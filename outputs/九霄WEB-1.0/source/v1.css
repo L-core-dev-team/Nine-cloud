@@ -1,0 +1,52 @@
+:root{color-scheme:dark}
+
+/* Landing pages and shared controls. */
+#landing:not(.hidden){display:block;height:100dvh;overflow:auto;background:#101b27;color:#ece7df}
+#landing .sheet{background:#14212d;color:#eee}
+#landing .hero p{color:#a9b4bd}
+#landing .field input,#landing .field textarea,#landing .field select{background:#1d2b38;color:#eee}
+#landing .note{background:#28323d;color:#d2c8b9}
+#landing .tabs button{background:#1d2c3b;color:#ccc}
+#landing .tabs button.active{background:#645567;color:#fff}
+#landing .gold-title{font-size:24px;color:#dbc5af}
+.field input,.field textarea,.field select{color:#1b2530}
+.actions-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0}
+.actions-grid button{text-align:left;line-height:1.65;padding:12px;border:1px solid #74818b;border-radius:12px;background:#13202dd9;color:#eee;font-size:14px}
+.readmark{font:12px/1.5 system-ui;color:#c8b9cd;margin:12px 0}
+.empty-title{font-size:28px;margin-bottom:18px}
+.v1-save{display:flex;gap:8px;align-items:center;padding:12px 0;border-bottom:1px solid #4c535b}
+.v1-save strong{flex:1}
+.v1-save button,.v1-btn{min-height:44px;padding:10px 15px;border:1px solid #687383;border-radius:11px;background:#263746;color:#fff;cursor:pointer}
+.v1-stack{white-space:pre-wrap;line-height:1.82;overflow-wrap:anywhere}
+.v1-row{padding:10px 0;border-bottom:1px solid #44505a}
+.v1-row small{display:block;opacity:.6}
+#notice{position:fixed;z-index:9999;top:calc(12px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:max-content;max-width:min(84vw,360px);padding:11px 16px;border:1px solid rgba(221,205,220,.16);border-radius:13px;background:rgba(43,44,61,.96);color:#fff;box-shadow:0 8px 30px #0008;font:600 13px/1.45 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}
+#notice:empty{display:none}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid #e4c1db;outline-offset:3px}
+button:disabled{opacity:.48;cursor:wait}
+
+/* Shared modal content. Layout is finalized in ui-replica.css. */
+.modalbox{color:#eef2f5;background:#14222e}
+.mini{white-space:pre-wrap}
+.ai-config{display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.ai-config-content{overflow:auto;overscroll-behavior:contain;min-height:0;padding:0 3px 6px;scrollbar-width:thin}
+.ai-config-content h2{margin:0 0 12px}
+.ai-config-content>p{margin:0 0 14px;color:#aebbc6;font:13px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}
+.ai-config-footer{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:8px;flex-shrink:0;padding-top:12px;border-top:1px solid rgba(143,167,186,.28)}
+.ai-config-footer button{min-width:0;min-height:46px;white-space:nowrap;padding:8px;font-size:14px}
+.ai-config-footer button:first-child{background:linear-gradient(135deg,#826782,#564d6d);border-color:#c3a8be}
+.ai-config label{display:block;margin-top:12px;color:#e7edf2;font:500 14px/1.4 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}
+.ai-config input:not([type=checkbox]),.ai-config select{width:100%;box-sizing:border-box;min-height:44px;margin-top:6px;padding:10px 12px;border:1px solid #526779;border-radius:10px;background:#0d1a25;color:#eef3f7;font-size:16px}
+.ai-config details{margin:13px 0;padding:12px;border:1px solid rgba(119,148,171,.5);border-radius:13px;background:rgba(9,22,33,.3)}
+.ai-config summary{min-height:36px;padding:5px 0;cursor:pointer;font-weight:650}
+.ai-config details>button{margin-top:12px}
+.api-key-wrap{display:grid;grid-template-columns:minmax(0,1fr) 58px;gap:7px;align-items:end}
+.api-key-wrap .api-key-toggle{height:44px;margin-top:6px;padding:0;border:1px solid #526779;border-radius:10px;background:#1b2b39;color:#eaf0f4;font-size:13px}
+#aiLogsText{white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace}
+
+@media(max-width:600px){
+  .actions-grid{grid-template-columns:1fr}
+  #landing .wrap{padding:0}
+  #landing .sheet{border-radius:0}
+  #landing .hero,#landing .page{padding-left:20px;padding-right:20px}
+}

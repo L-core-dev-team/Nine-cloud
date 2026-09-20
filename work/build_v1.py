@@ -1,0 +1,40 @@
+from pathlib import Path
+import re,json,base64
+root=Path(r'C:\Users\11954\Desktop\chatgpt\九霄剧情卡')
+out=Path('outputs/九霄WEB-1.0');out.mkdir(exist_ok=True)
+s=(root/'九霄_WEB_v2.8_空白版.html').read_text(encoding='utf-8-sig')
+s=re.sub(r'<script\b[^>]*>[\s\S]*?</script>','',s)
+# The source template contains several historical UI override blocks. Keep its
+# first structural stylesheet only; v1.css and ui-replica.css are authoritative.
+first_style_end=s.find('</style>')+len('</style>')
+head_end=s.find('</head>')
+if first_style_end<len('</style>') or head_end<first_style_end:raise RuntimeError('template head styles not found')
+s=s[:first_style_end]+'\n'+s[head_end:]
+s=s.replace('<div class="messages" id="messages"></div>','<section class="story-card" aria-label="剧情"><div class="messages story-scroll" id="messages" tabindex="0"></div></section>')
+s=s.replace('道阻且长 · 与君共赴','道阻且长 · 与君共勉')
+s=s.replace('九霄<span class="fy-redseal">',(Path('work')/'logo.svg').read_text(encoding='utf-8')+'<span class="fy-redseal">')
+s=s.replace('</header>','</header><div class="jx-verse" aria-hidden="true"><span>九霄之上</span><span>自有长生</span><i>印</i></div>',1)
+s=s.replace('WEB v2.8 · 空白版','WEB 1.0').replace('查看完整设定','查看世界资料')
+s=s.replace('WEB v2.8 空白版','WEB 1.0')
+s=s.replace('可写多项；也可以留空让AI按规则生成','每行一项，最多三项；留空则不指定天赋')
+s=s.replace('<option>随机开局</option><option>中州天枢域</option>','<option>中州天枢域</option><option>随机开局</option>')
+s=s.replace('从旧版重新覆盖设定','导入补充资料（TXT）').replace('当前权威设定','世界资料').replace('accept=".html,.htm"','accept=".txt"')
+s=s.replace('value="4096"','value="8192"').replace('value="30"','value="8"')
+s=s.replace('WEB 1.0','WEB 1.0')
+s=s.replace('</head>','<style>'+Path('work/ui-fonts.css').read_text(encoding='utf-8')+'</style></head>')
+s=s.replace('</head>','<link rel="manifest" href="manifest.json"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="九霄"><style>'+Path('work/v1.css').read_text(encoding='utf-8')+'\n'+Path('work/ui-replica.css').read_text(encoding='utf-8')+'</style></head>')
+corpus=json.loads(Path('outputs/设定OCR数据.json').read_text(encoding='utf-8'))
+old=json.loads(Path('work/九霄_WEB_v2.8_空白版.constants.json').read_text(encoding='utf-8'))
+personal=json.loads(Path('work/九霄_WEB_v2.8_临江仙存档版.constants.json').read_text(encoding='utf-8'))
+data={'sources':corpus['records'],'legacy':old['EMBEDDED_V1_AUTHORITY'],'personal':personal['PERSONAL_SAVE']}
+s=s.replace('</body>','<script>const MATERIALS='+json.dumps(data,ensure_ascii=False).replace('</','<\\/')+';</script><script>'+''.join((Path('work')/name).read_text(encoding='utf-8')+'\n' for name in ['ai-provider.js','ai-router.js','ai-settings.js'])+Path('work/v1.js').read_text(encoding='utf-8')+'</script></body>')
+background=(root/'仙山夜景.png') if (root/'仙山夜景.png').exists() else (out/'仙山夜景.png')
+s=s.replace("url('仙山夜景.png')","url('data:image/png;base64,"+base64.b64encode(background.read_bytes()).decode('ascii')+"')")
+(out/'九霄WEB-1.0.html').write_text(s,encoding='utf-8')
+print('Built',len(s),'characters')
+
+(out/'九霄_WEB_空白版.html').write_text(s,encoding='utf-8')
+personal_html=s.replace('<script>const MATERIALS=', '<script>window.JX_EDITION="personal";</script><script>const MATERIALS=',1)
+(out/'九霄_WEB_临江仙存档版.html').write_text(personal_html,encoding='utf-8')
+(out/'九霄_WEB_1.0_空白版.html').write_text(s,encoding='utf-8')
+(out/'九霄_WEB_1.0_临江仙存档版.html').write_text(personal_html,encoding='utf-8')

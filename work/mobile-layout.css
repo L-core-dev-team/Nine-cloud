@@ -1,0 +1,31 @@
+/* Mobile flow layout: row sizes follow the composer instead of fixed bottom offsets. */
+.ai-config{display:flex;flex-direction:column;gap:14px;overflow:hidden!important;max-height:calc(var(--viewport,100dvh) - 28px)}
+.ai-config-content{overflow:auto;overscroll-behavior:contain;min-height:0;padding:0 3px 4px;scrollbar-width:thin}
+.ai-config-content h2{margin-top:0}.ai-config-footer{display:flex;flex-wrap:wrap;gap:8px;flex-shrink:0;padding-top:12px;border-top:1px solid #66738466}
+.ai-config-footer button{flex:1 1 0;min-width:0;min-height:44px;white-space:nowrap;padding:10px 8px;font-size:14px}.ai-config-footer button:first-child{background:linear-gradient(135deg,#826782,#564d6d);border-color:#c3a8be}
+.ai-config input:not([type=checkbox]),.ai-config select{font-size:16px;border:1px solid #647081;border-radius:9px;background:#101c28;color:#eee;padding:10px 12px}
+.ai-config summary{min-height:36px;padding:5px 0;cursor:pointer}.modalbox{max-height:calc(var(--viewport,100dvh) - 28px)}
+@media(max-width:600px){
+  #game.active{display:grid!important;min-height:0!important;grid-template-rows:calc(78px + env(safe-area-inset-top)) minmax(0,1fr) calc(68px + env(safe-area-inset-bottom));box-sizing:border-box}
+  .fy-gamebar{position:relative!important;inset:auto!important;width:100%!important;height:auto!important;min-height:0!important;z-index:2}
+  .fy-gamebar .fy-iconbtn,.fy-gamebar .fy-modelpill{position:absolute!important;top:calc(14px + env(safe-area-inset-top))!important;min-height:44px}
+  .fy-brandlock{top:calc(21px + env(safe-area-inset-top))!important;left:67px!important}
+  .fy-modelpill{right:60px!important;width:calc(100% - 205px)!important;max-width:200px;min-width:90px;min-height:44px;padding:0 10px!important}
+  #modelLabel{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;font-size:12px}
+  .fy-stage{position:relative!important;inset:auto!important;width:100%!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;display:flex!important}
+  #game .chat{position:relative!important;inset:auto!important;display:grid!important;grid-template-rows:minmax(0,1fr) auto auto;gap:10px;width:calc(100% - 28px)!important;max-width:760px!important;height:100%!important;min-height:0!important;min-width:0!important;margin:0 auto!important;padding:0 0 10px!important;box-sizing:border-box}
+  .messages{position:relative!important;inset:auto!important;transform:none!important;width:100%!important;height:auto!important;min-height:0!important;margin:0!important;padding:4px 2px 12px!important;box-sizing:border-box;overscroll-behavior:contain}
+  .msg.ai{padding:24px 20px!important;line-height:1.95!important;overflow-wrap:anywhere}.msg.user{overflow-wrap:anywhere}
+  .fy-tools{position:static!important;inset:auto!important;transform:none!important;width:100%!important;margin:0!important;grid-template-columns:repeat(3,minmax(0,1fr)) 44px!important;gap:6px!important}
+  .fy-tools button{height:44px!important;min-height:44px;font-size:12px!important;padding:4px!important;white-space:nowrap}
+  .composer-wrap{position:static!important;inset:auto!important;transform:none!important;width:100%!important;margin:0!important}
+  .composer{height:auto!important;min-height:70px!important;grid-template-columns:minmax(0,1fr) 48px!important;gap:8px!important;align-items:center!important;padding:9px 10px 9px 16px!important;border-radius:22px!important;box-sizing:border-box}
+  .composer textarea{width:100%!important;height:54px!important;min-height:44px!important;max-height:120px!important;box-sizing:border-box;resize:none!important;font-size:16px!important;line-height:1.5!important}
+  #send{width:48px!important;height:48px!important;min-width:48px!important;min-height:48px!important}
+  .fy-dock{position:relative!important;inset:auto!important;transform:none!important;width:100%!important;height:auto!important;margin:0!important;padding:4px 8px calc(6px + env(safe-area-inset-bottom))!important;box-sizing:border-box}
+  .fy-dock button{min-height:48px!important}.fy-sheetpanel{max-height:calc(var(--viewport,100dvh) - 16px)!important}
+  #notice{top:calc(66px + env(safe-area-inset-top));font-size:13px;max-width:calc(100% - 36px);box-sizing:border-box}
+  .compact-viewport #game.active{grid-template-rows:calc(66px + env(safe-area-inset-top)) minmax(0,1fr)}
+  .compact-viewport .fy-dock{display:none!important}.compact-viewport #game .chat{gap:8px;padding-bottom:8px!important}
+  .compact-viewport .composer{min-height:62px!important;padding-top:5px!important;padding-bottom:5px!important}.compact-viewport .composer textarea{height:48px!important}
+}

@@ -1,0 +1,47 @@
+/* The existing world page becomes the game overlay when opened from the dock. */
+body.world-book-open{overflow:hidden}
+#landing.world-open{position:fixed;inset:0;z-index:95;display:block!important;overflow:hidden;background:rgba(5,12,21,.46);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+#landing.world-open .topbar,#landing.world-open .hero,#landing.world-open .tabs{display:none}
+#landing.world-open .wrap{width:100%;max-width:none;height:100%;margin:0;padding:calc(16px + env(safe-area-inset-top)) 14px calc(16px + env(safe-area-inset-bottom));display:flex;justify-content:center;box-sizing:border-box}
+#landing.world-open .sheet{width:min(100%,760px);height:100%;min-height:0;margin:0;padding:0;background:transparent;border:0;box-shadow:none;display:flex}
+#page-world{box-sizing:border-box;color:rgba(231,236,242,.93);background:linear-gradient(155deg,rgba(98,117,137,.11),transparent 35%),linear-gradient(180deg,rgba(25,42,60,.72),rgba(11,26,42,.72));border:1px solid rgba(201,218,235,.26);border-top:1px solid rgba(248,184,213,.62);border-radius:22px;box-shadow:0 20px 55px rgba(1,5,12,.34),inset 0 1px 0 rgba(255,255,255,.12);backdrop-filter:blur(18px) saturate(112%);-webkit-backdrop-filter:blur(18px) saturate(112%);width:100%;max-height:100%;min-height:0;padding:0;overflow:hidden;flex-direction:column}
+#page-world.active{display:flex}
+#landing:not(.world-open) #page-world{min-height:min(76dvh,760px)}
+.world-head{flex:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 19px 14px;border-bottom:1px solid rgba(209,223,238,.13);background:rgba(20,37,55,.22)}
+.world-head h2{margin:0;color:#f0eaf0;font-family:"Songti SC","STSong","Noto Serif CJK SC","SimSun",serif;font-size:21px;font-weight:500;letter-spacing:.07em}
+.world-close{width:35px;height:35px;flex:none;border-radius:50%;border:1px solid rgba(221,232,242,.32);background:rgba(156,174,192,.12);color:#f1f3f5;font-size:25px;line-height:1;display:grid;place-items:center;cursor:pointer}
+.world-close:focus-visible,.world-tree summary:focus-visible{outline:2px solid rgba(255,195,220,.8);outline-offset:2px}
+.world-scroll{min-height:0;flex:1;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:14px 16px 22px;scrollbar-width:thin;scrollbar-color:rgba(194,207,223,.26) transparent}
+.world-intro{margin:1px 2px 15px;color:rgba(219,229,239,.65);font-size:12px;letter-spacing:.06em}
+.world-search{display:block;width:100%;box-sizing:border-box;min-height:43px;margin:0 0 8px;padding:9px 13px;border:1px solid rgba(205,221,237,.29);border-radius:11px;background:rgba(12,27,43,.46);color:#edf1f6;font-size:16px;outline:none}
+.world-search::placeholder{color:rgba(218,227,237,.57)}
+.world-search:focus{border-color:rgba(245,187,214,.68)}
+.world-result-count{margin:0 2px 13px;color:rgba(220,229,239,.67);font-size:12px}
+.world-tree{display:grid;gap:10px}
+.world-tree [hidden]{display:none!important}
+.world-tree details{padding:0;border:0}
+.world-tree summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:50px;box-sizing:border-box}
+.world-tree summary::-webkit-details-marker{display:none}
+.world-tree summary::before,.world-tree details[open] summary::before{content:none!important;display:none!important}
+.world-tree summary::after{content:"›";flex:none;color:rgba(226,232,240,.74);font-family:Arial,sans-serif;font-size:24px;font-weight:300;transform:rotate(0);transition:transform .18s ease}
+.world-tree details[open]>summary::after{transform:rotate(90deg)}
+.world-group{border:1px solid rgba(203,220,237,.23)!important;border-radius:15px;background:linear-gradient(135deg,rgba(135,156,179,.12),rgba(55,78,105,.12));overflow:hidden}
+.world-group>summary{padding:0 16px;color:rgba(240,241,245,.96);font-family:"Songti SC","STSong","Noto Serif CJK SC","SimSun",serif;font-size:18px;font-weight:500;letter-spacing:.05em}
+.world-group[open]>summary{border-bottom:1px solid rgba(205,221,237,.14)}
+.world-children{display:grid;gap:7px;padding:10px 12px 12px}
+.world-item{border:1px solid rgba(202,216,234,.14)!important;border-radius:11px;background:rgba(111,137,162,.08)}
+.world-item>summary{min-height:44px;padding:0 12px 0 17px;color:rgba(228,235,243,.87);font-family:"Songti SC","STSong","Noto Serif CJK SC","SimSun",serif;font-size:16px;font-weight:400}
+.world-item[open]>summary{border-bottom:1px solid rgba(205,221,237,.1)}
+.world-text{padding:12px 17px 16px;opacity:1;transition:opacity .18s ease}
+.world-text p{margin:0 0 12px;color:rgba(228,233,239,.89);font-family:"Songti SC","STSong","Noto Serif CJK SC","SimSun",serif;font-size:15.5px;font-weight:400;line-height:1.87;overflow-wrap:anywhere}
+.world-text p:last-child{margin-bottom:0}
+.world-text h3{margin:5px 0 7px;color:rgba(236,239,243,.94);font-family:"Songti SC","STSong","Noto Serif CJK SC","SimSun",serif;font-size:16px;font-weight:500}
+.world-raw-text{margin:8px 0 0;white-space:pre-wrap;overflow-wrap:anywhere;color:rgba(229,234,241,.89);font-family:"Songti SC","STSong","Noto Serif CJK SC","SimSun",serif;font-size:15px;line-height:1.72}
+.world-text .world-provenance{margin:0;color:rgba(225,233,241,.6);font-family:inherit;font-size:11px;letter-spacing:.03em}
+.world-empty{margin:2px 4px 6px;color:rgba(221,230,239,.72);font-size:13px;line-height:1.6}
+.world-reviewed{margin-top:10px;background:rgba(92,121,150,.09)}
+.world-tools{margin:22px 2px 0;border-top:1px solid rgba(211,224,239,.13);padding-top:12px;color:rgba(217,227,238,.65)}
+.world-tools>summary{cursor:pointer;font-size:12px}
+.world-tools .actions{margin:12px 0 0;flex-wrap:wrap}
+.world-tools button{font-size:12px;background:rgba(111,137,162,.14);border:1px solid rgba(203,220,237,.22);color:rgba(235,240,246,.82);box-shadow:none}
+@media(max-width:430px){#landing.world-open .wrap{padding-left:10px;padding-right:10px}.world-head{padding:14px 16px 12px}.world-scroll{padding:12px 11px 18px}.world-group>summary{font-size:17px}.world-text p{font-size:15px}}

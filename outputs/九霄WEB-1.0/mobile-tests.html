@@ -1,0 +1,67 @@
+<!doctype html><meta charset="utf-8"><title>九霄手机布局验收 · DEV ONLY</title><style>body{background:#122030;color:#eee;font:15px/1.8 monospace;padding:24px}pre{white-space:pre-wrap}.fixture{position:absolute;left:-10000px;top:0;border:0;visibility:hidden}</style><h1>手机布局回归检查</h1><p>使用不同尺寸的本地页面，不发起AI请求、不修改玩家存档。不能替代真机软键盘与原生系统验收。</p><pre id="result">测试中…</pre>
+<script>
+(async()=>{
+const results=[],check=(name,pass)=>results.push((pass?'PASS ':'FAIL ')+name);
+for(const [width,height] of [[390,844],[393,852],[402,874],[430,932]]){
+ const frame=document.createElement('iframe');frame.className='fixture';frame.style.width=width+'px';frame.style.height=height+'px';
+ const loaded=new Promise(resolve=>frame.onload=resolve);frame.src='九霄WEB-1.0.html';document.body.append(frame);await loaded;
+ const w=frame.contentWindow,d=frame.contentDocument;
+ await d.fonts.ready;
+ check(width+' 离线宋体成功加载',[...d.fonts].some(f=>f.family==='JXReading'&&f.status==='loaded'));
+ // Stress layout with a long DOM-only passage. No library mutation or save writes.
+ d.querySelector('#messages').firstElementChild.textContent='DEV ONLY 长篇布局检查。\n\n'.repeat(100);
+ await new Promise(resolve=>w.requestAnimationFrame(()=>w.requestAnimationFrame(resolve)));
+ const r=selector=>d.querySelector(selector).getBoundingClientRect();
+ const msg=r('.story-card'),tools=r('.fy-tools'),composer=r('.composer-wrap');
+ const headers=['.fy-menuicon','.fy-brandname','.fy-tagline','.fy-modelpill','.fy-gear'].map(r);
+ check(width+' 顶栏完整无重叠',headers.every((a,i)=>!i||a.left>=headers[i-1].right-1)&&headers.at(-1).right<=width&&d.querySelector('.fy-tagline').textContent==='道阻且长 · 与君共勉');
+ check(width+' 书法矢量字形',d.querySelectorAll('.jx-logo path').length===2);
+ check(width+' 统一玻璃与图标居中',w.getComputedStyle(d.querySelector('.fy-tools button')).alignItems==='center'&&w.getComputedStyle(d.querySelector('.composer')).backgroundImage.includes('gradient'));
+ check(width+' 玻璃父层无叠加底色',['.fy-stage','#game .chat','.composer-wrap','.fy-tools','.messages.story-scroll'].every(s=>w.getComputedStyle(d.querySelector(s)).backgroundColor==='rgba(0, 0, 0, 0)'));
+ check(width+' 玻璃模糊与轻背景遮罩',w.getComputedStyle(d.querySelector('.story-card')).backdropFilter.includes('18px')&&w.getComputedStyle(d.querySelector('.game'),'::before').filter==='none');
+ check(width+' 右侧竖排题字',d.querySelector('.jx-verse')?.textContent.includes('九霄之上自有长生')&&w.getComputedStyle(d.querySelector('.jx-verse')).writingMode==='vertical-rl');
+ check(width+' 主阅读区无存档元信息',!d.querySelector('#messages').textContent.includes('自动保存')&&!d.querySelector('#messages').textContent.includes('旧局快照'));
+ const fixed=['.fy-gamebar','.story-card','.fy-tools','.composer-wrap','.fy-dock'],before=fixed.map(r),scroll=d.querySelector('#messages');scroll.scrollTop=scroll.scrollHeight;
+ await new Promise(resolve=>w.requestAnimationFrame(resolve));
+ check(width+' 仅剧情内部滚动',scroll.scrollTop>0&&fixed.every((s,i)=>r(s).top===before[i].top&&r(s).height===before[i].height)&&w.scrollY===0);
+ check(width+'×'+height+' 阅读/工具/输入不重叠',msg.bottom<=tools.top+1&&tools.bottom<=composer.top+1&&msg.height>100);
+ check(width+'×'+height+' 输入在屏幕内且无横向溢出',composer.bottom<=height+1&&d.documentElement.scrollWidth<=width+1);
+ check(width+'×'+height+' 参考比例与组件间距',Math.abs(msg.width/width-.68)<.035&&tools.width/width>.78&&tools.width/width<.84&&composer.width/width>.80&&composer.width/width<.86&&msg.bottom<=tools.top-8&&tools.bottom<=composer.top-8);
+ w.JX.AI.settings();await new Promise(resolve=>w.requestAnimationFrame(resolve));
+ const footer=r('.ai-config-footer');
+ check(width+' 设置仅单一滚动区',w.getComputedStyle(d.querySelector('.ai-config')).overflowY==='hidden'&&w.getComputedStyle(d.querySelector('.ai-config-content')).overflowY==='auto'&&d.querySelector('.ai-config>h2')!==null);
+ check(width+'×'+height+' 设置操作按钮可见',footer.top>=0&&footer.bottom<=height+1&&[...d.querySelectorAll('.ai-config-footer button')].every(b=>b.getBoundingClientRect().height>=44));
+ const key=d.querySelector('#ai-story-apiKey'),toggle=d.querySelector('.api-key-toggle');toggle.click();
+ check(width+'×'+height+' API Key可显示隐藏',key.type==='text'&&toggle.textContent==='隐藏');
+ d.querySelector('#multiAIModal').classList.remove('open');
+ const old=w.JX.importData(w.JX.sampleSnapshot);w.JX.renderData(old);d.querySelector('#dataModal').classList.add('open');
+ const status=d.querySelector('#statusDetail'),intel=d.querySelector('#intelDetail'),memory=d.querySelector('#memoryDetail');status.open=true;intel.open=false;memory.open=false;
+ await new Promise(resolve=>w.requestAnimationFrame(()=>w.requestAnimationFrame(resolve)));
+ const statusPane=d.querySelector('#statusPane');
+ check(width+'×'+height+' 长折叠正文正常推开后续模块',statusPane.getBoundingClientRect().height+1>=statusPane.scrollHeight&&status.getBoundingClientRect().bottom<=intel.getBoundingClientRect().top+1);
+ intel.open=true;await new Promise(resolve=>w.requestAnimationFrame(()=>w.requestAnimationFrame(resolve)));
+ check(width+'×'+height+' 三个主面板一次只展开一个',intel.open&&!status.open&&!memory.open);
+ frame.remove();
+}
+{
+ const width=390,height=500,frame=document.createElement('iframe');frame.className='fixture';frame.style.width=width+'px';frame.style.height=height+'px';
+ const loaded=new Promise(resolve=>frame.onload=resolve);frame.src='九霄WEB-1.0.html';document.body.append(frame);await loaded;const d=frame.contentDocument,r=s=>d.querySelector(s).getBoundingClientRect();
+ check('390×500 键盘压缩视口隐藏底栏',getComputedStyle(d.querySelector('.fy-dock')).display==='none');
+ check('390×500 输入区与工具栏仍在视口内',r('.fy-tools').bottom<=r('.composer-wrap').top+1&&r('.composer-wrap').bottom<=height+1&&d.documentElement.scrollWidth<=width+1);frame.remove();
+}
+for(const [file,personal] of [['九霄_WEB_1.0_空白版.html',false],['九霄_WEB_1.0_临江仙存档版.html',true]]){
+ const f=document.createElement('iframe');f.className='fixture';f.style.width='390px';f.style.height='500px';
+ const html=await (await fetch(file)).text();
+ const isolate='<script>Object.defineProperty(window,"localStorage",{value:{getItem:()=>null,setItem:()=>{}}});<\/script>';
+ const ready=new Promise(resolve=>f.onload=resolve);f.srcdoc=html.replace('<head>','<head>'+isolate);document.body.append(f);await ready;
+ const w=f.contentWindow,d=f.contentDocument;
+ check(file+' 首次打开',!!w.JX&&(personal?w.JX.library.saves[0]?.name==='临江仙':w.JX.library.saves.length===0));
+ w.JX.AI.settings();const input=d.querySelector('#ai-story-maxTokens');input.focus();input.value='9000';input.scrollIntoView({block:'center'});
+ await new Promise(resolve=>w.requestAnimationFrame(resolve));
+ const rect=input.getBoundingClientRect(),footer=d.querySelector('.ai-config-footer').getBoundingClientRect();
+ check(file+' 短屏下方参数可编辑',input.value==='9000'&&rect.top>=0&&rect.bottom<=footer.top&&footer.bottom<=501);
+ f.remove();
+}
+document.getElementById('result').textContent=results.join('\n')+'\n\n'+results.filter(x=>x.startsWith('PASS')).length+'/'+results.length+' 通过';
+})().catch(e=>document.getElementById('result').textContent='FAIL 页面初始化：'+e.message);
+</script>

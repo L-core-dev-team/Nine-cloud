@@ -1,0 +1,61 @@
+<!doctype html><meta charset="utf-8"><title>九霄1.0 逻辑验收 · DEV ONLY</title><style>body{background:#122030;color:#eee;font:16px/1.8 monospace;padding:30px}iframe{display:none}</style><h1>九霄 1.0 · 本地逻辑测试</h1><p>DEV ONLY：测试使用独立内存对象，不写入存档，不调用模型。</p><pre id="result">加载实际游戏代码…</pre><iframe src="九霄WEB-1.0.html" id="app"></iframe><script>
+document.getElementById('app').onload=()=>{const j=document.getElementById('app').contentWindow.JX,out=[];function test(name,f){try{f();out.push('PASS '+name)}catch(e){out.push('FAIL '+name+': '+e.message)}}const assert=(x)=>{if(!x)throw Error('assertion')},reject=f=>{let caught=false;try{f()}catch{caught=true}assert(caught)};let s=j.blank('DEV ONLY');const response=()=>({story:'测试剧情',summary:'测试事件',player:{修为:'炼气期一层'},npcs:[],items:[{id:'potion',name:'测试物品',quantity:1}],world:{location:'测试地点',intel:[]},elapsedMinutes:1500,longSummary:'六回合测试归档',facts:['测试承诺'],actions:['观察','离开','交谈']});
+test('创建独立存档',()=>assert(s.turn===0&&s.messages.length===0));
+test('合法回合状态与剧情同时更新',()=>{s.pending={id:'t1',text:'测试行动'};s=j.apply(s,j.validate(response(),s));assert(s.turn===1&&s.messages.length===2&&s.items[0].quantity===1&&s.world.elapsedMinutes===1500)});
+test('同一回合不能重复提交',()=>reject(()=>j.apply(s,response())));
+test('拒绝负物品数量',()=>{const r=response();r.items[0].quantity=-1;reject(()=>j.validate(r,s))});
+test('拒绝时间倒退',()=>{const r=response();r.elapsedMinutes=-1;reject(()=>j.validate(r,s))});
+test('拒绝空剧情',()=>{const r=response();r.story='';reject(()=>j.validate(r,s))});
+test('拒绝重复物品ID',()=>{const r=response();r.items.push({...r.items[0]});reject(()=>j.validate(r,s))});
+test('六回合归档保留原始事件',()=>{for(let i=2;i<=6;i++){s.pending={id:'t'+i,text:'测试'};s=j.apply(s,j.validate(response(),s))}assert(s.ltm.length===1&&s.stm.length===0&&s.events.length===6&&s.ltm[0].eventIds.length===6&&s.world.elapsedMinutes===9000)});
+test('第七回合启动新短期窗口',()=>{s.pending={id:'t7',text:'测试'};s=j.apply(s,j.validate(response(),s));assert(s.stm.length===1&&s.ltm.length===1&&s.facts.length===1)});
+test('物品null保持原资产',()=>{s.pending={id:'t8',text:'测试'};const r=response();r.items=null;s=j.apply(s,j.validate(r,s));assert(s.items.length===1)});
+test('新存档导出导入保留世界和记忆',()=>{const copy=j.importData(JSON.stringify({format:'JIUXIAO_SAVE',version:1,save:s}));assert(copy.id!==s.id&&copy.turn===8&&copy.events.length===8&&copy.ltm.length===1)});
+test('拒绝不完整存档',()=>reject(()=>j.importData('{"format":"JIUXIAO_SAVE","version":1,"save":{}}')));
+test('旧记录跳过空AI',()=>{const old=j.importData('[USER]:你好\n[AI]:第一幕\n[USER]:继续\n[AI]:\n#===========================================#');if(old.messages.length!==2||old.turn!==1||old.pending.text!=='继续')throw Error(JSON.stringify(old))});
+test('待提交期间原对象不被修改',()=>{const b=j.blank();b.pending={id:'x',text:'测试'};j.apply(b,j.validate(response(),b));assert(b.turn===0&&b.messages.length===0)});
+
+test('真实临江仙快照迁移角色地点和记忆',()=>{const old=j.importData(j.sampleSnapshot);assert(old.name==='临江仙'&&old.player.修为.includes('假婴')&&old.world.location.includes('南疆')&&old.npcs.length===2&&old.ltm.length===26&&old.stm.length===2&&old.player.物品栏.includes('三瓶'));});
+test('旧JSON正确计算回合',()=>{const old=j.importData(JSON.stringify({messages:[{role:'assistant',content:j.sampleSnapshot}]}));assert(old.turn===1&&old.ltm.length===26)});
+test('旧记忆进入续玩上下文但不重复携带原配置',()=>{const old=j.importData(j.sampleSnapshot);old.pending={id:'test',text:'继续'};const ctx=j.context(old);assert(ctx[1].content.includes('假婴')&&!ctx[1].content.includes('接收用户明确指令'));});
+test('迁移后的新存档再次导入不重复记忆',()=>{const old=j.importData(j.sampleSnapshot);const copy=j.importData(JSON.stringify({format:'JIUXIAO_SAVE',version:1,save:old}));assert(copy.ltm.length===26&&copy.stm.length===2&&copy.name==='临江仙')});
+
+
+test('超长历史按完整消息裁减，行动和状态保留',()=>{const b=j.blank();b.pending={id:'budget',text:'向北走'};b.messages=Array.from({length:12},()=>({role:'assistant',content:'长'.repeat(12000)}));const ctx=j.context(b);assert(JSON.stringify(ctx).length<=60000&&ctx.at(-1).content.includes('向北走')&&ctx.length<15&&b.messages.length===12)});
+test('核心资料超限阻止请求而不丢弃行动',()=>{const b=j.blank();b.pending={id:'budget',text:'继续'};b.supplements=['设'.repeat(61000)];reject(()=>j.context(b));assert(b.pending.text==='继续'&&b.turn===0)});
+
+
+test('真实旧物品迁移保留瓶包与未知数量',()=>{const b=j.importData(j.sampleSnapshot);assert(b.items.length===6);assert(b.items.find(x=>x.name==='化煞辟毒丹').quantity===3&&b.items.find(x=>x.name==='化煞辟毒丹').unit==='瓶');assert(b.items.find(x=>x.name==='避蝎引灵散').quantity===2&&b.items[0].quantity===null)});
+test('未知库存数量可以导出再导入',()=>{const b=j.importData(j.sampleSnapshot);const c=j.importData(JSON.stringify({format:'JIUXIAO_SAVE',version:1,save:b}));assert(c.items.length===6&&c.items[0].quantity===null)});
+test('模型库存接受未知数量，拒绝小数',()=>{const r=response();r.items[0].quantity=null;j.validate(r,s);r.items[0].quantity=1.5;reject(()=>j.validate(r,s))});
+test('导入库存拒绝重复ID与空项',()=>{const b=j.blank();b.items=[{id:'x',name:'丹',quantity:null},{id:'x',name:'丹',quantity:1}];reject(()=>j.importData(JSON.stringify({format:'JIUXIAO_SAVE',version:1,save:b})));b.items=[null];reject(()=>j.importData(JSON.stringify({format:'JIUXIAO_SAVE',version:1,save:b})))});
+
+
+test('旧记录末尾行动恢复并仅提交一次',()=>{const b=j.importData('[USER]:开始\n[AI]:第一幕\n[USER]:向北走');assert(b.pending.text==='向北走'&&b.turn===1&&b.messages.length===2);const c=j.apply(b,j.validate(response(),b));assert(c.turn===2&&c.messages.filter(x=>x.content==='向北走').length===1&&b.pending!==null)});
+test('连续未回复输入按原顺序恢复',()=>{const b=j.importData('[USER]:观察\n[USER]:先别走');assert(b.pending.text==='观察\n\n先别走'&&b.messages.length===0&&b.legacy.unanswered.length===2)});
+test('已有回复的旧局不重复发起行动',()=>{const b=j.importData('[USER]:继续\n[AI]:第二幕');assert(b.pending===null&&b.turn===1)});
+test('状态面板折叠旧档案并隐藏GM人物',()=>{const b=j.importData(j.sampleSnapshot);b.npcs.push({id:'secret',name:'DEV秘密人物',visibility:'GM_ONLY'});j.renderData(b);const d=document.getElementById('app').contentDocument;assert(d.querySelector('#statusPane details')&&!d.querySelector('#statusPane details').open);assert(!d.querySelector('#intelPane').textContent.includes('DEV秘密人物'));assert(d.querySelector('#statusPane').firstChild.textContent.indexOf('物品栏')===-1)});
+
+
+test('物品数量更新保留原描述和单位',()=>{const b=j.importData(j.sampleSnapshot);b.pending={id:'keep',text:'使用一瓶丹药'};const r=response();r.items=b.items.map(x=>({id:x.id,name:x.name,quantity:x.quantity}));r.items[2].quantity=2;const c=j.apply(b,j.validate(r,b));assert(c.items[2].unit==='瓶'&&c.items[2].record.includes('来历')&&c.items[2].quantity===2&&b.items[2].quantity===3)});
+test('模型回复拒绝重复NPC与空名称',()=>{const r=response();r.npcs=[{id:'x',name:'人物',visibility:'PLAYER_KNOWN'},{id:'x',name:'人物2',visibility:'GM_ONLY'}];reject(()=>j.validate(r,s));r.npcs=[{id:'x',name:' ',visibility:'PLAYER_KNOWN'}];reject(()=>j.validate(r,s))});
+test('畸形记忆与人物存档被拒绝',()=>{const b=j.blank();b.ltm=[null];reject(()=>j.importData(JSON.stringify({format:'JIUXIAO_SAVE',version:1,save:b})));b.ltm=[];b.npcs=[{id:'x',name:'未知可见性'}];reject(()=>j.importData(JSON.stringify({format:'JIUXIAO_SAVE',version:1,save:b})))});
+test('累计时间溢出不提交',()=>{const b=j.blank();b.world.elapsedMinutes=Number.MAX_SAFE_INTEGER;b.pending={id:'overflow',text:'等待'};reject(()=>j.apply(b,j.validate(response(),b)));assert(b.turn===0&&b.pending!==null)});
+
+
+test('损坏存档库保留原文，不伪装成空库',()=>{const loaded=j.loadLibrary({getItem:()=>'{bad json'});assert(loaded.damaged==='{bad json'&&!loaded.library&&!loaded.blocked)});
+test('存储读取被拒绝时禁止继续写入',()=>{assert(j.loadLibrary({getItem:()=>{throw Error('denied')}}).blocked)});
+test('新存档覆盖前先备份损坏原文',()=>{const calls=[];j.commitLibrary({setItem:(k,v)=>calls.push({k,v})},{version:1,active:null,saves:[]},'OLD DATA');assert(calls.length===3&&calls[0].v==='OLD DATA'&&calls[1].k.endsWith('_recovery_latest')&&calls[2].k==='jiuxiao_v1_library')});
+test('备份写入失败时原存档不被覆盖',()=>{const calls=[];reject(()=>j.commitLibrary({setItem:(k,v)=>{calls.push(k);throw Error('quota')}},{},'OLD'));assert(calls.length===1&&calls[0]!=='jiuxiao_v1_library')});
+
+
+test('草稿按存档隔离并支持恢复',()=>{const cache=new Map(),store={getItem:k=>cache.get(k)||null,setItem:(k,v)=>cache.set(k,v)};const a=j.blank(),b=j.blank();j.writeDraft(store,a,'观察石碑');j.writeDraft(store,b,'向南走');assert(j.readDraft(store,a)==='观察石碑'&&j.readDraft(store,b)==='向南走')});
+test('待处理与已推进回合不恢复旧草稿',()=>{const cache=new Map(),store={getItem:k=>cache.get(k)||null,setItem:(k,v)=>cache.set(k,v)};const b=j.blank();j.writeDraft(store,b,'渡河');b.pending={id:'draft',text:'渡河'};assert(j.readDraft(store,b)==='');b.pending=null;b.turn++;assert(j.readDraft(store,b)==='')});
+test('草稿写失败可报告且不更改回合',()=>{const b=j.blank();reject(()=>j.writeDraft({setItem:()=>{throw Error('full')}},b,'输入'));assert(b.turn===0&&b.pending===null)});
+
+test('长篇待结算正文不重复挤占玩家输入预算',()=>{const b=j.blank();b.pending={id:'long-draft',text:'继续',gm:false,draftNarrative:{story:'长'.repeat(70000),actions:['观察','等待','离开']}};const ctx=j.context(b);assert(JSON.stringify(ctx).length<60000&&!ctx.at(-1).content.includes('draftNarrative')&&b.pending.draftNarrative.story.length===70000)});
+test('上下文仅发送行动白名单字段',()=>{const b=j.blank();b.pending={id:'metadata',text:'向北走',gm:true,failure:'旧错误',internalNote:'仅本地'};const last=JSON.parse(j.context(b).at(-1).content);assert(last.text==='向北走'&&last.gm===true&&Object.keys(last).length===3)});
+test('兼容缺少randomUUID的浏览器',()=>{const id=j.makeId({getRandomValues:bytes=>{bytes.fill(0);return bytes}});assert(id==='00000000-0000-4000-8000-000000000000')});
+test('缺少安全随机源时拒绝创建伪唯一ID',()=>reject(()=>j.makeId({})));
+document.getElementById('result').textContent=out.join('\n')+'\n\n'+out.filter(x=>x.startsWith('PASS')).length+'/'+out.length+' 通过';};
+</script>

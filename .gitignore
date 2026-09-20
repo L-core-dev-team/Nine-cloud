@@ -1,0 +1,12 @@
+# Rebuildable release archives; the unpacked project is tracked below.
+*.zip
+
+# Local runtime and editor artifacts.
+__pycache__/
+*.py[cod]
+node_modules/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+

@@ -1,0 +1,197 @@
+:root{
+  --page-scrim:rgba(1,7,14,.14);
+  --glass-main-top:rgba(16,33,50,.46);
+  --glass-main-bottom:rgba(5,18,31,.34);
+  --glass-secondary:rgba(7,20,33,.26);
+  --glass-light:rgba(6,18,31,.22);
+  --glass-bg:rgba(8,22,37,.38);
+  --glass-bg-light:var(--glass-light);
+  --glass-border:rgba(205,222,240,.22);
+  --glass-highlight:rgba(255,255,255,.045);
+  --glass-pink:rgba(255,180,216,.90);
+  --glass-pink-glow:rgba(255,158,205,.18);
+  --glass-sheen:linear-gradient(135deg,rgba(218,235,250,.075),transparent 42%,rgba(166,196,222,.025));
+  --glass-inner:inset 0 1px 0 var(--glass-highlight),inset 0 0 16px rgba(199,221,243,.025);
+  --glass-shadow:0 18px 42px rgba(0,0,0,.20);
+  --glass-blur-main:18px;
+  --glass-blur-light:14px;
+  --panel-bg:linear-gradient(180deg,rgba(27,39,52,.78),rgba(11,24,35,.67));
+  --panel-border:rgba(202,218,232,.34);
+  --panel-highlight:rgba(247,166,207,.92);
+  --text-primary:#edf1f4;
+  --text-secondary:rgba(225,232,238,.68);
+  --accent-pink:#efa8cb;
+  --glass-blur:14px;
+  --radius-lg:20px;
+  --radius-md:13px;
+  --jx-dock-h:calc(46px + env(safe-area-inset-bottom));
+  --jx-input-h:52px;
+}
+html,body{margin:0;background:#030a11;color:var(--text-primary);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;overflow-x:hidden}
+button,input,textarea,select{font-family:inherit}
+#game.active{display:block;position:fixed;inset:0;height:var(--viewport,100dvh);min-height:0;overflow:hidden;background:#030a11;color:var(--text-primary)}
+.game:before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background-image:url('仙山夜景.png');background-size:cover;background-position:center 48%;filter:none}
+.game:after{content:"";position:fixed;inset:0;z-index:1;pointer-events:none;background:var(--page-scrim)}
+
+.fy-gamebar{position:fixed;inset:0 0 auto;z-index:40;height:calc(70px + env(safe-area-inset-top));padding:0;background:linear-gradient(180deg,rgba(2,8,14,.4),transparent);border:0;box-shadow:none;pointer-events:none}
+.fy-gamebar .fy-iconbtn,.fy-gamebar .fy-modelpill{position:absolute;top:calc(16px + env(safe-area-inset-top));height:34px;min-height:34px;margin:0;border:1px solid rgba(203,220,238,.32);background:rgba(5,16,27,.42);box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 8px 22px rgba(0,0,0,.14);backdrop-filter:blur(10px) saturate(108%);pointer-events:auto}
+.fy-menuicon{left:4.8%;width:34px;min-width:34px;padding:8px;border-radius:12px;display:flex;flex-direction:column;justify-content:center;gap:4px}
+.fy-menuicon span{display:block;width:17px;height:1px;margin:0;border-radius:9px;background:#eef2f5}
+.fy-brandlock{position:absolute;top:calc(17px + env(safe-area-inset-top));left:15.8%;right:46.5%;height:34px;display:flex;align-items:center;gap:11px;min-width:0;overflow:visible;pointer-events:none}
+.fy-brandname{flex:none;color:#f1e7dc;font:700 29px/1 "STKaiti","Kaiti SC","KaiTi","Songti SC",serif;letter-spacing:.01em;white-space:nowrap;transform:skewX(-4deg) rotate(-1deg);text-shadow:0 0 16px rgba(244,225,196,.16)}
+.fy-redseal{margin-left:3px;color:#a73846;font-size:7px;vertical-align:middle}
+.fy-tagline{display:block;min-width:106px;color:#aaa49f;font:10px/1.2 "Songti SC","STSong",serif;letter-spacing:.11em;white-space:nowrap}
+.fy-modelpill{right:13.2%;width:28.5%;min-width:0;max-width:none;padding:0 10px;border-radius:17px;color:#f1edf0;display:flex;align-items:center;justify-content:center;gap:5px}
+.fy-modelpill .badge{display:none}
+#modelLabel{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:11.5px/1.2 Georgia,"Times New Roman",serif}
+.fy-chevron{margin-left:auto;font-size:11px}
+.fy-gear{right:4.1%;width:34px;min-width:34px;padding:0;border-radius:50%;color:#eef2f5;display:flex;align-items:center;justify-content:center}
+.fy-gear svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+
+.fy-stage,#game .chat{position:static;width:100%;height:auto;min-height:0;margin:0;padding:0;background:transparent;border:0;overflow:visible}
+.story-card{position:absolute;z-index:10;top:calc(70px + env(safe-area-inset-top));bottom:calc(var(--jx-dock-h) + 142px);left:50%;width:68%;max-width:294px;height:auto;min-height:0;margin:0;padding:0;box-sizing:border-box;transform:translateX(-50%);overflow:hidden;overscroll-behavior:contain;scrollbar-width:none;border:1px solid rgba(188,207,224,.31);border-top:2px solid rgba(247,166,207,.88);border-radius:18px;background:linear-gradient(180deg,rgba(25,38,51,.73),rgba(9,22,34,.68));box-shadow:0 16px 36px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.035);backdrop-filter:blur(15px) saturate(105%)}
+.messages::-webkit-scrollbar{display:none}
+.story-card:before{content:"";position:absolute;z-index:2;left:13px;right:13px;top:-1px;height:2px;background:linear-gradient(90deg,transparent,rgba(255,205,231,.94) 18%,rgba(255,187,219,.98) 50%,rgba(255,205,231,.94) 82%,transparent);filter:blur(.15px)}
+.msg{max-width:100%;margin:0 0 1.45em;color:var(--text-primary);overflow-wrap:anywhere}
+.msg.ai{padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;color:rgba(238,242,245,.96);font:400 13px/2.02 "Songti SC","STSong","SimSun",serif;letter-spacing:.035em;text-shadow:0 1px 1px rgba(0,0,0,.18);white-space:pre-wrap}
+.msg.user{margin:8px 0 18px;padding:10px 12px;border:1px solid rgba(205,220,235,.18);border-radius:14px;background:rgba(16,27,39,.58);font:400 12px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;white-space:pre-wrap}
+.msg.system{margin:10px auto 18px;text-align:center;color:var(--text-secondary);font:12px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;white-space:pre-wrap}
+.messages>.readmark{margin:4px 0 14px;color:rgba(225,232,238,.62);font-size:10px}
+.messages .actions-grid{grid-template-columns:1fr;margin:10px 0 0;gap:7px}
+.messages .actions-grid button{min-height:38px;padding:8px 11px;border-color:rgba(203,220,237,.24);border-radius:11px;background:rgba(8,22,34,.54);font-size:11.5px}
+
+.fy-tools{position:fixed;z-index:30;left:50%;bottom:calc(var(--jx-dock-h) + 94px);width:80%;max-width:346px;margin:0;padding:0;transform:translateX(-50%);display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) 46px;gap:6px}
+.fy-tools button{box-sizing:border-box;height:36px;min-height:36px;padding:0 6px;border:1px solid rgba(210,225,242,.29);border-radius:11px;background:rgba(7,18,29,.36);color:rgba(241,244,247,.95);box-shadow:0 7px 18px rgba(0,0,0,.12),inset 0 1px 0 rgba(255,255,255,.035);backdrop-filter:blur(11px);font-size:10.8px;font-weight:400;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:5px}
+.fy-tools button span{font-size:13px;line-height:1}
+#moreBtn{font-size:17px;letter-spacing:.1em}
+.composer-wrap{position:fixed;z-index:31;left:50%;bottom:calc(var(--jx-dock-h) + 4px);width:82%;max-width:354px;margin:0;padding:0;transform:translateX(-50%)}
+.composer{box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) 38px;align-items:center;gap:8px;height:var(--jx-input-h);min-height:var(--jx-input-h);padding:5px 4px 5px 17px;border:1px solid rgba(241,247,255,.66);border-radius:18px;background:rgba(4,15,27,.5);box-shadow:0 0 0 1px rgba(244,169,208,.48),0 12px 28px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.04);backdrop-filter:blur(14px) saturate(108%)}
+.composer textarea{box-sizing:border-box;width:100%;height:40px;min-height:40px;max-height:40px;margin:0;padding:8px 0;border:0;outline:0;background:transparent;resize:none;color:#eef2f5;font:13px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;box-shadow:none}
+.composer textarea::placeholder{color:rgba(223,229,235,.54)}
+.send{width:38px;height:38px;min-width:38px;min-height:38px;padding:0;border:1px solid rgba(249,226,240,.96);border-radius:50%;background:radial-gradient(circle at 35% 23%,#fbfafc,#e5e3ea 75%);color:#111a24;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 1px rgba(239,168,207,.38),0 0 18px rgba(239,168,207,.18),0 7px 16px rgba(0,0,0,.18)}
+.send svg{width:20px;height:20px;margin-top:1px}
+.send.is-busy svg{animation:jx-pulse 1s ease-in-out infinite}
+@keyframes jx-pulse{50%{opacity:.35;transform:scale(.9)}}
+.composer-help{height:25px;margin:0;display:flex;align-items:center;justify-content:center;gap:10px;color:rgba(225,231,237,.68);font:9.5px/1.2 Georgia,"Times New Roman","Songti SC",serif;letter-spacing:.04em}
+.composer-help span{display:block;width:40px;height:1px;background:linear-gradient(90deg,transparent,rgba(220,228,235,.42))}
+.composer-help span:last-child{transform:scaleX(-1)}
+.fy-dock{position:fixed;z-index:28;left:0;right:0;bottom:0;width:100%;height:var(--jx-dock-h);box-sizing:border-box;margin:0;padding:3px 7px calc(4px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:linear-gradient(180deg,rgba(2,8,14,.04),rgba(2,8,14,.48) 32%,rgba(2,8,14,.78));border-top:1px solid rgba(210,225,240,.075);backdrop-filter:blur(8px)}
+.fy-dock button{position:relative;height:auto;min-height:0;padding:0 4px;border:0;background:transparent;color:rgba(232,237,241,.94);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:10px;font-weight:400}
+.fy-dock button+button:before{content:"";position:absolute;left:0;top:16%;bottom:14%;width:1px;background:linear-gradient(180deg,transparent,rgba(218,228,239,.23),transparent)}
+.dockicon{display:block;color:#edf2f5;font-size:19px;line-height:1}
+.dockicon svg{display:block;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round}
+
+/* Menus and information panels use normal document flow. */
+.fy-sheetmodal{position:fixed;inset:0;z-index:120;display:none;align-items:flex-end}
+.fy-sheetmodal.open{display:flex}
+.fy-sheetbackdrop{position:absolute;inset:0;background:rgba(0,0,0,.64);backdrop-filter:blur(4px)}
+.fy-sheetpanel{position:relative;z-index:1;width:min(100%,620px);max-height:calc(var(--viewport,100dvh) - 12px);margin:0 auto;overflow-y:auto;overflow-x:hidden;border:1px solid rgba(160,184,203,.32);border-bottom:0;border-radius:20px 20px 0 0;background:linear-gradient(180deg,#14232f,#0c1821);color:#eef1f3;padding:16px 17px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -24px 60px rgba(0,0,0,.34);box-sizing:border-box;overscroll-behavior:contain}
+.fy-sheethead{position:sticky;top:-16px;z-index:3;display:flex;align-items:center;gap:12px;margin:0 -4px 8px;padding:5px 4px 10px;background:linear-gradient(180deg,#14232f 72%,transparent);font-size:17px}
+.fy-sheethead strong{flex:1}
+.fy-close{width:36px;height:36px;border:1px solid rgba(169,188,203,.32);border-radius:50%;background:#1c2b36;color:#fff;font-size:22px;line-height:1}
+.fy-menugrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.fy-menugrid button{min-height:48px;border:1px solid rgba(165,188,205,.27);border-radius:11px;background:rgba(30,46,58,.72);color:#f3f3f3;font-size:14px;font-weight:650}
+.fy-sheetnote{margin:13px 2px 0;color:#aeb4b8;font-size:12.5px;line-height:1.7}
+.fy-data-panel{padding-left:13px;padding-right:13px}
+#dataModal .side{position:static;width:100%;height:auto;margin:0;padding:0 6px;border:0;border-radius:0;background:transparent;box-shadow:none}
+#dataModal .side>details{display:block;height:auto;max-height:none;padding:0;border-bottom:1px solid rgba(165,188,205,.2);overflow:visible}
+#dataModal .side>details>summary{position:relative;list-style:none;min-height:52px;padding:15px 30px 14px 2px;color:#f1f4f6;font-size:15.5px;line-height:1.45;font-weight:650;cursor:pointer;box-sizing:border-box}
+#dataModal summary::-webkit-details-marker{display:none}
+#dataModal .side>details>summary:after{content:"⌃";position:absolute;right:3px;top:50%;transform:translateY(-50%) rotate(180deg);color:#aab5bd;transition:transform .16s ease}
+#dataModal .side>details[open]>summary:after{transform:translateY(-50%)}
+#dataModal .mini{display:block;height:auto;max-height:none;overflow:visible;padding:2px 1px 20px;color:#d6dee4;font-size:13.5px;line-height:1.82;white-space:pre-wrap;overflow-wrap:anywhere}
+#dataModal .mini h3{margin:20px 0 9px;padding-top:13px;border-top:1px solid rgba(153,177,195,.16);color:#f0e5dc;font-size:14px;line-height:1.45}
+#dataModal .mini>details{margin:10px 0;border:1px solid rgba(143,167,186,.22);border-radius:11px;background:rgba(8,20,30,.34);overflow:hidden}
+#dataModal .mini>details>summary{position:relative;min-height:46px;padding:12px 31px 11px 12px;color:#e9eef2;font-size:13.5px;line-height:1.5;font-weight:600;cursor:pointer;box-sizing:border-box}
+#dataModal .mini>details>summary:after{content:"⌃";position:absolute;right:12px;top:50%;transform:translateY(-50%) rotate(180deg);color:#98a8b4}
+#dataModal .mini>details[open]>summary:after{transform:translateY(-50%)}
+#dataModal .mini>details>.v1-stack{padding:0 12px 13px;color:#cbd5dc;font-size:12.8px;line-height:1.78}
+
+.modal{position:fixed;inset:0;z-index:125;display:none;align-items:center;justify-content:center;padding:12px;background:rgba(0,0,0,.68);backdrop-filter:blur(4px)}
+.modal.open{display:flex}
+.modalbox{box-sizing:border-box;width:min(100%,720px);max-height:calc(var(--viewport,100dvh) - 28px);overflow:auto;padding:22px 20px 24px;border:1px solid rgba(154,181,202,.36);border-radius:18px;background:linear-gradient(180deg,#14232f,#0c1821);color:#eef2f5;box-shadow:0 24px 60px rgba(0,0,0,.36)}
+.modalbox h2{margin:0 0 14px;font-size:25px}
+.modalbox .field label{color:#f0f2f3}
+.modalbox .field input,.modalbox .field textarea,.modalbox .field select{background:#0d1923;border-color:#526575;color:#f4f6f7}
+.help{font-size:13px;line-height:1.7;color:#bac5cd}
+.pill{padding:5px 9px;border:1px solid #5e6d78;border-radius:999px;background:#172632;color:#e0e6ea}
+.ai-config{height:calc(var(--viewport,100dvh) - 28px);max-height:760px}
+
+@media(max-width:600px){
+  .modal{align-items:flex-end;padding:8px 0 0}
+  .modalbox{width:100%;height:auto;max-height:calc(var(--viewport,100dvh) - 8px);padding:18px 16px calc(14px + env(safe-area-inset-bottom));border-bottom:0;border-radius:20px 20px 0 0}
+  .ai-config{height:calc(var(--viewport,100dvh) - 8px);max-height:none}
+}
+@media(max-width:390px){
+  .fy-tagline{font-size:9px;letter-spacing:.07em}
+  .fy-brandlock{left:15%;gap:8px}
+  .fy-brandname{font-size:27px}
+  .fy-modelpill{right:13.5%;width:29%}
+  .story-card{width:70%}
+  .fy-tools{width:82%}
+  .composer-wrap{width:84%}
+}
+@media(max-height:550px) and (max-width:600px){
+  :root{--jx-dock-h:0px}
+  .fy-dock{display:none}
+  .story-card{top:62px;bottom:142px}
+  .fy-tools{bottom:72px}
+  .composer-wrap{bottom:4px}
+  .composer-help{display:none}
+}
+
+/* Targeted repair: a fixed shell with one independently scrolling story. */
+html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+.messages.story-scroll{position:relative;inset:auto;transform:none;width:100%;max-width:none;height:100%;min-height:0;margin:0;padding:27px 21px 31px;box-sizing:border-box;border:0;background:none;box-shadow:none;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;scrollbar-width:none}
+.fy-gamebar{display:flex;align-items:flex-start;gap:7px;box-sizing:border-box;padding:calc(16px + env(safe-area-inset-top)) 12px 0}
+.fy-gamebar .fy-iconbtn,.fy-gamebar .fy-modelpill,.fy-brandlock{position:static;inset:auto;margin:0;flex-shrink:0}
+.fy-brandlock{flex:1;min-width:0;height:34px;gap:7px}
+.fy-brandname{display:flex;align-items:center;font-size:24px;transform:rotate(-2.5deg) skewX(-2deg)}
+.jx-logo{display:block;width:55px;height:34px;overflow:visible;filter:drop-shadow(0 0 5px rgba(245,226,206,.12))}
+.fy-redseal{display:inline-block;font:7px/1 serif;border:1px solid #a73846;border-radius:2px;padding:1px;margin-left:1px}
+.fy-tagline{min-width:0;font-size:9.4px;letter-spacing:.035em;white-space:nowrap}
+.fy-gamebar .fy-modelpill{width:91px;padding:0 7px}
+.fy-menuicon{width:30px;min-width:30px;padding:6px}
+.fy-gear{width:30px;min-width:30px}
+#modelLabel{font-size:9.8px}
+.jx-verse{position:absolute;z-index:5;right:4.1%;top:calc(94px + env(safe-area-inset-top));display:flex;align-items:flex-start;gap:3px;color:#c8c4c0;opacity:.34;pointer-events:none;font:400 10px/1.65 "STKaiti","Kaiti SC","KaiTi",serif;letter-spacing:.18em;writing-mode:vertical-rl;text-orientation:upright;text-shadow:0 1px 8px rgba(0,0,0,.45)}
+.jx-verse i{margin-top:4px;padding:2px 1px;border:1px solid #9f3541;border-radius:1px;color:#a63a47;font:normal 6px/1 serif;letter-spacing:0}
+.ai-config.modalbox{overflow:hidden;min-height:0}
+.ai-config>h2{flex:none;margin:0;font-size:20px}
+.ai-config-content{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 8px 16px 2px;scrollbar-width:none;-webkit-overflow-scrolling:touch;touch-action:pan-y;scroll-padding-bottom:24px}
+.ai-config-content::-webkit-scrollbar{display:none}
+.ai-config details{overflow:visible;max-height:none}
+#game.active .fy-tools,#game.active .composer-wrap,#game.active .fy-dock{position:absolute}
+.modal{height:var(--viewport,100dvh);box-sizing:border-box;bottom:auto}
+input[type=range]{touch-action:pan-x}
+.modal input,.modal textarea,.modal select,.composer textarea{font-size:16px}
+@media(max-width:390px){.fy-gamebar{gap:4px;padding-left:9px;padding-right:9px}.fy-gamebar .fy-modelpill{width:86px}.fy-brandlock{gap:4px}.jx-logo{width:50px}.fy-tagline{font-size:8.9px;letter-spacing:0}.jx-verse{right:3%}}
+
+/* Final visual calibration: preserve geometry and independent story scroll. */
+.msg.ai{font-family:JXReading,"Songti SC","STSong","SimSun","Noto Serif CJK SC",serif;font-weight:400;font-synthesis:none;letter-spacing:.025em;text-shadow:none}
+.fy-tagline{font-family:JXReading,"Songti SC","STSong","SimSun",serif;font-weight:400;color:rgba(235,238,243,.72)}
+.jx-verse{font-family:JXPoem,"STKaiti","Kaiti SC","KaiTi",serif;color:#e1e6eb;opacity:.30;display:block}
+.jx-verse span{display:block;white-space:nowrap}
+.jx-verse span+span{padding-top:16px}
+.jx-verse i{display:block;width:7px;height:10px;margin:7px 2px 0;writing-mode:horizontal-tb}
+.story-card{background:var(--glass-sheen),linear-gradient(180deg,var(--glass-main-top),rgba(8,22,36,.38) 55%,var(--glass-main-bottom));border-color:var(--glass-border);border-top-color:rgba(205,222,240,.25);box-shadow:var(--glass-shadow),var(--glass-inner);backdrop-filter:blur(var(--glass-blur-main)) saturate(112%);-webkit-backdrop-filter:blur(var(--glass-blur-main)) saturate(112%)}
+.story-card:before{top:0;left:4%;right:4%;height:2px;border-radius:999px;background:linear-gradient(90deg,transparent,rgba(255,151,198,.45) 12%,var(--glass-pink) 50%,rgba(255,151,198,.45) 88%,transparent);box-shadow:0 0 8px var(--glass-pink-glow);pointer-events:none}
+.fy-gamebar{background:transparent}
+.fy-gamebar .fy-iconbtn,.fy-gamebar .fy-modelpill{background:var(--glass-sheen),var(--glass-light);border-color:var(--glass-border);box-shadow:0 8px 22px rgba(0,0,0,.10),var(--glass-inner);backdrop-filter:blur(var(--glass-blur-light)) saturate(106%);-webkit-backdrop-filter:blur(var(--glass-blur-light)) saturate(106%)}
+.fy-tools button{background:var(--glass-sheen),var(--glass-secondary);border-color:var(--glass-border);box-shadow:0 8px 22px rgba(0,0,0,.12),var(--glass-inner);backdrop-filter:blur(var(--glass-blur-light)) saturate(108%);-webkit-backdrop-filter:blur(var(--glass-blur-light)) saturate(108%)}
+.fy-tools button{font-weight:500;text-align:center;line-height:1.2;gap:5px}
+.fy-tools button>span{display:flex;align-items:center;justify-content:center;width:14px;height:14px;flex:0 0 14px;line-height:1}
+.fy-menuicon{color:#edf2f5;align-items:center}
+.composer{background:var(--glass-sheen),linear-gradient(180deg,var(--glass-bg),rgba(5,17,29,.30));border-color:rgba(235,224,235,.60);box-shadow:0 0 0 1px rgba(255,158,202,.16),0 12px 30px rgba(0,0,0,.16),var(--glass-inner);backdrop-filter:blur(17px) saturate(108%);-webkit-backdrop-filter:blur(17px) saturate(108%)}
+.send{background:linear-gradient(145deg,rgba(252,249,253,.91),rgba(234,231,242,.84));border-color:rgba(255,220,238,.82);box-shadow:0 0 16px rgba(255,163,208,.14),inset 0 1px 0 rgba(255,255,255,.32)}
+.msg.ai{color:rgba(237,241,245,.93)}
+.fy-stage,#game .chat,.composer-wrap,.fy-tools,.messages.story-scroll{background:transparent}
+@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+  .story-card,.composer,.fy-tools button,.fy-gamebar .fy-iconbtn,.fy-gamebar .fy-modelpill{background:rgba(8,21,35,.72)}
+}
+.fy-dock{-webkit-backdrop-filter:blur(8px)}
+.fy-dock button{text-align:center;align-items:center;justify-content:center}
+.dockicon{display:flex;align-items:center;justify-content:center;width:22px;height:22px;flex:0 0 22px}
+.dockicon svg{width:20px;height:20px;margin:0}
+#dockNew .dockicon svg{transform:translateX(1px) scale(1.06)}
+#dockImport .dockicon svg{transform:scale(.96)}

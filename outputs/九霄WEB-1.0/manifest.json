@@ -1,0 +1,11 @@
+{
+  "name":"九霄 WEB",
+  "short_name":"九霄",
+  "description":"修仙 AI 文字游戏",
+  "start_url":"九霄WEB-1.0.html",
+  "scope":"./",
+  "display":"standalone",
+  "background_color":"#030a11",
+  "theme_color":"#08131e",
+  "orientation":"portrait"
+}
