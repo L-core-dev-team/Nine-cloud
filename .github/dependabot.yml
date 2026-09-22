@@ -1,0 +1,67 @@
+# Dependabot 依赖安全与版本更新最优配置
+# 适配纯前端 Web 项目，同时覆盖 npm 前端依赖与 GitHub Actions 工作流依赖
+# 设计原则：安全优先、减少 PR 轰炸、符合约定式提交规范、适配国内时区
+
+version: 2
+
+updates:
+  # ==============================================
+  # npm 前端依赖扫描与更新
+  # 覆盖生产依赖与开发依赖，自动合并小版本与补丁更新
+  # ==============================================
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "03:00"
+      timezone: "Asia/Shanghai"
+    versioning-strategy: "increase"
+    rebase-strategy: "auto"
+    open-pull-requests-limit: 15
+    labels:
+      - "dependencies"
+      - "security"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    # 分组合并更新，大幅减少 PR 数量
+    groups:
+      # 生产依赖：小版本与补丁更新自动合并
+      production-deps:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+      # 开发依赖：小版本与补丁更新自动合并
+      development-deps:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # ==============================================
+  # GitHub Actions 工作流依赖扫描与更新
+  # 覆盖所有 Action 版本，保障 CI/CD 链路安全
+  # ==============================================
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "03:00"
+      timezone: "Asia/Shanghai"
+    rebase-strategy: "auto"
+    open-pull-requests-limit: 10
+    labels:
+      - "ci"
+      - "dependencies"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    # 分组合并所有 Action 的小版本与补丁更新
+    groups:
+      actions-all-minor:
+        update-types:
+          - "minor"
+          - "patch"
