@@ -1,12 +1,66 @@
 const {chromium}=require('playwright');
+const fs=require('node:fs');
+const path=require('node:path');
+
 (async()=>{
- const port=process.argv[2]||8771,round=process.argv[3]||'round';
+ const port=process.argv[2]||8771;
+ const output=path.resolve(process.argv[3]||'.impeccable/review');
+ fs.mkdirSync(output,{recursive:true});
  const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'});
- for(const [w,h] of [[390,844],[393,852],[402,874],[430,932]]){
-  const page=await browser.newPage({viewport:{width:w,height:h},deviceScaleFactor:1,isMobile:true,hasTouch:true});
-  await page.goto(`http://127.0.0.1:${port}/九霄WEB-1.0.html`);await page.waitForSelector('#messages .msg.ai');
-  await page.evaluate(()=>{document.querySelector('#modelLabel').textContent='gemini-2.5-flash';document.querySelector('#messages').firstElementChild.textContent='幽窟孤灯，寒髓生烟。\n\n万毒死谷下，九幽煞风自石隙间如厉鬼嘶号，百绝毒瘴的五彩雾障在绝壁外翻涌奔腾。而在那方被【大周天五行混元生生不息剑阵】死死封锁的青玉幽窟之中，却是另一番惊心动魄的景象。\n\n九叶太阳化形草的霸道药力如怒潮拍岸，在临江仙体内肆虐咆哮。\n\n那不是寻常灵药温吞的滋养，而是夺天地之造化、逆转阴阳乾坤的极阳洪流！\n\n临江仙盘膝端坐于青玉石台之上，面如冠玉，神色冷峻如万载玄冰。';});
-  await page.screenshot({path:`outputs/ui-${round}-${w}x${h}.png`});await page.close();
+ const failures=[];
+
+ async function openPage(label,width,height,options={}){
+  const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:1,isMobile:width<600,hasTouch:width<600,reducedMotion:options.reducedMotion?'reduce':'no-preference'});
+  const page=await context.newPage();
+  page.on('console',message=>{if(['error','warning'].includes(message.type()))failures.push(`${label}: ${message.type()} ${message.text()}`)});
+  page.on('pageerror',error=>failures.push(`${label}: pageerror ${error.message}`));
+  if(options.reducedTransparency){
+   const cdp=await context.newCDPSession(page);
+   await cdp.send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-transparency',value:'reduce'}]});
+  }
+  await page.goto(`http://127.0.0.1:${port}/九霄WEB-1.0.html`,{waitUntil:'networkidle'});
+  await page.waitForSelector('#messages .msg.ai');
+  return {context,page};
+ }
+
+ async function showLanding(page){
+  await page.getByRole('button',{name:'新开一局'}).click();
+  await page.locator('#landing').evaluate(node=>node.scrollTo(0,0));
+  await page.waitForTimeout(900);
+ }
+
+ for(const viewport of [{name:'mobile',width:390,height:844},{name:'desktop',width:1440,height:900}]){
+  const {context,page}=await openPage(viewport.name,viewport.width,viewport.height);
+  await showLanding(page);
+  await page.screenshot({path:path.join(output,`${viewport.name}.png`)});
+  await page.getByRole('button',{name:'进入世界'}).click();
+  await page.waitForTimeout(650);
+  await page.screenshot({path:path.join(output,`${viewport.name}-game.png`)});
+  await page.getByRole('button',{name:/角色状态/}).click();
+  await page.waitForTimeout(250);
+  await page.screenshot({path:path.join(output,`${viewport.name}-data.png`)});
+  await page.getByRole('button',{name:'×'}).click();
+  await page.getByRole('button',{name:'AI设置'}).click();
+  await page.waitForTimeout(250);
+  await page.screenshot({path:path.join(output,`${viewport.name}-settings.png`)});
+  await page.getByRole('button',{name:'关闭'}).click();
+  await page.getByRole('button',{name:'功能菜单'}).click();
+  await page.getByRole('button',{name:'存档列表'}).click();
+  await page.waitForTimeout(250);
+  await page.screenshot({path:path.join(output,`${viewport.name}-saves.png`)});
+  await context.close();
+
+  for(const preference of ['reduced-motion','reduced-transparency']){
+   const reduced=await openPage(`${viewport.name}-${preference}`,viewport.width,viewport.height,{
+    reducedMotion:preference==='reduced-motion',
+    reducedTransparency:preference==='reduced-transparency'
+   });
+   await showLanding(reduced.page);
+   await reduced.page.screenshot({path:path.join(output,`${viewport.name}-${preference}.png`)});
+   await reduced.context.close();
+  }
  }
  await browser.close();
-})().catch(e=>{console.error(e);process.exit(1)});
+ if(failures.length)throw new Error(failures.join('\n'));
+ console.log(`Captured ${fs.readdirSync(output).filter(name=>name.endsWith('.png')).length} review images in ${output}`);
+})().catch(error=>{console.error(error);process.exit(1)});

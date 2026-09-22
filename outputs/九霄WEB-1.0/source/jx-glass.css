@@ -1,0 +1,492 @@
+/*
+ * 九霄 UI 1.0 direction contract
+ * THESIS: 夜山是世界，界面只是浮在其上的玉玻璃与烟纱。
+ * OWN-WORLD: 月、雾、山、水、梅与朱印共同定义视觉语法。
+ * STORY: 首页从“看见世界”到“进入世界”，游戏从“阅读”到“行动”。
+ * FIRST VIEWPORT: 中轴山门、月华、九霄题字与低位入界动作；表单退到下层。
+ * FORM: 交互 chrome 用清透玉玻璃，长文与表单用更厚的烟纱。
+ * FINISH: 只保留一个入场时刻与有意义的反馈，所有效果均可降级。
+ * Concept seed: ef177a98. Brief-pinned direction overrides the dealt world.
+ */
+
+:root {
+  --jx-night: #030a11;
+  --jx-night-soft: #071421;
+  --jx-mist: rgba(205, 220, 232, .72);
+  --jx-moon: #f1ece5;
+  --jx-pink: #efa8cb;
+  --jx-seal: #a73846;
+  --jx-calm-ease: cubic-bezier(.16, 1, .3, 1);
+  --jx-content: min(1120px, calc(100vw - 48px));
+}
+
+::selection { background: rgba(239, 168, 203, .32); color: #fff; }
+* { scrollbar-color: rgba(216, 226, 235, .26) transparent; }
+button, input, textarea, select { caret-color: var(--jx-pink); }
+button { -webkit-tap-highlight-color: transparent; }
+
+/* Landing: a world-entry surface, not a dashboard. */
+#landing:not(.hidden) {
+  position: relative;
+  isolation: isolate;
+  min-height: 100dvh;
+  height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: var(--jx-night);
+  color: #edf1f4;
+  scroll-behavior: smooth;
+}
+#landing::before,
+#landing::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+#landing::before {
+  z-index: -3;
+  background: url('九霄入界山门-桌面.webp') center 50% / cover no-repeat;
+  transform: scale(1.015);
+}
+#landing::after {
+  z-index: -2;
+  background:
+    radial-gradient(ellipse at 50% 34%, transparent 0%, rgba(2, 8, 14, .08) 35%, rgba(2, 8, 14, .30) 100%),
+    linear-gradient(180deg, rgba(3, 10, 17, .18) 0%, rgba(3, 10, 17, .03) 50%, rgba(3, 10, 17, .60) 100%);
+}
+#landing .topbar {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+  min-height: calc(68px + env(safe-area-inset-top));
+  padding: calc(14px + env(safe-area-inset-top)) max(20px, calc((100vw - 1180px) / 2)) 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  background: linear-gradient(180deg, rgba(2, 8, 14, .58), transparent);
+  backdrop-filter: none;
+}
+#landing .brand {
+  color: var(--jx-moon);
+  font: 700 25px/1 JXPoem, "STKaiti", "KaiTi", serif;
+  letter-spacing: .05em;
+  text-shadow: 0 6px 22px rgba(0, 0, 0, .34);
+}
+#landing .version {
+  color: rgba(230, 235, 240, .58);
+  font-size: 10px;
+  letter-spacing: .13em;
+}
+#landing .topbtn,
+.jx-portal-actions button {
+  position: relative;
+  overflow: hidden;
+  min-height: 44px;
+  border: 1px solid rgba(230, 237, 244, .28);
+  border-radius: 14px;
+  color: #f8f3f5;
+  background:
+    radial-gradient(130px 50px at var(--jx-x, 35%) var(--jx-y, 0%), rgba(255, 255, 255, .16), transparent 70%),
+    linear-gradient(150deg, rgba(195, 216, 233, .16), rgba(8, 22, 35, .36));
+  box-shadow: 0 12px 34px rgba(0, 0, 0, .20), inset 0 1px 0 rgba(255, 255, 255, .10);
+  backdrop-filter: blur(14px) saturate(118%);
+  -webkit-backdrop-filter: blur(14px) saturate(118%);
+  transition: transform .22s var(--jx-calm-ease), border-color .22s ease, box-shadow .22s ease;
+}
+#landing .topbtn { padding: 0 17px; font-weight: 650; }
+#landing .topbtn:hover,
+.jx-portal-actions button:hover {
+  transform: translateY(-2px);
+  border-color: rgba(244, 199, 222, .60);
+  box-shadow: 0 16px 38px rgba(0, 0, 0, .24), inset 0 1px 0 rgba(255, 255, 255, .15);
+}
+#landing .wrap {
+  width: var(--jx-content);
+  max-width: none;
+  margin: 0 auto;
+  padding: 0 0 96px;
+}
+#landing .sheet { width: 100%; max-width: none; margin: 0; background: transparent; box-shadow: none; }
+#landing .hero {
+  position: relative;
+  box-sizing: border-box;
+  min-height: 100dvh;
+  padding: 13vh 24px 18vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  text-align: center;
+  border: 0;
+}
+#landing .hero h1 {
+  margin: 0;
+  color: var(--jx-moon);
+  font: 700 clamp(74px, 9vw, 136px)/.92 JXPoem, "STKaiti", "KaiTi", serif;
+  letter-spacing: -.02em;
+  text-shadow: 0 14px 46px rgba(0, 0, 0, .44), 0 0 30px rgba(239, 168, 203, .08);
+}
+#landing .hero p {
+  max-width: 470px;
+  margin: 22px 0 0;
+  color: rgba(232, 237, 242, .78);
+  font: 400 clamp(15px, 1.35vw, 19px)/1.8 JXReading, "Songti SC", serif;
+  letter-spacing: .08em;
+}
+.jx-oath {
+  margin-top: 18px;
+  padding: 4px 8px;
+  border-radius: 7px;
+  background: rgba(2, 8, 14, .48);
+  color: rgba(242, 244, 246, .88);
+  font: 400 13px/1.55 JXReading, "Songti SC", serif;
+  letter-spacing: .22em;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, .72);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+}
+.jx-portal-actions {
+  position: absolute;
+  left: 50%;
+  bottom: 7vh;
+  display: flex;
+  gap: 11px;
+  margin: 0;
+  transform: translateX(-50%);
+}
+.jx-portal-actions button { min-width: 132px; padding: 0 20px; font-size: 14px; letter-spacing: .06em; }
+.jx-portal-actions .jx-primary {
+  border-color: rgba(255, 211, 232, .52);
+  box-shadow: 0 0 0 1px rgba(239, 168, 203, .12), 0 14px 38px rgba(0, 0, 0, .26), inset 0 1px 0 rgba(255, 255, 255, .14);
+}
+.jx-portal-actions .jx-secondary { color: rgba(237, 241, 245, .76); }
+
+#landing .tabs {
+  position: sticky;
+  z-index: 20;
+  top: calc(10px + env(safe-area-inset-top));
+  width: min(720px, calc(100% - 40px));
+  margin: -22px auto 22px;
+  padding: 5px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  border: 1px solid rgba(207, 221, 234, .22);
+  border-radius: 16px;
+  background: linear-gradient(150deg, rgba(205, 224, 239, .10), rgba(6, 18, 30, .68));
+  box-shadow: 0 18px 42px rgba(0, 0, 0, .24), inset 0 1px 0 rgba(255, 255, 255, .07);
+  backdrop-filter: blur(18px) saturate(112%);
+  -webkit-backdrop-filter: blur(18px) saturate(112%);
+}
+#landing .tabs button {
+  min-height: 46px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: rgba(228, 235, 240, .66);
+  font-weight: 600;
+}
+#landing .tabs button.active {
+  background: rgba(229, 206, 220, .13);
+  color: #fff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 8px 20px rgba(0, 0, 0, .14);
+}
+#landing .page {
+  box-sizing: border-box;
+  width: min(880px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: clamp(28px, 5vw, 56px);
+  border: 1px solid rgba(199, 217, 232, .22);
+  border-radius: 16px;
+  background: linear-gradient(160deg, rgba(31, 48, 63, .78), rgba(5, 17, 28, .82));
+  box-shadow: 0 28px 72px rgba(0, 0, 0, .30), inset 0 1px 0 rgba(255, 255, 255, .055);
+  backdrop-filter: blur(22px) saturate(105%);
+  -webkit-backdrop-filter: blur(22px) saturate(105%);
+}
+#landing .gold-title {
+  margin: 0 0 24px;
+  color: #eee5dc;
+  font: 600 clamp(24px, 3vw, 34px)/1.25 JXPoem, "STKaiti", "KaiTi", serif;
+  letter-spacing: .04em;
+}
+#landing .prose { color: rgba(233, 238, 242, .86); font: 400 16px/2 JXReading, "Songti SC", serif; }
+#landing .note {
+  margin-bottom: 26px;
+  padding: 15px 17px;
+  border: 1px solid rgba(215, 226, 235, .14);
+  border-radius: 12px;
+  background: rgba(199, 213, 226, .08);
+  color: rgba(235, 239, 243, .78);
+}
+#landing .field label { color: rgba(241, 244, 247, .88); }
+#landing .field input,
+#landing .field textarea,
+#landing .field select {
+  min-height: 48px;
+  border: 1px solid rgba(196, 214, 229, .34);
+  border-radius: 12px;
+  background: rgba(5, 17, 28, .54);
+  color: #f1f4f6;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .025);
+}
+#landing .field input::placeholder,
+#landing .field textarea::placeholder { color: rgba(221, 229, 235, .42); }
+#landing .primary,
+#landing .secondary {
+  min-height: 46px;
+  border-radius: 12px;
+}
+
+/* Ambient layers never own interaction. */
+.jx-atmo {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+}
+.jx-atmo::before {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(ellipse at 74% 5%, rgba(228, 237, 245, .13), transparent 24%),
+    linear-gradient(112deg, transparent 32%, rgba(185, 209, 226, .035) 48%, transparent 62%);
+  transform: translate3d(-2%, 0, 0);
+  animation: jx-moon-breathe 72s var(--jx-calm-ease) infinite alternate;
+}
+.jx-atmo canvas { width: 100%; height: 100%; opacity: .55; }
+@keyframes jx-moon-breathe { to { transform: translate3d(3%, -1.5%, 0) scale(1.025); opacity: .78; } }
+
+/* Game: reading sanctuary plus thin HUD. */
+.game:before { transform: scale(1.012); }
+.game:after {
+  background:
+    linear-gradient(90deg, rgba(1, 7, 14, .20), rgba(1, 7, 14, .08) 55%, rgba(1, 7, 14, .18)),
+    linear-gradient(180deg, rgba(1, 7, 14, .08), rgba(1, 7, 14, .18));
+}
+.story-card,
+.composer,
+.fy-tools button,
+.fy-gamebar .fy-iconbtn,
+.fy-gamebar .fy-modelpill,
+.fy-dock,
+.fy-sheetpanel,
+.modalbox {
+  background-image:
+    radial-gradient(180px 70px at var(--jx-x, 35%) var(--jx-y, 0%), rgba(255, 255, 255, .09), transparent 72%),
+    var(--glass-sheen);
+}
+.story-card {
+  border-color: rgba(205, 222, 240, .20);
+  border-top-color: rgba(244, 190, 218, .42);
+  background-color: rgba(7, 21, 34, .58);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, .25), inset 0 1px 0 rgba(255, 255, 255, .055), inset 0 0 32px rgba(176, 205, 226, .025);
+}
+.story-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(110deg, rgba(255, 255, 255, .025), transparent 30%, transparent 72%, rgba(195, 216, 234, .018));
+}
+.messages.story-scroll { z-index: 2; }
+.composer {
+  border-color: rgba(243, 222, 234, .52);
+  background-color: rgba(5, 17, 29, .48);
+  box-shadow: 0 0 0 1px rgba(239, 168, 203, .12), 0 20px 48px rgba(0, 0, 0, .24), inset 0 1px 0 rgba(255, 255, 255, .10);
+}
+.composer:focus-within {
+  border-color: rgba(255, 215, 235, .76);
+  box-shadow: 0 0 0 3px rgba(239, 168, 203, .10), 0 22px 50px rgba(0, 0, 0, .26), inset 0 1px 0 rgba(255, 255, 255, .12);
+}
+.fy-tools button:hover,
+.fy-gamebar button:hover,
+.fy-dock button:hover { color: #fff; border-color: rgba(244, 206, 225, .48); }
+.send { transition: transform .18s var(--jx-calm-ease), box-shadow .2s ease; }
+.send:active { transform: scale(.94); }
+.send:not(:disabled):hover { box-shadow: 0 0 0 1px rgba(239, 168, 203, .32), 0 0 24px rgba(239, 168, 203, .22), inset 0 1px 0 rgba(255, 255, 255, .42); }
+
+.jx-system-line {
+  position: absolute;
+  z-index: 35;
+  top: calc(63px + env(safe-area-inset-top));
+  right: 28px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 9px;
+  border: 1px solid rgba(205, 222, 240, .16);
+  border-radius: 9px;
+  background: rgba(2, 9, 16, .58);
+  color: rgba(241, 244, 247, .88);
+  font: 500 12px/1.4 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+  letter-spacing: .04em;
+  pointer-events: none;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .18);
+  backdrop-filter: blur(9px);
+  -webkit-backdrop-filter: blur(9px);
+}
+.jx-system-line span + span::before { content: "·"; margin-right: 8px; color: rgba(239, 168, 203, .52); }
+.jx-burst-dot {
+  position: fixed;
+  z-index: 140;
+  width: var(--jx-size, 3px);
+  height: var(--jx-size, 3px);
+  border-radius: 50%;
+  background: var(--jx-pink);
+  box-shadow: 0 0 8px rgba(239, 168, 203, .44);
+  pointer-events: none;
+  animation: jx-burst 620ms var(--jx-calm-ease) forwards;
+}
+@keyframes jx-burst { to { transform: translate3d(var(--jx-dx), var(--jx-dy), 0) scale(.15); opacity: 0; } }
+
+@media (min-width: 960px) {
+  .story-card {
+    top: calc(86px + env(safe-area-inset-top));
+    bottom: 164px;
+    left: 44%;
+    width: min(48vw, 680px);
+    max-width: 680px;
+    border-radius: 16px;
+  }
+  .messages.story-scroll { padding: 38px clamp(34px, 4vw, 52px) 46px; }
+  .msg.ai { font-size: 16px; line-height: 2; letter-spacing: .02em; }
+  .msg.user { font-size: 14px; }
+  .fy-tools,
+  .composer-wrap { left: 44%; width: min(48vw, 680px); max-width: 680px; }
+  .fy-tools { bottom: 105px; grid-template-columns: repeat(3, minmax(0, 1fr)) 48px; }
+  .composer-wrap { bottom: 27px; }
+  .fy-dock {
+    left: 24px;
+    right: auto;
+    top: 50%;
+    bottom: auto;
+    width: 92px;
+    height: auto;
+    padding: 8px;
+    grid-template-columns: 1fr;
+    gap: 2px;
+    transform: translateY(-50%);
+    border: 1px solid rgba(205, 222, 240, .16);
+    border-radius: 16px;
+    background-color: rgba(5, 17, 29, .34);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, .22), inset 0 1px 0 rgba(255, 255, 255, .055);
+    backdrop-filter: blur(16px) saturate(108%);
+    -webkit-backdrop-filter: blur(16px) saturate(108%);
+  }
+  .fy-dock button { min-height: 62px; gap: 5px; border-radius: 10px; }
+  .fy-dock button + button::before {
+    left: 13%;
+    right: 13%;
+    top: 0;
+    bottom: auto;
+    width: auto;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(218, 228, 239, .18), transparent);
+  }
+  .jx-verse { right: 6%; top: 20%; opacity: .38; font-size: 12px; }
+}
+
+@media (max-width: 959px) {
+  .story-card { width: min(88%, 560px); max-width: 560px; }
+  .fy-tools { width: min(88%, 560px); max-width: 560px; }
+  .composer-wrap { width: min(90%, 580px); max-width: 580px; }
+  .jx-system-line { display: none; }
+}
+
+@media (max-width: 600px) {
+  :root { --jx-content: 100%; }
+  #landing::after {
+    background:
+      radial-gradient(ellipse at 50% 32%, transparent 0%, rgba(2, 8, 14, .06) 38%, rgba(2, 8, 14, .36) 100%),
+      linear-gradient(180deg, rgba(2, 8, 14, .20) 0%, rgba(2, 8, 14, .02) 52%, rgba(2, 8, 14, .66) 100%);
+  }
+  #landing::before { background-image: url('九霄入界山门-移动.webp'); background-position: center 50%; }
+  #landing .topbar {
+    min-height: calc(60px + env(safe-area-inset-top));
+    padding: calc(10px + env(safe-area-inset-top)) 14px 8px;
+  }
+  #landing .brand { font-size: 22px; }
+  #landing .topbtn { min-height: 40px; padding: 0 14px; }
+  #landing .wrap { padding: 0 0 56px; }
+  #landing .hero {
+    min-height: 78dvh;
+    padding: calc(86px + env(safe-area-inset-top)) 24px 15vh;
+    justify-content: flex-start;
+  }
+  #landing .hero h1 { font-size: clamp(64px, 23vw, 92px); }
+  #landing .hero p { max-width: 320px; margin-top: 20px; font-size: 15px; line-height: 1.75; }
+  .jx-oath { margin-top: 12px; font-size: 12px; }
+  .jx-portal-actions { bottom: 3.5vh; width: calc(100% - 48px); }
+  .jx-portal-actions button { flex: 1; min-width: 0; padding: 0 12px; }
+  #landing .tabs { top: calc(7px + env(safe-area-inset-top)); width: calc(100% - 24px); margin: -18px auto 14px; }
+  #landing .tabs button { min-height: 43px; padding: 0 6px; font-size: 13px; }
+  #landing .page { width: calc(100% - 24px); padding: 25px 19px 34px; border-radius: 15px; }
+  #landing .gold-title { font-size: 27px; }
+  #landing .prose { font-size: 15px; line-height: 1.95; }
+  .story-card { width: 88%; }
+  .messages.story-scroll { padding: 28px 24px 34px; }
+  .msg.ai { font-size: 14px; line-height: 2.02; }
+  .fy-tools { width: 88%; }
+  .composer-wrap { width: 90%; }
+}
+
+@media (max-width: 360px) {
+  .story-card { width: 90%; }
+  .messages.story-scroll { padding-left: 20px; padding-right: 20px; }
+  .fy-tools { width: 90%; gap: 4px; }
+  .composer-wrap { width: 92%; }
+  .fy-tagline { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #landing { scroll-behavior: auto; }
+  .jx-atmo::before,
+  .send.is-busy svg,
+  .jx-burst-dot { animation: none !important; }
+  *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  #landing .topbtn,
+  .jx-portal-actions button,
+  #landing .tabs,
+  #landing .page,
+  .story-card,
+  .composer,
+  .fy-tools button,
+  .fy-gamebar .fy-iconbtn,
+  .fy-gamebar .fy-modelpill,
+  .fy-dock,
+  .fy-sheetpanel,
+  .modalbox {
+    background: rgba(7, 20, 32, .94) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  #landing .topbtn,
+  .jx-portal-actions button,
+  #landing .tabs,
+  #landing .page,
+  .story-card,
+  .composer,
+  .fy-tools button,
+  .fy-gamebar .fy-iconbtn,
+  .fy-gamebar .fy-modelpill,
+  .fy-dock,
+  .fy-sheetpanel,
+  .modalbox { background-color: rgba(7, 20, 32, .92); }
+}

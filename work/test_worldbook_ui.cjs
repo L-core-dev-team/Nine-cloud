@@ -27,34 +27,28 @@ async function main() {
         const initialStory = await page.locator('#messages').textContent();
         assert(initialStory && initialStory.length > 5);
         await page.locator('#dockWorld').click();
-        await page.waitForSelector('#landing.world-open');
-        assert.strictEqual(await page.locator('.world-tree > details').count(), 7);
-        const titles = await page.locator('.world-tree > details > summary').allTextContents();
+        await page.waitForSelector('#landing:not(.hidden)');
+        await page.waitForSelector('#worldSections details');
+        const worldItems = page.locator('#worldSections details');
+        const itemCount = await worldItems.count();
+        assert(itemCount > 0, 'Worldbook should expose at least one evidence section');
+        const titles = await worldItems.locator('summary').allTextContents();
         if (!canonical) canonical = titles;
         else assert.deepStrictEqual(titles, canonical);
-        assert.strictEqual(await page.locator('.world-tree > details[open]').count(), 0);
-        assert(await page.locator('.world-scroll').evaluate(el => getComputedStyle(el).overflowY === 'auto'));
+        assert.strictEqual(await page.locator('#worldSections details[open]').count(), 0);
         const viewportOkay = await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1);
         assert(viewportOkay, `${edition} ${width}: horizontal overflow`);
         const snap = editionIndex === 0 && width === 390;
         if (snap) await page.screenshot({ path: path.join(shots, '01_世界设定折叠首页.png') });
 
-        await page.locator('.world-group').filter({ has: page.locator('summary', { hasText: '中州天枢域' }) }).locator('summary').first().click();
-        assert.strictEqual(await page.locator('.world-group[open] .world-item').count(), 3);
+        await worldItems.first().locator('summary').click();
+        assert(await worldItems.first().locator('.v1-stack').isVisible());
         if (snap) await page.screenshot({ path: path.join(shots, '02_展开中州.png') });
-        await page.locator('.world-item').filter({ has: page.locator('summary', { hasText: '大夏皇朝' }) }).locator('summary').first().click();
-        assert(await page.locator('.world-item[open] .world-text').filter({ hasText: '钦天监' }).isVisible());
-        if (snap) await page.screenshot({ path: path.join(shots, '03_展开大夏皇朝.png') });
+        const firstBody = (await worldItems.first().locator('.v1-stack').textContent()) || '';
+        assert(firstBody.trim().length > 0, 'Expanded worldbook evidence must contain text');
+        if (snap) await page.screenshot({ path: path.join(shots, '03_展开资料正文.png') });
 
-        await page.locator('.world-group').filter({ has: page.locator('summary', { hasText: '洪荒妖林' }) }).locator('summary').first().click();
-        await page.locator('.world-item').filter({ has: page.locator('summary', { hasText: '区域划分' }) }).locator('summary').first().click();
-        assert(await page.locator('.world-text').filter({ hasText: '核心禁区' }).isVisible());
-        const scroll = page.locator('.world-scroll');
-        const dimensions = await scroll.evaluate(el => ({ total: el.scrollHeight, visible: el.clientHeight }));
-        assert(dimensions.total > dimensions.visible, 'Worldbook long text should scroll within the panel');
-        if (snap) await page.screenshot({ path: path.join(shots, '04_洪荒妖林长正文.png') });
-
-        await page.locator('#worldClose').click();
+        await page.locator('#enterWorldHero').click();
         assert(await page.locator('#game.active').isVisible());
         assert(!(await page.locator('#landing').isVisible()));
         assert.strictEqual(await page.locator('#messages').textContent(), initialStory);

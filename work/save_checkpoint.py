@@ -3,8 +3,15 @@ from pathlib import Path
 import shutil,zipfile,subprocess,sys,os
 root=Path('outputs/九霄WEB-1.0')
 subprocess.run([sys.executable,'work/build_v1.py'],check=True)
-for name in ['v1.js','v1.css','ui-replica.css','ui-fonts.css','logo.svg','ai-provider.js','ai-router.js','ai-settings.js','manifest.json','core-regression.cjs']:
+for name in ['v1.js','v1.css','ui-replica.css','jx-glass.css','jx-atmo.js','jx-motion.js','capture-ui.js','ui-fonts.css','logo.svg','ai-provider.js','ai-router.js','ai-settings.js','manifest.json','core-regression.cjs']:
     shutil.copy2(Path('work')/name,root/'source'/name)
+(root/'source/vendor').mkdir(exist_ok=True)
+for name in ['anime.umd.min.js','anime.LICENSE.md']:
+    shutil.copy2(Path('work/vendor')/name,root/'source/vendor'/name)
+(root/'source/assets').mkdir(exist_ok=True)
+for name in ['九霄入界山门-移动.webp','九霄入界山门-桌面.webp']:
+    shutil.copy2(Path('work/assets')/name,root/'source/assets'/name)
+shutil.copy2(Path('work/source_build.py'),root/'source/build.py')
 shutil.copy2(Path('work/manifest.json'),root/'manifest.json')
 target=Path('outputs/九霄WEB-1.0-恢复预览.zip')
 temporary=target.with_suffix('.tmp.zip')

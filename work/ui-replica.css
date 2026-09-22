@@ -97,14 +97,16 @@ button,input,textarea,select{font-family:inherit}
 #dataModal .side>details{display:block;height:auto;max-height:none;padding:0;border-bottom:1px solid rgba(165,188,205,.2);overflow:visible}
 #dataModal .side>details>summary{position:relative;list-style:none;min-height:52px;padding:15px 30px 14px 2px;color:#f1f4f6;font-size:15.5px;line-height:1.45;font-weight:650;cursor:pointer;box-sizing:border-box}
 #dataModal summary::-webkit-details-marker{display:none}
-#dataModal .side>details>summary:after{content:"⌃";position:absolute;right:3px;top:50%;transform:translateY(-50%) rotate(180deg);color:#aab5bd;transition:transform .16s ease}
-#dataModal .side>details[open]>summary:after{transform:translateY(-50%)}
+#dataModal .side>details>summary:after{content:"";position:absolute;right:5px;top:50%;width:7px;height:7px;border-right:1.5px solid #aab5bd;border-bottom:1.5px solid #aab5bd;transform:translateY(-68%) rotate(45deg);transition:transform .16s ease}
+#dataModal .side>details[open]>summary:after{transform:translateY(-30%) rotate(225deg)}
 #dataModal .mini{display:block;height:auto;max-height:none;overflow:visible;padding:2px 1px 20px;color:#d6dee4;font-size:13.5px;line-height:1.82;white-space:pre-wrap;overflow-wrap:anywhere}
 #dataModal .mini h3{margin:20px 0 9px;padding-top:13px;border-top:1px solid rgba(153,177,195,.16);color:#f0e5dc;font-size:14px;line-height:1.45}
 #dataModal .mini>details{margin:10px 0;border:1px solid rgba(143,167,186,.22);border-radius:11px;background:rgba(8,20,30,.34);overflow:hidden}
 #dataModal .mini>details>summary{position:relative;min-height:46px;padding:12px 31px 11px 12px;color:#e9eef2;font-size:13.5px;line-height:1.5;font-weight:600;cursor:pointer;box-sizing:border-box}
-#dataModal .mini>details>summary:after{content:"⌃";position:absolute;right:12px;top:50%;transform:translateY(-50%) rotate(180deg);color:#98a8b4}
-#dataModal .mini>details[open]>summary:after{transform:translateY(-50%)}
+#dataModal .mini>details>summary:after{content:"";position:absolute;right:13px;top:50%;width:7px;height:7px;border-right:1.5px solid #98a8b4;border-bottom:1.5px solid #98a8b4;transform:translateY(-68%) rotate(45deg);transition:transform .16s ease}
+#dataModal .mini>details[open]>summary:after{transform:translateY(-30%) rotate(225deg)}
+#dataModal .side>details>summary{display:flex;align-items:center;gap:9px}
+.jx-panel-icon{width:18px;height:18px;flex:0 0 18px;fill:none;stroke:currentColor;stroke-width:1.45;stroke-linecap:round;stroke-linejoin:round;color:#d6e0e8}
 #dataModal .mini>details>.v1-stack{padding:0 12px 13px;color:#cbd5dc;font-size:12.8px;line-height:1.78}
 
 .modal{position:fixed;inset:0;z-index:125;display:none;align-items:center;justify-content:center;padding:12px;background:rgba(0,0,0,.68);backdrop-filter:blur(4px)}
