@@ -1,0 +1,26 @@
+# 项目赞助渠道全平台最优配置
+# 启用方式：仓库 Settings → General → 勾选 Sponsorships，即可在仓库首页显示赞助按钮
+# 官方规范：完整覆盖 GitHub 官方支持的全部赞助平台
+
+# GitHub 官方赞助（数组格式，最多支持 4 个 GitHub 账号）
+github: []
+
+# 主流海外大众赞助平台（填写对应平台用户名即可）
+patreon:
+open_collective:
+ko_fi:
+buy_me_a_coffee:
+
+# 开源商业支持专项平台
+tidelift:
+community_bridge:
+lfx_crowdfunding:
+polar:
+
+# 社区类赞助平台
+liberapay:
+issuehunt:
+thanks_dev:
+
+# 自定义赞助链接（数组格式，最多 4 个，支持爱发电、支付宝、微信等任意国内渠道）
+custom: []
