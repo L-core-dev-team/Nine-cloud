@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-23T00:00:00+08:00",
+  "title": "Design System: 九霄 WEB",
+  "extensions": {
+    "colorMeta": {
+      "night-abyss": {"role": "neutral", "displayName": "深夜渊", "tonalRamp": ["#020609", "#030a11", "#071421", "#122434", "#294052", "#526979", "#96a7b3", "#edf1f4"]},
+      "night-soft": {"role": "neutral", "displayName": "夜山烟青", "tonalRamp": ["#02070c", "#071421", "#102333", "#1c3548", "#3c5668", "#69808f", "#aab8c1", "#eff3f5"]},
+      "moon-paper": {"role": "neutral", "displayName": "月纸白", "tonalRamp": ["#24211f", "#4b4642", "#746d67", "#9e9690", "#c7c0ba", "#ded8d2", "#f1ece5", "#fbf9f6"]},
+      "peach-light": {"role": "primary", "displayName": "桃月微光", "tonalRamp": ["#321c28", "#5c3046", "#884863", "#b76285", "#d784a8", "#efa8cb", "#f8d2e5", "#fff0f7"]},
+      "seal-red": {"role": "secondary", "displayName": "朱印红", "tonalRamp": ["#260b10", "#4b141c", "#721f2a", "#a73846", "#c85e69", "#df8991", "#f1bdc1", "#fbe9ea"]}
+    },
+    "typographyMeta": {
+      "display": {"displayName": "题字", "purpose": "首页九霄题字。"},
+      "headline": {"displayName": "页题", "purpose": "页面和模态框标题。"},
+      "body": {"displayName": "剧情正文", "purpose": "剧情、资料和说明的长时阅读。"},
+      "label": {"displayName": "操作标签", "purpose": "按钮、导航和短状态。"}
+    },
+    "shadows": [
+      {"name": "jade-control", "value": "0 12px 34px rgba(0,0,0,.20), inset 0 1px 0 rgba(255,255,255,.10)", "purpose": "入口按钮和短时操作。"},
+      {"name": "mist-surface", "value": "0 28px 72px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.055)", "purpose": "首页下层页面和主要烟纱表面。"}
+    ],
+    "motion": [
+      {"name": "calm-ease", "value": "cubic-bezier(.16, 1, .3, 1)", "purpose": "控件位移和柔和入场。"},
+      {"name": "portal-stagger", "value": "85ms stagger / 460ms duration", "purpose": "首屏两个入口按钮的一次性出现；减少动效时禁用。"}
+    ],
+    "breakpoints": [
+      {"name": "mobile", "value": "599px"},
+      {"name": "compact-desktop", "value": "900px"}
+    ]
+  },
+  "components": [
+    {
+      "name": "Portal Primary Button",
+      "kind": "button",
+      "refersTo": "portal-primary",
+      "description": "首页进入世界的主动作。",
+      "html": "<button class=\"ds-portal-primary\">进入世界</button>",
+      "css": ".ds-portal-primary{min-width:132px;height:44px;padding:0 20px;border:1px solid rgba(255,211,232,.52);border-radius:14px;color:#f1ece5;background:linear-gradient(150deg,rgba(195,216,233,.16),rgba(8,22,35,.36));box-shadow:0 12px 34px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,255,255,.10);backdrop-filter:blur(14px) saturate(118%);font:600 14px/1.4 system-ui;letter-spacing:.06em;transition:.22s cubic-bezier(.16,1,.3,1)}.ds-portal-primary:hover{transform:translateY(-2px);border-color:rgba(244,199,222,.60)}.ds-portal-primary:focus-visible{outline:2px solid #efa8cb;outline-offset:3px}"
+    },
+    {
+      "name": "Portal Secondary Button",
+      "kind": "button",
+      "description": "首页读取存档的次动作。",
+      "html": "<button class=\"ds-portal-secondary\">读取存档</button>",
+      "css": ".ds-portal-secondary{min-width:132px;height:44px;padding:0 20px;border:1px solid rgba(230,237,244,.28);border-radius:14px;color:rgba(237,241,245,.76);background:linear-gradient(150deg,rgba(195,216,233,.12),rgba(8,22,35,.34));backdrop-filter:blur(14px) saturate(118%);font:600 14px/1.4 system-ui;letter-spacing:.06em;transition:.22s cubic-bezier(.16,1,.3,1)}.ds-portal-secondary:hover{color:#f1ece5;border-color:rgba(244,199,222,.60)}.ds-portal-secondary:focus-visible{outline:2px solid #efa8cb;outline-offset:3px}"
+    },
+    {
+      "name": "Active Tab",
+      "kind": "nav",
+      "refersTo": "tab-active",
+      "description": "首页三段任务导航的活动状态。",
+      "html": "<nav class=\"ds-tabs\"><button>作品简介</button><button class=\"is-active\">角色创建</button><button>世界观设定</button></nav>",
+      "css": ".ds-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:5px;border:1px solid rgba(207,221,234,.22);border-radius:16px;background:linear-gradient(150deg,rgba(205,224,239,.10),rgba(6,18,30,.68));backdrop-filter:blur(18px)}.ds-tabs button{height:46px;border:0;border-radius:11px;background:transparent;color:rgba(228,235,240,.66);font:600 14px/1.4 system-ui}.ds-tabs button.is-active{background:rgba(229,206,220,.13);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}.ds-tabs button:focus-visible{outline:2px solid #efa8cb;outline-offset:2px}"
+    },
+    {
+      "name": "Reading Surface",
+      "kind": "card",
+      "refersTo": "reading-surface",
+      "description": "剧情、资料和表单的稳定烟纱容器。",
+      "html": "<article class=\"ds-reading-surface\"><h2>九霄天地已启。</h2><p>从自己的出身开始，走一条自己的道。</p></article>",
+      "css": ".ds-reading-surface{max-width:680px;min-height:320px;padding:24px;border:1px solid rgba(199,217,232,.22);border-radius:16px;background:linear-gradient(160deg,rgba(31,48,63,.88),rgba(5,17,28,.92));box-shadow:0 28px 72px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.055);color:#edf1f4}.ds-reading-surface h2{font:600 28px/1.25 STKaiti,KaiTi,serif}.ds-reading-surface p{font:400 16px/2 'Songti SC',serif}"
+    },
+    {
+      "name": "Action Input",
+      "kind": "input",
+      "description": "游戏页最强交互材质，用于自由行动。",
+      "html": "<label class=\"ds-action-field\"><span>行动</span><textarea placeholder=\"输入任意行动…\"></textarea></label>",
+      "css": ".ds-action-field{display:grid;gap:8px;color:rgba(205,220,232,.72);font:600 13px/1.4 system-ui}.ds-action-field textarea{min-height:52px;padding:14px 16px;border:1px solid rgba(230,237,244,.26);border-radius:14px;background:rgba(3,10,17,.78);color:#edf1f4;caret-color:#efa8cb;backdrop-filter:blur(16px);font:400 16px/1.6 system-ui;resize:vertical}.ds-action-field textarea:focus-visible{outline:2px solid #efa8cb;outline-offset:2px;border-color:rgba(244,199,222,.60)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "月下入界山门",
+    "overview": "夜山不是背景装饰，而是持续存在的世界画布。月、雾、山、水、梅和朱印构成视觉语法。界面只在玩家需要行动时显形。清透玉玻璃用于导航、按钮和输入；高不透明烟纱用于剧情、表单和资料。系统追求克制的仪式感。首屏允许一个明确的入界时刻。进入游戏后，视觉重心立即转向阅读和行动。长时界面不使用持续炫光、逐字打字机或大面积折射。",
+    "keyCharacteristics": [
+      "深蓝黑夜山承担主要氛围，月白承担正文和题字。",
+      "桃粉只用于细微光感、焦点和边界；朱红只作为印记。",
+      "控件通透，内容稳定；材质强度服从任务时长。",
+      "所有效果都具有无动效、无透明和低性能回退。"
+    ],
+    "rules": [
+      {"name": "The Rare Accent Rule", "body": "桃粉和朱红不承担大面积背景。任何单屏都应以夜色和月白为主。", "section": "colors"},
+      {"name": "The Three Voices Rule", "body": "题字、正文和操作各用一种文字声音；不要把楷体铺到设置表单，也不要用无衬线替代剧情正文。", "section": "typography"},
+      {"name": "The Content Stability Rule", "body": "动态高光只属于交互 chrome。剧情、资料和表单不能因指针位置产生形变。", "section": "elevation"}
+    ],
+    "dos": [
+      "Do 把透明度与动效当作渐进增强，确保实色回退仍能完成任务。",
+      "Do 为长文保留宋体、宽松行距和稳定背景。",
+      "Do 在手机上优先保证安全区、键盘、滚动和 44px 触控目标。",
+      "Do 使用自绘 SVG 或 CSS 图形维持同一图标语言。"
+    ],
+    "donts": [
+      "Don't 把液态玻璃铺进剧情正文、世界资料或长表单。",
+      "Don't 使用满屏常驻粒子、循环彩虹、逐字打字机、自定义鼠标或滚动劫持。",
+      "Don't 虚构地点、存档、账号、云同步或商业能力来填充界面。",
+      "Don't 把 Apple、Huawei、Claude 或开源演示的品牌外观直接复制为《九霄》的身份。"
+    ]
+  }
+}
