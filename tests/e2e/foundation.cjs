@@ -45,12 +45,34 @@ async function ready(url) {
     for (const [width, height] of [[390, 844], [1366, 768]]) {
       const page = await browser.newPage({ viewport: { width, height } });
       await page.goto(`http://127.0.0.1:${webPort}/`);
-      assert.equal(await page.locator('h1').innerText(), '山门尚未开启');
-      assert.equal(await page.locator('button').count(), 0, 'Unimplemented actions must not be advertised');
-      assert.ok((await page.locator('body').innerText()).includes('存档契约版本 1'));
+      await page.evaluate(() => localStorage.clear());
+      await page.reload();
+      assert.equal(await page.locator('h1').innerText(), '先看见路，\n再踏入世界。');
+      assert.ok((await page.locator('body').innerText()).includes('新开一局'));
+      assert.ok((await page.locator('body').innerText()).includes('阅读世界设定'));
+      await page.getByRole('button', { name: '新开一局' }).click();
+      assert.equal(await page.locator('h2').innerText(), '把自己写进山门。');
+      assert.equal(await page.locator('input').count(), 7);
+      assert.equal(await page.locator('select').count(), 1);
+      assert.equal(await page.locator('textarea').count(), 2);
+      await page.locator('input').nth(0).fill(`测试修士-${width}`);
+      await page.getByRole('button', { name: '保存角色并进入' }).click();
+      assert.equal(await page.locator('h2').innerText(), `测试修士-${width}`);
+      assert.ok((await page.locator('body').innerText()).includes('待规则接入'));
+      await page.goto(`http://127.0.0.1:${webPort}/`);
+      assert.ok((await page.locator('body').innerText()).includes('继续游玩'));
+      await page.getByRole('button', { name: '继续游玩' }).click();
+      assert.equal(await page.locator('h2').innerText(), `测试修士-${width}`);
+      await page.goto(`http://127.0.0.1:${webPort}/`);
+      await page.getByRole('button', { name: '阅读世界设定' }).click();
+      assert.equal(await page.locator('h2').innerText(), '世界设定');
+      await page.goto(`http://127.0.0.1:${webPort}/settings/ai`);
+      assert.equal(await page.locator('h2').innerText(), '青鱼推荐配置');
+      assert.equal(await page.locator('.roles div').count(), 5);
+      assert.ok((await page.locator('body').innerText()).includes('契约 v1'));
       await page.close();
     }
   } finally { await browser.close(); }
-  console.log('S1 Web/API browser smoke passed at mobile and desktop viewports');
+  console.log('S2 navigation, character save/continue, API smoke passed at mobile and desktop viewports');
 })().catch(error => { console.error(error); process.exitCode = 1; })
   .finally(() => { for (const child of children) child.kill(); });
