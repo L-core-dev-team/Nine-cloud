@@ -4,3 +4,4 @@ export * from './event.js';
 export * from './save.js';
 export * from './world.js';
 export * from './errors.js';
+export * from './legacy-save.js';

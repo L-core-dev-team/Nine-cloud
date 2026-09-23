@@ -68,8 +68,28 @@ async function ready(url) {
       assert.equal(await page.locator('h2').innerText(), '世界设定');
       await page.goto(`http://127.0.0.1:${webPort}/settings/ai`);
       assert.equal(await page.locator('h2').innerText(), '青鱼推荐配置');
-      assert.equal(await page.locator('.roles div').count(), 5);
+      assert.equal(await page.locator('.roles .role-field').count(), 5);
+      await page.getByRole('button', { name: '填入候选值' }).click();
+      await page.getByRole('button', { name: '保存当前会话配置' }).click();
+      assert.ok((await page.locator('body').innerText()).includes('请填写实际 Model ID'));
+      for (let index = 0; index < 5; index += 1) {
+        await page.locator('.roles .role-field input').nth(index).fill(`provider/model-${index}`);
+      }
+      await page.getByRole('button', { name: '保存当前会话配置' }).click();
+      assert.ok((await page.locator('body').innerText()).includes('已保存到当前浏览器会话'));
       assert.ok((await page.locator('body').innerText()).includes('契约 v1'));
+      await page.goto(`http://127.0.0.1:${webPort}/`);
+      await page.getByRole('button', { name: '菜单' }).click();
+      const importInput = page.locator('aside input[type="file"]');
+      const legacyJson = JSON.stringify({ messages: [{ role: 'user', content: '旧档正文' }], status: '姓名：迁移修士' });
+      const [backup] = await Promise.all([
+        page.waitForEvent('download'),
+        importInput.setInputFiles({ name: 'legacy-chat.json', mimeType: 'application/json', buffer: Buffer.from(legacyJson) }),
+      ]);
+      assert.ok(backup.suggestedFilename().startsWith('九霄-导入前原文备份-'));
+      assert.equal(await page.locator('h2').innerText(), '导入旧局');
+      await page.goto(`http://127.0.0.1:${webPort}/`);
+      assert.ok((await page.locator('body').innerText()).includes('继续游玩'));
       await page.close();
     }
   } finally { await browser.close(); }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ActionIntentSchema, DomainEventSchema, SaveEnvelopeSchema } from './index.js';
+import { ActionIntentSchema, DomainEventSchema, LegacySaveFileSchema, SaveEnvelopeSchema } from './index.js';
 
 describe('shared wire contracts', () => {
   it('rejects a stale or malformed action before settlement', () => {
@@ -23,5 +23,17 @@ describe('shared wire contracts', () => {
     expect(DomainEventSchema.safeParse({ id: '2fa2ebad-1065-4ef4-9a9b-51407a998ad5', saveId: 'save-1',
       type: 'PLAYER_MOVED', beforeRevision: 1, afterRevision: 1,
       occurredAt: '2026-09-23T00:00:00.000Z', source: 'RULES', ruleVersion: 'rules-0', payload: {} }).success).toBe(false);
+  });
+
+  it('accepts the two recorded legacy JSON shapes and rejects empty objects', () => {
+    expect(LegacySaveFileSchema.safeParse({
+      messages: [{ role: 'user', content: '走向山门' }], status: '姓名：测试修士',
+    }).success).toBe(true);
+    expect(LegacySaveFileSchema.safeParse({
+      format: 'JIUXIAO_SAVE', version: 1, save: { id: 'legacy-1', player: { 姓名: '测试修士' }, turn: 0 },
+    }).success).toBe(true);
+    expect(LegacySaveFileSchema.safeParse({}).success).toBe(false);
+    expect(LegacySaveFileSchema.safeParse({ arbitrary: 'not a save' }).success).toBe(false);
+    expect(LegacySaveFileSchema.safeParse([]).success).toBe(false);
   });
 });

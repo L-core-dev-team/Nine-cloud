@@ -9,7 +9,7 @@
     "dev:api": "pnpm --filter @jiuxiao/contracts build && pnpm --filter @jiuxiao/api dev",
     "typecheck": "pnpm --filter @jiuxiao/contracts build && pnpm -r typecheck",
     "test": "node work/core-regression.cjs && pnpm -r test",
-    "build": "pnpm -r build && node scripts/build/write-manifest.mjs",
+    "build": "pnpm -r build && node scripts/build/write-manifest.mjs --stage S2",
     "test:integration": "pnpm --filter @jiuxiao/api test:integration",
     "test:e2e": "node tests/e2e/foundation.cjs",
     "license:check": "node scripts/audit/license-check.mjs"
