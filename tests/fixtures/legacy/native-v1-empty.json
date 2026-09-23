@@ -1,0 +1,24 @@
+{
+  "format": "JIUXIAO_SAVE",
+  "version": 1,
+  "save": {
+    "id": "fixture-native-v1-001",
+    "name": "测试修士",
+    "created": "2026-09-23T00:00:00.000Z",
+    "updated": "2026-09-23T00:00:00.000Z",
+    "turn": 0,
+    "messages": [],
+    "player": { "姓名": "测试修士" },
+    "npcs": [],
+    "world": { "elapsedMinutes": 0, "location": "中州天枢域" },
+    "items": [],
+    "events": [],
+    "stm": [],
+    "ltm": [],
+    "facts": [],
+    "actions": [],
+    "legacy": {},
+    "supplements": [],
+    "pending": null
+  }
+}
