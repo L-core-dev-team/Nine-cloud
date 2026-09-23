@@ -1,0 +1,8 @@
+:root { color-scheme: dark; font-family: 'Noto Serif SC', 'Songti SC', serif; background: #0d1520; color: #e9e3da; }
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; }
+.preview { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; max-width: 48rem; padding: clamp(2rem, 8vw, 6rem); }
+.eyebrow { font: 600 .8rem/1.6 system-ui, sans-serif; letter-spacing: .28em; color: #c99da7; }
+h1 { font-size: clamp(2.5rem, 8vw, 5.5rem); font-weight: 400; letter-spacing: .12em; margin: 1.1rem 0 1.8rem; }
+p { font-size: 1.1rem; line-height: 1.9; max-width: 36rem; }
+.detail { margin-top: 2.5rem; color: #9ca7b3; font: .85rem/1.7 system-ui, sans-serif; }
