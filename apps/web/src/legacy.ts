@@ -67,3 +67,15 @@ export function parseLegacySave(file: File, text: string): LocalSave {
   if (supplement) save.legacySupplement = supplement;
   return save;
 }
+
+export function migrateLegacyLibraryText(text: string): LocalSave[] {
+  let parsed: unknown;
+  try { parsed = JSON.parse(text); } catch { throw new Error('Legacy library is not JSON'); }
+  if (!isRecord(parsed) || parsed.version !== 1 || !Array.isArray(parsed.saves)) {
+    throw new Error('Legacy library shape is unsupported');
+  }
+  return parsed.saves.map((entry, index) => {
+    const source = JSON.stringify(entry);
+    return parseLegacySave(new File([source], `legacy-save-${index}.json`, { type: 'application/json' }), source);
+  });
+}

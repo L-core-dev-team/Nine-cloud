@@ -1,4 +1,7 @@
+import { readIndexedSaves, replaceIndexedSaves } from './idb';
+
 export const SAVE_STORE = 'jiuxiao_1_local_saves';
+export const LEGACY_LIBRARY_STORE = 'jiuxiao_v1_library';
 export const CHARACTER_DRAFT_STORE = 'jiuxiao_1_character_draft';
 
 export type SaveStatus = 'pending_rules';
@@ -48,10 +51,34 @@ export function readSaves(): LocalSave[] {
 export function writeSaves(saves: LocalSave[]): boolean {
   try {
     localStorage.setItem(SAVE_STORE, JSON.stringify(saves));
+    void replaceIndexedSaves(saves).catch(() => undefined);
     return true;
   } catch {
     return false;
   }
+}
+
+export async function hydrateSaves(): Promise<{ saves: LocalSave[]; indexedDb: boolean }> {
+  try {
+    const localRaw = localStorage.getItem(SAVE_STORE);
+    const local = readSaves();
+    const indexed = (await readIndexedSaves()).filter(isLocalSave);
+    // localStorage is the compatibility source for the current slice. It is
+    // written before the IndexedDB mirror, so it must win when both exist.
+    // IndexedDB is used as a recovery source only when the compatibility key
+    // is empty; this avoids resurrecting an intentionally cleared local key.
+    if (local.length || localRaw !== null) {
+      await replaceIndexedSaves(local);
+      return { saves: local, indexedDb: true };
+    }
+    return { saves: indexed, indexedDb: true };
+  } catch {
+    return { saves: readSaves(), indexedDb: false };
+  }
+}
+
+export function readLegacyLibraryText(): string | null {
+  try { return localStorage.getItem(LEGACY_LIBRARY_STORE); } catch { return null; }
 }
 
 export function readDraft(): Record<string, string> {

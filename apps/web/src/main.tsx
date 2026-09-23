@@ -1,8 +1,8 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { SAVE_SCHEMA_VERSION } from '@jiuxiao/contracts';
-import { MAX_IMPORT_BYTES, parseLegacySave } from './legacy';
-import { clearDraft, createSaveId, readDraft, readSaves, writeDraft, writeSaves, type LocalSave } from './storage';
+import { MAX_IMPORT_BYTES, migrateLegacyLibraryText, parseLegacySave } from './legacy';
+import { clearDraft, createSaveId, hydrateSaves, readDraft, readLegacyLibraryText, readSaves, writeDraft, writeSaves, type LocalSave } from './storage';
 import './style.css';
 
 const roles = ['主剧情', '剧情导演', '状态与记忆', '世界档案', '高级剧情'];
@@ -26,9 +26,9 @@ function downloadText(name: string, text: string, type: string): void {
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-function Shell({ children, saves, notice, onImport, onExport }: { children: ReactNode; saves: LocalSave[]; notice: string; onImport: (file: File) => void; onExport: () => void }) {
+function Shell({ children, saves, notice, noticeAction, onImport, onExport }: { children: ReactNode; saves: LocalSave[]; notice: string; noticeAction?: ReactNode; onImport: (file: File) => void; onExport: () => void }) {
   const [menu, setMenu] = useState(false);
-  return <div className="jx-shell"><header><button className="brand" onClick={() => go('/')}>九霄<small>1.0 公测构建</small></button><nav><button onClick={() => go('/')}>首页</button><button onClick={() => go('/world')}>世界设定</button><button onClick={() => go('/settings/ai')}>AI 设置</button></nav><button className="menu" aria-expanded={menu} onClick={() => setMenu(open => !open)}>菜单</button></header>{menu && <aside><strong>{saves.length ? `${saves.length} 份本地存档` : '暂无存档'}</strong><button onClick={() => { setMenu(false); go('/new'); }}>新开一局</button><button onClick={() => { setMenu(false); onExport(); }}>导出存档</button><label>导入旧档 / JSON<input type="file" accept=".json,.txt,.html,.htm" onChange={event => { const file = event.target.files?.[0]; if (file) onImport(file); event.currentTarget.value = ''; }} /></label></aside>}{notice && <p className="notice" role="status">{notice}</p>}<main>{children}</main><footer><span>本地优先 · API 密钥不写入存档</span><span>契约 v{SAVE_SCHEMA_VERSION}</span></footer></div>;
+  return <div className="jx-shell"><header><button className="brand" onClick={() => go('/')}>九霄<small>1.0 公测构建</small></button><nav><button onClick={() => go('/')}>首页</button><button onClick={() => go('/world')}>世界设定</button><button onClick={() => go('/settings/ai')}>AI 设置</button></nav><button className="menu" aria-expanded={menu} onClick={() => setMenu(open => !open)}>菜单</button></header>{menu && <aside><strong>{saves.length ? `${saves.length} 份本地存档` : '暂无存档'}</strong><button onClick={() => { setMenu(false); go('/new'); }}>新开一局</button><button onClick={() => { setMenu(false); onExport(); }}>导出存档</button><label>导入旧档 / JSON<input type="file" accept=".json,.txt,.html,.htm" onChange={event => { const file = event.target.files?.[0]; if (file) onImport(file); event.currentTarget.value = ''; }} /></label></aside>}{notice && <p className="notice" role="status">{notice} {noticeAction}</p>}<main>{children}</main><footer><span>本地优先 · API 密钥不写入存档</span><span>契约 v{SAVE_SCHEMA_VERSION}</span></footer></div>;
 }
 
 function Home({ saves }: { saves: LocalSave[] }) {
@@ -72,9 +72,31 @@ function AiSettings() {
 }
 
 function App() {
-  const [saves, setSaves] = useState(readSaves);
+  const [saves, setSaves] = useState<LocalSave[]>(readSaves);
   const [notice, setNotice] = useState('');
-  useEffect(() => { const refresh = () => setSaves(readSaves()); addEventListener('popstate', refresh); return () => removeEventListener('popstate', refresh); }, []);
+  const [legacyText, setLegacyText] = useState<string | null>(null);
+  const [indexedDbReady, setIndexedDbReady] = useState(true);
+  useEffect(() => {
+    let active = true;
+    void hydrateSaves().then(result => {
+      if (!active) return;
+      setSaves(result.saves); setIndexedDbReady(result.indexedDb);
+      if (!result.saves.length) setLegacyText(readLegacyLibraryText());
+      if (!result.indexedDb) setNotice('IndexedDB 不可用，当前仅使用本地回退存储；原存档不会被删除。');
+    });
+    const refresh = () => setSaves(readSaves());
+    addEventListener('popstate', refresh);
+    return () => { active = false; removeEventListener('popstate', refresh); };
+  }, []);
+  function migrateLegacyLibrary() {
+    if (!legacyText) return;
+    downloadText(`九霄-旧localStorage原文备份-${Date.now()}.json`, legacyText, 'application/json;charset=utf-8');
+    try {
+      const migrated = migrateLegacyLibraryText(legacyText);
+      if (!migrated.length || !writeSaves([...migrated, ...readSaves()])) throw new Error('migration');
+      setSaves(readSaves()); setLegacyText(null); setNotice(`已迁移 ${migrated.length} 份旧局。原 localStorage 文本已备份，旧键仍保留。`);
+    } catch { setNotice('旧 localStorage 存档无法通过校验，未写入新存储。原键和备份均保留。'); }
+  }
   function importFile(file: File) {
     if (file.size > MAX_IMPORT_BYTES) { setNotice('导入失败：文件超过 32 MiB 上限，原存档未修改。'); return; }
     file.text().then(text => {
@@ -90,7 +112,9 @@ function App() {
   const currentRoute = route();
   const game = currentRoute.startsWith('/game/') ? saves.find(save => save.saveId === currentRoute.split('/')[2]) : undefined;
   const page = currentRoute === '/new' ? <NewCharacter onSaved={save => { setSaves(readSaves()); go(`/game/${save.saveId}`); }} /> : currentRoute === '/world' ? <World /> : currentRoute === '/settings/ai' ? <AiSettings /> : currentRoute.startsWith('/game/') ? <Game save={game} onExport={exportFile} /> : <Home saves={saves} />;
-  return <Shell saves={saves} notice={notice} onImport={importFile} onExport={() => exportFile()}>{page}</Shell>;
+  const migrationAction = legacyText ? <button className="notice-action" onClick={migrateLegacyLibrary}>下载原文备份并迁移</button> : undefined;
+  const storageNotice = indexedDbReady ? notice : `${notice} IndexedDB 回退模式。`;
+  return <Shell saves={saves} notice={legacyText ? '检测到旧版 localStorage 存档。请先备份原文，再开始迁移。' : storageNotice} noticeAction={migrationAction} onImport={importFile} onExport={() => exportFile()}>{page}</Shell>;
 }
 
 const root = document.getElementById('root');
