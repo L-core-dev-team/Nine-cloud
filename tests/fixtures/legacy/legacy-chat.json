@@ -1,0 +1,9 @@
+{
+  "messages": [
+    { "role": "user", "content": "我走向山门，询问守门弟子。" },
+    { "role": "assistant", "content": "守门弟子示意你先登记姓名。" }
+  ],
+  "status": "姓名：测试修士",
+  "intel": "地点：山门",
+  "memory": "初到山门"
+}
