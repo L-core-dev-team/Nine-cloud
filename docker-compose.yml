@@ -36,6 +36,26 @@ services:
         condition: service_healthy
       mail:
         condition: service_started
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8787/ready').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 10s
+      timeout: 4s
+      retries: 6
+      start_period: 5s
+
+  migrate:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    command: ["pnpm", "--filter", "@jiuxiao/db", "db:migrate"]
+    environment:
+      DATABASE_URL: postgresql://jiuxiao:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@db:5432/jiuxiao
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
 
 volumes:
   jiuxiao_pg:

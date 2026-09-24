@@ -22,6 +22,22 @@ describe('legacy save importer', () => {
     expect(save.ruleVersion).toBe('rules-not-signed');
   });
 
+  it('retains every imported field in a separate recoverable archive', () => {
+    const payload = {
+      id: 'full-archive-1', turn: 9, messages: [{ role: 'assistant', content: '叙事' }],
+      player: { 姓名: '旧修士' }, world: { location: '旧地域' }, npcs: [{ id: 'npc-1' }],
+      items: [{ id: 'item-1', count: 2 }], events: [{ id: 'event-1' }], stm: ['短记忆'],
+      ltm: ['长记忆'], facts: ['事实候选'], actions: ['行动候选'], supplements: [{ name: '补充.txt', text: '原文' }],
+      pending: { id: 'pending-1', text: '未完成行动' }, extensionFromOldVersion: { opaque: [1, 2, 3] },
+    };
+    const text = JSON.stringify(payload);
+    const imported = parseLegacySave(new File([text], 'complete.json'), text);
+    expect(imported.messages).toEqual(payload.messages);
+    expect(imported.pending).toEqual(payload.pending);
+    expect(imported.legacyArchive?.payload).toEqual(payload);
+    expect(imported.legacyArchive?.payload.extensionFromOldVersion).toEqual({ opaque: [1, 2, 3] });
+  });
+
   it('extracts readable text from HTML and rejects an empty JSON object', () => {
     const html = '<html><script>secret()</script><body><h1>山门</h1><p>流水声。</p></body></html>';
     const htmlSave = parseLegacySave(new File([html], '旧档.html'), html);

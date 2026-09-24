@@ -54,4 +54,4 @@
 
 ## 1.0 工程预览
 
-需要 Node 24 与 pnpm 11.19。全新克隆运行 `pnpm install --frozen-lockfile`、`pnpm build`、`pnpm typecheck`、`pnpm test`、`pnpm test:integration`、`pnpm test:e2e`。本地用 `pnpm dev:web` 打开 `http://127.0.0.1:5173`，另开终端用 `pnpm dev:api` 启动 `http://127.0.0.1:8787/health`。开发数据库和测试邮件服务见 [S1 工程基线](docs/九霄1.0-S1工程基线.md)。新构建不会覆盖 `outputs/` 里的旧试玩产物。
+需要 Node 24 与 pnpm 11.19。全新克隆运行 `pnpm install --frozen-lockfile`、`pnpm build`、`pnpm typecheck`、`pnpm test`、`pnpm test:integration`、`pnpm test:e2e`。本地用 `pnpm dev:web` 打开 `http://127.0.0.1:5173`；使用 `docker compose up --build -d` 同时启动数据库、迁移、API 和 Mailpit。直接运行 `pnpm dev:api` 时，需先设置可连通的 `DATABASE_URL`。服务入口和验收步骤见[服务链配置与验收](docs/本地服务链配置与验收.md)。新构建不会覆盖 `outputs/` 里的旧试玩产物。

@@ -20,7 +20,10 @@ export type LocalSave = {
   location: string;
   status: SaveStatus;
   messages: unknown[];
+  pending?: unknown;
   legacySupplement?: Record<string, unknown>;
+  /** Lossless parsed copy of a legacy record. Never treated as authoritative rules state. */
+  legacyArchive?: { sourceFormat: string; sourceVersion: number | null; payload: Record<string, unknown> };
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -29,7 +32,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function isLocalSave(value: unknown): value is LocalSave {
   if (!isRecord(value)) return false;
-  return value.schemaVersion === 1 && typeof value.saveId === 'string' && value.saveId.length > 0
+  const valid = value.schemaVersion === 1 && typeof value.saveId === 'string' && value.saveId.length > 0
     && typeof value.name === 'string' && typeof value.createdAt === 'string'
     && typeof value.updatedAt === 'string' && typeof value.revision === 'number'
     && Number.isInteger(value.revision) && value.revision >= 0
@@ -37,6 +40,14 @@ function isLocalSave(value: unknown): value is LocalSave {
     && typeof value.memoryPolicyVersion === 'string' && isRecord(value.character)
     && typeof value.location === 'string' && value.status === 'pending_rules'
     && Array.isArray(value.messages);
+  if (!valid) return false;
+  if (value.legacySupplement !== undefined && !isRecord(value.legacySupplement)) return false;
+  if (value.legacyArchive !== undefined) {
+    if (!isRecord(value.legacyArchive) || typeof value.legacyArchive.sourceFormat !== 'string' || !isRecord(value.legacyArchive.payload)) return false;
+    const version = value.legacyArchive.sourceVersion;
+    if (version !== null && (!Number.isSafeInteger(version) || (version as number) < 0)) return false;
+  }
+  return true;
 }
 
 export function readSaves(): LocalSave[] {
