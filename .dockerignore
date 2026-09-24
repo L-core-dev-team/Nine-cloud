@@ -1,0 +1,12 @@
+.git
+.workbuddy
+.impeccable
+node_modules
+outputs
+work
+docs
+tests
+scripts
+*.zip
+**/dist
+.env
