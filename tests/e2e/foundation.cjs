@@ -33,7 +33,11 @@ async function ready(url) {
   const apiFile = join(root, 'apps/api/dist/index.js');
   const viteFile = join(webRoot, 'node_modules/vite/bin/vite.js');
   assert.ok(existsSync(apiFile) && existsSync(viteFile), 'Run pnpm build before test:e2e');
-  run(apiFile, [], root, { API_PORT: String(apiPort) });
+  // This E2E asserts API liveness only; database readiness is verified by the Docker service-chain check.
+  run(apiFile, [], root, {
+    API_PORT: String(apiPort),
+    DATABASE_URL: 'postgresql://jiuxiao:unused@127.0.0.1:1/unused',
+  });
   run(viteFile, ['preview', '--host', '127.0.0.1', '--port', String(webPort), '--strictPort'], webRoot);
   const response = await ready(`http://127.0.0.1:${apiPort}/health`);
   assert.equal((await response.json()).saveSchemaVersion, 1);
