@@ -33,7 +33,11 @@ async function ready(url) {
   const apiFile = join(root, 'apps/api/dist/index.js');
   const viteFile = join(webRoot, 'node_modules/vite/bin/vite.js');
   assert.ok(existsSync(apiFile) && existsSync(viteFile), 'Run pnpm build before test:e2e');
-  run(apiFile, [], root, { API_PORT: String(apiPort) });
+  // This API health smoke uses an intentionally unreachable database and does not require Docker.
+  run(apiFile, [], root, {
+    API_PORT: String(apiPort),
+    DATABASE_URL: 'postgresql://jiuxiao:unused@127.0.0.1:1/unused',
+  });
   run(viteFile, ['preview', '--host', '127.0.0.1', '--port', String(webPort), '--strictPort'], webRoot);
   const response = await ready(`http://127.0.0.1:${apiPort}/health`);
   assert.equal((await response.json()).saveSchemaVersion, 1);
@@ -45,6 +49,18 @@ async function ready(url) {
   try {
     for (const [width, height] of [[390, 844], [1366, 768]]) {
       const page = await browser.newPage({ viewport: { width, height } });
+      await page.route('https://openrouter.ai/api/v1/models?output_modalities=text', route => route.fulfill({
+        contentType: 'application/json',
+        body: JSON.stringify({ data: Array.from({ length: 12 }, (_, index) => ({
+          id: index === 0 ? 'anthropic/claude-sonnet-5' : `openai/model-${index}`,
+          name: index === 0 ? 'Claude Sonnet 5' : `Model ${index}`,
+          description: `Text generation and reasoning model ${index}`,
+          context_length: 32000 + index * 1000,
+          created: 1780000000,
+          pricing: { prompt: '0.000001', completion: '0.000002' },
+          architecture: { output_modalities: ['text'] },
+        })) }),
+      }));
       await page.goto(`http://127.0.0.1:${webPort}/`);
       await page.evaluate(() => new Promise(resolve => {
         localStorage.clear();
@@ -99,8 +115,9 @@ async function ready(url) {
       await page.getByRole('button', { name: '阅读世界设定' }).click();
       assert.equal(await page.locator('h2').innerText(), '世界设定');
       await page.goto(`http://127.0.0.1:${webPort}/settings/ai`);
-      assert.equal(await page.locator('h2').innerText(), '让五席各司其职。');
+      assert.equal(await page.locator('.ai-title').innerText(), 'AI 设定');
       assert.equal(await page.locator('.role-panel').count(), 5);
+      assert.equal(await page.locator('.glass-dialog').isVisible(), false, 'closed settings dialog must not cover the page');
       await page.getByRole('button', { name: '切换到晴昼配色' }).click();
       assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('.role-summary strong')).color), 'rgb(41, 58, 70)');
       await page.screenshot({ path: join(root, `docs/audit/${width === 390 ? '07-ai-settings-mobile-day.png' : '08-ai-settings-desktop-day.png'}`), fullPage: true });
@@ -115,19 +132,65 @@ async function ready(url) {
       await page.reload();
       const retainedLogs = await page.evaluate(() => JSON.parse(sessionStorage.getItem('jx10_ai_call_log_v1')));
       assert.deepEqual(retainedLogs.map(log => log.model), ['retained-model']);
-      assert.equal(await page.locator('.role-panel').first().locator('summary').innerText().then(text => text.includes('待配置')), true);
-      await page.getByRole('button', { name: '填入五席候选' }).nth(1).click();
+      assert.equal(await page.locator('.role-panel').first().locator(':scope > summary').innerText().then(text => text.includes('待配置')), true);
+      await page.locator('.provider-open').click();
+      assert.equal(await page.locator('.provider-name-list button').count(), 25);
+      assert.ok(!(await page.locator('.provider-name-list').innerText()).includes('已收录'));
+      assert.ok(await page.locator('.dialog-scroll-region').evaluate(element => element.scrollHeight > element.clientHeight), 'provider names should scroll within the glass dialog');
+      await page.getByRole('button', { name: 'Anthropic · Claude API' }).click();
+      assert.equal(await page.locator('.dialog-heading h2').innerText(), 'Anthropic · Claude API');
+      assert.ok((await page.locator('.provider-detail-body').innerText()).includes('官方型号与价格'));
+      assert.ok((await page.locator('.provider-detail-body').innerText()).includes('anthropic/claude-sonnet-5'));
+      assert.ok((await page.locator('.provider-detail-body').innerText()).includes('OpenRouter 托管目录'));
+      await page.locator('.back-link').click();
+      await page.locator('.directory-toolbar .comparison-link').click();
+      assert.equal(await page.locator('.dialog-heading h2').innerText(), '价格与能力总览比较');
+      assert.equal(await page.locator('.comparison-table tbody tr').count(), 12);
+      assert.ok((await page.locator('.comparison-body').innerText()).includes('OpenRouter 聚合市场'));
+      const comparisonScroll = page.locator('.dialog-scroll-region');
+      assert.ok(await comparisonScroll.evaluate(element => element.scrollHeight > element.clientHeight), 'comparison dialog should scroll vertically');
+      const comparisonTable = page.locator('.comparison-table').locator('..');
+      assert.ok(await comparisonTable.evaluate(element => element.scrollWidth > element.clientWidth), 'comparison table should retain a horizontal scroll path');
+      await page.getByRole('button', { name: '关闭窗口' }).click();
+      await page.getByRole('button', { name: '查看配置与成本' }).nth(1).click();
+      assert.equal(await page.locator('.glass-dialog h2').innerText(), '行云 · 合宜');
+      const presetMap = await page.locator('.preset-role-map').innerText();
+      assert.ok(presetMap.includes('deepseek-v4-pro'));
+      assert.ok(presetMap.includes('doubao-seed-2-1-pro-260915'));
+      assert.ok(presetMap.includes('qwen3.8-flash'));
+      assert.ok((await page.locator('.estimate-totals').innerText()).includes('/ 周'));
+      const modalScroll = page.locator('.dialog-scroll-region');
+      assert.ok(await modalScroll.evaluate(element => element.scrollHeight > element.clientHeight));
+      await modalScroll.evaluate(element => { element.scrollTop = element.scrollHeight; });
+      assert.ok(await modalScroll.evaluate(element => element.scrollTop > 0));
+      await page.getByRole('button', { name: '应用此方案' }).click();
+      assert.ok((await page.locator('.active-recipe').innerText()).includes('请为启用的岗位填写对应 API Key'));
       const storyPanel = page.locator('.role-panel').first();
-      await storyPanel.locator('summary').click();
-      assert.equal(await storyPanel.locator('input').nth(1).inputValue(), 'doubao-seed-2-1-pro-260915');
-      assert.equal(await storyPanel.locator('input').nth(2).inputValue(), 'https://ark.cn-beijing.volces.com/api/v3');
+      await storyPanel.locator(':scope > summary').click();
+      assert.equal(await storyPanel.locator('input').nth(1).inputValue(), 'deepseek-v4-pro');
+      assert.equal(await storyPanel.locator('input').nth(2).inputValue(), 'https://api.deepseek.com');
+      await storyPanel.locator('.advanced-fields > summary').click();
+      await storyPanel.getByLabel('期望上下文上限（tokens）').fill('65536');
+      await storyPanel.getByLabel('输出格式').selectOption('json_object');
+      await storyPanel.locator('textarea').last().fill('<END>');
+      assert.equal(await page.locator('.active-recipe').count(), 0, 'editing a role should mark the applied preset as customized');
       await storyPanel.locator('input[type="password"]').fill('test-secret-not-persisted');
       await page.getByRole('button', { name: '保存配置' }).click();
       const savedConfig = await page.evaluate(() => JSON.parse(sessionStorage.getItem('jx10_ai_config_v2')));
+      assert.equal(savedConfig.version, 3);
+      assert.equal(savedConfig.roles.story.contextWindowTokens, 65536);
+      assert.equal(savedConfig.roles.story.responseFormat, 'json_object');
+      assert.equal(savedConfig.roles.story.stopSequences, '<END>');
+      assert.equal(savedConfig.roles.premiumDirector.enabled, false);
       assert.equal(JSON.stringify(savedConfig).includes('test-secret-not-persisted'), false);
       assert.ok((await page.locator('body').innerText()).includes('API Key 只保留在当前页面内存'));
       assert.equal(await page.locator('button', { hasText: '测试此岗位' }).first().isDisabled(), true);
       assert.ok((await page.locator('body').innerText()).includes('契约 v1'));
+      await page.getByRole('button', { name: '查看配置与成本' }).nth(2).click();
+      assert.equal(await page.locator('.glass-dialog h2').innerText(), '长歌 · 旗舰');
+      assert.ok((await page.locator('.preset-role-map').innerText()).includes('claude-opus-5-5'));
+      assert.ok((await page.locator('.estimate-totals').innerText()).includes('$'));
+      await page.getByRole('button', { name: '关闭窗口' }).click();
       await page.goto(`http://127.0.0.1:${webPort}/lobby`);
       await page.getByRole('button', { name: '菜单' }).click();
       const importInput = page.locator('aside input[type="file"]');
