@@ -49,6 +49,18 @@ async function ready(url) {
   try {
     for (const [width, height] of [[390, 844], [1366, 768]]) {
       const page = await browser.newPage({ viewport: { width, height } });
+      await page.route('https://openrouter.ai/api/v1/models?output_modalities=text', route => route.fulfill({
+        contentType: 'application/json',
+        body: JSON.stringify({ data: Array.from({ length: 12 }, (_, index) => ({
+          id: index === 0 ? 'anthropic/claude-sonnet-5' : `openai/model-${index}`,
+          name: index === 0 ? 'Claude Sonnet 5' : `Model ${index}`,
+          description: `Text generation and reasoning model ${index}`,
+          context_length: 32000 + index * 1000,
+          created: 1780000000,
+          pricing: { prompt: '0.000001', completion: '0.000002' },
+          architecture: { output_modalities: ['text'] },
+        })) }),
+      }));
       await page.goto(`http://127.0.0.1:${webPort}/`);
       await page.evaluate(() => new Promise(resolve => {
         localStorage.clear();
@@ -128,13 +140,13 @@ async function ready(url) {
       await page.getByRole('button', { name: 'Anthropic · Claude API' }).click();
       assert.equal(await page.locator('.dialog-heading h2').innerText(), 'Anthropic · Claude API');
       assert.ok((await page.locator('.provider-detail-body').innerText()).includes('官方型号与价格'));
-      assert.ok((await page.locator('.provider-detail-body').innerText()).includes('claude-sonnet-5'));
-      assert.ok((await page.locator('.compatibility-note').innerText()).includes('原生接口暂不能在这里测试'));
+      assert.ok((await page.locator('.provider-detail-body').innerText()).includes('anthropic/claude-sonnet-5'));
+      assert.ok((await page.locator('.provider-detail-body').innerText()).includes('OpenRouter 托管目录'));
       await page.locator('.back-link').click();
       await page.locator('.directory-toolbar .comparison-link').click();
       assert.equal(await page.locator('.dialog-heading h2').innerText(), '价格与能力总览比较');
-      assert.equal(await page.locator('.comparison-table tbody tr').count(), 8);
-      assert.ok((await page.locator('.comparison-body').innerText()).includes('不作汇率换算'));
+      assert.equal(await page.locator('.comparison-table tbody tr').count(), 12);
+      assert.ok((await page.locator('.comparison-body').innerText()).includes('OpenRouter 聚合市场'));
       const comparisonScroll = page.locator('.dialog-scroll-region');
       assert.ok(await comparisonScroll.evaluate(element => element.scrollHeight > element.clientHeight), 'comparison dialog should scroll vertically');
       const comparisonTable = page.locator('.comparison-table').locator('..');
@@ -176,7 +188,7 @@ async function ready(url) {
       assert.ok((await page.locator('body').innerText()).includes('契约 v1'));
       await page.getByRole('button', { name: '查看配置与成本' }).nth(2).click();
       assert.equal(await page.locator('.glass-dialog h2').innerText(), '长歌 · 旗舰');
-      assert.equal((await page.locator('.preset-role-map').innerText()).split('gpt-6-astra').length - 1, 5);
+      assert.ok((await page.locator('.preset-role-map').innerText()).includes('claude-opus-5-5'));
       assert.ok((await page.locator('.estimate-totals').innerText()).includes('$'));
       await page.getByRole('button', { name: '关闭窗口' }).click();
       await page.goto(`http://127.0.0.1:${webPort}/lobby`);

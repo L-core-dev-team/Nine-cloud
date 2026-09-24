@@ -323,14 +323,15 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 .preset-card .secondary { min-height: 42px; padding: 10px 13px; }
 .provider-open { border-radius: 11px; background: linear-gradient(105deg, #172a3bb5, #0c1926c9); box-shadow: none; }
 .provider-open > span:first-child { border-radius: 9px; }
-.glass-dialog { position: fixed; display: flex; flex-direction: column; width: min(1040px, calc(100vw - 40px)); height: min(880px, 88dvh); max-height: 88dvh; overflow: hidden; isolation: isolate; background: linear-gradient(135deg, rgba(25, 43, 59, .87), rgba(8, 19, 30, .91) 68%, rgba(15, 30, 43, .89)); border-color: rgba(212, 225, 232, .21); border-radius: 16px; box-shadow: 0 30px 110px #0009, inset 0 1px 0 #ffffff20; backdrop-filter: blur(28px) saturate(1.18); }
+.glass-dialog { position: fixed; display: flex; flex-direction: column; width: min(1040px, calc(100vw - 40px)); height: min(880px, 88dvh); max-height: 88dvh; overflow: hidden; isolation: isolate; background: linear-gradient(135deg, rgba(25, 43, 59, .79), rgba(8, 19, 30, .83) 68%, rgba(15, 30, 43, .81)); border-color: rgba(212, 225, 232, .27); border-radius: 16px; box-shadow: 0 30px 110px #0009, inset 0 1px 0 #ffffff28; backdrop-filter: blur(25px) saturate(1.26); }
 .glass-dialog:not([open]) { display: none; }
-.glass-dialog::before { position: absolute; z-index: -1; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 12% 0%, #a9c3d311, transparent 36%), linear-gradient(180deg, #d8e4e910, transparent 28%); content: ''; }
+.glass-dialog::before { position: absolute; z-index: -1; inset: 0; pointer-events: none; background: linear-gradient(135deg, rgba(8, 17, 28, .88), rgba(8, 18, 29, .79) 45%, rgba(8, 17, 28, .91)), url('/scenes/gate-moonlight.webp') center 51% / cover, radial-gradient(ellipse at 12% 0%, #a9c3d311, transparent 36%); content: ''; }
 .glass-dialog::backdrop { background: rgba(3, 9, 15, .62); backdrop-filter: blur(7px) saturate(.8); }
 .dialog-close { position: absolute; top: 13px; right: 14px; z-index: 3; float: none; margin: 0; width: 38px; height: 38px; background: #f4f8fa0c; }
 .dialog-scroll-region { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-color: #728a9e88 transparent; scrollbar-width: thin; }
 .dialog-heading { padding: 30px 34px 20px; }
 .dialog-heading h2 { letter-spacing: .04em; }
+.dialog-heading h2, .preset-card h3 { font-family: 'Ma Shan Zheng Brand', 'Kaiti SC', 'STKaiti', serif; font-weight: 400; letter-spacing: .08em; }
 .catalog-search { padding: 16px 26px; }
 .catalog-search input { min-height: 44px; padding: 9px 13px; color: inherit; background: #07131d75; border: 1px solid #abbfc532; border-radius: 8px; }
 .provider-name-list { display: grid; gap: 2px; padding: 2px 26px 24px; }
@@ -350,6 +351,16 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 .model-table td code { color: #e5d9b0; font: .7rem ui-monospace, monospace; overflow-wrap: anywhere; }
 .model-table td small, .comparison-table td small { display: block; margin-top: 4px; color: var(--muted); font-size: .68rem; }
 .model-table a { color: #dfd3a9; white-space: nowrap; text-underline-offset: 3px; }
+.table-sort { padding: 0; color: inherit; background: none; font: inherit; text-align: left; }
+.inventory-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; }
+.inventory-heading > div { display: grid; gap: 4px; }
+.inventory-heading > div strong { font: 500 .86rem system-ui; }
+.inventory-heading > div small { max-width: 660px; color: var(--muted); font: .7rem/1.5 system-ui; }
+.inventory-heading label, .comparison-controls label { display: grid; gap: 5px; min-width: min(260px, 42vw); color: var(--muted); font: .68rem system-ui; }
+.inventory-heading input, .comparison-controls select { min-height: 38px; padding: 7px 10px; color: inherit; background: #07131d75; border: 1px solid #abbfc532; border-radius: 7px; }
+.comparison-controls { display: flex; align-items: end; justify-content: space-between; gap: 14px; }
+.comparison-controls > span { color: var(--muted); font: .7rem system-ui; }
+.model-table td small { max-width: 270px; overflow-wrap: anywhere; }
 .comparison-sources { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
 .comparison-sources a { display: grid; gap: 6px; padding: 13px; color: #e5e8e7; background: #ffffff06; border: 1px solid #b5c7d126; border-radius: 9px; text-decoration: none; }
 .comparison-sources a:hover { background: #ffffff0c; }
@@ -371,7 +382,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 .estimate-inputs label input { min-width: 0; padding: 9px 10px; color: inherit; background: #07131d75; border: 1px solid #abbfc532; border-radius: 7px; }
 .dialog-actions { flex: none; z-index: 2; position: relative; padding-bottom: calc(13px + env(safe-area-inset-bottom)); }
 :root[data-theme='day'] .glass-dialog { color: #344550; background: linear-gradient(135deg, rgba(247, 248, 244, .89), rgba(228, 235, 236, .91) 68%, rgba(239, 240, 233, .89)); border-color: rgba(69, 91, 105, .28); box-shadow: 0 30px 90px #1c293535, inset 0 1px 0 #ffffffd8; }
-:root[data-theme='day'] .glass-dialog::before { background: radial-gradient(ellipse at 12% 0%, #ffffffa8, transparent 36%), linear-gradient(180deg, #ffffff70, transparent 28%); }
+:root[data-theme='day'] .glass-dialog::before { background: linear-gradient(135deg, rgba(242, 242, 231, .83), rgba(231, 237, 234, .77) 45%, rgba(244, 241, 231, .86)), url('/scenes/gate-moonlight.webp') center 51% / cover, radial-gradient(ellipse at 12% 0%, #ffffffa8, transparent 36%); }
 :root[data-theme='day'] .comparison-link { color: #334550; border-color: #566d7d42; }
 :root[data-theme='day'] .provider-name-list button { color: #334550; border-color: #566d7d24; }
 :root[data-theme='day'] .provider-name-list button:hover { background: #465d6a0a; }
@@ -381,6 +392,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 :root[data-theme='day'] .model-table td code, :root[data-theme='day'] .model-table a, :root[data-theme='day'] .comparison-sources strong { color: #594d2e; }
 :root[data-theme='day'] .comparison-sources a { border-color: #566d7d32; }
 :root[data-theme='day'] .compatibility-note { color: #574e37; }
+ :root[data-theme='day'] .inventory-heading input, :root[data-theme='day'] .comparison-controls select { color: #334550; background: #ffffffa8; border-color: #566d7d44; }
 @media (max-width: 760px) {
   .recommend-heading { align-items: flex-start; flex-direction: column; gap: 4px; margin-top: 31px; }
   .recommend-heading p { max-width: 100%; }
@@ -398,6 +410,12 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
   .estimate-totals { align-items: flex-start; flex-direction: column; gap: 8px; }
   .advanced-wide { grid-column: auto; }
 }
+
+@media (prefers-reduced-motion: no-preference) {
+  .glass-dialog[open] { animation: dialog-arrive 220ms cubic-bezier(.2,.7,.25,1) both; }
+  .glass-dialog::after { position: absolute; inset: 0; z-index: -1; pointer-events: none; content: ''; background: linear-gradient(112deg, transparent 18%, rgba(228, 238, 241, .035) 38%, transparent 58%); transform: translateX(-12%); }
+}
+@keyframes dialog-arrive { from { opacity: 0; transform: translateY(8px) scale(.992); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
 @media (max-width: 760px) {
   .preset-grid { grid-template-columns: 1fr; }
