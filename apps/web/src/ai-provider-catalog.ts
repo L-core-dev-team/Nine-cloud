@@ -14,35 +14,45 @@ export type ProviderEntry = {
 // Prices are intentionally a small, dated reference sample, not an exhaustive or live quote.
 export const catalogVerifiedOn = '2026-09-24';
 export const providerCatalog: ProviderEntry[] = [
-  { id: 'deepseek', name: 'DeepSeek', region: '中国大陆', summary: '文本生成、长上下文、结构化输出与工具调用。', capabilities: ['中文叙事', '长上下文', '结构化输出'], compatibility: 'OpenAI 兼容协议', keyUrl: 'https://platform.deepseek.com/api_keys', docsUrl: 'https://api-docs.deepseek.com/', pricingUrl: 'https://api-docs.deepseek.com/quick_start/pricing/', models: [
+  { id: 'deepseek', name: 'DeepSeek', region: '中国大陆', summary: '提供长上下文文本模型、JSON 输出、工具调用和多种兼容接口。公开 API 支持 OpenAI 格式；高峰时与非高峰时采用不同价格。', capabilities: ['中文叙事', '长上下文', '结构化输出'], compatibility: 'OpenAI 兼容协议', keyUrl: 'https://platform.deepseek.com/api_keys', docsUrl: 'https://api-docs.deepseek.com/', pricingUrl: 'https://api-docs.deepseek.com/quick_start/pricing/', models: [
     { id: 'deepseek-flash', use: '高频主线、状态整理', input: '峰时 $0.30 / 百万 tokens', output: '峰时 $1.20 / 百万 tokens' },
     { id: 'deepseek-v4-pro', use: '复杂长篇与关键剧情', input: '峰时 $1.32 / 百万 tokens', output: '峰时 $3.96 / 百万 tokens' },
   ] },
-  { id: 'ark', name: '火山方舟 · 豆包', region: '中国大陆', summary: '文本、多模态与工具能力；按区域、接入点和模型计费。', capabilities: ['中文叙事', '多模态型号', '工具调用'], compatibility: 'OpenAI 兼容协议', keyUrl: 'https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey', docsUrl: 'https://www.volcengine.com/docs/82379/1263270', pricingUrl: 'https://www.volcengine.com/docs/82379/1263270', models: [
-    { id: 'doubao-seed-2.1-pro', use: '高质量中文文本；请核对控制台的当前接入点与 Model ID' },
-    { id: 'doubao-seed-2.0-lite', use: '高频、低延迟任务；实际可用版本以方舟控制台为准' },
+  { id: 'ark', name: '火山方舟 · 豆包', region: '中国大陆', summary: '豆包文本与多模态服务按推理接入点调用。价格可能按输入长度分档，并分别计算缓存命中、音频和文本 tokens；创建或购买模型接入点后，以控制台实际 Endpoint ID 为准。', capabilities: ['中文叙事候选', '多模态型号', '工具调用'], compatibility: 'OpenAI 兼容协议', keyUrl: 'https://console.volcengine.com/ark/region:ark+cn-beijing/apiKey', docsUrl: 'https://docs.volcengine.com/docs/ark/model-list?lang=zh', pricingUrl: 'https://www.volcengine.com/product/ark', models: [
+    { id: 'doubao-seed-2-1-pro-260915', use: 'Seed Pro 当前版本；方舟按量价样本，缓存、模态及账号条件另计', input: '¥6 / 百万 tokens', output: '¥30 / 百万 tokens' },
+    { id: 'doubao-seed-2-1-lite-260915', use: 'Seed Lite 当前版本；此快照未能核准价格，请查官方价目页' },
+    { id: 'deepseek-v4-pro', use: '方舟托管；输入 ¥4.50、缓存命中 ¥0.30、输出 ¥13.50 / 百万 tokens', input: '¥4.50（缓存 ¥0.30）', output: '¥13.50' },
+    { id: 'deepseek-v4-flash', use: '方舟托管；输入 ¥1.50、缓存命中 ¥0.10、输出 ¥4.50 / 百万 tokens', input: '¥1.50（缓存 ¥0.10）', output: '¥4.50' },
   ] },
-  { id: 'aliyun', name: '阿里云百炼 · 通义千问', region: '多区域', summary: '文本、代码、视觉等模型；价格随区域、上下文档位与缓存方式变化。', capabilities: ['中文与多语种', '长上下文', '多模态型号'], compatibility: 'OpenAI 兼容协议', keyUrl: 'https://bailian.console.aliyun.com/', docsUrl: 'https://help.aliyun.com/zh/model-studio/getting-started/first-api-call-to-qwen', pricingUrl: 'https://help.aliyun.com/zh/model-studio/model-pricing', models: [
-    { id: 'qwen3.8-max', use: '高复杂度任务；北京标准价示例', input: '¥12 / 百万 tokens', output: '¥36 / 百万 tokens' },
-    { id: 'qwen3.8-flash', use: '常规高频任务；全球标准价示例', input: '¥0.80 / 百万 tokens', output: '¥2.70 / 百万 tokens' },
+  { id: 'aliyun', name: '阿里云百炼 · 通义千问', region: '多区域', summary: '提供文本、视觉、音频等系列模型。API 接入按地域选择兼容地址；同一模型在北京、香港、海外等区域的价格和模型 ID 可能不同。', capabilities: ['中文与多语种', '长上下文', '多模态型号'], compatibility: 'OpenAI 兼容协议', keyUrl: 'https://bailian.console.aliyun.com/', docsUrl: 'https://help.aliyun.com/zh/model-studio/getting-started/first-api-call-to-qwen', pricingUrl: 'https://help.aliyun.com/zh/model-studio/model-pricing', models: [
+    { id: 'qwen3.8-max', use: '高复杂度与长上下文；北京标准价，输入 ¥12、输出 ¥36 / 百万 tokens', input: '¥12.00', output: '¥36.00' },
+    { id: 'qwen3.8-flash', use: '高频文本任务；北京标准价，输入 ¥0.80、输出 ¥2.70 / 百万 tokens', input: '¥0.80', output: '¥2.70' },
   ] },
   { id: 'zhipu', name: '智谱 · BigModel', region: '中国大陆', summary: 'GLM 系列文本与智能体能力；模型权益、价格和协议需在官方平台核对。', capabilities: ['中文生成', '工具调用', '智能体'], compatibility: 'OpenAI 兼容协议', keyUrl: 'https://bigmodel.cn/usercenter/proj-mgmt/apikeys', docsUrl: 'https://docs.bigmodel.cn/cn/guide/start/model-overview', pricingUrl: 'https://bigmodel.cn/pricing', models: [
     { id: 'glm-5-turbo', use: '官方平台提供的 Agent 取向型号；价格以平台当前页面为准' },
   ] },
-  { id: 'moonshot', name: '月之暗面 · Kimi API', region: '多区域', summary: '长文档与多轮文本能力；API 开放平台和 Kimi 订阅属于不同产品。', capabilities: ['长上下文', '多轮对话', '文件处理'], compatibility: 'OpenAI 兼容协议', keyUrl: 'https://platform.kimi.ai/', docsUrl: 'https://www.kimi.ai/help/kimi-api/api-overview', pricingUrl: 'https://platform.kimi.ai/docs/pricing', models: [
-    { id: '以 Kimi API 模型目录为准', use: '核对所在区域的平台与精确 Model ID' },
+  { id: 'moonshot', name: '月之暗面 · Kimi API', region: '多区域', summary: '长文档与多轮文本能力；开放平台 API 和 Kimi 订阅账户、密钥、计费相互独立。境内外平台也不能混用 Key。', capabilities: ['长上下文', '多轮对话', '文件处理'], compatibility: 'OpenAI 兼容协议', keyUrl: 'https://platform.kimi.com/', docsUrl: 'https://www.kimi.ai/zh-hans/help/kimi-api/api-overview', pricingUrl: 'https://platform.kimi.ai/zh-hans', models: [
+    { id: 'kimi-k3', use: '旗舰型号，官方页面标示 1M 上下文', input: '$3 / 百万 tokens', output: '$15 / 百万 tokens' },
+    { id: 'kimi-k2.7-code', use: '代码型号，官方页面标示 256K 上下文', input: '$0.95 / 百万 tokens', output: '$4 / 百万 tokens' },
+    { id: 'kimi-k2.6', use: '通用多模态型号，官方页面标示 256K 上下文', input: '$0.95 / 百万 tokens', output: '$4 / 百万 tokens' },
   ] },
   { id: 'minimax', name: 'MiniMax', region: '多区域', summary: '文本、语音、图像与视频等能力；不同产品线的密钥和计费不可混用。', capabilities: ['文本与长文本', '语音型号', '多模态型号'], compatibility: '需按接入点核对', keyUrl: 'https://platform.minimaxi.com/user-center/basic-information/interface-key', docsUrl: 'https://platform.minimaxi.com/document/Introduction', pricingUrl: 'https://platform.minimaxi.com/document/Price', models: [
     { id: '以当前 API 模型目录为准', use: '区分 API Key、Token Plan 与产品订阅' },
   ] },
-  { id: 'openai', name: 'OpenAI API', region: '国际', summary: '文本、多模态与工具工作流；API 服务和 ChatGPT 订阅分开计费。', capabilities: ['多语种生成', '多模态', '结构化输出'], compatibility: 'OpenAI 兼容协议', keyUrl: 'https://platform.openai.com/api-keys', docsUrl: 'https://developers.openai.com/api/docs/models', pricingUrl: 'https://developers.openai.com/api/docs/pricing', models: [
-    { id: 'gpt-6-luna', use: '短上下文标准价示例；美元/百万 tokens', input: '$0.10（缓存 $0.01）', output: '$0.50' },
+  { id: 'openai', name: 'OpenAI API', region: '国际', summary: 'API 提供文本、图像输入、结构化输出和工具工作流。API 按用量计费，与 ChatGPT 订阅分开；不同接口和服务档位的价格不相同。', capabilities: ['多语种生成', '多模态', '结构化输出'], compatibility: 'OpenAI 兼容协议', keyUrl: 'https://platform.openai.com/api-keys', docsUrl: 'https://developers.openai.com/api/docs/models', pricingUrl: 'https://developers.openai.com/api/docs/pricing', models: [
+    { id: 'gpt-6-astra', use: '标准短上下文价；输入 $10、缓存输入 $1、输出 $50 / 百万 tokens', input: '$10.00（缓存 $1.00）', output: '$50.00' },
+    { id: 'gpt-6-sol', use: '标准短上下文价；输入 $2、缓存输入 $0.20、输出 $10 / 百万 tokens', input: '$2.00（缓存 $0.20）', output: '$10.00' },
+    { id: 'gpt-6-luna', use: '标准短上下文价；输入 $0.10、缓存输入 $0.01、输出 $0.50 / 百万 tokens', input: '$0.10（缓存 $0.01）', output: '$0.50' },
   ] },
-  { id: 'anthropic', name: 'Anthropic · Claude API', region: '国际', summary: '文本、工具使用与长文任务；当前九霄适配器不支持厂商原生 Messages API。', capabilities: ['长文理解', '工具使用', '叙事生成'], compatibility: '厂商原生协议', keyUrl: 'https://console.anthropic.com/settings/keys', docsUrl: 'https://platform.claude.com/docs/en/api/overview', pricingUrl: 'https://platform.claude.com/docs/en/about-claude/pricing', models: [
-    { id: 'claude-sonnet-5', use: '官方标准价；美元/百万 tokens', input: '$2.00', output: '$10.00' },
+  { id: 'anthropic', name: 'Anthropic · Claude API', region: '国际', summary: 'Claude API 使用 Messages 协议，支持长文、工具和缓存。缓存写入、命中与普通输入单独计价；九霄当前测试器还没有 Claude 原生适配。', capabilities: ['长文理解', '工具使用', '叙事生成'], compatibility: '厂商原生协议', keyUrl: 'https://console.anthropic.com/settings/keys', docsUrl: 'https://platform.claude.com/docs/en/api/overview', pricingUrl: 'https://platform.claude.com/docs/en/about-claude/pricing', models: [
+    { id: 'claude-fable-5', use: '标准价；输入 $10、输出 $50 / 百万 tokens', input: '$10.00', output: '$50.00' },
+    { id: 'claude-opus-5', use: '标准价；输入 $5、输出 $25 / 百万 tokens', input: '$5.00', output: '$25.00' },
+    { id: 'claude-sonnet-5', use: '标准价；输入 $2、输出 $10 / 百万 tokens', input: '$2.00', output: '$10.00' },
+    { id: 'claude-haiku-4.5', use: '标准价；输入 $1、输出 $5 / 百万 tokens', input: '$1.00', output: '$5.00' },
   ] },
-  { id: 'google', name: 'Google · Gemini API', region: '国际', summary: '文本与多模态能力；当前九霄适配器不直接调用 Gemini 原生 API。', capabilities: ['多模态', '长上下文型号', '工具接口'], compatibility: '厂商原生协议', keyUrl: 'https://aistudio.google.com/app/apikey', docsUrl: 'https://ai.google.dev/gemini-api/docs/models', pricingUrl: 'https://ai.google.dev/gemini-api/docs/pricing', models: [
-    { id: 'gemini-3.8-flash', use: '标准层官方报价至 2026-12-31；美元/百万 tokens', input: '$0.75', output: '$3.75' },
+  { id: 'google', name: 'Google · Gemini API', region: '国际', summary: 'Gemini API 包含文本、多模态、函数调用、结构化输出和 Search grounding 等能力。模型能力与采样参数各不相同；九霄当前适配器还没有 Gemini 原生接口。', capabilities: ['多模态', '长上下文型号', '工具接口'], compatibility: '厂商原生协议', keyUrl: 'https://aistudio.google.com/app/apikey', docsUrl: 'https://ai.google.dev/gemini-api/docs/models', pricingUrl: 'https://ai.google.dev/gemini-api/docs/pricing', models: [
+    { id: 'gemini-3.8-flash', use: '标准价至 2026-12-31，2027-01-01 起调价；输入 $0.75/$1.50，输出 $3.75/$7.50', input: '$0.75（2027 起 $1.50）', output: '$3.75（2027 起 $7.50）' },
+    { id: 'gemini-3.5-flash', use: '标准价；输入 $1.50、输出 $9 / 百万 tokens', input: '$1.50', output: '$9.00' },
   ] },
   { id: 'openrouter', name: 'OpenRouter', region: '多区域', summary: '聚合式 API 路由，可从单一入口选择多家上游模型；费用、路由和数据政策要逐模型查看。', capabilities: ['多厂商路由', '统一计费入口', '模型目录广'], compatibility: 'OpenAI 兼容协议', keyUrl: 'https://openrouter.ai/settings/keys', docsUrl: 'https://openrouter.ai/docs/quickstart', pricingUrl: 'https://openrouter.ai/models', models: [{ id: '目录按需更新', use: '聚合平台，不是基础模型厂商；需核对上游与平台附加费' }] },
   { id: 'siliconflow', name: '硅基流动', region: '中国大陆', summary: '聚合多种开源与商业模型的推理服务，型号与配额会动态变化。', capabilities: ['多模型聚合', '开源模型', '文本与多模态型号'], compatibility: 'OpenAI 兼容协议', keyUrl: 'https://cloud.siliconflow.cn/account/ak', docsUrl: 'https://docs.siliconflow.cn/', pricingUrl: 'https://siliconflow.cn/pricing', models: [{ id: '以官方模型列表为准', use: '选择实际托管服务商和可用区域' }] },

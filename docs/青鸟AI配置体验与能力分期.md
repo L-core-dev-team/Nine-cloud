@@ -16,7 +16,7 @@ AI 设置不应被做成一个功能堆积页。它同时承担凭据安全、�
 | --- | --- | --- |
 | 服务商目录 | 中国主流与国际主流，并补充其他可用 AI 厂商 | 首版包含直连厂商、云平台、聚合路由和本地运行入口，并保留自定义 OpenAI 兼容 Base URL。行业模型与托管清单持续变化，无法诚实承诺穷尽“所有厂商”。 |
 | 型号与价格 | 官方快照、核验日期、来源链接 | 只有已核实的官方价格显示数字；其他厂商显示能力摘要和官方价格页链接。随版本人工维护快照。 |
-| 青鸟档位 | 三个推荐档；五个是岗位数量，不是档位数量 | 三档为听风·清简、行云·均衡、登霄·沉浸。每个档位均给五个岗位提供候选 Model ID、地址和非密钥参数。 |
+| 青鸟档位 | 三个推荐档；五个是岗位数量，不是档位数量 | 三档为疏影·省用、行云·合宜、长歌·旗舰。每档给五个岗位提供候选 Model ID、地址和非密钥参数。 |
 | 成本估算 | 用户可编辑每日回合数及输入、输出 token | 展示日、周和单回合估算，并列清调用次数、官方单价、区域、缓存及折扣假设。当前数字只用于方案比较。 |
 | 高级配置 | 希望接纳 DeepSeek 回答中全部设置建议 | 按“可共同支持、厂商特有、改变世界状态、涉及隐私/安全”分类实现。不能因为建议列表里有，就把不可运行或有安全隐患的选项伪装成已支持。 |
 | 调试与隐私 | 脱敏元数据和错误摘要，可设置保留期 | 不记录密钥、提示词、剧情正文和完整响应。保留期为用户可控设置。 |
@@ -24,26 +24,28 @@ AI 设置不应被做成一个功能堆积页。它同时承担凭据安全、�
 
 ## 这轮前端实现
 
-1. “青鱼”命名统一改为“青鸟”。推荐区提供三档选择。点开先查看五岗位映射、覆盖范围与成本假设，确认“应用并启用此档”后才写入当前会话配置。
-2. 应用档位会填入五个岗位的 Model ID、Base URL、Temperature、Top P、Top K、Penalty、Seed、最大回复 tokens、超时、重试、上下文条数和调用记录保留设置。API Key 保留在当前内存，不会被推荐档填充。连接测试许可是独立同意，不会被预设擅自打开。
+1. “青鱼”命名统一改为“青鸟”。推荐区提供三档选择。点开先查看五岗位映射、覆盖范围与成本假设；点击“应用此方案”后才写入当前会话配置。
+2. 应用档位会填入五个岗位的 Model ID、Base URL、Temperature、Top P、Top K、Penalty、Seed、最大回复 tokens、期望上下文、输出格式、推理强度、流式偏好、停止序列、超时和全局记录策略。API Key 保留在当前内存，不会被推荐档填充。连接测试许可是独立同意，不会被预设擅自打开。
 3. 应用后立刻保存非密钥配置，并提示用户为岗位自行输入 API Key。状态文案明确指出回合调度尚未接入；这是一份已经应用的表单配置，不是模型已在游戏里运行。
-4. 新增可滚动的服务商目录，现列出 DeepSeek、火山方舟、阿里云百炼、智谱、月之暗面、MiniMax、OpenAI、Anthropic、Google、OpenRouter、硅基流动、Groq、Together、Fireworks、xAI、Mistral、Cohere、Azure AI Foundry、Amazon Bedrock、Ollama、百度千帆、腾讯混元、阶跃星辰、讯飞，以及自定义兼容服务。条目注明地区、能力类别、接入协议、官方密钥入口、文档与价格来源。
-5. 价格数字仅在已核验的 DeepSeek、千问、OpenAI、Anthropic 和 Gemini 示例上显示。DeepSeek 价格受峰谷时段影响；千问按具体模型、区域、请求长度与缓存计费；OpenAI 示例采用标准短上下文价格；Gemini 示例仅按官方给出的有效时间段展示。没有核验的厂商不显示猜测单价。
+4. 新增可滚动的服务商目录，现列出 DeepSeek、火山方舟、阿里云百炼、智谱、月之暗面、MiniMax、OpenAI、Anthropic、Google、OpenRouter、硅基流动、Groq、Together、Fireworks、xAI、Mistral、Cohere、Azure AI Foundry、Amazon Bedrock、Ollama、百度千帆、腾讯混元、阶跃星辰、讯飞，以及自定义兼容服务。入口先显示名称；选中后看平台介绍、密钥入口、文档、价格链接与当前核验型号。目录不宣称收尽供应商或全部在售型号。
+5. 价格数字仅在本次已核对的 DeepSeek、豆包、千问、Kimi、OpenAI、Anthropic 和 Gemini 型号样本上显示。DeepSeek 价格受峰谷时段影响；豆包按型号、区域、接入点、上下文档和缓存计费；千问价格受型号和区域影响；OpenAI 样例使用短上下文标准价；Gemini 价格有注明期限。其余平台显示官方价格入口，不填未经证实的数字。
 6. 岗位开关采用键盘可达的滑动开关，颜色从粉色改为山岩青、暖金和玉色。专业参数可折叠；减少动态效果偏好继续生效。
-7. 补充 Top K、Frequency Penalty、Presence Penalty、Repetition Penalty、Seed、重试次数与重试间隔配置。界面注明这些设置现阶段只会保存在会话配置中，不会进入尚未接通的游戏回合。
+7. 补充 Top K、Frequency Penalty、Presence Penalty、Repetition Penalty、Seed、期望上下文、输出格式、推理强度、流式偏好、停止序列、重试次数与重试间隔配置。界面注明这些设置现阶段只会保存在会话配置中，不会进入尚未接通的游戏回合。
 8. 连接测试仍然是用户手动触发的一次真实 API 请求。它可能扣费；不能因为设置了“重试”就自动重复测试。
 
 ## 青鸟档位与估算口径
 
-| 档位 | 五席分配 | 定位 |
-| --- | --- | --- |
-| 听风·清简 | 五席使用 `deepseek-flash` | 先接通接口、控制预设输出上限，适合短测试。 |
-| 行云·均衡 | 主剧情与高级剧情使用 `deepseek-v4-pro`，另外三席使用 `deepseek-flash` | 把较贵模型留给两类叙事岗位。 |
-| 登霄·沉浸 | 主剧情、剧情导演、高级剧情使用 `deepseek-v4-pro`，状态与世界档案使用 `deepseek-flash` | 提高关键叙事岗位的 token 预算。 |
+| 档位 | 主剧情 | 导演 | 状态与记忆 | 世界档案 | 高级剧情 |
+| --- | --- | --- | --- | --- | --- |
+| 疏影·省用 | DeepSeek Flash | Qwen 3.8 Flash | Qwen 3.8 Flash | DeepSeek Flash | Doubao Seed 2.1 Pro，默认停用 |
+| 行云·合宜 | DeepSeek V4 Pro | Doubao Seed 2.1 Pro | Qwen 3.8 Flash | DeepSeek Flash | Doubao Seed 2.1 Pro，默认停用 |
+| 长歌·旗舰 | GPT-6 Astra | GPT-6 Astra | GPT-6 Astra | GPT-6 Astra | GPT-6 Astra，默认停用 |
 
-三个档位目前统一使用 DeepSeek 官方 OpenAI 格式 Base URL。Model ID 和账单资格仍须用户在官方账户确认。档位数字不构成质量排名；需要以真实中文样本、延迟和账单验收。
+“长歌·旗舰”受当前 OpenAI Chat Completions 适配范围约束，五席先以 GPT-6 Astra 作为宽能力基线，再用各岗位的任务提示与输出格式区分职责。它的公开标准短上下文价高，长上下文价格另有阶梯；预估不包含长上下文加价与推理 token。它不是九霄实测冠军。待原生适配和中文长篇盲测建立后，再判断是否应按岗位换用 Anthropic、Gemini 等型号。不同岗位使用不同厂商时要分别填 Key。Base URL 按直连平台预填；账户区域、模型权限和型号 ID 仍须本人在服务商控制台确认。高级剧情关闭时不应发生调用。
 
-成本预览用 DeepSeek 官方公布的峰时输入、输出标准单价，并让用户填写每日游历次数及每岗位平均输入、输出 tokens。公式是岗位数量乘以每次设定 token 数，再乘以每百万 token 单价。周费用按七天估算。它不包含缓存价、账户优惠、失败重试、其他工具费、税费或地区变化。更重要的是，当前五岗位没有接进游戏调用链，故估算只用于看懂不同分配的相对费用，不能预测真实实测账单。
+成本预览允许编辑每天、每周回合数，以及各岗位每百回合调用量、单次输入与输出 tokens。公式是 `回合数 × 岗位调用频次 × (输入 tokens × 输入价 + 输出 tokens × 输出价) ÷ 1,000,000`。美元和人民币分开显示，不做无汇率依据的换算；高级剧情默认每百回合零次。价格按核验日的标准价样本估算，不计缓存、账户优惠、峰谷价以外的服务档位、工具费、税费、失败请求或 tokenizer 差异。五岗位尚未进入游戏回合调度，实际调用频率与模型用量未知，当前结果只用于看预算量级，不是账单预测。
+
+价格与能力页使用八个代表型号作静态表。Artificial Analysis、Arena 和 AICPB 为外部参考链接，价格仍以提供模型 API 的平台为准。榜单目标、任务分布、语言、置信区间与计分方法不同；不能把综合名次转写成“最适合中文修仙”的结论。Artificial Analysis 的 API 授权和产品内再分发条款也不同，当前没有接入或复制其数据集。九霄需要以后建立自有中文长篇、角色一致性、状态抽取和成本延迟样本，并按固定版本做盲测。
 
 ## DeepSeek 建议的逐项分级
 
@@ -107,7 +109,7 @@ OpenAI. “Pricing.” *OpenAI API Documentation*, https://developers.openai.com
 
 Google. “Gemini Developer API Pricing.” *Google AI for Developers*, https://ai.google.dev/gemini-api/docs/pricing. Accessed 24 Sept. 2026.
 
-Volcano Engine. “Base URL and Authentication.” *Volcengine Ark Documentation*, https://docs.volcengine.com/docs/ark/base-url-and-authentication?lang=zh. Accessed 24 Sept. 2026.
+Volcano Engine. “Model Pricing.” *Volcengine Ark Documentation*, https://docs.volcengine.com/docs/ark/model-pricing?lang=zh. Accessed 24 Sept. 2026.
 
 Tencent Cloud. “API Overview.” *Tencent Hunyuan Documentation*, https://cloud.tencent.com/document/product/1729/101848. Accessed 24 Sept. 2026.
 
@@ -115,4 +117,18 @@ Baidu. “List Models.” *Qianfan API Reference*, https://cloud.baidu.com/doc/q
 
 Kimi. “Kimi API Overview.” *Kimi Help Center*, https://www.kimi.ai/help/kimi-api/api-overview. Accessed 24 Sept. 2026.
 
+Kimi. “API Troubleshooting.” *Kimi Help Center*, https://www.kimi.com/help/kimi-api/api-troubleshooting. Accessed 24 Sept. 2026.
+
 Anthropic. “Pricing.” *Claude Platform Docs*, https://platform.claude.com/docs/en/about-claude/pricing. Accessed 24 Sept. 2026.
+
+Artificial Analysis. “Artificial Analysis Benchmarking Methodology.” *Artificial Analysis*, https://artificialanalysis.ai/methodology. Accessed 24 Sept. 2026.
+
+Artificial Analysis. “Data API Documentation.” *Artificial Analysis*, https://artificialanalysis.ai/data-api/docs. Accessed 24 Sept. 2026.
+
+Arena Team. “Arena-Rank: Open Sourcing the Leaderboard Methodology.” *Arena.ai*, 18 Dec. 2025, https://arena.ai/blog/arena-rank. Accessed 24 Sept. 2026.
+
+Arena. “Text Arena English Leaderboard.” *Arena.ai*, https://arena.ai/leaderboard/text/english. Accessed 24 Sept. 2026.
+
+OpenAI. “Models.” *OpenAI API Documentation*, https://developers.openai.com/api/docs/models. Accessed 24 Sept. 2026.
+
+Google. “What’s New in Gemini 3.8 Flash.” *Google AI for Developers*, https://ai.google.dev/gemini-api/docs/latest-model. Accessed 24 Sept. 2026.
