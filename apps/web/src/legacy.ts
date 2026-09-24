@@ -26,22 +26,26 @@ function supplementOf(raw: LegacySavePayload): Record<string, unknown> | undefin
   return Object.keys(supplement).length ? supplement : undefined;
 }
 
-function payloadFromText(file: File, text: string): LegacySavePayload {
+type ParsedLegacyPayload = { payload: LegacySavePayload; sourceFormat: string; sourceVersion: number | null };
+
+function payloadFromText(file: File, text: string): ParsedLegacyPayload {
   let parsed: unknown;
   try { parsed = JSON.parse(text); } catch { parsed = undefined; }
   if (parsed !== undefined) {
     const result = LegacySaveFileSchema.safeParse(parsed);
     if (!result.success) throw new Error('JSON legacy save failed schema validation');
     const value = result.data as unknown as Record<string, unknown>;
-    return isRecord(value.save) ? value.save as LegacySavePayload : value as LegacySavePayload;
+    if (isRecord(value.save)) return { payload: value.save as LegacySavePayload, sourceFormat: 'JIUXIAO_SAVE', sourceVersion: typeof value.version === 'number' ? value.version : null };
+    return { payload: value as LegacySavePayload, sourceFormat: 'JIUXIAO_LEGACY_JSON', sourceVersion: null };
   }
   const plain = extractPlainText(text);
   if (!plain) throw new Error('Legacy file has no readable text');
-  return { name: file.name.replace(/\.(html?|txt)$/i, '') || '导入旧局', messages: [plain] };
+  return { payload: { name: file.name.replace(/\.(html?|txt)$/i, '') || '导入旧局', messages: [plain] }, sourceFormat: 'JIUXIAO_LEGACY_TEXT', sourceVersion: null };
 }
 
 export function parseLegacySave(file: File, text: string): LocalSave {
-  const raw = payloadFromText(file, text);
+  const parsed = payloadFromText(file, text);
+  const raw = parsed.payload;
   const now = new Date().toISOString();
   const character = isRecord(raw.character) ? raw.character : isRecord(raw.player) ? raw.player : {};
   const world = isRecord(raw.world) ? raw.world : {};
@@ -62,6 +66,8 @@ export function parseLegacySave(file: File, text: string): LocalSave {
     location,
     status: 'pending_rules',
     messages: Array.isArray(raw.messages) ? raw.messages : [],
+    ...(raw.pending === undefined ? {} : { pending: raw.pending }),
+    legacyArchive: { sourceFormat: parsed.sourceFormat, sourceVersion: parsed.sourceVersion, payload: raw as Record<string, unknown> },
   };
   const supplement = supplementOf(raw);
   if (supplement) save.legacySupplement = supplement;
