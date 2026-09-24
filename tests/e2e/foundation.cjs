@@ -33,7 +33,11 @@ async function ready(url) {
   const apiFile = join(root, 'apps/api/dist/index.js');
   const viteFile = join(webRoot, 'node_modules/vite/bin/vite.js');
   assert.ok(existsSync(apiFile) && existsSync(viteFile), 'Run pnpm build before test:e2e');
-  run(apiFile, [], root, { API_PORT: String(apiPort) });
+  // This API health smoke uses an intentionally unreachable database and does not require Docker.
+  run(apiFile, [], root, {
+    API_PORT: String(apiPort),
+    DATABASE_URL: 'postgresql://jiuxiao:unused@127.0.0.1:1/unused',
+  });
   run(viteFile, ['preview', '--host', '127.0.0.1', '--port', String(webPort), '--strictPort'], webRoot);
   const response = await ready(`http://127.0.0.1:${apiPort}/health`);
   assert.equal((await response.json()).saveSchemaVersion, 1);
@@ -115,12 +119,22 @@ async function ready(url) {
       await page.reload();
       const retainedLogs = await page.evaluate(() => JSON.parse(sessionStorage.getItem('jx10_ai_call_log_v1')));
       assert.deepEqual(retainedLogs.map(log => log.model), ['retained-model']);
-      assert.equal(await page.locator('.role-panel').first().locator('summary').innerText().then(text => text.includes('待配置')), true);
-      await page.getByRole('button', { name: '填入五席候选' }).nth(1).click();
+      assert.equal(await page.locator('.role-panel').first().locator(':scope > summary').innerText().then(text => text.includes('待配置')), true);
+      await page.locator('.provider-open').click();
+      assert.equal(await page.locator('.provider-card').count(), 25);
+      assert.ok((await page.locator('.provider-list').innerText()).includes('Anthropic'));
+      assert.ok((await page.locator('.provider-card').filter({ hasText: 'OpenAI API' }).innerText()).includes('$0.10（缓存 $0.01）'));
+      await page.getByRole('button', { name: '关闭窗口' }).click();
+      await page.getByRole('button', { name: '查看配置与成本' }).nth(1).click();
+      assert.equal(await page.locator('.glass-dialog h2').innerText(), '行云 · 均衡');
+      assert.ok((await page.locator('.preset-role-map').innerText()).includes('deepseek-v4-pro'));
+      assert.ok((await page.locator('.estimate-totals').innerText()).includes('/ 周'));
+      await page.getByRole('button', { name: '应用并启用此档' }).click();
       const storyPanel = page.locator('.role-panel').first();
-      await storyPanel.locator('summary').click();
-      assert.equal(await storyPanel.locator('input').nth(1).inputValue(), 'doubao-seed-2-1-pro-260915');
-      assert.equal(await storyPanel.locator('input').nth(2).inputValue(), 'https://ark.cn-beijing.volces.com/api/v3');
+      await storyPanel.locator(':scope > summary').click();
+      assert.equal(await storyPanel.locator('input').nth(1).inputValue(), 'deepseek-v4-pro');
+      assert.equal(await storyPanel.locator('input').nth(2).inputValue(), 'https://api.deepseek.com');
+      assert.ok((await page.locator('.active-recipe').innerText()).includes('请自行填入各岗位 API Key'));
       await storyPanel.locator('input[type="password"]').fill('test-secret-not-persisted');
       await page.getByRole('button', { name: '保存配置' }).click();
       const savedConfig = await page.evaluate(() => JSON.parse(sessionStorage.getItem('jx10_ai_config_v2')));
