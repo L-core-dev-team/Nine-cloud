@@ -30,7 +30,7 @@ const material = [
   '# 《九霄》世界书作者侧交接与自检（候选，不是发布签字）', '',
   '## 结论与边界', '',
   `旧 182 条清单已逐项形成去向：179 项映射到现存原图、3 项按已有用户记录排除。179 对原图/TXT 均存在，修订候选稿引用覆盖 179/179；相关补图 24/24 已进入正文或异文说明。${audit.summary.duplicateImageAliasesReconciled} 个 UUID 差异由旧 OCR 的 duplicates 表核对。`,
-  `已记录至少局部视觉复核 ${visual.size}/179。其余图虽有逐图文字和拼接记录，不能据此声称已逐字原图终审。候选条目 ${registry.entries.length} 条中 ${registry.entries.filter(entry => entry.status === 'pending_review').length} 条 pending_review、${registry.entries.filter(entry => entry.status === 'conflict').length} 条 conflict、0 条 confirmed；未覆盖既有 7 条已发布地理 Canon，也未写入游戏。`,
+  `已记录至少局部视觉复核 ${visual.size}/179。其余图虽有逐图文字和拼接记录，不能据此声称已逐字原图终审。候选条目 ${registry.entries.length} 条中 ${registry.entries.filter(entry => entry.status === 'pending_review').length} 条 pending_review、${registry.entries.filter(entry => entry.status === 'conflict').length} 条 conflict、0 条 confirmed；未覆盖另一工作区现有的 7 条地理 Canon 草案，也未写入游戏。`,
   `当前候选稿仍标有疑似缺失 ${audit.summary.suspectedGapMarkers} 处、待确认 ${audit.summary.uncertaintyMarkers} 处、看不清 ${audit.summary.unreadableMarkers} 处。计数包含说明及跨页标记，不代表各有一项独立事实。`, '',
   `自动文字片段复查：179份逐图文字的8字片段匹配率均高于50%；${textCoverage.results.filter(item => item.coverage >= .8).length}/179达到80%。原052（异文并录）与原094（表格OCR断列）低于80%，已定点核查；此算法不能替代原图逐字对读。`, '',
   '## 本轮确定修复', '',
