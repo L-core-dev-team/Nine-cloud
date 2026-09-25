@@ -80,6 +80,9 @@ const decisions = [
   { id: 'author_20260925_015', subject: '万兽山庄与偃师府风气段归属',
     resolution: '原114/112之间与原105/104之间各缺风气小标题，正式版以描述性“门内风气”分出原图可辨正文，不再误挂“弟子等级”；句首缺口仍用省略号提示。偃师府《千机百变诀》两张滚动截图重复开头只保留完整的一版。',
     sourceRefs: ['original_114', 'original_112', 'original_105', 'original_104', 'original_109', 'original_108'], confidence: 'high', newCoreFact: false },
+  { id: 'author_20260925_016', subject: '三处跨图孤字残句',
+    resolution: '玉清阁原013/014之间的“和力。”、四海商会原059/058之间的“量。”、稷下学宫原032/031之间的“非。”均缺可确认的前文或归属；这些孤字残句仅保存在私有缺口记录，不拼接成玩家可见的断裂句。其后有明确内容的条目原文照留。',
+    sourceRefs: ['original_013', 'original_014', 'original_059', 'original_058', 'original_032', 'original_031'], confidence: 'high', newCoreFact: false },
 ];
 const reviewQueue = [
   { id: 'gap_economy_chapter', status: 'pending_review', sourceId: 'original_085',

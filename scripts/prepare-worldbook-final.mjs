@@ -117,6 +117,19 @@ for (const entry of input.entries) {
     sections.splice(disciplesIndex + 1, 0, { title: '组织架构', content: organizationText });
     dropped.push({ entryId: entry.id, reason: 'orphan_fragment_unattributed', text: '宗门最高权力中心。' });
   }
+  for (const [id, title, fragment, replacement] of [
+    ['faction_yuqing_ge', '核心总纲', '\n…和力。\n', '\n'],
+    ['faction_sihai_shanghui', '组织架构', '\n量。成员', '\n成员'],
+    ['faction_jixia_xuegong', '组织架构', '\n非。\n', '\n'],
+  ]) {
+    if (entry.id !== id) continue;
+    const section = sections.find(item => item.title === title);
+    if (!section || !section.content.includes(fragment)) {
+      throw new Error(`The cropped orphan fragment changed: ${id}`);
+    }
+    section.content = section.content.replace(fragment, replacement);
+    dropped.push({ entryId: id, reason: 'orphan_fragment_unattributed', text: fragment.trim() });
+  }
   if (entry.id === 'faction_bingshen_gong') {
     const structureIndex = sections.findIndex(item => item.title === '内部结构');
     const structure = sections[structureIndex];

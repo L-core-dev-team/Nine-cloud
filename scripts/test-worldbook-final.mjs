@@ -73,6 +73,9 @@ assert.ok(!wudu.content.includes('…策》'));
 assert.ok(!wudu.content.includes('将……\n蟾'));
 assert.ok(!wudu.content.includes('只要你有则。门规只有一条'));
 assert.ok(!registry.entries.find(entry => entry.id === 'system_technique_grade').content.includes('乃至…\n毁天灭地之威'));
+assert.ok(!text.includes('\n…和力。\n'));
+assert.ok(!text.includes('\n量。成员'));
+assert.ok(!text.includes('\n非。\n'));
 const realms = registry.entries.find(entry => entry.id === 'system_cultivation_realm');
 assert.deepEqual(realms.sections.map(section => section.title),
   ['炼体期', '炼气期', '筑基期', '结丹期', '元婴期', '合体期', '化神期', '大乘期', '渡劫期']);
