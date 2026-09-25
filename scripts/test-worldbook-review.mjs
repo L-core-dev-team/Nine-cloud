@@ -6,10 +6,10 @@ const [reviewArgument] = process.argv.slice(2);
 if (!reviewArgument) throw new Error('Usage: node scripts/test-worldbook-review.mjs <private-review-dir>');
 const reviewDir = resolve(reviewArgument);
 const readJson = name => readFile(join(reviewDir, name), 'utf8').then(JSON.parse);
-const [audit, ledger, registry, sources, conflicts, decisions, candidate] = await Promise.all([
+const [audit, ledger, registry, sources, conflicts, decisions, textCoverage, candidate] = await Promise.all([
   readJson('source-audit.json'), readJson('legacy-182-review-ledger.json'),
   readJson('canon-review-registry.json'), readJson('source-registry.json'),
-  readJson('canon-conflicts.json'), readJson('author-decisions.json'),
+  readJson('canon-conflicts.json'), readJson('author-decisions.json'), readJson('text-coverage.json'),
   readFile(join(reviewDir, '世界书_拼接修订候选.md'), 'utf8'),
 ]);
 assert.deepEqual(audit.summary.issues, []);
@@ -36,5 +36,8 @@ for (const entry of registry.entries) for (const ref of entry.sourceRefs) assert
 assert.equal(conflicts.conflicts.length, 2);
 assert.equal(decisions.decisions.length, 10);
 assert.ok(registry.entries.some(entry => entry.sourceRefs.includes('review_decision_001')));
+assert.equal(textCoverage.results.length, 179);
+assert.ok(textCoverage.results.every(item => item.coverage >= .5));
+assert.equal(textCoverage.results.find(item => item.number === '120').coverage, 1);
 assert.ok(!JSON.stringify(registry).includes('C:/Users/'));
 console.log('Worldbook author-side coverage, status and isolation checks passed.');
