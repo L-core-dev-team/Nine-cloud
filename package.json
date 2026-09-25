@@ -7,12 +7,14 @@
   "scripts": {
     "dev:web": "pnpm --filter @jiuxiao/contracts build && pnpm --filter @jiuxiao/web dev",
     "dev:api": "pnpm --filter @jiuxiao/contracts build && pnpm --filter @jiuxiao/api dev",
-    "typecheck": "pnpm --filter @jiuxiao/contracts build && pnpm -r typecheck",
+    "typecheck": "pnpm --filter @jiuxiao/contracts build && pnpm --filter @jiuxiao/content build && pnpm -r typecheck",
     "test": "node work/core-regression.cjs && pnpm -r test",
-    "build": "pnpm -r build && node scripts/build/write-manifest.mjs --stage S2",
+    "build": "pnpm -r build && node scripts/build/write-manifest.mjs --stage S4",
     "test:integration": "pnpm --filter @jiuxiao/api test:integration",
     "test:e2e": "node tests/e2e/foundation.cjs",
-    "license:check": "node scripts/audit/license-check.mjs"
+    "license:check": "node scripts/audit/license-check.mjs",
+    "worldbook:index:write": "node scripts/audit/build-worldbook-draft-index.mjs --write",
+    "worldbook:index:check": "node scripts/audit/build-worldbook-draft-index.mjs --check"
   },
   "devDependencies": {
     "@types/node": "24.13.6",

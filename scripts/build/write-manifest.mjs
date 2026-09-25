@@ -10,6 +10,10 @@ if (!stage || !/^(S[0-8]|unclassified)$/.test(stage)) throw new Error('Expected 
 const commit = process.env.GIT_COMMIT_SHA || execFileSync('git', ['rev-parse', 'HEAD'],
   { cwd: root, encoding: 'utf8' }).trim();
 if (!/^[0-9a-f]{40}$/.test(commit)) throw new Error('Expected a full Git commit SHA');
+const gitStatus = execFileSync('git', ['status', '--porcelain=v1', '--untracked-files=all'],
+  { cwd: root, encoding: 'utf8' }).trim();
+const dirtyPathCount = gitStatus ? gitStatus.split(/\r?\n/).filter(Boolean).length : 0;
+const sourceTree = dirtyPathCount === 0 ? 'clean' : 'dirty';
 
 cpSync(resolve(root, 'packages/db/drizzle'), resolve(root, 'packages/db/dist/drizzle'),
   { recursive: true, force: true });
@@ -22,6 +26,6 @@ for (const [kind, target] of [
   const path = resolve(root, target);
   mkdirSync(resolve(path, '..'), { recursive: true });
   writeFileSync(path, `${JSON.stringify({ product: 'jiuxiao', stage, kind,
-    commit, saveSchemaVersion: 1 }, null, 2)}\n`);
+    commit, sourceTree, dirtyPathCount, saveSchemaVersion: 1 }, null, 2)}\n`);
 }
-console.log(`Built web, API and schema from ${commit}`);
+console.log(`Built web, API and schema at ${commit} (${sourceTree} worktree; ${dirtyPathCount} changed paths)`);

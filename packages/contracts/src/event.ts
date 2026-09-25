@@ -13,4 +13,6 @@ export const DomainEventSchema = z.strictObject({
 }).refine(event => event.afterRevision > event.beforeRevision,
   { message: 'Event revision must advance' });
 
+// All events emitted by one accepted turn share the same before/after pair.
+// The batch is applied atomically and advances the save by exactly one revision.
 export type DomainEvent = z.infer<typeof DomainEventSchema>;

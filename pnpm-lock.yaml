@@ -45,6 +45,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@jiuxiao/content':
+        specifier: workspace:*
+        version: link:../../packages/content
       '@jiuxiao/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
@@ -67,6 +70,12 @@ importers:
       vite:
         specifier: 8.3.0
         version: 8.3.0(@types/node@24.13.6)(esbuild@0.28.2)(tsx@4.23.15)
+
+  packages/content:
+    devDependencies:
+      '@types/node':
+        specifier: 24.13.6
+        version: 24.13.6
 
   packages/contracts:
     dependencies:

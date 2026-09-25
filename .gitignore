@@ -16,6 +16,7 @@ outputs/九霄WEB-1.0/世界书截图/
 **/dist/
 **/.vite/
 **/coverage/
+**/*.tsbuildinfo
 playwright-report/
 test-results/
 .env

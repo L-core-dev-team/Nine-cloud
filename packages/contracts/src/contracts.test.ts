@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ActionIntentSchema, DomainEventSchema, LegacySaveFileSchema, SaveEnvelopeSchema } from './index.js';
+import { ActionIntentSchema, DomainEventSchema, LegacySaveFileSchema, SaveEnvelopeSchema, TurnReceiptSchema } from './index.js';
 
 describe('shared wire contracts', () => {
   it('rejects a stale or malformed action before settlement', () => {
@@ -35,5 +35,18 @@ describe('shared wire contracts', () => {
     expect(LegacySaveFileSchema.safeParse({}).success).toBe(false);
     expect(LegacySaveFileSchema.safeParse({ arbitrary: 'not a save' }).success).toBe(false);
     expect(LegacySaveFileSchema.safeParse([]).success).toBe(false);
+  });
+
+  it('validates compact turn receipts without storing raw player input', () => {
+    const event = { id: '11111111-1111-4111-8111-111111111111', saveId: 'save-1',
+      type: 'PLAYER_MOVED', beforeRevision: 0, afterRevision: 1,
+      occurredAt: '2026-09-23T00:00:00.000Z', source: 'RULES', ruleVersion: 'rules-1', payload: {} };
+    const receipt = { idempotencyKey: '2fa2ebad-1065-4ef4-9a9b-51407a998ad5', saveId: 'save-1',
+      requestFingerprint: `sha256:v1:${'a'.repeat(64)}`,
+      decision: { status: 'accepted', nextRevision: 1, events: [event] }, resultingRevision: 1 };
+    expect(TurnReceiptSchema.safeParse(receipt).success).toBe(true);
+    expect(TurnReceiptSchema.safeParse({ ...receipt, rawInput: 'player text' }).success).toBe(false);
+    expect(TurnReceiptSchema.safeParse({ ...receipt, decision: { ...receipt.decision,
+      events: [event, event] } }).success).toBe(false);
   });
 });
