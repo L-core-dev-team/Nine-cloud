@@ -79,8 +79,8 @@ for (let index = 0; index < headings.length; index++) {
   const entryId = ids.get(heading.title);
   const decisionRefs = authorDecisions.filter(decision => decision.entryIds.includes(entryId)).map(decision => decision.id);
   entries.push({ id: entryId, title: heading.title,
-    category: heading.level === 1 ? (heading.title === '九霄大陆地图' ? 'world_overview' : heading.title === '通用设定部分' ? 'system_group' : 'region')
-      : heading.title.includes('宗') || heading.title.includes('阁') || heading.title.includes('宫') || heading.title.includes('府') || heading.title.includes('寺') || heading.title.includes('商会') || heading.title.includes('学宫') || heading.title.includes('联盟') || heading.title.includes('山庄') || heading.title.includes('神教') || heading.title.includes('谷') ? 'faction' : 'system',
+    category: entryId.startsWith('world_') ? 'world_overview' : entryId.startsWith('region_') ? 'region' :
+      entryId === 'system_general' ? 'system_group' : entryId.startsWith('faction_') ? 'faction' : 'system',
     parentId: heading.level === 1 ? null : parentId,
     status: conflicts[entryId] ? 'conflict' : 'pending_review', canonVersion: null, aliases: [], tags: [],
     conflictIds: conflicts[entryId] ?? [],
