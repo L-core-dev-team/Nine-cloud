@@ -88,6 +88,12 @@ for (const entry of input.entries) {
     for (const item of sections) item.content = item.content
       .replace('共分为四大基础品阶：凡、黄、玄、地、天', '分为凡、黄、玄、地、天五阶')
       .replaceAll('拜火圣教', '圣火教');
+    const heaven = sections.find(item => item.title === '天阶功法');
+    const overlap = '这是通往合体境乃至…\n毁天灭地之威。这是通往合体境乃至更高境界的唯一钥匙。';
+    if (!heaven || !heaven.content.includes(overlap)) {
+      throw new Error('The overlapping 天阶功法 crops changed; review originals 091/092');
+    }
+    heaven.content = heaven.content.replace(overlap, '这是通往合体境乃至更高境界的唯一钥匙。');
   }
   if (entry.id === 'system_cultivation_realm') {
     const jiedan = sections.find(item => item.title === '结丹期');
@@ -98,6 +104,31 @@ for (const entry of input.entries) {
     // 原077页顶只露出“态灵力”，旧转写却补成筑基期的气态→液态
     // 过程；结丹期可确认的突破段写液态→固态，此处不猜被裁文字。
     jiedan.content = jiedan.content.replace(overreached, '…通过九死一生的过程');
+  }
+  if (entry.id === 'faction_haotian_jianzong') {
+    const disciplesIndex = sections.findIndex(item => item.title === '弟子等级');
+    const disciples = sections[disciplesIndex];
+    const orphan = '\n宗门最高权力中心。\n';
+    if (disciplesIndex < 0 || !disciples.content.includes(orphan)) {
+      throw new Error('The cropped Haotian organization boundary changed');
+    }
+    const [discipleText, organizationText] = disciples.content.split(orphan);
+    disciples.content = discipleText;
+    sections.splice(disciplesIndex + 1, 0, { title: '组织架构', content: organizationText });
+    dropped.push({ entryId: entry.id, reason: 'orphan_fragment_unattributed', text: '宗门最高权力中心。' });
+  }
+  if (entry.id === 'faction_bingshen_gong') {
+    const structureIndex = sections.findIndex(item => item.title === '内部结构');
+    const structure = sections[structureIndex];
+    const atmosphereBreak = '\n北境之雪，清冷而孤傲。';
+    if (structureIndex < 0 || !structure.content.includes(atmosphereBreak)) {
+      throw new Error('The cropped Bingshen atmosphere boundary changed');
+    }
+    const [structureText, atmosphereText] = structure.content.split(atmosphereBreak);
+    structure.content = structureText;
+    sections.splice(structureIndex + 1, 0, {
+      title: '门内风气', content: `…北境之雪，清冷而孤傲。${atmosphereText}`,
+    });
   }
   if (entry.id === 'faction_wudu_shenjiao') {
     // The numbered crops lose two headings, but the older full screenshots

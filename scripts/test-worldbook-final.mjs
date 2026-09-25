@@ -47,6 +47,12 @@ assert.ok(tiangong.sections.find(section => section.title === '三大流派分�
 assert.ok(!tiangong.content.includes('技术挑战。这里是天工阁保持活力的心脏。'));
 assert.ok(registry.entries.find(entry => entry.id === 'faction_jingang_buhai_gu').sections.some(section => section.title === '山门场所'));
 assert.ok(!text.includes('地点类条目小节'));
+const haotian = registry.entries.find(entry => entry.id === 'faction_haotian_jianzong');
+assert.ok(haotian.sections.some(section => section.title === '组织架构' && section.content.includes('传功阁')));
+assert.ok(!haotian.content.includes('宗门最高权力中心。'));
+const bingshen = registry.entries.find(entry => entry.id === 'faction_bingshen_gong');
+assert.ok(bingshen.sections.some(section => section.title === '门内风气' && section.content.includes('天赋至上')));
+assert.ok(!bingshen.sections.find(section => section.title === '内部结构').content.includes('天赋至上'));
 const wudu = registry.entries.find(entry => entry.id === 'faction_wudu_shenjiao');
 assert.ok(wudu.sections.some(section => section.title === '地龙脉 - 《地龙腐骨功》' && section.content.includes('诅咒与瘟疫')));
 assert.ok(wudu.sections.some(section => section.title === '蛛神脉 - 《蛛神罗网策》' && section.content.includes('陷阱与幻毒')));
@@ -55,6 +61,7 @@ assert.ok(!wudu.content.includes('\n功》\n'));
 assert.ok(!wudu.content.includes('…策》'));
 assert.ok(!wudu.content.includes('将……\n蟾'));
 assert.ok(!wudu.content.includes('只要你有则。门规只有一条'));
+assert.ok(!registry.entries.find(entry => entry.id === 'system_technique_grade').content.includes('乃至…\n毁天灭地之威'));
 const realms = registry.entries.find(entry => entry.id === 'system_cultivation_realm');
 assert.deepEqual(realms.sections.map(section => section.title),
   ['炼体期', '炼气期', '筑基期', '结丹期', '元婴期', '合体期', '化神期', '大乘期', '渡劫期']);

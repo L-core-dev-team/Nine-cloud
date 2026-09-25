@@ -74,6 +74,9 @@ const decisions = [
   { id: 'author_20260925_013', subject: '五毒神教两处跨图功法名',
     resolution: '编号原图129和128的页底、页首只各显示半个条目；另存的旧设定截图26d2f418-e4b9-4fed-9082-7461613fafaf与529d0232-d8ab-4930-9268-a2e5b250d368直接显示完整名称“地龙脉 - 《地龙腐骨功》”和“蛛神脉 - 《蛛神罗网策》”。据两张旧截图恢复分支标题，并将误并入相邻分支的正文归回原分支；百足脉可见的“将子蛊植入他人体内，从”也照录，后续仍标缺口。原126/127的金蟾脉和原123/122的门规滚动重叠各只保留一遍。',
     sourceRefs: ['original_129', 'original_128', 'original_127', 'original_126', 'original_123', 'original_122'], confidence: 'high', newCoreFact: false },
+  { id: 'author_20260925_014', subject: '三处章节跨图归属与重叠',
+    resolution: '原091/092的天阶功法末句是滚动重叠，正式版只保留完整句一次。昊天剑宗原009/010之间缺失的机构名称不可辨，“宗门最高权力中心”残句不发布；可辨的传功阁等机构另列于描述性“组织架构”。冰神宫原144/143之间缺失风气段句首，原143可辨的风气正文另列于描述性“门内风气”，以省略号提示句首缺口。',
+    sourceRefs: ['original_091', 'original_092', 'original_009', 'original_010', 'original_144', 'original_143'], confidence: 'high', newCoreFact: false },
 ];
 const reviewQueue = [
   { id: 'gap_economy_chapter', status: 'pending_review', sourceId: 'original_085',
