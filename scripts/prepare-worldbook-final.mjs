@@ -5,11 +5,23 @@ const [reviewArgument] = process.argv.slice(2);
 if (!reviewArgument) throw new Error('Usage: node scripts/prepare-worldbook-final.mjs <private-review-dir>');
 const reviewDir = resolve(reviewArgument);
 const input = JSON.parse(await readFile(join(reviewDir, 'canon-review-registry.json'), 'utf8'));
+// The two foundation pages precede the named cultivation chapters in the source
+// manuscript. They have no reliable original section title, but contain rules
+// that must not disappear merely because the outline heading was cropped.
+const manuscript = await readFile(join(reviewDir, '世界书_拼接修订候选.md'), 'utf8');
+const foundationStart = manuscript.indexOf('## 【待归属】修仙基础引言（标题缺失）');
+const foundationEnd = manuscript.indexOf('## 常见修炼流派', foundationStart);
+if (foundationStart < 0 || foundationEnd < 0) throw new Error('Original 060/061 foundation section was not found');
+input.entries.push({
+  id: 'system_foundations', title: '修仙基础', category: 'cultivation_system',
+  sourceRefs: ['original_060', 'original_061'], sortOrder: 235,
+  contentDraft: manuscript.slice(foundationStart + '## 【待归属】修仙基础引言（标题缺失）'.length, foundationEnd),
+});
 const excludedEntryIds = new Set(['system_general', 'system_economy']);
-const reasonFor = line => /⟦/.test(line) ? 'source_gap_or_uncertainty' :
-  /\[看不清/.test(line) ? 'unreadable_in_source' :
-  /^\s*[（(]/.test(line) ? 'editorial_note' :
-  /^\s*>/.test(line) ? 'review_preface' : null;
+const reasonFor = line => /^\s*[（(]/.test(line) ? 'editorial_note' :
+  /^\s*>/.test(line) ? 'review_preface' :
+  /⟦/.test(line) ? 'source_gap_or_uncertainty' :
+  /\[看不清/.test(line) ? 'unreadable_in_source' : null;
 const sourceLine = line => /^\s*【来源：/.test(line);
 const cleanInlineSource = line => line.replace(/【来源：[^】]+】.*$/, '')
   .replace(/（(?:\d{3}|补\d{3})[^）]*）/g, '').trimEnd();
@@ -34,7 +46,7 @@ for (const entry of input.entries) {
     if (heading) {
       if (reasonFor(line)) { dropped.push({ entryId: entry.id, reason: 'unreadable_heading', text: line }); continue; }
       flush();
-      section = { title: heading[1].trim(), content: '' };
+      section = { title: heading[1].includes('小节标题缺失') ? '邪修势力' : heading[1].trim(), content: '' };
       forceBreak = false;
       continue;
     }
@@ -73,13 +85,13 @@ for (const entry of input.entries) {
   }
   const content = sections.map(item => item.title === '概述' ? item.content : `${item.title}\n${item.content}`).join('\n\n');
   entries.push({ id: entry.id, title: entry.title, category: entry.category,
-    ...(entry.parentId ? { parentId: entry.parentId } : {}),
+    ...(entry.parentId && !excludedEntryIds.has(entry.parentId) ? { parentId: entry.parentId } : {}),
     status: 'confirmed', canonVersion: '1.0', content, sections,
     aliases: entry.id === 'world_jiuxiao' ? ['九霄大陆'] :
       entry.id === 'region_honghuang_yaolin' ? ['洪荒妖林', '妖之领域'] :
       entry.id === 'faction_shenghuo_jiao' ? ['拜火圣教'] : [],
     tags: [entry.title, entry.category], sourceRefs: entry.sourceRefs,
-    publicSourceNote: '依据《九霄》原设截图、逐图文字及作者授权裁定整理；省略号表示原图截断或无法辨认的文字，不构成额外规则。',
+    publicSourceNote: '依据《九霄》原设截图、逐图文字及作者授权裁定整理；省略号表示原图截断或无法辨认的文字，不构成额外规则；描述性小标题不代表原图标题。',
     updatedAt: '2026-09-25', sortOrder: entry.sortOrder });
 }
 const joined = entries.map(entry => entry.content).join('\n');
