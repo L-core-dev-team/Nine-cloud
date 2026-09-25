@@ -258,6 +258,7 @@ async function ready(url) {
       await page.getByRole('button', { name: 'Anthropic · Claude API' }).click();
       assert.equal(await page.locator('.dialog-heading h2').innerText(), 'Anthropic · Claude API');
       assert.ok((await page.locator('.provider-detail-body').innerText()).includes('官方型号与价格'));
+      await page.waitForFunction(() => document.querySelector('.provider-detail-body')?.textContent?.includes('anthropic/claude-sonnet-5'), null, { timeout: 10000 });
       assert.ok((await page.locator('.provider-detail-body').innerText()).includes('anthropic/claude-sonnet-5'));
       assert.ok((await page.locator('.provider-detail-body').innerText()).includes('OpenRouter 托管目录'));
       await page.locator('.back-link').click();

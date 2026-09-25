@@ -285,7 +285,7 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
   }, [modal]);
 
   useEffect(() => {
-    if (modal?.kind !== 'catalog' || !['provider', 'comparison'].includes(modal.view)) return;
+    if (modal?.kind !== 'catalog') return;
     const controller = new AbortController();
     setInventoryLoading(true); setInventoryError(''); setRouterModels([]);
     fetch('https://openrouter.ai/api/v1/models?output_modalities=text', { signal: controller.signal })
@@ -294,7 +294,7 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
       .catch(reason => { if (!controller.signal.aborted) setInventoryError(reason instanceof Error ? reason.message : '无法读取公开型号目录。'); })
       .finally(() => { if (!controller.signal.aborted) setInventoryLoading(false); });
     return () => controller.abort();
-  }, [modal?.kind, modal?.kind === 'catalog' ? modal.view : '', modal?.kind === 'catalog' ? modal.providerId : '']);
+  }, [modal?.kind]);
   const migrationPossible = useMemo(() => {
     try { return Boolean(sessionStorage.getItem(LEGACY_MULTI_KEY) || sessionStorage.getItem(LEGACY_SINGLE_KEY)); } catch { return false; }
   }, []);
