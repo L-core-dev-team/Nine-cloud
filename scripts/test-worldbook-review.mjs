@@ -24,9 +24,9 @@ assert.deepEqual(ledger.records.map(item => item.legacy182Number), Array.from({ 
 assert.equal(ledger.records.filter(item => item.disposition === 'user_excluded').length, 3);
 assert.equal(ledger.records.filter(item => item.authorFinalApproval).length, 0);
 assert.ok(candidate.includes('##### ▪ 《万兽洪荒经》 - 天阶中品'));
-assert.ok(candidate.includes('【来源：120】'));
-assert.ok(candidate.indexOf('【来源：119】') < candidate.indexOf('【来源：120】'));
-assert.ok(candidate.indexOf('【来源：120】') < candidate.indexOf('【来源：118】'));
+assert.ok(candidate.includes('【来源：120→118】'));
+assert.ok(candidate.indexOf('【来源：119】') < candidate.indexOf('【来源：120→118】'));
+assert.ok(candidate.includes('上古血脉之力融入己身'));
 assert.equal(new Set(registry.entries.map(entry => entry.id)).size, registry.entries.length);
 assert.equal(registry.entries.filter(entry => entry.status === 'confirmed').length, 0);
 assert.equal(registry.entries.filter(entry => entry.status === 'conflict').length, 2);
