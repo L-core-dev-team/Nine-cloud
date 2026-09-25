@@ -71,6 +71,9 @@ const decisions = [
   { id: 'author_20260925_012', subject: '结丹期页顶旧转写越界',
     resolution: '原077图像顶部仅见被裁断的“态灵力”，无法确认旧转写额外写出的“将气态灵力压缩为液态灵力”。正式版删去这段未证实前缀，保留可见的凝丹描述；同章突破方式仍依原078记载液态灵力凝结固态金丹。',
     sourceRefs: ['original_077', 'original_078', 'original_076'], confidence: 'high', newCoreFact: false },
+  { id: 'author_20260925_013', subject: '五毒神教两处跨图功法名',
+    resolution: '编号原图129和128的页底、页首只各显示半个条目；另存的旧设定截图26d2f418-e4b9-4fed-9082-7461613fafaf与529d0232-d8ab-4930-9268-a2e5b250d368直接显示完整名称“地龙脉 - 《地龙腐骨功》”和“蛛神脉 - 《蛛神罗网策》”。据两张旧截图恢复分支标题，并将误并入相邻分支的正文归回原分支。原126/127的金蟾脉和原123/122的门规滚动重叠各只保留一遍。',
+    sourceRefs: ['original_129', 'original_128', 'original_127', 'original_126', 'original_123', 'original_122'], confidence: 'high', newCoreFact: false },
 ];
 const reviewQueue = [
   { id: 'gap_economy_chapter', status: 'pending_review', sourceId: 'original_085',
@@ -79,8 +82,6 @@ const reviewQueue = [
     subject: '玉清阁地阶功法全名', reason: '原图上缘裁断《万…丹王》中的字，不能据风格猜定专名。' },
   { id: 'gap_beijing_technique_name', status: 'pending_review', sourceId: 'original_139',
     subject: '北境联盟幽影部功法全名', reason: '《冰原潜行…》末尾未入镜。' },
-  { id: 'gap_wudu_technique_name', status: 'pending_review', sourceId: 'original_129',
-    subject: '五毒神教地龙脉功法全名', reason: '《地龙腐骨…》末尾未入镜。' },
   { id: 'gap_sihai_missing_page', status: 'pending_review', sourceId: 'original_059',
     subject: '四海商会客卿院等缺页', reason: '两张相邻图之间缺一页，机构正文无法据现有图恢复。' },
   { id: 'gap_tiangong_missing_page', status: 'pending_review', sourceId: 'original_051',

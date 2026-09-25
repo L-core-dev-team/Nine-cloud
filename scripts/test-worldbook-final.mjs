@@ -22,7 +22,7 @@ assert.equal(entryIds.size, registry.entries.length);
 assert.equal(sourceIds.size, registry.sourceRegistry.length);
 assert.equal(registry.sourceRegistry.filter(source => source.id.startsWith('original_') && source.imageReviewMethod).length, 179);
 assert.equal(registry.sourceRegistry.filter(source => source.id.startsWith('supplement_') && source.imageReviewMethod).length, 28);
-assert.equal(registry.reviewQueue.length, 8, 'source gaps that cannot be safely restored must remain explicit');
+assert.equal(registry.reviewQueue.length, 7, 'source gaps that cannot be safely restored must remain explicit');
 assert.ok(registry.reviewQueue.every(item => item.status === 'pending_review' && sourceIds.has(item.sourceId)));
 assert.ok(registry.entries.every(entry => entry.status === 'confirmed' &&
   entry.canonVersion === registry.activeVersion && entry.content.trim() &&
@@ -47,6 +47,13 @@ assert.ok(tiangong.sections.find(section => section.title === '三大流派分�
 assert.ok(!tiangong.content.includes('技术挑战。这里是天工阁保持活力的心脏。'));
 assert.ok(registry.entries.find(entry => entry.id === 'faction_jingang_buhai_gu').sections.some(section => section.title === '山门场所'));
 assert.ok(!text.includes('地点类条目小节'));
+const wudu = registry.entries.find(entry => entry.id === 'faction_wudu_shenjiao');
+assert.ok(wudu.sections.some(section => section.title === '地龙脉 - 《地龙腐骨功》' && section.content.includes('诅咒与瘟疫')));
+assert.ok(wudu.sections.some(section => section.title === '蛛神脉 - 《蛛神罗网策》' && section.content.includes('陷阱与幻毒')));
+assert.ok(!wudu.content.includes('\n功》\n'));
+assert.ok(!wudu.content.includes('…策》'));
+assert.ok(!wudu.content.includes('将……\n蟾'));
+assert.ok(!wudu.content.includes('只要你有则。门规只有一条'));
 const realms = registry.entries.find(entry => entry.id === 'system_cultivation_realm');
 assert.deepEqual(realms.sections.map(section => section.title),
   ['炼体期', '炼气期', '筑基期', '结丹期', '元婴期', '合体期', '化神期', '大乘期', '渡劫期']);

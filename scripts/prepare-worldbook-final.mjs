@@ -99,6 +99,46 @@ for (const entry of input.entries) {
     // 过程；结丹期可确认的突破段写液态→固态，此处不猜被裁文字。
     jiedan.content = jiedan.content.replace(overreached, '…通过九死一生的过程');
   }
+  if (entry.id === 'faction_wudu_shenjiao') {
+    // The numbered crops lose two headings, but the older full screenshots
+    // 26d2f418… and 529d0232… show both names and their continuation lines.
+    const scorpionIndex = sections.findIndex(item => item.title === '天蝎脉 - 《天蝎夺魂经》');
+    const scorpion = sections[scorpionIndex];
+    const dragonBreak = '\n功》\n';
+    if (scorpionIndex < 0 || !scorpion.content.includes(dragonBreak)) {
+      throw new Error('The cropped 地龙脉 continuation changed; review both images');
+    }
+    const [scorpionText, dragonText] = scorpion.content.split(dragonBreak);
+    scorpion.content = scorpionText;
+    sections.splice(scorpionIndex + 1, 0, {
+      title: '地龙脉 - 《地龙腐骨功》', content: dragonText,
+    });
+
+    const centipedeIndex = sections.findIndex(item => item.title === '百足脉 - 《百足控心诀》');
+    const centipede = sections[centipedeIndex];
+    const spiderBreak = '\n• 风格：陷阱与幻毒。';
+    if (centipedeIndex < 0 || !centipede.content.includes('…策》') || !centipede.content.includes(spiderBreak)) {
+      throw new Error('The cropped 蛛神脉 continuation changed; review both images');
+    }
+    const [centipedeText, spiderText] = centipede.content.split(spiderBreak);
+    centipede.content = centipedeText.replace('…策》', '…');
+    sections.splice(centipedeIndex + 1, 0, {
+      title: '蛛神脉 - 《蛛神罗网策》', content: `• 风格：陷阱与幻毒。${spiderText}`,
+    });
+
+    const toad = sections.find(item => item.title === '金蟾脉 - 《金蟾万毒体》');
+    const overlappingCrop = '将……\n蟾"，号称能吞食万毒。此脉弟子以身试毒，将肉身';
+    if (!toad || !toad.content.includes(overlappingCrop)) {
+      throw new Error('The overlapping 金蟾脉 crops changed; review originals 126/127');
+    }
+    toad.content = toad.content.replace(overlappingCrop, '将肉身');
+    const conduct = sections.find(item => item.title === '门内风气');
+    const overlappingRule = '门规只有一条：只要你有则。门规只有一条：只要你有能力';
+    if (!conduct || !conduct.content.includes(overlappingRule)) {
+      throw new Error('The overlapping 五毒神教门规 crops changed; review originals 123/122');
+    }
+    conduct.content = conduct.content.replace(overlappingRule, '门规只有一条：只要你有能力');
+  }
   if (entry.id === 'faction_tiangong_ge') {
     const branch = sections.find(item => item.title === '三大流派分支');
     if (!branch || !branch.content.includes('巨构院的杰作')) {
