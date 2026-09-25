@@ -50,6 +50,7 @@ assert.ok(!text.includes('地点类条目小节'));
 const wudu = registry.entries.find(entry => entry.id === 'faction_wudu_shenjiao');
 assert.ok(wudu.sections.some(section => section.title === '地龙脉 - 《地龙腐骨功》' && section.content.includes('诅咒与瘟疫')));
 assert.ok(wudu.sections.some(section => section.title === '蛛神脉 - 《蛛神罗网策》' && section.content.includes('陷阱与幻毒')));
+assert.ok(wudu.sections.some(section => section.title === '百足脉 - 《百足控心诀》' && section.content.includes('将子蛊植入他人体内，从…')));
 assert.ok(!wudu.content.includes('\n功》\n'));
 assert.ok(!wudu.content.includes('…策》'));
 assert.ok(!wudu.content.includes('将……\n蟾'));

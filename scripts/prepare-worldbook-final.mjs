@@ -121,7 +121,9 @@ for (const entry of input.entries) {
       throw new Error('The cropped 蛛神脉 continuation changed; review both images');
     }
     const [centipedeText, spiderText] = centipede.content.split(spiderBreak);
-    centipede.content = centipedeText.replace('…策》', '…');
+    // The same older screenshot shows the next complete clause, up to “从”.
+    // Keep the sentence open there; its continuation remains outside the frame.
+    centipede.content = centipedeText.replace('此脉弟子精通将…策》', '此脉弟子精通将子蛊植入他人体内，从…');
     sections.splice(centipedeIndex + 1, 0, {
       title: '蛛神脉 - 《蛛神罗网策》', content: `• 风格：陷阱与幻毒。${spiderText}`,
     });
