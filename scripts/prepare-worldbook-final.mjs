@@ -130,6 +130,29 @@ for (const entry of input.entries) {
       title: '门内风气', content: `…北境之雪，清冷而孤傲。${atmosphereText}`,
     });
   }
+  if (entry.id === 'faction_wanshou_shanzhuang' || entry.id === 'faction_yanshi_fu') {
+    const disciplesIndex = sections.findIndex(item => item.title === '弟子等级');
+    const disciples = sections[disciplesIndex];
+    const start = entry.id === 'faction_wanshou_shanzhuang'
+      ? '\n弟子与弟子之间，都以清晰的利益关系维系。'
+      : '\n极度崇尚理性，认为情感是干扰完美创造的杂念。';
+    if (disciplesIndex < 0 || !disciples.content.includes(start)) {
+      throw new Error(`The cropped atmosphere boundary changed: ${entry.id}`);
+    }
+    const [ranks, atmosphere] = disciples.content.split(start);
+    disciples.content = ranks;
+    sections.splice(disciplesIndex + 1, 0, {
+      title: '门内风气', content: `…${start.slice(1)}${atmosphere}`,
+    });
+  }
+  if (entry.id === 'faction_yanshi_fu') {
+    const ingenious = sections.find(item => item.title === '▪ 《千机百变诀》 - 地阶上品');
+    const repeatedOpening = '▪ 风格: 百巧机关。此流派追求极致的精巧与变化。他们创造的傀儡往往形态各异，小至可潜\n';
+    if (!ingenious || !ingenious.content.startsWith(repeatedOpening)) {
+      throw new Error('The overlapping 千机百变诀 crops changed');
+    }
+    ingenious.content = ingenious.content.slice(repeatedOpening.length);
+  }
   if (entry.id === 'faction_wudu_shenjiao') {
     // The numbered crops lose two headings, but the older full screenshots
     // 26d2f418… and 529d0232… show both names and their continuation lines.

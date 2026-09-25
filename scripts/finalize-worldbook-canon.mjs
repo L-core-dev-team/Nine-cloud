@@ -77,6 +77,9 @@ const decisions = [
   { id: 'author_20260925_014', subject: '三处章节跨图归属与重叠',
     resolution: '原091/092的天阶功法末句是滚动重叠，正式版只保留完整句一次。昊天剑宗原009/010之间缺失的机构名称不可辨，“宗门最高权力中心”残句不发布；可辨的传功阁等机构另列于描述性“组织架构”。冰神宫原144/143之间缺失风气段句首，原143可辨的风气正文另列于描述性“门内风气”，以省略号提示句首缺口。',
     sourceRefs: ['original_091', 'original_092', 'original_009', 'original_010', 'original_144', 'original_143'], confidence: 'high', newCoreFact: false },
+  { id: 'author_20260925_015', subject: '万兽山庄与偃师府风气段归属',
+    resolution: '原114/112之间与原105/104之间各缺风气小标题，正式版以描述性“门内风气”分出原图可辨正文，不再误挂“弟子等级”；句首缺口仍用省略号提示。偃师府《千机百变诀》两张滚动截图重复开头只保留完整的一版。',
+    sourceRefs: ['original_114', 'original_112', 'original_105', 'original_104', 'original_109', 'original_108'], confidence: 'high', newCoreFact: false },
 ];
 const reviewQueue = [
   { id: 'gap_economy_chapter', status: 'pending_review', sourceId: 'original_085',

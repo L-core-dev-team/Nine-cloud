@@ -53,6 +53,17 @@ assert.ok(!haotian.content.includes('宗门最高权力中心。'));
 const bingshen = registry.entries.find(entry => entry.id === 'faction_bingshen_gong');
 assert.ok(bingshen.sections.some(section => section.title === '门内风气' && section.content.includes('天赋至上')));
 assert.ok(!bingshen.sections.find(section => section.title === '内部结构').content.includes('天赋至上'));
+for (const [id, phrase] of [
+  ['faction_wanshou_shanzhuang', '开放的戒备'],
+  ['faction_yanshi_fu', '技艺至上，斗巧为荣'],
+]) {
+  const entry = registry.entries.find(item => item.id === id);
+  assert.ok(entry.sections.some(section => section.title === '门内风气' && section.content.includes(phrase)));
+  assert.ok(!entry.sections.find(section => section.title === '弟子等级').content.includes(phrase));
+}
+const ingenious = registry.entries.find(entry => entry.id === 'faction_yanshi_fu')
+  .sections.find(section => section.title === '▪ 《千机百变诀》 - 地阶上品').content;
+assert.equal((ingenious.match(/此流派追求极致的精巧与变化/g) || []).length, 1);
 const wudu = registry.entries.find(entry => entry.id === 'faction_wudu_shenjiao');
 assert.ok(wudu.sections.some(section => section.title === '地龙脉 - 《地龙腐骨功》' && section.content.includes('诅咒与瘟疫')));
 assert.ok(wudu.sections.some(section => section.title === '蛛神脉 - 《蛛神罗网策》' && section.content.includes('陷阱与幻毒')));
