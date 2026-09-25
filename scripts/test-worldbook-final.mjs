@@ -11,11 +11,16 @@ assert.equal(registry.activeVersion, '1.0');
 assert.equal(registry.reviewSummary.legacyRecordsReconciled, 182);
 assert.equal(registry.reviewSummary.originalImagesAndTranscriptionsPaired, 179);
 assert.equal(registry.reviewSummary.userExcludedLegacyRecords, 3);
+assert.equal(registry.reviewSummary.originalImagesIndependentlyOcrCrosschecked, 179);
+assert.equal(registry.reviewSummary.supplementImagesIndependentlyOcrCrosschecked, 28);
+assert.equal(registry.reviewSummary.imageByImageIndependentOcrCrosscheckComplete, true);
 assert.equal(registry.reviewSummary.imageByImageVisualVerificationComplete, false);
 assert.equal(registry.entries.length, 33);
 assert.equal(runtime.entries.length, registry.entries.length);
 assert.equal(entryIds.size, registry.entries.length);
 assert.equal(sourceIds.size, registry.sourceRegistry.length);
+assert.equal(registry.sourceRegistry.filter(source => source.id.startsWith('original_') && source.imageReviewMethod).length, 179);
+assert.equal(registry.sourceRegistry.filter(source => source.id.startsWith('supplement_') && source.imageReviewMethod).length, 28);
 assert.equal(registry.reviewQueue.length, 0, 'all legacy records have an author-side disposition');
 assert.ok(registry.entries.every(entry => entry.status === 'confirmed' &&
   entry.canonVersion === registry.activeVersion && entry.content.trim() &&
@@ -30,7 +35,9 @@ assert.deepEqual(runtime.entries.map(entry => entry.id), registry.entries.slice(
   .sort((a, b) => a.sortOrder - b.sortOrder).map(entry => entry.id));
 assert.ok(runtime.entries.every(entry => !('sourceRefs' in entry)));
 const text = runtime.entries.map(entry => entry.content).join('\n');
-for (const expected of ['万兽洪荒经', '圣火教', '资质决定论', '法器：各类修仙武器', '上古血脉之力融入己身']) {
+for (const expected of ['万兽洪荒经', '圣火教', '资质决定论', '法器：各类修仙武器',
+  '上古血脉之力融入己身', '海兽军团', '如同一支完整的交响乐团',
+  '引火锻体诀', '万卷阁', '玄阶上品', '三大院的执掌者']) {
   assert.ok(text.includes(expected), `missing key source content: ${expected}`);
 }
 assert.ok(!/⟦|【来源：|\[看不清|本章开头|小节标题缺失|C:[\\/]/.test(text));

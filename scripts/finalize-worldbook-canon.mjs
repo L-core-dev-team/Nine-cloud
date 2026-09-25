@@ -8,14 +8,24 @@ const readJson = async name => JSON.parse(await readFile(join(reviewDir, name), 
 const preview = await readJson('canon-final-preview.json');
 const sourceData = await readJson('source-registry.json');
 const ledger = await readJson('legacy-182-review-ledger.json');
+const imageReview = await readJson('image-by-image-review-20260925.json');
 const entries = preview.entries;
+const imageReviewBySource = new Map([
+  ...imageReview.originalImages, ...imageReview.supplementImages,
+].map(item => [item.sourceId, item]));
 const sourceRegistry = sourceData.sources.map(({ id, type, reviewStatus }) => ({
   id, type, ...(reviewStatus ? { reviewStatus } : {}),
+  ...(imageReviewBySource.has(id) ? { imageReviewMethod: imageReviewBySource.get(id).reviewMethod } : {}),
 }));
 const sourceIds = new Set(sourceRegistry.map(source => source.id));
 const originalRecords = ledger.records.filter(item => item.disposition !== 'user_excluded');
 if (ledger.records.length !== 182 || originalRecords.length !== 179 || entries.length !== 33) {
   throw new Error('Worldbook source coverage or entry count changed; audit before finalizing');
+}
+if (imageReview.legacyRecords.length !== 182 || imageReview.originalImages.length !== 179 ||
+  imageReview.supplementImages.length !== 28 || imageReviewBySource.size !== 207 ||
+  imageReview.originalImages.some(item => item.disposition !== 'no_substantive_transcription_mismatch_detected')) {
+  throw new Error('Image-by-image independent OCR review is incomplete');
 }
 for (const entry of entries) {
   if (entry.status !== 'confirmed' || !entry.content || !entry.sourceRefs.length ||
@@ -42,6 +52,15 @@ const decisions = [
   { id: 'author_20260925_006', subject: '原060/061缺标题的修仙基础段',
     resolution: '以描述性标题“修仙基础”单列，两页可辨正文照录；不推断被裁切的原始标题。',
     sourceRefs: ['original_060', 'original_061'], confidence: 'high', newCoreFact: false },
+  { id: 'author_20260925_007', subject: '原173→174功法引言',
+    resolution: '原173页末“如同”与原174页首“支完整”之间仅补语法必需的“一”。',
+    sourceRefs: ['original_173', 'original_174'], confidence: 'high', newCoreFact: false },
+  { id: 'author_20260925_008', subject: '原165→164驾驭之法',
+    resolution: '保留原164页可辨的海兽契约与潮汐正文；原165页末“一套”后缺失的名词不猜，以省略号标示。',
+    sourceRefs: ['original_165', 'original_164'], confidence: 'high', newCoreFact: false },
+  { id: 'author_20260925_009', subject: '天工阁匠师等级的多版本保全',
+    resolution: '按既有作者裁定将“宗师”统一为“大宗师”；合并原051、原052及补005可辨的等级描述，保留不同版本中的炼器能力、万卷阁、引火锻体诀等信息，不将裁切部分补成事实。',
+    sourceRefs: ['original_051', 'original_052', 'supplement_005'], confidence: 'high', newCoreFact: false },
 ];
 const registry = {
   schemaVersion: 1,
@@ -53,8 +72,13 @@ const registry = {
     originalImagesAndTranscriptionsPaired: 179,
     userExcludedLegacyRecords: 3,
     originalImagesSpotChecked: sourceRegistry.filter(source => source.id.startsWith('original_') && source.reviewStatus === 'image_spot_checked').length,
+    originalImagesIndependentlyOcrCrosschecked: imageReview.originalImages.length,
+    supplementImagesIndependentlyOcrCrosschecked: imageReview.supplementImages.length,
+    lowCoverageOriginalImagesDirectlyCompared: imageReview.summary.lowCoverageOriginalImagesDirectlyCompared,
+    lowCoverageSupplementImagesDirectlyCompared: imageReview.summary.lowCoverageSupplementImagesDirectlyCompared,
+    imageByImageIndependentOcrCrosscheckComplete: true,
     imageByImageVisualVerificationComplete: false,
-    note: '正式条目按配对转写、来源核对和定点图像复查裁定。逐页人工图像复核未完成；残缺原文不作为设定。',
+    note: '179 张原图和 28 张补图已逐张独立 OCR 交叉核对，低匹配图已直接打开复核。此为 AI 辅助逐图裁定，不冒充作者本人逐页目视签收；残缺原文不作为设定。',
   },
   versionHistory: [{ version: '1.0', date: '2026-09-25', reason: '作者授权裁定后的世界书首版正式内容' }],
   documentOutlineSourceRefs: ['original_001'],

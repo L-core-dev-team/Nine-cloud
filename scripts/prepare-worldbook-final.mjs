@@ -23,7 +23,10 @@ const reasonFor = line => /^\s*[（(]/.test(line) ? 'editorial_note' :
   /⟦/.test(line) ? 'source_gap_or_uncertainty' :
   /\[看不清/.test(line) ? 'unreadable_in_source' : null;
 const sourceLine = line => /^\s*【来源：/.test(line);
-const cleanInlineSource = line => line.replace(/【来源：[^】]+】.*$/, '')
+const cleanInlineSource = line => line
+  .replace('如同【来源：173】支完整', '如同一支完整')
+  .replace('一套【来源：165】可通过', '……可通过')
+  .replace(/【来源：[^】]+】/g, '')
   .replace(/（(?:\d{3}|补\d{3})[^）]*）/g, '').trimEnd();
 const endOfSentence = /[。！？；：.!?;:]$/;
 const bulletOrHeading = /^[•▪○◦\-*|>]|^\d+[.、]|^#{1,6} /;
@@ -82,6 +85,19 @@ for (const entry of input.entries) {
     for (const item of sections) item.content = item.content
       .replace('共分为四大基础品阶：凡、黄、玄、地、天', '分为凡、黄、玄、地、天五阶')
       .replaceAll('拜火圣教', '圣火教');
+  }
+  if (entry.id === 'faction_tiangong_ge') {
+    // 原051、原052和补005是同一等级表的三种措辞；作者已裁定
+    // “宗师”与“大宗师”为同级。保留各页能够确认的不同细节。
+    const ranks = sections.find(item => item.title === '弟子与匠师等级');
+    if (!ranks) throw new Error('The Tiangong artisan-rank section is missing');
+    ranks.content = [
+      '▪ 学徒：负责材料的初级处理、看守炉火、矿石分拣、熔炼和图纸描摹等杂务，同时学习基础的炼器理论，修习黄阶功法《引火锻体诀》。成功炼制出第一件入阶法器后，方可晋升。',
+      '▪ 工匠：能够独立完成黄阶法器的炼制，是宗门的中坚力量。可选择三大流派之一深入研究，并有资格进入“万卷阁”学习玄阶炼器图谱。',
+      '▪ 大师：技艺高超，能炼制玄阶法宝，其中有能炼制玄阶上品者。他们负责宗门项目，可开设自己的工坊，招收工匠与学徒，带领团队承接大型项目，并有资格修习三大流派的地阶功法。',
+      '▪ 大宗师：炼器水平出神入化，每一位都能炼制地阶法器。他们是三大流派的执掌者，或为宗门长老，拥有仅次于阁主的地位与权力。三大院的执掌者各自在所长领域登峰造极，一件作品便能引得无数大能争抢。',
+    ].join('\n');
+    if (!entry.sourceRefs.includes('supplement_005')) entry.sourceRefs.push('supplement_005');
   }
   const content = sections.map(item => item.title === '概述' ? item.content : `${item.title}\n${item.content}`).join('\n\n');
   entries.push({ id: entry.id, title: entry.title, category: entry.category,
