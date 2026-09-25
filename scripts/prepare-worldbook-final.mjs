@@ -27,6 +27,7 @@ const cleanInlineSource = line => line
   .replace('如同【来源：173】支完整', '如同一支完整')
   .replace('一套【来源：165】可通过', '……可通过')
   .replace(/【来源：[^】]+】/g, '')
+  .replace(/（经看原图确认：[^）]*）/g, '')
   .replace(/（(?:\d{3}|补\d{3})[^）]*）/g, '').trimEnd();
 const endOfSentence = /[。！？；：.!?;:]$/;
 const bulletOrHeading = /^[•▪○◦\-*|>]|^\d+[.、]|^#{1,6} /;
@@ -59,7 +60,8 @@ for (const entry of input.entries) {
       safeLine = line.replace(/⟦[^⟧]+⟧|\[看不清[^\]]*\]/g, '…').replace(/…+/g, '…').trim();
       if (safeLine === '…') {
         dropped.push({ entryId: entry.id, reason, text: line });
-        if (section.content.trim() && !endOfSentence.test(section.content.trim())) section.content += '…';
+        if (section.content.trim() && !endOfSentence.test(section.content.trim()) &&
+          !section.content.trimEnd().endsWith('|')) section.content += '…';
         forceBreak = true;
         continue;
       }
@@ -72,7 +74,8 @@ for (const entry of input.entries) {
     } else if (reason) { dropped.push({ entryId: entry.id, reason, text: line }); continue; }
     if (line.startsWith('#')) { dropped.push({ entryId: entry.id, reason: 'stray_heading', text: line }); continue; }
     const prior = section.content.trimEnd();
-    if (prior && !forceBreak && !endOfSentence.test(prior) && !bulletOrHeading.test(safeLine) && !safeLine.startsWith('|')) {
+    if (prior && !forceBreak && !endOfSentence.test(prior) && !prior.endsWith('|') &&
+      !bulletOrHeading.test(safeLine) && !safeLine.startsWith('|')) {
       section.content = `${prior}${safeLine}`;
     } else {
       section.content += `${section.content ? '\n' : ''}${safeLine}`;
@@ -86,7 +89,22 @@ for (const entry of input.entries) {
       .replace('共分为四大基础品阶：凡、黄、玄、地、天', '分为凡、黄、玄、地、天五阶')
       .replaceAll('拜火圣教', '圣火教');
   }
+  if (entry.id === 'system_cultivation_realm') {
+    const jiedan = sections.find(item => item.title === '结丹期');
+    const overreached = '…将气态灵力压缩为液态灵力，通过九死一生的过程';
+    if (!jiedan || !jiedan.content.startsWith(overreached)) {
+      throw new Error('The disputed cropped Jiedan opening changed; review the source image');
+    }
+    // 原077页顶只露出“态灵力”，旧转写却补成筑基期的气态→液态
+    // 过程；结丹期可确认的突破段写液态→固态，此处不猜被裁文字。
+    jiedan.content = jiedan.content.replace(overreached, '…通过九死一生的过程');
+  }
   if (entry.id === 'faction_tiangong_ge') {
+    const branch = sections.find(item => item.title === '三大流派分支');
+    if (!branch || !branch.content.includes('巨构院的杰作')) {
+      throw new Error('Cannot recover the Tiangong first-branch label without the source body');
+    }
+    branch.content = `巨构院\n${branch.content}`;
     // 原051、原052和补005是同一等级表的三种措辞；作者已裁定
     // “宗师”与“大宗师”为同级。保留各页能够确认的不同细节。
     const ranks = sections.find(item => item.title === '弟子与匠师等级');
@@ -98,6 +116,20 @@ for (const entry of input.entries) {
       '▪ 大宗师：炼器水平出神入化，每一位都能炼制地阶法器。他们是三大流派的执掌者，或为宗门长老，拥有仅次于阁主的地位与权力。三大院的执掌者各自在所长领域登峰造极，一件作品便能引得无数大能争抢。',
     ].join('\n');
     if (!entry.sourceRefs.includes('supplement_005')) entry.sourceRefs.push('supplement_005');
+    const organization = sections.find(item => item.title === '组织架构');
+    const orphan = '技术挑战。这里是天工阁保持活力的心脏。';
+    if (!organization || !organization.content.includes(orphan)) {
+      throw new Error('Expected the unattributed Tiangong fragment for private preservation');
+    }
+    organization.content = organization.content.replace(`${orphan}\n`, '');
+    dropped.push({ entryId: entry.id, reason: 'orphan_fragment_unattributed', text: orphan });
+  }
+  if (entry.id === 'faction_jingang_buhai_gu') {
+    const places = sections.find(item => item.title === '（地点类条目小节，标题未见于素材）');
+    if (!places || !places.content.includes('万丈渊')) {
+      throw new Error('Cannot replace the missing-source heading without its place entries');
+    }
+    places.title = '山门场所';
   }
   const content = sections.map(item => item.title === '概述' ? item.content : `${item.title}\n${item.content}`).join('\n\n');
   entries.push({ id: entry.id, title: entry.title, category: entry.category,

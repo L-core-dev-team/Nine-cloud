@@ -24,7 +24,8 @@ if (ledger.records.length !== 182 || originalRecords.length !== 179 || entries.l
 }
 if (imageReview.legacyRecords.length !== 182 || imageReview.originalImages.length !== 179 ||
   imageReview.supplementImages.length !== 28 || imageReviewBySource.size !== 207 ||
-  imageReview.originalImages.some(item => item.disposition !== 'no_substantive_transcription_mismatch_detected')) {
+  imageReview.originalImages.some(item => !['no_substantive_transcription_mismatch_detected',
+    'source_transcription_overreach_corrected_in_canon'].includes(item.disposition))) {
   throw new Error('Image-by-image independent OCR review is incomplete');
 }
 for (const entry of entries) {
@@ -61,6 +62,33 @@ const decisions = [
   { id: 'author_20260925_009', subject: '天工阁匠师等级的多版本保全',
     resolution: '按既有作者裁定将“宗师”统一为“大宗师”；合并原051、原052及补005可辨的等级描述，保留不同版本中的炼器能力、万卷阁、引火锻体诀等信息，不将裁切部分补成事实。',
     sourceRefs: ['original_051', 'original_052', 'supplement_005'], confidence: 'high', newCoreFact: false },
+  { id: 'author_20260925_010', subject: '天工阁巨构院与无归属残句',
+    resolution: '三大流派首支正文明确称“巨构院的杰作”，据此恢复描述性小标题“巨构院”；原050页首“技术挑战。这里是天工阁保持活力的心脏。”缺机构主语，不在玩家正式正文中冒充完整机构介绍，原句保留在私有缺口记录。',
+    sourceRefs: ['original_053', 'original_050', 'original_051'], confidence: 'medium', newCoreFact: false },
+  { id: 'author_20260925_011', subject: '金刚不坏谷缺失的小节标题',
+    resolution: '原小节标题未见于截图，正式版使用描述性标题“山门场所”归拢万丈渊、刑罚崖、药浴池等可辨条目；不声称此为原图标题。',
+    sourceRefs: ['supplement_017'], confidence: 'medium', newCoreFact: false },
+  { id: 'author_20260925_012', subject: '结丹期页顶旧转写越界',
+    resolution: '原077图像顶部仅见被裁断的“态灵力”，无法确认旧转写额外写出的“将气态灵力压缩为液态灵力”。正式版删去这段未证实前缀，保留可见的凝丹描述；同章突破方式仍依原078记载液态灵力凝结固态金丹。',
+    sourceRefs: ['original_077', 'original_078', 'original_076'], confidence: 'high', newCoreFact: false },
+];
+const reviewQueue = [
+  { id: 'gap_economy_chapter', status: 'pending_review', sourceId: 'original_085',
+    subject: '经济体系章节', reason: '仅见目录标题，未取得可靠正文；不得从经济与物价参考反推整章规则。' },
+  { id: 'gap_yuqing_technique_name', status: 'pending_review', sourceId: 'original_016',
+    subject: '玉清阁地阶功法全名', reason: '原图上缘裁断《万…丹王》中的字，不能据风格猜定专名。' },
+  { id: 'gap_beijing_technique_name', status: 'pending_review', sourceId: 'original_139',
+    subject: '北境联盟幽影部功法全名', reason: '《冰原潜行…》末尾未入镜。' },
+  { id: 'gap_wudu_technique_name', status: 'pending_review', sourceId: 'original_129',
+    subject: '五毒神教地龙脉功法全名', reason: '《地龙腐骨…》末尾未入镜。' },
+  { id: 'gap_sihai_missing_page', status: 'pending_review', sourceId: 'original_059',
+    subject: '四海商会客卿院等缺页', reason: '两张相邻图之间缺一页，机构正文无法据现有图恢复。' },
+  { id: 'gap_tiangong_missing_page', status: 'pending_review', sourceId: 'original_051',
+    subject: '天工阁机构缺页', reason: '神工殿末尾及三大学宫、问道堂条目未入镜。' },
+  { id: 'gap_jixia_missing_page', status: 'pending_review', sourceId: 'original_032',
+    subject: '稷下学宫机构缺页', reason: '讲经堂末尾及戒律院完整条目未入镜。' },
+  { id: 'gap_price_table_rows', status: 'pending_review', sourceId: 'supplement_024',
+    subject: '物价表黄阶上品与玄阶下品', reason: '两行价格不在现有截图中；正式表仅列有原图证据的行。' },
 ];
 const registry = {
   schemaVersion: 1,
@@ -76,6 +104,8 @@ const registry = {
     supplementImagesIndependentlyOcrCrosschecked: imageReview.supplementImages.length,
     lowCoverageOriginalImagesDirectlyCompared: imageReview.summary.lowCoverageOriginalImagesDirectlyCompared,
     lowCoverageSupplementImagesDirectlyCompared: imageReview.summary.lowCoverageSupplementImagesDirectlyCompared,
+    additionalOriginalImagesDirectlyCompared: imageReview.summary.additionalOriginalImagesDirectlyCompared,
+    originalTranscriptionOverreachCorrected: imageReview.summary.originalTranscriptionOverreachCorrected,
     imageByImageIndependentOcrCrosscheckComplete: true,
     imageByImageVisualVerificationComplete: false,
     note: '179 张原图和 28 张补图已逐张独立 OCR 交叉核对，低匹配图已直接打开复核。此为 AI 辅助逐图裁定，不冒充作者本人逐页目视签收；残缺原文不作为设定。',
@@ -83,7 +113,7 @@ const registry = {
   versionHistory: [{ version: '1.0', date: '2026-09-25', reason: '作者授权裁定后的世界书首版正式内容' }],
   documentOutlineSourceRefs: ['original_001'],
   entries,
-  reviewQueue: [],
+  reviewQueue,
   sourceRegistry,
   decisions,
 };

@@ -41,6 +41,9 @@ for prefix, count in (("原", 179), ("补", 28)):
         unmatched_ocr = [independent[a0:a1] for kind, a0, a1, _, _ in
                          SequenceMatcher(None, independent, supplied, autojunk=False).get_opcodes()
                          if kind != "equal"]
+        unmatched_supplied = [supplied[a0:a1] for kind, a0, a1, _, _ in
+                              SequenceMatcher(None, supplied, independent, autojunk=False).get_opcodes()
+                              if kind != "equal"]
         records.append(
             {
                 "image": name,
@@ -52,6 +55,7 @@ for prefix, count in (("原", 179), ("补", 28)):
                 "ocrFourgramCoverageInSupplied": round(coverage(independent, supplied), 4),
                 "suppliedFourgramCoverageInOcr": round(coverage(supplied, independent), 4),
                 "longestIndependentUnmatchedSpan": max(unmatched_ocr, key=len, default="")[:100],
+                "longestSuppliedUnmatchedSpan": max(unmatched_supplied, key=len, default="")[:100],
                 "requiresVisualAdjudication": coverage(independent, supplied) < 0.85,
             }
         )

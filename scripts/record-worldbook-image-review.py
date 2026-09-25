@@ -18,7 +18,8 @@ visually_resolved = {
     "原008", "原023", "原025", "原033", "原041", "原054", "原058",
     "原078", "原093", "原094", "原109", "原118", "原129", "原138",
     "原147", "原148", "原159", "原174", "补004", "补020", "补024",
-    "补026",
+    "补026", "原016", "原017", "原072", "原076", "原077", "原078",
+    "原087", "原088", "原090", "原095", "原096",
 }
 
 by_name = {record["image"]: record for record in comparison["records"]}
@@ -42,7 +43,9 @@ def adjudicate(name: str, source_id: str) -> dict:
         "independentOcrSha256": record["independentOcrSha256"],
         "ocrFourgramCoverageInSupplied": record["ocrFourgramCoverageInSupplied"],
         "reviewMethod": "source_image_direct_comparison" if visual else "independent_image_ocr_crosscheck",
-        "disposition": "excluded_non_worldbook" if name == "补004" else "no_substantive_transcription_mismatch_detected",
+        "disposition": "excluded_non_worldbook" if name == "补004" else
+        "source_transcription_overreach_corrected_in_canon" if name == "原077" else
+        "no_substantive_transcription_mismatch_detected",
         "personalAuthorSignoff": False,
     }
 
@@ -80,7 +83,11 @@ summary = {
     "supplementImagesIndependentlyOcrCrosschecked": 28,
     "lowCoverageOriginalImagesDirectlyCompared": 18,
     "lowCoverageSupplementImagesDirectlyCompared": 3,
+    "additionalOriginalImagesDirectlyCompared": sum(item["reviewMethod"] == "source_image_direct_comparison" and
+                                                    by_name[item["name"]]["requiresVisualAdjudication"] is False
+                                                    for item in originals),
     "additionalSupplementDirectlyCompared": 1,
+    "originalTranscriptionOverreachCorrected": 1,
     "personalAuthorVisualSignoffComplete": False,
 }
 report = {

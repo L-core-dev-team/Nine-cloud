@@ -14,6 +14,7 @@ assert.equal(registry.reviewSummary.userExcludedLegacyRecords, 3);
 assert.equal(registry.reviewSummary.originalImagesIndependentlyOcrCrosschecked, 179);
 assert.equal(registry.reviewSummary.supplementImagesIndependentlyOcrCrosschecked, 28);
 assert.equal(registry.reviewSummary.imageByImageIndependentOcrCrosscheckComplete, true);
+assert.equal(registry.reviewSummary.originalTranscriptionOverreachCorrected, 1);
 assert.equal(registry.reviewSummary.imageByImageVisualVerificationComplete, false);
 assert.equal(registry.entries.length, 33);
 assert.equal(runtime.entries.length, registry.entries.length);
@@ -21,7 +22,8 @@ assert.equal(entryIds.size, registry.entries.length);
 assert.equal(sourceIds.size, registry.sourceRegistry.length);
 assert.equal(registry.sourceRegistry.filter(source => source.id.startsWith('original_') && source.imageReviewMethod).length, 179);
 assert.equal(registry.sourceRegistry.filter(source => source.id.startsWith('supplement_') && source.imageReviewMethod).length, 28);
-assert.equal(registry.reviewQueue.length, 0, 'all legacy records have an author-side disposition');
+assert.equal(registry.reviewQueue.length, 8, 'source gaps that cannot be safely restored must remain explicit');
+assert.ok(registry.reviewQueue.every(item => item.status === 'pending_review' && sourceIds.has(item.sourceId)));
 assert.ok(registry.entries.every(entry => entry.status === 'confirmed' &&
   entry.canonVersion === registry.activeVersion && entry.content.trim() &&
   entry.sourceRefs.length && entry.sourceRefs.every(id => sourceIds.has(id)) &&
@@ -40,6 +42,22 @@ for (const expected of ['万兽洪荒经', '圣火教', '资质决定论', '法�
   '引火锻体诀', '万卷阁', '玄阶上品', '三大院的执掌者']) {
   assert.ok(text.includes(expected), `missing key source content: ${expected}`);
 }
-assert.ok(!/⟦|【来源：|\[看不清|本章开头|小节标题缺失|C:[\\/]/.test(text));
+const tiangong = registry.entries.find(entry => entry.id === 'faction_tiangong_ge');
+assert.ok(tiangong.sections.find(section => section.title === '三大流派分支').content.startsWith('巨构院\n'));
+assert.ok(!tiangong.content.includes('技术挑战。这里是天工阁保持活力的心脏。'));
+assert.ok(registry.entries.find(entry => entry.id === 'faction_jingang_buhai_gu').sections.some(section => section.title === '山门场所'));
+assert.ok(!text.includes('地点类条目小节'));
+const realms = registry.entries.find(entry => entry.id === 'system_cultivation_realm');
+assert.deepEqual(realms.sections.map(section => section.title),
+  ['炼体期', '炼气期', '筑基期', '结丹期', '元婴期', '合体期', '化神期', '大乘期', '渡劫期']);
+const jiedan = realms.sections.find(section => section.title === '结丹期').content;
+assert.ok(!jiedan.includes('气态灵力压缩为液态灵力'));
+assert.ok(jiedan.includes('液态灵力压缩凝结成一颗固态金丹'));
+const prices = registry.entries.find(entry => entry.id === 'system_prices').content;
+assert.ok(prices.includes('| 黄阶中品 | 300 | 400 | 500 | 750 |\n| 玄阶中品 |'));
+assert.ok(prices.includes('| 地阶上品 | 80万(80上品) | 100万(100上品) | 130万(130上品) | 180万(180上品) |\n天阶'));
+assert.ok(!prices.includes('|…'));
+assert.equal(registry.entries.filter(entry => entry.category === 'region' && entry.id !== 'region_honghuang_yaolin').length, 5);
+assert.ok(!/⟦|【来源：|\[看不清|本章开头|小节标题缺失|经看原图确认|C:[\\/]/.test(text));
 assert.ok(!/C:[\\/]|imageSha256|transcriptionSha256|originalId|legacyOcrId/.test(JSON.stringify(runtime)));
 console.log('Worldbook Canon coverage, runtime isolation and source-grounded content checks passed.');
