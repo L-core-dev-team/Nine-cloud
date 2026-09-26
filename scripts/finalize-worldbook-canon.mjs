@@ -28,6 +28,32 @@ if (imageReview.legacyRecords.length !== 182 || imageReview.originalImages.lengt
     'source_transcription_overreach_corrected_in_canon'].includes(item.disposition))) {
   throw new Error('Image-by-image independent OCR review is incomplete');
 }
+const authorAdditionSourceId = 'author_delegation_20260926';
+sourceRegistry.push({ id: authorAdditionSourceId, type: 'author_delegated_addition',
+  reviewStatus: 'author_delegated' });
+sourceIds.add(authorAdditionSourceId);
+const authorAdditionNote = '作者授权的保守新增设定；非原图转写。缺失原文仍在审核队列，若将来取得原图应重新核对。';
+const authorAdditions = [
+  { id: 'system_economy_author_addition', title: '经济体系补充', category: 'system',
+    parentId: 'world_jiuxiao', sortOrder: 305,
+    content: '修士交易多以灵石计价。资源的品阶、成色、供求与地域差异都会影响实际成交价；“经济与物价参考”所列价格仅作坊市通常行情参考。' },
+  { id: 'faction_sihai_guest_court_addition', title: '四海商会·客卿院补充', category: 'faction',
+    parentId: 'faction_sihai_shanghui', sortOrder: 51,
+    content: '客卿院接待并协调商会聘请的外部修士。客卿的具体职责与报酬依约定确定，由商会按事务需要安排。' },
+  { id: 'faction_tiangong_academies_addition', title: '天工阁·学宫与问道堂补充', category: 'faction',
+    parentId: 'faction_tiangong_ge', sortOrder: 61,
+    content: '三大学宫分别承接三大流派的教学与研究；问道堂供门人公开讨论器道问题。不同流派可以争论，也可以就具体炼器难题合作。' },
+  { id: 'faction_jixia_discipline_addition', title: '稷下学宫·戒律院补充', category: 'faction',
+    parentId: 'faction_jixia_xuegong', sortOrder: 81,
+    content: '戒律院处理学宫内部的纪律事务，依学宫礼法规矩应对违反院规的行为，以维持求学和讲学秩序。' },
+  { id: 'faction_beijing_shadow_addition', title: '北境联盟·幽影部补充', category: 'faction',
+    parentId: 'faction_beijing_lianmeng', sortOrder: 171,
+    content: '幽影部重视隐匿与侦察，惯于借冰雪地形掩护行动，并在接近目标后迅速突袭。' },
+].map(item => ({ ...item, status: 'confirmed', canonVersion: '1.0',
+  origin: 'author_addition', sections: [{ title: '作者补充', content: item.content }],
+  aliases: [], tags: [item.title, '作者补充'], sourceRefs: [authorAdditionSourceId],
+  publicSourceNote: authorAdditionNote, updatedAt: '2026-09-26' }));
+entries.push(...authorAdditions);
 for (const entry of entries) {
   if (entry.status !== 'confirmed' || !entry.content || !entry.sourceRefs.length ||
     entry.sourceRefs.some(id => !sourceIds.has(id))) {
@@ -86,6 +112,9 @@ const decisions = [
   { id: 'author_20260926_017', subject: '玉清阁地阶功法原图误读',
     resolution: '原016对应的完整尺寸原始截图 c5247208-8a14-49d2-984b-a6169b92b28f 清楚写作《万化丹尘》、地阶中品。逐图TXT的“万[看不清1字]丹王”为误读；依原图恢复完整名称并归回既有“护道奇术”描述，不新增设定。',
     sourceRefs: ['original_016'], confidence: 'high', newCoreFact: false },
+  { id: 'author_20260926_018', subject: '保守补足五个可用内容条目',
+    resolution: '依作者“直接自己编并编入游戏”的授权，另增经济体系、四海商会客卿院、天工阁学宫及问道堂、稷下学宫戒律院、北境联盟幽影部五个短条目。均单列 origin=author_addition、独立来源 ID 和公开来源说明，不伪称截图原文；不补核心人物、精确品阶或缺失价格。原图缺口继续保留在 reviewQueue。',
+    sourceRefs: [authorAdditionSourceId], confidence: 'author_delegated', newCoreFact: true },
 ];
 const reviewQueue = [
   { id: 'gap_economy_chapter', status: 'pending_review', sourceId: 'original_085',
@@ -119,9 +148,12 @@ const registry = {
     originalTranscriptionOverreachCorrected: imageReview.summary.originalTranscriptionOverreachCorrected,
     imageByImageIndependentOcrCrosscheckComplete: true,
     imageByImageVisualVerificationComplete: false,
+    authorAdditionsIncluded: authorAdditions.length,
     note: '179 张原图和 28 张补图已逐张独立 OCR 交叉核对，低匹配图已直接打开复核。此为 AI 辅助逐图裁定，不冒充作者本人逐页目视签收；残缺原文不作为设定。',
   },
   versionHistory: [{ version: '1.0', date: '2026-09-25', reason: '作者授权裁定后的世界书首版正式内容' }],
+  contentRevisions: [{ date: '2026-09-26', reason: '另列五条作者授权补充，不改原图转写',
+    decisionId: 'author_20260926_018' }],
   documentOutlineSourceRefs: ['original_001'],
   entries,
   reviewQueue,
@@ -134,4 +166,4 @@ await writeFile(join(reviewDir, 'author-delegated-decisions-20260925.json'), `${
   retainedIncompleteFragments: preview.retainedFragments,
   legacyRecordDispositions: ledger.records,
 }, null, 2)}\n`);
-console.log(`Finalized ${entries.length} sourced Canon entries; reconciled ${ledger.records.length} legacy records; ${preview.dropped.length} unrecoverable fragments archived privately.`);
+console.log(`Finalized ${entries.length} Canon entries (${authorAdditions.length} separately attributed author additions); reconciled ${ledger.records.length} legacy records; ${preview.dropped.length} unrecoverable fragments archived privately.`);

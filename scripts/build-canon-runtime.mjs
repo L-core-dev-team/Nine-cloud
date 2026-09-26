@@ -32,9 +32,10 @@ for (const item of registry.reviewQueue) {
 const entries = registry.entries
   .filter(entry => entry.status === 'confirmed' && entry.canonVersion === registry.activeVersion)
   .sort((a, b) => a.sortOrder - b.sortOrder)
-  .map(({ id, title, category, parentId, status, canonVersion, content, sections, aliases, tags, publicSourceNote, sortOrder }) => ({
+  .map(({ id, title, category, parentId, status, canonVersion, content, sections, aliases, tags, origin, publicSourceNote, sortOrder }) => ({
     id, title, category, ...(parentId ? { parentId } : {}), status, canonVersion, content,
     ...(sections ? { sections } : {}), aliases: aliases ?? [], tags: tags ?? [],
+    ...(origin ? { origin } : {}),
     ...(publicSourceNote ? { publicSourceNote } : {}), sortOrder,
   }));
 

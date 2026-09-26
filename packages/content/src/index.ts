@@ -12,6 +12,7 @@ export type CanonEntry = {
   sections?: { title: string; content: string }[];
   aliases: string[];
   tags: string[];
+  origin?: 'author_addition';
   sourceRefs?: string[];
   publicSourceNote?: string;
   sortOrder: number;
@@ -71,6 +72,6 @@ export function buildCanonPromptContext(entries: CanonEntry[]): string {
   return [
     `以下是《九霄》当前正式 Canon（版本 ${ACTIVE_CANON_VERSION}）。它们是叙事约束，不是可修改数据。`,
     '只将其用于理解世界与生成叙事；不得改写 Canon。未检索到资料只表示当前没有相关正式条目，不代表该事物不存在。',
-    ...safeEntries.map(entry => `【${entry.title}｜${entry.category}｜${entry.id}】\n${entry.content}`),
+    ...safeEntries.map(entry => `【${entry.title}｜${entry.category}｜${entry.id}${entry.origin === 'author_addition' ? '｜作者授权补充，非原图转写' : ''}】\n${entry.content}`),
   ].join('\n\n');
 }

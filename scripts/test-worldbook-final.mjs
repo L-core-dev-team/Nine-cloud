@@ -16,7 +16,8 @@ assert.equal(registry.reviewSummary.supplementImagesIndependentlyOcrCrosschecked
 assert.equal(registry.reviewSummary.imageByImageIndependentOcrCrosscheckComplete, true);
 assert.equal(registry.reviewSummary.originalTranscriptionOverreachCorrected, 1);
 assert.equal(registry.reviewSummary.imageByImageVisualVerificationComplete, false);
-assert.equal(registry.entries.length, 33);
+assert.equal(registry.entries.length, 38);
+assert.equal(registry.reviewSummary.authorAdditionsIncluded, 5);
 assert.equal(runtime.entries.length, registry.entries.length);
 assert.equal(entryIds.size, registry.entries.length);
 assert.equal(sourceIds.size, registry.sourceRegistry.length);
@@ -36,6 +37,16 @@ assert.ok(registry.sourceRegistry.filter(source => source.id.startsWith('origina
 assert.deepEqual(runtime.entries.map(entry => entry.id), registry.entries.slice()
   .sort((a, b) => a.sortOrder - b.sortOrder).map(entry => entry.id));
 assert.ok(runtime.entries.every(entry => !('sourceRefs' in entry)));
+const authorAdditions = registry.entries.filter(entry => entry.origin === 'author_addition');
+assert.equal(authorAdditions.length, 5);
+assert.ok(authorAdditions.every(entry => entry.sourceRefs.length === 1 &&
+  entry.sourceRefs[0] === 'author_delegation_20260926' &&
+  entry.publicSourceNote.includes('非原图转写')));
+assert.equal(runtime.entries.filter(entry => entry.origin === 'author_addition').length, 5);
+assert.ok(runtime.entries.filter(entry => entry.origin === 'author_addition')
+  .every(entry => entry.publicSourceNote.includes('非原图转写')));
+assert.ok(!runtime.entries.some(entry => entry.origin === 'author_addition' &&
+  /《冰原潜行术》|黄阶上品\s*\|\s*\d|玄阶下品\s*\|\s*\d/.test(entry.content)));
 const text = runtime.entries.map(entry => entry.content).join('\n');
 for (const expected of ['万兽洪荒经', '圣火教', '资质决定论', '法器：各类修仙武器',
   '上古血脉之力融入己身', '海兽军团', '如同一支完整的交响乐团',

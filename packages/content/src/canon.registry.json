@@ -16,6 +16,7 @@
     "originalTranscriptionOverreachCorrected": 1,
     "imageByImageIndependentOcrCrosscheckComplete": true,
     "imageByImageVisualVerificationComplete": false,
+    "authorAdditionsIncluded": 5,
     "note": "179 张原图和 28 张补图已逐张独立 OCR 交叉核对，低匹配图已直接打开复核。此为 AI 辅助逐图裁定，不冒充作者本人逐页目视签收；残缺原文不作为设定。"
   },
   "versionHistory": [
@@ -23,6 +24,13 @@
       "version": "1.0",
       "date": "2026-09-25",
       "reason": "作者授权裁定后的世界书首版正式内容"
+    }
+  ],
+  "contentRevisions": [
+    {
+      "date": "2026-09-26",
+      "reason": "另列五条作者授权补充，不改原图转写",
+      "decisionId": "author_20260926_018"
     }
   ],
   "documentOutlineSourceRefs": [
@@ -1591,6 +1599,141 @@
       "publicSourceNote": "依据《九霄》原设截图、逐图文字及作者授权裁定整理；省略号表示原图截断或无法辨认的文字，不构成额外规则；描述性小标题不代表原图标题。",
       "updatedAt": "2026-09-25",
       "sortOrder": 235
+    },
+    {
+      "id": "system_economy_author_addition",
+      "title": "经济体系补充",
+      "category": "system",
+      "parentId": "world_jiuxiao",
+      "sortOrder": 305,
+      "content": "修士交易多以灵石计价。资源的品阶、成色、供求与地域差异都会影响实际成交价；“经济与物价参考”所列价格仅作坊市通常行情参考。",
+      "status": "confirmed",
+      "canonVersion": "1.0",
+      "origin": "author_addition",
+      "sections": [
+        {
+          "title": "作者补充",
+          "content": "修士交易多以灵石计价。资源的品阶、成色、供求与地域差异都会影响实际成交价；“经济与物价参考”所列价格仅作坊市通常行情参考。"
+        }
+      ],
+      "aliases": [],
+      "tags": [
+        "经济体系补充",
+        "作者补充"
+      ],
+      "sourceRefs": [
+        "author_delegation_20260926"
+      ],
+      "publicSourceNote": "作者授权的保守新增设定；非原图转写。缺失原文仍在审核队列，若将来取得原图应重新核对。",
+      "updatedAt": "2026-09-26"
+    },
+    {
+      "id": "faction_sihai_guest_court_addition",
+      "title": "四海商会·客卿院补充",
+      "category": "faction",
+      "parentId": "faction_sihai_shanghui",
+      "sortOrder": 51,
+      "content": "客卿院接待并协调商会聘请的外部修士。客卿的具体职责与报酬依约定确定，由商会按事务需要安排。",
+      "status": "confirmed",
+      "canonVersion": "1.0",
+      "origin": "author_addition",
+      "sections": [
+        {
+          "title": "作者补充",
+          "content": "客卿院接待并协调商会聘请的外部修士。客卿的具体职责与报酬依约定确定，由商会按事务需要安排。"
+        }
+      ],
+      "aliases": [],
+      "tags": [
+        "四海商会·客卿院补充",
+        "作者补充"
+      ],
+      "sourceRefs": [
+        "author_delegation_20260926"
+      ],
+      "publicSourceNote": "作者授权的保守新增设定；非原图转写。缺失原文仍在审核队列，若将来取得原图应重新核对。",
+      "updatedAt": "2026-09-26"
+    },
+    {
+      "id": "faction_tiangong_academies_addition",
+      "title": "天工阁·学宫与问道堂补充",
+      "category": "faction",
+      "parentId": "faction_tiangong_ge",
+      "sortOrder": 61,
+      "content": "三大学宫分别承接三大流派的教学与研究；问道堂供门人公开讨论器道问题。不同流派可以争论，也可以就具体炼器难题合作。",
+      "status": "confirmed",
+      "canonVersion": "1.0",
+      "origin": "author_addition",
+      "sections": [
+        {
+          "title": "作者补充",
+          "content": "三大学宫分别承接三大流派的教学与研究；问道堂供门人公开讨论器道问题。不同流派可以争论，也可以就具体炼器难题合作。"
+        }
+      ],
+      "aliases": [],
+      "tags": [
+        "天工阁·学宫与问道堂补充",
+        "作者补充"
+      ],
+      "sourceRefs": [
+        "author_delegation_20260926"
+      ],
+      "publicSourceNote": "作者授权的保守新增设定；非原图转写。缺失原文仍在审核队列，若将来取得原图应重新核对。",
+      "updatedAt": "2026-09-26"
+    },
+    {
+      "id": "faction_jixia_discipline_addition",
+      "title": "稷下学宫·戒律院补充",
+      "category": "faction",
+      "parentId": "faction_jixia_xuegong",
+      "sortOrder": 81,
+      "content": "戒律院处理学宫内部的纪律事务，依学宫礼法规矩应对违反院规的行为，以维持求学和讲学秩序。",
+      "status": "confirmed",
+      "canonVersion": "1.0",
+      "origin": "author_addition",
+      "sections": [
+        {
+          "title": "作者补充",
+          "content": "戒律院处理学宫内部的纪律事务，依学宫礼法规矩应对违反院规的行为，以维持求学和讲学秩序。"
+        }
+      ],
+      "aliases": [],
+      "tags": [
+        "稷下学宫·戒律院补充",
+        "作者补充"
+      ],
+      "sourceRefs": [
+        "author_delegation_20260926"
+      ],
+      "publicSourceNote": "作者授权的保守新增设定；非原图转写。缺失原文仍在审核队列，若将来取得原图应重新核对。",
+      "updatedAt": "2026-09-26"
+    },
+    {
+      "id": "faction_beijing_shadow_addition",
+      "title": "北境联盟·幽影部补充",
+      "category": "faction",
+      "parentId": "faction_beijing_lianmeng",
+      "sortOrder": 171,
+      "content": "幽影部重视隐匿与侦察，惯于借冰雪地形掩护行动，并在接近目标后迅速突袭。",
+      "status": "confirmed",
+      "canonVersion": "1.0",
+      "origin": "author_addition",
+      "sections": [
+        {
+          "title": "作者补充",
+          "content": "幽影部重视隐匿与侦察，惯于借冰雪地形掩护行动，并在接近目标后迅速突袭。"
+        }
+      ],
+      "aliases": [],
+      "tags": [
+        "北境联盟·幽影部补充",
+        "作者补充"
+      ],
+      "sourceRefs": [
+        "author_delegation_20260926"
+      ],
+      "publicSourceNote": "作者授权的保守新增设定；非原图转写。缺失原文仍在审核队列，若将来取得原图应重新核对。",
+      "updatedAt": "2026-09-26"
     }
   ],
   "reviewQueue": [
@@ -2934,6 +3077,11 @@
     {
       "id": "review_decision_010",
       "type": "review_decision"
+    },
+    {
+      "id": "author_delegation_20260926",
+      "type": "author_delegated_addition",
+      "reviewStatus": "author_delegated"
     }
   ],
   "decisions": [
@@ -3134,6 +3282,16 @@
       ],
       "confidence": "high",
       "newCoreFact": false
+    },
+    {
+      "id": "author_20260926_018",
+      "subject": "保守补足五个可用内容条目",
+      "resolution": "依作者“直接自己编并编入游戏”的授权，另增经济体系、四海商会客卿院、天工阁学宫及问道堂、稷下学宫戒律院、北境联盟幽影部五个短条目。均单列 origin=author_addition、独立来源 ID 和公开来源说明，不伪称截图原文；不补核心人物、精确品阶或缺失价格。原图缺口继续保留在 reviewQueue。",
+      "sourceRefs": [
+        "author_delegation_20260926"
+      ],
+      "confidence": "author_delegated",
+      "newCoreFact": true
     }
   ]
 }
