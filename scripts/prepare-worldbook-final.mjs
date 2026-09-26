@@ -195,6 +195,10 @@ for (const entry of input.entries) {
     sections.splice(scorpionIndex + 1, 0, {
       title: '地龙脉 - 《地龙腐骨功》', content: dragonText,
     });
+    const droppedDragonIndex = dropped.findIndex(item => item.entryId === entry.id &&
+      item.reason === 'unreadable_heading' && item.text.includes('地龙腐骨[看不清]'));
+    if (droppedDragonIndex < 0) throw new Error('The disputed 地龙脉 heading record changed');
+    dropped.splice(droppedDragonIndex, 1);
 
     const centipedeIndex = sections.findIndex(item => item.title === '百足脉 - 《百足控心诀》');
     const centipede = sections[centipedeIndex];
