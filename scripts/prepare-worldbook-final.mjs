@@ -130,6 +130,21 @@ for (const entry of input.entries) {
     section.content = section.content.replace(fragment, replacement);
     dropped.push({ entryId: id, reason: 'orphan_fragment_unattributed', text: fragment.trim() });
   }
+  if (entry.id === 'faction_yuqing_ge') {
+    const branches = sections.find(item => item.title === '主要分支（地阶功法）');
+    const style = '▪ 风格： 护道奇术。玉清阁弟子不擅争斗';
+    if (!branches || !branches.content.includes(style) || branches.content.includes('《万化丹尘》')) {
+      throw new Error('The cropped 玉清阁 technique line changed; review original 016');
+    }
+    // The full-size source screenshot c5247208… clearly shows 《万化丹尘》.
+    // The supplied TXT's “万[看不清1字]丹王” is a transcription error.
+    branches.content = branches.content.replace(style,
+      `▪ 《万化丹尘》 - 地阶中品\n${style}`);
+    const droppedNameIndex = dropped.findIndex(item => item.entryId === entry.id &&
+      item.reason === 'unreadable_proper_name' && item.text.includes('万[看不清1字]丹王'));
+    if (droppedNameIndex < 0) throw new Error('The disputed 玉清阁 name record changed');
+    dropped.splice(droppedNameIndex, 1);
+  }
   if (entry.id === 'faction_bingshen_gong') {
     const structureIndex = sections.findIndex(item => item.title === '内部结构');
     const structure = sections[structureIndex];

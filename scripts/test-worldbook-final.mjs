@@ -22,7 +22,7 @@ assert.equal(entryIds.size, registry.entries.length);
 assert.equal(sourceIds.size, registry.sourceRegistry.length);
 assert.equal(registry.sourceRegistry.filter(source => source.id.startsWith('original_') && source.imageReviewMethod).length, 179);
 assert.equal(registry.sourceRegistry.filter(source => source.id.startsWith('supplement_') && source.imageReviewMethod).length, 28);
-assert.equal(registry.reviewQueue.length, 7, 'source gaps that cannot be safely restored must remain explicit');
+assert.equal(registry.reviewQueue.length, 6, 'source gaps that cannot be safely restored must remain explicit');
 assert.ok(registry.reviewQueue.every(item => item.status === 'pending_review' && sourceIds.has(item.sourceId)));
 assert.ok(registry.entries.every(entry => entry.status === 'confirmed' &&
   entry.canonVersion === registry.activeVersion && entry.content.trim() &&
@@ -76,6 +76,9 @@ assert.ok(!registry.entries.find(entry => entry.id === 'system_technique_grade')
 assert.ok(!text.includes('\n…和力。\n'));
 assert.ok(!text.includes('\n量。成员'));
 assert.ok(!text.includes('\n非。\n'));
+const yuqing = registry.entries.find(entry => entry.id === 'faction_yuqing_ge');
+assert.ok(yuqing.content.includes('▪ 《万化丹尘》 - 地阶中品\n▪ 风格： 护道奇术。'));
+assert.ok(!registry.reviewQueue.some(item => item.id === 'gap_yuqing_technique_name'));
 const realms = registry.entries.find(entry => entry.id === 'system_cultivation_realm');
 assert.deepEqual(realms.sections.map(section => section.title),
   ['炼体期', '炼气期', '筑基期', '结丹期', '元婴期', '合体期', '化神期', '大乘期', '渡劫期']);

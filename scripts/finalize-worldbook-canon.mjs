@@ -83,12 +83,13 @@ const decisions = [
   { id: 'author_20260925_016', subject: '三处跨图孤字残句',
     resolution: '玉清阁原013/014之间的“和力。”、四海商会原059/058之间的“量。”、稷下学宫原032/031之间的“非。”均缺可确认的前文或归属；这些孤字残句仅保存在私有缺口记录，不拼接成玩家可见的断裂句。其后有明确内容的条目原文照留。',
     sourceRefs: ['original_013', 'original_014', 'original_059', 'original_058', 'original_032', 'original_031'], confidence: 'high', newCoreFact: false },
+  { id: 'author_20260926_017', subject: '玉清阁地阶功法原图误读',
+    resolution: '原016对应的完整尺寸原始截图 c5247208-8a14-49d2-984b-a6169b92b28f 清楚写作《万化丹尘》、地阶中品。逐图TXT的“万[看不清1字]丹王”为误读；依原图恢复完整名称并归回既有“护道奇术”描述，不新增设定。',
+    sourceRefs: ['original_016'], confidence: 'high', newCoreFact: false },
 ];
 const reviewQueue = [
   { id: 'gap_economy_chapter', status: 'pending_review', sourceId: 'original_085',
     subject: '经济体系章节', reason: '仅见目录标题，未取得可靠正文；不得从经济与物价参考反推整章规则。' },
-  { id: 'gap_yuqing_technique_name', status: 'pending_review', sourceId: 'original_016',
-    subject: '玉清阁地阶功法全名', reason: '原图上缘裁断《万…丹王》中的字，不能据风格猜定专名。' },
   { id: 'gap_beijing_technique_name', status: 'pending_review', sourceId: 'original_139',
     subject: '北境联盟幽影部功法全名', reason: '《冰原潜行…》末尾未入镜。' },
   { id: 'gap_sihai_missing_page', status: 'pending_review', sourceId: 'original_059',
