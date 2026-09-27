@@ -361,6 +361,8 @@ async function ready(url) {
         memory: '曾与守门弟子交谈',
         apiKey: 'imported-secret-not-exported',
         legacyAiConfig: { providers: [{ api_key: 'imported-secret-not-exported' }] },
+        pendingQueue: [{ text: '旧版待处理行动' }],
+        extensionFromOldVersion: { clue: '仍可核对的扩展字段' },
         stm: ['短期线索甲'],
         ltm: ['长期约定乙'],
       });
@@ -393,6 +395,13 @@ async function ready(url) {
       await page.getByRole('button', { name: '关闭资料面板' }).click();
       await page.locator('.legacy-groups summary').filter({ hasText: 'status' }).click();
       assert.ok((await page.locator('.legacy-groups').innerText()).includes('姓名：迁移修士'));
+      await page.locator('.legacy-groups summary').filter({ hasText: 'pendingQueue' }).click();
+      assert.ok((await page.locator('.legacy-groups').innerText()).includes('旧版待处理行动'), 'legacy queues should remain inspectable after import');
+      await page.locator('.legacy-groups summary').filter({ hasText: 'extensionFromOldVersion' }).click();
+      assert.ok((await page.locator('.legacy-groups').innerText()).includes('仍可核对的扩展字段'), 'unknown legacy fields should remain inspectable');
+      await page.locator('.legacy-groups summary').filter({ hasText: 'legacyAiConfig' }).click();
+      assert.ok((await page.locator('.legacy-groups').innerText()).includes('[已移除密钥]'), 'archive preview should redact credential fields');
+      assert.equal((await page.locator('.legacy-groups').innerText()).includes('imported-secret-not-exported'), false, 'archive preview should not expose credential values');
       assert.equal(await page.evaluate(() => {
         const saves = JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves;
         return saves.find(save => save.name === '导入旧局')?.legacyArchive?.payload?.legacyAiConfig?.providers?.[0]?.api_key;
