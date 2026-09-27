@@ -315,6 +315,15 @@ async function ready(url) {
       await page.goto(`http://127.0.0.1:${webPort}/lobby`);
       await page.getByRole('button', { name: '菜单' }).click();
       const importInput = page.locator('aside input[type="file"]');
+      const savesBeforeBadImport = await page.evaluate(() => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves.length);
+      const [badBackup] = await Promise.all([
+        page.waitForEvent('download'),
+        importInput.setInputFiles({ name: 'broken.json', mimeType: 'application/json', buffer: Buffer.from('{"messages":') }),
+      ]);
+      assert.ok(badBackup.suggestedFilename().startsWith('九霄-导入前原文备份-'));
+      await page.getByText(/导入失败：文件格式或内容不符合旧档契约/).waitFor();
+      assert.equal(await page.locator('.import-preview').count(), 0, 'malformed JSON must not enter the import preview as story text');
+      assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves.length), savesBeforeBadImport, 'a malformed import must not alter existing saves');
       const legacyJson = JSON.stringify({ messages: [{ role: 'user', content: '旧档正文' }], status: '姓名：迁移修士' });
       const [backup] = await Promise.all([
         page.waitForEvent('download'),
