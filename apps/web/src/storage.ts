@@ -33,7 +33,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-function isLocalSave(value: unknown): value is LocalSave {
+export function isLocalSave(value: unknown): value is LocalSave {
   if (!isRecord(value)) return false;
   const valid = value.schemaVersion === 1 && typeof value.saveId === 'string' && value.saveId.length > 0
     && typeof value.name === 'string' && typeof value.createdAt === 'string'
