@@ -356,9 +356,11 @@ async function ready(url) {
       const legacyJson = JSON.stringify({
         messages: [{ role: 'user', content: '旧档正文' }],
         status: '姓名：迁移修士',
-        world: { location: '旧档山门', weather: '夜雨' },
+        world: { location: '旧档山门', weather: '夜雨', key: '旧钥匙' },
         intel: { clue: '石阶留有剑痕' },
         memory: '曾与守门弟子交谈',
+        apiKey: 'imported-secret-not-exported',
+        legacyAiConfig: { providers: [{ api_key: 'imported-secret-not-exported' }] },
         stm: ['短期线索甲'],
         ltm: ['长期约定乙'],
       });
@@ -391,6 +393,23 @@ async function ready(url) {
       await page.getByRole('button', { name: '关闭资料面板' }).click();
       await page.locator('.legacy-groups summary').filter({ hasText: 'status' }).click();
       assert.ok((await page.locator('.legacy-groups').innerText()).includes('姓名：迁移修士'));
+      assert.equal(await page.evaluate(() => {
+        const saves = JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves;
+        return saves.find(save => save.name === '导入旧局')?.legacyArchive?.payload?.legacyAiConfig?.providers?.[0]?.api_key;
+      }), 'imported-secret-not-exported', 'the local legacy archive must retain the original payload');
+      await page.goto(`http://127.0.0.1:${webPort}/saves`);
+      const importedCard = page.locator('.save-manager-list .card').filter({ hasText: '导入旧局' });
+      const [sanitizedDownload] = await Promise.all([
+        page.waitForEvent('download'),
+        importedCard.getByRole('button', { name: '导出' }).click(),
+      ]);
+      const sanitizedExport = JSON.parse(readFileSync(await sanitizedDownload.path(), 'utf8'));
+      assert.equal(JSON.stringify(sanitizedExport).includes('imported-secret-not-exported'), false, 'downloaded save must not contain archived API keys');
+      assert.equal(sanitizedExport.save.legacyArchive.payload.apiKey, '[已移除密钥]');
+      assert.equal(sanitizedExport.save.legacyArchive.payload.legacyAiConfig.providers[0].api_key, '[已移除密钥]');
+      assert.equal(sanitizedExport.save.legacyArchive.payload.world.key, '旧钥匙', 'non-credential game fields must survive export');
+      assert.equal(sanitizedExport.save.legacyArchive.payload.memory, '曾与守门弟子交谈');
+      await importedCard.getByRole('button', { name: '打开' }).click();
       const privateSavePath = process.env.JIUXIAO_PRIVATE_LEGACY_SAVE;
       if (width === 390 && privateSavePath) {
         const sourceBytes = readFileSync(privateSavePath);
