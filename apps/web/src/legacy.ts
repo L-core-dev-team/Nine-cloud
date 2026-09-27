@@ -45,6 +45,7 @@ function payloadFromText(file: File, text: string): ParsedLegacyPayload {
 }
 
 export function parseLegacySave(file: File, text: string): LocalSave {
+  if (file.size > MAX_IMPORT_BYTES) throw new Error('Legacy file exceeds 20 MiB import limit');
   const parsed = payloadFromText(file, text);
   const raw = parsed.payload;
   const now = new Date().toISOString();
