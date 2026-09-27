@@ -38,10 +38,11 @@ describe('legacy save importer', () => {
     expect(imported.legacyArchive?.payload.extensionFromOldVersion).toEqual({ opaque: [1, 2, 3] });
   });
 
-  it('extracts readable text from HTML and rejects an empty JSON object', () => {
+  it('extracts readable text from HTML and rejects invalid JSON imports', () => {
     const html = '<html><script>secret()</script><body><h1>山门</h1><p>流水声。</p></body></html>';
     const htmlSave = parseLegacySave(new File([html], '旧档.html'), html);
     expect(htmlSave.messages).toEqual(['山门 流水声。']);
-    expect(() => parseLegacySave(new File(['{}'], 'bad.json'), '{}')).toThrow();
+    expect(() => parseLegacySave(new File(['{}'], 'empty.json'), '{}')).toThrow();
+    expect(() => parseLegacySave(new File(['{"messages":'], 'broken.json'), '{"messages":')).toThrow('JSON legacy save is malformed');
   });
 });
