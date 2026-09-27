@@ -83,6 +83,23 @@ describe('S3 event log and turn boundary', () => {
     expect(decision).toHaveBeenCalledTimes(1);
   });
 
+  it('rejects a duplicate receipt when the supplied snapshot belongs to another save', async () => {
+    const save = initialSave();
+    const decide = vi.fn((_action: ActionIntent, snapshot: SaveEnvelope) => acceptedDecision(snapshot));
+    const first = await prepareTurn({ intent: intent(), save, decide, reduce: reducer });
+    if (first.status !== 'prepared') throw new Error('Expected fixture decision to prepare');
+
+    const otherSave = { ...first.save, saveId: 'other-fixture-save' };
+    await expect(prepareTurn({
+      intent: intent(),
+      save: otherSave,
+      priorReceipt: first.receipt,
+      decide,
+      reduce: reducer,
+    })).rejects.toMatchObject({ code: 'SAVE_ID_MISMATCH' });
+    expect(decide).toHaveBeenCalledTimes(1);
+  });
+
   it('rejects idempotency-key reuse with a different action and reports revision conflicts', async () => {
     const save = initialSave();
     const first = await prepareTurn({ intent: intent(), save, decide: (_action, snapshot) => acceptedDecision(snapshot), reduce: reducer });
