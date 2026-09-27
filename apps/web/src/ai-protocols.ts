@@ -34,6 +34,18 @@ export function buildProbeRequest(protocol: ProtocolId, baseUrl: string, model: 
   return { url: `${root}/v1beta/models/${encodeURIComponent(model)}:generateContent`, headers, body: { contents: [{ role: 'user', parts: [{ text: '请仅回复：通路已通' }] }], generationConfig: { maxOutputTokens: 24, temperature: 0 } } };
 }
 
+function textFromParts(value: unknown): string {
+  if (typeof value === 'string') return value;
+  if (!Array.isArray(value)) return '';
+  return value.map(part => {
+    if (typeof part === 'string') return part;
+    if (part && typeof part === 'object' && typeof (part as Record<string, unknown>).text === 'string') {
+      return (part as Record<string, unknown>).text as string;
+    }
+    return '';
+  }).join('');
+}
+
 export function parseProbeResponse(protocol: ProtocolId, payload: unknown): { text: string; inputTokens?: number | undefined; outputTokens?: number | undefined } {
   const body = payload && typeof payload === 'object' ? payload as Record<string, unknown> : {};
   if (protocol === 'openai-chat') {
@@ -41,19 +53,18 @@ export function parseProbeResponse(protocol: ProtocolId, payload: unknown): { te
     const first = choices[0] && typeof choices[0] === 'object' ? choices[0] as Record<string, unknown> : {};
     const message = first.message && typeof first.message === 'object' ? first.message as Record<string, unknown> : {};
     const usage = body.usage && typeof body.usage === 'object' ? body.usage as Record<string, unknown> : {};
-    return { text: typeof message.content === 'string' ? message.content : '', inputTokens: numberOrUndefined(usage.prompt_tokens), outputTokens: numberOrUndefined(usage.completion_tokens) };
+    return { text: textFromParts(message.content), inputTokens: numberOrUndefined(usage.prompt_tokens), outputTokens: numberOrUndefined(usage.completion_tokens) };
   }
   if (protocol === 'openai-responses') {
     const usage = body.usage && typeof body.usage === 'object' ? body.usage as Record<string, unknown> : {};
     const output = Array.isArray(body.output) ? body.output : [];
-    const text = output.flatMap(item => item && typeof item === 'object' && Array.isArray((item as Record<string, unknown>).content) ? (item as Record<string, unknown>).content as unknown[] : [])
-      .map(item => item && typeof item === 'object' ? (item as Record<string, unknown>).text : undefined).filter((item): item is string => typeof item === 'string').join('');
+    const text = textFromParts(output.flatMap(item => item && typeof item === 'object' && Array.isArray((item as Record<string, unknown>).content) ? (item as Record<string, unknown>).content as unknown[] : []));
     return { text: typeof body.output_text === 'string' ? body.output_text : text, inputTokens: numberOrUndefined(usage.input_tokens), outputTokens: numberOrUndefined(usage.output_tokens) };
   }
   if (protocol === 'anthropic-messages') {
     const usage = body.usage && typeof body.usage === 'object' ? body.usage as Record<string, unknown> : {};
     const content = Array.isArray(body.content) ? body.content : [];
-    const text = content.map(item => item && typeof item === 'object' ? (item as Record<string, unknown>).text : undefined).filter((item): item is string => typeof item === 'string').join('');
+    const text = textFromParts(content);
     return { text, inputTokens: numberOrUndefined(usage.input_tokens), outputTokens: numberOrUndefined(usage.output_tokens) };
   }
   const candidates = Array.isArray(body.candidates) ? body.candidates : [];
@@ -61,7 +72,7 @@ export function parseProbeResponse(protocol: ProtocolId, payload: unknown): { te
   const content = first.content && typeof first.content === 'object' ? first.content as Record<string, unknown> : {};
   const parts = Array.isArray(content.parts) ? content.parts : [];
   const usage = body.usageMetadata && typeof body.usageMetadata === 'object' ? body.usageMetadata as Record<string, unknown> : {};
-  return { text: parts.map(item => item && typeof item === 'object' ? (item as Record<string, unknown>).text : undefined).filter((item): item is string => typeof item === 'string').join(''), inputTokens: numberOrUndefined(usage.promptTokenCount), outputTokens: numberOrUndefined(usage.candidatesTokenCount) };
+  return { text: textFromParts(parts), inputTokens: numberOrUndefined(usage.promptTokenCount), outputTokens: numberOrUndefined(usage.candidatesTokenCount) };
 }
 
 function numberOrUndefined(value: unknown): number | undefined { return typeof value === 'number' && Number.isFinite(value) ? value : undefined; }
