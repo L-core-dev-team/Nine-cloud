@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseLegacySave } from './legacy.js';
+import { MAX_IMPORT_BYTES, parseLegacySave } from './legacy.js';
 
 describe('legacy save importer', () => {
   it('maps the native envelope without stringifying message objects', async () => {
@@ -36,6 +36,11 @@ describe('legacy save importer', () => {
     expect(imported.pending).toEqual(payload.pending);
     expect(imported.legacyArchive?.payload).toEqual(payload);
     expect(imported.legacyArchive?.payload.extensionFromOldVersion).toEqual({ opaque: [1, 2, 3] });
+  });
+
+  it('rejects oversized files at the parser boundary before parsing their contents', () => {
+    const file = new File([new Uint8Array(MAX_IMPORT_BYTES + 1)], 'oversized.txt');
+    expect(() => parseLegacySave(file, 'small placeholder')).toThrow('Legacy file exceeds 20 MiB import limit');
   });
 
   it('extracts readable text from HTML and rejects invalid JSON imports', () => {
