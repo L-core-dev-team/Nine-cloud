@@ -203,7 +203,9 @@ async function ready(url) {
         page.waitForEvent('download'),
         renamedCard.getByRole('button', { name: '导出' }).click(),
       ]);
-      assert.equal(JSON.parse(readFileSync(await branchDownload.path(), 'utf8')).save.name, `旁支修士-${width}`);
+      const exportedBranch = JSON.parse(readFileSync(await branchDownload.path(), 'utf8'));
+      assert.equal(exportedBranch.save.name, `旁支修士-${width}`);
+      assert.equal(JSON.stringify(exportedBranch).includes('test-secret-not-persisted'), false, 'save export must never include AI API keys');
       await renamedCard.getByRole('button', { name: '删除' }).click();
       assert.equal(await renamedCard.getByRole('button', { name: '确认删除' }).isDisabled(), true);
       await renamedCard.getByRole('textbox', { name: '确认名称' }).fill(`旁支修士-${width}`);
