@@ -155,10 +155,10 @@ async function ready(url) {
       await page.reload();
       await page.locator('.game-topline h1').waitFor();
       await page.locator('.pending-intent').filter({ hasText: '本地镜像配额失败时仍由 IndexedDB 保全的行动' }).waitFor();
-      assert.equal(await page.waitForFunction(() => {
+      assert.equal(await page.evaluate(() => {
         const mirror = JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2') || 'null');
         return mirror?.saves?.some(save => save.pendingQueue?.some(action => action.text === '本地镜像配额失败时仍由 IndexedDB 保全的行动'));
-      }), undefined);
+      }), true);
       assert.equal(await page.getByRole('button', { name: '角色状态', exact: true }).count(), 1, 'character status has one visible entry');
       assert.equal(await page.getByRole('button', { name: '综合情报', exact: true }).count(), 1, 'intel has one visible entry');
       assert.equal(await page.getByRole('button', { name: '星记忆', exact: true }).count(), 1, 'memory has one visible entry');
