@@ -199,7 +199,7 @@ function LegacyArchive({ save }: { save: LocalSave }) {
     const serialized = serializeJsonWithCredentialRedaction(value);
     const preview = serialized.slice(0, 12000);
     const summary = Array.isArray(value) ? `${value.length} 项` : value !== null && typeof value === 'object' ? `${Object.keys(value).length} 个字段` : typeof value === 'string' ? `${value.length} 字符` : '已保留';
-    return <details key={key}><summary>{key} <small>{summary}</small></summary><pre>{preview}{serialized.length > preview.length ? '\\n…预览已截断，完整内容仍保存在存档中。' : ''}</pre></details>;
+    return <details key={key}><summary>{key} <small>{summary}</small></summary><pre>{preview}{serialized.length > preview.length ? '\n…预览已截断，完整内容仍保存在存档中。' : ''}</pre></details>;
   })}</div></section>;
 }
 
