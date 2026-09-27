@@ -340,7 +340,7 @@ function App() {
     } catch { setNotice('旧 localStorage 存档无法通过校验，未写入新存储。原键和备份均保留。'); }
   }
   function importFile(file: File) {
-    if (file.size > MAX_IMPORT_BYTES) { setNotice('导入失败：文件超过 32 MiB 上限，原存档未修改。'); return; }
+    if (file.size > MAX_IMPORT_BYTES) { setNotice('导入失败：文件超过 20 MiB 上限，原存档未修改。'); return; }
     file.text().then(text => {
       downloadFileCopy(file, `九霄-导入前原文备份-${Date.now()}-${file.name}`);
       try {
