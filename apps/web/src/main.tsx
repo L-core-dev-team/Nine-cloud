@@ -5,7 +5,7 @@ import { searchReviewedWorldbook } from '@jiuxiao/content';
 import { AiSettings } from './ai-settings';
 import { MountainGateScene } from './scene';
 import { MAX_IMPORT_BYTES, migrateLegacyLibraryText, parseLegacySave } from './legacy';
-import { serializeSaveForExport } from './export-save';
+import { serializeJsonWithCredentialRedaction, serializeSaveForExport } from './export-save';
 import { clearDraft, commitSaves, createIdempotencyKey, createSaveId, hydrateSaves, readActionDraft, readDraft, readLegacyLibraryText, readSaves, writeActionDraft, writeDraft, type LocalSave } from './storage';
 import type { SaveCommitResult } from './idb';
 import './style.css';
@@ -194,8 +194,13 @@ function World({ onClose, save, onImportSupplement }: { onClose: () => void; sav
 function LegacyArchive({ save }: { save: LocalSave }) {
   const archive = save.legacyArchive;
   if (!archive) return null;
-  const keys = ['player', 'world', 'npcs', 'items', 'events', 'stm', 'ltm', 'facts', 'actions', 'legacy', 'supplements', 'pending', 'status', 'intel', 'memory'];
-  return <section className="card legacy-archive"><h3>旧档内容与迁移核对</h3><p>原始字段保存在这份存档的历史资料区，不作为新规则结算结果。展开可逐项核对。</p><div className="legacy-groups">{keys.filter(key => Object.prototype.hasOwnProperty.call(archive.payload, key)).map(key => <details key={key}><summary>{key} <small>{Array.isArray(archive.payload[key]) ? `${(archive.payload[key] as unknown[]).length} 项` : '已保留'}</small></summary><pre>{JSON.stringify(archive.payload[key], null, 2)}</pre></details>)}</div></section>;
+  const entries = Object.entries(archive.payload);
+  return <section className="card legacy-archive"><h3>旧档内容与迁移核对</h3><p>原始字段保存在这份存档的历史资料区，不作为新规则结算结果。展开可逐项核对；密钥字段会隐藏，单项预览最多显示 12000 字符。</p><div className="legacy-groups">{entries.map(([key, value]) => {
+    const serialized = serializeJsonWithCredentialRedaction(value);
+    const preview = serialized.slice(0, 12000);
+    const summary = Array.isArray(value) ? `${value.length} 项` : value !== null && typeof value === 'object' ? `${Object.keys(value).length} 个字段` : typeof value === 'string' ? `${value.length} 字符` : '已保留';
+    return <details key={key}><summary>{key} <small>{summary}</small></summary><pre>{preview}{serialized.length > preview.length ? '\\n…预览已截断，完整内容仍保存在存档中。' : ''}</pre></details>;
+  })}</div></section>;
 }
 
 function visibleLegacyText(value: unknown): string | null {
