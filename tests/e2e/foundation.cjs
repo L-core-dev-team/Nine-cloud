@@ -139,6 +139,26 @@ async function ready(url) {
       await page.getByText('沿山门石阶向前探看').waitFor();
       assert.ok((await page.locator('.pending-intent').filter({ hasText: '沿山门石阶向前探看' }).innerText()).includes('沿山门石阶向前探看'));
       assert.ok((await page.locator('.intent-composer').innerText()).includes('不会推进时间或改变角色状态'));
+      await page.evaluate(() => {
+        window.__restoreLocalStorageSetItem = Storage.prototype.setItem;
+        Storage.prototype.setItem = function(key, value) {
+          if (['jiuxiao_1_local_saves_v2', 'jiuxiao_1_local_saves', 'jiuxiao_1_local_saves_revision'].includes(key)) {
+            throw new DOMException('simulated storage quota', 'QuotaExceededError');
+          }
+          return window.__restoreLocalStorageSetItem.call(this, key, value);
+        };
+      });
+      await page.locator('#player-intent').fill('本地镜像配额失败时仍由 IndexedDB 保全的行动');
+      await page.getByRole('button', { name: '收入待处理' }).click();
+      await page.locator('.pending-intent').filter({ hasText: '本地镜像配额失败时仍由 IndexedDB 保全的行动' }).waitFor();
+      await page.evaluate(() => { Storage.prototype.setItem = window.__restoreLocalStorageSetItem; });
+      await page.reload();
+      await page.locator('.game-topline h1').waitFor();
+      await page.locator('.pending-intent').filter({ hasText: '本地镜像配额失败时仍由 IndexedDB 保全的行动' }).waitFor();
+      assert.equal(await page.waitForFunction(() => {
+        const mirror = JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2') || 'null');
+        return mirror?.saves?.some(save => save.pendingQueue?.some(action => action.text === '本地镜像配额失败时仍由 IndexedDB 保全的行动'));
+      }), undefined);
       assert.equal(await page.getByRole('button', { name: '角色状态', exact: true }).count(), 1, 'character status has one visible entry');
       assert.equal(await page.getByRole('button', { name: '综合情报', exact: true }).count(), 1, 'intel has one visible entry');
       assert.equal(await page.getByRole('button', { name: '星记忆', exact: true }).count(), 1, 'memory has one visible entry');
