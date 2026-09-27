@@ -402,6 +402,9 @@ async function ready(url) {
       await page.locator('.legacy-groups summary').filter({ hasText: 'legacyAiConfig' }).click();
       assert.ok((await page.locator('.legacy-groups').innerText()).includes('[已移除密钥]'), 'archive preview should redact credential fields');
       assert.equal((await page.locator('.legacy-groups').innerText()).includes('imported-secret-not-exported'), false, 'archive preview should not expose credential values');
+      await page.locator('.legacy-groups summary').filter({ hasText: 'apiKey' }).click();
+      assert.ok((await page.locator('.legacy-groups').innerText()).includes('[已移除密钥]'), 'top-level archive credential fields should also be redacted');
+      assert.equal((await page.locator('.legacy-groups').innerText()).includes('imported-secret-not-exported'), false, 'no archive preview should expose credential values');
       assert.equal(await page.evaluate(() => {
         const saves = JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves;
         return saves.find(save => save.name === '导入旧局')?.legacyArchive?.payload?.legacyAiConfig?.providers?.[0]?.api_key;
