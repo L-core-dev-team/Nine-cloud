@@ -11,7 +11,8 @@ function isCredentialKey(key: string): boolean {
 }
 
 /** Redacts structured credentials in serialized data without changing its source object. */
-export function serializeJsonWithCredentialRedaction(value: unknown): string {
+export function serializeJsonWithCredentialRedaction(value: unknown, rootKey = ''): string {
+  if (rootKey && isCredentialKey(rootKey)) return JSON.stringify(REDACTED);
   return JSON.stringify(value, (key, entry) => isCredentialKey(key) ? REDACTED : entry, 2) ?? 'null';
 }
 
