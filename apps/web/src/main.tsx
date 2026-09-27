@@ -239,9 +239,22 @@ function Game({ save, onExport, onImportSupplement, onUpdate, onBranch, onReload
     : [];
   const pendingCount = (pendingText ? 1 : 0) + pendingQueue.length;
   const archive = save.legacyArchive?.payload || {};
-  const panelContent = activePanel === 'character' ? archive.status ?? save.character
-    : activePanel === 'intel' ? archive.intel ?? archive.world ?? { location: save.location, status: save.status }
-      : activePanel === 'memory' ? archive.memory ?? archive.stm ?? archive.ltm ?? { note: '此存档尚无已归档记忆。' } : null;
+  const panelContent = activePanel === 'character' ? {
+    '当前角色资料': save.character,
+    ...(archive.status === undefined ? {} : { '旧版状态记录': archive.status }),
+  } : activePanel === 'intel' ? {
+    '当前地点': save.location,
+    ...(archive.world === undefined ? {} : { '旧版世界资料': archive.world }),
+    ...(archive.intel === undefined ? {} : { '旧版综合情报': archive.intel }),
+  } : activePanel === 'memory' ? (
+    archive.memory === undefined && archive.stm === undefined && archive.ltm === undefined
+      ? { note: '此存档尚无已归档记忆。' }
+      : {
+        ...(archive.memory === undefined ? {} : { '旧版记忆记录': archive.memory }),
+        ...(archive.stm === undefined ? {} : { '短期记忆': archive.stm }),
+        ...(archive.ltm === undefined ? {} : { '长期记忆': archive.ltm }),
+      }
+  ) : null;
   const messageOffset = Math.max(0, save.messages.length - 100);
   const readableMessages = save.messages.slice(-100).map((message, index) => ({ message, index: messageOffset + index, content: visibleLegacyText(message) })).filter(item => item.content !== null).slice(-80);
   async function saveIntent() {
