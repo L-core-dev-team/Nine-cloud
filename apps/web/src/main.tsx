@@ -196,7 +196,7 @@ function LegacyArchive({ save }: { save: LocalSave }) {
   if (!archive) return null;
   const entries = Object.entries(archive.payload);
   return <section className="card legacy-archive"><h3>旧档内容与迁移核对</h3><p>原始字段保存在这份存档的历史资料区，不作为新规则结算结果。展开可逐项核对；密钥字段会隐藏，单项预览最多显示 12000 字符。</p><div className="legacy-groups">{entries.map(([key, value]) => {
-    const serialized = serializeJsonWithCredentialRedaction(value);
+    const serialized = serializeJsonWithCredentialRedaction(value, key);
     const preview = serialized.slice(0, 12000);
     const summary = Array.isArray(value) ? `${value.length} 项` : value !== null && typeof value === 'object' ? `${Object.keys(value).length} 个字段` : typeof value === 'string' ? `${value.length} 字符` : '已保留';
     return <details key={key}><summary>{key} <small>{summary}</small></summary><pre>{preview}{serialized.length > preview.length ? '\n…预览已截断，完整内容仍保存在存档中。' : ''}</pre></details>;
