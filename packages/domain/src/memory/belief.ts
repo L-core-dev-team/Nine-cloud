@@ -1,5 +1,5 @@
 import type { DomainEvent } from '@jiuxiao/contracts';
-import type { NpcMemory, NpcObservation, ObservationGrant } from './policy.js';
+import { assertNpcMemory, type NpcMemory, type NpcObservation, type ObservationGrant } from './policy.js';
 
 /**
  * Records an explicitly granted observation. The caller must prove visibility
@@ -11,8 +11,17 @@ export function rememberObservedEvent(
   grant: ObservationGrant | undefined,
   observedAtMinute: number,
 ): NpcMemory {
-  if (!grant || grant.npcId !== memory.npcId || grant.eventId !== event.id) throw new Error('Observation grant does not match event and NPC');
-  if (!grant.visibleSummary.trim() || !Number.isSafeInteger(observedAtMinute) || observedAtMinute < 0) throw new Error('Invalid visible observation');
+  assertNpcMemory(memory);
+  if (!grant || typeof grant !== 'object' || grant.npcId !== memory.npcId || grant.eventId !== event.id) {
+    throw new Error('Observation grant does not match event and NPC');
+  }
+  if ((grant.channel !== 'witnessed' && grant.channel !== 'reported')
+    || typeof grant.visibleSummary !== 'string' || !grant.visibleSummary.trim()
+    || !Number.isSafeInteger(observedAtMinute) || observedAtMinute < 0
+    || !event || typeof event.id !== 'string' || !event.id.trim()
+    || !Number.isSafeInteger(event.afterRevision) || event.afterRevision < 1) {
+    throw new Error('Invalid visible observation');
+  }
   const observation: NpcObservation = {
     npcId: memory.npcId,
     eventId: event.id,
