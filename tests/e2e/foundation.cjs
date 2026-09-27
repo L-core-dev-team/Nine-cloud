@@ -344,6 +344,13 @@ async function ready(url) {
       await page.getByText(/导入失败：文件格式或内容不符合旧档契约/).waitFor();
       assert.equal(await page.locator('.import-preview').count(), 0, 'malformed JSON must not enter the import preview as story text');
       assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves.length), savesBeforeBadImport, 'a malformed import must not alter existing saves');
+      if (width === 390) {
+        const oversized = Buffer.alloc(20 * 1024 * 1024 + 1, 0x61);
+        await importInput.setInputFiles({ name: 'oversized.json', mimeType: 'application/json', buffer: oversized });
+        await page.getByText(/导入失败：文件超过 20 MiB 上限/).waitFor();
+        assert.equal(await page.locator('.import-preview').count(), 0, 'an oversized file must be rejected before preview');
+        assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves.length), savesBeforeBadImport, 'an oversized import must not alter existing saves');
+      }
       const legacyJson = JSON.stringify({ messages: [{ role: 'user', content: '旧档正文' }], status: '姓名：迁移修士' });
       const [backup] = await Promise.all([
         page.waitForEvent('download'),
