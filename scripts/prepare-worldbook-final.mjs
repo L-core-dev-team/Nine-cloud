@@ -3,6 +3,11 @@ import { join, resolve } from 'node:path';
 
 const [reviewArgument] = process.argv.slice(2);
 if (!reviewArgument) throw new Error('Usage: node scripts/prepare-worldbook-final.mjs <private-review-dir>');
+// The source manuscript here is a pre-recovery candidate, not the current Canon.
+const currentRegistry = JSON.parse(await readFile(new URL('../packages/content/src/canon.registry.json', import.meta.url), 'utf8'));
+if (currentRegistry.resolvedSourceGaps?.length) {
+  throw new Error('Historical preview cannot replace the recovered Canon. Use scripts/build-worldbook-reading-edition.mjs.');
+}
 const reviewDir = resolve(reviewArgument);
 const input = JSON.parse(await readFile(join(reviewDir, 'canon-review-registry.json'), 'utf8'));
 // The two foundation pages precede the named cultivation chapters in the source

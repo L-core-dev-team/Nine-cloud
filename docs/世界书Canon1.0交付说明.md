@@ -2,6 +2,8 @@
 
 本分支仅提交世界书数据包、构建脚本与审核记录。游戏页面、场景、AI 请求和存档逻辑由合作者的开发分支继续维护；本分支未改动这些文件。
 
+可直接审阅的完整正文在[正式阅读版](../outputs/九霄世界书/九霄世界书_Canon1.0_正式阅读版.md)，每条来源和省略号数量在[来源审核表](../outputs/九霄世界书/九霄世界书_Canon1.0_来源审核表.md)。两者从现行内容包生成，旧 `outputs/九霄世界书` 阶段快照不得当作当前入库数据。
+
 需要逐项判断“世界书作者侧已交付什么、哪些仍不能验收”时，见[作者侧交付验收索引](世界书作者侧交付验收索引.md)。
 
 ## 内容与来源
@@ -54,5 +56,6 @@
 - 带版本、来源引用、裁定与真实审核状态的作者侧登记：`packages/content/src/canon.registry.json`。
 - 查询、按场景选取、形成 AI 只读上下文：`packages/content/src/index.ts`。
 - 运行数据由 `node scripts/build-canon-runtime.mjs` 从登记生成；`node scripts/test-worldbook-final.mjs` 检查条目来源、179 张图的去向、逐图 OCR 审核状态、运行版隔离和关键正文。
+- 面向作者审阅的完整阅读版与来源表由 `node scripts/build-worldbook-reading-edition.mjs` 从现行运行包和登记册生成；更新登记册后依次重建运行包、阅读版，再运行测试。不得用早期 `世界书入库数据.json` 或历史一次性预览脚本覆盖。
 
 接入游戏时请调用 `retrieveCanon` 选取相关条目，再通过 `buildCanonPromptContext` 提供给 AI；不要将作者侧登记中的来源和审核字段塞入剧情提示词，也不要让 AI 的回合输出回写正式 Canon。本分支未自行改动合作者的游戏接入代码。

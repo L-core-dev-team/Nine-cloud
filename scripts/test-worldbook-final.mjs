@@ -4,6 +4,8 @@ import { readFile } from 'node:fs/promises';
 const readJson = async path => JSON.parse(await readFile(new URL(path, import.meta.url), 'utf8'));
 const registry = await readJson('../packages/content/src/canon.registry.json');
 const runtime = await readJson('../packages/content/src/canon-runtime.json');
+const readingEdition = await readFile(new URL('../outputs/九霄世界书/九霄世界书_Canon1.0_正式阅读版.md', import.meta.url), 'utf8');
+const sourceAudit = await readFile(new URL('../outputs/九霄世界书/九霄世界书_Canon1.0_来源审核表.md', import.meta.url), 'utf8');
 const sourceIds = new Set(registry.sourceRegistry.map(source => source.id));
 const entryIds = new Set(registry.entries.map(entry => entry.id));
 
@@ -21,6 +23,12 @@ assert.equal(registry.reviewSummary.authorAdditionsIncluded, 0);
 assert.equal(registry.reviewSummary.historicalAuthorAdditionsRetained, 5);
 assert.equal(registry.reviewSummary.supplementImagesDirectlyComparedAfterInitialReview, 14);
 assert.equal(runtime.entries.length, 34);
+assert.equal((readingEdition.match(/^## /gm) ?? []).length, runtime.entries.length);
+for (const entry of runtime.entries) {
+  assert.ok(readingEdition.includes(`## ${entry.title}\n\n${entry.content.trim()}\n`),
+    `reading edition differs from runtime: ${entry.id}`);
+  assert.ok(sourceAudit.includes(`| \`${entry.id}\` |`), `source audit misses ${entry.id}`);
+}
 assert.equal(entryIds.size, registry.entries.length);
 assert.equal(sourceIds.size, registry.sourceRegistry.length);
 assert.equal(registry.sourceRegistry.filter(source => source.id.startsWith('original_') && source.imageReviewMethod).length, 179);

@@ -3,6 +3,11 @@ import { join, resolve } from 'node:path';
 
 const [reviewArgument] = process.argv.slice(2);
 if (!reviewArgument) throw new Error('Usage: node scripts/write-worldbook-author-handoff.mjs <private-review-dir>');
+// Historical candidate handoff; its claims about missing pages predate Canon 1.0.
+const currentRegistry = JSON.parse(await readFile(new URL('../packages/content/src/canon.registry.json', import.meta.url), 'utf8'));
+if (currentRegistry.resolvedSourceGaps?.length) {
+  throw new Error('Historical handoff cannot overwrite the current author review. Use docs/世界书作者侧交付验收索引.md.');
+}
 const reviewDir = resolve(reviewArgument);
 const audit = JSON.parse(await readFile(join(reviewDir, 'source-audit.json'), 'utf8'));
 const registry = JSON.parse(await readFile(join(reviewDir, 'canon-review-registry.json'), 'utf8'));
