@@ -421,7 +421,9 @@ async function ready(url) {
       await page.locator('.game-topline h1').waitFor();
       await page.waitForFunction(() => localStorage.getItem('jiuxiao_1_local_saves_v2_damaged_backup') === '{damaged-json');
       assert.equal(await page.locator('.game-topline h1').innerText(), '旧库修士', 'a damaged mirror must not hide the durable save');
-      assert.equal((await page.evaluate(() => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves)).length, 1);
+      const restoredSaves = await page.evaluate(() => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves);
+      assert.equal(restoredSaves.length, 2, 'mirror recovery must retain both saves migrated from duplicate legacy IDs');
+      assert.equal(new Set(restoredSaves.map(save => save.saveId)).size, 2);
       await context.close();
 
       const damagedContext = await browser.newContext({ viewport: { width, height } });
