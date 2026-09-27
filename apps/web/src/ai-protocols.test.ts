@@ -31,6 +31,7 @@ describe('protocol connection probes', () => {
   });
 });
 
+describe('compatible multipart response parsing', () => {
   it('extracts text from content-part arrays across compatible protocols', () => {
     expect(parseProbeResponse('openai-chat', {
       choices: [{ message: { content: [{ type: 'text', text: '风' }, { type: 'image_url' }, { type: 'text', text: '起' }] } }],
