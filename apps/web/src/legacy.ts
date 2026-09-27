@@ -1,7 +1,7 @@
 import { LegacySaveFileSchema, type LegacySavePayload } from '@jiuxiao/contracts';
 import { createSaveId, nonNegativeInteger, type LocalSave } from './storage';
 
-export const MAX_IMPORT_BYTES = 32 * 1024 * 1024;
+export const MAX_IMPORT_BYTES = 20 * 1024 * 1024;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
