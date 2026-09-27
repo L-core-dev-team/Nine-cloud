@@ -1,4 +1,4 @@
-import type { NpcMemory, NpcObservation } from './policy.js';
+import { assertNpcMemory, type NpcMemory, type NpcObservation } from './policy.js';
 
 export type Recall = { observation: NpcObservation; accessibility: number };
 
@@ -9,7 +9,9 @@ export function retrieveNpcMemories(memory: NpcMemory, options: {
   limit: number;
   minAccessibility: number;
 }): Recall[] {
-  if (!Number.isSafeInteger(options.nowMinute) || options.nowMinute < 0
+  assertNpcMemory(memory);
+  if (!options || typeof options.query !== 'string'
+    || !Number.isSafeInteger(options.nowMinute) || options.nowMinute < 0
     || !Number.isSafeInteger(options.limit) || options.limit < 0 || options.limit > 100
     || !Number.isFinite(options.minAccessibility) || options.minAccessibility < 0 || options.minAccessibility > 1) {
     throw new Error('Invalid recall parameters');
