@@ -89,6 +89,9 @@ export async function prepareTurn(options: {
 }): Promise<TurnPreparation> {
   const intent = ActionIntentSchema.parse(options.intent);
   const save = SaveEnvelopeSchema.parse(options.save);
+  if (intent.saveId !== save.saveId) {
+    throw new TurnBoundaryError('SAVE_ID_MISMATCH', 'Action and save identifiers do not match.');
+  }
   const requestFingerprint = await fingerprintIntent(intent);
   const prior = options.priorReceipt ? TurnReceiptSchema.parse(options.priorReceipt) : undefined;
 
@@ -97,9 +100,6 @@ export async function prepareTurn(options: {
       return { status: 'idempotency-conflict' };
     }
     return { status: 'duplicate', receipt: prior };
-  }
-  if (intent.saveId !== save.saveId) {
-    throw new TurnBoundaryError('SAVE_ID_MISMATCH', 'Action and save identifiers do not match.');
   }
   if (intent.expectedRevision !== save.revision) {
     return { status: 'revision-conflict', expectedRevision: intent.expectedRevision, actualRevision: save.revision };
