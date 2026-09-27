@@ -15,6 +15,50 @@ describe('legacy save importer', () => {
     expect(save.location).toBe('山门');
   });
 
+  it('roundtrips native saves without losing queued actions or nesting the original archive', () => {
+    const originalArchive = {
+      sourceFormat: 'JIUXIAO_LEGACY_JSON',
+      sourceVersion: null,
+      payload: { messages: ['旧故事'], extension: { clue: '石阶剑痕' } },
+    };
+    const native = {
+      schemaVersion: 1, saveId: 'roundtrip-1', name: '往返修士',
+      createdAt: '2026-09-01T00:00:00.000Z', updatedAt: '2026-09-02T00:00:00.000Z',
+      revision: 4, canonVersion: 'legacy-unverified', ruleVersion: 'rules-not-signed',
+      memoryPolicyVersion: 'legacy-unknown', character: { name: '往返修士' },
+      location: '山门', status: 'pending_rules',
+      messages: [{ role: 'assistant', content: '旧故事' }],
+      pendingQueue: [{ id: 'intent-1', text: '观察山门' }],
+      legacyArchive: originalArchive,
+    };
+    const firstText = JSON.stringify({ format: 'JIUXIAO_SAVE', version: 1, save: native });
+    const once = parseLegacySave(new File([firstText], 'first.json'), firstText);
+    const secondText = JSON.stringify({ format: 'JIUXIAO_SAVE', version: 1, save: once });
+    const twice = parseLegacySave(new File([secondText], 'second.json'), secondText);
+    expect(once.pendingQueue).toEqual(native.pendingQueue);
+    expect(twice.pendingQueue).toEqual(native.pendingQueue);
+    expect(once.legacyArchive).toEqual(originalArchive);
+    expect(twice.legacyArchive).toEqual(originalArchive);
+    expect(twice.ruleVersion).toBe('rules-not-signed');
+  });
+
+  it('archives a native save without an existing archive only once', () => {
+    const native = {
+      schemaVersion: 1, saveId: 'roundtrip-2', name: '新局修士',
+      createdAt: '2026-09-01T00:00:00.000Z', updatedAt: '2026-09-02T00:00:00.000Z',
+      revision: 0, canonVersion: 'legacy-unverified', ruleVersion: 'rules-not-signed',
+      memoryPolicyVersion: 'legacy-unknown', character: {},
+      location: '山门', status: 'pending_rules', messages: [], pendingQueue: [],
+    };
+    const firstText = JSON.stringify({ format: 'JIUXIAO_SAVE', version: 1, save: native });
+    const once = parseLegacySave(new File([firstText], 'first.json'), firstText);
+    const secondText = JSON.stringify({ format: 'JIUXIAO_SAVE', version: 1, save: once });
+    const twice = parseLegacySave(new File([secondText], 'second.json'), secondText);
+    expect(once.legacyArchive?.payload).toEqual(native);
+    expect(twice.legacyArchive?.payload).toEqual(native);
+    expect(twice.legacyArchive?.payload.legacyArchive).toBeUndefined();
+  });
+
   it('keeps legacy supplementary fields separate from authoritative state', () => {
     const text = JSON.stringify({ messages: [], status: '姓名：测试修士', intel: '地点：山门', memory: '初到山门' });
     const save = parseLegacySave(new File([text], 'legacy-chat.json'), text);
