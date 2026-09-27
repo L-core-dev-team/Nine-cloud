@@ -26,11 +26,13 @@ describe('NPC memory projection boundary', () => {
 
   it('rejects malformed persisted memories and invalid creation policies', () => {
     expect(() => createNpcMemory('npc-1', 'unknown-policy' as never)).toThrow('policy version');
-    const malformed = createNpcMemory('npc-1', 'exact-recall-v1');
-    malformed.observations = [{
-      npcId: 'npc-1', eventId: event.id, eventRevision: 1, observedAtMinute: -1,
-      channel: 'witnessed', summary: '看见来客',
-    }];
+    const malformed = {
+      ...createNpcMemory('npc-1', 'exact-recall-v1'),
+      observations: [{
+        npcId: 'npc-1', eventId: event.id, eventRevision: 1, observedAtMinute: -1,
+        channel: 'witnessed' as const, summary: '看见来客',
+      }],
+    };
     expect(() => retrieveNpcMemories(malformed, { nowMinute: 0, query: '', limit: 5, minAccessibility: 0 }))
       .toThrow('Invalid NPC memory observation');
     expect(() => retrieveNpcMemories(createNpcMemory('npc-1', 'exact-recall-v1'), {
