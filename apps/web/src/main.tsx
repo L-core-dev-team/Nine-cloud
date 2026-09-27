@@ -5,6 +5,7 @@ import { searchReviewedWorldbook } from '@jiuxiao/content';
 import { AiSettings } from './ai-settings';
 import { MountainGateScene } from './scene';
 import { MAX_IMPORT_BYTES, migrateLegacyLibraryText, parseLegacySave } from './legacy';
+import { serializeSaveForExport } from './export-save';
 import { clearDraft, commitSaves, createIdempotencyKey, createSaveId, hydrateSaves, readActionDraft, readDraft, readLegacyLibraryText, readSaves, writeActionDraft, writeDraft, type LocalSave } from './storage';
 import type { SaveCommitResult } from './idb';
 import './style.css';
@@ -373,7 +374,7 @@ function App() {
     if (!result.ok) { setSaves(result.saves); setNotice(result.reason === 'conflict' ? '存档列表刚有变化，导入未覆盖任何内容。请核对最新列表后再选“另存副本”或重试。' : '浏览器数据库不可写，存档尚未导入。已下载的原始备份仍可使用。'); return; }
     setSaves(result.saves); setImportPreview(null); setNotice(`已导入「${candidate.name}」。原始旧档字段保存在历史资料区。`); go(`/game/${candidate.saveId}`);
   }
-  function exportFile(save = saves[0]) { if (!save) { setNotice('暂无可导出的存档。'); return; } downloadText(`九霄-${save.name}.json`, JSON.stringify({ format: 'JIUXIAO_SAVE', version: 1, save }, null, 2), 'application/json;charset=utf-8'); setNotice('存档已导出。'); }
+  function exportFile(save = saves[0]) { if (!save) { setNotice('暂无可导出的存档。'); return; } downloadText(`九霄-${save.name}.json`, serializeSaveForExport(save), 'application/json;charset=utf-8'); setNotice('存档已导出。'); }
   function importSupplement(file: File, save: LocalSave) {
     if (file.size > 100_000) { setNotice('补充资料需小于 100 KB，当前存档未修改。'); return; }
     void file.text().then(text => {
