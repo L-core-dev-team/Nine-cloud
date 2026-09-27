@@ -353,7 +353,15 @@ async function ready(url) {
         assert.equal(await page.locator('.import-preview').count(), 0, 'an oversized file must be rejected before preview');
         assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves.length), savesBeforeBadImport, 'an oversized import must not alter existing saves');
       }
-      const legacyJson = JSON.stringify({ messages: [{ role: 'user', content: '旧档正文' }], status: '姓名：迁移修士' });
+      const legacyJson = JSON.stringify({
+        messages: [{ role: 'user', content: '旧档正文' }],
+        status: '姓名：迁移修士',
+        world: { location: '旧档山门', weather: '夜雨' },
+        intel: { clue: '石阶留有剑痕' },
+        memory: '曾与守门弟子交谈',
+        stm: ['短期线索甲'],
+        ltm: ['长期约定乙'],
+      });
       const [backup] = await Promise.all([
         page.waitForEvent('download'),
         importInput.setInputFiles({ name: 'legacy-chat.json', mimeType: 'application/json', buffer: Buffer.from(legacyJson) }),
@@ -364,6 +372,23 @@ async function ready(url) {
       assert.equal(await page.locator('.import-preview h2').innerText(), '导入旧局');
       await page.getByRole('button', { name: '导入此档' }).click();
       assert.equal(await page.locator('.game-topline h1').innerText(), '导入旧局');
+      await page.getByRole('button', { name: '角色状态', exact: true }).click();
+      let legacyPanel = page.locator('.game-info-panel [aria-label="资料内容"]');
+      assert.ok((await legacyPanel.innerText()).includes('旧版状态记录'));
+      assert.ok((await legacyPanel.innerText()).includes('姓名：迁移修士'));
+      await page.getByRole('button', { name: '关闭资料面板' }).click();
+      await page.getByRole('button', { name: '综合情报', exact: true }).click();
+      legacyPanel = page.locator('.game-info-panel [aria-label="资料内容"]');
+      assert.ok((await legacyPanel.innerText()).includes('旧档世界资料'));
+      assert.ok((await legacyPanel.innerText()).includes('旧档综合情报'));
+      assert.ok((await legacyPanel.innerText()).includes('石阶留有剑痕'));
+      await page.getByRole('button', { name: '关闭资料面板' }).click();
+      await page.getByRole('button', { name: '星记忆', exact: true }).click();
+      legacyPanel = page.locator('.game-info-panel [aria-label="资料内容"]');
+      for (const memoryField of ['旧版记忆记录', '短期记忆', '长期记忆', '曾与守门弟子交谈', '短期线索甲', '长期约定乙']) {
+        assert.ok((await legacyPanel.innerText()).includes(memoryField), `memory panel should retain ${memoryField}`);
+      }
+      await page.getByRole('button', { name: '关闭资料面板' }).click();
       await page.locator('.legacy-groups summary').filter({ hasText: 'status' }).click();
       assert.ok((await page.locator('.legacy-groups').innerText()).includes('姓名：迁移修士'));
       const privateSavePath = process.env.JIUXIAO_PRIVATE_LEGACY_SAVE;
