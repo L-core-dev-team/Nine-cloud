@@ -363,11 +363,18 @@ async function ready(url) {
       await page.evaluate(() => new Promise(resolve => {
         localStorage.removeItem('jiuxiao_1_local_saves');
         localStorage.removeItem('jiuxiao_1_local_saves_v2');
-        localStorage.setItem('jiuxiao_v1_library', JSON.stringify({ version: 1, active: 'old-1', saves: [{
-          id: 'old-1', name: '旧库修士', turn: 2,
-          messages: Array.from({ length: 40 }, (_, index) => ({ role: 'assistant', content: `旧档正文 ${index + 1}` })),
-          player: { 姓名: '旧库修士' }, world: { location: '山门' },
-        }] }));
+        localStorage.setItem('jiuxiao_v1_library', JSON.stringify({ version: 1, active: 'old-1', saves: [
+          {
+            id: 'old-1', name: '旧库修士', turn: 2,
+            messages: Array.from({ length: 40 }, (_, index) => ({ role: 'assistant', content: `旧档正文 ${index + 1}` })),
+            player: { 姓名: '旧库修士' }, world: { location: '山门' },
+          },
+          {
+            id: 'old-1', name: '重名旧库修士', turn: 3,
+            messages: [{ role: 'assistant', content: '重复 ID 仍须保全的内容。' }],
+            player: { 姓名: '重名旧库修士' }, world: { location: '山门' },
+          },
+        ] }));
         const request = indexedDB.deleteDatabase('jiuxiao-1');
         request.onsuccess = request.onerror = request.onblocked = () => resolve();
       }));
@@ -379,7 +386,11 @@ async function ready(url) {
         page.getByRole('button', { name: '下载原文备份并迁移' }).click(),
       ]);
       assert.ok(libraryBackup.suggestedFilename().startsWith('九霄-旧localStorage原文备份-'));
-      await page.getByText(/已迁移 1 份旧局/).waitFor();
+      await page.getByText(/已迁移 2 份旧局/).waitFor();
+      const migratedSaves = await page.evaluate(() => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves);
+      assert.equal(migratedSaves.length, 2, 'duplicate legacy IDs must migrate without dropping either save');
+      assert.equal(new Set(migratedSaves.map(save => save.saveId)).size, 2, 'duplicate legacy IDs must receive a unique copy ID');
+      assert.equal(migratedSaves.some(save => save.messages.some(message => message.content === '重复 ID 仍须保全的内容。')), true);
       await page.getByRole('button', { name: '继续游玩' }).click();
       await page.locator('.game-topline h1').waitFor();
       assert.equal(await page.locator('.game-topline h1').innerText(), '旧库修士');
