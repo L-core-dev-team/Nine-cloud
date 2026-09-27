@@ -31,6 +31,22 @@ describe('protocol connection probes', () => {
   });
 });
 
+  it('extracts text from content-part arrays across compatible protocols', () => {
+    expect(parseProbeResponse('openai-chat', {
+      choices: [{ message: { content: [{ type: 'text', text: '风' }, { type: 'image_url' }, { type: 'text', text: '起' }] } }],
+    }).text).toBe('风起');
+    expect(parseProbeResponse('openai-responses', {
+      output: [{ content: [{ type: 'output_text', text: '云' }] }],
+    }).text).toBe('云');
+    expect(parseProbeResponse('anthropic-messages', {
+      content: [{ type: 'tool_use', id: 'ignored' }, { type: 'text', text: '月' }],
+    }).text).toBe('月');
+    expect(parseProbeResponse('gemini-content', {
+      candidates: [{ content: { parts: [{ text: '影' }, { functionCall: { name: 'ignored' } }] } }],
+    }).text).toBe('影');
+  });
+});
+
 describe('OpenRouter inventory snapshot', () => {
   it('converts per-token prices, removes expired/non-text entries and supports author filtering', () => {
     const now = Date.parse('2026-09-24T00:00:00Z');
