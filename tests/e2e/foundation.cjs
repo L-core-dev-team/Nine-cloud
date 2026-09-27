@@ -379,8 +379,8 @@ async function ready(url) {
       await page.getByRole('button', { name: '关闭资料面板' }).click();
       await page.getByRole('button', { name: '综合情报', exact: true }).click();
       legacyPanel = page.locator('.game-info-panel [aria-label="资料内容"]');
-      assert.ok((await legacyPanel.innerText()).includes('旧档世界资料'));
-      assert.ok((await legacyPanel.innerText()).includes('旧档综合情报'));
+      assert.ok((await legacyPanel.innerText()).includes('旧版世界资料'));
+      assert.ok((await legacyPanel.innerText()).includes('旧版综合情报'));
       assert.ok((await legacyPanel.innerText()).includes('石阶留有剑痕'));
       await page.getByRole('button', { name: '关闭资料面板' }).click();
       await page.getByRole('button', { name: '星记忆', exact: true }).click();
