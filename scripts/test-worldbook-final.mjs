@@ -16,16 +16,21 @@ assert.equal(registry.reviewSummary.supplementImagesIndependentlyOcrCrosschecked
 assert.equal(registry.reviewSummary.imageByImageIndependentOcrCrosscheckComplete, true);
 assert.equal(registry.reviewSummary.originalTranscriptionOverreachCorrected, 1);
 assert.equal(registry.reviewSummary.imageByImageVisualVerificationComplete, false);
-assert.equal(registry.entries.length, 38);
-assert.equal(registry.reviewSummary.authorAdditionsIncluded, 5);
-assert.equal(runtime.entries.length, registry.entries.length);
+assert.equal(registry.entries.length, 39);
+assert.equal(registry.reviewSummary.authorAdditionsIncluded, 0);
+assert.equal(registry.reviewSummary.historicalAuthorAdditionsRetained, 5);
+assert.equal(registry.reviewSummary.supplementImagesDirectlyComparedAfterInitialReview, 14);
+assert.equal(runtime.entries.length, 34);
 assert.equal(entryIds.size, registry.entries.length);
 assert.equal(sourceIds.size, registry.sourceRegistry.length);
 assert.equal(registry.sourceRegistry.filter(source => source.id.startsWith('original_') && source.imageReviewMethod).length, 179);
 assert.equal(registry.sourceRegistry.filter(source => source.id.startsWith('supplement_') && source.imageReviewMethod).length, 28);
-assert.equal(registry.reviewQueue.length, 6, 'source gaps that cannot be safely restored must remain explicit');
+assert.equal(registry.reviewQueue.length, 0, 'all six former source gaps have direct-image evidence');
+assert.equal(registry.resolvedSourceGaps.length, 6);
+assert.ok(registry.resolvedSourceGaps.every(item => item.status === 'confirmed' &&
+  item.sourceRefs.every(id => sourceIds.has(id))));
 assert.ok(registry.reviewQueue.every(item => item.status === 'pending_review' && sourceIds.has(item.sourceId)));
-assert.ok(registry.entries.every(entry => entry.status === 'confirmed' &&
+assert.ok(registry.entries.every(entry => ['confirmed', 'deprecated'].includes(entry.status) &&
   entry.canonVersion === registry.activeVersion && entry.content.trim() &&
   entry.sourceRefs.length && entry.sourceRefs.every(id => sourceIds.has(id)) &&
   (!entry.parentId || entryIds.has(entry.parentId))));
@@ -34,17 +39,15 @@ const citedSources = new Set([
   ...registry.entries.flatMap(entry => entry.sourceRefs),
 ]);
 assert.ok(registry.sourceRegistry.filter(source => source.id.startsWith('original_')).every(source => citedSources.has(source.id)));
-assert.deepEqual(runtime.entries.map(entry => entry.id), registry.entries.slice()
+assert.deepEqual(runtime.entries.map(entry => entry.id), registry.entries.filter(entry => entry.status === 'confirmed')
   .sort((a, b) => a.sortOrder - b.sortOrder).map(entry => entry.id));
 assert.ok(runtime.entries.every(entry => !('sourceRefs' in entry)));
 const authorAdditions = registry.entries.filter(entry => entry.origin === 'author_addition');
 assert.equal(authorAdditions.length, 5);
-assert.ok(authorAdditions.every(entry => entry.sourceRefs.length === 1 &&
+assert.ok(authorAdditions.every(entry => entry.status === 'deprecated' && entry.sourceRefs.length === 1 &&
   entry.sourceRefs[0] === 'author_delegation_20260926' &&
-  entry.publicSourceNote.includes('非原图转写')));
-assert.equal(runtime.entries.filter(entry => entry.origin === 'author_addition').length, 5);
-assert.ok(runtime.entries.filter(entry => entry.origin === 'author_addition')
-  .every(entry => entry.publicSourceNote.includes('非原图转写')));
+  entry.publicSourceNote.includes('历史作者授权补充')));
+assert.equal(runtime.entries.filter(entry => entry.origin === 'author_addition').length, 0);
 assert.ok(!runtime.entries.some(entry => entry.origin === 'author_addition' &&
   /《冰原潜行术》|黄阶上品\s*\|\s*\d|玄阶下品\s*\|\s*\d/.test(entry.content)));
 const text = runtime.entries.map(entry => entry.content).join('\n');
@@ -55,7 +58,13 @@ for (const expected of ['万兽洪荒经', '圣火教', '资质决定论', '法�
 }
 const tiangong = registry.entries.find(entry => entry.id === 'faction_tiangong_ge');
 assert.ok(tiangong.sections.find(section => section.title === '三大流派分支').content.startsWith('巨构院\n'));
-assert.ok(!tiangong.content.includes('技术挑战。这里是天工阁保持活力的心脏。'));
+assert.ok(tiangong.content.includes('技术挑战。这里是天工阁保持活力的心脏。'));
+assert.ok(tiangong.content.includes('三大学宫：巨构、器灵、神机'));
+assert.ok(registry.entries.find(entry => entry.id === 'faction_sihai_shanghui').content.includes('客卿院：商会的“利剑”'));
+assert.ok(registry.entries.find(entry => entry.id === 'faction_jixia_xuegong').content.includes('戒律院：由修习《天宪宝典》'));
+assert.ok(registry.entries.find(entry => entry.id === 'faction_beijing_lianmeng').sections
+  .some(section => section.title === '幽影部 - 《冰原潜行术》'));
+assert.ok(runtime.entries.some(entry => entry.id === 'system_economy' && entry.content.includes('灵石品级分为')));
 assert.ok(registry.entries.find(entry => entry.id === 'faction_jingang_buhai_gu').sections.some(section => section.title === '山门场所'));
 assert.ok(!text.includes('地点类条目小节'));
 const haotian = registry.entries.find(entry => entry.id === 'faction_haotian_jianzong');
@@ -97,7 +106,7 @@ const jiedan = realms.sections.find(section => section.title === '结丹期').co
 assert.ok(!jiedan.includes('气态灵力压缩为液态灵力'));
 assert.ok(jiedan.includes('液态灵力压缩凝结成一颗固态金丹'));
 const prices = registry.entries.find(entry => entry.id === 'system_prices').content;
-assert.ok(prices.includes('| 黄阶中品 | 300 | 400 | 500 | 750 |\n| 玄阶中品 |'));
+assert.ok(prices.includes('| 黄阶中品 | 300 | 400 | 500 | 750 |\n| 黄阶上品 | 800 | 1,000 | 1,300 | 2,000 |\n| 玄阶下品 | 4,000 | 5,000 | 6,500 | 10,000 |\n| 玄阶中品 |'));
 assert.ok(prices.includes('| 地阶上品 | 80万(80上品) | 100万(100上品) | 130万(130上品) | 180万(180上品) |\n天阶'));
 assert.ok(!prices.includes('|…'));
 assert.equal(registry.entries.filter(entry => entry.category === 'region' && entry.id !== 'region_honghuang_yaolin').length, 5);

@@ -3,6 +3,12 @@ import { join, resolve } from 'node:path';
 
 const [reviewArgument] = process.argv.slice(2);
 if (!reviewArgument) throw new Error('Usage: node scripts/finalize-worldbook-canon.mjs <private-review-dir>');
+// This historical one-shot finalizer predates the author's recovered source screenshots.
+// Re-running it over the current registry would erase those confirmed corrections.
+const currentRegistry = JSON.parse(await readFile(new URL('../packages/content/src/canon.registry.json', import.meta.url), 'utf8'));
+if (currentRegistry.resolvedSourceGaps?.length) {
+  throw new Error('Historical finalizer cannot overwrite the recovered Canon registry; use the current registry as source of truth.');
+}
 const reviewDir = resolve(reviewArgument);
 const readJson = async name => JSON.parse(await readFile(join(reviewDir, name), 'utf8'));
 const preview = await readJson('canon-final-preview.json');
