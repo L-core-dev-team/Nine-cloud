@@ -120,6 +120,9 @@ export function readSaves(): LocalSave[] {
 }
 
 export async function commitSaves(expected: LocalSave[], proposed: LocalSave[]): Promise<SaveCommitResult> {
+  if (!strictSaveArray(expected) || !strictSaveArray(proposed)) {
+    return { ok: false, reason: 'unavailable', saves: readSaves(), conflictIds: [], revision: 0 };
+  }
   try {
     const local = inspectLocalSaves();
     const indexed = await readIndexedSnapshot();
