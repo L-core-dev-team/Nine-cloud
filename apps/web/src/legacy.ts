@@ -1,5 +1,5 @@
 import { LegacySaveFileSchema, type LegacySavePayload } from '@jiuxiao/contracts';
-import { createSaveId, nonNegativeInteger, type LocalSave } from './storage';
+import { createSaveId, isLocalSave, nonNegativeInteger, type LocalSave } from './storage';
 
 export const MAX_IMPORT_BYTES = 20 * 1024 * 1024;
 
@@ -49,6 +49,20 @@ export function parseLegacySave(file: File, text: string): LocalSave {
   const parsed = payloadFromText(file, text);
   const raw = parsed.payload;
   const now = new Date().toISOString();
+  if (parsed.sourceFormat === 'JIUXIAO_SAVE' && parsed.sourceVersion === 1 && isLocalSave(raw)) {
+    return {
+      ...raw,
+      updatedAt: now,
+      canonVersion: 'legacy-unverified',
+      ruleVersion: 'rules-not-signed',
+      memoryPolicyVersion: 'legacy-unknown',
+      legacyArchive: raw.legacyArchive ?? {
+        sourceFormat: 'JIUXIAO_SAVE',
+        sourceVersion: 1,
+        payload: raw as unknown as Record<string, unknown>,
+      },
+    };
+  }
   const character = isRecord(raw.character) ? raw.character : isRecord(raw.player) ? raw.player : {};
   const world = isRecord(raw.world) ? raw.world : {};
   const id = textOrFallback(raw.saveId ?? raw.id, createSaveId());
