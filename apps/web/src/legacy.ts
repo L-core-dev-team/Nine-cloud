@@ -12,12 +12,12 @@ function textOrFallback(value: unknown, fallback: string): string {
 }
 
 function extractPlainText(text: string): string {
-  return text.replace(/<script[\\s\\S]*?<\\/script>/gi, '')
-    .replace(/<style[\\s\\S]*?<\\/style>/gi, '')
+  return text.replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
     .replace(/<[^>]+>/g, ' ')
     .replace(/&nbsp;|&#160;/gi, ' ')
     .replace(/&amp;/gi, '&').replace(/&lt;/gi, '<').replace(/&gt;/gi, '>')
-    .replace(/\\s+/g, ' ').trim();
+    .replace(/\s+/g, ' ').trim();
 }
 
 function supplementOf(raw: LegacySavePayload): Record<string, unknown> | undefined {
@@ -38,10 +38,10 @@ function payloadFromText(file: File, text: string): ParsedLegacyPayload {
     if (isRecord(value.save)) return { payload: value.save as LegacySavePayload, sourceFormat: 'JIUXIAO_SAVE', sourceVersion: typeof value.version === 'number' ? value.version : null };
     return { payload: value as LegacySavePayload, sourceFormat: 'JIUXIAO_LEGACY_JSON', sourceVersion: null };
   }
-  if (/\\.json$/i.test(file.name)) throw new Error('JSON legacy save is malformed');
+  if (/\.json$/i.test(file.name)) throw new Error('JSON legacy save is malformed');
   const plain = extractPlainText(text);
   if (!plain) throw new Error('Legacy file has no readable text');
-  return { payload: { name: file.name.replace(/\\.(html?|txt)$/i, '') || '导入旧局', messages: [plain] }, sourceFormat: 'JIUXIAO_LEGACY_TEXT', sourceVersion: null };
+  return { payload: { name: file.name.replace(/\.(html?|txt)$/i, '') || '导入旧局', messages: [plain] }, sourceFormat: 'JIUXIAO_LEGACY_TEXT', sourceVersion: null };
 }
 
 export function parseLegacySave(file: File, text: string): LocalSave {
