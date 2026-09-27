@@ -10,8 +10,12 @@ function isCredentialKey(key: string): boolean {
   return normalized.endsWith('apikey') || normalized.endsWith('apitoken') || CREDENTIAL_KEYS.has(normalized);
 }
 
+/** Redacts structured credentials in serialized data without changing its source object. */
+export function serializeJsonWithCredentialRedaction(value: unknown): string {
+  return JSON.stringify(value, (key, entry) => isCredentialKey(key) ? REDACTED : entry, 2) ?? 'null';
+}
+
 /** Redacts structured credentials in the downloaded copy without changing the local archive. */
 export function serializeSaveForExport(save: LocalSave): string {
-  return JSON.stringify({ format: 'JIUXIAO_SAVE', version: 1, save }, (key, value) =>
-    isCredentialKey(key) ? REDACTED : value, 2);
+  return serializeJsonWithCredentialRedaction({ format: 'JIUXIAO_SAVE', version: 1, save });
 }
