@@ -1,16 +1,18 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { commitSaves, type LocalSave } from './storage';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { commitSaves, hydrateSaves, type LocalSave } from './storage';
 
 const indexed = vi.hoisted(() => ({
   readIndexedSnapshot: vi.fn(),
   commitIndexedSaves: vi.fn(),
+  initializeIndexedSaves: vi.fn(),
+  restoreLocalMirror: vi.fn(),
 }));
 
 vi.mock('./idb', () => ({
   readIndexedSnapshot: indexed.readIndexedSnapshot,
   commitIndexedSaves: indexed.commitIndexedSaves,
-  initializeIndexedSaves: vi.fn(),
-  restoreLocalMirror: vi.fn(),
+  initializeIndexedSaves: indexed.initializeIndexedSaves,
+  restoreLocalMirror: indexed.restoreLocalMirror,
 }));
 
 const validSave: LocalSave = {
@@ -29,10 +31,28 @@ const validSave: LocalSave = {
   messages: [],
 };
 
+function stubLocalStorage(entries: Array<[string, string]> = []): void {
+  const values = new Map(entries);
+  vi.stubGlobal('localStorage', {
+    getItem: (key: string) => values.get(key) ?? null,
+    setItem: (key: string, value: string) => { values.set(key, String(value)); },
+    removeItem: (key: string) => { values.delete(key); },
+    clear: () => { values.clear(); },
+    key: (index: number) => [...values.keys()][index] ?? null,
+    get length() { return values.size; },
+  } as Storage);
+}
+
 describe('local save commit boundary', () => {
   beforeEach(() => {
     indexed.readIndexedSnapshot.mockReset();
     indexed.commitIndexedSaves.mockReset();
+    indexed.initializeIndexedSaves.mockReset();
+    indexed.restoreLocalMirror.mockReset();
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   it('rejects malformed proposed or expected saves before touching IndexedDB', async () => {
@@ -55,5 +75,43 @@ describe('local save commit boundary', () => {
     if (!result.ok) expect(result.reason).toBe('unavailable');
     expect(indexed.readIndexedSnapshot).not.toHaveBeenCalled();
     expect(indexed.commitIndexedSaves).not.toHaveBeenCalled();
+  });
+
+  it('does not initialize an empty database from a stale legacy array when the v2 mirror is damaged', async () => {
+    const damagedMirror = '{damaged-v2';
+    const legacyCopy = JSON.stringify([validSave]);
+    stubLocalStorage([
+      ['jiuxiao_1_local_saves_v2', damagedMirror],
+      ['jiuxiao_1_local_saves', legacyCopy],
+    ]);
+    indexed.readIndexedSnapshot.mockResolvedValue({ saves: [], revision: 0, initialized: false });
+
+    const hydrated = await hydrateSaves();
+    expect(hydrated.indexedDb).toBe(false);
+    expect(hydrated.saves).toEqual([validSave]);
+    expect(hydrated.warning).toMatch(/未初始化数据库/);
+    expect(indexed.initializeIndexedSaves).not.toHaveBeenCalled();
+    expect(localStorage.getItem('jiuxiao_1_local_saves_v2')).toBe(damagedMirror);
+    expect(localStorage.getItem('jiuxiao_1_local_saves')).toBe(legacyCopy);
+
+    const attemptedCommit = await commitSaves([validSave], [{ ...validSave, updatedAt: '2026-09-28T00:00:00.000Z' }]);
+    expect(attemptedCommit.ok).toBe(false);
+    if (!attemptedCommit.ok) expect(attemptedCommit.reason).toBe('unavailable');
+    expect(indexed.initializeIndexedSaves).not.toHaveBeenCalled();
+    expect(indexed.commitIndexedSaves).not.toHaveBeenCalled();
+  });
+
+  it('still imports the legacy array when no v2 mirror exists', async () => {
+    stubLocalStorage([['jiuxiao_1_local_saves', JSON.stringify([validSave])]]);
+    const uninitialized = { saves: [], revision: 0, initialized: false };
+    const initialized = { saves: [validSave], revision: 0, initialized: true };
+    indexed.readIndexedSnapshot.mockResolvedValueOnce(uninitialized).mockResolvedValueOnce(initialized);
+    indexed.initializeIndexedSaves.mockResolvedValue(initialized);
+    indexed.restoreLocalMirror.mockReturnValue(true);
+
+    const hydrated = await hydrateSaves();
+
+    expect(hydrated).toEqual({ saves: [validSave], indexedDb: true });
+    expect(indexed.initializeIndexedSaves).toHaveBeenCalledWith([validSave]);
   });
 });
