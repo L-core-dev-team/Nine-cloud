@@ -9,7 +9,8 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "test:integration": "vitest run src/app.integration.test.ts"
+    "test:integration": "vitest run src/app.integration.test.ts",
+    "test:s6:integration": "vitest run src/services/cloud-save-repository.integration.test.ts"
   },
   "dependencies": {
     "@hono/node-server": "2.1.1",

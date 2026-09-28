@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { catalogVerifiedOn, providerCatalog } from './ai-provider-catalog';
 import { buildProbeRequest, parseProbeResponse, protocolLabels, type ProtocolId } from './ai-protocols';
 import { filterRouterModels, normalizeRouterModels, type RouterModel } from './ai-model-inventory';
+import { modelSamplingPolicy } from './ai-model-compatibility';
+import { estimateModelCost, MODEL_RATE_SNAPSHOT_DATE } from './ai-model-pricing';
 
 const CONFIG_KEY = 'jx10_ai_config_v2';
 const LOG_KEY = 'jx10_ai_call_log_v1';
@@ -48,18 +50,18 @@ const presets: Preset[] = [
   {
     id: 'mist', title: '疏影 · 省用', tone: '把常用岗位放在轻量价位；高级剧情默认关闭。',
     detail: '主线与档案用 DeepSeek Flash，状态整理用通义千问 Flash；高级剧情预填豆包 Seed Pro，但默认停用。', temperature: 0.72, topP: 0.9, maxTokens: 2048,
-    models: { story: 'deepseek-flash', director: 'qwen3.8-flash', stateManager: 'qwen3.8-flash', archive: 'deepseek-flash', premiumDirector: 'doubao-seed-2-1-pro-260915' },
+    models: { story: 'deepseek-flash', director: 'qwen3.8-flash', stateManager: 'qwen3.8-flash', archive: 'deepseek-flash', premiumDirector: 'doubao-seed-2.1-pro' },
     providers: { story: 'deepseek', director: 'aliyun', stateManager: 'aliyun', archive: 'deepseek', premiumDirector: 'ark' },
     adapters: { story: 'openai-chat', director: 'openai-chat', stateManager: 'openai-chat', archive: 'openai-chat', premiumDirector: 'openai-chat' },
-    reasons: { story: '主线按实际预算选择低价文本模型；可用自己的剧情样本复核文风。', director: '常规节奏检查使用千问 Flash，减少高频调用的单价。', stateManager: '状态抽取偏结构化、重复调用多，选千问 Flash。', archive: '档案候选以归纳为主，先压低整理成本。', premiumDirector: '预填官方目录中的现行豆包 Seed Pro ID，但默认关闭，避免闲置扣费。' },
+    reasons: { story: '主线按实际预算选择低价文本模型；可用自己的剧情样本复核文风。', director: '常规节奏检查使用千问 Flash，减少高频调用的单价。', stateManager: '状态抽取偏结构化、重复调用多，选千问 Flash。', archive: '档案候选以归纳为主，先压低整理成本。', premiumDirector: '预填方舟当前文档列出的 doubao-seed-2.1-pro，默认关闭；启用前先核对账号可用的接入点。' },
   },
   {
     id: 'balanced', title: '行云 · 合宜', tone: '把预算留给正文和关键判断，整理岗位用轻量型号。',
-    detail: '主剧情用 DeepSeek V4 Pro，导演用豆包 Seed Pro；状态和档案分别用通义千问 Flash、DeepSeek Flash。', temperature: 0.78, topP: 0.92, maxTokens: 4096,
-    models: { story: 'deepseek-v4-pro', director: 'doubao-seed-2-1-pro-260915', stateManager: 'qwen3.8-flash', archive: 'deepseek-flash', premiumDirector: 'doubao-seed-2-1-pro-260915' },
+    detail: '主剧情用 DeepSeek V4.1 Flash，导演用豆包 Seed Pro；状态和档案分别用通义千问 Flash、DeepSeek Flash。', temperature: 0.78, topP: 0.92, maxTokens: 4096,
+    models: { story: 'deepseek-flash', director: 'doubao-seed-2.1-pro', stateManager: 'qwen3.8-flash', archive: 'deepseek-flash', premiumDirector: 'doubao-seed-2.1-pro' },
     providers: { story: 'deepseek', director: 'ark', stateManager: 'aliyun', archive: 'deepseek', premiumDirector: 'ark' },
     adapters: { story: 'openai-chat', director: 'openai-chat', stateManager: 'openai-chat', archive: 'openai-chat', premiumDirector: 'openai-chat' },
-    reasons: { story: 'DeepSeek V4 Pro 官方价按峰谷时段浮动；长篇表现仍需用九霄样本盲测。', director: '豆包 Seed Pro 适合复杂规划候选；费用高于轻量档，按需保留。', stateManager: '结构化重复任务采用低价 Flash。', archive: '归档时重在压缩与检索线索，避免占用高阶预算。', premiumDirector: '预填强档但默认关闭；只有启用并实际调用时才会产生费用。' },
+    reasons: { story: '使用厂商当前公开的 deepseek-flash ID；V4.1 Flash 支持长上下文，峰时与非峰时单价不同。九霄文风仍须盲测。', director: '豆包 Seed Pro 作为章节结构候选；按常规在线推理公开价估算，按需保留。', stateManager: '结构化重复任务采用低价 Flash。', archive: '归档时重在压缩与检索线索，避免占用高阶预算。', premiumDirector: '预填方舟当前模型名但默认关闭；启用前需核对账号可用的接入点与计费档。' },
   },
   {
     id: 'longform', title: '长歌 · 旗舰', tone: '把高阶模型留给正文、导演和关键场面；结构整理另选合适型号。',
@@ -87,27 +89,9 @@ const presets: Preset[] = [
   },
 ];
 
-const MODEL_RATES: Record<string, { input: number; output: number; currency: 'USD' | 'CNY' }> = {
-  'doubao-seed-2-1-pro-260915': { input: 6, output: 30, currency: 'CNY' },
-  'deepseek-flash': { input: 0.3, output: 1.2, currency: 'USD' },
-  'deepseek-v4-pro': { input: 1.32, output: 3.96, currency: 'USD' },
-  'qwen3.8-flash': { input: 0.8, output: 2.7, currency: 'CNY' },
-  'qwen3.8-max': { input: 12, output: 36, currency: 'CNY' },
-  'kimi-k3': { input: 3, output: 15, currency: 'USD' },
-  'gpt-6-astra': { input: 10, output: 50, currency: 'USD' },
-  'claude-opus-5-5': { input: 4, output: 20, currency: 'USD' },
-  'claude-sonnet-5': { input: 2, output: 10, currency: 'USD' },
-  'gemini-3.8-flash': { input: 0.75, output: 3.75, currency: 'USD' },
-  'gpt-6-sol': { input: 2, output: 10, currency: 'USD' },
-};
-const MODEL_RATE_SNAPSHOT_DATE = '2026-09-24';
-function modelRates(model: string) {
-  if (model === 'gemini-3.8-flash' && Date.now() >= Date.parse('2027-01-01T00:00:00+08:00')) return { input: 1.5, output: 7.5, currency: 'USD' as const };
-  return MODEL_RATES[model];
-}
 const MODEL_CONTEXT: Record<string, number> = {
   'deepseek-flash': 1_000_000, 'deepseek-v4-pro': 1_000_000,
-  'doubao-seed-2-1-pro-260915': 1_024_000, 'qwen3.8-flash': 1_000_000,
+  'doubao-seed-2.1-pro': 1_024_000, 'qwen3.8-flash': 1_000_000,
   'qwen3.8-max': 1_000_000, 'kimi-k3': 1_000_000,
   'gpt-6-astra': 1_050_000, 'gpt-6-sol': 1_050_000, 'gpt-6-luna': 1_050_000,
   'claude-opus-5-5': 1_000_000, 'claude-sonnet-5': 1_000_000, 'gemini-3.8-flash': 1_048_576,
@@ -307,17 +291,24 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
   function applyPreset(preset: Preset) {
     const next: AiConfig = {
       ...config, activePresetId: preset.id,
-      roles: Object.fromEntries(roleMeta.map(role => [role.id, {
-        ...config.roles[role.id], enabled: role.id === 'premiumDirector' ? false : true, model: preset.models[role.id], adapter: preset.adapters[role.id],
-        baseUrl: providerDefaults[preset.providers[role.id]] || config.roles[role.id].baseUrl,
-        temperature: preset.temperature, topP: preset.topP, maxTokens: preset.maxTokens,
-        topK: 0, frequencyPenalty: 0, presencePenalty: 0, repetitionPenalty: 1, seed: null,
-        timeoutSeconds: 90, contextWindowTokens: MODEL_CONTEXT[preset.models[role.id]] || 32768,
-        responseFormat: role.id === 'stateManager' || role.id === 'archive' ? 'json_object' : 'text',
-        streaming: true,
-        reasoningEffort: preset.id === 'longform' ? 'high' : 'default',
-        stopSequences: '',
-      }])) as AiConfig['roles'],
+      roles: Object.fromEntries(roleMeta.map(role => {
+        const model = preset.models[role.id];
+        const sampling = modelSamplingPolicy(model);
+        return [role.id, {
+          ...config.roles[role.id], enabled: role.id === 'premiumDirector' ? false : true, model, adapter: preset.adapters[role.id],
+          baseUrl: providerDefaults[preset.providers[role.id]] || config.roles[role.id].baseUrl,
+          // For providers that own sampling, store safe placeholders; request adapters must omit them.
+          temperature: sampling.supported.temperature ? preset.temperature : 1,
+          topP: sampling.supported.topP ? preset.topP : 1,
+          maxTokens: preset.maxTokens,
+          topK: 0, frequencyPenalty: 0, presencePenalty: 0, repetitionPenalty: 1, seed: null,
+          timeoutSeconds: 90, contextWindowTokens: MODEL_CONTEXT[model] || 32768,
+          responseFormat: role.id === 'stateManager' || role.id === 'archive' ? 'json_object' : 'text',
+          streaming: true,
+          reasoningEffort: preset.id === 'longform' ? 'high' : 'default',
+          stopSequences: '',
+        }];
+      })) as AiConfig['roles'],
       retryCount: preset.id === 'mist' ? 0 : 1, retryDelaySeconds: 2,
       logRetentionDays: 7, archiveInterval: 25, contextCount: preset.id === 'mist' ? 4 : 8,
       allowLegacyMigration: false,
@@ -404,12 +395,12 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
     let unpricedRoles = 0;
     for (const role of roleMeta) {
       const model = preset.models[role.id];
-      const rates = modelRates(model);
+      const rates = estimateModelCost(model, 0, 0);
       if (!rates) { if (estimateUsage[role.id].callsPer100 > 0) unpricedRoles += 1; continue; }
       const usage = estimateUsage[role.id];
       const calls = (Math.max(0, usage.callsPer100) / 100) * Math.max(0, rounds);
-      const amount = (usage.inputTokens * rates.input + usage.outputTokens * rates.output) / 1_000_000 * calls;
-      totals[rates.currency] = (totals[rates.currency] || 0) + amount;
+      const amount = estimateModelCost(model, usage.inputTokens, usage.outputTokens)?.amount || 0;
+      totals[rates.currency] = (totals[rates.currency] || 0) + amount * calls;
     }
     const priced = Object.entries(totals).map(([currency, amount]) => `${currency === 'CNY' ? '¥' : '$'}${amount.toFixed(5)}`).join(' + ') || '价格待核';
     return unpricedRoles ? `${priced}（${unpricedRoles} 个岗位缺直连价）` : priced;
@@ -428,7 +419,7 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
   return <section className="page ai-page">
     <h1 className="ai-title">AI 设定</h1>
     <p>配置五个岗位的模型与调用方式。密钥只在本页临时使用。</p>
-    <div className="ai-start-actions"><button className="provider-open" onClick={() => { setCatalogSearch(''); setModal({ kind: 'catalog', view: 'providers' }); }}><span>⌕</span><span><strong>模型与服务商目录</strong><small>查模型、接入方式与官方价格</small></span><b>打开目录　›</b></button><span className="catalog-date">价格核验日：{catalogVerifiedOn}</span></div>
+    <div className="ai-start-actions"><button className="provider-open" onClick={() => { setCatalogSearch(''); setModal({ kind: 'catalog', view: 'providers' }); }}><span>⌕</span><span><strong>模型与服务商目录</strong><small>查模型、接入方式与官方价格</small></span><b>打开目录　›</b></button><span className="catalog-date">服务商资料：{catalogVerifiedOn}　·　推荐价格快照：{MODEL_RATE_SNAPSHOT_DATE}</span></div>
     <button className="comparison-link" onClick={() => setModal({ kind: 'catalog', view: 'comparison' })}><span>价格与能力总览比较</span><span>打开模型比较　›</span></button>
     <div className="recommend-heading"><div><span className="eyebrow">五岗位分别选型</span><h2>青鸟推荐</h2></div><p>先用推荐值起步；每个岗位都能单独改模型、参数和密钥。</p></div>
     {config.activePresetId && presets.find(item => item.id === config.activePresetId) && <div className="active-recipe" role="status"><span className="active-seal">青</span><span><strong>青鸟 · {presets.find(item => item.id === config.activePresetId)!.title}</strong><small>推荐参数已填入。请为启用的岗位填写对应 API Key；高级剧情默认停用。游戏回合调度尚未接入。</small></span><button className="text-button" onClick={() => setModal({ kind: 'catalog', view: 'providers' })}>打开服务商目录</button></div>}
@@ -439,6 +430,7 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
     <section className="role-list" aria-label="五个 AI 岗位">
       {roleMeta.map((role, index) => {
         const active = config.roles[role.id];
+        const sampling = modelSamplingPolicy(active.model);
         return <details className="role-panel" key={role.id} open={index === 0 ? undefined : false}>
           <summary><span className="role-index">0{index + 1}</span><span className="role-summary"><strong>{role.title}</strong><small>{role.purpose}</small></span><span className={active.enabled ? (active.model.trim() && active.baseUrl.trim() ? 'role-state enabled' : 'role-state pending') : 'role-state'}>{active.enabled ? (active.model.trim() && active.baseUrl.trim() ? '已配置' : '待配置') : '已停用'}</span></summary>
           <div className="role-fields">
@@ -448,13 +440,13 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
             <label className="setting-field">Base URL<input value={active.baseUrl} onChange={event => updateRole(role.id, 'baseUrl', event.target.value)} placeholder="https://api.example.com" inputMode="url" autoComplete="url" /><small>填写服务商的 API 根地址，通常无需填写具体操作路径。非本机地址必须使用 HTTPS。</small></label>
             <label className="setting-field">API Key（仅当前页面内存）<input type="password" value={keys[role.id] || ''} onChange={event => setKeys(current => ({ ...current, [role.id]: event.target.value }))} placeholder="粘贴当前岗位使用的密钥" autoComplete="new-password" /><small>不写入存档、设置文件或调用记录；离开页面或刷新后需要重输。不要把密钥发给协作者或提交到 Git。</small></label>
             <div className="number-grid">
-              <label className="setting-field">Temperature<input type="number" min="0" max="2" step="0.05" value={active.temperature} onChange={event => updateRole(role.id, 'temperature', clampNumber(event.target.value, 0, 2, active.temperature))} /></label>
-              <label className="setting-field">TopP<input type="number" min="0" max="1" step="0.01" value={active.topP} onChange={event => updateRole(role.id, 'topP', clampNumber(event.target.value, 0, 1, active.topP))} /></label>
+              <label className="setting-field">Temperature<input type="number" min="0" max="2" step="0.05" value={active.temperature} disabled={!sampling.supported.temperature} onChange={event => updateRole(role.id, 'temperature', clampNumber(event.target.value, 0, 2, active.temperature))} />{!sampling.supported.temperature && <small>由该型号的默认设置控制。</small>}</label>
+              <label className="setting-field">TopP<input type="number" min="0" max="1" step="0.01" value={active.topP} disabled={!sampling.supported.topP} onChange={event => updateRole(role.id, 'topP', clampNumber(event.target.value, 0, 1, active.topP))} />{!sampling.supported.topP && <small>由该型号的默认设置控制。</small>}</label>
               <label className="setting-field">最大回复 tokens<input type="number" min="128" max="131072" step="128" value={active.maxTokens} onChange={event => updateRole(role.id, 'maxTokens', clampNumber(event.target.value, 128, 131072, active.maxTokens, true))} /></label>
               <label className="setting-field">超时（秒）<input type="number" min="5" max="600" step="5" value={active.timeoutSeconds} onChange={event => updateRole(role.id, 'timeoutSeconds', clampNumber(event.target.value, 5, 600, active.timeoutSeconds, true))} /></label>
             </div>
             <details className="advanced-fields"><summary>更多生成选项与服务细节</summary><div className="number-grid">
-              <label className="setting-field">Top K<input type="number" min="0" max="500" value={active.topK} onChange={event => updateRole(role.id, 'topK', clampNumber(event.target.value, 0, 500, active.topK, true))} /><small>0 表示不指定；部分服务商不支持。</small></label>
+              <label className="setting-field">Top K<input type="number" min="0" max="500" value={active.topK} disabled={!sampling.supported.topK} onChange={event => updateRole(role.id, 'topK', clampNumber(event.target.value, 0, 500, active.topK, true))} /><small>{sampling.supported.topK ? '0 表示不指定；部分服务商不支持。' : '由该型号的默认设置控制。'}</small></label>
               <label className="setting-field">Frequency Penalty<input type="number" min="-2" max="2" step="0.05" value={active.frequencyPenalty} onChange={event => updateRole(role.id, 'frequencyPenalty', clampNumber(event.target.value, -2, 2, active.frequencyPenalty))} /></label>
               <label className="setting-field">Presence Penalty<input type="number" min="-2" max="2" step="0.05" value={active.presencePenalty} onChange={event => updateRole(role.id, 'presencePenalty', clampNumber(event.target.value, -2, 2, active.presencePenalty))} /></label>
               <label className="setting-field">Repetition Penalty<input type="number" min="0" max="2" step="0.05" value={active.repetitionPenalty} onChange={event => updateRole(role.id, 'repetitionPenalty', clampNumber(event.target.value, 0, 2, active.repetitionPenalty))} /><small>非所有 API 采用相同范围与语义。</small></label>
@@ -464,7 +456,7 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
               <label className="setting-field">推理强度<select value={active.reasoningEffort} onChange={event => updateRole(role.id, 'reasoningEffort', event.target.value as RoleConfig['reasoningEffort'])}><option value="default">服务商默认</option><option value="low">低</option><option value="medium">中</option><option value="high">高</option></select><small>只有支持该参数的型号才能使用。</small></label>
               <label className="toggle-line"><input type="checkbox" checked={active.streaming} onChange={event => updateRole(role.id, 'streaming', event.target.checked)} />期望使用流式输出</label>
               <label className="setting-field advanced-wide">停止序列（每行一项）<textarea rows={3} maxLength={1000} value={active.stopSequences} onChange={event => updateRole(role.id, 'stopSequences', event.target.value.slice(0, 1000))} placeholder="留空表示不设置" /><small>不同服务商支持情况不同；当前仅保存，不会发送。</small></label>
-            </div><p className="quiet-note">这些字段目前作为受约束的配置草案保存；游戏回合尚未接入岗位调度，不会发送以上采样参数。不同服务商接受的参数不同，正式接入时会按能力表过滤。</p><p className="quiet-note">世界 Canon、规则和状态契约不开放给自由提示词或正则表达式改写。模型不得凭输出直接改变生命、物品、任务等权威状态。</p></details>
+            </div>{sampling.note && <p className="quiet-note" role="note">{sampling.note}</p>}<p className="quiet-note">采样值目前只保存为本地草案；游戏回合尚未接入岗位调度。接入调度时，受限型号必须省略这些字段；未知 Model ID 仍须按服务商文档核对。</p><p className="quiet-note">世界 Canon、规则和状态契约不开放给自由提示词或正则表达式改写。模型不得凭输出直接改变生命、物品、任务等权威状态。</p></details>
             <div className="connection-row"><span>该岗位的连接测试</span><button className="secondary" onClick={() => void testConnection(role.id)} disabled={testing || !config.connectionTestAllowed || !active.enabled}>{testing ? '测试中…' : '测试此岗位'}</button></div>
           </div>
         </details>;
@@ -473,7 +465,7 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
     <label className="toggle-line test-permission"><input type="checkbox" checked={config.connectionTestAllowed} onChange={event => setConfig(current => ({ ...current, connectionTestAllowed: event.target.checked }))} />允许连接测试</label>
     <p className="quiet-note">测试会发送一次极短文本请求，可能产生费用。浏览器跨域策略也可能阻止直连；失败不代表 Model ID 一定错误。</p>
     <section className="card settings-card"><h3>全局调度与隐私</h3><div className="number-grid">
-      <label className="setting-field">调用记录保留（天）<select value={config.logRetentionDays} onChange={event => setConfig(current => ({ ...current, logRetentionDays: Number(event.target.value) }))}><option value="0">不保存</option><option value="1">1 天</option><option value="7">7 天</option><option value="30">30 天</option><option value="90">90 天</option></select></label>
+      <label className="setting-field">调用记录最长保留（天）<select value={config.logRetentionDays} onChange={event => setConfig(current => ({ ...current, logRetentionDays: Number(event.target.value) }))}><option value="0">不保存</option><option value="1">1 天</option><option value="7">7 天</option><option value="30">30 天</option><option value="90">90 天</option></select><small>只保存在当前标签页会话的 sessionStorage 中；关闭标签页后可能提前清除。所选天数是到期上限。</small></label>
       <label className="setting-field">世界档案整理周期（回合）<input type="number" min="1" max="100" value={config.archiveInterval} onChange={event => setConfig(current => ({ ...current, archiveInterval: clampNumber(event.target.value, 1, 100, config.archiveInterval, true) }))} /></label>
       <label className="setting-field">近期上下文消息数<input type="number" min="0" max="120" value={config.contextCount} onChange={event => setConfig(current => ({ ...current, contextCount: clampNumber(event.target.value, 0, 120, config.contextCount, true) }))} /></label>
       <label className="setting-field">失败后重试次数<input type="number" min="0" max="3" value={config.retryCount} onChange={event => setConfig(current => ({ ...current, retryCount: clampNumber(event.target.value, 0, 3, config.retryCount, true) }))} /><small>仅供后续回合调度使用；当前设置页不会自动重试连接测试。</small></label>
@@ -531,7 +523,7 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
             <div className="estimate-inputs"><label>每日回合<input type="number" min="0" max="10000" value={dailyRounds} onChange={event => setDailyRounds(clampNumber(event.target.value, 0, 10000, 20, true))} /></label><label>每周回合<input type="number" min="0" max="70000" value={weeklyRounds} onChange={event => setWeeklyRounds(clampNumber(event.target.value, 0, 70000, 140, true))} /></label></div>
             <details className="usage-breakdown"><summary>按岗位调整调用频次与 tokens</summary><div className="usage-rows">{roleMeta.map(role => <div className="usage-row" key={role.id}><strong>{role.title}</strong><label>每百回合调用<input aria-label={`${role.title}每百回合调用次数`} type="number" min="0" max="500" step="1" value={estimateUsage[role.id].callsPer100} onChange={event => setEstimateUsage(current => ({ ...current, [role.id]: { ...current[role.id], callsPer100: clampNumber(event.target.value, 0, 500, current[role.id].callsPer100) } }))} /></label><label>单次输入<input aria-label={`${role.title}单次输入 tokens`} type="number" min="0" max="1000000" step="100" value={estimateUsage[role.id].inputTokens} onChange={event => setEstimateUsage(current => ({ ...current, [role.id]: { ...current[role.id], inputTokens: clampNumber(event.target.value, 0, 1000000, current[role.id].inputTokens, true) } }))} /></label><label>单次输出<input aria-label={`${role.title}单次输出 tokens`} type="number" min="0" max={modal.preset.maxTokens} step="100" value={estimateUsage[role.id].outputTokens} onChange={event => setEstimateUsage(current => ({ ...current, [role.id]: { ...current[role.id], outputTokens: clampNumber(event.target.value, 0, modal.preset.maxTokens, current[role.id].outputTokens, true) } }))} /></label></div>)}</div></details>
             <div className="estimate-totals"><strong>{presetEstimate(modal.preset)} / 回合</strong><span>{presetEstimate(modal.preset, dailyRounds)} / 日</span><span>{presetEstimate(modal.preset, weeklyRounds)} / 周</span></div>
-            <small>有公开直连价的岗位按 {MODEL_RATE_SNAPSHOT_DATE} 价目快照估算；Gemini 3.8 Flash 促销价到期后按已公告标准价切换。缺价岗位会单独标出。美元、人民币分列。未计缓存、长上下文阶梯价、推理 token、工具费、税费、折扣和失败请求。岗位调度尚未接入，实际调用量未知；这只是预算参考，不是账单。</small></section>
+            <small>按 {MODEL_RATE_SNAPSHOT_DATE} 厂商公开价估算：DeepSeek 取直连峰时未命中缓存价，阿里云取中国（北京）标准档，火山方舟取常规在线推理价。GPT‑6 单次输入超过 272K tokens 时计入官方长上下文倍率；Gemini 3.8 Flash 到期后切换已公告的标准价。美元、人民币分列。输入输出 token 数由你填写；思考 token 也可能计入输出用量。尚未计缓存命中、地域/接入点差异、阶梯价、折扣、税费、工具费和失败请求。游戏岗位调度尚未接入，实际调用量未知；这不是账单。价格来源：<a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noreferrer">DeepSeek</a> · <a href="https://docs.volcengine.com/docs/ark/model-pricing?lang=zh" target="_blank" rel="noreferrer">火山方舟</a> · <a href="https://help.aliyun.com/en/model-studio/model-pricing" target="_blank" rel="noreferrer">阿里云</a> · <a href="https://platform.kimi.ai/" target="_blank" rel="noreferrer">Kimi</a> · <a href="https://developers.openai.com/api/docs/pricing" target="_blank" rel="noreferrer">OpenAI</a> · <a href="https://platform.claude.com/docs/en/models/overview" target="_blank" rel="noreferrer">Anthropic</a> · <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noreferrer">Google</a></small></section>
         </>
         }
         {modal?.kind === 'logs' && <>

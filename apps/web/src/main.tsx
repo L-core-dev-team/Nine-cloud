@@ -1,9 +1,13 @@
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { SAVE_SCHEMA_VERSION } from '@jiuxiao/contracts';
-import { searchReviewedWorldbook } from '@jiuxiao/content';
+import { sceneForLocation, searchReviewedWorldbook, type SceneId } from '@jiuxiao/content';
 import { AiSettings } from './ai-settings';
 import { MountainGateScene } from './scene';
+import { startSyntheticWaterAmbience, type AmbientAudioHandle } from './ambient-audio';
+import { DEFAULT_GRAPHICS_SETTINGS, loadGraphicsSettings, saveGraphicsSettings, type GraphicsSettings } from './graphics-settings';
+import { GraphicsSettingsPage } from './routes/GraphicsSettings';
+import { SceneAtmosphere, type SceneRenderStatus } from './scenes/SceneAtmosphere';
 import { MAX_IMPORT_BYTES, migrateLegacyLibraryText, parseLegacySave } from './legacy';
 import { serializeJsonWithCredentialRedaction, serializeSaveForExport } from './export-save';
 import { clearDraft, commitSaves, createIdempotencyKey, createSaveId, hydrateSaves, readActionDraft, readDraft, readLegacyLibraryText, readSaves, writeActionDraft, writeDraft, type LocalSave } from './storage';
@@ -49,14 +53,14 @@ function downloadFileCopy(file: File, name: string): void {
 
 type Theme = 'night' | 'day';
 
-function Shell({ children, saves, notice, noticeAction, theme, onThemeChange, onImport, onExport }: { children: ReactNode; saves: LocalSave[]; notice: string; noticeAction?: ReactNode; theme: Theme; onThemeChange: () => void; onImport: (file: File) => void; onExport: () => void }) {
+function Shell({ children, saves, notice, noticeAction, theme, onThemeChange, onImport, onExport, sceneId, graphicsSettings, ambientAudioActive, onToggleAmbientAudio }: { children: ReactNode; saves: LocalSave[]; notice: string; noticeAction?: ReactNode; theme: Theme; onThemeChange: () => void; onImport: (file: File) => void; onExport: () => void; sceneId: SceneId; graphicsSettings: GraphicsSettings; ambientAudioActive: boolean; onToggleAmbientAudio: () => void }) {
   const [menu, setMenu] = useState(false);
   const themeLabel = theme === 'night' ? '夜色' : '晴昼';
   const nextThemeLabel = theme === 'night' ? '晴昼' : '夜色';
   const themeAction = () => { onThemeChange(); setMenu(false); };
   const isLanding = route() === '/';
   const showNavigation = !isLanding;
-  return <div className={isLanding ? 'jx-shell landing-shell' : 'jx-shell'}><header><button className="brand" onClick={() => go('/')}>踏月过山门，天地任君行。</button>{showNavigation && <nav><button onClick={() => go('/lobby')}>山门</button><button onClick={() => go('/world')}>世界设定</button><button onClick={() => go('/settings/ai')}>AI 设置</button></nav>}<button className="theme-toggle" aria-label={`切换到${nextThemeLabel}配色`} onClick={onThemeChange}>{themeLabel}</button><button className="menu" aria-expanded={menu} onClick={() => setMenu(open => !open)}>菜单</button></header>{menu && <aside><strong>{saves.length ? `${saves.length} 份本地存档` : '暂无存档'}</strong>{showNavigation && <><button onClick={() => { setMenu(false); go('/lobby'); }}>回到山门</button><button onClick={() => { setMenu(false); go('/new'); }}>新开一局</button><button onClick={() => { setMenu(false); go('/world'); }}>阅读世界设定</button><button onClick={() => { setMenu(false); go('/settings/ai'); }}>AI 设置</button></>}<button onClick={() => { setMenu(false); onExport(); }}>导出存档</button><button onClick={themeAction}>切换到{nextThemeLabel}配色</button><label>导入旧档 / JSON<input type="file" accept=".json,.txt,.html,.htm" onChange={event => { const file = event.target.files?.[0]; if (file) onImport(file); event.currentTarget.value = ''; }} /></label></aside>}{notice && <p className="notice" role="status">{notice} {noticeAction}</p>}<main>{children}</main><footer><span>本地优先 · API 密钥不写入存档</span><span>契约 v{SAVE_SCHEMA_VERSION}</span></footer></div>;
+  return <div className={isLanding ? 'jx-shell landing-shell' : 'jx-shell'}><SceneAtmosphere sceneId={sceneId} theme={theme} settings={graphicsSettings} /><header><button className="brand" onClick={() => go('/')}>踏月过山门，天地任君行。</button>{showNavigation && <nav><button onClick={() => go('/lobby')}>山门</button><button onClick={() => go('/world')}>世界设定</button><button onClick={() => go('/settings/ai')}>AI 设置</button><button onClick={() => go('/settings/graphics')}>画面与声音</button></nav>}<button className={`ambient-toggle${ambientAudioActive ? ' is-active' : ''}`} aria-pressed={ambientAudioActive} onClick={onToggleAmbientAudio}>{ambientAudioActive ? '水声已启' : '启水声'}</button><button className="theme-toggle" aria-label={`切换到${nextThemeLabel}配色`} onClick={onThemeChange}>{themeLabel}</button><button className="menu" aria-expanded={menu} onClick={() => setMenu(open => !open)}>菜单</button></header>{menu && <aside><strong>{saves.length ? `${saves.length} 份本地存档` : '暂无存档'}</strong>{showNavigation && <><button onClick={() => { setMenu(false); go('/lobby'); }}>回到山门</button><button onClick={() => { setMenu(false); go('/new'); }}>新开一局</button><button onClick={() => { setMenu(false); go('/world'); }}>阅读世界设定</button><button onClick={() => { setMenu(false); go('/settings/ai'); }}>AI 设置</button><button onClick={() => { setMenu(false); go('/settings/graphics'); }}>画面与声音</button></>}<button onClick={() => { setMenu(false); onExport(); }}>导出存档</button><button onClick={themeAction}>切换到{nextThemeLabel}配色</button><label>导入旧档 / JSON<input type="file" accept=".json,.txt,.html,.htm" onChange={event => { const file = event.target.files?.[0]; if (file) { setMenu(false); onImport(file); } event.currentTarget.value = ''; }} /></label></aside>}{notice && <p className="notice" role="status">{notice} {noticeAction}</p>}<main>{children}</main><footer><span>本地优先 · API 密钥不写入存档</span><span>契约 v{SAVE_SCHEMA_VERSION}</span></footer></div>;
 }
 
 function Landing() {
@@ -314,6 +318,32 @@ function App() {
     catch { return 'night'; }
   });
   const [notice, setNotice] = useState('');
+  const [graphicsSettings, setGraphicsSettings] = useState<GraphicsSettings>(() => ({ ...DEFAULT_GRAPHICS_SETTINGS, ...loadGraphicsSettings() }));
+  const [ambientAudioActive, setAmbientAudioActive] = useState(false);
+  const [rendererStatus, setRendererStatus] = useState<SceneRenderStatus | null>(null);
+  const [scenePreview, setScenePreview] = useState<SceneId | null>(null);
+  const ambientAudioRef = useRef<AmbientAudioHandle | null>(null);
+  const audioStartingRef = useRef(false);
+  const onScenePreview = useCallback((scene: SceneId | null) => setScenePreview(scene), []);
+  function updateGraphicsSettings(next: GraphicsSettings) {
+    setGraphicsSettings(next);
+    saveGraphicsSettings(next);
+    ambientAudioRef.current?.setVolume(next.ambienceVolume);
+  }
+  async function toggleAmbientAudio() {
+    if (ambientAudioRef.current) {
+      ambientAudioRef.current.stop(); ambientAudioRef.current = null; setAmbientAudioActive(false); return;
+    }
+    if (audioStartingRef.current) return;
+    audioStartingRef.current = true;
+    try {
+      const engine = await startSyntheticWaterAmbience(graphicsSettings.ambienceVolume);
+      ambientAudioRef.current = engine; setAmbientAudioActive(true);
+      setNotice('已启用本机合成流水氛围；刷新页面后需再次点击启用。');
+    } catch {
+      setNotice('此浏览器无法启动环境声。游戏画面与存档不受影响。');
+    } finally { audioStartingRef.current = false; }
+  }
   const [legacyText, setLegacyText] = useState<string | null>(null);
   const [indexedDbReady, setIndexedDbReady] = useState(true);
   const [importPreview, setImportPreview] = useState<{ save: LocalSave; sourceName: string } | null>(null);
@@ -321,14 +351,28 @@ function App() {
     document.documentElement.dataset.theme = theme;
     try { localStorage.setItem('jx10_appearance', theme); } catch { /* Appearance remains available for this session. */ }
   }, [theme]);
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    root.dataset.jxAtmosphere = graphicsSettings.atmosphereEnabled ? 'on' : 'off';
+    root.dataset.jxParticles = graphicsSettings.particlesEnabled ? 'on' : 'off';
+    root.dataset.jxReducedMotion = graphicsSettings.reducedMotion ? 'on' : 'off';
+    root.dataset.jxDataSaver = graphicsSettings.dataSaver ? 'on' : 'off';
+  }, [graphicsSettings.atmosphereEnabled, graphicsSettings.particlesEnabled, graphicsSettings.reducedMotion, graphicsSettings.dataSaver]);
+  useEffect(() => {
+    const onRendererStatus = (event: Event) => setRendererStatus((event as CustomEvent<SceneRenderStatus>).detail);
+    window.addEventListener('jx:scene-render-status', onRendererStatus);
+    return () => { window.removeEventListener('jx:scene-render-status', onRendererStatus); ambientAudioRef.current?.stop(); };
+  }, []);
   useEffect(() => {
     let active = true;
+    document.documentElement.dataset.jxStorageHydrated = 'false';
     void hydrateSaves().then(result => {
       if (!active) return;
       setSaves(result.saves); setIndexedDbReady(result.indexedDb);
       if (!result.saves.length) setLegacyText(readLegacyLibraryText());
       if (result.warning) setNotice(result.warning);
       else if (!result.indexedDb) setNotice('IndexedDB 不可用，当前仅使用本地回退存储；原存档不会被删除。');
+      document.documentElement.dataset.jxStorageHydrated = 'true';
     });
     const refresh = () => setSaves(readSaves());
     const externalSaveChange = (event: StorageEvent) => {
@@ -336,6 +380,7 @@ function App() {
       void hydrateSaves().then(result => {
         setSaves(result.saves); setIndexedDbReady(result.indexedDb);
         setNotice(result.warning || '检测到另一个标签页修改了存档。已从本地数据库重新读取；同一存档再次提交前仍会核对版本。');
+        document.documentElement.dataset.jxStorageHydrated = 'true';
       });
     };
     addEventListener('popstate', refresh);
@@ -381,7 +426,7 @@ function App() {
   }
   function exportFile(save = saves[0]) { if (!save) { setNotice('暂无可导出的存档。'); return; } downloadText(`九霄-${save.name}.json`, serializeSaveForExport(save), 'application/json;charset=utf-8'); setNotice('存档已导出。'); }
   function importSupplement(file: File, save: LocalSave) {
-    if (file.size > 100_000) { setNotice('补充资料需小于 100 KB，当前存档未修改。'); return; }
+    if (file.size > 100_000) { setNotice('补充资料不可超过 100 KB（100,000 字节），当前存档未修改。'); return; }
     void file.text().then(text => {
       const current = saves;
       const target = current.find(item => item.saveId === save.saveId);
@@ -404,7 +449,7 @@ function App() {
     const result = await commitSaves(saves, [save, ...saves]);
     if (!result.ok) { setSaves(result.saves); setNotice(result.reason === 'conflict' ? '存档列表刚有变化，角色尚未创建。请确认后重试。' : '浏览器数据库不可写，角色尚未创建。草稿仍保留。'); return false; }
     setSaves(result.saves); go(`/game/${save.saveId}`); return true;
-  }} /> : currentRoute === '/intro' ? <Introduction onStart={() => go('/new')} onWorld={() => go('/world')} /> : currentRoute === '/world' ? <World onClose={returnFromReading} save={activeSave} onImportSupplement={importSupplement} /> : currentRoute === '/settings/ai' ? <AiSettings onClose={returnFromReading} /> : currentRoute === '/lobby' ? <WorldHub saves={saves} /> : currentRoute === '/saves' ? <SaveManager saves={saves} onExport={exportFile}
+  }} /> : currentRoute === '/intro' ? <Introduction onStart={() => go('/new')} onWorld={() => go('/world')} /> : currentRoute === '/world' ? <World onClose={returnFromReading} save={activeSave} onImportSupplement={importSupplement} /> : currentRoute === '/settings/ai' ? <AiSettings onClose={returnFromReading} /> : currentRoute === '/settings/graphics' ? <GraphicsSettingsPage settings={graphicsSettings} onChange={updateGraphicsSettings} renderer={rendererStatus} ambientAudioActive={ambientAudioActive} onToggleAmbientAudio={() => { void toggleAmbientAudio(); }} onPreviewScene={onScenePreview} /> : currentRoute === '/lobby' ? <WorldHub saves={saves} /> : currentRoute === '/saves' ? <SaveManager saves={saves} onExport={exportFile}
     onRename={async (save, name) => {
       const trimmed = name.trim();
       if (!trimmed || trimmed.length > 40) return false;
@@ -438,7 +483,8 @@ function App() {
     }} /> : <Landing />;
   const migrationAction = legacyText ? <button className="notice-action" onClick={migrateLegacyLibrary}>下载原文备份并迁移</button> : undefined;
   const storageNotice = indexedDbReady ? notice : `${notice} IndexedDB 回退模式。`;
-  return <Shell saves={saves} theme={theme} onThemeChange={() => setTheme(current => current === 'night' ? 'day' : 'night')} notice={legacyText ? '检测到旧版 localStorage 存档。请先备份原文，再开始迁移。' : storageNotice} noticeAction={migrationAction} onImport={importFile} onExport={() => exportFile()}>{importPreview && <section className="import-preview card" role="dialog" aria-labelledby="import-preview-title"><span className="eyebrow">旧档导入 / 提交前核对</span><h2 id="import-preview-title">{importPreview.save.name}</h2><p>来源：{importPreview.sourceName}。原始文件已先下载为备份。核对数量与回合，再选择导入方式；所有顶层字段均会原样保存在该存档的历史资料区。</p><div className="stats"><div><small>回合</small><strong>{importPreview.save.revision}</strong></div><div><small>消息</small><strong>{importPreview.save.messages.length}</strong></div><div><small>人物 / 物品</small><strong>{Array.isArray(importPreview.save.legacyArchive?.payload.npcs) ? importPreview.save.legacyArchive.payload.npcs.length : 0} / {Array.isArray(importPreview.save.legacyArchive?.payload.items) ? importPreview.save.legacyArchive.payload.items.length : 0}</strong></div></div><div className="legacy-groups">{Object.entries(importPreview.save.legacyArchive?.payload || {}).map(([key, value]) => <div className="import-field" key={key}><strong>{key}</strong><span>{Array.isArray(value) ? `${value.length} 项` : value !== null && typeof value === 'object' ? `${Object.keys(value).length} 个字段` : typeof value === 'string' ? `${value.length} 字符` : '已保留'}</span></div>)}</div><div className="actions"><button className="primary" onClick={() => commitImport('keep')}>导入此档</button>{saves.some(item => item.saveId === importPreview.save.saveId) && <><button className="secondary" onClick={() => commitImport('copy')}>另存为副本</button><button className="secondary" onClick={() => commitImport('replace')}>替换现有存档</button></>}<button className="secondary" onClick={() => { setImportPreview(null); setNotice('已取消导入。原存档未修改，原始备份仍保留。'); }}>取消</button></div></section>}{page}</Shell>;
+  const activeScene = scenePreview ?? (game ? sceneForLocation(game.location) : 'mountain-gate');
+  return <Shell saves={saves} theme={theme} onThemeChange={() => setTheme(current => current === 'night' ? 'day' : 'night')} graphicsSettings={graphicsSettings} ambientAudioActive={ambientAudioActive} onToggleAmbientAudio={() => { void toggleAmbientAudio(); }} sceneId={activeScene} notice={legacyText ? '检测到旧版 localStorage 存档。请先备份原文，再开始迁移。' : storageNotice} noticeAction={migrationAction} onImport={importFile} onExport={() => exportFile()}>{importPreview && <section className="import-preview card" role="dialog" aria-labelledby="import-preview-title"><span className="eyebrow">旧档导入 / 提交前核对</span><h2 id="import-preview-title">{importPreview.save.name}</h2><p>来源：{importPreview.sourceName}。原始文件已先下载为备份。核对数量与回合，再选择导入方式；所有顶层字段均会原样保存在该存档的历史资料区。</p><div className="stats"><div><small>回合</small><strong>{importPreview.save.revision}</strong></div><div><small>消息</small><strong>{importPreview.save.messages.length}</strong></div><div><small>人物 / 物品</small><strong>{Array.isArray(importPreview.save.legacyArchive?.payload.npcs) ? importPreview.save.legacyArchive.payload.npcs.length : 0} / {Array.isArray(importPreview.save.legacyArchive?.payload.items) ? importPreview.save.legacyArchive.payload.items.length : 0}</strong></div></div><div className="legacy-groups">{Object.entries(importPreview.save.legacyArchive?.payload || {}).map(([key, value]) => <div className="import-field" key={key}><strong>{key}</strong><span>{Array.isArray(value) ? `${value.length} 项` : value !== null && typeof value === 'object' ? `${Object.keys(value).length} 个字段` : typeof value === 'string' ? `${value.length} 字符` : '已保留'}</span></div>)}</div><div className="actions"><button className="primary" onClick={() => commitImport('keep')}>导入此档</button>{saves.some(item => item.saveId === importPreview.save.saveId) && <><button className="secondary" onClick={() => commitImport('copy')}>另存为副本</button><button className="secondary" onClick={() => commitImport('replace')}>替换现有存档</button></>}<button className="secondary" onClick={() => { setImportPreview(null); setNotice('已取消导入。原存档未修改，原始备份仍保留。'); }}>取消</button></div></section>}{page}</Shell>;
 }
 
 const root = document.getElementById('root');
