@@ -1,0 +1,123 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+
+const readJson = async path => JSON.parse(await readFile(new URL(path, import.meta.url), 'utf8'));
+const registry = await readJson('../packages/content/src/canon.registry.json');
+const runtime = await readJson('../packages/content/src/canon-runtime.json');
+const readingEdition = await readFile(new URL('../outputs/九霄世界书/九霄世界书_Canon1.0_正式阅读版.md', import.meta.url), 'utf8');
+const sourceAudit = await readFile(new URL('../outputs/九霄世界书/九霄世界书_Canon1.0_来源审核表.md', import.meta.url), 'utf8');
+const sourceIds = new Set(registry.sourceRegistry.map(source => source.id));
+const entryIds = new Set(registry.entries.map(entry => entry.id));
+
+assert.equal(registry.activeVersion, '1.0');
+assert.equal(registry.reviewSummary.legacyRecordsReconciled, 182);
+assert.equal(registry.reviewSummary.originalImagesAndTranscriptionsPaired, 179);
+assert.equal(registry.reviewSummary.userExcludedLegacyRecords, 3);
+assert.equal(registry.reviewSummary.originalImagesIndependentlyOcrCrosschecked, 179);
+assert.equal(registry.reviewSummary.supplementImagesIndependentlyOcrCrosschecked, 28);
+assert.equal(registry.reviewSummary.imageByImageIndependentOcrCrosscheckComplete, true);
+assert.equal(registry.reviewSummary.originalTranscriptionOverreachCorrected, 1);
+assert.equal(registry.reviewSummary.imageByImageVisualVerificationComplete, false);
+assert.equal(registry.entries.length, 39);
+assert.equal(registry.reviewSummary.authorAdditionsIncluded, 0);
+assert.equal(registry.reviewSummary.historicalAuthorAdditionsRetained, 5);
+assert.equal(registry.reviewSummary.supplementImagesDirectlyComparedAfterInitialReview, 14);
+assert.equal(runtime.entries.length, 34);
+assert.equal((readingEdition.match(/^## /gm) ?? []).length, runtime.entries.length);
+for (const entry of runtime.entries) {
+  assert.ok(readingEdition.includes(`## ${entry.title}\n\n${entry.content.trim()}\n`),
+    `reading edition differs from runtime: ${entry.id}`);
+  assert.ok(sourceAudit.includes(`| \`${entry.id}\` |`), `source audit misses ${entry.id}`);
+}
+assert.equal(entryIds.size, registry.entries.length);
+assert.equal(sourceIds.size, registry.sourceRegistry.length);
+assert.equal(registry.sourceRegistry.filter(source => source.id.startsWith('original_') && source.imageReviewMethod).length, 179);
+assert.equal(registry.sourceRegistry.filter(source => source.id.startsWith('supplement_') && source.imageReviewMethod).length, 28);
+assert.equal(registry.reviewQueue.length, 0, 'all six former source gaps have direct-image evidence');
+assert.equal(registry.resolvedSourceGaps.length, 6);
+assert.ok(registry.resolvedSourceGaps.every(item => item.status === 'confirmed' &&
+  item.sourceRefs.every(id => sourceIds.has(id))));
+assert.ok(registry.reviewQueue.every(item => item.status === 'pending_review' && sourceIds.has(item.sourceId)));
+assert.ok(registry.entries.every(entry => ['confirmed', 'deprecated'].includes(entry.status) &&
+  entry.canonVersion === registry.activeVersion && entry.content.trim() &&
+  entry.sourceRefs.length && entry.sourceRefs.every(id => sourceIds.has(id)) &&
+  (!entry.parentId || entryIds.has(entry.parentId))));
+const citedSources = new Set([
+  ...registry.documentOutlineSourceRefs,
+  ...registry.entries.flatMap(entry => entry.sourceRefs),
+]);
+assert.ok(registry.sourceRegistry.filter(source => source.id.startsWith('original_')).every(source => citedSources.has(source.id)));
+assert.deepEqual(runtime.entries.map(entry => entry.id), registry.entries.filter(entry => entry.status === 'confirmed')
+  .sort((a, b) => a.sortOrder - b.sortOrder).map(entry => entry.id));
+assert.ok(runtime.entries.every(entry => !('sourceRefs' in entry)));
+const authorAdditions = registry.entries.filter(entry => entry.origin === 'author_addition');
+assert.equal(authorAdditions.length, 5);
+assert.ok(authorAdditions.every(entry => entry.status === 'deprecated' && entry.sourceRefs.length === 1 &&
+  entry.sourceRefs[0] === 'author_delegation_20260926' &&
+  entry.publicSourceNote.includes('历史作者授权补充')));
+assert.equal(runtime.entries.filter(entry => entry.origin === 'author_addition').length, 0);
+assert.ok(!runtime.entries.some(entry => entry.origin === 'author_addition' &&
+  /《冰原潜行术》|黄阶上品\s*\|\s*\d|玄阶下品\s*\|\s*\d/.test(entry.content)));
+const text = runtime.entries.map(entry => entry.content).join('\n');
+for (const expected of ['万兽洪荒经', '圣火教', '资质决定论', '法器：各类修仙武器',
+  '上古血脉之力融入己身', '海兽军团', '如同一支完整的交响乐团',
+  '引火锻体诀', '万卷阁', '玄阶上品', '三大院的执掌者']) {
+  assert.ok(text.includes(expected), `missing key source content: ${expected}`);
+}
+const tiangong = registry.entries.find(entry => entry.id === 'faction_tiangong_ge');
+assert.ok(tiangong.sections.find(section => section.title === '三大流派分支').content.startsWith('巨构院\n'));
+assert.ok(tiangong.content.includes('技术挑战。这里是天工阁保持活力的心脏。'));
+assert.ok(tiangong.content.includes('三大学宫：巨构、器灵、神机'));
+assert.ok(registry.entries.find(entry => entry.id === 'faction_sihai_shanghui').content.includes('客卿院：商会的“利剑”'));
+assert.ok(registry.entries.find(entry => entry.id === 'faction_jixia_xuegong').content.includes('戒律院：由修习《天宪宝典》'));
+assert.ok(registry.entries.find(entry => entry.id === 'faction_beijing_lianmeng').sections
+  .some(section => section.title === '幽影部 - 《冰原潜行术》'));
+assert.ok(runtime.entries.some(entry => entry.id === 'system_economy' && entry.content.includes('灵石品级分为')));
+assert.ok(registry.entries.find(entry => entry.id === 'faction_jingang_buhai_gu').sections.some(section => section.title === '山门场所'));
+assert.ok(!text.includes('地点类条目小节'));
+const haotian = registry.entries.find(entry => entry.id === 'faction_haotian_jianzong');
+assert.ok(haotian.sections.some(section => section.title === '组织架构' && section.content.includes('传功阁')));
+assert.ok(!haotian.content.includes('宗门最高权力中心。'));
+const bingshen = registry.entries.find(entry => entry.id === 'faction_bingshen_gong');
+assert.ok(bingshen.sections.some(section => section.title === '门内风气' && section.content.includes('天赋至上')));
+assert.ok(!bingshen.sections.find(section => section.title === '内部结构').content.includes('天赋至上'));
+for (const [id, phrase] of [
+  ['faction_wanshou_shanzhuang', '开放的戒备'],
+  ['faction_yanshi_fu', '技艺至上，斗巧为荣'],
+]) {
+  const entry = registry.entries.find(item => item.id === id);
+  assert.ok(entry.sections.some(section => section.title === '门内风气' && section.content.includes(phrase)));
+  assert.ok(!entry.sections.find(section => section.title === '弟子等级').content.includes(phrase));
+}
+const ingenious = registry.entries.find(entry => entry.id === 'faction_yanshi_fu')
+  .sections.find(section => section.title === '▪ 《千机百变诀》 - 地阶上品').content;
+assert.equal((ingenious.match(/此流派追求极致的精巧与变化/g) || []).length, 1);
+const wudu = registry.entries.find(entry => entry.id === 'faction_wudu_shenjiao');
+assert.ok(wudu.sections.some(section => section.title === '地龙脉 - 《地龙腐骨功》' && section.content.includes('诅咒与瘟疫')));
+assert.ok(wudu.sections.some(section => section.title === '蛛神脉 - 《蛛神罗网策》' && section.content.includes('陷阱与幻毒')));
+assert.ok(wudu.sections.some(section => section.title === '百足脉 - 《百足控心诀》' && section.content.includes('将子蛊植入他人体内，从…')));
+assert.ok(!wudu.content.includes('\n功》\n'));
+assert.ok(!wudu.content.includes('…策》'));
+assert.ok(!wudu.content.includes('将……\n蟾'));
+assert.ok(!wudu.content.includes('只要你有则。门规只有一条'));
+assert.ok(!registry.entries.find(entry => entry.id === 'system_technique_grade').content.includes('乃至…\n毁天灭地之威'));
+assert.ok(!text.includes('\n…和力。\n'));
+assert.ok(!text.includes('\n量。成员'));
+assert.ok(!text.includes('\n非。\n'));
+const yuqing = registry.entries.find(entry => entry.id === 'faction_yuqing_ge');
+assert.ok(yuqing.content.includes('▪ 《万化丹尘》 - 地阶中品\n▪ 风格： 护道奇术。'));
+assert.ok(!registry.reviewQueue.some(item => item.id === 'gap_yuqing_technique_name'));
+const realms = registry.entries.find(entry => entry.id === 'system_cultivation_realm');
+assert.deepEqual(realms.sections.map(section => section.title),
+  ['炼体期', '炼气期', '筑基期', '结丹期', '元婴期', '合体期', '化神期', '大乘期', '渡劫期']);
+const jiedan = realms.sections.find(section => section.title === '结丹期').content;
+assert.ok(!jiedan.includes('气态灵力压缩为液态灵力'));
+assert.ok(jiedan.includes('液态灵力压缩凝结成一颗固态金丹'));
+const prices = registry.entries.find(entry => entry.id === 'system_prices').content;
+assert.ok(prices.includes('| 黄阶中品 | 300 | 400 | 500 | 750 |\n| 黄阶上品 | 800 | 1,000 | 1,300 | 2,000 |\n| 玄阶下品 | 4,000 | 5,000 | 6,500 | 10,000 |\n| 玄阶中品 |'));
+assert.ok(prices.includes('| 地阶上品 | 80万(80上品) | 100万(100上品) | 130万(130上品) | 180万(180上品) |\n天阶'));
+assert.ok(!prices.includes('|…'));
+assert.equal(registry.entries.filter(entry => entry.category === 'region' && entry.id !== 'region_honghuang_yaolin').length, 5);
+assert.ok(!/⟦|【来源：|\[看不清|本章开头|小节标题缺失|经看原图确认|C:[\\/]/.test(text));
+assert.ok(!/C:[\\/]|imageSha256|transcriptionSha256|originalId|legacyOcrId/.test(JSON.stringify(runtime)));
+console.log('Worldbook Canon coverage, runtime isolation and source-grounded content checks passed.');
