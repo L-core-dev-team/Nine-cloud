@@ -172,7 +172,8 @@ export function prepareNpcMemoryTurn(input: PrepareNpcMemoryTurnOptions): NpcMem
     throw new Error('NPC memory journal revision mismatch');
   }
 
-  const memories = new Map(input.journal.memories.map(memory => [memory.npcId, memory]));
+  const memories = new Map<string, NpcMemory>();
+  for (const memory of input.journal.memories) memories.set(memory.npcId, memory);
   let recordedObservations = 0;
   for (const event of events) {
     const grants = input.grantsForEvent(event);
