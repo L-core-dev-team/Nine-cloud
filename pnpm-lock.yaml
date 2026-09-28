@@ -29,6 +29,9 @@ importers:
       '@jiuxiao/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@jiuxiao/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
       hono:
         specifier: 4.13.8
         version: 4.13.8

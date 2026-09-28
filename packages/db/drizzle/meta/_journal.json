@@ -8,6 +8,13 @@
       "when": 1790167576242,
       "tag": "0000_glamorous_robbie_robertson",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790605290887,
+      "tag": "0001_s4_npc_memory_atomic",
+      "breakpoints": true
     }
   ]
 }

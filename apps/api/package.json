@@ -16,7 +16,8 @@
     "@hono/node-server": "2.1.1",
     "@jiuxiao/contracts": "workspace:*",
     "hono": "4.13.8",
-    "pg": "8.23.0"
+    "pg": "8.23.0",
+    "@jiuxiao/domain": "workspace:*"
   },
   "devDependencies": {
     "@types/pg": "8.23.1",
