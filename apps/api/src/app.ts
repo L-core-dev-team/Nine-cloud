@@ -1,11 +1,16 @@
 import { Hono } from 'hono';
 import { SAVE_SCHEMA_VERSION } from '@jiuxiao/contracts';
+import type { CloudSaveService } from './services/cloud-save-service.js';
+import { mountCloudSaveRoutes, type CloudSaveRouteAuth } from './routes/saves.js';
 
 export type ReadinessDatabase = {
   query: (sql: string) => Promise<unknown>;
 };
 
-export function createApp(database?: ReadinessDatabase) {
+export function createApp(database?: ReadinessDatabase, cloudSaves?: {
+  service: CloudSaveService;
+  auth: CloudSaveRouteAuth;
+}) {
   const app = new Hono();
 
   app.get('/health', c => c.json({ status: 'ok', service: 'jiuxiao-api',
@@ -22,6 +27,10 @@ export function createApp(database?: ReadinessDatabase) {
       return c.json({ status: 'not_ready', service: 'jiuxiao-api', dependency: 'database' }, 503);
     }
   });
+
+  // Business save routes exist only when the host supplies a verified session
+  // resolver. The production entry point deliberately does not provide one yet.
+  if (cloudSaves) mountCloudSaveRoutes(app, cloudSaves);
 
   app.notFound(c => c.json({ code: 'NOT_FOUND', message: '接口不存在。' }, 404));
   return app;

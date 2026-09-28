@@ -12,6 +12,7 @@ export type GraphicsSettings = {
   atmosphereEnabled: boolean;
   particlesEnabled: boolean;
   dataSaver: boolean;
+  sceneVideoEnabled: boolean;
   ambienceVolume: number;
 };
 
@@ -42,6 +43,7 @@ export const DEFAULT_GRAPHICS_SETTINGS: GraphicsSettings = {
   atmosphereEnabled: true,
   particlesEnabled: true,
   dataSaver: false,
+  sceneVideoEnabled: false,
   ambienceVolume: 32,
 };
 
@@ -90,6 +92,7 @@ export function loadGraphicsSettings(storage?: Pick<Storage, 'getItem'>): Graphi
       atmosphereEnabled: booleanOr(parsed.atmosphereEnabled, DEFAULT_GRAPHICS_SETTINGS.atmosphereEnabled),
       particlesEnabled: booleanOr(parsed.particlesEnabled, DEFAULT_GRAPHICS_SETTINGS.particlesEnabled),
       dataSaver: booleanOr(parsed.dataSaver, DEFAULT_GRAPHICS_SETTINGS.dataSaver),
+      sceneVideoEnabled: booleanOr(parsed.sceneVideoEnabled, DEFAULT_GRAPHICS_SETTINGS.sceneVideoEnabled),
       ambienceVolume: numericClamp(parsed.ambienceVolume, DEFAULT_GRAPHICS_SETTINGS.ambienceVolume, 0, 80),
     };
   } catch {

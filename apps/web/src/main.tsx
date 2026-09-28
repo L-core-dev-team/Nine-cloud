@@ -1,12 +1,13 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { SAVE_SCHEMA_VERSION } from '@jiuxiao/contracts';
-import { sceneForLocation, searchReviewedWorldbook, type SceneId } from '@jiuxiao/content';
+import { SCENE_MANIFEST, sceneForLocation, searchReviewedWorldbook, type SceneId } from '@jiuxiao/content';
 import { AiSettings } from './ai-settings';
 import { MountainGateScene } from './scene';
 import { startSyntheticWaterAmbience, type AmbientAudioHandle } from './ambient-audio';
 import { DEFAULT_GRAPHICS_SETTINGS, loadGraphicsSettings, saveGraphicsSettings, type GraphicsSettings } from './graphics-settings';
 import { GraphicsSettingsPage } from './routes/GraphicsSettings';
+import { CANDIDATE_ILLUSTRATIONS, type CandidateIllustration, type CandidateIllustrationCollection } from './candidate-atlas';
 import { SceneAtmosphere, type SceneRenderStatus } from './scenes/SceneAtmosphere';
 import { MAX_IMPORT_BYTES, migrateLegacyLibraryText, parseLegacySave } from './legacy';
 import { serializeJsonWithCredentialRedaction, serializeSaveForExport } from './export-save';
@@ -21,6 +22,14 @@ const fields = [
   ['appearance', '外貌', '简短描述即可'], ['talents', '天赋 / 特殊设定', '每行一项，最多三项'],
   ['goal', '补充目标', '例如：只想炼器'], ['region', '开局地域', '中州天枢域'],
 ] as const;
+const REGION_VISUAL_IDS: Record<string, string> = {
+  '中州天枢域': 'region_zhongzhou_tianshu',
+  '东瀚龙吟域': 'region_donghan_longyin',
+  '西荒焚天域': 'region_xihuang_fentian',
+  '北境霜寒域': 'region_beijing_shuanghan',
+  '南疆万蛊域': 'region_nanjiang_wangu',
+  '完全自定义': 'world_jiuxiao',
+};
 
 const route = () => window.location.pathname.replace(/\/+$/, '') || '/';
 const go = (path: string) => {
@@ -60,7 +69,13 @@ function Shell({ children, saves, notice, noticeAction, theme, onThemeChange, on
   const themeAction = () => { onThemeChange(); setMenu(false); };
   const isLanding = route() === '/';
   const showNavigation = !isLanding;
-  return <div className={isLanding ? 'jx-shell landing-shell' : 'jx-shell'}><SceneAtmosphere sceneId={sceneId} theme={theme} settings={graphicsSettings} /><header><button className="brand" onClick={() => go('/')}>踏月过山门，天地任君行。</button>{showNavigation && <nav><button onClick={() => go('/lobby')}>山门</button><button onClick={() => go('/world')}>世界设定</button><button onClick={() => go('/settings/ai')}>AI 设置</button><button onClick={() => go('/settings/graphics')}>画面与声音</button></nav>}<button className={`ambient-toggle${ambientAudioActive ? ' is-active' : ''}`} aria-pressed={ambientAudioActive} onClick={onToggleAmbientAudio}>{ambientAudioActive ? '水声已启' : '启水声'}</button><button className="theme-toggle" aria-label={`切换到${nextThemeLabel}配色`} onClick={onThemeChange}>{themeLabel}</button><button className="menu" aria-expanded={menu} onClick={() => setMenu(open => !open)}>菜单</button></header>{menu && <aside><strong>{saves.length ? `${saves.length} 份本地存档` : '暂无存档'}</strong>{showNavigation && <><button onClick={() => { setMenu(false); go('/lobby'); }}>回到山门</button><button onClick={() => { setMenu(false); go('/new'); }}>新开一局</button><button onClick={() => { setMenu(false); go('/world'); }}>阅读世界设定</button><button onClick={() => { setMenu(false); go('/settings/ai'); }}>AI 设置</button><button onClick={() => { setMenu(false); go('/settings/graphics'); }}>画面与声音</button></>}<button onClick={() => { setMenu(false); onExport(); }}>导出存档</button><button onClick={themeAction}>切换到{nextThemeLabel}配色</button><label>导入旧档 / JSON<input type="file" accept=".json,.txt,.html,.htm" onChange={event => { const file = event.target.files?.[0]; if (file) { setMenu(false); onImport(file); } event.currentTarget.value = ''; }} /></label></aside>}{notice && <p className="notice" role="status">{notice} {noticeAction}</p>}<main>{children}</main><footer><span>本地优先 · API 密钥不写入存档</span><span>契约 v{SAVE_SCHEMA_VERSION}</span></footer></div>;
+  const scene = SCENE_MANIFEST.find(candidate => candidate.id === sceneId);
+  const backgroundStyle = {
+    '--jx-scene-poster-desktop': `url("${scene?.desktopPoster ?? '/scenes/gate-moonlight.webp'}")`,
+    '--jx-scene-poster-mobile': `url("${scene?.mobilePoster ?? '/scenes/gate-moonlight-mobile.webp'}")`,
+    '--jx-paper-texture': `url("${theme === 'day' ? '/scenes/candidate/atlas/texture_day-paper.webp' : '/scenes/candidate/atlas/texture_night-ink.webp'}")`,
+  } as CSSProperties;
+  return <div className={isLanding ? 'jx-shell landing-shell' : 'jx-shell'} style={backgroundStyle}><SceneAtmosphere sceneId={sceneId} theme={theme} settings={graphicsSettings} /><header><button className="brand" onClick={() => go('/')}>踏月过山门，天地任君行。</button>{showNavigation && <nav><button onClick={() => go('/lobby')}>山门</button><button onClick={() => go('/world')}>世界设定</button><button onClick={() => go('/settings/ai')}>AI 设置</button><button onClick={() => go('/settings/graphics')}>画面与声音</button></nav>}<button className={`ambient-toggle${ambientAudioActive ? ' is-active' : ''}`} aria-pressed={ambientAudioActive} onClick={onToggleAmbientAudio}>{ambientAudioActive ? '水声已启' : '启水声'}</button><button className="theme-toggle" aria-label={`切换到${nextThemeLabel}配色`} onClick={onThemeChange}>{themeLabel}</button><button className="menu" aria-expanded={menu} onClick={() => setMenu(open => !open)}>菜单</button></header>{menu && <aside><strong>{saves.length ? `${saves.length} 份本地存档` : '暂无存档'}</strong>{showNavigation && <><button onClick={() => { setMenu(false); go('/lobby'); }}>回到山门</button><button onClick={() => { setMenu(false); go('/new'); }}>新开一局</button><button onClick={() => { setMenu(false); go('/world'); }}>阅读世界设定</button><button onClick={() => { setMenu(false); go('/settings/ai'); }}>AI 设置</button><button onClick={() => { setMenu(false); go('/settings/graphics'); }}>画面与声音</button></>}<button onClick={() => { setMenu(false); onExport(); }}>导出存档</button><button onClick={themeAction}>切换到{nextThemeLabel}配色</button><label>导入旧档 / JSON<input type="file" accept=".json,.txt,.html,.htm" onChange={event => { const file = event.target.files?.[0]; if (file) { setMenu(false); onImport(file); } event.currentTarget.value = ''; }} /></label></aside>}{notice && <p className="notice" role="status">{notice} {noticeAction}</p>}<main>{children}</main><footer><span>本地优先 · API 密钥不写入存档</span><span>契约 v{SAVE_SCHEMA_VERSION}</span></footer></div>;
 }
 
 function Landing() {
@@ -154,6 +169,9 @@ function NewCharacter({ onSaved }: { onSaved: (save: LocalSave) => Promise<boole
     ['goal', 'region'],
   ];
   const stepNames = ['其人', '其道', '起行'];
+  const selectedRegion = form.region || '中州天枢域';
+  const regionArtworkId = REGION_VISUAL_IDS[selectedRegion] ?? 'world_jiuxiao';
+  const regionArtwork = CANDIDATE_ILLUSTRATIONS.find(item => item.id === regionArtworkId);
   async function submit(mode: 'manual' | 'random' = 'manual') {
     const talents = (form.talents || '').split('\n').map(value => value.trim()).filter(Boolean);
     if (talents.length > 3) { setError('天赋最多三项，请每行填写一项。'); return; }
@@ -166,7 +184,7 @@ function NewCharacter({ onSaved }: { onSaved: (save: LocalSave) => Promise<boole
   return <section className="page character-creation"><span className="eyebrow">建角 · {stepNames[step]}</span><h2>把自己写进山门。</h2>
     <p>依次记下人物、修行与去处。提交前可以回看修改；开局意图在规则未就绪时留在存档中。</p>
     <ol className="character-steps" aria-label="建角进度">{stepNames.map((label, index) => <li key={label} aria-current={index === step ? 'step' : undefined}><span>{index + 1}</span>{label}</li>)}</ol>
-    <div className="form">{fields.filter(([key]) => stepKeys[step]?.includes(key)).map(([key, label, hint]) => <label key={key}>{label}<small>{hint}</small>{key === 'region' ? <select value={form[key] || '中州天枢域'} onChange={event => set(key, event.target.value)}><option>中州天枢域</option><option>北境霜寒域</option><option>南疆万蛊域</option><option>东瀚龙吟域</option><option>西荒焚天域</option><option>完全自定义</option></select> : key === 'talents' || key === 'goal' ? <textarea value={form[key] || ''} onChange={event => set(key, event.target.value)} /> : <input value={form[key] || ''} onChange={event => set(key, event.target.value)} />}</label>)}</div>
+    <div className="form">{fields.filter(([key]) => stepKeys[step]?.includes(key)).map(([key, label, hint]) => <label key={key}>{label}<small>{hint}</small>{key === 'region' ? <><select aria-label="开局地域" value={selectedRegion} onChange={event => set(key, event.target.value)}><option>中州天枢域</option><option>北境霜寒域</option><option>南疆万蛊域</option><option>东瀚龙吟域</option><option>西荒焚天域</option><option>完全自定义</option></select>{regionArtwork && <figure className="region-visual-reference"><img src={regionArtwork.src} alt="" loading="lazy" decoding="async" /><figcaption><strong>{selectedRegion}</strong><span>地域画影 · 只作辨识，设定以正文为准</span></figcaption></figure>}</> : key === 'talents' || key === 'goal' ? <textarea value={form[key] || ''} onChange={event => set(key, event.target.value)} /> : <input value={form[key] || ''} onChange={event => set(key, event.target.value)} />}</label>)}</div>
     {step === 2 && <section className="character-summary" aria-label="角色提交前摘要"><h3>回看行传</h3><dl>{fields.map(([key, label]) => <div key={key}><dt>{label}</dt><dd>{form[key]?.trim() || (key === 'region' ? '中州天枢域' : key === 'name' ? '无名修士' : '未填写')}</dd></div>)}</dl></section>}
     {error && <p className="error" role="alert">{error}</p>}
     <div className="actions"><button className="secondary" onClick={() => step ? setStep(step - 1) : go('/lobby')}>{step ? '上一步' : '返回山门'}</button>
@@ -178,17 +196,57 @@ function NewCharacter({ onSaved }: { onSaved: (save: LocalSave) => Promise<boole
 }
 
 function Introduction({ onStart, onWorld }: { onStart: () => void; onWorld: () => void }) { return <section className="page intro-page"><span className="eyebrow">九霄 · 行旅札记</span><h2>作品简介</h2><div className="intro-prose"><p>《九霄》是一款以东方修仙世界为核心的开放式文字角色扮演游戏。玩家并非沿着固定剧本前进，而是在九霄大陆中自行选择出身、修行道路与目标：入宗问道、独行江湖、炼丹炼器，或在诸域之间留下自己的名字。</p><p>世界设定以作者审核的资料为准。旅途中的人物状态和世界事实由规则记录；AI 可以理解玩家的文字并叙述结果，却不能凭一段故事改写既成之事。</p></div><div className="actions"><button className="primary" onClick={onStart}>创建角色</button><button className="secondary" onClick={onWorld}>查看世界资料</button></div></section>; }
+const atlasCollections: readonly { id: CandidateIllustrationCollection; label: string }[] = [
+  { id: 'world', label: '山河与地域' },
+  { id: 'faction', label: '宗门与势力' },
+  { id: 'system', label: '修行图鉴' },
+  { id: 'brand', label: '题字与纹章' },
+  { id: 'texture', label: '纸墨氛围' },
+];
+
 function World({ onClose, save, onImportSupplement }: { onClose: () => void; save: LocalSave | undefined; onImportSupplement: (file: File, save: LocalSave) => void }) {
-  const [query, setQuery] = useState('');
-  const entries = searchReviewedWorldbook(query);
-  return <section className="page world-page"><span className="eyebrow">原图核对 · 地理卷</span><h2>世界设定</h2>
-    <p>先开放已完成原图比对的地理条目。其余待校资料不会混入检索结果。</p>
-    <label className="world-search">搜索已审设定<input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="试试：中州、海上贸易、妖林外围" aria-label="搜索已审核世界设定" /></label>
-    <div className="worldbook-results" aria-live="polite">{entries.length ? entries.map(entry => <article className="worldbook-entry" key={entry.id}>
-      <span className="eyebrow">地理与区域 · 原图确认</span><h3>{entry.title}</h3><p className="worldbook-body">{entry.body}</p>
+  const [worldQuery, setWorldQuery] = useState('');
+  const [atlasQuery, setAtlasQuery] = useState('');
+  const [view, setView] = useState<'text' | 'atlas'>('text');
+  const [collection, setCollection] = useState<CandidateIllustrationCollection>('world');
+  const [selectedIllustration, setSelectedIllustration] = useState<CandidateIllustration | null>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (selectedIllustration && !dialog.open) dialog.showModal();
+    else if (!selectedIllustration && dialog.open) dialog.close();
+  }, [selectedIllustration]);
+  const entries = searchReviewedWorldbook(worldQuery);
+  const illustrations = CANDIDATE_ILLUSTRATIONS.filter(item => item.collection === collection
+    && (!atlasQuery.trim() || `${item.title} ${item.topicTag ?? ''}`.toLocaleLowerCase().includes(atlasQuery.trim().toLocaleLowerCase())));
+  return <section className="page world-page"><span className="eyebrow">山河地理 · 设定与图鉴</span><h2>世界设定</h2>
+    <p>正文收录已审核设定；画卷另列视觉素材，二者各守其界。</p>
+    <div className="world-view-switch" role="group" aria-label="世界资料类型">
+      <button aria-pressed={view === 'text'} onClick={() => setView('text')}>设定正文</button>
+      <button aria-pressed={view === 'atlas'} onClick={() => setView('atlas')}>画卷图鉴 <small>44 幅视觉稿</small></button>
+    </div>
+    {view === 'text' && <div id="world-text-panel" aria-label="设定正文">
+       <label className="world-search">搜索已审核设定<input type="search" value={worldQuery} onChange={event => setWorldQuery(event.target.value)} placeholder="试试：中州、海上贸易、妖林外围" aria-label="搜索已审核世界设定" /></label>
+      <div className="worldbook-results" aria-live="polite">{entries.length ? entries.map(entry => <article className="worldbook-entry" key={entry.id}>
+      <span className="eyebrow">地理与区域 · 已审正文</span><h3>{entry.title}</h3><p className="worldbook-body">{entry.body}</p>
       <details><summary>来源与校核说明</summary><p>{entry.reviewNote}</p><small>原图编号：{entry.sourceIds.map(id => id.slice(0, 8)).join('、')} · {entry.evidence.includes('authorized-completion') ? '含作者授权补全' : entry.evidence.includes('context-restored') ? '含上下文恢复' : '正文据原图核对'}</small></details>
-    </article>) : <p className="worldbook-empty">没有找到这组字词。试试地点名、地貌或文化关键词。</p>}</div>
-    <div className="card worldbook-scope"><strong>资料范围</strong><p>本卷覆盖 7 张原图对应的地理设定。其余 182 条 OCR 原图仍待逐项校核，未纳入本页搜索。</p>
+      </article>) : <p className="worldbook-empty">没有找到这组字词。试试地点名、地貌或文化关键词。</p>}</div>
+    </div>}
+    {view === 'atlas' && <div id="world-atlas-panel" aria-label="画卷图鉴">
+      <div className="atlas-intro"><img src="/scenes/candidate/atlas/brand_calligraphy.webp" alt="九霄书法题字与云山图" loading="lazy" decoding="async" /><div><span className="eyebrow">案头画卷</span><h3>九霄山河图鉴</h3><p>按素材原名与目录归卷。点开可细看。</p></div></div>
+       <label className="world-search">查找画卷<input type="search" value={atlasQuery} onChange={event => setAtlasQuery(event.target.value)} placeholder="地域、宗门、功法或图鉴名称" aria-label="搜索画卷图鉴" /></label>
+      <div className="atlas-collections" role="group" aria-label="画卷分类">{atlasCollections.map(item => <button key={item.id} aria-pressed={collection === item.id} onClick={() => setCollection(item.id)}>{item.label}<small>{CANDIDATE_ILLUSTRATIONS.filter(art => art.collection === item.id).length} 幅</small></button>)}</div>
+      <p className="atlas-boundary">这些画面是视觉参考，不构成设定正文或审核证据。具体地域、势力关系与修炼规则，以已审核文字和游戏规则为准。</p>
+      <div className="atlas-grid" aria-live="polite">{illustrations.length ? illustrations.map(illustration => <button className="atlas-card" key={illustration.id} onClick={() => setSelectedIllustration(illustration)} aria-label={`放大查看：${illustration.title}`}>
+        <img src={illustration.src} alt={illustration.title} loading="lazy" decoding="async" />
+         <span>{illustration.title}</span>
+      </button>) : <p className="worldbook-empty">这一卷里没有找到对应画面。</p>}</div>
+      <dialog className="atlas-dialog" ref={dialogRef} aria-labelledby="atlas-dialog-title" onClose={() => setSelectedIllustration(null)}>
+        {selectedIllustration && <><button className="atlas-dialog-close" aria-label="关闭画卷" onClick={() => dialogRef.current?.close()}>×</button><img src={selectedIllustration.src} alt={selectedIllustration.title} /><div><h3 id="atlas-dialog-title">{selectedIllustration.title}</h3><p>项目视觉参考 · 设定以已审核正文为准</p></div></>}
+      </dialog>
+    </div>}
+    <div className="card worldbook-scope"><strong>资料范围</strong><p>正文目前开放 7 条已审核的地理设定。你说明的 182 条 OCR 原图未随本次素材提供，因此没有纳入正文搜索。画卷图鉴使用本次提供的 37 张世界、势力与体系图，以及 7 张品牌和纹理素材；它们只作视觉参考。</p>
       {save && <label className="secondary file-action world-import">为当前存档附加补充 TXT<input type="file" accept=".txt,.md" onChange={event => { const file = event.currentTarget.files?.[0]; if (file) onImportSupplement(file, save); event.currentTarget.value = ''; }} /></label>}
       <button className="secondary" onClick={onClose}>回到刚才的位置</button>
     </div>

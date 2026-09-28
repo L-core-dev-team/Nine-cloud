@@ -46,10 +46,10 @@ export function GraphicsSettingsPage({ settings, onChange, renderer, ambientAudi
       <div className="scene-choice-list" role="group" aria-label="预览场景">
         {SCENE_MANIFEST.map(scene => <button key={scene.id} className="scene-choice" aria-pressed={preview === scene.id} onClick={() => { setPreview(scene.id); onPreviewScene(scene.id); }}>
           <strong>{scene.name}</strong>
-          <small>{scene.assetStatus === 'project-reviewed' ? '现有山门图与本地雾、水光层' : '程序化预览 · 正式画面待审核'}</small>
+          <small>{scene.assetStatus === 'candidate-internal' ? '项目候选画面 · 来源与发布授权待核' : '程序化预览 · 正式画面待审核'}</small>
         </button>)}
       </div>
-      <p className="quiet-note">试览只影响当前预览。剧情场景要等地点或事件进入存档状态后再切换；玩家或模型不能指定图片网址。</p>
+      <p className="quiet-note">候选画面已按四类固定场景接入预览。游戏内只按已结算地点切换；玩家输入和模型不能指定图片网址。来源、授权和双作者发布审核完成前，这些文件只作内部预览。</p>
     </section>
 
     <section className="graphics-section" aria-labelledby="quality-title">
@@ -75,6 +75,7 @@ export function GraphicsSettingsPage({ settings, onChange, renderer, ambientAudi
         <label className="graphics-toggle"><input type="checkbox" checked={settings.atmosphereEnabled} onChange={event => patch({ atmosphereEnabled: event.target.checked })} /><span><strong>雾与水光</strong><small>山门水面反光及全站氛围雾层。</small></span></label>
         <label className="graphics-toggle"><input type="checkbox" checked={settings.particlesEnabled} onChange={event => patch({ particlesEnabled: event.target.checked })} /><span><strong>浮尘与灵火</strong><small>按场景采用冷光微尘或暖色微粒。</small></span></label>
         <label className="graphics-toggle"><input type="checkbox" checked={settings.dataSaver} onChange={event => patch({ dataSaver: event.target.checked })} /><span><strong>省电 / 省流量</strong><small>氛围层目标 30 FPS、关闭粒子并冻结装饰动效；场景图使用本地文件。</small></span></label>
+        <label className="graphics-toggle"><input type="checkbox" checked={settings.sceneVideoEnabled} disabled={settings.dataSaver || settings.reducedMotion} onChange={event => patch({ sceneVideoEnabled: event.target.checked })} /><span><strong>短循环场景影像</strong><small>山门横屏与妖林竖屏可播放静音循环；约 1.5 MB，省流量、减少动态效果或浏览器不支持时保留静态画面。</small></span></label>
         <label className="graphics-toggle"><input type="checkbox" checked={settings.reducedMotion} onChange={event => patch({ reducedMotion: event.target.checked })} /><span><strong>减少动态效果</strong><small>保留静态画面；同时尊重系统的减少动态效果设置。</small></span></label>
       </div>
       <div className="renderer-readout" aria-live="polite"><span>场景采样</span><strong>{measured}</strong><span>有效渲染比例</span><strong>{actualScale}</strong><span>档位目标</span><strong>{settings.dataSaver ? '30 FPS' : `${settings.targetFps} FPS`}</strong></div>
