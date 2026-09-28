@@ -103,7 +103,7 @@ describe('NPC memory turn journal', () => {
 
     const prepared = prepare();
     if (prepared.status !== 'prepared') throw new Error('Expected prepared memory journal');
-    expect(() => prepare(prepared.journal, [makeEvent()])).toThrow('revision mismatch');
+    expect(() => prepare(prepared.journal, [makeEvent(EVENT_2)])).toThrow('revision mismatch');
   });
 
   it('does not partially change the source journal when a grant or policy fails', () => {
