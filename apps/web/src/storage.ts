@@ -148,7 +148,7 @@ export async function hydrateSaves(): Promise<{ saves: LocalSave[]; indexedDb: b
     const local = inspectLocalSaves();
     let indexed = await readIndexedSnapshot();
     if (!indexed.initialized) {
-      if (!local.usable) return { saves: local.saves, indexedDb: false, warning: '检测到受损或不一致的本地存档副本。未初始化数据库，已保留可解析的旧副本；请先导出并核对，不要清除浏览器数据。' };
+      if (!local.usable) return { saves: local.saves, indexedDb: false, warning: '检测到受损的本地存档文本或不一致的副本。未初始化数据库，已保留可解析的旧副本；请先导出并核对，不要清除浏览器数据。' };
       await initializeIndexedSaves(local.saves);
       indexed = await readIndexedSnapshot();
     }
