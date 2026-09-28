@@ -49,18 +49,25 @@ async function ready(url) {
   try {
     for (const [width, height] of [[390, 844], [1366, 768]]) {
       const page = await browser.newPage({ viewport: { width, height } });
-      await page.route('https://openrouter.ai/api/v1/models?output_modalities=text', route => route.fulfill({
-        contentType: 'application/json',
-        body: JSON.stringify({ data: Array.from({ length: 12 }, (_, index) => ({
-          id: index === 0 ? 'anthropic/claude-sonnet-5' : `openai/model-${index}`,
-          name: index === 0 ? 'Claude Sonnet 5' : `Model ${index}`,
-          description: `Text generation and reasoning model ${index}`,
-          context_length: 32000 + index * 1000,
-          created: 1780000000,
-          pricing: { prompt: '0.000001', completion: '0.000002' },
-          architecture: { output_modalities: ['text'] },
-        })) }),
-      }));
+      const catalogRequests = [];
+      await page.route(
+        url => url.origin === 'https://openrouter.ai' && url.pathname === '/api/v1/models',
+        route => {
+          catalogRequests.push(route.request().url());
+          return route.fulfill({
+            contentType: 'application/json',
+            body: JSON.stringify({ data: Array.from({ length: 12 }, (_, index) => ({
+              id: index === 0 ? 'anthropic/claude-sonnet-5' : `openai/model-${index}`,
+              name: index === 0 ? 'Claude Sonnet 5' : `Model ${index}`,
+              description: `Text generation and reasoning model ${index}`,
+              context_length: 32000 + index * 1000,
+              created: 1780000000,
+              pricing: { prompt: '0.000001', completion: '0.000002' },
+              architecture: { output_modalities: ['text'] },
+            })) }),
+          });
+        },
+      );
       await page.goto(`http://127.0.0.1:${webPort}/`);
       await page.evaluate(() => new Promise(resolve => {
         localStorage.clear();
@@ -140,11 +147,13 @@ async function ready(url) {
       await page.getByRole('button', { name: 'Anthropic · Claude API' }).click();
       assert.equal(await page.locator('.dialog-heading h2').innerText(), 'Anthropic · Claude API');
       assert.ok((await page.locator('.provider-detail-body').innerText()).includes('官方型号与价格'));
-      assert.ok((await page.locator('.provider-detail-body').innerText()).includes('anthropic/claude-sonnet-5'));
+      await page.locator('.provider-detail-body').getByText('anthropic/claude-sonnet-5').waitFor();
+      assert.ok(catalogRequests.some(url => new URL(url).searchParams.get('output_modalities') === 'text'), 'OpenRouter catalogue request should use the deterministic fixture');
       assert.ok((await page.locator('.provider-detail-body').innerText()).includes('OpenRouter 托管目录'));
       await page.locator('.back-link').click();
       await page.locator('.directory-toolbar .comparison-link').click();
       assert.equal(await page.locator('.dialog-heading h2').innerText(), '价格与能力总览比较');
+      await page.locator('.comparison-table tbody tr').first().waitFor();
       assert.equal(await page.locator('.comparison-table tbody tr').count(), 12);
       assert.ok((await page.locator('.comparison-body').innerText()).includes('OpenRouter 聚合市场'));
       const comparisonScroll = page.locator('.dialog-scroll-region');
