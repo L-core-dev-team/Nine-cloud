@@ -4,3 +4,6 @@ packages:
 
 allowBuilds:
   esbuild: true
+
+overrides:
+  esbuild: 0.28.2
