@@ -1,0 +1,26 @@
+{
+  "name": "@jiuxiao/content",
+  "version": "1.0.0-alpha.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./publisher": {
+      "types": "./dist/worldbook-publisher.d.ts",
+      "default": "./dist/worldbook-publisher.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.6"
+  }
+}

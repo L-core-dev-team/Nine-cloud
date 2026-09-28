@@ -1,0 +1,3301 @@
+{
+  "schemaVersion": 1,
+  "artifact": "author-only-worldbook-draft-index",
+  "handling": "Source headings and line references only. Draft ids are index-local ordinals, not durable Canon ids. This is not reviewed Canon and is excluded from the player build.",
+  "source": {
+    "repoPath": "docs/sources/世界书_保守补全版.md",
+    "sha256": "1d871057163f7f0b439c135b3af943e948b2401bb284ab077622ed95450d35d2",
+    "byteLength": 131160,
+    "lineCount": 1826,
+    "status": "unreviewed-source-material",
+    "publishable": false
+  },
+  "scan": {
+    "headingCount": 172,
+    "sourceMarkerOccurrences": 219,
+    "reviewMarkerOccurrences": {
+      "suspectedMissing": 155,
+      "confirmationNeeded": 20,
+      "unreadable": 47,
+      "unassigned": 4
+    },
+    "note": "Marker counts are text occurrences, not independent issues, reviewed images, or approved entries."
+  },
+  "sections": [
+    {
+      "id": "draft-heading-0001",
+      "parentId": null,
+      "title": "《九霄》世界书 · 审核修正版（未入库）",
+      "level": 1,
+      "startLine": 1,
+      "contentEndLine": 15,
+      "endLine": 32,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "NNN"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 1,
+        "unreadable": 1,
+        "unassigned": 1
+      }
+    },
+    {
+      "id": "draft-heading-0002",
+      "parentId": "draft-heading-0001",
+      "title": "【待归属】目录导航页（疑似全书目录，仅存通用设定部分）",
+      "level": 2,
+      "startLine": 16,
+      "contentEndLine": 32,
+      "endLine": 32,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "001"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0003",
+      "parentId": null,
+      "title": "九霄大陆地图",
+      "level": 1,
+      "startLine": 33,
+      "contentEndLine": 49,
+      "endLine": 49,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "002"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0004",
+      "parentId": null,
+      "title": "中州天枢域",
+      "level": 1,
+      "startLine": 50,
+      "contentEndLine": 69,
+      "endLine": 619,
+      "sourceMarkerOccurrences": 8,
+      "sourceRefs": [
+        "补022→003",
+        "003",
+        "019",
+        "028",
+        "028→039"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 1,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0005",
+      "parentId": "draft-heading-0004",
+      "title": "昊天剑宗",
+      "level": 2,
+      "startLine": 70,
+      "contentEndLine": 79,
+      "endLine": 144,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "003",
+        "004"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0006",
+      "parentId": "draft-heading-0005",
+      "title": "功法体系",
+      "level": 3,
+      "startLine": 80,
+      "contentEndLine": 85,
+      "endLine": 112,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 1,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0007",
+      "parentId": "draft-heading-0006",
+      "title": "核心总纲",
+      "level": 4,
+      "startLine": 86,
+      "contentEndLine": 92,
+      "endLine": 92,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "005→006"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0008",
+      "parentId": "draft-heading-0006",
+      "title": "主要分支- 地阶功法",
+      "level": 4,
+      "startLine": 93,
+      "contentEndLine": 104,
+      "endLine": 104,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "006→007→008"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 2,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0009",
+      "parentId": "draft-heading-0006",
+      "title": "剑意修行",
+      "level": 4,
+      "startLine": 105,
+      "contentEndLine": 112,
+      "endLine": 112,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "008"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0010",
+      "parentId": "draft-heading-0005",
+      "title": "内部结构",
+      "level": 3,
+      "startLine": 113,
+      "contentEndLine": 116,
+      "endLine": 134,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0011",
+      "parentId": "draft-heading-0010",
+      "title": "弟子等级",
+      "level": 4,
+      "startLine": 117,
+      "contentEndLine": 134,
+      "endLine": 134,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "009",
+        "010"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 2,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0012",
+      "parentId": "draft-heading-0005",
+      "title": "门内风气",
+      "level": 3,
+      "startLine": 135,
+      "contentEndLine": 144,
+      "endLine": 144,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "011"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 1,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0013",
+      "parentId": "draft-heading-0004",
+      "title": "玉清阁",
+      "level": 2,
+      "startLine": 145,
+      "contentEndLine": 158,
+      "endLine": 214,
+      "sourceMarkerOccurrences": 3,
+      "sourceRefs": [
+        "011→012",
+        "012",
+        "013"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 1,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0014",
+      "parentId": "draft-heading-0013",
+      "title": "功法体系",
+      "level": 3,
+      "startLine": 159,
+      "contentEndLine": 162,
+      "endLine": 194,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0015",
+      "parentId": "draft-heading-0014",
+      "title": "核心总纲",
+      "level": 4,
+      "startLine": 163,
+      "contentEndLine": 175,
+      "endLine": 175,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "013",
+        "014"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 1,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0016",
+      "parentId": "draft-heading-0014",
+      "title": "主要分支（地阶功法）",
+      "level": 4,
+      "startLine": 176,
+      "contentEndLine": 194,
+      "endLine": 194,
+      "sourceMarkerOccurrences": 3,
+      "sourceRefs": [
+        "014",
+        "015",
+        "016"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 2,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0017",
+      "parentId": "draft-heading-0013",
+      "title": "内部结构",
+      "level": 3,
+      "startLine": 195,
+      "contentEndLine": 204,
+      "endLine": 204,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "017"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0018",
+      "parentId": "draft-heading-0013",
+      "title": "门内风气",
+      "level": 3,
+      "startLine": 205,
+      "contentEndLine": 214,
+      "endLine": 214,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "018"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0019",
+      "parentId": "draft-heading-0004",
+      "title": "衍天宗",
+      "level": 2,
+      "startLine": 215,
+      "contentEndLine": 226,
+      "endLine": 283,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "019",
+        "020"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 2,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0020",
+      "parentId": "draft-heading-0019",
+      "title": "功法体系",
+      "level": 3,
+      "startLine": 227,
+      "contentEndLine": 232,
+      "endLine": 253,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "021"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0021",
+      "parentId": "draft-heading-0020",
+      "title": "核心总纲",
+      "level": 4,
+      "startLine": 233,
+      "contentEndLine": 239,
+      "endLine": 239,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "021→022"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0022",
+      "parentId": "draft-heading-0020",
+      "title": "主要分支 - 地阶功法",
+      "level": 4,
+      "startLine": 240,
+      "contentEndLine": 253,
+      "endLine": 253,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "022→023",
+        "024"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 2,
+        "confirmationNeeded": 0,
+        "unreadable": 1,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0023",
+      "parentId": "draft-heading-0019",
+      "title": "内部结构",
+      "level": 3,
+      "startLine": 254,
+      "contentEndLine": 273,
+      "endLine": 273,
+      "sourceMarkerOccurrences": 3,
+      "sourceRefs": [
+        "024",
+        "025",
+        "026"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0024",
+      "parentId": "draft-heading-0019",
+      "title": "门内风气",
+      "level": 3,
+      "startLine": 274,
+      "contentEndLine": 283,
+      "endLine": 283,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "027、028"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0025",
+      "parentId": "draft-heading-0004",
+      "title": "四海商会",
+      "level": 2,
+      "startLine": 284,
+      "contentEndLine": 293,
+      "endLine": 364,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "028",
+        "029"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0026",
+      "parentId": "draft-heading-0025",
+      "title": "功法与能力体系",
+      "level": 3,
+      "startLine": 294,
+      "contentEndLine": 297,
+      "endLine": 313,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0027",
+      "parentId": "draft-heading-0026",
+      "title": "核心总纲",
+      "level": 4,
+      "startLine": 298,
+      "contentEndLine": 305,
+      "endLine": 305,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "030→补006"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0028",
+      "parentId": "draft-heading-0026",
+      "title": "特色法门",
+      "level": 4,
+      "startLine": 306,
+      "contentEndLine": 313,
+      "endLine": 313,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "补006"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0029",
+      "parentId": "draft-heading-0025",
+      "title": "内部结构",
+      "level": 3,
+      "startLine": 314,
+      "contentEndLine": 317,
+      "endLine": 348,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0030",
+      "parentId": "draft-heading-0029",
+      "title": "权力核心",
+      "level": 4,
+      "startLine": 318,
+      "contentEndLine": 325,
+      "endLine": 325,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "补007"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0031",
+      "parentId": "draft-heading-0029",
+      "title": "弟子与成员",
+      "level": 4,
+      "startLine": 326,
+      "contentEndLine": 335,
+      "endLine": 335,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "补007→补008"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0032",
+      "parentId": "draft-heading-0029",
+      "title": "组织架构",
+      "level": 4,
+      "startLine": 336,
+      "contentEndLine": 348,
+      "endLine": 348,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "补009、059"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0033",
+      "parentId": "draft-heading-0025",
+      "title": "内部风气",
+      "level": 3,
+      "startLine": 349,
+      "contentEndLine": 364,
+      "endLine": 364,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "058",
+        "057"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 2,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0034",
+      "parentId": "draft-heading-0004",
+      "title": "天工阁",
+      "level": 2,
+      "startLine": 365,
+      "contentEndLine": 375,
+      "endLine": 450,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "057"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0035",
+      "parentId": "draft-heading-0034",
+      "title": "功法体系",
+      "level": 3,
+      "startLine": 376,
+      "contentEndLine": 386,
+      "endLine": 386,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "056",
+        "055"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0036",
+      "parentId": "draft-heading-0034",
+      "title": "三大流派分支",
+      "level": 3,
+      "startLine": 387,
+      "contentEndLine": 388,
+      "endLine": 408,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0037",
+      "parentId": "draft-heading-0036",
+      "title": "巨构院",
+      "level": 4,
+      "startLine": 389,
+      "contentEndLine": 393,
+      "endLine": 393,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0038",
+      "parentId": "draft-heading-0036",
+      "title": "器灵院",
+      "level": 4,
+      "startLine": 394,
+      "contentEndLine": 401,
+      "endLine": 401,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "054"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0039",
+      "parentId": "draft-heading-0036",
+      "title": "神机院",
+      "level": 4,
+      "startLine": 402,
+      "contentEndLine": 408,
+      "endLine": 408,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "053"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0040",
+      "parentId": "draft-heading-0034",
+      "title": "内部结构",
+      "level": 3,
+      "startLine": 409,
+      "contentEndLine": 410,
+      "endLine": 435,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0041",
+      "parentId": "draft-heading-0040",
+      "title": "弟子与匠师等级",
+      "level": 4,
+      "startLine": 411,
+      "contentEndLine": 421,
+      "endLine": 421,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "052、051"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0042",
+      "parentId": "draft-heading-0040",
+      "title": "组织架构",
+      "level": 4,
+      "startLine": 422,
+      "contentEndLine": 435,
+      "endLine": 435,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "051",
+        "050"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 2,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0043",
+      "parentId": "draft-heading-0034",
+      "title": "门内风气",
+      "level": 3,
+      "startLine": 436,
+      "contentEndLine": 450,
+      "endLine": 450,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "050",
+        "049"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0044",
+      "parentId": "draft-heading-0004",
+      "title": "大光明寺",
+      "level": 2,
+      "startLine": 451,
+      "contentEndLine": 464,
+      "endLine": 538,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "补023、028",
+        "补023→048"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0045",
+      "parentId": "draft-heading-0044",
+      "title": "门内风气",
+      "level": 3,
+      "startLine": 465,
+      "contentEndLine": 473,
+      "endLine": 473,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "040"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0046",
+      "parentId": "draft-heading-0044",
+      "title": "功法体系",
+      "level": 3,
+      "startLine": 474,
+      "contentEndLine": 477,
+      "endLine": 515,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0047",
+      "parentId": "draft-heading-0046",
+      "title": "核心总纲",
+      "level": 4,
+      "startLine": 478,
+      "contentEndLine": 486,
+      "endLine": 486,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "047"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0048",
+      "parentId": "draft-heading-0046",
+      "title": "主要分支 (地阶功法)",
+      "level": 4,
+      "startLine": 487,
+      "contentEndLine": 506,
+      "endLine": 506,
+      "sourceMarkerOccurrences": 3,
+      "sourceRefs": [
+        "046",
+        "045",
+        "044"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 2,
+        "confirmationNeeded": 0,
+        "unreadable": 1,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0049",
+      "parentId": "draft-heading-0046",
+      "title": "基础修行",
+      "level": 4,
+      "startLine": 507,
+      "contentEndLine": 515,
+      "endLine": 515,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "043"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 1,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0050",
+      "parentId": "draft-heading-0044",
+      "title": "内部结构",
+      "level": 3,
+      "startLine": 516,
+      "contentEndLine": 519,
+      "endLine": 538,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0051",
+      "parentId": "draft-heading-0050",
+      "title": "弟子等级",
+      "level": 4,
+      "startLine": 520,
+      "contentEndLine": 538,
+      "endLine": 538,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "042",
+        "041"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 2,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0052",
+      "parentId": "draft-heading-0004",
+      "title": "稷下学宫",
+      "level": 2,
+      "startLine": 539,
+      "contentEndLine": 549,
+      "endLine": 619,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "028→039",
+        "039"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 1,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0053",
+      "parentId": "draft-heading-0052",
+      "title": "功法体系",
+      "level": 3,
+      "startLine": 550,
+      "contentEndLine": 560,
+      "endLine": 584,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "038",
+        "037"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 2,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0054",
+      "parentId": "draft-heading-0053",
+      "title": "主要分支 (地阶功法)",
+      "level": 4,
+      "startLine": 561,
+      "contentEndLine": 576,
+      "endLine": 576,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "036",
+        "035"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 2,
+        "confirmationNeeded": 0,
+        "unreadable": 1,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0055",
+      "parentId": "draft-heading-0053",
+      "title": "基础修行",
+      "level": 4,
+      "startLine": 577,
+      "contentEndLine": 584,
+      "endLine": 584,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "034"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0056",
+      "parentId": "draft-heading-0052",
+      "title": "内部结构",
+      "level": 3,
+      "startLine": 585,
+      "contentEndLine": 588,
+      "endLine": 610,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0057",
+      "parentId": "draft-heading-0056",
+      "title": "成员等级",
+      "level": 4,
+      "startLine": 589,
+      "contentEndLine": 597,
+      "endLine": 597,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "033"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0058",
+      "parentId": "draft-heading-0056",
+      "title": "组织架构",
+      "level": 4,
+      "startLine": 598,
+      "contentEndLine": 610,
+      "endLine": 610,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "032"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 2,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0059",
+      "parentId": "draft-heading-0052",
+      "title": "门内风气",
+      "level": 3,
+      "startLine": 611,
+      "contentEndLine": 619,
+      "endLine": 619,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "031"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0060",
+      "parentId": null,
+      "title": "东瀚龙吟域",
+      "level": 1,
+      "startLine": 620,
+      "contentEndLine": 629,
+      "endLine": 787,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "补021→172"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 1,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0061",
+      "parentId": "draft-heading-0060",
+      "title": "听潮阁",
+      "level": 2,
+      "startLine": 630,
+      "contentEndLine": 640,
+      "endLine": 715,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "172"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0062",
+      "parentId": "draft-heading-0061",
+      "title": "功法体系",
+      "level": 3,
+      "startLine": 641,
+      "contentEndLine": 644,
+      "endLine": 676,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "173",
+        "173→174"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0063",
+      "parentId": "draft-heading-0062",
+      "title": "核心总纲",
+      "level": 4,
+      "startLine": 645,
+      "contentEndLine": 651,
+      "endLine": 651,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "174→175"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0064",
+      "parentId": "draft-heading-0062",
+      "title": "主要分支（地阶功法）",
+      "level": 4,
+      "startLine": 652,
+      "contentEndLine": 667,
+      "endLine": 667,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "175",
+        "176"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 2,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0065",
+      "parentId": "draft-heading-0062",
+      "title": "特色修行",
+      "level": 4,
+      "startLine": 668,
+      "contentEndLine": 676,
+      "endLine": 676,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "177"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 2,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0066",
+      "parentId": "draft-heading-0061",
+      "title": "内部结构",
+      "level": 3,
+      "startLine": 677,
+      "contentEndLine": 680,
+      "endLine": 715,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0067",
+      "parentId": "draft-heading-0066",
+      "title": "弟子等级",
+      "level": 4,
+      "startLine": 681,
+      "contentEndLine": 690,
+      "endLine": 690,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "178"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0068",
+      "parentId": "draft-heading-0066",
+      "title": "组织架构",
+      "level": 4,
+      "startLine": 691,
+      "contentEndLine": 715,
+      "endLine": 715,
+      "sourceMarkerOccurrences": 4,
+      "sourceRefs": [
+        "179",
+        "171",
+        "170",
+        "170、169"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 3,
+        "confirmationNeeded": 1,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0069",
+      "parentId": "draft-heading-0060",
+      "title": "覆海宗",
+      "level": 2,
+      "startLine": 716,
+      "contentEndLine": 727,
+      "endLine": 787,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "169"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0070",
+      "parentId": "draft-heading-0069",
+      "title": "功法体系",
+      "level": 3,
+      "startLine": 728,
+      "contentEndLine": 733,
+      "endLine": 754,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "168"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0071",
+      "parentId": "draft-heading-0070",
+      "title": "核心总纲",
+      "level": 4,
+      "startLine": 734,
+      "contentEndLine": 741,
+      "endLine": 741,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "167"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0072",
+      "parentId": "draft-heading-0070",
+      "title": "主要分支 - 地阶功法",
+      "level": 4,
+      "startLine": 742,
+      "contentEndLine": 754,
+      "endLine": 754,
+      "sourceMarkerOccurrences": 3,
+      "sourceRefs": [
+        "166",
+        "165",
+        "165、164"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0073",
+      "parentId": "draft-heading-0069",
+      "title": "内部结构",
+      "level": 3,
+      "startLine": 755,
+      "contentEndLine": 758,
+      "endLine": 787,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0074",
+      "parentId": "draft-heading-0073",
+      "title": "弟子等级",
+      "level": 4,
+      "startLine": 759,
+      "contentEndLine": 787,
+      "endLine": 787,
+      "sourceMarkerOccurrences": 4,
+      "sourceRefs": [
+        "164",
+        "163",
+        "162",
+        "161"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 4,
+        "confirmationNeeded": 1,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0075",
+      "parentId": null,
+      "title": "西荒焚天域",
+      "level": 1,
+      "startLine": 788,
+      "contentEndLine": 797,
+      "endLine": 945,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "160→补020"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0076",
+      "parentId": "draft-heading-0075",
+      "title": "圣火教",
+      "level": 2,
+      "startLine": 798,
+      "contentEndLine": 808,
+      "endLine": 875,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "160→159",
+        "159"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 2,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0077",
+      "parentId": "draft-heading-0076",
+      "title": "功法体系",
+      "level": 3,
+      "startLine": 809,
+      "contentEndLine": 812,
+      "endLine": 848,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0078",
+      "parentId": "draft-heading-0077",
+      "title": "核心总纲",
+      "level": 4,
+      "startLine": 813,
+      "contentEndLine": 821,
+      "endLine": 821,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "158"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0079",
+      "parentId": "draft-heading-0077",
+      "title": "主要分支（地阶功法）",
+      "level": 4,
+      "startLine": 822,
+      "contentEndLine": 839,
+      "endLine": 839,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "157",
+        "156"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 2,
+        "confirmationNeeded": 0,
+        "unreadable": 2,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0080",
+      "parentId": "draft-heading-0077",
+      "title": "特色修行",
+      "level": 4,
+      "startLine": 840,
+      "contentEndLine": 848,
+      "endLine": 848,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "155"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0081",
+      "parentId": "draft-heading-0076",
+      "title": "内部结构",
+      "level": 3,
+      "startLine": 849,
+      "contentEndLine": 867,
+      "endLine": 867,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "154",
+        "153"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 2,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0082",
+      "parentId": "draft-heading-0076",
+      "title": "门内风气",
+      "level": 3,
+      "startLine": 868,
+      "contentEndLine": 875,
+      "endLine": 875,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "152"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0083",
+      "parentId": "draft-heading-0075",
+      "title": "金刚不坏谷",
+      "level": 2,
+      "startLine": 876,
+      "contentEndLine": 885,
+      "endLine": 945,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "补020、补010",
+        "补010"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 1
+      }
+    },
+    {
+      "id": "draft-heading-0084",
+      "parentId": "draft-heading-0083",
+      "title": "功法体系",
+      "level": 3,
+      "startLine": 886,
+      "contentEndLine": 889,
+      "endLine": 910,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0085",
+      "parentId": "draft-heading-0084",
+      "title": "核心总纲",
+      "level": 4,
+      "startLine": 890,
+      "contentEndLine": 897,
+      "endLine": 897,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "补011→补012"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 1,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0086",
+      "parentId": "draft-heading-0084",
+      "title": "主要分支 - 地阶功法",
+      "level": 4,
+      "startLine": 898,
+      "contentEndLine": 910,
+      "endLine": 910,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "补013→补014→补015"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 3,
+        "confirmationNeeded": 0,
+        "unreadable": 1,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0087",
+      "parentId": "draft-heading-0083",
+      "title": "内部结构",
+      "level": 3,
+      "startLine": 911,
+      "contentEndLine": 914,
+      "endLine": 932,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0088",
+      "parentId": "draft-heading-0087",
+      "title": "弟子等级",
+      "level": 4,
+      "startLine": 915,
+      "contentEndLine": 923,
+      "endLine": 923,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "补015→补016"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 2,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0089",
+      "parentId": "draft-heading-0087",
+      "title": "（地点类条目小节，标题未见于素材）",
+      "level": 4,
+      "startLine": 924,
+      "contentEndLine": 932,
+      "endLine": 932,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "补017"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0090",
+      "parentId": "draft-heading-0083",
+      "title": "门内风气",
+      "level": 3,
+      "startLine": 933,
+      "contentEndLine": 945,
+      "endLine": 945,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "补018、151→补019、150"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 1,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0091",
+      "parentId": null,
+      "title": "北境霜寒域",
+      "level": 1,
+      "startLine": 946,
+      "contentEndLine": 955,
+      "endLine": 1106,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "150"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0092",
+      "parentId": "draft-heading-0091",
+      "title": "冰神宫",
+      "level": 2,
+      "startLine": 956,
+      "contentEndLine": 965,
+      "endLine": 1019,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "150、149；上下文恢复"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0093",
+      "parentId": "draft-heading-0092",
+      "title": "功法体系",
+      "level": 3,
+      "startLine": 966,
+      "contentEndLine": 971,
+      "endLine": 991,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "149"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0094",
+      "parentId": "draft-heading-0093",
+      "title": "核心总纲",
+      "level": 4,
+      "startLine": 972,
+      "contentEndLine": 991,
+      "endLine": 991,
+      "sourceMarkerOccurrences": 3,
+      "sourceRefs": [
+        "148",
+        "147",
+        "146"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 3,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0095",
+      "parentId": "draft-heading-0092",
+      "title": "独门秘术",
+      "level": 3,
+      "startLine": 992,
+      "contentEndLine": 995,
+      "endLine": 995,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0096",
+      "parentId": "draft-heading-0092",
+      "title": "内部结构",
+      "level": 3,
+      "startLine": 996,
+      "contentEndLine": 1019,
+      "endLine": 1019,
+      "sourceMarkerOccurrences": 3,
+      "sourceRefs": [
+        "145",
+        "144",
+        "143"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 3,
+        "confirmationNeeded": 1,
+        "unreadable": 2,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0097",
+      "parentId": "draft-heading-0091",
+      "title": "北境联盟",
+      "level": 2,
+      "startLine": 1020,
+      "contentEndLine": 1030,
+      "endLine": 1106,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "142→补027"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 2,
+        "confirmationNeeded": 0,
+        "unreadable": 2,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0098",
+      "parentId": "draft-heading-0097",
+      "title": "功法体系",
+      "level": 3,
+      "startLine": 1031,
+      "contentEndLine": 1041,
+      "endLine": 1063,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "141"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0099",
+      "parentId": "draft-heading-0098",
+      "title": "主要分支 - 部族秘法 (等地阶)",
+      "level": 4,
+      "startLine": 1042,
+      "contentEndLine": 1047,
+      "endLine": 1047,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "140"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0100",
+      "parentId": "draft-heading-0098",
+      "title": "狂战部 - 《血牙战吼诀》",
+      "level": 4,
+      "startLine": 1048,
+      "contentEndLine": 1051,
+      "endLine": 1051,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0101",
+      "parentId": "draft-heading-0098",
+      "title": "幽影部 - 《冰原潜行[看不清]",
+      "level": 4,
+      "startLine": 1052,
+      "contentEndLine": 1057,
+      "endLine": 1057,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "139"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0102",
+      "parentId": "draft-heading-0098",
+      "title": "魂祭部 - 《狼魂通灵法》",
+      "level": 4,
+      "startLine": 1058,
+      "contentEndLine": 1063,
+      "endLine": 1063,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "138"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0103",
+      "parentId": "draft-heading-0097",
+      "title": "内部结构",
+      "level": 3,
+      "startLine": 1064,
+      "contentEndLine": 1067,
+      "endLine": 1091,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0104",
+      "parentId": "draft-heading-0103",
+      "title": "成员等级",
+      "level": 4,
+      "startLine": 1068,
+      "contentEndLine": 1078,
+      "endLine": 1078,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "137"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0105",
+      "parentId": "draft-heading-0103",
+      "title": "组织架构",
+      "level": 4,
+      "startLine": 1079,
+      "contentEndLine": 1091,
+      "endLine": 1091,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "136"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 1,
+        "unreadable": 2,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0106",
+      "parentId": "draft-heading-0097",
+      "title": "联盟风气",
+      "level": 3,
+      "startLine": 1092,
+      "contentEndLine": 1106,
+      "endLine": 1106,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "135",
+        "134"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 1,
+        "unreadable": 1,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0107",
+      "parentId": null,
+      "title": "南疆万蛊域",
+      "level": 1,
+      "startLine": 1107,
+      "contentEndLine": 1118,
+      "endLine": 1393,
+      "sourceMarkerOccurrences": 4,
+      "sourceRefs": [
+        "134",
+        "133、132",
+        "133"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 2,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0108",
+      "parentId": "draft-heading-0107",
+      "title": "五毒神教",
+      "level": 2,
+      "startLine": 1119,
+      "contentEndLine": 1127,
+      "endLine": 1214,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "132"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 1,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0109",
+      "parentId": "draft-heading-0108",
+      "title": "功法体系",
+      "level": 3,
+      "startLine": 1128,
+      "contentEndLine": 1133,
+      "endLine": 1175,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "131"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0110",
+      "parentId": "draft-heading-0109",
+      "title": "《万毒蛊源》- 天阶（活体）",
+      "level": 4,
+      "startLine": 1134,
+      "contentEndLine": 1142,
+      "endLine": 1142,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "130"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0111",
+      "parentId": "draft-heading-0109",
+      "title": "天蝎脉 - 《天蝎夺魂经》",
+      "level": 4,
+      "startLine": 1143,
+      "contentEndLine": 1146,
+      "endLine": 1146,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0112",
+      "parentId": "draft-heading-0109",
+      "title": "地龙脉 - 《地龙腐骨功》",
+      "level": 4,
+      "startLine": 1147,
+      "contentEndLine": 1151,
+      "endLine": 1151,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "129、128；跨图恢复"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0113",
+      "parentId": "draft-heading-0109",
+      "title": "百足脉 - 《百足控心诀》",
+      "level": 4,
+      "startLine": 1152,
+      "contentEndLine": 1160,
+      "endLine": 1160,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "128"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 1,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0114",
+      "parentId": "draft-heading-0109",
+      "title": "金蟾脉 - 《金蟾万毒体》",
+      "level": 4,
+      "startLine": 1161,
+      "contentEndLine": 1166,
+      "endLine": 1166,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "127、126"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0115",
+      "parentId": "draft-heading-0109",
+      "title": "本命蛊修行",
+      "level": 4,
+      "startLine": 1167,
+      "contentEndLine": 1175,
+      "endLine": 1175,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "126"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0116",
+      "parentId": "draft-heading-0108",
+      "title": "内部结构",
+      "level": 3,
+      "startLine": 1176,
+      "contentEndLine": 1179,
+      "endLine": 1200,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0117",
+      "parentId": "draft-heading-0116",
+      "title": "弟子与高层",
+      "level": 4,
+      "startLine": 1180,
+      "contentEndLine": 1190,
+      "endLine": 1190,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "125"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0118",
+      "parentId": "draft-heading-0116",
+      "title": "组织架构",
+      "level": 4,
+      "startLine": 1191,
+      "contentEndLine": 1200,
+      "endLine": 1200,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "124"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0119",
+      "parentId": "draft-heading-0108",
+      "title": "门内风气",
+      "level": 3,
+      "startLine": 1201,
+      "contentEndLine": 1214,
+      "endLine": 1214,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "123、122",
+        "122"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0120",
+      "parentId": "draft-heading-0107",
+      "title": "万兽山庄 - 宗门设定详解",
+      "level": 2,
+      "startLine": 1215,
+      "contentEndLine": 1216,
+      "endLine": 1320,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0121",
+      "parentId": "draft-heading-0120",
+      "title": "宗门总览",
+      "level": 3,
+      "startLine": 1217,
+      "contentEndLine": 1229,
+      "endLine": 1229,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "121",
+        "121、119"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0122",
+      "parentId": "draft-heading-0120",
+      "title": "功法体系",
+      "level": 3,
+      "startLine": 1230,
+      "contentEndLine": 1236,
+      "endLine": 1249,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "119"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0123",
+      "parentId": "draft-heading-0122",
+      "title": "核心总纲",
+      "level": 4,
+      "startLine": 1237,
+      "contentEndLine": 1249,
+      "endLine": 1249,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "120",
+        "118"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 1,
+        "unreadable": 1,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0124",
+      "parentId": "draft-heading-0120",
+      "title": "主要分支 (地阶功法)",
+      "level": 3,
+      "startLine": 1250,
+      "contentEndLine": 1253,
+      "endLine": 1269,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0125",
+      "parentId": "draft-heading-0124",
+      "title": "▪ 《龙象镇狱诀》 - 地阶上品",
+      "level": 4,
+      "startLine": 1254,
+      "contentEndLine": 1259,
+      "endLine": 1259,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "118"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0126",
+      "parentId": "draft-heading-0124",
+      "title": "▪ 《百鸟朝凤诀》 - 地阶中品",
+      "level": 4,
+      "startLine": 1260,
+      "contentEndLine": 1263,
+      "endLine": 1263,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0127",
+      "parentId": "draft-heading-0124",
+      "title": "▪ 《幽影蛇蛊术》 - 地阶下品",
+      "level": 4,
+      "startLine": 1264,
+      "contentEndLine": 1269,
+      "endLine": 1269,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "117"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0128",
+      "parentId": "draft-heading-0120",
+      "title": "基础修行",
+      "level": 3,
+      "startLine": 1270,
+      "contentEndLine": 1280,
+      "endLine": 1280,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "116",
+        "115"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0129",
+      "parentId": "draft-heading-0120",
+      "title": "内部结构",
+      "level": 3,
+      "startLine": 1281,
+      "contentEndLine": 1284,
+      "endLine": 1320,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0130",
+      "parentId": "draft-heading-0129",
+      "title": "弟子等级",
+      "level": 4,
+      "startLine": 1285,
+      "contentEndLine": 1320,
+      "endLine": 1320,
+      "sourceMarkerOccurrences": 5,
+      "sourceRefs": [
+        "115",
+        "115→113",
+        "113",
+        "114",
+        "112"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 2,
+        "confirmationNeeded": 1,
+        "unreadable": 2,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0131",
+      "parentId": "draft-heading-0107",
+      "title": "偃师府",
+      "level": 2,
+      "startLine": 1321,
+      "contentEndLine": 1332,
+      "endLine": 1393,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "111"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 2,
+        "confirmationNeeded": 0,
+        "unreadable": 1,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0132",
+      "parentId": "draft-heading-0131",
+      "title": "功法体系",
+      "level": 3,
+      "startLine": 1333,
+      "contentEndLine": 1340,
+      "endLine": 1340,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "110"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0133",
+      "parentId": "draft-heading-0131",
+      "title": "主要分支 (地阶功法)",
+      "level": 3,
+      "startLine": 1341,
+      "contentEndLine": 1344,
+      "endLine": 1362,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0134",
+      "parentId": "draft-heading-0133",
+      "title": "▪ 《千机百变诀》 - 地阶上品",
+      "level": 4,
+      "startLine": 1345,
+      "contentEndLine": 1350,
+      "endLine": 1350,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "109→108"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0135",
+      "parentId": "draft-heading-0133",
+      "title": "《巨灵神工诀》- 地阶中品",
+      "level": 4,
+      "startLine": 1351,
+      "contentEndLine": 1356,
+      "endLine": 1356,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "108→107"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0136",
+      "parentId": "draft-heading-0133",
+      "title": "《画皮赋灵术》- 地阶上品",
+      "level": 4,
+      "startLine": 1357,
+      "contentEndLine": 1362,
+      "endLine": 1362,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "107"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0137",
+      "parentId": "draft-heading-0131",
+      "title": "基础修行",
+      "level": 3,
+      "startLine": 1363,
+      "contentEndLine": 1368,
+      "endLine": 1368,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0138",
+      "parentId": "draft-heading-0131",
+      "title": "内部结构",
+      "level": 3,
+      "startLine": 1369,
+      "contentEndLine": 1374,
+      "endLine": 1393,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "106"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0139",
+      "parentId": "draft-heading-0138",
+      "title": "弟子等级",
+      "level": 4,
+      "startLine": 1375,
+      "contentEndLine": 1393,
+      "endLine": 1393,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "105",
+        "104"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 2,
+        "confirmationNeeded": 1,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0140",
+      "parentId": null,
+      "title": "妖域：洪荒妖林",
+      "level": 1,
+      "startLine": 1394,
+      "contentEndLine": 1409,
+      "endLine": 1409,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "103"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 1,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0141",
+      "parentId": null,
+      "title": "通用设定部分",
+      "level": 1,
+      "startLine": 1410,
+      "contentEndLine": 1414,
+      "endLine": 1826,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0142",
+      "parentId": "draft-heading-0141",
+      "title": "修仙体系核心要素",
+      "level": 2,
+      "startLine": 1415,
+      "contentEndLine": 1436,
+      "endLine": 1436,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "060",
+        "061"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 2,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0143",
+      "parentId": "draft-heading-0141",
+      "title": "常见修炼流派",
+      "level": 2,
+      "startLine": 1437,
+      "contentEndLine": 1460,
+      "endLine": 1460,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "062",
+        "063"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 3,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0144",
+      "parentId": "draft-heading-0141",
+      "title": "邪修体系",
+      "level": 2,
+      "startLine": 1461,
+      "contentEndLine": 1466,
+      "endLine": 1520,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "补028"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 1,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0145",
+      "parentId": "draft-heading-0144",
+      "title": "邪修职业分支",
+      "level": 3,
+      "startLine": 1467,
+      "contentEndLine": 1488,
+      "endLine": 1488,
+      "sourceMarkerOccurrences": 4,
+      "sourceRefs": [
+        "补028→064",
+        "065",
+        "066",
+        "067"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 5,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0146",
+      "parentId": "draft-heading-0144",
+      "title": "（邪修宗门，小节标题缺失）",
+      "level": 3,
+      "startLine": 1489,
+      "contentEndLine": 1520,
+      "endLine": 1520,
+      "sourceMarkerOccurrences": 4,
+      "sourceRefs": [
+        "068",
+        "069",
+        "070",
+        "071"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 2,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0147",
+      "parentId": "draft-heading-0141",
+      "title": "资源的品级与境界划分",
+      "level": 2,
+      "startLine": 1521,
+      "contentEndLine": 1534,
+      "endLine": 1534,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "072"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 2,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0148",
+      "parentId": "draft-heading-0141",
+      "title": "修炼境界介绍",
+      "level": 2,
+      "startLine": 1535,
+      "contentEndLine": 1538,
+      "endLine": 1653,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0149",
+      "parentId": "draft-heading-0148",
+      "title": "炼体期",
+      "level": 3,
+      "startLine": 1539,
+      "contentEndLine": 1549,
+      "endLine": 1549,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "073"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0150",
+      "parentId": "draft-heading-0148",
+      "title": "炼气期",
+      "level": 3,
+      "startLine": 1550,
+      "contentEndLine": 1561,
+      "endLine": 1561,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "074"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0151",
+      "parentId": "draft-heading-0148",
+      "title": "筑基期",
+      "level": 3,
+      "startLine": 1562,
+      "contentEndLine": 1577,
+      "endLine": 1577,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "075、076"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0152",
+      "parentId": "draft-heading-0148",
+      "title": "结丹期",
+      "level": 3,
+      "startLine": 1578,
+      "contentEndLine": 1593,
+      "endLine": 1593,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "077、078"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 2,
+        "confirmationNeeded": 1,
+        "unreadable": 2,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0153",
+      "parentId": "draft-heading-0148",
+      "title": "元婴期",
+      "level": 3,
+      "startLine": 1594,
+      "contentEndLine": 1611,
+      "endLine": 1611,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "079",
+        "080"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 2,
+        "confirmationNeeded": 0,
+        "unreadable": 3,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0154",
+      "parentId": "draft-heading-0148",
+      "title": "合体期",
+      "level": 3,
+      "startLine": 1612,
+      "contentEndLine": 1625,
+      "endLine": 1625,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "081、082"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0155",
+      "parentId": "draft-heading-0148",
+      "title": "化神期",
+      "level": 3,
+      "startLine": 1626,
+      "contentEndLine": 1639,
+      "endLine": 1639,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "083、084"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 1,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0156",
+      "parentId": "draft-heading-0148",
+      "title": "大乘期",
+      "level": 3,
+      "startLine": 1640,
+      "contentEndLine": 1645,
+      "endLine": 1645,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "085"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0157",
+      "parentId": "draft-heading-0148",
+      "title": "渡劫期",
+      "level": 3,
+      "startLine": 1646,
+      "contentEndLine": 1653,
+      "endLine": 1653,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "086→补025"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 1,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0158",
+      "parentId": "draft-heading-0141",
+      "title": "灵根资质与影响",
+      "level": 2,
+      "startLine": 1654,
+      "contentEndLine": 1668,
+      "endLine": 1668,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "补026→087"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 1,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0159",
+      "parentId": "draft-heading-0141",
+      "title": "功法的品阶划分",
+      "level": 2,
+      "startLine": 1669,
+      "contentEndLine": 1675,
+      "endLine": 1716,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "088"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 1,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0160",
+      "parentId": "draft-heading-0159",
+      "title": "黄阶功法",
+      "level": 3,
+      "startLine": 1676,
+      "contentEndLine": 1681,
+      "endLine": 1681,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0161",
+      "parentId": "draft-heading-0159",
+      "title": "玄阶功法",
+      "level": 3,
+      "startLine": 1682,
+      "contentEndLine": 1690,
+      "endLine": 1690,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "089"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0162",
+      "parentId": "draft-heading-0159",
+      "title": "地阶功法：",
+      "level": 3,
+      "startLine": 1691,
+      "contentEndLine": 1703,
+      "endLine": 1703,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "090",
+        "090→091"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0163",
+      "parentId": "draft-heading-0159",
+      "title": "天阶功法",
+      "level": 3,
+      "startLine": 1704,
+      "contentEndLine": 1716,
+      "endLine": 1716,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "091→092",
+        "092"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 1,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0164",
+      "parentId": "draft-heading-0141",
+      "title": "经济体系",
+      "level": 2,
+      "startLine": 1717,
+      "contentEndLine": 1722,
+      "endLine": 1722,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0165",
+      "parentId": "draft-heading-0141",
+      "title": "经济与物价参考",
+      "level": 2,
+      "startLine": 1723,
+      "contentEndLine": 1751,
+      "endLine": 1751,
+      "sourceMarkerOccurrences": 3,
+      "sourceRefs": [
+        "补024",
+        "补024、093、094",
+        "094"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 1,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0166",
+      "parentId": "draft-heading-0141",
+      "title": "妖兽体系总览",
+      "level": 2,
+      "startLine": 1752,
+      "contentEndLine": 1764,
+      "endLine": 1764,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "095"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 1,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0167",
+      "parentId": "draft-heading-0141",
+      "title": "境界金字塔与宗门设定",
+      "level": 2,
+      "startLine": 1765,
+      "contentEndLine": 1780,
+      "endLine": 1817,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "096→097→098"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 1,
+        "confirmationNeeded": 1,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0168",
+      "parentId": "draft-heading-0167",
+      "title": "势力等级设定",
+      "level": 3,
+      "startLine": 1781,
+      "contentEndLine": 1782,
+      "endLine": 1817,
+      "sourceMarkerOccurrences": 0,
+      "sourceRefs": [],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0169",
+      "parentId": "draft-heading-0168",
+      "title": "三流势力：小型宗门、小型修仙家族",
+      "level": 4,
+      "startLine": 1783,
+      "contentEndLine": 1791,
+      "endLine": 1791,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "098→099"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0170",
+      "parentId": "draft-heading-0168",
+      "title": "二流势力：中型宗门、中型修仙家族",
+      "level": 4,
+      "startLine": 1792,
+      "contentEndLine": 1800,
+      "endLine": 1800,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "099→100"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0171",
+      "parentId": "draft-heading-0168",
+      "title": "顶尖势力：大型宗门 (圣地/神教级)、大型修仙家族",
+      "level": 4,
+      "startLine": 1801,
+      "contentEndLine": 1817,
+      "endLine": 1817,
+      "sourceMarkerOccurrences": 2,
+      "sourceRefs": [
+        "100→101",
+        "101→102"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 1,
+        "unreadable": 0,
+        "unassigned": 0
+      }
+    },
+    {
+      "id": "draft-heading-0172",
+      "parentId": "draft-heading-0141",
+      "title": "附：素材覆盖与缺失总览",
+      "level": 2,
+      "startLine": 1818,
+      "contentEndLine": 1826,
+      "endLine": 1826,
+      "sourceMarkerOccurrences": 1,
+      "sourceRefs": [
+        "补NNN"
+      ],
+      "reviewMarkers": {
+        "suspectedMissing": 0,
+        "confirmationNeeded": 0,
+        "unreadable": 0,
+        "unassigned": 1
+      }
+    }
+  ]
+}

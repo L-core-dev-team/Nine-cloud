@@ -1,0 +1,61 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: jiuxiao
+      POSTGRES_USER: jiuxiao
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - jiuxiao_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jiuxiao -d jiuxiao"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  mail:
+    image: axllent/mailpit:v1.27
+    ports:
+      - "127.0.0.1:8025:8025"
+      - "127.0.0.1:1025:1025"
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      API_PORT: 8787
+      API_HOST: 0.0.0.0
+      DATABASE_URL: postgresql://jiuxiao:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@db:5432/jiuxiao
+    ports:
+      - "127.0.0.1:8787:8787"
+    depends_on:
+      db:
+        condition: service_healthy
+      mail:
+        condition: service_started
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8787/ready').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 10s
+      timeout: 4s
+      retries: 6
+      start_period: 5s
+
+  migrate:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    command: ["pnpm", "--filter", "@jiuxiao/db", "db:migrate"]
+    environment:
+      DATABASE_URL: postgresql://jiuxiao:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@db:5432/jiuxiao
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+volumes:
+  jiuxiao_pg:

@@ -11,3 +11,14 @@ Thumbs.db
 .idea/
 .impeccable/review/
 outputs/九霄WEB-1.0/世界书截图/
+
+# 1.0 workspace output and local secrets.
+**/dist/
+**/.vite/
+**/coverage/
+**/*.tsbuildinfo
+playwright-report/
+test-results/
+.env
+.env.*.local
+!.env.example

@@ -1,0 +1,2 @@
+# Preserve the author's byte-for-byte source copy and its recorded SHA-256.
+docs/sources/世界书_保守补全版.md -text whitespace=-trailing-space
