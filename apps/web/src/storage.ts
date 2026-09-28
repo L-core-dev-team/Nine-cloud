@@ -94,7 +94,8 @@ function inspectLocalSaves(): LocalInspection {
     return {
       saves: mirrorSaves ?? legacySaves ?? [],
       rawPresent: mirrorRaw !== null || legacyRaw !== null,
-      usable: mirrorSaves !== null || legacySaves !== null || (mirrorRaw === null && legacyRaw === null),
+      // The v2 value is the atomic mirror. If present but damaged, never seed an empty DB from the older compatibility array.
+      usable: mirrorSaves !== null || (mirrorRaw === null && (legacySaves !== null || legacyRaw === null)),
       mirrorRevision,
       damagedRaw,
     };
@@ -147,7 +148,7 @@ export async function hydrateSaves(): Promise<{ saves: LocalSave[]; indexedDb: b
     const local = inspectLocalSaves();
     let indexed = await readIndexedSnapshot();
     if (!indexed.initialized) {
-      if (!local.usable) return { saves: [], indexedDb: false, warning: '检测到受损的本地存档文本。未初始化新数据库；请保留浏览器数据并导出原文核对。' };
+      if (!local.usable) return { saves: local.saves, indexedDb: false, warning: '检测到受损或不一致的本地存档副本。未初始化数据库，已保留可解析的旧副本；请先导出并核对，不要清除浏览器数据。' };
       await initializeIndexedSaves(local.saves);
       indexed = await readIndexedSnapshot();
     }
