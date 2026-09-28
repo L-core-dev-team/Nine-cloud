@@ -698,7 +698,7 @@ async function ready(url) {
         };
       });
       await webgl1Page.goto(`http://127.0.0.1:${webPort}/settings/graphics`);
-      await webgl1Page.waitForFunction(() => Array.from(document.querySelectorAll('.graphics-status')).some(element => element.textContent?.includes('当前后端：WebGL')));
+      await webgl1Page.waitForFunction(() => Array.from(document.querySelectorAll('.graphics-status')).some(element => element.textContent?.trim() === '当前后端：WebGL'));
       const webgl1Status = await webgl1Page.locator('.graphics-status').filter({ hasText: '当前后端：' }).innerText();
       assert.equal(webgl1Status, '当前后端：WebGL', 'the WebGL 1 path should compile when WebGL 2 is unavailable');
       fallbackChecks.push(`${width}px WebGL 2 禁用 → WebGL 1`);
