@@ -124,6 +124,11 @@ p { max-width: 650px; color: #c3ccd3; line-height: 1.9; }
 .character-summary dl div { padding: 10px 0; border-top: 1px solid var(--line); }
 .character-summary dt { color: var(--muted); font-size: .75rem; }
 .character-summary dd { margin: 5px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.region-visual-reference { overflow: hidden; margin: 8px 0 0; border: 1px solid var(--line); border-radius: 12px; background: #071421a8; }
+.region-visual-reference img { display: block; width: 100%; aspect-ratio: 16 / 7; max-height: 150px; object-fit: cover; object-position: center 45%; }
+.region-visual-reference figcaption { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 9px 11px; }
+.region-visual-reference figcaption strong { color: #eee8df; font: 400 .94rem 'Ma Shan Zheng Brand', 'Kaiti SC', serif; }
+.region-visual-reference figcaption span { color: var(--muted); font: .66rem/1.45 'Noto Serif SC', serif; text-align: right; }
 @media (max-width: 540px) { .character-summary dl { grid-template-columns: 1fr; } }
 .form label, .wide { display: grid; gap: 7px; color: #f0e8df; font: 0.9rem system-ui; }
 .form small { color: var(--muted); font-size: 0.72rem; }
@@ -154,6 +159,16 @@ input:focus, textarea:focus, select:focus { border-color: var(--accent); box-sha
   .hero .hero-deck { margin-top: 8px; font-size: .9rem; letter-spacing: .08em; }
   .landing-copy { padding-left: 18px !important; }
   .brand { max-width: 54vw; overflow: hidden; font-size: .86rem; letter-spacing: 0; text-overflow: ellipsis; }
+  .atlas-intro { grid-template-columns: 1fr; gap: 0; }
+  .atlas-intro img { height: auto; max-height: 150px; aspect-ratio: 3 / 1; }
+  .atlas-intro > div { padding: 13px 16px 16px; }
+  .atlas-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .atlas-card { padding: 6px; }
+  .atlas-card span { font-size: .75rem; }
+  .atlas-collections { gap: 6px; }
+  .atlas-collections button { min-height: 38px; padding: 7px 9px; font-size: .72rem; }
+  .atlas-dialog { width: calc(100vw - 20px); max-height: 92svh; padding: 8px; }
+  .atlas-dialog > img { max-height: calc(92svh - 110px); }
   .theme-toggle { padding: 7px 9px; font-size: .72rem; }
   header { gap: 10px; }
   .lobby-actions { grid-template-columns: 1fr; }
@@ -523,8 +538,9 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 
 /* Shared mountain canvas keeps each route inside the same visual world. */
 .jx-shell { position: relative; isolation: isolate; }
-.jx-shell::before { position: fixed; z-index: -1; inset: 0; pointer-events: none; content: ''; background: linear-gradient(90deg, rgba(3, 10, 18, .74), rgba(5, 14, 23, .48) 48%, rgba(3, 9, 16, .63)), linear-gradient(0deg, rgba(4, 10, 17, .38), rgba(4, 10, 17, .18)), url('/scenes/gate-moonlight.webp') center 48% / cover no-repeat; transform: translateZ(0); }
-:root[data-theme='day'] .jx-shell::before { background: linear-gradient(90deg, rgba(238, 236, 227, .7), rgba(232, 236, 234, .65) 52%, rgba(239, 236, 225, .7)), linear-gradient(0deg, rgba(243, 239, 229, .24), rgba(243, 239, 229, .04)), url('/scenes/gate-moonlight.webp') center 48% / cover no-repeat; }
+.jx-shell::before { position: fixed; z-index: -2; inset: 0; pointer-events: none; content: ''; background: linear-gradient(90deg, rgba(3, 10, 18, .74), rgba(5, 14, 23, .48) 48%, rgba(3, 9, 16, .63)), linear-gradient(0deg, rgba(4, 10, 17, .38), rgba(4, 10, 17, .18)), var(--jx-scene-poster-desktop, url('/scenes/gate-moonlight.webp')) center 48% / cover no-repeat; transform: translateZ(0); }
+.jx-shell::after { position: fixed; z-index: -1; inset: 0; pointer-events: none; content: ''; background: var(--jx-paper-texture, none) center / cover no-repeat; opacity: .08; mix-blend-mode: soft-light; }
+:root[data-theme='day'] .jx-shell::before { background: linear-gradient(90deg, rgba(238, 236, 227, .7), rgba(232, 236, 234, .65) 52%, rgba(239, 236, 225, .7)), linear-gradient(0deg, rgba(243, 239, 229, .24), rgba(243, 239, 229, .04)), var(--jx-scene-poster-desktop, url('/scenes/gate-moonlight.webp')) center 48% / cover no-repeat; }
 .landing-shell::before { opacity: .18; }
 
 /* The settings page uses calligraphic display type and a legible Song body face. */
@@ -652,6 +668,45 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 :root[data-theme='day'] .worldbook-entry details { color: #566873; border-color: #62788830; }
 :root[data-theme='day'] .worldbook-entry details summary { color: #796f47; }
 .world-import { width: fit-content; margin: 14px 0; }
+.world-view-switch { display: flex; gap: 8px; margin: 24px 0 8px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.world-view-switch button { display: inline-flex; align-items: center; gap: 9px; min-height: 42px; padding: 7px 13px; color: #c3ccd3; background: transparent; border: 1px solid transparent; border-radius: 9px; font: .86rem 'Noto Serif SC', 'Songti SC', serif; }
+.world-view-switch button[aria-selected='true'] { color: #f0e8df; background: #b9c8d112; border-color: #bdcad744; }
+.world-view-switch small, .atlas-collections small { color: var(--muted); font: .68rem system-ui; }
+.atlas-intro { display: grid; grid-template-columns: minmax(150px, 270px) 1fr; align-items: center; gap: clamp(16px, 3vw, 30px); max-width: 920px; margin: 20px 0; overflow: hidden; color: #e6e2dc; background: linear-gradient(110deg, #0b1824df, #0b182477); border: 1px solid var(--line); border-radius: 13px; }
+.atlas-intro img { display: block; width: 100%; height: 112px; object-fit: cover; object-position: 43% 50%; }
+.atlas-intro > div { padding: 12px 18px 12px 0; }
+.atlas-intro h3 { margin: 4px 0; font: 400 clamp(1.2rem, 3vw, 1.8rem) 'Ma Shan Zheng Brand', 'Kaiti SC', serif; letter-spacing: .08em; }
+.atlas-intro p { margin: 0; color: #b9c5cc; font: .78rem/1.65 'Noto Serif SC', serif; }
+.atlas-collections { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 8px; }
+.atlas-collections button { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 12px; color: #dce3e5; background: #0a1b2acc; border: 1px solid var(--line); border-radius: 999px; font: .78rem 'Noto Serif SC', serif; }
+.atlas-collections button[aria-pressed='true'] { color: #f1ece5; border-color: #d2c9ad99; background: linear-gradient(120deg, #8c987b3b, #aab8bd19); box-shadow: 0 0 18px #d8ceb515; }
+.atlas-boundary { max-width: 920px; margin: 12px 0 18px; color: var(--muted); font: .76rem/1.75 'Noto Serif SC', serif; }
+.atlas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 205px), 1fr)); gap: 13px; }
+.atlas-card { display: grid; align-content: start; gap: 8px; min-width: 0; padding: 9px; overflow: hidden; color: #eee8df; text-align: left; background: linear-gradient(150deg, #122638df, #07131fe8); border: 1px solid #bdcad733; border-radius: 12px; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
+.atlas-card:hover, .atlas-card:focus-visible { transform: translateY(-2px); border-color: #d6cba995; box-shadow: 0 12px 28px #0005; }
+.atlas-card img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 7px; background: #07121c; }
+.atlas-card span { padding: 2px 3px 0; font: .88rem 'Noto Serif SC', 'Songti SC', serif; }
+.atlas-card small { padding: 0 3px 2px; color: var(--muted); font: .65rem ui-monospace, monospace; }
+.atlas-dialog { position: fixed; width: min(1100px, calc(100vw - 32px)); max-width: none; max-height: min(92svh, 980px); padding: 12px; overflow: auto; color: #eee8df; background: #091522ed; border: 1px solid #d4dbe477; border-radius: 16px; box-shadow: 0 24px 90px #000b; backdrop-filter: blur(22px); }
+.atlas-dialog::backdrop { background: #02070dcc; backdrop-filter: blur(8px); }
+.atlas-dialog > img { display: block; width: 100%; max-height: calc(92svh - 116px); object-fit: contain; border-radius: 9px; }
+.atlas-dialog > div { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 18px; padding: 10px 8px 2px; }
+.atlas-dialog h3 { margin: 0; font: 400 1.25rem 'Ma Shan Zheng Brand', 'Kaiti SC', serif; }
+.atlas-dialog p { margin: 0; color: var(--muted); font: .7rem/1.6 'Noto Serif SC', serif; }
+.atlas-dialog-close { position: sticky; z-index: 1; top: 0; float: right; width: 38px; height: 38px; margin: 2px 2px -40px 0; color: #f1ece5; background: #0a1724dc; border: 1px solid #d4dbe477; border-radius: 50%; font: 1.5rem/1 system-ui; }
+:root[data-theme='day'] .jx-shell::after { opacity: .13; mix-blend-mode: multiply; }
+:root[data-theme='day'] .world-view-switch button { color: #526573; }
+:root[data-theme='day'] .world-view-switch button[aria-selected='true'] { color: #344550; background: #fffdf4a8; }
+:root[data-theme='day'] .atlas-intro { color: #344550; background: linear-gradient(110deg, #f1ece5e8, #f1ece58c); }
+:root[data-theme='day'] .atlas-intro p, :root[data-theme='day'] .atlas-boundary { color: #596c77; }
+:root[data-theme='day'] .atlas-collections button { color: #394c58; background: #fffdf0ad; }
+:root[data-theme='day'] .atlas-collections button[aria-pressed='true'] { color: #344550; border-color: #71808b88; background: #d6dcd8d9; }
+:root[data-theme='day'] .atlas-card { color: #394c58; background: linear-gradient(150deg, #fffcf2ed, #e9ece8e8); border-color: #62788836; }
+:root[data-theme='day'] .atlas-dialog { color: #344550; background: #f2eee6f2; }
+:root[data-theme='day'] .atlas-dialog::backdrop { background: #121d28a6; }
+:root[data-theme='day'] .atlas-dialog-close { color: #344550; background: #f6f2e9e8; border-color: #62788866; }
+:root[data-theme='day'] .region-visual-reference { background: #f1ece5e8; }
+:root[data-theme='day'] .region-visual-reference figcaption strong { color: #34434d; }
 .history-limit-note { color: var(--muted); font: .69rem/1.55 'Noto Serif SC', serif; }
 :root[data-theme='day'] .intro-prose { color: #3e505c; background: linear-gradient(150deg, rgba(255, 254, 250, .88), rgba(231, 237, 237, .83)); border-color: #62788836; }
 :root[data-theme='day'] .intro-prose p { color: inherit; }
@@ -687,6 +742,8 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 /* S5 scene renderer: one restrained GPU atmosphere layer behind every route. */
 .jx-shell > .scene-atmosphere { position: fixed; z-index: 0; inset: 0; overflow: hidden; pointer-events: none; }
 .scene-atmosphere-canvas, .scene-atmosphere-still { position: absolute; inset: 0; width: 100%; height: 100%; }
+.scene-atmosphere-video { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; opacity: 0; filter: brightness(.76) saturate(.76); mix-blend-mode: screen; transition: opacity .8s ease; }
+.scene-atmosphere-video.is-playing { opacity: .24; }
 .scene-atmosphere-canvas { display: block; opacity: 0; transition: opacity .25s ease; }
 .scene-atmosphere-canvas.is-active { opacity: .78; }
 .scene-atmosphere-2d { opacity: 0; }
@@ -760,7 +817,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
   .renderer-readout { grid-template-columns: auto auto; }
 }
 @media (max-width: 720px) {
-  .jx-shell::before { background-image: linear-gradient(90deg, rgba(3, 10, 18, .66), rgba(5, 14, 23, .37) 48%, rgba(3, 9, 16, .52)), linear-gradient(0deg, rgba(4, 10, 17, .38), rgba(4, 10, 17, .18)), url('/scenes/gate-moonlight-mobile.webp'); background-position: center 46%; }
-  :root[data-theme='day'] .jx-shell::before { background-image: linear-gradient(90deg, rgba(238, 236, 227, .64), rgba(232, 236, 234, .57) 52%, rgba(239, 236, 225, .64)), linear-gradient(0deg, rgba(243, 239, 229, .2), rgba(243, 239, 229, .03)), url('/scenes/gate-moonlight-mobile.webp'); }
+  .jx-shell::before { background-image: linear-gradient(90deg, rgba(3, 10, 18, .66), rgba(5, 14, 23, .37) 48%, rgba(3, 9, 16, .52)), linear-gradient(0deg, rgba(4, 10, 17, .38), rgba(4, 10, 17, .18)), var(--jx-scene-poster-mobile, url('/scenes/gate-moonlight-mobile.webp')); background-position: center 46%; }
+  :root[data-theme='day'] .jx-shell::before { background-image: linear-gradient(90deg, rgba(238, 236, 227, .64), rgba(232, 236, 234, .57) 52%, rgba(239, 236, 225, .64)), linear-gradient(0deg, rgba(243, 239, 229, .2), rgba(243, 239, 229, .03)), var(--jx-scene-poster-mobile, url('/scenes/gate-moonlight-mobile.webp')); }
 }
 @media (prefers-reduced-motion: reduce) { .scene-atmosphere-canvas.is-active { opacity: .35; transition: none; } .scene-choice { transition: none; } }

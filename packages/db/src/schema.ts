@@ -1,4 +1,5 @@
-import { integer, jsonb, pgTable, primaryKey, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
+import { bigint, check, foreignKey, integer, jsonb, pgTable, primaryKey, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
 
 // Authentication tables and ownership checks arrive with S6. No save API uses these yet.
 export const gameSaves = pgTable('game_saves', {
@@ -33,3 +34,40 @@ export const turnEvents = pgTable('turn_events', {
   payload: jsonb('payload').notNull(),
   occurredAt: timestamp('occurred_at', { withTimezone: true }).notNull(),
 }, table => [uniqueIndex('turn_events_save_sequence_idx').on(table.saveId, table.sequence)]);
+
+/** S7 usage entitlements only. Monetary value and payment-provider records stay separate. */
+export const entitlementBalances = pgTable('entitlement_balances', {
+  ownerId: text('owner_id').notNull(),
+  entitlementKey: text('entitlement_key').notNull(),
+  availableUnits: bigint('available_units', { mode: 'number' }).notNull().default(0),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, table => [
+  primaryKey({ columns: [table.ownerId, table.entitlementKey] }),
+  check('entitlement_balances_nonnegative_check', sql`${table.availableUnits} >= 0`),
+  check('entitlement_balances_safe_integer_check', sql`${table.availableUnits} <= 9007199254740991`),
+]);
+
+export const entitlementLedgerEntries = pgTable('entitlement_ledger_entries', {
+  id: text('id').primaryKey(),
+  ownerId: text('owner_id').notNull(),
+  entitlementKey: text('entitlement_key').notNull(),
+  entryType: text('entry_type').notNull(),
+  deltaUnits: bigint('delta_units', { mode: 'number' }).notNull(),
+  balanceAfter: bigint('balance_after', { mode: 'number' }).notNull(),
+  idempotencyKey: text('idempotency_key').notNull(),
+  requestHash: text('request_hash').notNull(),
+  reversesEntryId: text('reverses_entry_id'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+}, table => [
+  foreignKey({ columns: [table.ownerId, table.entitlementKey], foreignColumns: [entitlementBalances.ownerId, entitlementBalances.entitlementKey], name: 'entitlement_ledger_balance_fk' }),
+  foreignKey({ columns: [table.reversesEntryId], foreignColumns: [table.id], name: 'entitlement_ledger_reversal_fk' }),
+  uniqueIndex('entitlement_ledger_owner_idempotency_idx').on(table.ownerId, table.idempotencyKey),
+  uniqueIndex('entitlement_ledger_single_reversal_idx').on(table.reversesEntryId).where(sql`${table.reversesEntryId} IS NOT NULL`),
+  check('entitlement_ledger_entry_type_check', sql`${table.entryType} IN ('grant', 'consume', 'refund')`),
+  check('entitlement_ledger_delta_sign_check', sql`(
+    (${table.entryType} = 'grant' AND ${table.deltaUnits} > 0 AND ${table.reversesEntryId} IS NULL) OR
+    (${table.entryType} = 'consume' AND ${table.deltaUnits} < 0 AND ${table.reversesEntryId} IS NULL) OR
+    (${table.entryType} = 'refund' AND ${table.deltaUnits} > 0 AND ${table.reversesEntryId} IS NOT NULL)
+  )`),
+  check('entitlement_ledger_balance_check', sql`${table.balanceAfter} >= 0 AND ${table.balanceAfter} <= 9007199254740991`),
+]);

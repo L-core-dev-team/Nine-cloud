@@ -196,10 +196,25 @@ async function ready(url) {
       assert.equal(await page.locator('.form input').count(), 2);
       assert.equal(await page.locator('.form textarea').count(), 1);
       await page.locator('.form label').filter({ hasText: '修为' }).locator('input').fill('炼气期');
-      await page.getByRole('button', { name: '下一步' }).click();
-      assert.equal(await page.locator('.form select').count(), 1);
-      assert.equal(await page.locator('.form textarea').count(), 1);
-      assert.ok((await page.locator('.character-summary').innerText()).includes(`测试修士-${width}`));
+       await page.getByRole('button', { name: '下一步' }).click();
+       assert.equal(await page.locator('.form select').count(), 1);
+       assert.equal(await page.locator('.form textarea').count(), 1);
+       const regionSelect = page.getByLabel('开局地域');
+       const regionPreview = page.locator('.region-visual-reference img');
+       const assertRegionImage = file => page.waitForFunction(expected => {
+         const image = document.querySelector('.region-visual-reference img');
+         return image instanceof HTMLImageElement && image.src.endsWith(expected) && image.complete && image.naturalWidth > 0;
+       }, file);
+       assert.match(await regionPreview.getAttribute('src'), /region_zhongzhou_tianshu\.webp$/);
+       await assertRegionImage('region_zhongzhou_tianshu.webp');
+       await regionSelect.selectOption({ label: '北境霜寒域' });
+       assert.match(await regionPreview.getAttribute('src'), /region_beijing_shuanghan\.webp$/);
+       await assertRegionImage('region_beijing_shuanghan.webp');
+       await regionSelect.selectOption({ label: '完全自定义' });
+       assert.match(await regionPreview.getAttribute('src'), /world_jiuxiao\.webp$/);
+       await assertRegionImage('world_jiuxiao.webp');
+       await regionSelect.selectOption({ label: '中州天枢域' });
+       assert.ok((await page.locator('.character-summary').innerText()).includes(`测试修士-${width}`));
       assert.ok((await page.locator('.character-summary').innerText()).includes('炼气期'));
       await page.getByRole('button', { name: '上一步' }).click();
       assert.equal(await page.locator('.form input').first().inputValue(), '炼气期');
@@ -353,7 +368,7 @@ async function ready(url) {
       await page.getByRole('button', { name: '菜单' }).click();
       await page.locator('aside').getByRole('button', { name: 'AI 设置' }).click();
       assert.equal(await page.locator('.ai-title').innerText(), 'AI 设定');
-      assert.equal(await page.locator('.jx-shell').evaluate(element => getComputedStyle(element, '::before').backgroundImage.includes('gate-moonlight')), true);
+      assert.equal(await page.locator('.jx-shell').evaluate(element => getComputedStyle(element, '::before').backgroundImage.includes('/scenes/candidate/mountain-gate.')), true, 'all pages should retain the selected scene poster behind overlays');
       await page.getByRole('button', { name: '关闭', exact: true }).click();
       assert.equal(await page.locator('h2').innerText(), `测试修士-${width}`, 'AI close should return to the game route that opened it');
       await page.goto(`http://127.0.0.1:${webPort}/lobby`);
@@ -368,11 +383,30 @@ async function ready(url) {
       assert.equal(await page.locator('.worldbook-entry h3').innerText(), '东瀚龙吟域');
       await page.getByRole('searchbox', { name: '搜索已审核世界设定' }).fill('OCR待校');
       assert.equal(await page.locator('.worldbook-entry').count(), 0, 'pending OCR must not enter public search');
-      await page.getByRole('searchbox', { name: '搜索已审核世界设定' }).fill('南疆');
-      const southEntry = page.getByRole('heading', { name: '南疆万蛊域' }).locator('..');
-      await southEntry.locator('details summary').click();
-      assert.ok((await southEntry.locator('details').innerText()).includes('作者授权补全'));
-      await page.getByRole('button', { name: '回到刚才的位置' }).click();
+       await page.getByRole('searchbox', { name: '搜索已审核世界设定' }).fill('南疆');
+       const southEntry = page.getByRole('heading', { name: '南疆万蛊域' }).locator('..');
+       await southEntry.locator('details summary').click();
+       assert.ok((await southEntry.locator('details').innerText()).includes('作者授权补全'));
+       await page.getByRole('button', { name: /画卷图鉴/ }).click();
+       assert.equal(await page.locator('.atlas-card').count(), 7, 'region artwork should be grouped under the source-inspired world collection');
+       await page.waitForFunction(() => {
+         const image = document.querySelector('.atlas-card img');
+         return image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0;
+       });
+       await page.getByRole('button', { name: '放大查看：九霄大陆全图' }).click();
+       assert.equal(await page.locator('.atlas-dialog').evaluate(dialog => dialog.open), true, 'a visual reference should open in a native, closable detail view');
+       assert.equal(/(?:canonId|world_jiuxiao)/i.test(await page.locator('.atlas-dialog').innerText()), false, 'gallery copy must not expose internal asset tags');
+       await page.keyboard.press('Escape');
+       await page.locator('.atlas-dialog').waitFor({ state: 'hidden' });
+       const galleryCollections = [
+         ['宗门与势力', 16], ['修行图鉴', 14], ['题字与纹章', 4], ['纸墨氛围', 3],
+       ];
+       for (const [label, count] of galleryCollections) {
+         await page.locator('.atlas-collections').getByRole('button', { name: new RegExp(label) }).click();
+         assert.equal(await page.locator('.atlas-card').count(), count, `${label} must include every supplied illustration in that collection`);
+       }
+       assert.equal(await page.locator('.atlas-grid').innerText().then(text => /(?:world|region|faction|system)_/.test(text)), false, 'asset index tags must not leak into player-facing copy');
+       await page.getByRole('button', { name: '回到刚才的位置' }).click();
       assert.equal(await page.locator('h2').innerText(), `测试修士-${width}`, 'world close from game should preserve the save route');
       await page.goto(`http://127.0.0.1:${webPort}/lobby`);
       await page.getByRole('button', { name: '阅读世界设定' }).click();
@@ -539,7 +573,7 @@ async function ready(url) {
       await page.goto(`http://127.0.0.1:${webPort}/settings/graphics`);
       assert.equal(await page.locator('.graphics-page h2').innerText(), '山河光景');
       assert.equal(await page.locator('.scene-choice').count(), 4, 'the graphics page should expose the four fixed scene identities');
-      assert.equal(await page.locator('.jx-shell').evaluate(element => getComputedStyle(element, '::before').backgroundImage.includes('gate-moonlight')), true, 'graphics settings should retain the shared home background');
+      assert.equal(await page.locator('.jx-shell').evaluate(element => getComputedStyle(element, '::before').backgroundImage.includes('/scenes/candidate/mountain-gate.')), true, 'graphics settings should retain the shared selected-scene background');
       await page.locator('.scene-choice').nth(1).click();
       assert.equal(await page.locator('.scene-choice').nth(1).getAttribute('aria-pressed'), 'true');
       await page.getByLabel('画质档位').selectOption('extreme');
@@ -550,14 +584,14 @@ async function ready(url) {
         const value = JSON.parse(localStorage.getItem('jx10_graphics_v1'));
         return [value.quality, value.targetFps];
       }), ['extreme', 120], 'quality and frame target must persist locally');
-      const reduceMotionToggle = page.locator('.graphics-toggle').filter({ hasText: '减少动态效果' }).locator('input');
+      const reduceMotionToggle = page.getByRole('checkbox', { name: /^减少动态效果/ });
       await reduceMotionToggle.check();
       await page.goto(`http://127.0.0.1:${webPort}/`);
       assert.equal(await page.evaluate(() => document.documentElement.dataset.jxReducedMotion), 'on', 'the custom reduced-motion preference must reach every route');
       assert.equal(await page.locator('.waterfall-traces').first().evaluate(element => getComputedStyle(element).animationName), 'none', 'custom reduced motion must freeze waterfall decoration');
       assert.equal(await page.locator('.scene-cloud-drift-one').evaluate(element => getComputedStyle(element).animationName), 'none', 'custom reduced motion must freeze drifting clouds');
       await page.goto(`http://127.0.0.1:${webPort}/settings/graphics`);
-      await page.locator('.graphics-toggle').filter({ hasText: '减少动态效果' }).locator('input').uncheck();
+      await page.getByRole('checkbox', { name: /^减少动态效果/ }).uncheck();
       await page.goto(`http://127.0.0.1:${webPort}/`);
       assert.notEqual(await page.locator('.waterfall-traces').first().evaluate(element => getComputedStyle(element).animationName), 'none', 'turning custom reduced motion off must restore scene motion');
 

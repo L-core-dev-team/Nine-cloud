@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { SceneId } from '@jiuxiao/content';
 import { getCanvasBufferSize, getSceneNumber, resolveGraphicsProfile, type GraphicsSettings } from '../graphics-settings';
+import { selectSceneVideo } from '../scene-media';
 
 export type SceneRenderStatus = {
   backend: 'WebGL 2' | 'WebGL' | 'Canvas 2D' | '静态回退';
@@ -169,8 +170,63 @@ export function SceneAtmosphere({ sceneId, theme, settings }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fallbackCanvasRef = useRef<HTMLCanvasElement>(null);
   const atmosphereRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const settingsRef = useRef(settings);
   settingsRef.current = settings;
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)') ?? null;
+    const narrow = window.matchMedia?.('(max-width: 720px)') ?? null;
+    let selectedSource = '';
+    const clearSource = () => {
+      video.pause();
+      video.classList.remove('is-playing');
+      video.removeAttribute('src');
+      video.removeAttribute('poster');
+      video.dataset.sceneSource = '';
+      video.load();
+      selectedSource = '';
+    };
+    const synchronize = () => {
+      const selection = selectSceneVideo({
+        sceneId,
+        narrowViewport: narrow?.matches ?? window.innerWidth <= 720,
+        enabled: settings.sceneVideoEnabled,
+        dataSaver: settings.dataSaver,
+        reducedMotion: settings.reducedMotion,
+        systemReducedMotion: reducedMotion?.matches ?? false,
+      });
+      if (!selection) { clearSource(); return; }
+      if (selection.src !== selectedSource) {
+        video.pause();
+        video.classList.remove('is-playing');
+        video.poster = selection.poster;
+        video.src = selection.src;
+        video.dataset.sceneSource = selection.src;
+        selectedSource = selection.src;
+        video.load();
+      }
+      void video.play().catch(() => video.classList.remove('is-playing'));
+    };
+    const onPlaying = () => video.classList.add('is-playing');
+    const onError = () => { video.pause(); video.classList.remove('is-playing'); };
+    video.muted = true;
+    video.addEventListener('playing', onPlaying);
+    video.addEventListener('error', onError);
+    window.addEventListener('resize', synchronize);
+    narrow?.addEventListener('change', synchronize);
+    reducedMotion?.addEventListener('change', synchronize);
+    synchronize();
+    return () => {
+      window.removeEventListener('resize', synchronize);
+      narrow?.removeEventListener('change', synchronize);
+      reducedMotion?.removeEventListener('change', synchronize);
+      video.removeEventListener('playing', onPlaying);
+      video.removeEventListener('error', onError);
+      clearSource();
+    };
+  }, [sceneId, settings.dataSaver, settings.reducedMotion, settings.sceneVideoEnabled]);
   useEffect(() => {
     const canvas = canvasRef.current;
     const fallbackCanvas = fallbackCanvasRef.current;
@@ -458,5 +514,5 @@ export function SceneAtmosphere({ sceneId, theme, settings }: Props) {
     };
   }, [sceneId, theme]);
 
-  return <div ref={atmosphereRef} className="scene-atmosphere" aria-hidden="true"><canvas ref={canvasRef} className="scene-atmosphere-canvas scene-atmosphere-webgl" /><canvas ref={fallbackCanvasRef} className="scene-atmosphere-canvas scene-atmosphere-2d" /><div className="scene-atmosphere-still" /></div>;
+  return <div ref={atmosphereRef} className="scene-atmosphere" aria-hidden="true"><video ref={videoRef} className="scene-atmosphere-video" muted loop playsInline preload="none" /><canvas ref={canvasRef} className="scene-atmosphere-canvas scene-atmosphere-webgl" /><canvas ref={fallbackCanvasRef} className="scene-atmosphere-canvas scene-atmosphere-2d" /><div className="scene-atmosphere-still" /></div>;
 }
