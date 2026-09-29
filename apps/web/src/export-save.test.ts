@@ -87,10 +87,20 @@ describe('save export credential redaction', () => {
     const endpoint = JSON.parse(serializeJsonWithCredentialRedaction(
       'https://api.example.test/v1?key=query-secret&region=cn', 'baseUrl',
     ));
+    const relativeEndpoint = JSON.parse(serializeJsonWithCredentialRedaction(
+      '/v1/chat?key=relative-query-secret&region=cn', 'baseUrl',
+    ));
+    const protocolRelativeEndpoint = JSON.parse(serializeJsonWithCredentialRedaction(
+      '//api.example.test/v1?token=protocol-relative-secret', 'endpoint',
+    ));
 
     expect(config.token).toBe(REDACTED);
     expect(world.secret).toBe('宗门秘史');
     expect(new URL(endpoint).searchParams.get('key')).toBe(REDACTED);
+    expect(new URL(relativeEndpoint, 'https://jiuxiao.invalid').searchParams.get('key')).toBe(REDACTED);
+    expect(relativeEndpoint).not.toContain('relative-query-secret');
+    expect(new URL(protocolRelativeEndpoint, 'https://jiuxiao.invalid').searchParams.get('token')).toBe(REDACTED);
+    expect(protocolRelativeEndpoint).not.toContain('protocol-relative-secret');
   });
 
   it('keeps path context when a JSON object uses an empty-string key', () => {

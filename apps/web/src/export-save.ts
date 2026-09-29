@@ -62,13 +62,18 @@ function isSensitiveUrlParameter(key: string): boolean {
 
 function redactEndpointUrl(value: string): string {
   try {
-    const url = new URL(value);
+    const isProtocolRelative = value.startsWith('//');
+    const isAbsolute = /^[a-z][a-z0-9+.-]*:/i.test(value);
+    const url = new URL(value, 'https://jiuxiao.invalid');
     if (url.username) url.username = 'REDACTED';
     if (url.password) url.password = 'REDACTED';
     for (const name of [...url.searchParams.keys()]) {
       if (isSensitiveUrlParameter(name)) url.searchParams.set(name, REDACTED);
     }
-    return url.toString();
+    if (isAbsolute) return url.toString();
+    const relativeUrl = `${url.pathname}${url.search}${url.hash}`;
+    if (isProtocolRelative) return `//${url.host}${relativeUrl}`;
+    return value.startsWith('/') ? relativeUrl : relativeUrl.replace(/^\//, '');
   } catch {
     return value;
   }
