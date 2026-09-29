@@ -8,7 +8,7 @@ const MIRROR_KEY = 'jiuxiao_1_local_saves_v2';
 
 export type IndexedSaveSnapshot = { saves: LocalSave[]; revision: number; initialized: boolean };
 export type SaveCommitResult =
-  | { ok: true; saves: LocalSave[]; revision: number }
+  | { ok: true; saves: LocalSave[]; revision: number; warning?: 'compatibility-mirror-unavailable' }
   | { ok: false; reason: 'conflict'; saves: LocalSave[]; conflictIds: string[]; revision: number }
   | { ok: false; reason: 'unavailable'; saves: LocalSave[]; conflictIds: []; revision: number };
 
@@ -193,7 +193,10 @@ export async function commitIndexedSaves(expected: LocalSave[], proposed: LocalS
       revisionRequest.onerror = () => { outcome = { ok: false, reason: 'unavailable', saves: [], conflictIds: [], revision }; try { transaction.abort(); } catch { /* noop */ } };
       transaction.oncomplete = () => {
         if (!outcome) { reject(new Error('IndexedDB transaction completed without a result')); return; }
-        if (outcome.ok) mirrorSaves(outcome.saves, outcome.revision);
+        if (outcome.ok && !mirrorSaves(outcome.saves, outcome.revision)) {
+          resolve({ ...outcome, warning: 'compatibility-mirror-unavailable' });
+          return;
+        }
         resolve(outcome);
       };
       transaction.onabort = () => {
