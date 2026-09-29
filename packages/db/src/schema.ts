@@ -29,6 +29,8 @@ export const turnEvents = pgTable('turn_events', {
   idempotencyKey: text('idempotency_key').notNull(),
   sequence: integer('sequence').notNull(),
   eventType: text('event_type').notNull(),
+  source: text('source'),
+  ruleVersion: text('rule_version'),
   beforeRevision: integer('before_revision').notNull(),
   afterRevision: integer('after_revision').notNull(),
   payload: jsonb('payload').notNull(),
@@ -71,3 +73,11 @@ export const entitlementLedgerEntries = pgTable('entitlement_ledger_entries', {
   )`),
   check('entitlement_ledger_balance_check', sql`${table.balanceAfter} >= 0 AND ${table.balanceAfter} <= 9007199254740991`),
 ]);
+
+export const npcMemoryJournals = pgTable('npc_memory_journals', {
+  saveId: text('save_id').primaryKey().references(() => gameSaves.id, { onDelete: 'cascade' }),
+  schemaVersion: integer('schema_version').notNull().default(1),
+  revision: integer('revision').notNull().default(0),
+  payload: jsonb('payload').notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+});
