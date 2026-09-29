@@ -154,4 +154,46 @@ describe('S3 event log and turn boundary', () => {
     expect(() => replayEvents(save, [{ ...event, payload: { amount: Number.NaN } }], reducer))
       .toThrowError(/persisted as JSON/);
   });
+
+  it('replays a 100-turn synthetic tail deterministically and resumes from a checkpoint', () => {
+    // Synthetic infrastructure coverage only: this does not install or imply signed gameplay rules.
+    const save = initialSave();
+    const turnCount = 100;
+    const eventTail: DomainEvent[] = [];
+
+    for (let turn = 0; turn < turnCount; turn += 1) {
+      for (let index = 0; index < 2; index += 1) {
+        const sequence = turn * 2 + index + 1;
+        eventTail.push({
+          id: `00000000-0000-4000-8000-${sequence.toString().padStart(12, '0')}`,
+          saveId: save.saveId,
+          type: 'FIXTURE_INCREMENT',
+          beforeRevision: turn,
+          afterRevision: turn + 1,
+          occurredAt: new Date(Date.UTC(2026, 8, 25, 0, sequence)).toISOString(),
+          source: 'RULES',
+          ruleVersion: save.ruleVersion,
+          payload: { amount: index + 1 },
+        });
+      }
+    }
+
+    const complete = replayEvents(save, eventTail, reducer);
+    const replayedAgain = replayEvents(save, eventTail, reducer);
+    const checkpointEventCount = 50 * 2;
+    const checkpoint = replayEvents(save, eventTail.slice(0, checkpointEventCount), reducer);
+    const resumed = replayEvents(checkpoint, eventTail.slice(checkpointEventCount), reducer);
+
+    expect(eventTail).toHaveLength(turnCount * 2);
+    expect(new Set(eventTail.map(event => event.id)).size).toBe(eventTail.length);
+    expect(checkpoint.revision).toBe(50);
+    expect(checkpoint.state.facts.counter).toBe(150);
+    expect(complete.revision).toBe(turnCount);
+    expect(complete.state.facts.counter).toBe(turnCount * 3);
+    expect(replayedAgain).toEqual(complete);
+    expect(resumed).toEqual(complete);
+    expect(save.revision).toBe(0);
+    expect(save.state.facts.counter).toBe(0);
+  });
+
 });
