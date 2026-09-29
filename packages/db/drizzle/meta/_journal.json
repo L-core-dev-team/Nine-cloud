@@ -15,6 +15,13 @@
       "when": 1790603780986,
       "tag": "0001_s7_entitlement_ledger",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790670000000,
+      "tag": "0002_s4_npc_memory_atomic",
+      "breakpoints": true
     }
   ]
 }
