@@ -2,7 +2,7 @@
 
 《九霄 WEB》是修仙 AI 文字 RPG 的私有开发仓库。仓库保留可运行的单 HTML 试玩原型，并逐阶段建设 1.0 工作区。
 
-> **当前状态：** 现有 HTML 是 0 号试玩开发版。`apps/web` 是 S2 局部工程切片，已具备独立首页、建角、世界占位页、本地继续和旧档导入边界；玩法规则、IndexedDB 迁移、完整 AI 设置、账号、云档、社区、动态场景和商业化尚未迁入。
+> **当前状态（2026-09-29）：** `apps/web` 已包含首页/世界入口、建角、游戏与存档界面、世界书浏览、五岗位 AI 设置、本地档案与旧档导入、场景和画质控制。它仍是工程预览，不是完整可玩公测版：权威玩法规则未签署，行动结算保持关闭。API 有健康/就绪端点和待认证的云档服务基础；生产入口没有接入登录或挂载云档路由。权益账本不等于支付。完整证据、缺口与技术选型见[2026-09-29 全仓复核](docs/九霄1.0全仓复核与技术选型-2026-09-29.md)。
 
 ## 快速入口
 
@@ -37,8 +37,8 @@
 | `work/` | 当前单 HTML 原型源码、构建工具、测试、资源、OCR 辅助材料 | 见 [工作区说明](work/README.md)；脚本可能会改文件 |
 | `outputs/` | 原型 HTML、测试页面、历史记录、世界书与交付材料 | 见 [产物区说明](outputs/README.md)；不要手改生成 HTML |
 | `.github/` | GitHub 维护配置 | 发布和分支规则以 GitHub 实际设置为准 |
-| `apps/` | 1.0 Web 工程切片与 Hono API | 当前为 S2 局部能力；玩法和在线服务仍未完成 |
-| `packages/` | 共享契约、未启用规则、数据库 schema | 只有已签玩法规则才能增加结算能力 |
+| `apps/` | React/TypeScript Web 预览、Hono API | 页面和本地体验已有实现；权威回合规则、认证与生产云同步仍未完成 |
+| `packages/` | 共享运行时契约、fail-closed 规则入口、内容和数据库定义 | 只有已签玩法规则才能启用结算；数据库结构不代表线上业务已开放 |
 | `scripts/`、`tests/` | 基线审计、构建清单与合成样本 | 不放私档、密钥和未审原图 |
 | `PRODUCT.md`、`DESIGN.md`、`SECURITY.md` | 产品与设计约束、安全边界 | 以新版总方案和阶段证据判断完成状态 |
 
@@ -54,4 +54,4 @@
 
 ## 1.0 工程预览
 
-需要 Node 24 与 pnpm 11.19。全新克隆运行 `pnpm install --frozen-lockfile`、`pnpm build`、`pnpm typecheck`、`pnpm test`、`pnpm test:integration`、`pnpm test:e2e`。本地用 `pnpm dev:web` 打开 `http://127.0.0.1:5173`；使用 `docker compose up --build -d` 同时启动数据库、迁移、API 和 Mailpit。直接运行 `pnpm dev:api` 时，需先设置可连通的 `DATABASE_URL`。服务入口和验收步骤见[服务链配置与验收](docs/本地服务链配置与验收.md)。新构建不会覆盖 `outputs/` 里的旧试玩产物。
+需要 Node 24 与 pnpm 11.19。全新克隆运行 `pnpm install --frozen-lockfile`、`pnpm build`、`pnpm typecheck`、`pnpm test`、`pnpm test:integration`、`pnpm test:e2e`。集成测试要求独立、可丢弃的 PostgreSQL `TEST_DATABASE_URL`；缺失时命令会明确失败。CI 会启动一次性 PostgreSQL 并先执行迁移。本地用 `pnpm dev:web` 打开 `http://127.0.0.1:5173`；使用 `docker compose up --build -d` 启动开发数据库、迁移、API 和 Mailpit。直接运行 `pnpm dev:api` 时，需先设置可连通的 `DATABASE_URL`。服务入口和验收步骤见[服务链配置与验收](docs/本地服务链配置与验收.md)。新构建不会覆盖 `outputs/` 里的旧试玩产物。
