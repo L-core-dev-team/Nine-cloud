@@ -9,7 +9,6 @@ import {
 import {
   createNpcMemoryJournal,
   parseNpcMemoryJournalJson,
-  serializeNpcMemoryJournal,
   type NpcMemoryJournal,
 } from '@jiuxiao/domain';
 import type { Pool, PoolClient, QueryResult, QueryResultRow } from 'pg';
@@ -155,7 +154,7 @@ export class PostgresNpcMemoryTurnRepository {
         const parsedJournal = parseJournal(storedJournal.payload);
         if (Number(storedJournal.revision) !== commit.expectedRevision ||
           parsedJournal.revision !== commit.expectedRevision ||
-          serializeNpcMemoryJournal(parsedJournal) !== serializeNpcMemoryJournal(commit.previousJournal)) {
+          canonicalJson(parsedJournal) !== canonicalJson(commit.previousJournal)) {
           return await rollbackWith(client, () => {
             inTransaction = false;
             return { kind: 'memory_conflict', currentRevision };
