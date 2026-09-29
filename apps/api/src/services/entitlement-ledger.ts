@@ -49,8 +49,18 @@ function validate(mutation: LedgerMutation): LedgerMutation {
   return { ...mutation, ownerId } as LedgerMutation;
 }
 
+function canonicalize(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(canonicalize);
+  if (value !== null && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value)
+      .sort(([left], [right]) => left < right ? -1 : left > right ? 1 : 0)
+      .map(([key, nested]) => [key, canonicalize(nested)]));
+  }
+  return value;
+}
+
 function hashRequest(mutation: LedgerMutation): string {
-  return createHash('sha256').update(JSON.stringify(mutation)).digest('hex');
+  return createHash('sha256').update(JSON.stringify(canonicalize(mutation))).digest('hex');
 }
 
 /**

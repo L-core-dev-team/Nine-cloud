@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { SAVE_SCHEMA_VERSION } from '@jiuxiao/contracts';
-import { SCENE_MANIFEST, sceneForLocation, searchReviewedWorldbook, type SceneId } from '@jiuxiao/content';
+import { SCENE_MANIFEST, sceneForLocation, type SceneId } from '@jiuxiao/content/scenes';
+import type { CanonRuntimeEntry } from '@jiuxiao/content/worldbook';
 import { AiSettings } from './ai-settings';
 import { MountainGateScene } from './scene';
 import { startSyntheticWaterAmbience, type AmbientAudioHandle } from './ambient-audio';
@@ -30,6 +31,14 @@ const REGION_VISUAL_IDS: Record<string, string> = {
   '南疆万蛊域': 'region_nanjiang_wangu',
   '完全自定义': 'world_jiuxiao',
 };
+const CANON_CATEGORY_LABELS: Record<string, string> = {
+  world_overview: '世界', region: '地域', faction: '势力', system: '体系',
+  cultivation: '修炼', economy: '经济', resources: '资源',
+};
+
+function canonCategoryLabel(category: string): string {
+  return CANON_CATEGORY_LABELS[category] ?? '设定';
+}
 
 const route = () => window.location.pathname.replace(/\/+$/, '') || '/';
 const go = (path: string) => {
@@ -225,14 +234,28 @@ function World({ onClose, save, onImportSupplement }: { onClose: () => void; sav
   const [view, setView] = useState<'text' | 'atlas'>('text');
   const [collection, setCollection] = useState<CandidateIllustrationCollection>('world');
   const [selectedIllustration, setSelectedIllustration] = useState<CandidateIllustration | null>(null);
+  const [canonSearch, setCanonSearch] = useState<((query: string) => CanonRuntimeEntry[]) | null>(null);
+  const [canonEntryCount, setCanonEntryCount] = useState<number | null>(null);
+  const [canonLoadFailed, setCanonLoadFailed] = useState(false);
   const dialogRef = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    let active = true;
+    import('@jiuxiao/content/worldbook').then(module => {
+      if (!active) return;
+      setCanonSearch(() => module.searchCanonRuntime);
+      setCanonEntryCount(module.canonRuntimeEntries.length);
+    }).catch(() => {
+      if (active) setCanonLoadFailed(true);
+    });
+    return () => { active = false; };
+  }, []);
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
     if (selectedIllustration && !dialog.open) dialog.showModal();
     else if (!selectedIllustration && dialog.open) dialog.close();
   }, [selectedIllustration]);
-  const entries = searchReviewedWorldbook(worldQuery);
+  const entries = useMemo(() => canonSearch?.(worldQuery) ?? [], [canonSearch, worldQuery]);
   const illustrations = CANDIDATE_ILLUSTRATIONS.filter(item => item.collection === collection
     && (!atlasQuery.trim() || `${item.title} ${item.topicTag ?? ''}`.toLocaleLowerCase().includes(atlasQuery.trim().toLocaleLowerCase())));
   return <section className="page world-page"><span className="eyebrow">山河地理 · 设定与图鉴</span><h2>世界设定</h2>
@@ -243,9 +266,9 @@ function World({ onClose, save, onImportSupplement }: { onClose: () => void; sav
     </div>
     {view === 'text' && <div id="world-text-panel" aria-label="设定正文">
        <label className="world-search">搜索已审核设定<input type="search" value={worldQuery} onChange={event => setWorldQuery(event.target.value)} placeholder="试试：中州、海上贸易、妖林外围" aria-label="搜索已审核世界设定" /></label>
-      <div className="worldbook-results" aria-live="polite">{entries.length ? entries.map(entry => <article className="worldbook-entry" key={entry.id}>
-      <span className="eyebrow">地理与区域 · 已审正文</span><h3>{entry.title}</h3><p className="worldbook-body">{entry.body}</p>
-      <details><summary>来源与校核说明</summary><p>{entry.reviewNote}</p><small>原图编号：{entry.sourceIds.map(id => id.slice(0, 8)).join('、')} · {entry.evidence.includes('authorized-completion') ? '含作者授权补全' : entry.evidence.includes('context-restored') ? '含上下文恢复' : '正文据原图核对'}</small></details>
+      <div className="worldbook-results" aria-live="polite">{canonLoadFailed ? <p className="worldbook-empty" role="status">设定正文暂时无法载入。请稍后重试；画卷图鉴仍可查看。</p> : !canonSearch ? <p className="worldbook-empty" role="status">正在载入已审核设定……</p> : entries.length ? entries.map(entry => <article className="worldbook-entry" key={entry.id}>
+      <span className="eyebrow">{canonCategoryLabel(entry.category)} · Canon {entry.canonVersion}</span><h3>{entry.title}</h3><div className="worldbook-body">{entry.content}</div>
+      {entry.publicSourceNote && <details><summary>来源与整理说明</summary><p>{entry.publicSourceNote}</p></details>}
       </article>) : <p className="worldbook-empty">没有找到这组字词。试试地点名、地貌或文化关键词。</p>}</div>
     </div>}
     {view === 'atlas' && <div id="world-atlas-panel" aria-label="画卷图鉴">
@@ -261,7 +284,7 @@ function World({ onClose, save, onImportSupplement }: { onClose: () => void; sav
         {selectedIllustration && <><button className="atlas-dialog-close" aria-label="关闭画卷" onClick={() => dialogRef.current?.close()}>×</button><img src={selectedIllustration.src} alt={selectedIllustration.title} /><div><h3 id="atlas-dialog-title">{selectedIllustration.title}</h3><p>项目视觉参考 · 设定以已审核正文为准</p></div></>}
       </dialog>
     </div>}
-    <div className="card worldbook-scope"><strong>资料范围</strong><p>正文目前开放 7 条已审核的地理设定。你说明的 182 条 OCR 原图未随本次素材提供，因此没有纳入正文搜索。画卷图鉴使用本次提供的 37 张世界、势力与体系图，以及 7 张品牌和纹理素材；它们只作视觉参考。</p>
+    <div className="card worldbook-scope"><strong>资料范围</strong><p>正文只收录已审核并发布的世界设定{canonEntryCount === null ? '' : `，当前 ${canonEntryCount} 条`}。尚待核验的 OCR 与补充材料不会混入正文；完成审核后再逐条纳入。画卷图鉴中的图片仅作视觉参考，不构成设定依据。</p>
       {save && <label className="secondary file-action world-import">为当前存档附加补充 TXT<input type="file" accept=".txt,.md" onChange={event => { const file = event.currentTarget.files?.[0]; if (file) onImportSupplement(file, save); event.currentTarget.value = ''; }} /></label>}
       <button className="secondary" onClick={onClose}>回到刚才的位置</button>
     </div>

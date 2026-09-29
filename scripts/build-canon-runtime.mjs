@@ -34,11 +34,29 @@ const entries = registry.entries
   .sort((a, b) => a.sortOrder - b.sortOrder)
   .map(({ id, title, category, parentId, status, canonVersion, content, sections, aliases, tags, origin, publicSourceNote, sortOrder }) => ({
     id, title, category, ...(parentId ? { parentId } : {}), status, canonVersion, content,
-    ...(sections ? { sections } : {}), aliases: aliases ?? [], tags: tags ?? [],
+    ...(sections ? {
+      sections: sections.map(({ title: sectionTitle, content: sectionContent }) => ({
+        title: sectionTitle,
+        content: sectionContent,
+      })),
+    } : {}),
+    aliases: aliases ?? [], tags: tags ?? [],
     ...(origin ? { origin } : {}),
     ...(publicSourceNote ? { publicSourceNote } : {}), sortOrder,
   }));
 
 const runtime = { schemaVersion: registry.schemaVersion, activeVersion: registry.activeVersion, entries };
-await writeFile(runtimeUrl, `${JSON.stringify(runtime, null, 2)}\n`, 'utf8');
-console.log(`Built public Canon runtime ${runtime.activeVersion}: ${entries.length} confirmed entries; pending/conflict/deprecated and private source metadata excluded.`);
+const serialized = `${JSON.stringify(runtime, null, 2)}\n`;
+if (process.argv.slice(2).some(argument => argument !== '--check' && argument !== '--write')
+  || process.argv.includes('--check') && process.argv.includes('--write')) {
+  throw new Error('Usage: node scripts/build-canon-runtime.mjs [--check|--write]');
+}
+
+if (process.argv.includes('--check')) {
+  const current = await readFile(runtimeUrl, 'utf8');
+  if (current !== serialized) throw new Error('Public Canon runtime is stale; run `pnpm worldbook:runtime:write` and review the generated diff.');
+  console.log(`Verified public Canon runtime ${runtime.activeVersion}: ${entries.length} confirmed entries; private source metadata excluded.`);
+} else {
+  await writeFile(runtimeUrl, serialized, 'utf8');
+  console.log(`Built public Canon runtime ${runtime.activeVersion}: ${entries.length} confirmed entries; pending/conflict/deprecated and private source metadata excluded.`);
+}

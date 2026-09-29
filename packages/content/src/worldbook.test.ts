@@ -2,24 +2,33 @@ import { describe, expect, it } from 'vitest';
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { getReviewedWorldbookEntry, reviewedWorldbook, searchReviewedWorldbook } from './worldbook.js';
+import canonRuntime from './canon-runtime.json' with { type: 'json' };
+import { canonRuntimeEntries, getCanonRuntimeEntry, searchCanonRuntime } from './worldbook.js';
 
-describe('reviewed geography canon', () => {
-  it('publishes exactly the entries represented by the recorded seven-image review batch', () => {
-    expect(reviewedWorldbook).toHaveLength(7);
-    expect(reviewedWorldbook.every(entry => entry.reviewStatus === 'reviewed' && entry.sourceIds.length > 0)).toBe(true);
-    expect(new Set(reviewedWorldbook.map(entry => entry.id)).size).toBe(7);
+describe('public Canon runtime', () => {
+  it('exposes every active public entry and excludes author-only source fields', () => {
+    expect(canonRuntimeEntries).toHaveLength(34);
+    expect(canonRuntimeEntries.map(entry => entry.id)).toEqual(canonRuntime.entries.map(entry => entry.id));
+    expect(canonRuntimeEntries.every(entry => entry.status === 'confirmed'
+      && entry.canonVersion === canonRuntime.activeVersion)).toBe(true);
+    expect(canonRuntimeEntries.every(entry => !('sourceRefs' in entry)
+      && !('reviews' in entry) && !('reviewNote' in entry))).toBe(true);
+    expect(canonRuntimeEntries.flatMap(entry => entry.sections ?? [])
+      .every(section => Object.keys(section).every(key => key === 'title' || key === 'content'))).toBe(true);
+    const scriptPath = fileURLToPath(new URL('../../../scripts/build-canon-runtime.mjs', import.meta.url));
+    expect(execFileSync(process.execPath, [scriptPath, '--check'], { encoding: 'utf8' }))
+      .toContain('Verified public Canon runtime 1.0: 34 confirmed entries');
   });
 
-  it('searches reviewed text without importing pending OCR into results', () => {
-    expect(searchReviewedWorldbook('音波功').map(entry => entry.id)).toEqual(['geography-east']);
-    expect(searchReviewedWorldbook(' OCR待校 ')).toEqual([]);
+  it('searches published factions and systems, including section text', () => {
+    expect(searchCanonRuntime('天工阁').some(entry => entry.id === 'faction_tiangong_ge')).toBe(true);
+    expect(searchCanonRuntime('黄阶上品').some(entry => entry.id === 'system_prices')).toBe(true);
+    expect(getCanonRuntimeEntry('faction_tiangong_ge')?.title).toBe('天工阁');
   });
 
-  it('keeps context restoration and owner-authorized completion visible in provenance', () => {
-    expect(getReviewedWorldbookEntry('geography-central')?.evidence).toContain('context-restored');
-    expect(getReviewedWorldbookEntry('geography-south')?.evidence).toContain('authorized-completion');
-    expect(getReviewedWorldbookEntry('geography-forest')?.reviewNote).toContain('未补写');
+  it('does not expose author-only OCR draft terms in player search', () => {
+    expect(searchCanonRuntime('OCR待校')).toEqual([]);
+    expect(searchCanonRuntime('审核修正版')).toEqual([]);
   });
 
   it('keeps the author-only draft index source-bound and outside player search', () => {
@@ -40,7 +49,6 @@ describe('reviewed geography canon', () => {
       reviewMarkerOccurrences: { suspectedMissing: 155, confirmationNeeded: 20, unreadable: 47, unassigned: 4 } });
     expect(new Set(index.sections.map(section => section.id)).size).toBe(index.sections.length);
     expect(index.sections.every(section => section.startLine > 0 && section.endLine >= section.startLine)).toBe(true);
-    expect(searchReviewedWorldbook('审核修正版')).toEqual([]);
 
     const scriptPath = fileURLToPath(new URL('../../../scripts/audit/build-worldbook-draft-index.mjs', import.meta.url));
     expect(execFileSync(process.execPath, [scriptPath, '--check'], { encoding: 'utf8' })).toContain('Verified 172 draft headings');

@@ -1,4 +1,4 @@
-import type { SceneId } from '@jiuxiao/content';
+import type { SceneId } from '@jiuxiao/content/scenes';
 
 export type GraphicsQuality = 'auto' | 'cinematic' | 'extreme' | 'high' | 'balanced' | 'economy' | 'standard';
 export type TargetFrameRate = 30 | 60 | 90 | 120;

@@ -3,18 +3,22 @@
   "private": true,
   "version": "1.0.0-alpha.0",
   "packageManager": "pnpm@11.19.0",
-  "engines": { "node": ">=24" },
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "dev:web": "pnpm --filter @jiuxiao/contracts build && pnpm --filter @jiuxiao/web dev",
     "dev:api": "pnpm --filter @jiuxiao/contracts build && pnpm --filter @jiuxiao/domain build && pnpm --filter @jiuxiao/api dev",
     "typecheck": "pnpm --filter @jiuxiao/contracts build && pnpm --filter @jiuxiao/content build && pnpm --filter @jiuxiao/domain build && pnpm -r typecheck",
     "test": "pnpm --filter @jiuxiao/domain build && node work/core-regression.cjs && pnpm -r test",
-    "build": "pnpm -r build && node scripts/build/write-manifest.mjs --stage S5",
+    "build": "pnpm worldbook:runtime:check && pnpm -r build && node scripts/build/write-manifest.mjs --stage S5",
     "test:integration": "pnpm --filter @jiuxiao/api test:integration",
     "test:e2e": "node tests/e2e/foundation.cjs",
     "license:check": "node scripts/audit/license-check.mjs",
     "worldbook:index:write": "node scripts/audit/build-worldbook-draft-index.mjs --write",
-    "worldbook:index:check": "node scripts/audit/build-worldbook-draft-index.mjs --check"
+    "worldbook:index:check": "node scripts/audit/build-worldbook-draft-index.mjs --check",
+    "worldbook:runtime:write": "node scripts/build-canon-runtime.mjs --write",
+    "worldbook:runtime:check": "node scripts/build-canon-runtime.mjs --check"
   },
   "devDependencies": {
     "@types/node": "24.13.6",

@@ -8,6 +8,7 @@ const { chromium } = require('playwright');
 
 const root = resolve(__dirname, '../..');
 const webRoot = join(root, 'apps/web');
+const screenshotDir = join(root, 'test-results/e2e');
 const apiPort = 18787;
 const webPort = 15173;
 const children = [];
@@ -30,6 +31,7 @@ async function ready(url) {
 }
 
 (async () => {
+  mkdirSync(screenshotDir, { recursive: true });
   const apiFile = join(root, 'apps/api/dist/index.js');
   const viteFile = join(webRoot, 'node_modules/vite/bin/vite.js');
   assert.ok(existsSync(apiFile) && existsSync(viteFile), 'Run pnpm build before test:e2e');
@@ -168,12 +170,11 @@ async function ready(url) {
       assert.equal(await page.locator('.scene-cloud-drift-one').evaluate(element => getComputedStyle(element).animationName), 'none');
       assert.equal(await page.locator('.portal-enter').evaluate(element => getComputedStyle(element, '::after').animationName), 'none');
       await page.emulateMedia({ reducedMotion: 'no-preference' });
-      mkdirSync(join(root, 'test-results/e2e'), { recursive: true });
-      await page.screenshot({ path: join(root, `test-results/e2e/${width === 390 ? '03-home-mobile-after-layers.png' : '04-home-desktop-after-layers.png'}`), fullPage: true });
+      await page.screenshot({ path: join(screenshotDir, `${width === 390 ? '03-home-mobile-after-layers.png' : '04-home-desktop-after-layers.png'}`), fullPage: true });
       await page.getByRole('button', { name: '切换到晴昼配色' }).click();
       assert.equal(await page.evaluate(() => document.documentElement.dataset.theme), 'day');
       assert.equal(await page.evaluate(() => localStorage.getItem('jx10_appearance')), 'day');
-      await page.screenshot({ path: join(root, `test-results/e2e/${width === 390 ? '05-home-mobile-day.png' : '06-home-desktop-day.png'}`), fullPage: true });
+      await page.screenshot({ path: join(screenshotDir, `${width === 390 ? '05-home-mobile-day.png' : '06-home-desktop-day.png'}`), fullPage: true });
       await page.reload();
       assert.equal(await page.evaluate(() => document.documentElement.dataset.theme), 'day');
       await page.getByRole('button', { name: '切换到夜色配色' }).click();
@@ -265,7 +266,7 @@ async function ready(url) {
         assert.equal(await page.getByRole('button', { name: '收入待处理' }).isVisible(), true);
         await page.setViewportSize({ width, height });
       }
-      await page.screenshot({ path: join(root, `test-results/e2e/${width === 390 ? '09-game-mobile-after-workspace.png' : '10-game-desktop-after-workspace.png'}`), fullPage: true });
+      await page.screenshot({ path: join(screenshotDir, `${width === 390 ? '09-game-mobile-after-workspace.png' : '10-game-desktop-after-workspace.png'}`), fullPage: true });
       await page.locator('#player-intent').fill('沿山门石阶向前探看');
       await page.getByRole('button', { name: '收入待处理' }).click();
       await page.getByText('沿山门石阶向前探看').waitFor();
@@ -340,7 +341,7 @@ async function ready(url) {
       await stalePage.close();
 
       await page.goto(`http://127.0.0.1:${webPort}/saves`);
-      await page.screenshot({ path: join(root, `test-results/e2e/${width === 390 ? '11-saves-mobile.png' : '12-saves-desktop.png'}`), fullPage: true });
+      await page.screenshot({ path: join(screenshotDir, `${width === 390 ? '11-saves-mobile.png' : '12-saves-desktop.png'}`), fullPage: true });
       const branchCard = page.locator('.save-manager-list .card').filter({ hasText: '（冲突分支）' });
       await branchCard.getByRole('button', { name: '改名' }).click();
       await branchCard.getByRole('textbox', { name: '新名称' }).fill(`旁支修士-${width}`);
@@ -377,16 +378,20 @@ async function ready(url) {
       assert.equal(await page.locator('h2').innerText(), `测试修士-${width}`);
       await page.getByRole('button', { name: '菜单' }).click();
       await page.locator('aside').getByRole('button', { name: '阅读世界设定' }).click();
-      assert.equal(await page.locator('.worldbook-entry').count(), 7, 'only the seven reviewed geography entries are published');
-      await page.getByRole('searchbox', { name: '搜索已审核世界设定' }).fill('音波功');
-      assert.equal(await page.locator('.worldbook-entry').count(), 1);
-      assert.equal(await page.locator('.worldbook-entry h3').innerText(), '东瀚龙吟域');
+      await page.locator('.worldbook-entry').first().waitFor();
+      assert.equal(await page.locator('.worldbook-entry').count(), 34, 'player search should use the complete current public Canon runtime');
+      assert.ok((await page.locator('.worldbook-scope').innerText()).includes('当前 34 条'), 'the reader should report the published entry count instead of a stale hardcoded number');
+      const worldSearch = page.getByRole('searchbox', { name: '搜索已审核世界设定' });
+      await worldSearch.fill('天工阁');
+      const worldTitles = await page.locator('.worldbook-entry h3').allTextContents();
+      assert.ok(worldTitles.includes('天工阁'), 'search should find a published faction beyond the old geography sample');
+      const factionEntry = page.locator('.worldbook-entry').filter({ has: page.getByRole('heading', { name: '天工阁', exact: true }) });
+      await factionEntry.locator('details summary').click();
+      assert.ok((await factionEntry.locator('details').innerText()).includes('原设截图'));
+      assert.equal(/(?:original_\d+|[0-9a-f]{8}-[0-9a-f-]{27})/i.test(await factionEntry.locator('details').innerText()), false,
+        'player source notes must not expose author-only source IDs');
       await page.getByRole('searchbox', { name: '搜索已审核世界设定' }).fill('OCR待校');
       assert.equal(await page.locator('.worldbook-entry').count(), 0, 'pending OCR must not enter public search');
-       await page.getByRole('searchbox', { name: '搜索已审核世界设定' }).fill('南疆');
-       const southEntry = page.getByRole('heading', { name: '南疆万蛊域' }).locator('..');
-       await southEntry.locator('details summary').click();
-       assert.ok((await southEntry.locator('details').innerText()).includes('作者授权补全'));
        await page.getByRole('button', { name: /画卷图鉴/ }).click();
        assert.equal(await page.locator('.atlas-card').count(), 7, 'region artwork should be grouped under the source-inspired world collection');
        await page.waitForFunction(() => {
@@ -459,7 +464,7 @@ async function ready(url) {
         assert.equal(await page.locator('.provider-open').isVisible(), true);
         await page.setViewportSize({ width, height });
       }
-      await page.screenshot({ path: join(root, `test-results/e2e/${width === 390 ? '07-ai-settings-mobile-day.png' : '08-ai-settings-desktop-day.png'}`), fullPage: true });
+      await page.screenshot({ path: join(screenshotDir, `${width === 390 ? '07-ai-settings-mobile-day.png' : '08-ai-settings-desktop-day.png'}`), fullPage: true });
       await page.getByRole('button', { name: '切换到夜色配色' }).click();
       await page.evaluate(() => {
         const now = Date.now();

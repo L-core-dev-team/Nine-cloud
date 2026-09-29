@@ -21,6 +21,20 @@ describe('EntitlementLedgerService', () => {
     expect(repository.records.every(row => /^[a-f0-9]{64}$/.test(row.requestHash))).toBe(true);
   });
 
+  it('keeps the request fingerprint stable when equivalent input fields arrive in a different order', async () => {
+    const firstRepository = new CaptureRepository();
+    const secondRepository = new CaptureRepository();
+    const firstService = new EntitlementLedgerService(firstRepository);
+    const secondService = new EntitlementLedgerService(secondRepository);
+
+    await firstService.grant({ ownerId: 'owner-a', entitlementKey: 'model.units', units: 50, idempotencyKey: 'grant-order-001' });
+    await secondService.grant({ idempotencyKey: 'grant-order-001', units: 50, entitlementKey: 'model.units', ownerId: 'owner-a' });
+    await secondService.grant({ idempotencyKey: 'grant-order-001', units: 51, entitlementKey: 'model.units', ownerId: 'owner-a' });
+
+    expect(secondRepository.records[0]?.requestHash).toBe(firstRepository.records[0]?.requestHash);
+    expect(secondRepository.records[1]?.requestHash).not.toBe(firstRepository.records[0]?.requestHash);
+  });
+
   it('rejects unsafe ownership strings, client amounts, and malformed idempotency keys before persistence', async () => {
     const repository = new CaptureRepository();
     const service = new EntitlementLedgerService(repository);

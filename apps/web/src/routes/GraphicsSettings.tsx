@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { SCENE_MANIFEST, type SceneId } from '@jiuxiao/content';
+import { SCENE_MANIFEST, type SceneId } from '@jiuxiao/content/scenes';
 import { detectRendererEnvironment, type GraphicsSettings } from '../graphics-settings';
 import type { SceneRenderStatus } from '../scenes/SceneAtmosphere';
 
