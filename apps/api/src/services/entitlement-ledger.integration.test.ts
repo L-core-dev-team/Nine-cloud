@@ -38,7 +38,7 @@ suite('PostgresEntitlementLedgerRepository (TEST_DATABASE_URL)', () => {
     const ownerId = `s7-owner-${randomUUID()}`;
     const key = `s7.${randomUUID()}`;
     const grant = await service.grant({ ownerId, entitlementKey: 'model.units', units: 100, idempotencyKey: `grant-${randomUUID()}` });
-    const grantRetry = await service.grant({ ownerId, entitlementKey: 'model.units', units: 100, idempotencyKey: grant.idempotencyKey });
+    const grantRetry = await service.grant({ idempotencyKey: grant.idempotencyKey, units: 100, entitlementKey: 'model.units', ownerId });
     expect(grantRetry).toMatchObject({ entryId: grant.entryId, balanceAfter: 100, replayed: true });
 
     const competing = await Promise.allSettled([

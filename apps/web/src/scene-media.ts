@@ -1,4 +1,4 @@
-import { SCENE_MANIFEST, type SceneId } from '@jiuxiao/content';
+import { SCENE_MANIFEST, type SceneId } from '@jiuxiao/content/scenes';
 
 export type SceneVideoSelection = { src: string; poster: string };
 

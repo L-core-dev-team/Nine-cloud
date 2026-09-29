@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import type { SceneId } from '@jiuxiao/content';
+import type { SceneId } from '@jiuxiao/content/scenes';
 import { getCanvasBufferSize, getSceneNumber, resolveGraphicsProfile, type GraphicsSettings } from '../graphics-settings';
 import { selectSceneVideo } from '../scene-media';
 

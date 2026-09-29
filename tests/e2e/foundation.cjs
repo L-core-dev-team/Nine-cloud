@@ -378,16 +378,20 @@ async function ready(url) {
       assert.equal(await page.locator('h2').innerText(), `测试修士-${width}`);
       await page.getByRole('button', { name: '菜单' }).click();
       await page.locator('aside').getByRole('button', { name: '阅读世界设定' }).click();
-      assert.equal(await page.locator('.worldbook-entry').count(), 7, 'only the seven reviewed geography entries are published');
-      await page.getByRole('searchbox', { name: '搜索已审核世界设定' }).fill('音波功');
-      assert.equal(await page.locator('.worldbook-entry').count(), 1);
-      assert.equal(await page.locator('.worldbook-entry h3').innerText(), '东瀚龙吟域');
+      await page.locator('.worldbook-entry').first().waitFor();
+      assert.equal(await page.locator('.worldbook-entry').count(), 34, 'player search should use the complete current public Canon runtime');
+      assert.ok((await page.locator('.worldbook-scope').innerText()).includes('当前 34 条'), 'the reader should report the published entry count instead of a stale hardcoded number');
+      const worldSearch = page.getByRole('searchbox', { name: '搜索已审核世界设定' });
+      await worldSearch.fill('天工阁');
+      const worldTitles = await page.locator('.worldbook-entry h3').allTextContents();
+      assert.ok(worldTitles.includes('天工阁'), 'search should find a published faction beyond the old geography sample');
+      const factionEntry = page.locator('.worldbook-entry').filter({ has: page.getByRole('heading', { name: '天工阁', exact: true }) });
+      await factionEntry.locator('details summary').click();
+      assert.ok((await factionEntry.locator('details').innerText()).includes('原设截图'));
+      assert.equal(/(?:original_\d+|[0-9a-f]{8}-[0-9a-f-]{27})/i.test(await factionEntry.locator('details').innerText()), false,
+        'player source notes must not expose author-only source IDs');
       await page.getByRole('searchbox', { name: '搜索已审核世界设定' }).fill('OCR待校');
       assert.equal(await page.locator('.worldbook-entry').count(), 0, 'pending OCR must not enter public search');
-       await page.getByRole('searchbox', { name: '搜索已审核世界设定' }).fill('南疆');
-       const southEntry = page.getByRole('heading', { name: '南疆万蛊域' }).locator('..');
-       await southEntry.locator('details summary').click();
-       assert.ok((await southEntry.locator('details').innerText()).includes('作者授权补全'));
        await page.getByRole('button', { name: /画卷图鉴/ }).click();
        assert.equal(await page.locator('.atlas-card').count(), 7, 'region artwork should be grouped under the source-inspired world collection');
        await page.waitForFunction(() => {
