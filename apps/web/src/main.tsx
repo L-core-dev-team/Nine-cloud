@@ -54,6 +54,13 @@ const returnFromReading = () => {
   go('/lobby');
 };
 
+function commitSuccessMessage(result: SaveCommitResult, message: string): string {
+  if (result.ok && result.warning === 'compatibility-mirror-unavailable') {
+    return `${message} 本次变更已写入浏览器数据库；兼容副本未能完整同步。重新载入时系统会尝试恢复副本。离开前请核对存档列表，并导出仍需保留的存档。`;
+  }
+  return message;
+}
+
 function downloadText(name: string, text: string, type: string): void {
   const url = URL.createObjectURL(new Blob([text], { type }));
   const anchor = document.createElement('a');
@@ -349,7 +356,7 @@ function Game({ save, onExport, onImportSupplement, onUpdate, onBranch, onReload
     }
     setConflictDraft(null);
     setIntent(''); writeActionDraft(currentSave.saveId, '');
-    setFeedback('行动已加入本地待处理队列。规则结算接入前，它不会推进时间或改变角色状态。');
+    setFeedback(commitSuccessMessage(result, '行动已加入本地待处理队列。规则结算接入前，它不会推进时间或改变角色状态。'));
   }
   return <section className="game-page">
     <header className="game-topline"><div><span className="eyebrow">{save.location} · 本地存档</span><h1>{save.name}</h1></div><button className="quiet-action" onClick={() => go('/lobby')}>离开此局<span>回到山门</span></button></header>
@@ -466,7 +473,7 @@ function App() {
       if (!safeMigrated.length) throw new Error('empty migration');
       const result = await commitSaves(saves, [...safeMigrated, ...saves]);
       if (!result.ok) { setSaves(result.saves); setNotice(result.reason === 'conflict' ? '另一个标签页同时修改了存档。旧库和下载的原文备份均保留；请刷新后重新迁移。' : '浏览器数据库不可写。旧库和下载的原文备份均保留。'); return; }
-      setSaves(result.saves); setLegacyText(null); setNotice(`已迁移 ${safeMigrated.length} 份旧局。${copied ? `${copied} 份 ID 冲突已另存副本。` : ''}原 localStorage 文本已备份，旧键仍保留。`);
+      setSaves(result.saves); setLegacyText(null); setNotice(commitSuccessMessage(result, `已迁移 ${safeMigrated.length} 份旧局。${copied ? `${copied} 份 ID 冲突已另存副本。` : ''}原 localStorage 文本已备份，旧键仍保留。`));
     } catch { setNotice('旧 localStorage 存档无法通过校验，未写入新存储。原键和备份均保留。'); }
   }
   function importFile(file: File) {
@@ -488,7 +495,7 @@ function App() {
     const next = collision && strategy === 'replace' ? current.map(item => item.saveId === candidate.saveId ? candidate : item) : [candidate, ...current];
     const result = await commitSaves(saves, next);
     if (!result.ok) { setSaves(result.saves); setNotice(result.reason === 'conflict' ? '存档列表刚有变化，导入未覆盖任何内容。请核对最新列表后再选“另存副本”或重试。' : '浏览器数据库不可写，存档尚未导入。已下载的原始备份仍可使用。'); return; }
-    setSaves(result.saves); setImportPreview(null); setNotice(`已导入「${candidate.name}」。原始旧档字段保存在历史资料区。`); go(`/game/${candidate.saveId}`);
+    setSaves(result.saves); setImportPreview(null); setNotice(commitSuccessMessage(result, `已导入「${candidate.name}」。原始旧档字段保存在历史资料区。`)); go(`/game/${candidate.saveId}`);
   }
   function exportFile(save = saves[0]) { if (!save) { setNotice('暂无可导出的存档。'); return; } downloadText(`九霄-${save.name}.json`, serializeSaveForExport(save), 'application/json;charset=utf-8'); setNotice('存档已导出。'); }
   function importSupplement(file: File, save: LocalSave) {
@@ -502,7 +509,7 @@ function App() {
       const next: LocalSave = { ...target, updatedAt: new Date().toISOString(), legacyArchive: { sourceFormat: target.legacyArchive?.sourceFormat || 'JIUXIAO_LOCAL', sourceVersion: target.legacyArchive?.sourceVersion ?? null, payload: { ...payload, supplements: [...existing, { name: file.name, text, source: 'USER_SUPPLIED' }] } } };
       void commitSaves(current, current.map(item => item.saveId === save.saveId ? next : item)).then(result => {
         if (!result.ok) { setSaves(result.saves); setNotice(result.reason === 'conflict' ? '存档在读取补充资料期间发生变化，未覆盖较新版本；请重新附加。' : '浏览器数据库不可写，补充资料没有写入。'); return; }
-        setSaves(result.saves); setNotice(`「${file.name}」已附加到「${save.name}」，不会覆盖旧内容。`);
+        setSaves(result.saves); setNotice(commitSuccessMessage(result, `「${file.name}」已附加到「${save.name}」，不会覆盖旧内容。`));
       });
     }).catch(() => setNotice('无法读取该补充资料，存档未修改。'));
   }
@@ -514,7 +521,7 @@ function App() {
   const page = currentRoute === '/new' ? <NewCharacter onSaved={async save => {
     const result = await commitSaves(saves, [save, ...saves]);
     if (!result.ok) { setSaves(result.saves); setNotice(result.reason === 'conflict' ? '存档列表刚有变化，角色尚未创建。请确认后重试。' : '浏览器数据库不可写，角色尚未创建。草稿仍保留。'); return false; }
-    setSaves(result.saves); go(`/game/${save.saveId}`); return true;
+    setSaves(result.saves); if (result.warning) setNotice(commitSuccessMessage(result, '角色与新存档已创建。')); go(`/game/${save.saveId}`); return true;
   }} /> : currentRoute === '/intro' ? <Introduction onStart={() => go('/new')} onWorld={() => go('/world')} /> : currentRoute === '/world' ? <World onClose={returnFromReading} save={activeSave} onImportSupplement={importSupplement} /> : currentRoute === '/settings/ai' ? <AiSettings onClose={returnFromReading} /> : currentRoute === '/settings/graphics' ? <GraphicsSettingsPage settings={graphicsSettings} onChange={updateGraphicsSettings} renderer={rendererStatus} ambientAudioActive={ambientAudioActive} onToggleAmbientAudio={() => { void toggleAmbientAudio(); }} onPreviewScene={onScenePreview} /> : currentRoute === '/lobby' ? <WorldHub saves={saves} /> : currentRoute === '/saves' ? <SaveManager saves={saves} onExport={exportFile}
     onRename={async (save, name) => {
       const trimmed = name.trim();
@@ -522,12 +529,14 @@ function App() {
       const next = saves.map(item => item.saveId === save.saveId ? { ...item, name: trimmed, updatedAt: new Date().toISOString() } : item);
       const result = await commitSaves(saves, next);
       setSaves(result.saves);
+      if (result.ok && result.warning) setNotice(commitSuccessMessage(result, '存档名称已更新。'));
       return result.ok;
     }}
     onDelete={async save => {
       const result = await commitSaves(saves, saves.filter(item => item.saveId !== save.saveId));
       setSaves(result.saves);
       if (result.ok) {
+        if (result.warning) setNotice(commitSuccessMessage(result, '本地存档已删除。'));
         try { if (sessionStorage.getItem('jiuxiao_active_save_id') === save.saveId) sessionStorage.removeItem('jiuxiao_active_save_id'); }
         catch { /* Navigation remains available. */ }
       }
@@ -545,7 +554,7 @@ function App() {
       const now = new Date().toISOString();
       const branch = { ...stale, saveId: createSaveId(), name: `${stale.name}（冲突分支）`, createdAt: now, updatedAt: now };
       const result = await commitSaves(saves, [branch, ...saves]);
-      setSaves(result.saves); return result.ok;
+      setSaves(result.saves); if (result.ok && result.warning) setNotice(commitSuccessMessage(result, '冲突内容已另存为独立分支；原存档保持不变。')); return result.ok;
     }} /> : <Landing />;
   const migrationAction = legacyText ? <button className="notice-action" onClick={migrateLegacyLibrary}>下载原文备份并迁移</button> : undefined;
   const storageNotice = indexedDbReady ? notice : `${notice} IndexedDB 回退模式。`;
