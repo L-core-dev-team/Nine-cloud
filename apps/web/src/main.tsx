@@ -42,8 +42,15 @@ const go = (path: string) => {
 };
 const returnFromReading = () => {
   const candidate = history.state?.returnTo;
-  const safe = typeof candidate === 'string' && /^\/(lobby|new|settings\/ai|world|game\/[^/]+)$/.test(candidate) ? candidate : '/lobby';
-  go(safe);
+  const hasSafeReturn = typeof candidate === 'string' && /^\/(lobby|new|settings\/ai|world|game\/[^/]+)$/.test(candidate);
+  if (hasSafeReturn) {
+    // The destination already exists immediately behind this reader in the
+    // browser history. Going back preserves its original return target when
+    // readers/settings are opened in sequence (for example world -> AI).
+    history.back();
+    return;
+  }
+  go('/lobby');
 };
 
 function downloadText(name: string, text: string, type: string): void {

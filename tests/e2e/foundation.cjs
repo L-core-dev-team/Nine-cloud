@@ -413,6 +413,14 @@ async function ready(url) {
       assert.equal(await page.locator('h2').innerText(), '世界设定');
       await page.getByRole('button', { name: '回到刚才的位置' }).click();
       assert.ok((await page.locator('body').innerText()).includes('选择去处'));
+      await page.getByRole('button', { name: '阅读世界设定' }).click();
+      await page.getByRole('button', { name: '菜单' }).click();
+      await page.locator('aside').getByRole('button', { name: 'AI 设置' }).click();
+      assert.equal(await page.locator('.ai-title').innerText(), 'AI 设定');
+      await page.getByRole('button', { name: '关闭', exact: true }).click();
+      assert.equal(await page.locator('h2').innerText(), '世界设定', 'closing AI settings opened from the world reader should return to that reader');
+      await page.getByRole('button', { name: '回到刚才的位置' }).click();
+      assert.ok((await page.locator('body').innerText()).includes('选择去处'), 'closing the world reader should preserve the lobby as the original return destination');
       await page.getByRole('button', { name: '菜单' }).click();
       await page.locator('aside').getByRole('button', { name: 'AI 设置' }).click();
       assert.equal(await page.locator('.ai-title').innerText(), 'AI 设定');
