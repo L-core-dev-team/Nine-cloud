@@ -114,4 +114,33 @@ describe('local save commit boundary', () => {
     expect(hydrated).toEqual({ saves: [validSave], indexedDb: true });
     expect(indexed.initializeIndexedSaves).toHaveBeenCalledWith([validSave]);
   });
+  it('keeps the durable IndexedDB snapshot available when the compatibility mirror hits quota', async () => {
+    const mirrorKey = 'jiuxiao_1_local_saves_v2';
+    const existingMirror = JSON.stringify({ revision: 1, saves: [validSave] });
+    const durableSave: LocalSave = { ...validSave, revision: 2, updatedAt: '2026-09-29T00:00:00.000Z' };
+    stubLocalStorage([[mirrorKey, existingMirror]]);
+    const storage = globalThis.localStorage;
+    vi.stubGlobal('localStorage', {
+      ...storage,
+      setItem: () => { throw Object.assign(new Error('Storage quota exceeded'), { name: 'QuotaExceededError' }); },
+    } as Storage);
+    indexed.readIndexedSnapshot.mockResolvedValue({ saves: [durableSave], revision: 2, initialized: true });
+    indexed.restoreLocalMirror.mockImplementation((saves: LocalSave[], revision: number) => {
+      try {
+        localStorage.setItem(mirrorKey, JSON.stringify({ revision, saves }));
+        return true;
+      } catch {
+        return false;
+      }
+    });
+
+    const hydrated = await hydrateSaves();
+
+    expect(hydrated.saves).toEqual([durableSave]);
+    expect(hydrated.indexedDb).toBe(true);
+    expect(hydrated.warning).toMatch(/数据库仍保有存档/);
+    expect(localStorage.getItem(mirrorKey)).toBe(existingMirror);
+    expect(indexed.initializeIndexedSaves).not.toHaveBeenCalled();
+  });
+
 });

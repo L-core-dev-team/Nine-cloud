@@ -19,6 +19,6 @@ try {
     throw new Error('The database name must begin with jiuxiao_test to reduce the risk of mutating a development or production database.');
   }
 } catch (error) {
-  console.error(`TEST_DATABASE_URL is invalid: ${error instanceof Error ? error.message : 'invalid URL'}`);
+  console.error('TEST_DATABASE_URL is invalid: ' + (error instanceof Error ? error.message : 'invalid URL'));
   process.exit(1);
 }

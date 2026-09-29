@@ -18,31 +18,26 @@ test('requires a PostgreSQL integration database and rejects other protocols', a
     assert.equal(result.status, 1);
     assert.match(result.stderr, /TEST_DATABASE_URL is required/);
   });
-
   await t.test('non-PostgreSQL URL is rejected', () => {
     const result = runGuard('mysql://localhost/jiuxiao_test');
     assert.equal(result.status, 1);
     assert.match(result.stderr, /Expected a PostgreSQL URL/);
   });
-
   await t.test('PostgreSQL URL without a database is rejected', () => {
     const result = runGuard('postgresql://localhost/');
     assert.equal(result.status, 1);
     assert.match(result.stderr, /host and database name/);
   });
-
   await t.test('database without the project test prefix is rejected', () => {
     const result = runGuard('postgresql://localhost/jiuxiao_dev');
     assert.equal(result.status, 1);
     assert.match(result.stderr, /must begin with jiuxiao_test/);
   });
-
   await t.test('encoded path separators cannot smuggle a different database name', () => {
     const result = runGuard('postgresql://localhost/jiuxiao_test%2Fproduction');
     assert.equal(result.status, 1);
     assert.match(result.stderr, /must begin with jiuxiao_test/);
   });
-
   await t.test('valid PostgreSQL URL passes without printing credentials', () => {
     const result = runGuard('postgresql://test-user:private-value@127.0.0.1:5432/jiuxiao_test_ci');
     assert.equal(result.status, 0, result.stderr);
