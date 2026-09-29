@@ -20,7 +20,12 @@ function openDatabase(): Promise<IDBDatabase> {
       if (!request.result.objectStoreNames.contains(STORE)) request.result.createObjectStore(STORE, { keyPath: 'saveId' });
       if (!request.result.objectStoreNames.contains(META)) request.result.createObjectStore(META, { keyPath: 'key' });
     };
-    request.onsuccess = () => resolve(request.result);
+    request.onsuccess = () => {
+      const database = request.result;
+      // Let a newer tab upgrade the schema instead of leaving this stale connection blocking it.
+      database.onversionchange = () => database.close();
+      resolve(database);
+    };
     request.onerror = () => reject(request.error ?? new Error('IndexedDB open failed'));
   });
 }
