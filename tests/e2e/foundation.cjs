@@ -253,9 +253,48 @@ async function ready(url) {
         const save = JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2') || 'null').saves.find(item => item.saveId === saveId);
         return save.legacyArchive.payload.supplements.length;
       }), 2, 'oversized supplementary files must not modify the archive');
+      const beforeSupplementFailure = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      await page.evaluate(() => {
+        const original = File.prototype.text;
+        File.prototype.text = function () {
+          if (this.name === 'unreadable-notes.txt') return Promise.reject(new Error('synthetic read failure'));
+          if (this.name === 'delayed-notes.txt') return new Promise(resolve => { window.resolveSupplementForTest = resolve; });
+          return original.call(this);
+        };
+      });
+      await supplementInput.setInputFiles({ name: 'unreadable-notes.txt', mimeType: 'text/plain', buffer: Buffer.from('合成读取失败样本') });
+      await page.getByText('无法读取该补充资料，存档未修改。').waitFor();
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), beforeSupplementFailure, 'failed supplement reads must not write saves');
+      await supplementInput.setInputFiles([]);
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), beforeSupplementFailure, 'empty file selection must not write saves');
+      await supplementInput.setInputFiles({ name: 'delayed-notes.txt', mimeType: 'text/plain', buffer: Buffer.from('过时附加资料') });
+      await page.waitForFunction(() => typeof window.resolveSupplementForTest === 'function');
+      await page.locator('#player-intent').fill('补充资料读取期间写入的新行动');
+      await page.getByRole('button', { name: '收入待处理' }).click();
+      await page.waitForFunction(() => {
+        const mirror = JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2') || 'null');
+        return mirror?.saves?.some(save => save.pendingQueue?.some(item => item.text === '补充资料读取期间写入的新行动'));
+      });
+      const newerSupplementSnapshot = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      await page.evaluate(() => { window.resolveSupplementForTest('过时附加资料'); delete window.resolveSupplementForTest; });
+      await page.getByText('存档在读取补充资料期间发生变化，未覆盖较新版本；请重新附加。').waitFor();
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), newerSupplementSnapshot, 'stale supplement commit must preserve the newer action and snapshot');
+      await page.evaluate(() => {
+        const original = IDBDatabase.prototype.transaction;
+        window.restoreSupplementDatabaseForTest = () => { IDBDatabase.prototype.transaction = original; };
+        IDBDatabase.prototype.transaction = function (stores, mode, options) {
+          if (mode === 'readwrite') throw new DOMException('synthetic database write rejection', 'QuotaExceededError');
+          return original.call(this, stores, mode, options);
+        };
+      });
+      await supplementInput.setInputFiles({ name: 'database-failure-notes.txt', mimeType: 'text/plain', buffer: Buffer.from('不能写入的合成资料') });
+      await page.getByText('浏览器数据库不可写，补充资料没有写入。').waitFor();
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), newerSupplementSnapshot, 'failed IndexedDB supplement writes must not modify the mirror');
+      await page.evaluate(() => { window.restoreSupplementDatabaseForTest(); delete window.restoreSupplementDatabaseForTest; });
       await page.locator('#player-intent').fill('刷新后仍可恢复的行动草稿');
       await page.reload();
       await page.locator('.game-topline h1').waitFor();
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), newerSupplementSnapshot, 'refresh must recover the same durable snapshot after failed supplement writes');
       assert.equal(await page.locator('#player-intent').inputValue(), '刷新后仍可恢复的行动草稿');
       assert.equal(await page.locator('.game-workspace').count(), 1);
       assert.equal(await page.locator('.story-column').count(), 1);
