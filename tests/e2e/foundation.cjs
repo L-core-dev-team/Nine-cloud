@@ -343,6 +343,13 @@ async function ready(url) {
       await page.goto(`http://127.0.0.1:${webPort}/saves`);
       await page.screenshot({ path: join(screenshotDir, `${width === 390 ? '11-saves-mobile.png' : '12-saves-desktop.png'}`), fullPage: true });
       const branchCard = page.locator('.save-manager-list .card').filter({ hasText: '（冲突分支）' });
+      const savesBeforeRenameCancel = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      await branchCard.getByRole('button', { name: '改名' }).click();
+      await branchCard.getByRole('textbox', { name: '新名称' }).fill('   ');
+      assert.equal(await branchCard.getByRole('button', { name: '保存名称' }).isDisabled(), true);
+      await branchCard.getByRole('textbox', { name: '新名称' }).fill('不应保存的取消名称');
+      await branchCard.getByRole('button', { name: '取消', exact: true }).click();
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), savesBeforeRenameCancel, 'cancelled rename must not write saves');
       await branchCard.getByRole('button', { name: '改名' }).click();
       await branchCard.getByRole('textbox', { name: '新名称' }).fill(`旁支修士-${width}`);
       await branchCard.getByRole('button', { name: '保存名称' }).click();
@@ -355,6 +362,15 @@ async function ready(url) {
       const exportedBranch = JSON.parse(readFileSync(await branchDownload.path(), 'utf8'));
       assert.equal(exportedBranch.save.name, `旁支修士-${width}`);
       assert.equal(JSON.stringify(exportedBranch).includes('test-secret-not-persisted'), false, 'save export must never include AI API keys');
+      const savesBeforeDeleteCancel = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      await renamedCard.getByRole('button', { name: '删除' }).click();
+      await renamedCard.getByRole('textbox', { name: '确认名称' }).fill('不匹配的名称');
+      assert.equal(await renamedCard.getByRole('button', { name: '确认删除' }).isDisabled(), true);
+      await renamedCard.getByRole('button', { name: '取消', exact: true }).click();
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), savesBeforeDeleteCancel, 'cancelled deletion must not write saves');
+      await page.reload();
+      await renamedCard.waitFor();
+      assert.equal(await page.locator('.save-manager-list .card').count(), 2, 'cancelled deletion must survive refresh');
       await renamedCard.getByRole('button', { name: '删除' }).click();
       assert.equal(await renamedCard.getByRole('button', { name: '确认删除' }).isDisabled(), true);
       await renamedCard.getByRole('textbox', { name: '确认名称' }).fill(`旁支修士-${width}`);
@@ -843,6 +859,19 @@ async function ready(url) {
       assert.equal(await page.locator('.import-preview h2').innerText(), '导入旧局');
       assert.ok((await page.locator('.import-preview').innerText()).includes('status'));
       assert.equal(await page.locator('.import-preview h2').innerText(), '导入旧局');
+      const savesBeforeImportCancel = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      assert.equal(readFileSync(await backup.path(), 'utf8'), legacyJson, 'cancelled import still has the exact original backup');
+      await page.locator('.import-preview').getByRole('button', { name: '取消', exact: true }).click();
+      assert.equal(await page.locator('.import-preview').count(), 0);
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), savesBeforeImportCancel, 'cancelled import must not write saves');
+      await page.reload();
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), savesBeforeImportCancel, 'cancelled import must not change saves after refresh');
+      await page.getByRole('button', { name: '菜单' }).click();
+      await Promise.all([
+        page.waitForEvent('download'),
+        importInput.setInputFiles({ name: 'legacy-chat.json', mimeType: 'application/json', buffer: Buffer.from(legacyJson) }),
+      ]);
+      await page.locator('.import-preview').waitFor();
       await page.getByRole('button', { name: '导入此档' }).click();
       assert.equal(await page.locator('.game-topline h1').innerText(), '导入旧局');
       await page.getByRole('button', { name: '角色状态', exact: true }).click();
