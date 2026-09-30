@@ -3,6 +3,7 @@ import { catalogVerifiedOn, providerCatalog } from './ai-provider-catalog';
 import { buildProbeRequest, parseProbeResponse, protocolLabels, type ProtocolId } from './ai-protocols';
 import { filterRouterModels, normalizeRouterModels, type RouterModel } from './ai-model-inventory';
 import { modelSamplingPolicy } from './ai-model-compatibility';
+import { sanitizeCallLogs, type CallLog } from './ai-call-logs';
 import { estimateModelCost, MODEL_RATE_SNAPSHOT_DATE } from './ai-model-pricing';
 
 const CONFIG_KEY = 'jx10_ai_config_v2';
@@ -31,10 +32,6 @@ type AiConfig = {
   logRetentionDays: number; allowLegacyMigration: boolean; archiveInterval: number;
   contextCount: number; retryCount: number; retryDelaySeconds: number;
   activePresetId: string | null;
-};
-type CallLog = {
-  at: string; role: string; model: string; elapsedMs: number; outcome: 'success' | 'failure';
-  status?: number; inputTokens?: number; outputTokens?: number; errorCode?: string;
 };
 type Preset = { id: string; title: string; tone: string; detail: string; models: Record<RoleId, string>; providers: Record<RoleId, string>; adapters: Record<RoleId, ProtocolId>; reasons: Record<RoleId, string>; temperature: number; topP: number; maxTokens: number };
 
@@ -171,23 +168,14 @@ function readLogs(retentionDays: number): CallLog[] {
   try {
     const values: unknown = JSON.parse(sessionStorage.getItem(LOG_KEY) || '[]');
     if (retentionDays === 0) { sessionStorage.removeItem(LOG_KEY); return []; }
-    const cutoff = Date.now() - retentionDays * 86_400_000;
-    if (!Array.isArray(values)) { sessionStorage.removeItem(LOG_KEY); return []; }
-    const retained = values.filter((entry): entry is CallLog => {
-      const log = asRecord(entry);
-      const timestamp = typeof log.at === 'string' ? Date.parse(log.at) : Number.NaN;
-      return Number.isFinite(timestamp) && timestamp >= cutoff
-        && typeof log.role === 'string' && typeof log.model === 'string'
-        && typeof log.elapsedMs === 'number' && Number.isFinite(log.elapsedMs) && log.elapsedMs >= 0
-        && (log.outcome === 'success' || log.outcome === 'failure');
-    }).slice(-200);
+    const retained = sanitizeCallLogs(values, retentionDays);
     if (retained.length) sessionStorage.setItem(LOG_KEY, JSON.stringify(retained));
     else sessionStorage.removeItem(LOG_KEY);
     return retained;
   } catch { try { sessionStorage.removeItem(LOG_KEY); } catch { /* session storage may be unavailable */ } return []; }
 }
 function addLog(entry: CallLog, retentionDays: number): CallLog[] {
-  const logs = [...readLogs(retentionDays), entry].slice(-200);
+  const logs = sanitizeCallLogs([...readLogs(retentionDays), entry], retentionDays);
   try { if (retentionDays === 0) sessionStorage.removeItem(LOG_KEY); else sessionStorage.setItem(LOG_KEY, JSON.stringify(logs)); } catch { /* logs are optional */ }
   return retentionDays === 0 ? [] : logs;
 }

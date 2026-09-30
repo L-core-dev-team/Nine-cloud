@@ -470,12 +470,15 @@ async function ready(url) {
         const now = Date.now();
         sessionStorage.setItem('jx10_ai_call_log_v1', JSON.stringify([
           { at: new Date('2000-01-01T00:00:00.000Z').toISOString(), role: '过期岗位', model: 'expired-model', elapsedMs: 1, outcome: 'success' },
-          { at: new Date(now - 86_400_000).toISOString(), role: '近期岗位', model: 'retained-model', elapsedMs: 12, outcome: 'success' },
+          { at: new Date(now - 86_400_000).toISOString(), role: '近期岗位', model: 'retained-model', elapsedMs: 12, outcome: 'success', apiKey: 'synthetic-log-secret', response: 'synthetic-private-response', errorCode: 'synthetic-log-secret' },
+          { at: new Date(now + 86_400_000).toISOString(), role: '未来岗位', model: 'future-model', elapsedMs: 1, outcome: 'success' },
         ]));
       });
       await page.reload();
       const retainedLogs = await page.evaluate(() => JSON.parse(sessionStorage.getItem('jx10_ai_call_log_v1')));
       assert.deepEqual(retainedLogs.map(log => log.model), ['retained-model']);
+      assert.deepEqual(Object.keys(retainedLogs[0]).sort(), ['at', 'elapsedMs', 'model', 'outcome', 'role']);
+      assert.equal(JSON.stringify(retainedLogs).includes('synthetic-'), false, 'polluted old logs must be sanitized before storage rewrite');
       await page.getByRole('button', { name: '调用记录' }).click();
       assert.equal(await page.locator('.glass-dialog').isVisible(), true);
       assert.ok((await page.locator('.call-log-dialog-body').innerText()).includes('retained-model'));
