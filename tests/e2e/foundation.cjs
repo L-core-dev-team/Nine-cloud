@@ -1035,12 +1035,26 @@ async function ready(url) {
       assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves.length), savesBeforeBadImport, 'a malformed import must not alter existing saves');
       assert.equal(await page.locator('aside').count(), 0, 'selecting a file should close the menu before import review');
       if (width === 390) {
+        const boundarySnapshot = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+        const exactLimit = Buffer.alloc(20 * 1024 * 1024, 0x20);
+        Buffer.from(JSON.stringify({ messages: ['boundary story'], status: 'boundary status' })).copy(exactLimit);
+        await page.getByRole('button', { name: '菜单' }).click();
+        const [boundaryBackup] = await Promise.all([
+          page.waitForEvent('download'),
+          importInput.setInputFiles({ name: 'exact-limit.json', mimeType: 'application/json', buffer: exactLimit }),
+        ]);
+        await page.locator('.import-preview').getByText(/来源：exact-limit.json/).waitFor();
+        assert.deepEqual(readFileSync(await boundaryBackup.path()), exactLimit, 'the exact 20 MiB import backup must retain every original byte');
+        assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), boundarySnapshot, 'a valid boundary preview must not commit a save');
+        await page.locator('.import-preview').getByRole('button', { name: '取消', exact: true }).click();
+        assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), boundarySnapshot, 'cancelling a boundary preview must preserve saved data');
         const oversized = Buffer.alloc(20 * 1024 * 1024 + 1, 0x61);
         await page.getByRole('button', { name: '菜单' }).click();
         await importInput.setInputFiles({ name: 'oversized.json', mimeType: 'application/json', buffer: oversized });
         await page.getByText(/导入失败：文件超过 20 MiB 上限/).waitFor();
         assert.equal(await page.locator('.import-preview').count(), 0, 'an oversized file must be rejected before preview');
         assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves.length), savesBeforeBadImport, 'an oversized import must not alter existing saves');
+        assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), boundarySnapshot, 'over-limit rejection must preserve the complete saved library');
       }
       const legacyJson = JSON.stringify({
         messages: [{ role: 'user', content: '旧档正文' }],
