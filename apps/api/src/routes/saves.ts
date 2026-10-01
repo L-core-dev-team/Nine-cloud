@@ -13,6 +13,9 @@ type RouteDependencies = { service: CloudSaveService; auth: CloudSaveRouteAuth }
 async function ownerFor(request: Request, auth: CloudSaveRouteAuth): Promise<string | null> {
   try {
     const ownerId = await auth.resolveOwnerId(request);
+    // A tab queued under account A must not upload into account B after cookie/account switching.
+    const expectedOwner = request.headers.get('x-jiuxiao-account');
+    if (expectedOwner !== null && expectedOwner !== ownerId) return null;
     return typeof ownerId === 'string' && ownerId.trim() && ownerId.length <= 200 ? ownerId : null;
   } catch {
     return null;
@@ -80,6 +83,14 @@ function publicError(error: unknown): Response {
 }
 
 export function mountCloudSaveRoutes(app: Hono, { service, auth }: RouteDependencies): void {
+  app.get('/api/save-index', async c => {
+    const ownerId = await ownerFor(c.req.raw, auth);
+    if (!ownerId) return c.json({ code: 'UNAUTHENTICATED' }, 401);
+    const offset = c.req.query('offset') ?? '0', limit = c.req.query('limit') ?? '20';
+    if (!/^\d+$/.test(offset) || !/^\d+$/.test(limit)) return c.json({ code: 'INVALID_PAGINATION' }, 400);
+    try { return c.json(await service.archiveIndex(ownerId, Number(offset), Number(limit))); }
+    catch (error) { return publicError(error); }
+  });
   app.get('/api/saves', async c => {
     const ownerId = await ownerFor(c.req.raw, auth);
     if (!ownerId) return c.json({ code: 'UNAUTHENTICATED', message: '请先登录。' }, 401);

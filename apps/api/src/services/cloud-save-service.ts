@@ -7,6 +7,7 @@ export type CloudSaveWriteResult =
   | { kind: 'not_found' };
 
 export interface CloudSaveRepository {
+  archiveIndexForOwner?(ownerId: string, offset: number, limit: number): Promise<Array<{ saveId: string; name: string; revision: number }>>;
   listForOwner(ownerId: string): Promise<SaveEnvelope[]>;
   getForOwner(ownerId: string, saveId: string): Promise<SaveEnvelope | null>;
   createForOwner(ownerId: string, save: SaveEnvelope): Promise<boolean>;
@@ -44,6 +45,13 @@ function parseSave(value: unknown): SaveEnvelope {
  */
 export class CloudSaveService {
   constructor(private readonly repository: CloudSaveRepository) {}
+
+  async archiveIndex(ownerId: string, offset: number, limit: number) {
+    if (!Number.isSafeInteger(offset) || offset < 0 || offset > 100000 || !Number.isInteger(limit) || limit < 1 || limit > 50) throw new TypeError('Invalid pagination');
+    if (!this.repository.archiveIndexForOwner) throw new Error('Archive index unavailable');
+    const rows = await this.repository.archiveIndexForOwner(requireOwnerId(ownerId), offset, limit + 1);
+    return { saves: rows.slice(0, limit), hasMore: rows.length > limit };
+  }
 
   async list(ownerId: string): Promise<SaveEnvelope[]> {
     return this.repository.listForOwner(requireOwnerId(ownerId));

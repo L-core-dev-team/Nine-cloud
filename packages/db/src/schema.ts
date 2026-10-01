@@ -1,7 +1,25 @@
 import { sql } from 'drizzle-orm';
 import { bigint, check, foreignKey, integer, jsonb, pgTable, primaryKey, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
 
-// Authentication tables and ownership checks arrive with S6. No save API uses these yet.
+export const authAccounts = pgTable('auth_accounts', {
+  id: text('id').primaryKey(), email: text('email').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+}, table => [uniqueIndex('auth_accounts_email_idx').on(table.email)]);
+export const authChallenges = pgTable('auth_challenges', {
+  email: text('email').primaryKey(), digest: text('digest'), attempts: integer('attempts').notNull().default(0),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+  issuedAt: timestamp('issued_at', { withTimezone: true }).notNull(),
+  windowStartedAt: timestamp('window_started_at', { withTimezone: true }).notNull(),
+  windowCount: integer('window_count').notNull(),
+});
+export const authSessions = pgTable('auth_sessions', {
+  tokenHash: text('token_hash').primaryKey(), ownerId: text('owner_id').notNull().references(() => authAccounts.id, { onDelete: 'cascade' }),
+  expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+});
+export const authMailLimits = pgTable('auth_mail_limits', {
+  bucket: bigint('bucket', { mode: 'number' }).primaryKey(), sent: integer('sent').notNull(),
+});
+
 export const gameSaves = pgTable('game_saves', {
   id: text('id').primaryKey(),
   ownerId: text('owner_id').notNull(),

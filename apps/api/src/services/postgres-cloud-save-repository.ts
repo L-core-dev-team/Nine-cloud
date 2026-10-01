@@ -32,6 +32,14 @@ const SELECT_FIELDS = `id, revision, schema_version, canon_version, rule_version
 export class PostgresCloudSaveRepository implements CloudSaveRepository {
   constructor(private readonly pool: Pool) {}
 
+  async archiveIndexForOwner(ownerId: string, offset: number, limit: number) {
+    const result = await this.pool.query<{ id: string; name: string; revision: number }>(
+      `SELECT id, revision, left(snapshot #>> '{facts,localArchive,name}', 200) AS name FROM game_saves
+       WHERE owner_id = $1 AND snapshot #>> '{facts,archiveKind}' = 'local-untrusted-v1'
+       ORDER BY id ASC LIMIT $2 OFFSET $3`, [ownerId, limit, offset]);
+    return result.rows.map(row => ({ saveId: row.id, name: row.name || '云端存档', revision: row.revision }));
+  }
+
   async listForOwner(ownerId: string): Promise<SaveEnvelope[]> {
     const result = await this.pool.query<SaveRow>(
       `SELECT ${SELECT_FIELDS} FROM game_saves WHERE owner_id = $1 ORDER BY updated_at DESC, id ASC`,

@@ -2,6 +2,8 @@ import { Hono } from 'hono';
 import { SAVE_SCHEMA_VERSION } from '@jiuxiao/contracts';
 import type { CloudSaveService } from './services/cloud-save-service.js';
 import { mountCloudSaveRoutes, type CloudSaveRouteAuth } from './routes/saves.js';
+import { mountAuth } from './routes/auth.js';
+import type { EmailAuthService } from './services/email-auth.js';
 
 export type ReadinessDatabase = {
   query: (sql: string) => Promise<unknown>;
@@ -10,8 +12,9 @@ export type ReadinessDatabase = {
 export function createApp(database?: ReadinessDatabase, cloudSaves?: {
   service: CloudSaveService;
   auth: CloudSaveRouteAuth;
-}) {
+}, emailAuth?: { service: EmailAuthService; origin: string }) {
   const app = new Hono();
+  if (emailAuth) mountAuth(app, emailAuth.service, emailAuth.origin);
 
   app.get('/health', c => c.json({ status: 'ok', service: 'jiuxiao-api',
     saveSchemaVersion: SAVE_SCHEMA_VERSION }));

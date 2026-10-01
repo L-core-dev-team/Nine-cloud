@@ -1,6 +1,10 @@
 import { serve } from '@hono/node-server';
 import { Pool } from 'pg';
 import { createApp } from './app.js';
+import { createEmailAuthRuntime } from './services/auth-runtime.js';
+import { CloudSaveService } from './services/cloud-save-service.js';
+import { PostgresCloudSaveRepository } from './services/postgres-cloud-save-repository.js';
+import { sessionToken } from './routes/auth.js';
 
 const port = Number(process.env.API_PORT ?? 8787);
 const hostname = process.env.API_HOST || '127.0.0.1';
@@ -11,7 +15,11 @@ const databaseUrl = process.env.DATABASE_URL;
 if (!databaseUrl) throw new Error('DATABASE_URL is required');
 
 const pool = new Pool({ connectionString: databaseUrl, max: 5, connectionTimeoutMillis: 3_000 });
-const app = createApp({ query: sql => pool.query(sql) });
+const emailAuth = createEmailAuthRuntime(pool, process.env);
+const app = createApp({ query: sql => pool.query(sql) }, emailAuth ? {
+  service: new CloudSaveService(new PostgresCloudSaveRepository(pool)),
+  auth: { resolveOwnerId: async request => (await emailAuth.service.resolve(sessionToken(request)))?.ownerId || null },
+} : undefined, emailAuth);
 
 const server = serve({ fetch: app.fetch, port, hostname });
 console.log(`jiuxiao-api listening on ${hostname}:${port}`);

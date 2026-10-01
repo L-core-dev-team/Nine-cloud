@@ -29,6 +29,11 @@ services:
       API_PORT: 8787
       API_HOST: 0.0.0.0
       DATABASE_URL: postgresql://jiuxiao:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@db:5432/jiuxiao
+      AUTH_ENABLED: ${AUTH_ENABLED:-false}
+      AUTH_PUBLIC_ORIGIN: ${AUTH_PUBLIC_ORIGIN:-http://127.0.0.1:5173}
+      AUTH_SECRET: ${AUTH_SECRET:-}
+      AUTH_MAIL_FROM: ${AUTH_MAIL_FROM:-login@example.invalid}
+      SMTP_URL: ${SMTP_URL:-smtp://mail:1025}
     ports:
       - "127.0.0.1:8787:8787"
     depends_on:
