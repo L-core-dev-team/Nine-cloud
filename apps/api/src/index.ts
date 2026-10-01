@@ -6,6 +6,8 @@ import { CloudSaveService } from './services/cloud-save-service.js';
 import { PostgresCloudSaveRepository } from './services/postgres-cloud-save-repository.js';
 import { sessionToken } from './routes/auth.js';
 import { CloudArchiveLifecycle } from './services/cloud-archive-lifecycle.js';
+import { ServerTurnService } from './services/server-turn.js';
+import { createPostgresServerTurnRepository } from './services/postgres-server-turn.js';
 
 const port = Number(process.env.API_PORT ?? 8787);
 const hostname = process.env.API_HOST || '127.0.0.1';
@@ -22,7 +24,11 @@ const app = createApp({ query: sql => pool.query(sql) }, emailAuth ? {
   service: new CloudSaveService(new PostgresCloudSaveRepository(pool), true),
   archive: new CloudArchiveLifecycle(pool),
   auth: { resolveOwnerId: async request => (await emailAuth.service.resolve(sessionToken(request)))?.ownerId || null },
-} : undefined, emailAuth);
+} : undefined, emailAuth, emailAuth ? {
+  // No author rules are bundled: authenticated requests remain fail closed.
+  service: new ServerTurnService(createPostgresServerTurnRepository(pool)),
+  auth: { resolveOwnerId: async request => (await emailAuth.service.resolve(sessionToken(request)))?.ownerId || null },
+} : undefined);
 
 const server = serve({ fetch: app.fetch, port, hostname });
 console.log(`jiuxiao-api listening on ${hostname}:${port}`);

@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { mountServerTurnRoutes, type ServerTurnRouteDependencies } from './routes/turns.js';
 import { SAVE_SCHEMA_VERSION } from '@jiuxiao/contracts';
 import type { CloudSaveService } from './services/cloud-save-service.js';
 import { mountCloudSaveRoutes, type CloudSaveRouteAuth } from './routes/saves.js';
@@ -14,7 +15,7 @@ export function createApp(database?: ReadinessDatabase, cloudSaves?: {
   service: CloudSaveService;
   auth: CloudSaveRouteAuth;
   archive?: CloudArchiveLifecycle;
-}, emailAuth?: { service: EmailAuthService; origin: string }) {
+}, emailAuth?: { service: EmailAuthService; origin: string }, turns?: ServerTurnRouteDependencies) {
   const app = new Hono();
   if (emailAuth) mountAuth(app, emailAuth.service, emailAuth.origin);
 
@@ -36,6 +37,7 @@ export function createApp(database?: ReadinessDatabase, cloudSaves?: {
   // Business save routes exist only when the host supplies a verified session
   // resolver. The production entry point supplies it only when auth is enabled.
   if (cloudSaves) mountCloudSaveRoutes(app, cloudSaves);
+  if (turns) mountServerTurnRoutes(app, turns);
 
   app.notFound(c => c.json({ code: 'NOT_FOUND', message: '接口不存在。' }, 404));
   return app;

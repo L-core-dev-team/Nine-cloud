@@ -25,13 +25,13 @@ async function ownerFor(request: Request, auth: CloudSaveRouteAuth): Promise<str
 
 type JsonBodyResult = { ok: true; value: unknown } | { ok: false; status: 400 | 413 };
 
-async function readJson(request: Request): Promise<JsonBodyResult> {
+export async function readJson(request: Request, maximumBytes = MAX_REQUEST_BYTES): Promise<JsonBodyResult> {
   const lengthHeader = request.headers.get('content-length');
   if (lengthHeader !== null) {
     if (!/^\d+$/.test(lengthHeader)) return { ok: false, status: 400 };
     const contentLength = Number(lengthHeader);
     if (!Number.isSafeInteger(contentLength) || contentLength < 0) return { ok: false, status: 400 };
-    if (contentLength > MAX_REQUEST_BYTES) return { ok: false, status: 413 };
+    if (contentLength > maximumBytes) return { ok: false, status: 413 };
   }
   if (!request.body) return { ok: false, status: 400 };
   const reader = request.body.getReader();
@@ -42,7 +42,7 @@ async function readJson(request: Request): Promise<JsonBodyResult> {
       const { done, value } = await reader.read();
       if (done) break;
       byteLength += value.byteLength;
-      if (byteLength > MAX_REQUEST_BYTES) {
+      if (byteLength > maximumBytes) {
         await reader.cancel().catch(() => undefined);
         return { ok: false, status: 413 };
       }
