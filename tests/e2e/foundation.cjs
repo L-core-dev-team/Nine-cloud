@@ -220,8 +220,31 @@ async function ready(url) {
       await page.getByRole('button', { name: '上一步' }).click();
       assert.equal(await page.locator('.form input').first().inputValue(), '炼气期');
       await page.getByRole('button', { name: '下一步' }).click();
+      const beforeCreationFailure = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      await page.evaluate(() => {
+        const original = IDBDatabase.prototype.transaction;
+        window.restoreCreationDatabaseForTest = () => { IDBDatabase.prototype.transaction = original; };
+        IDBDatabase.prototype.transaction = function (stores, mode, options) {
+          if (mode === 'readwrite') throw new DOMException('synthetic creation write failure', 'QuotaExceededError');
+          return original.call(this, stores, mode, options);
+        };
+      });
       await page.getByRole('button', { name: '保存角色并进入' }).click();
+      await page.getByText(/角色草稿仍在/).waitFor();
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), beforeCreationFailure);
+      assert.equal(await page.getByRole('button', { name: '保存角色并进入' }).isEnabled(), true, 'failed creation must release its submit lock');
+      assert.ok((await page.locator('.character-summary').innerText()).includes(`测试修士-${width}`), 'failed creation must preserve edited character data');
+      await page.evaluate(() => {
+        window.restoreCreationDatabaseForTest(); delete window.restoreCreationDatabaseForTest;
+        const buttons = [...document.querySelectorAll('button')];
+        const manual = buttons.find(button => button.textContent.includes('保存角色并进入'));
+        const random = buttons.find(button => button.textContent.includes('按资料随机开局'));
+        manual.click(); manual.click(); random.click();
+      });
       await page.locator('.game-topline h1').filter({ hasText: `测试修士-${width}` }).waitFor();
+      const onceCreated = await page.evaluate(() => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves);
+      assert.equal(onceCreated.length, 1, 'rapid manual/random submissions must only create one save');
+      assert.equal(onceCreated[0].pending.source, 'CHARACTER_START', 'later clicks must not change the accepted start mode');
       assert.equal(await page.locator('h2').innerText(), `测试修士-${width}`);
       assert.match(await page.locator('body').innerText(), /\d+ 项待处理/);
       const supplementInput = page.locator('.game-tools input[type="file"]');

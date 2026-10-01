@@ -185,6 +185,8 @@ function NewCharacter({ onSaved }: { onSaved: (save: LocalSave) => Promise<boole
   const [form, setForm] = useState<Record<string, string>>(readDraft);
   const [step, setStep] = useState(0);
   const [error, setError] = useState('');
+  const submittingRef = useRef(false);
+  const [submitting, setSubmitting] = useState(false);
   useEffect(() => { if (!writeDraft(form)) setError('浏览器暂时无法保存草稿。提交前请保持页面打开。'); }, [form]);
   const set = (key: string, value: string) => setForm(previous => ({ ...previous, [key]: value }));
   const stepKeys: readonly (readonly string[])[] = [
@@ -197,13 +199,18 @@ function NewCharacter({ onSaved }: { onSaved: (save: LocalSave) => Promise<boole
   const regionArtworkId = REGION_VISUAL_IDS[selectedRegion] ?? 'world_jiuxiao';
   const regionArtwork = CANDIDATE_ILLUSTRATIONS.find(item => item.id === regionArtworkId);
   async function submit(mode: 'manual' | 'random' = 'manual') {
+    if (submittingRef.current) return;
     const talents = (form.talents || '').split('\n').map(value => value.trim()).filter(Boolean);
     if (talents.length > 3) { setError('天赋最多三项，请每行填写一项。'); return; }
+    submittingRef.current = true; setSubmitting(true); setError('');
+    try {
     const now = new Date().toISOString();
     const name = form.name?.trim() || '无名修士';
     const save: LocalSave = { schemaVersion: 1, saveId: createSaveId(), name, createdAt: now, updatedAt: now, revision: 0, canonVersion: 'pending-author-review', ruleVersion: 'rules-not-signed', memoryPolicyVersion: 'none', character: { ...form, name, talents }, location: form.region || '中州天枢域', status: 'pending_rules', messages: [], pending: { id: createSaveId(), text: mode === 'random' ? '按已录入资料生成随机角色并开始第一幕。当前尚无规则结算，因此此意图不会自行改变人物资料。' : '按已填写的角色设定，开始第一幕。', gm: false, source: mode === 'random' ? 'RANDOM_START' : 'CHARACTER_START' } };
     if (!await onSaved(save)) { setError('存档列表刚有变化，或浏览器存储不可用。角色草稿仍在；请刷新存档列表后再提交。'); return; }
     clearDraft();
+    } catch { setError('建角提交未完成。角色草稿仍在，请确认本地存储可用后重试。'); }
+    finally { submittingRef.current = false; setSubmitting(false); }
   }
   return <section className="page character-creation"><span className="eyebrow">建角 · {stepNames[step]}</span><h2>把自己写进山门。</h2>
     <p>依次记下人物、修行与去处。提交前可以回看修改；开局意图在规则未就绪时留在存档中。</p>
@@ -213,8 +220,8 @@ function NewCharacter({ onSaved }: { onSaved: (save: LocalSave) => Promise<boole
     {error && <p className="error" role="alert">{error}</p>}
     <div className="actions"><button className="secondary" onClick={() => step ? setStep(step - 1) : go('/lobby')}>{step ? '上一步' : '返回山门'}</button>
       {step < 2 ? <button className="primary" onClick={() => { setError(''); setStep(step + 1); }}>下一步</button> : <>
-        <button className="secondary" onClick={() => submit('random')}>按资料随机开局<span>保留随机开局意图</span></button>
-        <button className="primary" onClick={() => submit('manual')}>保存角色并进入<span>本地存档 · 待剧情规则接入</span></button>
+        <button className="secondary" disabled={submitting} onClick={() => submit('random')}>按资料随机开局<span>保留随机开局意图</span></button>
+        <button className="primary" disabled={submitting} onClick={() => submit('manual')}>保存角色并进入<span>本地存档 · 待剧情规则接入</span></button>
       </>}</div>
   </section>;
 }
