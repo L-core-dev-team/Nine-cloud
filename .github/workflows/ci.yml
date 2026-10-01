@@ -49,6 +49,13 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build
+      - name: Build and smoke the production API container
+        run: |
+          docker build --tag "jiuxiao-api-review:$REVIEW_SHA" --file apps/api/Dockerfile .
+          TEST_API_IMAGE="jiuxiao-api-review:$REVIEW_SHA" node tests/integration/api-image-smoke.mjs
+        env:
+          REVIEW_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jiuxiao_test
       - name: Run PostgreSQL integration tests
         run: pnpm test:integration
         env:
