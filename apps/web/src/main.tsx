@@ -450,6 +450,7 @@ function App() {
   const [legacyText, setLegacyText] = useState<string | null>(null);
   const [indexedDbReady, setIndexedDbReady] = useState(true);
   const [importPreview, setImportPreview] = useState<{ save: LocalSave; sourceName: string; expectedSaves: LocalSave[] } | null>(null);
+  const importReadRef = useRef(0);
   useLayoutEffect(() => {
     document.documentElement.dataset.theme = theme;
     try { localStorage.setItem('jx10_appearance', theme); } catch { /* Appearance remains available for this session. */ }
@@ -507,14 +508,17 @@ function App() {
     } catch { setNotice('旧 localStorage 存档无法通过校验，未写入新存储。原键和备份均保留。'); }
   }
   function importFile(file: File) {
+    const request = ++importReadRef.current;
+    setImportPreview(null);
     if (file.size > MAX_IMPORT_BYTES) { setNotice('导入失败：文件超过 20 MiB 上限，原存档未修改。'); return; }
     file.text().then(text => {
+      if (request !== importReadRef.current) return;
       downloadFileCopy(file, `九霄-导入前原文备份-${Date.now()}-${file.name}`);
       try {
         const save = parseLegacySave(file, text);
         setImportPreview({ save, sourceName: file.name, expectedSaves: saves }); setNotice(`已读取「${file.name}」。原始文件副本已下载；核对字段后再选择导入。`);
       } catch { setNotice('导入失败：文件格式或内容不符合旧档契约。原文件和已有存档未修改。'); }
-    }).catch(() => setNotice('导入失败：无法读取文件。原存档未修改。'));
+    }).catch(() => { if (request === importReadRef.current) setNotice('导入失败：无法读取文件。原存档未修改。'); });
   }
   async function commitImport(strategy: 'keep' | 'replace' | 'copy') {
     if (!importPreview) return;

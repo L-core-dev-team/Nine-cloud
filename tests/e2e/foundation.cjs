@@ -881,6 +881,45 @@ async function ready(url) {
       await page.goto(`http://127.0.0.1:${webPort}/lobby`);
       await page.getByRole('button', { name: '菜单' }).click();
       const importInput = page.locator('aside input[type="file"]');
+      const beforeImportRace = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      await page.evaluate(() => {
+        window.originalImportText = File.prototype.text;
+        File.prototype.text = function () {
+          if (this.name === 'slow-import.json') return new Promise(resolve => { window.resolveSlowImport = resolve; });
+          if (this.name === 'stale-failure.json') return new Promise((resolve, reject) => { window.rejectStaleImport = reject; });
+          if (this.name === 'unreadable-import.json') return Promise.reject(new Error('synthetic read failure'));
+          return window.originalImportText.call(this);
+        };
+      });
+      await importInput.setInputFiles({ name: 'slow-import.json', mimeType: 'application/json', buffer: Buffer.from('{}') });
+      await page.waitForFunction(() => typeof window.resolveSlowImport === 'function');
+      const latestImport = { name: 'latest-import.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ messages: [{ role: 'user', content: '最新预览正文' }] })) };
+      await page.getByRole('button', { name: '菜单' }).click();
+      await Promise.all([page.waitForEvent('download'), importInput.setInputFiles(latestImport)]);
+      await page.locator('.import-preview').getByText(/来源：latest-import.json/).waitFor();
+      await page.evaluate(async () => {
+        window.resolveSlowImport(JSON.stringify({ messages: [{ role: 'user', content: '旧预览正文' }] }));
+        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      });
+      assert.match(await page.locator('.import-preview').innerText(), /来源：latest-import.json/, 'a late old read must not replace the latest preview');
+      await page.getByRole('button', { name: '菜单' }).click();
+      await importInput.setInputFiles({ name: 'stale-failure.json', mimeType: 'application/json', buffer: Buffer.from('{}') });
+      await page.waitForFunction(() => typeof window.rejectStaleImport === 'function');
+      await page.getByRole('button', { name: '菜单' }).click();
+      await Promise.all([page.waitForEvent('download'), importInput.setInputFiles(latestImport)]);
+      await page.locator('.import-preview').getByText(/来源：latest-import.json/).waitFor();
+      await page.evaluate(async () => {
+        window.rejectStaleImport(new Error('synthetic superseded failure'));
+        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      });
+      await page.getByText(/已读取「latest-import.json」/).waitFor();
+      await page.getByRole('button', { name: '菜单' }).click();
+      await importInput.setInputFiles({ name: 'unreadable-import.json', mimeType: 'application/json', buffer: Buffer.from('{}') });
+      await page.getByText(/导入失败：无法读取文件。原存档未修改。/).waitFor();
+      assert.equal(await page.locator('.import-preview').count(), 0, 'a failed new read must clear the old actionable preview');
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), beforeImportRace, 'read races and failures must not change saved data');
+      await page.evaluate(() => { File.prototype.text = window.originalImportText; });
+      await page.getByRole('button', { name: '菜单' }).click();
       const savesBeforeBadImport = await page.evaluate(() => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves.length);
       const [badBackup] = await Promise.all([
         page.waitForEvent('download'),
