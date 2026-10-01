@@ -433,6 +433,26 @@ async function ready(url) {
       await page.reload();
       await renamedCard.waitFor();
       assert.equal(await page.locator('.save-manager-list .card').count(), 2, 'cancelled deletion must survive refresh');
+      const managerConcurrentPage = await context.newPage();
+      await managerConcurrentPage.goto(`http://127.0.0.1:${webPort}/game/${exportedBranch.save.saveId}`);
+      for (const operation of ['改名', '删除']) {
+        await renamedCard.getByRole('button', { name: operation, exact: true }).click();
+        if (operation === '改名') await renamedCard.getByRole('textbox', { name: '新名称' }).fill('不得覆盖新进度的名称');
+        else await renamedCard.getByRole('textbox', { name: '确认名称' }).fill(`旁支修士-${width}`);
+        const beforeManagerConflict = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+        await managerConcurrentPage.locator('#player-intent').fill(`确认${operation}期间新增进度`);
+        await managerConcurrentPage.getByRole('button', { name: '收入待处理' }).click();
+        await page.waitForFunction(previous => localStorage.getItem('jiuxiao_1_local_saves_v2') !== previous, beforeManagerConflict);
+        await page.getByText('检测到另一个标签页修改了存档。已从本地数据库重新读取；同一存档再次提交前仍会核对版本。').waitFor();
+        const newerManagerSnapshot = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+        const newerManagedSave = JSON.parse(newerManagerSnapshot).saves.find(save => save.saveId === exportedBranch.save.saveId);
+        await renamedCard.getByText(new RegExp(`存档版本 ${newerManagedSave.revision}$`)).waitFor();
+        await renamedCard.getByRole('button', { name: operation === '改名' ? '保存名称' : '确认删除', exact: true }).click();
+        await page.getByText(operation === '改名' ? '改名未写入。请检查存储状态或重新载入列表。' : '删除未完成。请检查另一标签页的改动后重试。').waitFor();
+        assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), newerManagerSnapshot, 'stale management confirmation must preserve the whole latest library');
+        await renamedCard.getByRole('button', { name: '取消', exact: true }).click();
+      }
+      await managerConcurrentPage.close();
       await renamedCard.getByRole('button', { name: '删除' }).click();
       assert.equal(await renamedCard.getByRole('button', { name: '确认删除' }).isDisabled(), true);
       await renamedCard.getByRole('textbox', { name: '确认名称' }).fill(`旁支修士-${width}`);

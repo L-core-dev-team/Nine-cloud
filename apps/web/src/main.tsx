@@ -148,6 +148,7 @@ function SaveManager({ saves, onRename, onDelete, onExport }: {
   const [name, setName] = useState('');
   const [confirmation, setConfirmation] = useState('');
   const [feedback, setFeedback] = useState('');
+  const reviewedSaveRef = useRef<LocalSave | null>(null);
   return <section className="page save-manager"><span className="eyebrow">本地档案</span><h2>存档管理</h2>
     <p>改名只调整列表称呼。删除前请导出副本；其他标签页若改过同一存档，删除会被拒绝。</p>
     {!saves.length && <p>目前没有本地存档。</p>}
@@ -155,10 +156,10 @@ function SaveManager({ saves, onRename, onDelete, onExport }: {
       <div><h3>{save.name}</h3><p>{save.location} · 存档版本 {save.revision}</p></div>
       <div className="actions"><button className="secondary" onClick={() => go(`/game/${save.saveId}`)}>打开</button>
         <button className="secondary" onClick={() => onExport(save)}>导出</button>
-        <button className="secondary" onClick={() => { setEditingId(save.saveId); setDeletingId(null); setName(save.name); setFeedback(''); }}>改名</button>
-        <button className="quiet-action" onClick={() => { setDeletingId(save.saveId); setEditingId(null); setConfirmation(''); setFeedback(''); }}>删除</button></div>
+        <button className="secondary" onClick={() => { reviewedSaveRef.current = save; setEditingId(save.saveId); setDeletingId(null); setName(save.name); setFeedback(''); }}>改名</button>
+        <button className="quiet-action" onClick={() => { reviewedSaveRef.current = save; setDeletingId(save.saveId); setEditingId(null); setConfirmation(''); setFeedback(''); }}>删除</button></div>
       {editingId === save.saveId && <form className="save-manager-form" onSubmit={event => {
-        event.preventDefault(); void onRename(save, name).then(ok => {
+        event.preventDefault(); void onRename(reviewedSaveRef.current || save, name).then(ok => {
           if (ok) { setEditingId(null); setFeedback('存档名称已更新。'); }
           else setFeedback('改名未写入。请检查存储状态或重新载入列表。');
         });
@@ -169,7 +170,7 @@ function SaveManager({ saves, onRename, onDelete, onExport }: {
         <p>此操作会移除本机这份存档。请先导出，并输入完整名称确认。</p>
         <label>确认名称<input value={confirmation} onChange={event => setConfirmation(event.target.value)} /></label>
         <button className="primary" disabled={confirmation !== save.name} onClick={() => {
-          void onDelete(save).then(ok => {
+          void onDelete(reviewedSaveRef.current || save).then(ok => {
             if (ok) { setDeletingId(null); setFeedback('本地存档已删除。'); }
             else setFeedback('删除未完成。请检查另一标签页的改动后重试。');
           });
@@ -563,6 +564,7 @@ function App() {
     onRename={async (save, name) => {
       const trimmed = name.trim();
       if (!trimmed || trimmed.length > 40) return false;
+      if (JSON.stringify(saves.find(item => item.saveId === save.saveId)) !== JSON.stringify(save)) return false;
       const next = saves.map(item => item.saveId === save.saveId ? { ...item, name: trimmed, updatedAt: new Date().toISOString() } : item);
       const result = await commitSaves(saves, next);
       setSaves(result.saves);
@@ -570,6 +572,7 @@ function App() {
       return result.ok;
     }}
     onDelete={async save => {
+      if (JSON.stringify(saves.find(item => item.saveId === save.saveId)) !== JSON.stringify(save)) return false;
       const result = await commitSaves(saves, saves.filter(item => item.saveId !== save.saveId));
       setSaves(result.saves);
       if (result.ok) {
