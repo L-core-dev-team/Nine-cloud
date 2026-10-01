@@ -74,6 +74,18 @@ type NormalizedCommit = Omit<AcceptedTurnCommitInput, 'ownerId' | 'receipt' | 's
 export class PostgresNpcMemoryTurnRepository {
   constructor(private readonly database: Database) {}
 
+  async getReceiptForOwner(ownerId: string, saveId: string, requestId: string): Promise<TurnReceipt | null> {
+    const owner = normalizeOwnerId(ownerId);
+    if (!isValidId(saveId) || !/^[0-9a-f-]{36}$/i.test(requestId)) throw new TypeError('Invalid turn identity');
+    const result = await this.database.query<ReceiptRow>(
+      'SELECT r.result FROM turn_requests r JOIN game_saves s ON s.id = r.save_id ' +
+      'WHERE r.save_id = $1 AND s.owner_id = $2 AND r.idempotency_key = $3 ' +
+      'AND NOT EXISTS (SELECT 1 FROM cloud_archive_trash t WHERE t.save_id = s.id) LIMIT 1',
+      [saveId, owner, requestId],
+    );
+    if (!result.rows[0]) return null;
+    return TurnReceiptSchema.parse(result.rows[0].result);
+  }
   async getForOwner(ownerId: string, saveId: string): Promise<NpcMemoryJournal | null> {
     const owner = normalizeOwnerId(ownerId);
     if (!isValidId(saveId)) throw new TypeError('Save ID is invalid.');
