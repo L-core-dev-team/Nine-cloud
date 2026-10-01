@@ -442,7 +442,7 @@ function App() {
   }
   const [legacyText, setLegacyText] = useState<string | null>(null);
   const [indexedDbReady, setIndexedDbReady] = useState(true);
-  const [importPreview, setImportPreview] = useState<{ save: LocalSave; sourceName: string } | null>(null);
+  const [importPreview, setImportPreview] = useState<{ save: LocalSave; sourceName: string; expectedSaves: LocalSave[] } | null>(null);
   useLayoutEffect(() => {
     document.documentElement.dataset.theme = theme;
     try { localStorage.setItem('jx10_appearance', theme); } catch { /* Appearance remains available for this session. */ }
@@ -505,7 +505,7 @@ function App() {
       downloadFileCopy(file, `九霄-导入前原文备份-${Date.now()}-${file.name}`);
       try {
         const save = parseLegacySave(file, text);
-        setImportPreview({ save, sourceName: file.name }); setNotice(`已读取「${file.name}」。原始文件副本已下载；核对字段后再选择导入。`);
+        setImportPreview({ save, sourceName: file.name, expectedSaves: saves }); setNotice(`已读取「${file.name}」。原始文件副本已下载；核对字段后再选择导入。`);
       } catch { setNotice('导入失败：文件格式或内容不符合旧档契约。原文件和已有存档未修改。'); }
     }).catch(() => setNotice('导入失败：无法读取文件。原存档未修改。'));
   }
@@ -516,7 +516,10 @@ function App() {
     if (collision && strategy === 'keep') { setNotice('此档 ID 已存在。请选择“替换现有存档”或“另存副本”。'); return; }
     const candidate = strategy === 'copy' ? { ...importPreview.save, saveId: createSaveId(), name: `${importPreview.save.name}（副本）`, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() } : importPreview.save;
     const next = collision && strategy === 'replace' ? current.map(item => item.saveId === candidate.saveId ? candidate : item) : [candidate, ...current];
-    const result = await commitSaves(saves, next);
+    // Replacing requires the version reviewed by the user, even after another
+    // tab's storage event has refreshed the visible save list.
+    const expected = strategy === 'replace' ? importPreview.expectedSaves : current;
+    const result = await commitSaves(expected, next);
     if (!result.ok) { setSaves(result.saves); setNotice(result.reason === 'conflict' ? '存档列表刚有变化，导入未覆盖任何内容。请核对最新列表后再选“另存副本”或重试。' : '浏览器数据库不可写，存档尚未导入。已下载的原始备份仍可使用。'); return; }
     setSaves(result.saves); setImportPreview(null); setNotice(commitSuccessMessage(result, `已导入「${candidate.name}」。原始旧档字段保存在历史资料区。`)); go(`/game/${candidate.saveId}`);
   }

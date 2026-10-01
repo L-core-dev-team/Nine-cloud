@@ -959,6 +959,45 @@ async function ready(url) {
       assert.equal(sanitizedExport.save.legacyArchive.payload.world.key, '旧钥匙', 'non-credential game fields must survive export');
       assert.equal(sanitizedExport.save.legacyArchive.payload.memory, '曾与守门弟子交谈');
       await importedCard.getByRole('button', { name: '打开' }).click();
+      const collisionJson = JSON.stringify(sanitizedExport);
+      const collisionSnapshotBefore = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      await page.getByRole('button', { name: '菜单' }).click();
+      await Promise.all([
+        page.waitForEvent('download'),
+        importInput.setInputFiles({ name: 'same-id-import.json', mimeType: 'application/json', buffer: Buffer.from(collisionJson) }),
+      ]);
+      await page.locator('.import-preview').getByRole('button', { name: '导入此档', exact: true }).click();
+      await page.getByText('此档 ID 已存在。请选择“替换现有存档”或“另存副本”。').waitFor();
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), collisionSnapshotBefore, 'same-ID keep import must not silently replace');
+      const importConcurrentPage = await context.newPage();
+      await importConcurrentPage.goto(page.url());
+      await importConcurrentPage.locator('#player-intent').fill('导入预览后另一个标签保存的新进度');
+      await importConcurrentPage.getByRole('button', { name: '收入待处理' }).click();
+      await importConcurrentPage.getByText(/行动已加入本地待处理队列/).waitFor();
+      await page.getByText('检测到另一个标签页修改了存档。已从本地数据库重新读取；同一存档再次提交前仍会核对版本。').waitFor();
+      const collisionSnapshotNewer = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      assert.notEqual(collisionSnapshotNewer, collisionSnapshotBefore);
+      await page.locator('.import-preview').getByRole('button', { name: '替换现有存档' }).click();
+      await page.getByText('存档列表刚有变化，导入未覆盖任何内容。请核对最新列表后再选“另存副本”或重试。').waitFor();
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), collisionSnapshotNewer, 'stale reviewed replacement must not overwrite new progress after a storage refresh');
+      await page.locator('.import-preview').getByRole('button', { name: '另存为副本' }).click();
+      await page.waitForFunction(name => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2') || 'null')?.saves?.some(save => save.name === name), `${sanitizedExport.save.name}（副本）`);
+      const recoveredCollisionSaves = await page.evaluate(() => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves);
+      const expectedLatest = JSON.parse(collisionSnapshotNewer).saves.find(save => save.saveId === sanitizedExport.save.saveId);
+      assert.deepEqual(recoveredCollisionSaves.find(save => save.saveId === expectedLatest.saveId), expectedLatest, 'copy recovery must preserve the entire latest original');
+      const collisionCopy = recoveredCollisionSaves.find(save => save.name === `${sanitizedExport.save.name}（副本）`);
+      assert.ok(collisionCopy && collisionCopy.saveId !== expectedLatest.saveId);
+      await importConcurrentPage.close();
+      await page.getByRole('button', { name: '菜单' }).click();
+      await Promise.all([
+        page.waitForEvent('download'),
+        importInput.setInputFiles({ name: 'freshly-reviewed-replacement.json', mimeType: 'application/json', buffer: Buffer.from(collisionJson) }),
+      ]);
+      await page.locator('.import-preview').getByRole('button', { name: '替换现有存档' }).click();
+      await page.waitForFunction(id => location.pathname === `/game/${id}` && !document.querySelector('.import-preview'), sanitizedExport.save.saveId);
+      const deliberatelyReplaced = await page.evaluate(id => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves.find(save => save.saveId === id), sanitizedExport.save.saveId);
+      assert.deepEqual(deliberatelyReplaced.pendingQueue, sanitizedExport.save.pendingQueue, 'a newly reviewed explicit replacement must still be allowed');
+      assert.deepEqual(deliberatelyReplaced.messages, sanitizedExport.save.messages);
       const privateSavePath = process.env.JIUXIAO_PRIVATE_LEGACY_SAVE;
       if (width === 390 && privateSavePath) {
         const sourceBytes = readFileSync(privateSavePath);
