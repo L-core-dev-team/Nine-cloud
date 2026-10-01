@@ -100,4 +100,15 @@ describe('server turn orchestration (synthetic rules, never production gameplay)
     expect(await new ServerTurnService(f.repository, denied, narrate).execute('owner', f.intent, true)).toMatchObject({ status: 'decision', receipt: { decision: { status: 'rejected' } } });
     expect(f.repository.commitAcceptedTurn).not.toHaveBeenCalled(); expect(narrate).not.toHaveBeenCalled();
   });
+  it('cancels only narration, preserving the committed receipt and aborting the provider', async () => {
+    const f = fixture(); const cancel = new AbortController(); let providerSignal: AbortSignal | undefined;
+    let entered!: () => void; const started = new Promise<void>(resolve => { entered = resolve; });
+    const service = new ServerTurnService(f.repository, f.rules, async (_, signal) => { providerSignal = signal; entered(); return new Promise(() => {}); });
+    const result = service.execute('owner', f.intent, true, cancel.signal);
+    await started; cancel.abort();
+    expect(await result).toMatchObject({ status: 'accepted', narrative: { status: 'failed', code: 'NARRATIVE_CANCELLED' } });
+    expect(providerSignal?.aborted).toBe(true); expect(f.snapshot().save.revision).toBe(1);
+    expect(await service.execute('owner', f.intent)).toMatchObject({ status: 'accepted', duplicate: true, narrative: { status: 'not_requested' } });
+    expect(f.decide).toHaveBeenCalledTimes(1);
+  });
 });

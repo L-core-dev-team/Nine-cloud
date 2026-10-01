@@ -22,7 +22,7 @@ export function mountServerTurnRoutes(app: Hono, { service, auth }: ServerTurnRo
     const intent = ActionIntentSchema.safeParse(value.intent);
     if (!intent.success) return c.json({ code: 'INVALID_TURN' }, 400);
     try {
-      const result = await service.execute(owner, intent.data, value.requestNarrative === true);
+      const result = await service.execute(owner, intent.data, value.requestNarrative === true, c.req.raw.signal);
       switch (result.status) {
         case 'not_found': return c.json({ code: 'NOT_FOUND' }, 404);
         case 'client_archive': return c.json({ code: 'CLIENT_ARCHIVE_NOT_AUTHORITATIVE' }, 400);

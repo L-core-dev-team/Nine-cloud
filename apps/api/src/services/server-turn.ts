@@ -27,7 +27,7 @@ export interface ServerTurnRepository {
 export type NarrativeResult =
   | { status: 'not_requested' }
   | { status: 'received'; text: string }
-  | { status: 'failed'; code: 'NARRATIVE_UNAVAILABLE' | 'NARRATIVE_TIMEOUT' };
+  | { status: 'failed'; code: 'NARRATIVE_UNAVAILABLE' | 'NARRATIVE_TIMEOUT' | 'NARRATIVE_CANCELLED' };
 export type ServerTurnResult =
   | { status: 'not_found' | 'client_archive' | 'rules_not_ready' | 'version_mismatch' | 'idempotency_conflict' }
   | { status: 'revision_conflict'; currentRevision: number }
@@ -48,7 +48,7 @@ export class ServerTurnService {
     }
   }
 
-  async execute(ownerId: string, raw: unknown, requestNarrative = false): Promise<ServerTurnResult> {
+  async execute(ownerId: string, raw: unknown, requestNarrative = false, cancellation?: AbortSignal): Promise<ServerTurnResult> {
     if (!ownerId.trim() || ownerId.length > 200) throw new TypeError('Authenticated owner is required');
     const intent = ActionIntentSchema.parse(raw);
     const current = await this.repository.loadSave(ownerId, intent.saveId);
@@ -67,7 +67,7 @@ export class ServerTurnService {
     if (prepared.status === 'revision-conflict') return { status: 'revision_conflict', currentRevision: prepared.actualRevision };
     if (prepared.status === 'idempotency-conflict') return { status: 'idempotency_conflict' };
     if (prepared.status === 'recorded') return { status: 'decision', receipt: prepared.receipt };
-    if (prepared.status === 'duplicate') return this.completed(prepared.receipt, true, requestNarrative);
+    if (prepared.status === 'duplicate') return this.completed(prepared.receipt, true, requestNarrative, cancellation);
 
     const journal = await this.repository.getForOwner(ownerId, save.saveId);
     if (!journal) return { status: 'not_found' };
@@ -78,7 +78,7 @@ export class ServerTurnService {
       if (winner) {
         const retry = await prepareTurn({ intent, save, priorReceipt: winner,
           decide: rules.decide.bind(rules), reduce: rules.reduce });
-        if (retry.status === 'duplicate') return this.completed(retry.receipt, true, requestNarrative);
+        if (retry.status === 'duplicate') return this.completed(retry.receipt, true, requestNarrative, cancellation);
         if (retry.status === 'idempotency-conflict') return { status: 'idempotency_conflict' };
       }
       return { status: 'revision_conflict', currentRevision: journal.revision };
@@ -97,28 +97,34 @@ export class ServerTurnService {
     if (committed.kind === 'conflict' || committed.kind === 'memory_conflict') {
       return { status: 'revision_conflict', currentRevision: committed.currentRevision };
     }
-    return this.completed(committed.receipt, committed.kind === 'duplicate', requestNarrative);
+    return this.completed(committed.receipt, committed.kind === 'duplicate', requestNarrative, cancellation);
   }
 
-  private async completed(raw: TurnReceipt, duplicate: boolean, requestNarrative: boolean): Promise<ServerTurnResult> {
+  private async completed(raw: TurnReceipt, duplicate: boolean, requestNarrative: boolean, cancellation?: AbortSignal): Promise<ServerTurnResult> {
     const receipt = TurnReceiptSchema.parse(raw);
     if (receipt.decision.status !== 'accepted') return { status: 'decision', receipt };
     let narrative: NarrativeResult = { status: 'not_requested' };
     if (requestNarrative) {
-      if (!this.narrator) narrative = { status: 'failed', code: 'NARRATIVE_UNAVAILABLE' };
+      if (cancellation?.aborted) narrative = { status: 'failed', code: 'NARRATIVE_CANCELLED' };
+      else if (!this.narrator) narrative = { status: 'failed', code: 'NARRATIVE_UNAVAILABLE' };
       else {
-        const abort = new AbortController(); let timer: ReturnType<typeof setTimeout> | undefined;
+        const abort = new AbortController(); let userCancelled = false; let cancelListener: (() => void) | undefined; let timer: ReturnType<typeof setTimeout> | undefined;
         try {
           const deadline = new Promise<never>((_, reject) => {
             timer = setTimeout(() => { abort.abort(); reject(new Error('timeout')); }, this.narrativeTimeoutMs);
           });
+          const cancelled = new Promise<never>((_, reject) => {
+            cancelListener = () => { userCancelled = true; abort.abort(); reject(new Error('cancelled')); };
+            cancellation?.addEventListener('abort', cancelListener, { once: true });
+            if (cancellation?.aborted) cancelListener();
+          });
           // Never hand mutable state, memory or the persisted receipt to a model adapter.
-          const text = await Promise.race([Promise.resolve().then(() => this.narrator!(structuredClone(receipt), abort.signal)), deadline]);
+          const text = await Promise.race([Promise.resolve().then(() => { if (abort.signal.aborted) throw new Error('cancelled'); return this.narrator!(structuredClone(receipt), abort.signal); }), deadline, cancelled]);
           if (typeof text !== 'string' || !text.trim() || text.length > 100_000) throw new Error('Invalid narrative');
           narrative = { status: 'received', text };
         } catch {
-          narrative = { status: 'failed', code: abort.signal.aborted ? 'NARRATIVE_TIMEOUT' : 'NARRATIVE_UNAVAILABLE' };
-        } finally { if (timer) clearTimeout(timer); }
+          narrative = { status: 'failed', code: userCancelled ? 'NARRATIVE_CANCELLED' : abort.signal.aborted ? 'NARRATIVE_TIMEOUT' : 'NARRATIVE_UNAVAILABLE' };
+        } finally { if (timer) clearTimeout(timer); if (cancelListener) cancellation?.removeEventListener('abort', cancelListener); }
       }
     }
     return { status: 'accepted', duplicate, receipt, narrative };
