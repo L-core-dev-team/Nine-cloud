@@ -28,6 +28,7 @@ async function login(page, email) {
   assert.ok(code, 'Test SMTP delivery must reach the isolated inbox');
   await page.getByLabel('验证码', { exact: true }).fill(code); await page.getByRole('button', { name: '登录', exact: true }).click();
   await page.getByText('已登录。', { exact: true }).waitFor();
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), await page.evaluate(() => document.documentElement.clientWidth), 'Cloud mobile page must not overflow horizontally');
 }
 (async () => {
   await ready(`${mailApi}/api/v1/info`);

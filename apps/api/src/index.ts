@@ -16,6 +16,7 @@ const databaseUrl = process.env.DATABASE_URL;
 if (!databaseUrl) throw new Error('DATABASE_URL is required');
 
 const pool = new Pool({ connectionString: databaseUrl, max: 5, connectionTimeoutMillis: 3_000 });
+pool.on('error', () => { console.error('Database connection unavailable.'); });
 const emailAuth = createEmailAuthRuntime(pool, process.env);
 const app = createApp({ query: sql => pool.query(sql) }, emailAuth ? {
   service: new CloudSaveService(new PostgresCloudSaveRepository(pool), true),
@@ -29,8 +30,8 @@ for (const signal of ['SIGINT', 'SIGTERM'] as const) {
   process.on(signal, () => server.close(() => {
     void pool.end().then(
       () => process.exit(0),
-      error => {
-        console.error('Failed to close the database pool cleanly.', error);
+      () => {
+        console.error('Failed to close the database pool cleanly.');
         process.exit(1);
       },
     );

@@ -41,7 +41,7 @@ export function CloudSettings({ saves, onRestore }: { saves: LocalSave[]; onRest
       if (account) { try { setQueue(await sync.list(account.id)); } catch { /* Keep visible previous queue. */ } }
     } finally { busyRef.current = false; setBusy(false); }
   };
-  return <section className="card" aria-busy={busy}><span className="eyebrow">账号与云端备份</span><h1>云档</h1><p role="status">{notice}</p>
+  return <section className="card cloud-page" aria-busy={busy}><span className="eyebrow">账号与云端备份</span><h1>云档</h1><p role="status">{notice}</p>
     {!account ? <><label>邮箱<input type="email" autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} /></label>
       <button disabled={busy} onClick={() => void act(async () => { await cloudRequest('/api/auth/code', 'POST', { email }); return '验证码已发送，10 分钟内有效。'; })}>发送验证码</button>
       <label>验证码<input inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={e => setCode(e.target.value)} /></label>
