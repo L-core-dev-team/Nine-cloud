@@ -651,10 +651,16 @@ async function ready(url) {
           await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({
             choices: [{ message: { content: '通路已通' } }], usage: { prompt_tokens: 9, completion_tokens: 3 },
           }) });
-        } else {
+        } else if (probeCount === 2) {
           await route.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({
             error: { message: 'synthetic provider error contains test-secret-not-persisted' },
           }) });
+        } else if (probeCount === 3) {
+          await route.abort('failed');
+        } else if (probeCount === 4) {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: '{invalid-json' });
+        } else {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ choices: [{ message: { content: '通路已通' } }] }) });
         }
       });
       await page.locator('.test-permission input').check();
@@ -674,6 +680,50 @@ async function ready(url) {
       assert.equal(testLogs.at(-1).status, 401);
       assert.equal(testLogs.at(-1).errorCode, 'HTTP_401');
       assert.equal(JSON.stringify(testLogs).includes('test-secret-not-persisted'), false, 'HTTP error bodies must not enter persisted diagnostics');
+      for (const expectedCount of [3, 4]) {
+        const priorLogCount = testLogs.length;
+        await storyTestButton.click();
+        await page.waitForFunction(previous => JSON.parse(sessionStorage.getItem('jx10_ai_call_log_v1') || '[]').length === previous + 1, priorLogCount);
+        testLogs = await page.evaluate(() => JSON.parse(sessionStorage.getItem('jx10_ai_call_log_v1') || '[]'));
+        assert.equal(testLogs.at(-1).outcome, 'failure');
+        assert.equal(testLogs.at(-1).errorCode, 'NETWORK_OR_FORMAT');
+        assert.equal(await storyTestButton.isEnabled(), true, 'network and format failures must release the test button');
+        assert.equal(probeCount, expectedCount, 'a failed probe must not automatically retry');
+      }
+      await storyPanel.getByRole('spinbutton', { name: '超时（秒）' }).fill('5');
+      await page.evaluate(() => {
+        window.originalTimeoutProbeFetch = window.fetch;
+        window.timeoutProbeCount = 0;
+        window.fetch = (input, init) => {
+          if (String(input) === 'https://api.deepseek.com/v1/chat/completions') {
+            window.timeoutProbeCount++;
+            return new Promise((resolve, reject) => {
+              init.signal.addEventListener('abort', () => {
+                window.timeoutProbeAborted = true;
+                reject(new DOMException('Synthetic aborted probe', 'AbortError'));
+              }, { once: true });
+            });
+          }
+          return window.originalTimeoutProbeFetch(input, init);
+        };
+      });
+      const logsBeforeTimeout = testLogs.length;
+      await storyTestButton.click();
+      await page.getByText('超过 5 秒，连接已中止。可核对超时与服务商状态后重试。').waitFor();
+      testLogs = await page.evaluate(() => JSON.parse(sessionStorage.getItem('jx10_ai_call_log_v1') || '[]'));
+      assert.equal(testLogs.length, logsBeforeTimeout + 1, 'timeout records exactly one failure');
+      assert.equal(testLogs.at(-1).errorCode, 'TIMEOUT');
+      assert.equal(testLogs.at(-1).outcome, 'failure');
+      assert.equal(await page.evaluate(() => window.timeoutProbeAborted), true, 'timeout must actually abort the signal');
+      assert.equal(await page.evaluate(() => window.timeoutProbeCount), 1, 'timeout must not auto-retry');
+      assert.equal(await storyTestButton.isEnabled(), true);
+      assert.equal(JSON.stringify(testLogs).includes('test-secret-not-persisted'), false);
+      await page.evaluate(() => { window.fetch = window.originalTimeoutProbeFetch; });
+      await storyTestButton.click();
+      await page.getByText(/连接成功，.*测试回复：通路已通/).waitFor();
+      testLogs = await page.evaluate(() => JSON.parse(sessionStorage.getItem('jx10_ai_call_log_v1') || '[]'));
+      assert.equal(testLogs.at(-1).outcome, 'success', 'explicit retry after timeout may succeed');
+      assert.equal(probeCount, 5);
       await page.getByRole('button', { name: '调用记录' }).click();
       const connectionLogText = await page.locator('.call-log-dialog-body').innerText();
       assert.ok(connectionLogText.includes('deepseek-flash'));
