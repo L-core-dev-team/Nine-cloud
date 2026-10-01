@@ -281,6 +281,20 @@ async function ready(url) {
       assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_character_draft')), null, 'only successful creation clears the draft');
       assert.equal(await page.locator('h2').innerText(), `测试修士-${width}`);
       assert.match(await page.locator('body').innerText(), /\d+ 项待处理/);
+      const beforeMissingLink = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      for (const invalidId of ['missing-save-link', 'missing-save-%E4%B8%AD%E6%96%87']) {
+        await page.goto(`http://127.0.0.1:${webPort}/game/${invalidId}`);
+        await page.waitForFunction(() => document.documentElement.dataset.jxStorageHydrated === 'true');
+        await page.getByRole('heading', { name: '找不到这份存档' }).waitFor();
+        assert.equal(await page.locator('#player-intent').count(), 0, 'missing save links must not expose an actionable game');
+        await page.reload();
+        await page.getByRole('heading', { name: '找不到这份存档' }).waitFor();
+        await page.getByRole('button', { name: '回到首页', exact: true }).click();
+        await page.getByRole('button', { name: '进入世界', exact: true }).waitFor();
+        assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), beforeMissingLink, 'invalid link navigation and refresh must not create or modify saves');
+      }
+      await page.goto(`http://127.0.0.1:${webPort}/game/${onceCreated[0].saveId}`);
+      await page.locator('.game-topline h1').filter({ hasText: `测试修士-${width}` }).waitFor();
       const supplementInput = page.locator('.game-tools input[type="file"]');
       const supplementBytes = Buffer.from('旅途札记：在山门外遇见一位采药人。\n<script>不应作为网页执行</script>');
       await supplementInput.setInputFiles({ name: '旅途札记.txt', mimeType: 'text/plain', buffer: supplementBytes });
@@ -467,6 +481,29 @@ async function ready(url) {
       await page.reload();
       await renamedCard.waitFor();
       assert.equal(await page.locator('.save-manager-list .card').count(), 2, 'cancelled deletion must survive refresh');
+      const beforeManagerFailure = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      await page.evaluate(() => {
+        const original = IDBDatabase.prototype.transaction;
+        window.restoreManagerDatabase = () => { IDBDatabase.prototype.transaction = original; };
+        IDBDatabase.prototype.transaction = function (stores, mode, options) {
+          if (mode === 'readwrite') throw new DOMException('synthetic management write failure', 'QuotaExceededError');
+          return original.call(this, stores, mode, options);
+        };
+      });
+      for (const operation of ['改名', '删除']) {
+        await renamedCard.getByRole('button', { name: operation, exact: true }).click();
+        if (operation === '改名') await renamedCard.getByRole('textbox', { name: '新名称' }).fill('不得提交的失败改名');
+        else await renamedCard.getByRole('textbox', { name: '确认名称' }).fill(`旁支修士-${width}`);
+        await renamedCard.getByRole('button', { name: operation === '改名' ? '保存名称' : '确认删除', exact: true }).click();
+        await page.getByText(operation === '改名' ? '改名未写入。请检查存储状态或重新载入列表。' : '删除未完成。请检查另一标签页的改动后重试。').waitFor();
+        assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), beforeManagerFailure, 'failed save management must not change the compatibility mirror');
+        assert.equal(await page.locator('.save-manager-list .card').count(), 2, 'failed deletion must retain both visible saves');
+        await renamedCard.getByRole('button', { name: '取消', exact: true }).click();
+      }
+      await page.evaluate(() => { window.restoreManagerDatabase(); });
+      await page.reload();
+      await page.waitForFunction(() => document.documentElement.dataset.jxStorageHydrated === 'true');
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), beforeManagerFailure, 'failed management must preserve authoritative data after hydration');
       const managerConcurrentPage = await context.newPage();
       await managerConcurrentPage.goto(`http://127.0.0.1:${webPort}/game/${exportedBranch.save.saveId}`);
       for (const operation of ['改名', '删除']) {
@@ -1056,6 +1093,32 @@ async function ready(url) {
         assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves.length), savesBeforeBadImport, 'an oversized import must not alter existing saves');
         assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), boundarySnapshot, 'over-limit rejection must preserve the complete saved library');
       }
+      const beforeInvalidImports = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      const invalidImports = [
+        ['empty.json', ''], ['object.json', '{}'], ['null.json', 'null'], ['array.json', '[]'], ['scalar.json', '42'],
+        ['messages-type.json', '{"messages":"not-an-array"}'], ['negative-turn.json', '{"turn":-1}'],
+        ['fractional-turn.json', '{"turn":1.5}'], ['revision-type.json', '{"revision":"1"}'],
+        ['player-type.json', '{"player":[]}'], ['world-type.json', '{"world":"not-an-object"}'],
+        ['unrecognized.json', '{"unknown":"not-a-save"}'],
+        ['bad-envelope.json', '{"format":"JIUXIAO_SAVE","version":0,"save":{"messages":[]}}'],
+        ['blank.txt', '   \n'], ['script-only.html', '<script>window.importScriptExecuted=true</script><style>body{display:none}</style>'],
+      ];
+      for (const [name, text] of invalidImports) {
+        const bytes = Buffer.from(text);
+        await page.getByRole('button', { name: '菜单' }).click();
+        const [invalidBackup] = await Promise.all([
+          page.waitForEvent('download'),
+          importInput.setInputFiles({ name, mimeType: name.endsWith('.json') ? 'application/json' : 'text/plain', buffer: bytes }),
+        ]);
+        await page.getByText(/导入失败：文件格式或内容不符合旧档契约/).waitFor();
+        assert.deepEqual(readFileSync(await invalidBackup.path()), bytes, `rejected ${name} must retain its exact original backup`);
+        assert.equal(await page.locator('.import-preview').count(), 0, `rejected ${name} must not enter preview`);
+        assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), beforeInvalidImports, `rejected ${name} must preserve the complete save library`);
+      }
+      assert.equal(await page.evaluate(() => window.importScriptExecuted), undefined, 'HTML import must not execute scripts');
+      await page.reload();
+      await page.waitForFunction(() => document.documentElement.dataset.jxStorageHydrated === 'true');
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), beforeInvalidImports, 'rejected imports must preserve authoritative saves after refresh');
       const legacyJson = JSON.stringify({
         messages: [{ role: 'user', content: '旧档正文' }],
         status: '姓名：迁移修士',
