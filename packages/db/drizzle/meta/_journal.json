@@ -29,6 +29,13 @@
       "when": 1790824121091,
       "tag": "0003_s6_email_auth",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790845235945,
+      "tag": "0004_s6_archive_trash",
+      "breakpoints": true
     }
   ]
 }

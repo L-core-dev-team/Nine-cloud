@@ -564,7 +564,7 @@ function App() {
   }} /> : currentRoute === '/intro' ? <Introduction onStart={() => go('/new')} onWorld={() => go('/world')} /> : currentRoute === '/world' ? <World onClose={returnFromReading} save={activeSave} onImportSupplement={importSupplement} /> : currentRoute === '/settings/ai' ? <AiSettings onClose={returnFromReading} /> : currentRoute === '/settings/cloud' ? <CloudSettings saves={saves} onRestore={async archive => {
     const copied = { ...archive, saveId: createSaveId(), name: `${archive.name}（云端副本）`, updatedAt: new Date().toISOString() };
     const expected = readSaves(); const result = await commitSaves(expected, [copied, ...expected]);
-    setSaves(result.saves); if (result.ok) setNotice(commitSuccessMessage(result, '云端档已恢复为新副本。')); return result.ok;
+    setSaves(result.saves); if (result.ok) setNotice(commitSuccessMessage(result, '云端档已恢复为新副本。')); return result.ok ? copied : null;
   }} /> : currentRoute === '/settings/graphics' ? <GraphicsSettingsPage settings={graphicsSettings} onChange={updateGraphicsSettings} renderer={rendererStatus} ambientAudioActive={ambientAudioActive} onToggleAmbientAudio={() => { void toggleAmbientAudio(); }} onPreviewScene={onScenePreview} /> : currentRoute === '/lobby' ? <WorldHub saves={saves} /> : currentRoute === '/saves' ? <SaveManager saves={saves} onExport={exportFile}
     onRename={async (save, name) => {
       const trimmed = name.trim();

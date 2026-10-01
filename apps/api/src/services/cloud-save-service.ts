@@ -44,7 +44,7 @@ function parseSave(value: unknown): SaveEnvelope {
  * server-side session, never from a request body or query string.
  */
 export class CloudSaveService {
-  constructor(private readonly repository: CloudSaveRepository) {}
+  constructor(private readonly repository: CloudSaveRepository, private readonly archiveOnly = false) {}
 
   async archiveIndex(ownerId: string, offset: number, limit: number) {
     if (!Number.isSafeInteger(offset) || offset < 0 || offset > 100000 || !Number.isInteger(limit) || limit < 1 || limit > 50) throw new TypeError('Invalid pagination');
@@ -66,6 +66,7 @@ export class CloudSaveService {
 
   async create(ownerId: string, candidate: unknown): Promise<CloudSaveWriteResult> {
     const save = parseSave(candidate);
+    if (this.archiveOnly && save.state.facts.archiveKind !== 'local-untrusted-v1') throw new TypeError('Client archive required');
     if (save.revision !== 0) throw new TypeError('A new cloud save must start at revision zero.');
     const created = await this.repository.createForOwner(requireOwnerId(ownerId), save);
     return created ? { kind: 'created', save } : { kind: 'conflict' };
@@ -85,6 +86,11 @@ export class CloudSaveService {
     }
 
     const next = parseSave(candidate);
+    if (this.archiveOnly) {
+      if (next.state.facts.archiveKind !== 'local-untrusted-v1') throw new TypeError('Client archive required');
+      const current = await this.repository.getForOwner(requireOwnerId(ownerId), saveId);
+      if (!current || current.state.facts.archiveKind !== 'local-untrusted-v1') return { kind: 'not_found' };
+    }
     if (next.saveId !== saveId || next.revision !== expectedRevision + 1) {
       throw new TypeError('Cloud save identity or next revision does not match the request.');
     }

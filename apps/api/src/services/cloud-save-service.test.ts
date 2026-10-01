@@ -49,6 +49,14 @@ class MemoryCloudSaveRepository implements CloudSaveRepository {
 }
 
 describe('CloudSaveService', () => {
+  it('production client-archive mode cannot create or overwrite authoritative state', async () => {
+    const repository = new MemoryCloudSaveRepository();
+    await repository.createForOwner('a', envelope());
+    const service = new CloudSaveService(repository, true);
+    await expect(service.create('a', envelope())).rejects.toThrow('Client archive required');
+    expect(await service.replace('a', 'save-one', 0, { ...envelope(1), state: { ...envelope().state, facts: { archiveKind: 'local-untrusted-v1' } } })).toEqual({ kind: 'not_found' });
+    expect(await repository.getForOwner('a', 'save-one')).toEqual(envelope());
+  });
   it('requires a trusted owner scope and never accepts owner data from the save envelope', async () => {
     const service = new CloudSaveService(new MemoryCloudSaveRepository());
     await expect(service.create('  ', envelope())).rejects.toThrow('Authenticated owner ID is required');

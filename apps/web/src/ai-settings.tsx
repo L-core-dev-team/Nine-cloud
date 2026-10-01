@@ -250,6 +250,8 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
     premiumDirector: { callsPer100: 0, inputTokens: 18000, outputTokens: 2600 },
   });
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const probeRef = useRef<AbortController | null>(null);
+  useEffect(() => () => { probeRef.current?.abort(); probeRef.current = null; }, []);
   useEffect(() => {
     const dialog = dialogRef.current;
     if (modal && dialog && !dialog.open) dialog.showModal();
@@ -337,6 +339,7 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
     } catch (reason) { setError(reason instanceof Error ? reason.message : '旧配置读取失败。'); }
   }
   async function testConnection(roleId: RoleId) {
+    if (probeRef.current) return;
     const active = config.roles[roleId];
     const roleTitle = roleMeta.find(role => role.id === roleId)!.title;
     if (!config.connectionTestAllowed) { setError('请先开启“允许连接测试”。测试会向所填地址发送一次短请求，并可能产生服务商费用。'); return; }
@@ -345,10 +348,12 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
     setTesting(true); setError(''); setMessage('正在测试，只发送“请仅回复：通路已通”。');
     const start = performance.now();
     const controller = new AbortController();
+    probeRef.current = controller;
     const timer = window.setTimeout(() => controller.abort(), active.timeoutSeconds * 1000);
     try {
       const request = buildProbeRequest(active.adapter, safeUrl(active.baseUrl), active.model.trim(), keys[roleId]?.trim() || '');
       const response = await fetch(request.url, { method: 'POST', signal: controller.signal, headers: request.headers, body: JSON.stringify(request.body) });
+      if (probeRef.current !== controller) return;
       const elapsedMs = Math.round(performance.now() - start);
       if (!response.ok) {
         const entry: CallLog = { at: new Date().toISOString(), role: roleTitle, model: active.model.trim(), elapsedMs, outcome: 'failure', status: response.status, errorCode: `HTTP_${response.status}` };
@@ -356,6 +361,7 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
         throw new Error(`服务返回 HTTP ${response.status}。请检查 Base URL、Key、Model ID 和账号权限；响应正文未保存。`);
       }
       const data: unknown = await response.json();
+      if (probeRef.current !== controller) return;
       const parsed = parseProbeResponse(active.adapter, data);
       if (!parsed.text.trim()) throw new Error(`服务已响应，但返回格式无法由 ${protocolLabels[active.adapter]} 适配器识别。`);
       const entry: CallLog = {
@@ -365,13 +371,14 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
       };
       setLogs(addLog(entry, config.logRetentionDays)); setMessage(`连接成功，${elapsedMs} ms。测试回复：${parsed.text.slice(0, 60)}`);
     } catch (reason) {
+      if (probeRef.current !== controller) return;
       const messageText = reason instanceof Error ? reason.message : '网络请求失败。';
       if (!messageText.startsWith('服务返回 HTTP')) {
         const entry: CallLog = { at: new Date().toISOString(), role: roleTitle, model: active.model.trim(), elapsedMs: Math.round(performance.now() - start), outcome: 'failure', errorCode: controller.signal.aborted ? 'TIMEOUT' : 'NETWORK_OR_FORMAT' };
         setLogs(addLog(entry, config.logRetentionDays));
       }
       setError(controller.signal.aborted ? `超过 ${active.timeoutSeconds} 秒，连接已中止。可核对超时与服务商状态后重试。` : messageText);
-    } finally { window.clearTimeout(timer); setTesting(false); }
+    } finally { window.clearTimeout(timer); if (probeRef.current === controller) { probeRef.current = null; setTesting(false); } }
   }
 
   const visibleProviders = useMemo(() => {

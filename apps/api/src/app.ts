@@ -4,6 +4,7 @@ import type { CloudSaveService } from './services/cloud-save-service.js';
 import { mountCloudSaveRoutes, type CloudSaveRouteAuth } from './routes/saves.js';
 import { mountAuth } from './routes/auth.js';
 import type { EmailAuthService } from './services/email-auth.js';
+import type { CloudArchiveLifecycle } from './services/cloud-archive-lifecycle.js';
 
 export type ReadinessDatabase = {
   query: (sql: string) => Promise<unknown>;
@@ -12,6 +13,7 @@ export type ReadinessDatabase = {
 export function createApp(database?: ReadinessDatabase, cloudSaves?: {
   service: CloudSaveService;
   auth: CloudSaveRouteAuth;
+  archive?: CloudArchiveLifecycle;
 }, emailAuth?: { service: EmailAuthService; origin: string }) {
   const app = new Hono();
   if (emailAuth) mountAuth(app, emailAuth.service, emailAuth.origin);
@@ -32,7 +34,7 @@ export function createApp(database?: ReadinessDatabase, cloudSaves?: {
   });
 
   // Business save routes exist only when the host supplies a verified session
-  // resolver. The production entry point deliberately does not provide one yet.
+  // resolver. The production entry point supplies it only when auth is enabled.
   if (cloudSaves) mountCloudSaveRoutes(app, cloudSaves);
 
   app.notFound(c => c.json({ code: 'NOT_FOUND', message: '接口不存在。' }, 404));

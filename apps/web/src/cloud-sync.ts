@@ -61,13 +61,23 @@ function mutation(envelope: SaveEnvelope | null) { return envelope?.state.facts.
 function envelopeFor(save: LocalSave, id: string, revision: number): SaveEnvelope {
   const archive: unknown = (JSON.parse(serializeSaveForExport(save)) as { save: unknown }).save; if (!isLocalSave(archive)) throw new Error('INVALID_LOCAL_SAVE');
   // These are transport archives, never approved rule events or authoritative gameplay state.
-  return SaveEnvelopeSchema.parse({ schemaVersion: 1, saveId: id, canonVersion: save.canonVersion, ruleVersion: save.ruleVersion,
+  const envelope = SaveEnvelopeSchema.parse({ schemaVersion: 1, saveId: id, canonVersion: save.canonVersion, ruleVersion: save.ruleVersion,
     memoryPolicyVersion: save.memoryPolicyVersion, revision, state: { playerId: save.saveId, locationId: save.location,
       elapsedMinutes: 0, facts: { archiveKind: 'local-untrusted-v1', localArchive: archive, cloudMutationId: crypto.randomUUID() } } });
+  if (new TextEncoder().encode(JSON.stringify({ save: envelope, expectedRevision: revision })).byteLength > 1000000) throw new Error('ARCHIVE_TOO_LARGE');
+  return envelope;
 }
 export class CloudSync {
   constructor(private readonly store: CloudQueueStore, private readonly request = cloudRequest) {}
   list(ownerId: string) { return this.store.list(ownerId); }
+  async trackRestored(ownerId: string, localSaveId: string, envelope: unknown) {
+    const remote = SaveEnvelopeSchema.parse(envelope); archiveFromEnvelope(remote);
+    const key = `${ownerId}\0${localSaveId}`;
+    return this.store.update(key, current => {
+      if (current?.pending) throw new Error('LOCAL_UPLOAD_PENDING');
+      return { key, ownerId, localSaveId, cloudSaveId: remote.saveId, baseRevision: remote.revision, pending: null, conflict: null };
+    });
+  }
   async enqueue(ownerId: string, save: LocalSave) {
     const key = `${ownerId}\0${save.saveId}`;
     return this.store.update(key, current => {
@@ -88,12 +98,14 @@ export class CloudSync {
         if (!(error instanceof CloudHttpError) || error.status !== 409) throw error;
         const remote = SaveEnvelopeSchema.parse((await this.request(`/api/saves/${encodeURIComponent(item.cloudSaveId)}`, 'GET', undefined, ownerId)).save);
         if (remote.saveId !== item.cloudSaveId) throw new Error('INVALID_CLOUD_ACK');
+        archiveFromEnvelope(remote);
         if (mutation(remote) !== mutation(item.pending)) {
           await this.store.update(item.key, current => ({ ...current!, conflict: remote })); continue;
         }
         accepted = remote; // Lost response/reload: this exact mutation already committed.
       }
       if (accepted.saveId !== item.cloudSaveId || accepted.revision !== item.pending.revision || mutation(accepted) !== mutation(item.pending)) throw new Error('INVALID_CLOUD_ACK');
+      archiveFromEnvelope(accepted);
       await this.store.update(item.key, current => {
         if (!current) throw new Error('MISSING_QUEUE');
         const pending = mutation(current.pending) === mutation(item.pending) ? null : current.pending && { ...current.pending, revision: accepted.revision + 1 };

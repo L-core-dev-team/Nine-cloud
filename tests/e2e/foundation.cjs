@@ -823,7 +823,22 @@ async function ready(url) {
       const geminiTemperature = geminiPanel.locator('.number-grid').first().locator('input').nth(0);
       assert.equal(await geminiTemperature.isDisabled(), true, 'Gemini 3.8 Flash migration guidance requires omitting sampling fields');
       assert.ok((await geminiPanel.innerText()).includes('Gemini 3.8 Flash 要求移除这三项'));
+      const logsBeforeLeave = await page.evaluate(() => sessionStorage.getItem('jx10_ai_call_log_v1'));
+      await page.evaluate(() => {
+        window.originalLeaveProbeFetch = window.fetch; window.leaveProbeCount = 0;
+        window.fetch = (_input, init) => {
+          window.leaveProbeCount++;
+          return new Promise((_resolve, reject) => init.signal.addEventListener('abort', () => {
+            window.leaveProbeAborted = true; reject(new DOMException('Synthetic leave cancellation', 'AbortError'));
+          }, { once: true }));
+        };
+        const button = document.querySelector('.connection-row button'); button.click(); button.click();
+      });
+      await page.waitForFunction(() => window.leaveProbeCount === 1);
       await page.getByRole('button', { name: '关闭', exact: true }).click();
+      await page.waitForFunction(() => window.leaveProbeAborted === true);
+      assert.equal(await page.evaluate(() => sessionStorage.getItem('jx10_ai_call_log_v1')), logsBeforeLeave, 'leaving settings must abort and not append late diagnostics');
+      await page.evaluate(() => { window.fetch = window.originalLeaveProbeFetch; });
       assert.ok((await page.locator('body').innerText()).includes('选择去处'), 'AI settings should close back to its entry route');
 
       await page.goto(`http://127.0.0.1:${webPort}/settings/graphics`);

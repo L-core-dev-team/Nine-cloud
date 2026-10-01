@@ -11,6 +11,11 @@ jobs:
   verify:
     runs-on: ubuntu-24.04
     services:
+      mailpit:
+        image: axllent/mailpit:v1.27
+        ports:
+          - 11025:1025
+          - 18025:8025
       postgres:
         image: postgres:17-alpine
         env:
@@ -26,6 +31,8 @@ jobs:
           --health-retries 12
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
         with:
           version: 11.19.0
@@ -48,3 +55,31 @@ jobs:
           TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jiuxiao_test
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:e2e
+      - name: Test isolated SMTP and cloud browser path
+        run: node tests/e2e/cloud.cjs
+        env:
+          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jiuxiao_test
+          TEST_SMTP_URL: smtp://127.0.0.1:11025
+          MAILPIT_API_URL: http://127.0.0.1:18025
+      - name: Verify isolated database backup restoration
+        run: node tests/integration/database-restore.mjs
+        env:
+          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jiuxiao_test
+          TEST_POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+      - name: Bind review artifacts to the tested commit
+        run: node scripts/build/write-review-bundle.mjs
+      - name: Upload engineering review artifacts and evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: jiuxiao-engineering-review-${{ github.event.pull_request.head.sha || github.sha }}
+          retention-days: 14
+          if-no-files-found: error
+          path: |
+            apps/web/dist/
+            apps/api/dist/
+            packages/db/dist/
+            packages/contracts/dist/
+            packages/domain/dist/
+            packages/content/dist/
+            test-results/review-bundle/
+            test-results/cloud/

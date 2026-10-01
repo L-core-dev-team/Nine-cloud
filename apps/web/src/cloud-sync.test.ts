@@ -12,6 +12,19 @@ class Store implements CloudQueueStore {
   async update(key: string, change: (r: CloudRecord | undefined) => CloudRecord) { const next = change(structuredClone(this.rows.get(key))); this.rows.set(key, structuredClone(next)); return next; }
 }
 describe('cloud archive queues and CAS decisions', () => {
+  it('restored local copies remain bound to the reviewed cloud identity and revision', async () => {
+    const store = new Store(); const sync = new CloudSync(store);
+    const original = await sync.enqueue('a', save);
+    await sync.trackRestored('a', 'restored-copy', { ...original.pending!, revision: 4 });
+    const queued = await sync.enqueue('a', { ...save, saveId: 'restored-copy' });
+    expect(queued.cloudSaveId).toBe(original.cloudSaveId); expect(queued.baseRevision).toBe(4); expect(queued.pending?.revision).toBe(5);
+    await expect(sync.trackRestored('a', 'restored-copy', original.pending)).rejects.toThrow('LOCAL_UPLOAD_PENDING');
+  });
+  it('oversized archives are rejected before queue mutation and preserve the existing upload', async () => {
+    const store = new Store(); const sync = new CloudSync(store); const queued = await sync.enqueue('a', save);
+    await expect(sync.enqueue('a', { ...save, messages: ['字'.repeat(400000)] })).rejects.toThrow('ARCHIVE_TOO_LARGE');
+    expect((await sync.list('a'))[0]).toEqual(queued);
+  });
   it('redacts credentials, preserves original content, partitions queues by account', async () => {
     const store = new Store(); const sync = new CloudSync(store);
     const a = await sync.enqueue('a', save); const b = await sync.enqueue('b', save);

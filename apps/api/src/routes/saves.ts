@@ -1,5 +1,6 @@
 import type { Context, Hono } from 'hono';
 import type { CloudSaveService } from '../services/cloud-save-service.js';
+import type { CloudArchiveLifecycle } from '../services/cloud-archive-lifecycle.js';
 
 const MAX_REQUEST_BYTES = 1_000_000;
 
@@ -8,7 +9,7 @@ export type CloudSaveRouteAuth = {
   resolveOwnerId(request: Request): Promise<string | null>;
 };
 
-type RouteDependencies = { service: CloudSaveService; auth: CloudSaveRouteAuth };
+type RouteDependencies = { service: CloudSaveService; auth: CloudSaveRouteAuth; archive?: CloudArchiveLifecycle };
 
 async function ownerFor(request: Request, auth: CloudSaveRouteAuth): Promise<string | null> {
   try {
@@ -82,7 +83,32 @@ function publicError(error: unknown): Response {
   return Response.json({ code: 'INTERNAL_ERROR', message: '存档服务暂不可用。' }, { status: 500 });
 }
 
-export function mountCloudSaveRoutes(app: Hono, { service, auth }: RouteDependencies): void {
+export function mountCloudSaveRoutes(app: Hono, { service, auth, archive }: RouteDependencies): void {
+  if (archive) {
+    app.get('/api/save-trash', async c => {
+      const ownerId = await ownerFor(c.req.raw, auth);
+      if (!ownerId) return c.json({ code: 'UNAUTHENTICATED' }, 401);
+      const offset = c.req.query('offset') ?? '0';
+      if (!/^\d+$/.test(offset) || Number(offset) > 100000) return c.json({ code: 'INVALID_PAGINATION' }, 400);
+      try { return c.json(await archive.list(ownerId, Number(offset))); } catch (error) { return publicError(error); }
+    });
+    for (const operation of ['delete', 'restore'] as const) {
+      const path = operation === 'delete' ? '/api/saves/:saveId' : '/api/save-trash/:saveId/restore';
+      app.on(operation === 'delete' ? 'DELETE' : 'POST', path, async c => {
+        const ownerId = await ownerFor(c.req.raw, auth);
+        if (!ownerId) return c.json({ code: 'UNAUTHENTICATED' }, 401);
+        const body = await readJson(c.req.raw);
+        if (!body.ok) return invalidBody(c, body.status);
+        if (!isRecord(body.value) || !Number.isSafeInteger(body.value.expectedRevision)) return c.json({ code: 'INVALID_REVISION' }, 400);
+        try {
+          const result = await archive.change(ownerId, c.req.param('saveId'), body.value.expectedRevision as number, operation);
+          if (result.kind === 'not_found') return c.json({ code: 'NOT_FOUND' }, 404);
+          if (result.kind === 'conflict') return c.json({ code: 'REVISION_CONFLICT' }, 409);
+          return c.json(result);
+        } catch (error) { return publicError(error); }
+      });
+    }
+  }
   app.get('/api/save-index', async c => {
     const ownerId = await ownerFor(c.req.raw, auth);
     if (!ownerId) return c.json({ code: 'UNAUTHENTICATED' }, 401);

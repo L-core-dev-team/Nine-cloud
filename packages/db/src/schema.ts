@@ -33,6 +33,12 @@ export const gameSaves = pgTable('game_saves', {
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 }, table => [uniqueIndex('game_saves_owner_id_idx').on(table.ownerId, table.id)]);
 
+export const cloudArchiveTrash = pgTable('cloud_archive_trash', {
+  saveId: text('save_id').primaryKey().references(() => gameSaves.id), ownerId: text('owner_id').notNull(),
+  deletedRevision: integer('deleted_revision').notNull(), backup: jsonb('backup').notNull(), digest: text('digest').notNull(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const turnRequests = pgTable('turn_requests', {
   saveId: text('save_id').notNull().references(() => gameSaves.id),
   idempotencyKey: text('idempotency_key').notNull(),
