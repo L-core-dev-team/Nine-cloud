@@ -20,6 +20,7 @@ if (!databaseUrl) throw new Error('DATABASE_URL is required');
 const pool = new Pool({ connectionString: databaseUrl, max: 5, connectionTimeoutMillis: 3_000 });
 pool.on('error', () => { console.error('Database connection unavailable.'); });
 const emailAuth = createEmailAuthRuntime(pool, process.env);
+if(process.env.AUTH_MAIL_PREFLIGHT==='true')await emailAuth?.verifyMail();
 const app = createApp({ query: sql => pool.query(sql) }, emailAuth ? {
   service: new CloudSaveService(new PostgresCloudSaveRepository(pool, true), true),
   archive: new CloudArchiveLifecycle(pool, true),
