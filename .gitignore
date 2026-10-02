@@ -19,6 +19,7 @@ outputs/九霄WEB-1.0/世界书截图/
 **/*.tsbuildinfo
 playwright-report/
 test-results/
+.wrangler/
 .env
 .env.*.local
 !.env.example
