@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { CloudHttpError, CloudSync, IndexedCloudQueue, archiveFromEnvelope, cloudRequest, type CloudRecord } from '../cloud-sync';
 import type { LocalSave } from '../storage';
 import { serializeSaveForExport } from '../export-save';
+import { AccountLifecyclePanel } from './AccountLifecyclePanel';
 
 type Account = { id: string; email: string };
 function readAccount(value: unknown): Account {
@@ -49,6 +50,7 @@ export function CloudSettings({ saves, onRestore }: { saves: LocalSave[]; onRest
       : <><p>{account.email}</p><div className="actions"><button disabled={busy} onClick={() => void act(async () => { await cloudRequest('/api/auth/refresh', 'POST', {}, account.id); return '会话已刷新。'; })}>刷新会话</button>
         <button disabled={busy} onClick={() => void act(async () => { await cloudRequest('/api/auth/logout', 'POST', {}, account.id); setAccount(null); setRemote([]); setQueue([]); setTrash([]); return '已退出；本地存档及未完成队列保留。'; })}>退出</button>
         <button disabled={busy} onClick={() => void act(async () => { await sync.flush(account.id); await refresh(account.id); return '已重试队列。冲突需要逐项选择。'; })}>重试待上传</button></div>
+        <AccountLifecyclePanel account={account} saves={saves} externalBusy={busy} acquire={() => { if (busyRef.current) return false; busyRef.current=true;setBusy(true);return true; }} release={() => {busyRef.current=false;setBusy(false);}} onSignedOut={() => { setAccount(null); setRemote([]); setQueue([]); setTrash([]); setNotice('账户操作完成，所有会话已退出。本机独立存档保留。'); }} />
         <h2>本地存档</h2>{saves.map(save => <div key={save.saveId}><span>{save.name}</span><button disabled={busy} onClick={() => void act(async () => { await sync.enqueue(account.id, save); await sync.flush(account.id); await refresh(account.id); return '已处理备份请求；若有冲突，请先核对双方版本。'; })}>备份到云端</button></div>)}
         <h2>待上传与冲突</h2>{queue.filter(r => r.pending || r.conflict).map(record => <div key={record.key}><p>{record.localSaveId}：{record.conflict ? '云端已变化，上传暂停' : '待重试'}</p>
           {record.conflict && <><p>本地回合：{record.pending ? archiveFromEnvelope(record.pending).revision : '无'}；云端回合：{archiveFromEnvelope(record.conflict).revision}</p>

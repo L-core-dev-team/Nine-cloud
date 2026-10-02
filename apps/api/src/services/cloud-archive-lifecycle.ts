@@ -12,7 +12,7 @@ export function archiveDigest(value: unknown): string {
 }
 /** Soft deletion of client archives only; rule/event saves cannot enter this path. */
 export class CloudArchiveLifecycle {
-  constructor(private readonly pool: Pool) {}
+  constructor(private readonly pool: Pool, private readonly requiresLiveAccount = false) {}
   async list(owner: string, offset = 0) {
     const result = await this.pool.query(`SELECT save_id, deleted_revision, deleted_at, left(backup #>> '{state,facts,localArchive,name}', 200) AS name
       FROM cloud_archive_trash WHERE owner_id = $1 ORDER BY deleted_at DESC, save_id LIMIT 21 OFFSET $2`, [owner, offset]);
@@ -23,6 +23,9 @@ export class CloudArchiveLifecycle {
     const client = await this.pool.connect();
     try {
       await client.query('BEGIN');
+      if (this.requiresLiveAccount && !(await client.query('SELECT id FROM auth_accounts WHERE id=$1 AND closed_at IS NULL FOR KEY SHARE', [owner])).rowCount) {
+        await client.query('ROLLBACK'); return { kind: 'not_found' as const };
+      }
       const result = await client.query('SELECT * FROM game_saves WHERE id = $1 AND owner_id = $2 FOR UPDATE', [saveId, owner]);
       const row = result.rows[0];
       if (!row || row.snapshot?.facts?.archiveKind !== 'local-untrusted-v1') { await client.query('ROLLBACK'); return { kind: 'not_found' as const }; }

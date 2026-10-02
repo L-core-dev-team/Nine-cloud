@@ -30,7 +30,7 @@ const SELECT_FIELDS = `id, revision, schema_version, canon_version, rule_version
 
 /** PostgreSQL implementation; every read/write is scoped by the session owner. */
 export class PostgresCloudSaveRepository implements CloudSaveRepository {
-  constructor(private readonly pool: Pool) {}
+  constructor(private readonly pool: Pool, private readonly requiresLiveAccount = false) {}
 
   async archiveIndexForOwner(ownerId: string, offset: number, limit: number) {
     const result = await this.pool.query<{ id: string; name: string; revision: number }>(
@@ -59,9 +59,9 @@ export class PostgresCloudSaveRepository implements CloudSaveRepository {
 
   async createForOwner(ownerId: string, save: SaveEnvelope): Promise<boolean> {
     const result = await this.pool.query(
-      `INSERT INTO game_saves
+      `${this.requiresLiveAccount ? 'WITH live_account AS (SELECT id FROM auth_accounts WHERE id=$2 AND closed_at IS NULL FOR KEY SHARE) ' : ''}INSERT INTO game_saves
         (id, owner_id, revision, schema_version, canon_version, rule_version, memory_policy_version, snapshot)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8::jsonb)
+       ${this.requiresLiveAccount ? 'SELECT $1,$2,$3,$4,$5,$6,$7,$8::jsonb FROM live_account' : 'VALUES ($1, $2, $3, $4, $5, $6, $7, $8::jsonb)'}
        ON CONFLICT (id) DO NOTHING`,
       [save.saveId, ownerId, save.revision, save.schemaVersion, save.canonVersion,
         save.ruleVersion, save.memoryPolicyVersion, JSON.stringify(save.state)],
@@ -76,10 +76,10 @@ export class PostgresCloudSaveRepository implements CloudSaveRepository {
     next: SaveEnvelope;
   }): Promise<{ kind: 'updated' } | { kind: 'conflict'; currentRevision: number } | { kind: 'not_found' }> {
     const result = await this.pool.query(
-      `UPDATE game_saves
+      `${this.requiresLiveAccount ? 'WITH live_account AS (SELECT id FROM auth_accounts WHERE id=$2 AND closed_at IS NULL FOR KEY SHARE) ' : ''}UPDATE game_saves
          SET revision = $4, schema_version = $5, canon_version = $6, rule_version = $7,
              memory_policy_version = $8, snapshot = $9::jsonb, updated_at = now()
-       WHERE id = $1 AND owner_id = $2 AND revision = $3 AND NOT EXISTS (SELECT 1 FROM cloud_archive_trash t WHERE t.save_id = game_saves.id)`,
+       WHERE id = $1 AND owner_id = $2 AND revision = $3 ${this.requiresLiveAccount ? 'AND EXISTS (SELECT 1 FROM live_account)' : ''} AND NOT EXISTS (SELECT 1 FROM cloud_archive_trash t WHERE t.save_id = game_saves.id)`,
       [input.saveId, input.ownerId, input.expectedRevision, input.next.revision,
         input.next.schemaVersion, input.next.canonVersion, input.next.ruleVersion,
         input.next.memoryPolicyVersion, JSON.stringify(input.next.state)],

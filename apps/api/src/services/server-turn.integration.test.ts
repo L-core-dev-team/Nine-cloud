@@ -11,6 +11,7 @@ suite('ServerTurnService on isolated PostgreSQL (synthetic rules only)', () => {
   const pool = new Pool({ connectionString: databaseUrl, max: 10 });
   const repository = createPostgresServerTurnRepository(pool);
   const owner = 'turn-fixture-owner-' + randomUUID(); const saveId = 'turn-fixture-save-' + randomUUID();
+  const secondSaveId = 'turn-isolation-save-' + randomUUID();
   const intent: ActionIntent = { kind: 'move', saveId, actorId: 'fixture-player', expectedRevision: 0,
     idempotencyKey: randomUUID(), payload: { destinationId: 'fixture-gate' } };
   const rules: ServerTurnRules = {
@@ -23,6 +24,9 @@ suite('ServerTurnService on isolated PostgreSQL (synthetic rules only)', () => {
     policyForNpc: () => 'exact-recall-v1',
   };
   afterAll(async () => {
+    await pool.query('DELETE FROM turn_events WHERE save_id = $1', [secondSaveId]);
+    await pool.query('DELETE FROM turn_requests WHERE save_id = $1', [secondSaveId]);
+    await pool.query('DELETE FROM game_saves WHERE id = $1 AND owner_id = $2', [secondSaveId, owner]);
     await pool.query('DELETE FROM turn_events WHERE save_id = $1', [saveId]);
     await pool.query('DELETE FROM turn_requests WHERE save_id = $1', [saveId]);
     await pool.query('DELETE FROM game_saves WHERE id = $1 AND owner_id = $2', [saveId, owner]);
@@ -52,5 +56,15 @@ suite('ServerTurnService on isolated PostgreSQL (synthetic rules only)', () => {
     expect(await repository.loadSave(owner, saveId)).toMatchObject({ revision: 1 });
     expect(await new ServerTurnService(repository).execute(owner, { ...intent, expectedRevision: 1, idempotencyKey: randomUUID() })).toEqual({ status: 'rules_not_ready' });
     expect(await repository.loadSave(owner, saveId)).toMatchObject({ revision: 1 });
+  });
+  it('the same NPC identity in a second save cannot contaminate the first save memory', async () => {
+    const before = await repository.getForOwner(owner, saveId);
+    await pool.query('INSERT INTO game_saves (id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,snapshot) VALUES ($1,$2,0,1,$3,$3,$3,$4::jsonb)',
+      [secondSaveId,owner,'fixture-only',JSON.stringify({playerId:'fixture-player',locationId:'second-origin',elapsedMinutes:0,facts:{privateFixture:'second-private'}})]);
+    const secondRules: ServerTurnRules = {...rules, decide: (input, save) => ({status:'accepted',nextRevision:save.revision+1,events:[{id:randomUUID(),saveId:input.saveId,type:'fixture.second',beforeRevision:save.revision,afterRevision:save.revision+1,source:'RULES',ruleVersion:save.ruleVersion,occurredAt:new Date().toISOString(),payload:{}}]}),
+      grantsForEvent:event=>[{npcId:'visible-fixture-npc',eventId:event.id,channel:'witnessed',visibleSummary:'Only second-save observation.'}]};
+    expect((await new ServerTurnService(repository,secondRules).execute(owner,{...intent,saveId:secondSaveId,idempotencyKey:randomUUID()})).status).toBe('accepted');
+    expect(await repository.getForOwner(owner,saveId)).toEqual(before);
+    const second=await repository.getForOwner(owner,secondSaveId);expect(JSON.stringify(second)).toContain('Only second-save observation.');expect(JSON.stringify(second)).not.toContain('Public fixture event.');expect(JSON.stringify(second)).not.toContain('second-private');
   });
 });

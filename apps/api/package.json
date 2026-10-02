@@ -9,8 +9,8 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "node --test ../../scripts/assert-test-database.test.mjs && vitest run",
-    "test:integration": "node ../../scripts/assert-test-database.mjs && vitest run src/app.integration.test.ts src/services/cloud-save-repository.integration.test.ts src/services/entitlement-ledger.integration.test.ts src/services/npc-memory-turn-transaction.integration.test.ts src/services/server-turn.integration.test.ts src/services/email-auth.integration.test.ts src/services/cloud-archive-lifecycle.integration.test.ts",
-    "test:s6:integration": "node ../../scripts/assert-test-database.mjs && vitest run src/services/cloud-save-repository.integration.test.ts src/services/email-auth.integration.test.ts src/services/cloud-archive-lifecycle.integration.test.ts"
+    "test:integration": "node ../../scripts/assert-test-database.mjs && vitest run src/app.integration.test.ts src/services/cloud-save-repository.integration.test.ts src/services/entitlement-ledger.integration.test.ts src/services/npc-memory-turn-transaction.integration.test.ts src/services/server-turn.integration.test.ts src/services/email-auth.integration.test.ts src/services/cloud-archive-lifecycle.integration.test.ts src/services/account-lifecycle.integration.test.ts",
+    "test:s6:integration": "node ../../scripts/assert-test-database.mjs && vitest run src/services/cloud-save-repository.integration.test.ts src/services/email-auth.integration.test.ts src/services/cloud-archive-lifecycle.integration.test.ts src/services/account-lifecycle.integration.test.ts"
   },
   "dependencies": {
     "@hono/node-server": "2.1.1",

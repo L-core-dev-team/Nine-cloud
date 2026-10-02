@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { SaveEnvelopeSchema, type SaveEnvelope } from '@jiuxiao/contracts';
+import { SaveEnvelopeSchema, StateDeltaSchema, type SaveEnvelope } from '@jiuxiao/contracts';
 import { cloudRequest, CloudHttpError } from '../cloud-sync';
 import { IndexedTurnStore, TurnClient, type PendingTurn } from '../turn-client';
 
@@ -12,6 +12,7 @@ export function TurnWorkspace({ onBack, onLogin }: { onBack: () => void; onLogin
   const lock = useRef(false); const alive = useRef(true);
   const generation = useRef<AbortController | null>(null);
   const current = saves.find(save => save.saveId === selected);
+  const changes = pending?.receipt?.decision.status === 'accepted' ? pending.receipt.decision.events.map(event => StateDeltaSchema.safeParse(event.payload.stateDelta)).filter(result => result.success).map(result => result.data) : [];
   useEffect(() => { let active = true; alive.current = true; void (async () => {
     try {
       const session = await cloudRequest('/api/auth/session'); const account = session.account as { id?: unknown };
@@ -65,6 +66,7 @@ export function TurnWorkspace({ onBack, onLogin }: { onBack: () => void; onLogin
     <p role="status" aria-live="polite">{message}</p>
     {pending?.receipt?.decision.status === 'rejected' && <p>行动未通过：{pending.receipt.decision.message}</p>}
     {pending?.receipt?.decision.status === 'clarify' && <p>需要补充：{pending.receipt.decision.question}</p>}
+    {changes.length > 0 && <section aria-label="结算变化"><h2>结算变化</h2>{changes.map((delta,index) => <div key={index}><p>时间推进：{delta.timeChange} 分钟</p>{delta.locationChange && <p>地点：{delta.locationChange.before} → {delta.locationChange.after}</p>}{delta.factChanges.map(change => <p key={change.key}>{change.key}：{change.before.present ? JSON.stringify(change.before.value) : '无'} → {change.after.present ? JSON.stringify(change.after.value) : '移除'}</p>)}</div>)}</section>}
     {pending && <p>请求：{pending.intent.idempotencyKey} · {pending.phase === 'confirmed' ? '回执已确认' : '待核对，尚不能判断是否结算'}</p>}
     {narrative && <article className="story-message narration"><p>{narrative}</p></article>}
   </section>;

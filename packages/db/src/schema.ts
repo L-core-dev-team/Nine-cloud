@@ -4,7 +4,14 @@ import { bigint, check, foreignKey, integer, jsonb, pgTable, primaryKey, text, t
 export const authAccounts = pgTable('auth_accounts', {
   id: text('id').primaryKey(), email: text('email').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  closedAt: timestamp('closed_at', { withTimezone: true }),
 }, table => [uniqueIndex('auth_accounts_email_idx').on(table.email)]);
+export const accountOperations = pgTable('account_operations', {
+  id: text('id').primaryKey(), ownerId: text('owner_id').notNull().references(() => authAccounts.id, { onDelete:'cascade' }),
+  sessionHash: text('session_hash').notNull(), operation: text('operation').notNull(), oldEmail: text('old_email').notNull(), newEmail: text('new_email'),
+  phase: text('phase').notNull(), digest: text('digest'), attempts: integer('attempts').notNull().default(0),
+  createdAt: timestamp('created_at', { withTimezone:true }).notNull().defaultNow(), expiresAt: timestamp('expires_at', { withTimezone:true }).notNull(),
+});
 export const authChallenges = pgTable('auth_challenges', {
   email: text('email').primaryKey(), digest: text('digest'), attempts: integer('attempts').notNull().default(0),
   expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),

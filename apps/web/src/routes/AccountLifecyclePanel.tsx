@@ -1,0 +1,26 @@
+import { useEffect,useState } from 'react';
+import { cloudRequest, IndexedCloudQueue } from '../cloud-sync';
+import { serializeJsonWithCredentialRedaction,serializeSaveForExport } from '../export-save';
+import type { LocalSave } from '../storage';
+type Operation='email_change'|'close'|'delete';
+export function AccountLifecyclePanel({account,saves,onSignedOut,acquire,release,externalBusy}:{account:{id:string;email:string};saves:LocalSave[];onSignedOut:()=>void;acquire:()=>boolean;release:()=>void;externalBusy:boolean}){
+ const [cap,setCap]=useState<{close:boolean;permanentDelete:boolean}|null>(null);const [op,setOp]=useState<Operation>('email_change');const [newEmail,setNewEmail]=useState('');const [id,setId]=useState('');const [phase,setPhase]=useState('');const [code,setCode]=useState('');const [confirmation,setConfirmation]=useState('');const [busy,setBusy]=useState(false);const [message,setMessage]=useState('正在检查账户操作……');
+ useEffect(()=>{let active=true;void cloudRequest('/api/account/capabilities','GET',undefined,account.id).then(value=>{if(active){setCap({close:value.close===true,permanentDelete:value.permanentDelete===true});setMessage('邮箱变更需要先验证旧邮箱，再验证新邮箱。关闭或删除会使所有会话失效。');}}).catch(()=>{if(active)setMessage('账户生命周期服务暂不可用。');});return()=>{active=false;};},[account.id]);
+ async function act(work:()=>Promise<string>){if(busy||!acquire())return;setBusy(true);try{setMessage(await work());}catch{setMessage('操作未完成。请核对验证码与确认文字；验证过期或会话变化时重新登录。未收到完成回执前不要假定操作成功。');}finally{setBusy(false);release();}}
+ const blocked=busy||externalBusy;
+ const required=op==='email_change'?'CHANGE_EMAIL':op==='close'?'CLOSE_ACCOUNT':'DELETE_ACCOUNT';
+ async function exportData(){const data=await cloudRequest('/api/account/export','GET',undefined,account.id,undefined,32_000_000);if((data.account as {id?:unknown})?.id!==account.id||data.kind!=='jiuxiao-account-export')throw new Error('INVALID_ACCOUNT_EXPORT');
+  const settings:Record<string,unknown>={};for(const [name,store,key] of [['ai',sessionStorage,'jx10_ai_config_v2'],['graphics',localStorage,'jx10_graphics_v1']]as const){const value=store.getItem(key);try{settings[name]=value?JSON.parse(value):null;}catch{settings[name]={unreadable:true};}}
+  const bundle={...data,client:{settings,independentLocalSaves:saves.map(save=>JSON.parse(serializeSaveForExport(save))),ownerQueue:await new IndexedCloudQueue().list(account.id)}};
+  const url=URL.createObjectURL(new Blob([serializeJsonWithCredentialRedaction(bundle)],{type:'application/json'}));const link=document.createElement('a');link.href=url;link.download='九霄_账号与本机资料.json';link.click();window.setTimeout(()=>URL.revokeObjectURL(url),1000);return '账号资料与本浏览器设置、本地存档已交给浏览器下载；密钥已移除。';
+ }
+ return <section aria-label="账户生命周期"><h2>账户资料与安全</h2><button disabled={blocked||!cap} onClick={()=>void act(exportData)}>导出账号全部资料</button><p>服务器导出包含本账号存档、事件、记忆和回收区。浏览器附加本机独立存档与设置；其他设备的本地资料不在此浏览器。超大数据会明确失败，不会截断为“完整导出”。</p>
+ <label>账户操作<select value={op} disabled={blocked||Boolean(id)} onChange={e=>setOp(e.target.value as Operation)}><option value="email_change">修改邮箱</option><option value="close" disabled={!cap?.close}>关闭账户</option><option value="delete" disabled={!cap?.permanentDelete}>永久删除服务器账户资料</option></select></label>
+ {op==='email_change'&&<label>新邮箱<input type="email" value={newEmail} disabled={blocked||Boolean(id)} onChange={e=>setNewEmail(e.target.value)}/></label>}
+ {!cap?.close&&<p>关闭与永久删除暂未开放，等待服务器配置已批准的数据政策。</p>}
+ {!id?<button disabled={blocked||!cap} onClick={()=>void act(async()=>{const result=await cloudRequest('/api/account/operation/begin','POST',{operation:op,...(op==='email_change'?{newEmail}:{})},account.id);if(typeof result.operationId!=='string'||result.phase!=='old')throw new Error('INVALID_PROOF');setId(result.operationId);setPhase('old');return '验证码已发送到旧邮箱。';})}>验证旧邮箱</button>:<>
+ {(phase==='old'||phase==='new')&&<><label>{phase==='old'?'旧邮箱操作验证码':'新邮箱操作验证码'}<input inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={e=>setCode(e.target.value)} disabled={blocked}/></label><button disabled={blocked} onClick={()=>void act(async()=>{const result=await cloudRequest('/api/account/operation/verify','POST',{operationId:id,code},account.id);if(!['new','ready'].includes(String(result.phase)))throw new Error('INVALID_PROOF');setPhase(String(result.phase));setCode('');return result.phase==='new'?'旧邮箱验证通过，验证码已发送到新邮箱。':'验证通过，请完成第二次确认。';})}>核验操作验证码</button></>}
+ {phase==='ready'&&<><p>{op==='delete'?'将永久删除在线数据库中的账户、存档、事件、记忆、回收区和使用权益数据。备份副本按已批准的数据政策处理。':op==='close'?'账户关闭后无法继续登录，服务器数据按批准政策保留；关闭不等于永久删除。':'确认后全部会话退出，请用新邮箱重新登录。'}请先导出资料。</p><label>输入 {required}<input value={confirmation} onChange={e=>setConfirmation(e.target.value)} disabled={blocked}/></label><button disabled={blocked||confirmation!==required} onClick={()=>{if(window.confirm('确认执行此账户操作？所有会话将失效。'))void act(async()=>{await cloudRequest('/api/account/operation/complete','POST',{operationId:id,confirmation},account.id);onSignedOut();return '账户操作已确认完成。';});}}>最终确认账户操作</button></>}
+ <button disabled={blocked} onClick={()=>void act(async()=>{await cloudRequest('/api/account/operation/cancel','POST',{operationId:id},account.id);setId('');setPhase('');setCode('');setConfirmation('');return '验证流程已取消。';})}>取消账户操作</button></>}
+ <p role="status">{message}</p></section>;
+}

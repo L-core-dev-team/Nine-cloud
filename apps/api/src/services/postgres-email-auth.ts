@@ -44,7 +44,8 @@ export class PostgresEmailAuthRepository implements EmailAuthRepository {
         await client.query('COMMIT'); return null;
       }
       const account = await client.query(`INSERT INTO auth_accounts (id, email) VALUES ($1, $2)
-        ON CONFLICT (email) DO UPDATE SET email = EXCLUDED.email RETURNING id`, [randomUUID(), email]);
+        ON CONFLICT (email) DO UPDATE SET email = EXCLUDED.email WHERE auth_accounts.closed_at IS NULL RETURNING id`, [randomUUID(), email]);
+      if (!account.rows[0]) { await client.query('UPDATE auth_challenges SET digest = NULL WHERE email = $1', [email]); await client.query('COMMIT'); return null; }
       const ownerId = account.rows[0].id as string;
       await insertSession(client, tokenHash, ownerId, expiresAt);
       await client.query('UPDATE auth_challenges SET digest = NULL WHERE email = $1', [email]);
@@ -53,7 +54,7 @@ export class PostgresEmailAuthRepository implements EmailAuthRepository {
   }
   async resolve(tokenHash: string, now: Date): Promise<AuthSession | null> {
     const result = await this.pool.query(`SELECT a.id, a.email, s.expires_at FROM auth_sessions s
-      JOIN auth_accounts a ON a.id = s.owner_id WHERE s.token_hash = $1 AND s.expires_at > $2`, [tokenHash, now]);
+      JOIN auth_accounts a ON a.id = s.owner_id WHERE s.token_hash = $1 AND s.expires_at > $2 AND a.closed_at IS NULL`, [tokenHash, now]);
     const row = result.rows[0]; return row ? { ownerId: row.id, email: row.email, expiresAt: new Date(row.expires_at) } : null;
   }
   async rotate(tokenHash: string, nextHash: string, now: Date, expiresAt: Date): Promise<AuthSession | null> {
@@ -61,7 +62,7 @@ export class PostgresEmailAuthRepository implements EmailAuthRepository {
     try {
       await client.query('BEGIN');
       const result = await client.query(`DELETE FROM auth_sessions s USING auth_accounts a
-        WHERE s.token_hash = $1 AND s.expires_at > $2 AND a.id = s.owner_id RETURNING a.id, a.email`, [tokenHash, now]);
+        WHERE s.token_hash = $1 AND s.expires_at > $2 AND a.id = s.owner_id AND a.closed_at IS NULL RETURNING a.id, a.email`, [tokenHash, now]);
       const row = result.rows[0];
       if (!row) { await client.query('ROLLBACK'); return null; }
       await insertSession(client, nextHash, row.id, expiresAt);

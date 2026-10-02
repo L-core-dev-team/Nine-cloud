@@ -6,3 +6,4 @@ export * from './world.js';
 export * from './errors.js';
 export * from './legacy-save.js';
 export * from './turn.js';
+export * from './state-delta.js';

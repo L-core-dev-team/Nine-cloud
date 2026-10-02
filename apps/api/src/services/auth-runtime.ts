@@ -2,6 +2,8 @@ import nodemailer from 'nodemailer';
 import type { Pool } from 'pg';
 import { EmailAuthService, normalizeEmail } from './email-auth.js';
 import { PostgresEmailAuthRepository } from './postgres-email-auth.js';
+import { AccountLifecycle } from './account-lifecycle.js';
+import { AccountExport } from './account-export.js';
 
 /** Disabled by default; explicit enablement requires every deployment input. */
 export function createEmailAuthRuntime(pool: Pool, env: NodeJS.ProcessEnv) {
@@ -25,5 +27,10 @@ export function createEmailAuthRuntime(pool: Pool, env: NodeJS.ProcessEnv) {
   const service = new EmailAuthService(new PostgresEmailAuthRepository(pool), async (email, code) => {
     await mail.sendMail({ from, to: email, subject: '九霄登录验证码', text: `登录验证码：${code}\n10 分钟内有效。若非本人操作，请忽略。` });
   }, secret);
-  return { service, origin };
+  const policyVersion = env.ACCOUNT_DATA_POLICY_VERSION?.trim() || null;
+  if (policyVersion && !/^[a-zA-Z0-9._:-]{1,200}$/.test(policyVersion)) throw new Error('Invalid ACCOUNT_DATA_POLICY_VERSION');
+  const lifecycle = new AccountLifecycle(pool, async (email, code) => {
+    await mail.sendMail({ from, to: email, subject: '九霄账号操作验证', text: `账号操作验证码：${code}\n仅用于您刚刚发起的邮箱变更、关闭或删除操作。10 分钟内完成验证；不要把验证码交给他人。` });
+  }, secret, policyVersion, env.ACCOUNT_DELETE_ENABLED === 'true');
+  return { service, origin, lifecycle, exporter: new AccountExport(pool) };
 }

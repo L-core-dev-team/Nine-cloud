@@ -30,6 +30,10 @@ async function login(page, email) {
   await page.getByText('已登录。', { exact: true }).waitFor();
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), await page.evaluate(() => document.documentElement.clientWidth), 'Cloud mobile page must not overflow horizontally');
 }
+async function latestCode(email) {
+  for (let i=0;i<40;i++) { const response=await fetch(`${mailApi}/api/v1/message/latest`);if(response.ok){const mail=await response.json();const code=mail.To?.some(to=>to.Address===email)&&mail.Text?.match(/验证码：(\d{6})/)?.[1];if(code)return code;}await new Promise(r=>setTimeout(r,100)); }
+  throw new Error('Isolated account-operation SMTP delivery failed');
+}
 (async () => {
   await ready(`${mailApi}/api/v1/info`);
   run(join(root, 'apps/api/dist/index.js'), [], root, { API_PORT: String(apiPort), DATABASE_URL: process.env.TEST_DATABASE_URL,
@@ -77,9 +81,20 @@ async function login(page, email) {
     await page.getByText('完整性校验通过，云档已恢复。', { exact: true }).waitFor();
     const recovered = await page.evaluate(async id => (await (await fetch(`/api/saves/${encodeURIComponent(id)}`)).json()).save, remote.saveId);
     assert.equal(recovered.revision, 3); assert.deepEqual(recovered.state, next.state);
+    const accountBefore = await page.evaluate(async()=>(await(await fetch('/api/auth/session')).json()).account);
+    const accountDownloadPromise=page.waitForEvent('download');await page.getByRole('button',{name:'导出账号全部资料',exact:true}).click();
+    const accountDownload=await accountDownloadPromise;const accountText=readFileSync(await accountDownload.path(),'utf8');const accountBundle=JSON.parse(accountText);
+    assert.equal(accountBundle.account.id,accountBefore.id);assert.equal(accountBundle.client.independentLocalSaves.length,2);assert.ok(accountBundle.data.saves.some(row=>row.id===remote.saveId));assert.ok(!accountText.includes('never-upload-this-key'));assert.ok(!accountText.includes('session_hash'));
+    const newEmail=`changed-${randomUUID()}@example.invalid`;await page.getByLabel('新邮箱',{exact:true}).fill(newEmail);await page.getByRole('button',{name:'验证旧邮箱',exact:true}).click();
+    await page.getByLabel('旧邮箱操作验证码',{exact:true}).fill(await latestCode(accountBefore.email));await page.getByRole('button',{name:'核验操作验证码',exact:true}).click();
+    await page.getByLabel('新邮箱操作验证码',{exact:true}).fill(await latestCode(newEmail));await page.getByRole('button',{name:'核验操作验证码',exact:true}).click();
+    await page.getByLabel('输入 CHANGE_EMAIL',{exact:true}).fill('CHANGE_EMAIL');page.once('dialog',dialog=>dialog.accept());await page.getByRole('button',{name:'最终确认账户操作',exact:true}).click();
+    await page.getByText('账户操作完成，所有会话已退出。本机独立存档保留。',{exact:true}).waitFor();
+    assert.equal(await pageC.evaluate(async()=>(await fetch('/api/auth/session')).status),401);await login(page,newEmail);
+    assert.equal((await page.evaluate(async()=>(await(await fetch('/api/auth/session')).json()).account)).id,accountBefore.id);
     const output = join(root, 'test-results/cloud'); mkdirSync(output, { recursive: true });
     await page.screenshot({ path: join(output, 'cloud-conflict-390.png'), fullPage: true });
-    writeFileSync(join(output, 'report.json'), JSON.stringify({ kind: 'isolated-smtp-postgres-browser', viewports: [[390,844],[430,932],[393,852]], checks: ['SMTP login', 'offline queue survives reload', 'redacted archive roundtrip', 'two-account read refusal', 'two-device CAS conflict', 'restore preserves local original', 'redacted cloud download', 'soft deletion preserves local saves', 'verified backup restoration'] }, null, 2));
+    writeFileSync(join(output, 'report.json'), JSON.stringify({ kind: 'isolated-smtp-postgres-browser', viewports: [[390,844],[430,932],[393,852]], checks: ['SMTP login', 'offline queue survives reload', 'redacted archive roundtrip', 'two-account read refusal', 'two-device CAS conflict', 'restore preserves local original', 'redacted cloud download', 'soft deletion preserves local saves', 'verified backup restoration', 'full account export excludes credentials', 'old then new email proof', 'email change revokes other device session', 'new email login keeps same owner'] }, null, 2));
     await a.close(); await b.close(); await secondDevice.close();
     console.log('Isolated SMTP/PostgreSQL cloud browser path passed; no real account or provider acceptance claimed.');
   } finally { await browser.close(); }

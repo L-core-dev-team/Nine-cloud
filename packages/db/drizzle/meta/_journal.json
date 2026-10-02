@@ -36,6 +36,13 @@
       "when": 1790845235945,
       "tag": "0004_s6_archive_trash",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790913321543,
+      "tag": "0005_fearless_shatterstar",
+      "breakpoints": true
     }
   ]
 }

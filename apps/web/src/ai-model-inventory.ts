@@ -1,4 +1,9 @@
 export type RouterModel = {
+  provider: 'openrouter';
+  modelId: string;
+  capability: { outputModalities: string[] } | null;
+  price: { input: number | null; output: number | null; currency: 'USD'; unit: 'million_tokens' };
+  updatedAt: string | null;
   id: string;
   name: string;
   description: string;
@@ -44,6 +49,11 @@ export function normalizeRouterModels(payload: unknown, now = Date.now()): Route
       ? new Date(raw.created * 1000) : null;
     const created = date && Number.isFinite(date.getTime()) ? date.toISOString().slice(0, 10) : null;
     const model: RouterModel = {
+      provider: 'openrouter', modelId: id,
+      capability: modalities.length ? { outputModalities: modalities.filter((value): value is string => typeof value === 'string') } : null,
+      price: { input: price(raw.pricing?.prompt), output: price(raw.pricing?.completion), currency: 'USD', unit: 'million_tokens' },
+      // Retrieval time, not the provider's model creation date or a claimed price verification.
+      updatedAt: Number.isFinite(now) && Number.isFinite(new Date(now).getTime()) ? new Date(now).toISOString() : null,
       id,
       name: typeof raw.name === 'string' && raw.name ? raw.name : id,
       description: typeof raw.description === 'string' ? raw.description : '',
@@ -60,6 +70,8 @@ export function normalizeRouterModels(payload: unknown, now = Date.now()): Route
       // Conflicting duplicate quotes cannot safely become a single exact price.
       if (previous.inputUsdPerMillion !== model.inputUsdPerMillion) previous.inputUsdPerMillion = null;
       if (previous.outputUsdPerMillion !== model.outputUsdPerMillion) previous.outputUsdPerMillion = null;
+      previous.price.input = previous.inputUsdPerMillion;
+      previous.price.output = previous.outputUsdPerMillion;
     } else models.set(id, model);
   }
   return [...models.values()].sort((a, b) => a.author.localeCompare(b.author) || a.name.localeCompare(b.name));

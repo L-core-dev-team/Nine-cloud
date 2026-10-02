@@ -21,12 +21,12 @@ const pool = new Pool({ connectionString: databaseUrl, max: 5, connectionTimeout
 pool.on('error', () => { console.error('Database connection unavailable.'); });
 const emailAuth = createEmailAuthRuntime(pool, process.env);
 const app = createApp({ query: sql => pool.query(sql) }, emailAuth ? {
-  service: new CloudSaveService(new PostgresCloudSaveRepository(pool), true),
-  archive: new CloudArchiveLifecycle(pool),
+  service: new CloudSaveService(new PostgresCloudSaveRepository(pool, true), true),
+  archive: new CloudArchiveLifecycle(pool, true),
   auth: { resolveOwnerId: async request => (await emailAuth.service.resolve(sessionToken(request)))?.ownerId || null },
 } : undefined, emailAuth, emailAuth ? {
   // No author rules are bundled: authenticated requests remain fail closed.
-  service: new ServerTurnService(createPostgresServerTurnRepository(pool)),
+  service: new ServerTurnService(createPostgresServerTurnRepository(pool, true)),
   auth: { resolveOwnerId: async request => (await emailAuth.service.resolve(sessionToken(request)))?.ownerId || null },
 } : undefined);
 

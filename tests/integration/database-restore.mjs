@@ -14,7 +14,7 @@ const sourceUrl = new URL(process.env.TEST_DATABASE_URL); const sourceName = dec
 const user = decodeURIComponent(sourceUrl.username); const restoreName = `jiuxiao_test_restore_${randomUUID().replaceAll('-', '')}`;
 assert.match(restoreName, /^jiuxiao_test_restore_[a-f0-9]{32}$/);
 const { Pool } = createRequire(resolve(root, 'apps/api/package.json'))('pg');
-const tables = ['auth_accounts','auth_challenges','auth_mail_limits','auth_sessions','cloud_archive_trash','game_saves','turn_requests','turn_events','npc_memory_journals','entitlement_balances','entitlement_ledger_entries'];
+const tables = ['account_operations','auth_accounts','auth_challenges','auth_mail_limits','auth_sessions','cloud_archive_trash','game_saves','turn_requests','turn_events','npc_memory_journals','entitlement_balances','entitlement_ledger_entries'];
 const docker = args => execFileSync('docker', ['exec', container, ...args], { maxBuffer: 64 * 1024 * 1024 });
 async function digest(url) {
   const pool = new Pool({ connectionString: url, connectionTimeoutMillis: 3000 });

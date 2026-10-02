@@ -4,9 +4,9 @@ import { PostgresNpcMemoryTurnRepository } from './npc-memory-turn-transaction.j
 import type { ServerTurnRepository } from './server-turn.js';
 
 /** Host-side adapter only: it does not publish or supply gameplay rules. */
-export function createPostgresServerTurnRepository(pool: Pool): ServerTurnRepository {
+export function createPostgresServerTurnRepository(pool: Pool, requiresLiveAccount = false): ServerTurnRepository {
   const saves = new PostgresCloudSaveRepository(pool);
-  const turns = new PostgresNpcMemoryTurnRepository(pool);
+  const turns = new PostgresNpcMemoryTurnRepository(pool, requiresLiveAccount);
   return {
     loadSave: (owner, id) => saves.getForOwner(owner, id),
     getReceiptForOwner: (owner, id, key) => turns.getReceiptForOwner(owner, id, key),

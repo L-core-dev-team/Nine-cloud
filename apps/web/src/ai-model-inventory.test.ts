@@ -7,6 +7,10 @@ const snapshot = (pricing: unknown, extra = {}) => normalizeRouterModels({ data:
 ] }, now)[0]!;
 
 describe('public model catalog boundaries', () => {
+  it('exposes explicit hosted-route metadata without guessing price or capability', () => {
+    expect(snapshot({}, { created: 1780000000 })).toMatchObject({ provider: 'openrouter', modelId: 'openai/example', capability: null, price: {input: null, output: null, currency: 'USD', unit: 'million_tokens'}, updatedAt: new Date(now).toISOString() });
+    expect(snapshot({}, { architecture: {output_modalities: ['text']} }).capability).toEqual({outputModalities: ['text']});
+  });
   it.each([null, undefined, '', '  ', true, false, [], {}, '-1', 'NaN', 'Infinity', '0x10', 1e308])(
     'does not treat invalid price %j as a zero-price quote', value => {
       const model = snapshot({ prompt: value, completion: value });

@@ -36,7 +36,8 @@ export class IndexedCloudQueue implements CloudQueueStore {
   }
 }
 export class CloudHttpError extends Error { constructor(readonly status: number) { super(`CLOUD_${status}`); } }
-export async function cloudRequest(path: string, method = 'GET', body?: unknown, expectedOwner?: string, cancellation?: AbortSignal): Promise<Record<string, unknown>> {
+export async function cloudRequest(path: string, method = 'GET', body?: unknown, expectedOwner?: string, cancellation?: AbortSignal, maximumBytes = 1_000_000): Promise<Record<string, unknown>> {
+  if (!Number.isSafeInteger(maximumBytes) || maximumBytes < 1 || maximumBytes > 32_000_000) throw new Error('INVALID_RESPONSE_BOUND');
   const deadline = AbortSignal.timeout(20000);
   const response = await fetch(path, { method, credentials: 'same-origin', cache: 'no-store', signal: cancellation ? AbortSignal.any([deadline, cancellation]) : deadline,
     headers: { ...(expectedOwner ? { 'x-jiuxiao-account': expectedOwner } : {}), ...(body === undefined ? {} : { 'content-type': 'application/json' }) },
@@ -46,7 +47,7 @@ export async function cloudRequest(path: string, method = 'GET', body?: unknown,
   const chunks: Uint8Array[] = []; let size = 0;
   try {
     while (true) { const { done, value } = await reader.read(); if (done) break;
-      size += value.byteLength; if (size > 1000000) { await reader.cancel(); throw new Error('INVALID_CLOUD_RESPONSE'); } chunks.push(value); }
+      size += value.byteLength; if (size > maximumBytes) { await reader.cancel(); throw new Error('INVALID_CLOUD_RESPONSE'); } chunks.push(value); }
   } finally { reader.releaseLock(); }
   const bytes = new Uint8Array(size); let offset = 0; for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.length; }
   const value: unknown = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
