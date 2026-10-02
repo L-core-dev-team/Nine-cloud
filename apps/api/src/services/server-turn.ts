@@ -65,7 +65,7 @@ export class ServerTurnService {
     if (rules.ruleVersion !== save.ruleVersion || rules.canonVersion !== save.canonVersion ||
         rules.memoryPolicyVersion !== save.memoryPolicyVersion) return { status: 'version_mismatch' };
     const prepared = await prepareTurn({ intent, save, ...(prior ? { priorReceipt: prior } : {}),
-      decide: rules.decide.bind(rules), reduce: rules.reduce });
+      decide: rules.decide.bind(rules), reduce: rules.reduce.bind(rules) });
     if (prepared.status === 'revision-conflict') return { status: 'revision_conflict', currentRevision: prepared.actualRevision };
     if (prepared.status === 'idempotency-conflict') return { status: 'idempotency_conflict' };
     if (prepared.status === 'recorded') return { status: 'decision', receipt: prepared.receipt };
@@ -79,7 +79,7 @@ export class ServerTurnService {
       const winner = await this.repository.getReceiptForOwner(ownerId, save.saveId, intent.idempotencyKey);
       if (winner) {
         const retry = await prepareTurn({ intent, save, priorReceipt: winner,
-          decide: rules.decide.bind(rules), reduce: rules.reduce });
+          decide: rules.decide.bind(rules), reduce: rules.reduce.bind(rules) });
         if (retry.status === 'duplicate') return this.completed(ownerId, retry.receipt, true, requestNarrative, cancellation);
         if (retry.status === 'idempotency-conflict') return { status: 'idempotency_conflict' };
       }

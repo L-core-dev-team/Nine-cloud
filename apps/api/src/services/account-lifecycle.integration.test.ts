@@ -43,9 +43,13 @@ suite('account lifecycle, isolated PostgreSQL only',()=>{
   await pool.query("INSERT INTO turn_requests(save_id,idempotency_key,expected_revision,result) VALUES($1,$2,0,'{}'::jsonb)",[saveId,randomUUID()]);
   await pool.query("INSERT INTO npc_memory_journals(save_id,payload) VALUES($1,'{}'::jsonb)",[saveId]);
   await pool.query("INSERT INTO cloud_archive_trash(save_id,owner_id,deleted_revision,backup,digest) VALUES($1,$2,0,'{}'::jsonb,$3)",[saveId,f.owner,'a'.repeat(64)]);
+  await pool.query("INSERT INTO entitlement_balances(owner_id,entitlement_key,available_units) VALUES($1,'fixture',1)",[f.owner]);
+  await pool.query("INSERT INTO entitlement_ledger_entries(id,owner_id,entitlement_key,entry_type,delta_units,balance_after,idempotency_key,request_hash) VALUES($1,$2,'fixture','grant',1,1,$3,$4)",[randomUUID(),f.owner,randomUUID(),'a'.repeat(64)]);
+  await expect(pool.query('DELETE FROM entitlement_ledger_entries WHERE owner_id=$1',[f.owner])).rejects.toThrow('append-only');
   const id=await ready(f,'delete');expect(await lifecycle.complete(f.owner,f.hash,id,'DELETE_ACCOUNT')).toMatchObject({status:'account_deleted'});
   expect((await pool.query('SELECT id FROM auth_accounts WHERE id=$1',[f.owner])).rowCount).toBe(0);expect((await pool.query('SELECT id FROM game_saves WHERE id=$1',[saveId])).rowCount).toBe(0);expect(await auth.resolve(f.token)).toBeNull();expect(await auth.resolve(b.token)).not.toBeNull();
   for(const table of ['turn_requests','npc_memory_journals','cloud_archive_trash'])expect((await pool.query(`SELECT save_id FROM ${table} WHERE save_id=$1`,[saveId])).rowCount).toBe(0);
+  for(const table of ['entitlement_balances','entitlement_ledger_entries'])expect((await pool.query(`SELECT owner_id FROM ${table} WHERE owner_id=$1`,[f.owner])).rowCount).toBe(0);
  });
  it('persists failed attempts and refuses the correct OTP after five failures',async()=>{
   const f=await fixture(),op=await lifecycle.begin(f.owner,f.hash,'close');const code=sent.get(f.email)!;const wrong=code==='000000'?'000001':'000000';

@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { describe, expect, it, vi } from 'vitest';
 import type { SaveEnvelope, TurnReceipt } from '@jiuxiao/contracts';
 import { createNpcMemoryJournal } from '@jiuxiao/domain';
+import { RuleResolver } from './rule-resolver.js';
 import { ServerTurnService, type ServerTurnRepository, type ServerTurnRules } from './server-turn.js';
 
 function fixture() {
@@ -37,6 +38,13 @@ function fixture() {
 }
 
 describe('server turn orchestration (synthetic rules, never production gameplay)', () => {
+  it('preserves class-based resolver context during settlement and duplicate recovery', async () => {
+    const f=fixture();const rules=new RuleResolver({version:{ruleVersion:'fixture-only',ActionRulesVersion:'fixture-action',CombatRulesVersion:'fixture-combat',canonVersion:'fixture-only',memoryPolicyVersion:'fixture-only'},resolve:()=>({status:'accepted',delta:{timeChange:1,locationChange:{before:'origin',after:'gate'},factChanges:[]}})},()=>[],()=>'exact-recall-v1');
+    const service=new ServerTurnService(f.repository,rules);
+    expect(await service.execute('owner',f.intent)).toMatchObject({status:'accepted',duplicate:false});
+    expect(await service.execute('owner',f.intent)).toMatchObject({status:'accepted',duplicate:true});
+    expect(f.snapshot().save).toMatchObject({revision:1,state:{locationId:'gate',elapsedMinutes:1}});
+  });
   it('records presentation status after commit without letting log failure undo settlement', async () => {
     const f=fixture();const log=vi.fn<NonNullable<ServerTurnRepository['recordNarrativeStatus']>>(async()=>{expect(f.snapshot().save.revision).toBe(1);});f.repository.recordNarrativeStatus=log;
     expect(await new ServerTurnService(f.repository,f.rules,async()=>'text').execute('owner',f.intent,true)).toMatchObject({status:'accepted',narrative:{status:'received'}});
