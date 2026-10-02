@@ -18,7 +18,9 @@ function run(file, args, cwd, env) {
 async function ready(url) { for (let i = 0; i < 100; i++) { try { if ((await fetch(url)).ok) return; } catch {} await new Promise(r => setTimeout(r, 100)); } throw new Error('Local service readiness failed'); }
 async function login(page, email) {
   await page.goto(`${origin}/settings/cloud`); await page.getByLabel('邮箱', { exact: true }).fill(email);
-  await page.getByRole('button', { name: '发送验证码', exact: true }).click(); await page.getByText('验证码已发送，10 分钟内有效。', { exact: true }).waitFor();
+  await page.getByRole('button', { name: '发送验证码', exact: true }).click();
+  try { await page.getByText('验证码已发送，10 分钟内有效。', { exact: true }).waitFor(); }
+  catch (error) { console.error('Isolated login notice:', await page.getByRole('status').allTextContents()); throw error; }
   let code;
   for (let i = 0; i < 40; i++) {
     const response = await fetch(`${mailApi}/api/v1/message/latest`);

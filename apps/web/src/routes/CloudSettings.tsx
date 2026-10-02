@@ -11,7 +11,7 @@ function readAccount(value: unknown): Account {
 export function CloudSettings({ saves, onRestore }: { saves: LocalSave[]; onRestore: (save: LocalSave) => Promise<LocalSave | null> }) {
   const sync = useRef(new CloudSync(new IndexedCloudQueue())).current;
   const [account, setAccount] = useState<Account | null>(null); const [email, setEmail] = useState(''); const [code, setCode] = useState('');
-  const [notice, setNotice] = useState('正在检查云档服务…'); const [busy, setBusy] = useState(false); const busyRef = useRef(false);
+  const [notice, setNotice] = useState('正在检查云档服务…'); const [busy, setBusy] = useState(true); const busyRef = useRef(true);
   const [queue, setQueue] = useState<CloudRecord[]>([]); const [remote, setRemote] = useState<Array<{ saveId: string; name: string; revision: number }>>([]); const [offset, setOffset] = useState(0); const [hasMore, setHasMore] = useState(false);
   const [trash, setTrash] = useState<Array<{ saveId: string; name: string; revision: number }>>([]); const [trashOffset, setTrashOffset] = useState(0); const [trashMore, setTrashMore] = useState(false);
   const refreshTrash = async (owner: string, pageOffset = trashOffset) => {
@@ -24,13 +24,14 @@ export function CloudSettings({ saves, onRestore }: { saves: LocalSave[]; onRest
     if (!Array.isArray(result.saves) || !result.saves.every(value => value && typeof value.saveId === 'string' && typeof value.name === 'string' && Number.isSafeInteger(value.revision))) throw new Error('INVALID_CLOUD_RESPONSE');
     setRemote(result.saves as Array<{ saveId: string; name: string; revision: number }>); setHasMore(result.hasMore === true); setOffset(pageOffset);
     setQueue(await sync.list(owner));
-    await refreshTrash(owner);
+    await refreshTrash(owner, 0);
   };
   useEffect(() => {
     let active = true;
     void cloudRequest('/api/auth/session').then(async result => {
-      if (!active) return; const user = readAccount(result.account); setAccount(user); await refresh(user.id); if (active) setNotice('已登录。云端备份需手动提交，本地存档始终保留。');
-    }).catch(error => { if (active) setNotice(error instanceof CloudHttpError && error.status === 401 ? '使用邮箱验证码登录。' : '云档服务尚未启用或暂不可用；本地功能不受影响。'); });
+      if (!active) return; const user = readAccount(result.account); setAccount(user); await refresh(user.id, 0); if (active) setNotice('已登录。云端备份需手动提交，本地存档始终保留。');
+    }).catch(error => { if (active) setNotice(error instanceof CloudHttpError && error.status === 401 ? '使用邮箱验证码登录。' : '云档服务尚未启用或暂不可用；本地功能不受影响。'); })
+      .finally(() => { if (active) { busyRef.current = false; setBusy(false); } });
     return () => { active = false; };
   }, []);
   const act = async (work: () => Promise<string>) => {
@@ -38,14 +39,14 @@ export function CloudSettings({ saves, onRestore }: { saves: LocalSave[]; onRest
     try { setNotice(await work()); } catch (error) {
       setNotice(error instanceof CloudHttpError && error.status === 401 ? '会话失效或账号已切换，请重新登录。原账号队列保留。' : error instanceof CloudHttpError && error.status === 429 ? '验证码发送过于频繁，请稍后重试。' : '操作未完成。未确认的上传保留在队列，本地存档未覆盖；可稍后重试。');
       if (error instanceof CloudHttpError && error.status === 401) { setAccount(null); setRemote([]); setQueue([]); setTrash([]); }
-      if (account) { try { setQueue(await sync.list(account.id)); } catch { /* Keep visible previous queue. */ } }
+      else if (account) { try { setQueue(await sync.list(account.id)); } catch { /* Keep visible previous queue. */ } }
     } finally { busyRef.current = false; setBusy(false); }
   };
   return <section className="card cloud-page" aria-busy={busy}><span className="eyebrow">账号与云端备份</span><h1>云档</h1><p role="status">{notice}</p>
     {!account ? <><label>邮箱<input type="email" autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} /></label>
       <button disabled={busy} onClick={() => void act(async () => { await cloudRequest('/api/auth/code', 'POST', { email }); return '验证码已发送，10 分钟内有效。'; })}>发送验证码</button>
       <label>验证码<input inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={e => setCode(e.target.value)} /></label>
-      <button disabled={busy} onClick={() => void act(async () => { const result = await cloudRequest('/api/auth/verify', 'POST', { email, code }); const user = readAccount(result.account); setAccount(user); setCode(''); await refresh(user.id); return '已登录。'; })}>登录</button></>
+      <button disabled={busy} onClick={() => void act(async () => { const result = await cloudRequest('/api/auth/verify', 'POST', { email, code }); const user = readAccount(result.account); setAccount(user); setCode(''); await refresh(user.id, 0); return '已登录。'; })}>登录</button></>
       : <><p>{account.email}</p><div className="actions"><button disabled={busy} onClick={() => void act(async () => { await cloudRequest('/api/auth/refresh', 'POST', {}, account.id); return '会话已刷新。'; })}>刷新会话</button>
         <button disabled={busy} onClick={() => void act(async () => { await cloudRequest('/api/auth/logout', 'POST', {}, account.id); setAccount(null); setRemote([]); setQueue([]); setTrash([]); return '已退出；本地存档及未完成队列保留。'; })}>退出</button>
         <button disabled={busy} onClick={() => void act(async () => { await sync.flush(account.id); await refresh(account.id); return '已重试队列。冲突需要逐项选择。'; })}>重试待上传</button></div>

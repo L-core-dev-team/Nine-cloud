@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { CloudHttpError, CloudSync, archiveFromEnvelope, type CloudRecord, type CloudQueueStore } from './cloud-sync';
+import { describe, expect, it, vi } from 'vitest';
+import { CloudHttpError, CloudSync, IndexedCloudQueue, archiveFromEnvelope, type CloudRecord, type CloudQueueStore } from './cloud-sync';
 import type { LocalSave } from './storage';
 import type { SaveEnvelope } from '@jiuxiao/contracts';
 
@@ -11,7 +11,57 @@ class Store implements CloudQueueStore {
   async list(owner: string) { return [...this.rows.values()].filter(r => r.ownerId === owner).map(r => structuredClone(r)); }
   async update(key: string, change: (r: CloudRecord | undefined) => CloudRecord) { const next = change(structuredClone(this.rows.get(key))); this.rows.set(key, structuredClone(next)); return next; }
 }
+describe('cloud queue connections', () => {
+  it('closes a late connection after reporting a blocked open, without starting a transaction', async () => {
+    const close = vi.fn(); const transaction = vi.fn();
+    const request = { result: { close, transaction }, onsuccess: null as (() => void) | null,
+      onblocked: null as (() => void) | null };
+    vi.stubGlobal('indexedDB', { open: () => request });
+    try {
+      const reading = new IndexedCloudQueue().list('a');
+      request.onblocked!(); await expect(reading).rejects.toThrow('QUEUE_UNAVAILABLE');
+      request.onsuccess!(); expect(close).toHaveBeenCalledOnce(); expect(transaction).not.toHaveBeenCalled();
+    } finally { vi.unstubAllGlobals(); }
+  });
+});
 describe('cloud archive queues and CAS decisions', () => {
+  it('rejects a reviewed local choice after a newer local upload replaces it', async () => {
+    const store = new Store(); const sync = new CloudSync(store);
+    const first = await sync.enqueue('a', save);
+    const reviewed = await store.update(first.key, current => ({ ...current!, conflict: { ...first.pending!, revision: 2 } }));
+    await sync.enqueue('a', { ...save, name: '尚未核对的新编辑' });
+    const latest = (await sync.list('a'))[0];
+    await expect(sync.keepLocal(reviewed)).rejects.toThrow('STALE_CONFLICT');
+    expect((await sync.list('a'))[0]).toEqual(latest);
+  });
+  it('a delayed acknowledgement cannot rewind a newer cloud revision or queued edit', async () => {
+    const store = new Store(); let release!: () => void;
+    const wait = new Promise<void>(resolve => { release = resolve; }); let entered!: () => void;
+    const started = new Promise<void>(resolve => { entered = resolve; });
+    const slow = new CloudSync(store, async (_path, _method, body) => {
+      entered(); await wait; return { save: (body as { save: SaveEnvelope }).save };
+    });
+    const fast = new CloudSync(store, async (_path, _method, body) => ({ save: (body as { save: SaveEnvelope }).save }));
+    await slow.enqueue('a', save); const oldRequest = slow.flush('a'); await started;
+    await fast.flush('a'); await fast.enqueue('a', { ...save, name: '已提交的新编辑' }); await fast.flush('a');
+    await fast.enqueue('a', { ...save, name: '第三份待提交编辑' });
+    const latest = (await fast.list('a'))[0]; release(); await oldRequest;
+    expect((await fast.list('a'))[0]).toEqual(latest);
+  });
+  it('a delayed conflict does not block or replace the result of a newer successful upload', async () => {
+    const store = new Store(); let release!: () => void; let entered!: () => void;
+    const wait = new Promise<void>(resolve => { release = resolve; });
+    const started = new Promise<void>(resolve => { entered = resolve; }); let remote: SaveEnvelope;
+    const slow = new CloudSync(store, async (_path, method) => {
+      if (method === 'GET') return { save: { ...remote, revision: 0, state: { ...remote.state, facts: { ...remote.state.facts, cloudMutationId: 'stale-other' } } } };
+      entered(); await wait; throw new CloudHttpError(409);
+    });
+    const fast = new CloudSync(store, async (_path, _method, body) => { remote = (body as { save: SaveEnvelope }).save; return { save: remote }; });
+    await slow.enqueue('a', save); const oldRequest = slow.flush('a'); await started;
+    await fast.flush('a'); await fast.enqueue('a', { ...save, name: '新编辑' }); await fast.flush('a');
+    const latest = (await fast.list('a'))[0]; release(); await oldRequest;
+    expect((await fast.list('a'))[0]).toEqual(latest);
+  });
   it('restored local copies remain bound to the reviewed cloud identity and revision', async () => {
     const store = new Store(); const sync = new CloudSync(store);
     const original = await sync.enqueue('a', save);

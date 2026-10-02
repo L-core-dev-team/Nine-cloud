@@ -1119,7 +1119,12 @@ async function ready(url) {
         ['blank.txt', '   \n'], ['script-only.html', '<script>window.importScriptExecuted=true</script><style>body{display:none}</style>'],
       ];
       for (const [name, text] of invalidImports) {
+        console.log(`Invalid import regression: ${width}px ${name}`);
         const bytes = Buffer.from(text);
+        // Each rejection must also survive a real reload. Browser-initiated
+        // navigation resets the automatic-download limiter between samples.
+        await page.reload();
+        await page.waitForFunction(() => document.documentElement.dataset.jxStorageHydrated === 'true');
         await page.getByRole('button', { name: '菜单' }).click();
         const [invalidBackup] = await Promise.all([
           page.waitForEvent('download'),
