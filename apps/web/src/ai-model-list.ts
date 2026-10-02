@@ -55,6 +55,26 @@ export function parseModelList(protocol: ProtocolId, payload: unknown): { models
   return { models, cursor: typeof rawCursor === 'string' ? rawCursor : null };
 }
 
+async function readModelResponse(response: Response) {
+  const reader = response.body?.getReader();
+  if (!reader) throw new Error('型号列表响应为空。');
+  const decoder = new TextDecoder('utf-8', { fatal: true });
+  let bytes = 0; let text = '';
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      bytes += value.byteLength;
+      if (bytes > 2_000_000) {
+        await reader.cancel();
+        throw new Error('型号列表响应过大，读取已中止。');
+      }
+      text += decoder.decode(value, { stream: true });
+    }
+    return text + decoder.decode();
+  } finally { reader.releaseLock(); }
+}
+
 export async function fetchAvailableModels(protocol: ProtocolId, baseUrl: string, apiKey: string, signal: AbortSignal, fetcher: typeof fetch = fetch) {
   const found = new Map<string, AvailableModel>();
   const seen = new Set<string>();
@@ -63,8 +83,7 @@ export async function fetchAvailableModels(protocol: ProtocolId, baseUrl: string
     const request = modelListRequest(protocol, baseUrl, apiKey, cursor);
     const response = await fetcher(request.url, { headers: request.headers, signal, credentials: 'omit', redirect: 'error', cache: 'no-store', referrerPolicy: 'no-referrer' });
     if (!response.ok) throw new Error(`型号列表返回 HTTP ${response.status}；请检查账号权限或手动填写。`);
-    const text = await response.text();
-    if (text.length > 2_000_000) throw new Error('型号列表响应过大，读取已中止。');
+    const text = await readModelResponse(response);
     const result = parseModelList(protocol, JSON.parse(text));
     for (const model of result.models) found.set(model.id, model);
     if (found.size > 1000) throw new Error('型号列表超过 1000 项，未将部分列表标为完整。');
