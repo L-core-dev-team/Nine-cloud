@@ -6,6 +6,10 @@ export type CloudSaveWriteResult =
   | { kind: 'conflict'; currentRevision?: number }
   | { kind: 'not_found' };
 
+export class CloudCapacityError extends Error {
+  constructor() { super('CAPACITY_EXCEEDED'); }
+}
+
 export interface CloudSaveRepository {
   archiveIndexForOwner?(ownerId: string, offset: number, limit: number): Promise<Array<{ saveId: string; name: string; revision: number }>>;
   listForOwner(ownerId: string): Promise<SaveEnvelope[]>;
