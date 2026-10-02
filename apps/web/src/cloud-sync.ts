@@ -13,9 +13,16 @@ export class IndexedCloudQueue implements CloudQueueStore {
   private async open() {
     return new Promise<IDBDatabase>((resolve, reject) => {
       const request = indexedDB.open('jiuxiao-cloud-1', 1);
+      let blocked = false;
       request.onupgradeneeded = () => request.result.createObjectStore('queue', { keyPath: 'key' });
-      request.onsuccess = () => resolve(request.result); request.onerror = () => reject(new Error('QUEUE_UNAVAILABLE'));
-      request.onblocked = () => reject(new Error('QUEUE_UNAVAILABLE'));
+      request.onsuccess = () => {
+        const db = request.result;
+        if (blocked) { db.close(); return; }
+        db.onversionchange = () => db.close();
+        resolve(db);
+      };
+      request.onerror = () => reject(new Error('QUEUE_UNAVAILABLE'));
+      request.onblocked = () => { blocked = true; reject(new Error('QUEUE_UNAVAILABLE')); };
     });
   }
   async list(ownerId: string) {
@@ -102,7 +109,14 @@ export class CloudSync {
         if (remote.saveId !== item.cloudSaveId) throw new Error('INVALID_CLOUD_ACK');
         archiveFromEnvelope(remote);
         if (mutation(remote) !== mutation(item.pending)) {
-          await this.store.update(item.key, current => ({ ...current!, conflict: remote })); continue;
+          await this.store.update(item.key, current => {
+            if (!current) throw new Error('MISSING_QUEUE');
+            // Another tab can commit, rebind, cancel or replace this upload while
+            // its request is in flight. An old failure is not its new conflict.
+            if (current.cloudSaveId !== item.cloudSaveId || current.baseRevision !== item.baseRevision ||
+                mutation(current.pending) !== mutation(item.pending)) return current;
+            return { ...current, conflict: remote };
+          }); continue;
         }
         accepted = remote; // Lost response/reload: this exact mutation already committed.
       }
@@ -110,6 +124,10 @@ export class CloudSync {
       archiveFromEnvelope(accepted);
       await this.store.update(item.key, current => {
         if (!current) throw new Error('MISSING_QUEUE');
+        // A later upload may already have advanced the shared queue. Never
+        // rewind that CAS baseline or rebase its edits onto an older receipt.
+        if (current.cloudSaveId !== item.cloudSaveId ||
+            (current.baseRevision !== null && current.baseRevision >= accepted.revision)) return current;
         const pending = mutation(current.pending) === mutation(item.pending) ? null : current.pending && { ...current.pending, revision: accepted.revision + 1 };
         return { ...current, baseRevision: accepted.revision, pending, conflict: null };
       });
@@ -118,7 +136,9 @@ export class CloudSync {
   async keepLocal(record: CloudRecord) {
     // Explicit user decision, CAS against the reviewed remote revision. A newer remote still conflicts.
     return this.store.update(record.key, current => {
-      if (!current?.conflict || !current.pending || current.conflict.revision !== record.conflict?.revision) throw new Error('STALE_CONFLICT');
+      if (!current?.conflict || !current.pending || current.cloudSaveId !== record.cloudSaveId ||
+          current.baseRevision !== record.baseRevision || mutation(current.pending) !== mutation(record.pending) ||
+          mutation(current.conflict) !== mutation(record.conflict) || current.conflict.revision !== record.conflict?.revision) throw new Error('STALE_CONFLICT');
       return { ...current, baseRevision: current.conflict.revision, pending: { ...current.pending, revision: current.conflict.revision + 1 }, conflict: null };
     });
   }

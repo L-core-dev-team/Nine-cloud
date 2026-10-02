@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type { ActionIntent, TurnReceipt } from '@jiuxiao/contracts';
-import { TurnClient, type PendingTurn, type TurnStore } from './turn-client';
+import { IndexedTurnStore, TurnClient, type PendingTurn, type TurnStore } from './turn-client';
 class Store implements TurnStore {
   rows = new Map<string, PendingTurn>();
   async read(key: string) { return structuredClone(this.rows.get(key) ?? null); }
@@ -14,6 +14,32 @@ async function receipt(): Promise<TurnReceipt> {
  decision: { status: 'accepted', nextRevision: 1, events: [{ id: '3719acb0-5296-48cd-b806-bc2966110ff7', saveId: 'test', type: 'fixture', beforeRevision: 0, afterRevision: 1, occurredAt: '2026-10-01T00:00:00.000Z', source: 'RULES', ruleVersion: 'fixture-only', payload: {} }] } };
 }
 describe('durable turn recovery', () => {
+ it('closes a late blocked storage connection without reading a turn', async () => {
+  const close = vi.fn(); const transaction = vi.fn();
+  const req = { result: { close, transaction }, onsuccess: null as (() => void) | null, onblocked: null as (() => void) | null };
+  vi.stubGlobal('indexedDB', { open: () => req });
+  try {
+   const reading = new IndexedTurnStore().read('owner\0test');
+   req.onblocked!(); await expect(reading).rejects.toThrow('TURN_STORAGE_UNAVAILABLE');
+   req.onsuccess!(); expect(close).toHaveBeenCalledOnce(); expect(transaction).not.toHaveBeenCalled();
+  } finally { vi.unstubAllGlobals(); }
+ });
+ it('does not rewind an acknowledgement confirmed between read and dispatch', async () => {
+  const ack = await receipt(); const store = new Store(); const request = vi.fn(async () => ({ receipt: ack }));
+  const client = new TurnClient(store, request); const prepared = await client.prepare('owner', intent);
+  const confirmed: PendingTurn = { ...prepared, phase: 'confirmed', receipt: ack };
+  const originalUpdate = store.update.bind(store);
+  store.update = async (key, change) => { store.rows.set(key, confirmed); return originalUpdate(key, change); };
+  expect(await client.submit(prepared)).toEqual(confirmed); expect(request).not.toHaveBeenCalled();
+ });
+ it.each(['accepted', 'rejected'] as const)('rejects a %s receipt at an unrelated revision despite its matching fingerprint', async status => {
+  const ack = await receipt();
+  const invalid: TurnReceipt = status === 'accepted' ? { ...ack, resultingRevision: 2, decision: { status, nextRevision: 2, events: ack.decision.status === 'accepted' ? ack.decision.events.map(event => ({ ...event, beforeRevision: 1, afterRevision: 2 })) : [] } }
+   : { ...ack, resultingRevision: 7, decision: { status, revision: 7, code: 'REFUSED', message: 'synthetic' } };
+  const client = new TurnClient(new Store(), async () => ({ receipt: invalid }));
+  await expect(client.submit(await client.prepare('owner', intent))).rejects.toThrow('INVALID_TURN_RECEIPT');
+  expect((await client.read('owner', 'test'))?.phase).toBe('unknown');
+ });
  it('persists uncertainty before sending and recovers identical intent after a lost acknowledgement', async () => {
   const store = new Store(); let calls = 0; const ack = await receipt();
   const request = async (_path: string, _method?: string, body?: unknown) => { calls++; expect((await store.read('owner\0test'))?.phase).toBe('unknown'); expect((body as {intent:unknown}).intent).toEqual(intent); if (calls === 1) throw new Error('lost reply'); return {receipt: ack}; };

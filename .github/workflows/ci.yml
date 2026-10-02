@@ -13,6 +13,8 @@ jobs:
     services:
       mailpit:
         image: axllent/mailpit:v1.27
+        env:
+          MP_SMTP_DISABLE_RDNS: 'true'
         ports:
           - 11025:1025
           - 18025:8025

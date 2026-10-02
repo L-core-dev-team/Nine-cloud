@@ -106,11 +106,12 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
     const secondInput = makeTurn(firstResult.journal, 1);
     await pool.query(
       'CREATE FUNCTION jiuxiao_test_reject_memory_write() RETURNS trigger LANGUAGE plpgsql ' +
-      'AS $$ BEGIN RAISE EXCEPTION \'forced journal failure\'; END; $$',
+      'AS $$ BEGIN IF NEW.save_id = TG_ARGV[0] THEN RAISE EXCEPTION \'forced journal failure\'; END IF; RETURN NEW; END; $$',
     );
     await pool.query(
       'CREATE TRIGGER jiuxiao_test_reject_memory_write BEFORE INSERT OR UPDATE ON npc_memory_journals ' +
-      'FOR EACH ROW EXECUTE FUNCTION jiuxiao_test_reject_memory_write()',
+      // Only fail this fixture; parallel suites share the isolated test database.
+      `FOR EACH ROW EXECUTE FUNCTION jiuxiao_test_reject_memory_write('${saveId}')`,
     );
     try {
       await expect(repository.commitAcceptedTurn({
