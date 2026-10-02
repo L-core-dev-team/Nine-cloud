@@ -15,7 +15,7 @@ suite('PostgresCloudSaveRepository (TEST_DATABASE_URL)', () => {
   const saveId = `s6-${randomUUID()}`;
 
   afterAll(async () => {
-    await pool.query('DELETE FROM game_saves WHERE id = $1 AND owner_id = $2', [saveId, ownerA]);
+    { const client = await pool.connect(); try { await client.query('BEGIN'); await client.query("SELECT set_config('jiuxiao.account_erasure_operation','test-cleanup',true)"); await client.query('DELETE FROM game_saves WHERE id = $1 AND owner_id = $2', [saveId, ownerA]); await client.query('COMMIT'); } catch (error) { await client.query('ROLLBACK'); throw error; } finally { client.release(); } }
     await pool.end();
   });
 

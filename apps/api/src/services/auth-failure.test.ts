@@ -17,7 +17,7 @@ describe('sanitized auth failure stages',()=>{
   expect(response.status).toBe(503);expect(await response.json()).toMatchObject({code:'VERIFICATION_STORE_FAILED',stage:'verification_store'});expect(sent).toBe(false);
  });
  it('invalidates a challenge after a provider refusal',async()=>{
-  let invalidated=false;const repo={issue:async()=>true,invalidate:async()=>{invalidated=true;}} as unknown as EmailAuthRepository;
+  let invalidated=false;const repo={issue:async()=>true,issueIpLimit:async()=>true,refundIssue:async()=>{},invalidate:async()=>{invalidated=true;}} as unknown as EmailAuthRepository;
   const service=new EmailAuthService(repo,async()=>{throw new AuthFailure('MAIL_REJECTED','mail_send');},'x'.repeat(32));
   await expect(service.requestCode('a@example.invalid')).rejects.toMatchObject({code:'MAIL_REJECTED'});expect(invalidated).toBe(true);
  });

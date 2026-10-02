@@ -4,6 +4,7 @@ const { chromium } = require('playwright');
 const assert = require('node:assert/strict');
 const { pathToFileURL } = require('node:url');
 const { resolve } = require('node:path');
+const { existsSync } = require('node:fs');
 
 const [legacy, current] = process.argv.slice(2);
 if (!legacy || !current) {
@@ -47,8 +48,9 @@ async function measure(browser, path, width, height) {
 }
 
 (async () => {
-  const browser = await chromium.launch({ headless: true,
-    executablePath: 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe' });
+  const edge = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
+  const executablePath = process.env.PLAYWRIGHT_BROWSER_EXECUTABLE || (process.platform === 'win32' && existsSync(edge) ? edge : undefined);
+  const browser = await chromium.launch(executablePath ? { headless: true, executablePath } : { headless: true });
   const report = {};
   try {
     for (const [name, path] of Object.entries({ legacy, current })) {

@@ -27,13 +27,19 @@ suite('ServerTurnService on isolated PostgreSQL (synthetic rules only)', () => {
     policyForNpc: () => 'exact-recall-v1',
   };
   afterAll(async () => {
-    for (const id of templateIds) { await pool.query('DELETE FROM turn_events WHERE save_id=$1',[id]); await pool.query('DELETE FROM turn_requests WHERE save_id=$1',[id]); await pool.query('DELETE FROM game_saves WHERE id=$1 AND owner_id=$2',[id,owner]); }
-    await pool.query('DELETE FROM turn_events WHERE save_id = $1', [secondSaveId]);
-    await pool.query('DELETE FROM turn_requests WHERE save_id = $1', [secondSaveId]);
-    await pool.query('DELETE FROM game_saves WHERE id = $1 AND owner_id = $2', [secondSaveId, owner]);
-    await pool.query('DELETE FROM turn_events WHERE save_id = $1', [saveId]);
-    await pool.query('DELETE FROM turn_requests WHERE save_id = $1', [saveId]);
-    await pool.query('DELETE FROM game_saves WHERE id = $1 AND owner_id = $2', [saveId, owner]);
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query("SELECT set_config('jiuxiao.account_erasure_operation','test-cleanup',true)");
+      for (const id of templateIds) { await client.query('DELETE FROM turn_events WHERE save_id=$1',[id]); await client.query('DELETE FROM turn_requests WHERE save_id=$1',[id]); await client.query('DELETE FROM game_saves WHERE id=$1 AND owner_id=$2',[id,owner]); }
+      await client.query('DELETE FROM turn_events WHERE save_id = $1', [secondSaveId]);
+      await client.query('DELETE FROM turn_requests WHERE save_id = $1', [secondSaveId]);
+      await client.query('DELETE FROM game_saves WHERE id = $1 AND owner_id = $2', [secondSaveId, owner]);
+      await client.query('DELETE FROM turn_events WHERE save_id = $1', [saveId]);
+      await client.query('DELETE FROM turn_requests WHERE save_id = $1', [saveId]);
+      await client.query('DELETE FROM game_saves WHERE id = $1 AND owner_id = $2', [saveId, owner]);
+      await client.query('COMMIT');
+    } catch (error) { await client.query('ROLLBACK'); throw error; } finally { client.release(); }
     await pool.end();
   });
   it('commits state, events, receipt and visible memory once, even when ten clients race and narration fails', async () => {

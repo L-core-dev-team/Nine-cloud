@@ -568,7 +568,15 @@ function App() {
     if (!result.ok) { setSaves(result.saves); setNotice(result.reason === 'conflict' ? '存档列表刚有变化，导入未覆盖任何内容。请核对最新列表后再选“另存副本”或重试。' : '浏览器数据库不可写，存档尚未导入。已下载的原始备份仍可使用。'); return; }
     setSaves(result.saves); setImportPreview(null); setNotice(commitSuccessMessage(result, `已导入「${candidate.name}」。原始旧档字段保存在历史资料区。`)); go(`/game/${candidate.saveId}`);
   }
-  function exportFile(save = saves[0]) { if (!save) { setNotice('暂无可导出的存档。'); return; } downloadText(`九霄-${save.name}.json`, serializeSaveForExport(save), 'application/json;charset=utf-8'); setNotice('存档已导出。'); }
+  function exportFile(save?: LocalSave) {
+    let selectedId = '';
+    try { selectedId = sessionStorage.getItem('jiuxiao_active_save_id') || ''; } catch { /* Fall back to the most recently edited save. */ }
+    const selected = save ?? saves.find(item => item.saveId === selectedId)
+      ?? [...saves].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt) || a.saveId.localeCompare(b.saveId))[0];
+    if (!selected) { setNotice('暂无可导出的存档。'); return; }
+    downloadText(`九霄-${selected.name}.json`, serializeSaveForExport(selected), 'application/json;charset=utf-8');
+    setNotice(`「${selected.name}」已导出。`);
+  }
   function importSupplement(file: File, save: LocalSave) {
     if (file.size > 100_000) { setNotice('补充资料不可超过 100 KB（100,000 字节），当前存档未修改。'); return; }
     void file.text().then(text => {
@@ -577,7 +585,11 @@ function App() {
       if (!target) { setNotice('找不到目标存档，补充资料未写入。'); return; }
       const payload = target.legacyArchive?.payload || {};
       const existing = Array.isArray(payload.supplements) ? payload.supplements : [];
-      const next: LocalSave = { ...target, updatedAt: new Date().toISOString(), legacyArchive: { sourceFormat: target.legacyArchive?.sourceFormat || 'JIUXIAO_LOCAL', sourceVersion: target.legacyArchive?.sourceVersion ?? null, payload: { ...payload, supplements: [...existing, { name: file.name, text, source: 'USER_SUPPLIED' }] } } };
+      const additions = [...existing, { name: file.name, text, source: 'USER_SUPPLIED' }];
+      if (additions.length > 20 || new TextEncoder().encode(JSON.stringify(additions)).byteLength > 256_000) {
+        setNotice('补充资料已达 20 份或合计 256 KB 上限；本次未写入，原档保持不变。'); return;
+      }
+      const next: LocalSave = { ...target, updatedAt: new Date().toISOString(), legacyArchive: { sourceFormat: target.legacyArchive?.sourceFormat || 'JIUXIAO_LOCAL', sourceVersion: target.legacyArchive?.sourceVersion ?? null, payload: { ...payload, supplements: additions } } };
       void commitSaves(current, current.map(item => item.saveId === save.saveId ? next : item)).then(result => {
         if (!result.ok) { setSaves(result.saves); setNotice(result.reason === 'conflict' ? '存档在读取补充资料期间发生变化，未覆盖较新版本；请重新附加。' : '浏览器数据库不可写，补充资料没有写入。'); return; }
         setSaves(result.saves); setNotice(commitSuccessMessage(result, `「${file.name}」已附加到「${save.name}」，不会覆盖旧内容。`));

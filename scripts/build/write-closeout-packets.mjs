@@ -11,6 +11,16 @@ if (process.env.GITHUB_ACTIONS !== 'true' || !/^\d+$/.test(process.env.GITHUB_RU
 const build=JSON.parse(readFileSync(resolve(out,'artifact-manifest.json'),'utf8'));
 const currentCommit=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
 if (build.commit !== currentCommit) throw new Error('STALE_BUILD_EVIDENCE');
+// SEC-04: prove the referenced run exists on GitHub, succeeded, and built exactly
+// this commit. A locally spoofed GITHUB_* environment now fails here instead of
+// fabricating CI evidence. GITHUB_REPOSITORY is always set inside Actions; its
+// absence fails closed for local invocations.
+const repositorySlug=process.env.GITHUB_REPOSITORY||'';
+if (!/^[^/\s]+\/[^/\s]+$/.test(repositorySlug)) throw new Error('CI_REPOSITORY_REQUIRED');
+const runResponse=await fetch(`https://api.github.com/repos/${repositorySlug}/actions/runs/${process.env.GITHUB_RUN_ID}`,{headers:{'user-agent':'jiuxiao-closeout',accept:'application/vnd.github+json',...(process.env.GITHUB_TOKEN?{authorization:`Bearer ${process.env.GITHUB_TOKEN}`}:{})}});
+if (!runResponse.ok) throw new Error(`CI_RUN_VERIFY_FAILED_HTTP_${runResponse.status}`);
+const run=await runResponse.json();
+if (run.head_sha !== currentCommit || run.status !== 'completed' || run.conclusion !== 'success') throw new Error(`CI_RUN_NOT_SUCCESSFUL_FOR_THIS_COMMIT:${run.head_sha?.slice(0,12)}/${run.status}/${run.conclusion}`);
 const digest=createHash('sha256').update(readFileSync(resolve(out,'artifact-manifest.json'))).digest('hex');
 const canonBytes=readFileSync(resolve(root,'packages/content/src/canon-runtime.json'));
 const canon=JSON.parse(canonBytes);const timestamp=new Date().toISOString();

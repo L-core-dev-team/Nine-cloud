@@ -3,7 +3,7 @@ import { isLocalSave, type LocalSave } from './storage';
 import { serializeSaveForExport } from './export-save';
 
 export type CloudRecord = { key: string; ownerId: string; localSaveId: string; cloudSaveId: string; baseRevision: number | null;
-  pending: SaveEnvelope | null; conflict: SaveEnvelope | null };
+  pending: SaveEnvelope | null; conflict: SaveEnvelope | null; failure?: 'AUTH_REQUIRED' | 'RATE_LIMITED' | 'SERVER_ERROR' | 'NETWORK_ERROR' | 'INVALID_RESPONSE' | 'UPLOAD_FAILED' | null };
 export interface CloudQueueStore {
   list(ownerId: string): Promise<CloudRecord[]>;
   update(key: string, change: (record: CloudRecord | undefined) => CloudRecord): Promise<CloudRecord>;
@@ -79,10 +79,11 @@ function mutation(envelope: SaveEnvelope | null) { return envelope?.state.facts.
 function envelopeFor(save: LocalSave, id: string, revision: number): SaveEnvelope {
   const archive: unknown = (JSON.parse(serializeSaveForExport(save)) as { save: unknown }).save; if (!isLocalSave(archive)) throw new Error('INVALID_LOCAL_SAVE');
   // These are transport archives, never approved rule events or authoritative gameplay state.
-  const envelope = SaveEnvelopeSchema.parse({ schemaVersion: 1, saveId: id, canonVersion: save.canonVersion, ruleVersion: save.ruleVersion,
+  const candidate = { schemaVersion: 1, saveId: id, canonVersion: save.canonVersion, ruleVersion: save.ruleVersion,
     memoryPolicyVersion: save.memoryPolicyVersion, revision, state: { playerId: save.saveId, locationId: save.location,
-      elapsedMinutes: 0, facts: { archiveKind: 'local-untrusted-v1', localArchive: archive, cloudMutationId: crypto.randomUUID() } } });
-  if (new TextEncoder().encode(JSON.stringify({ save: envelope, expectedRevision: revision })).byteLength > 1000000) throw new Error('ARCHIVE_TOO_LARGE');
+      elapsedMinutes: 0, facts: { archiveKind: 'local-untrusted-v1', localArchive: archive, cloudMutationId: crypto.randomUUID() } } };
+  if (new TextEncoder().encode(JSON.stringify({ save: candidate, expectedRevision: revision })).byteLength > 1000000) throw new Error('ARCHIVE_TOO_LARGE');
+  const envelope = SaveEnvelopeSchema.parse(candidate);
   return envelope;
 }
 export class CloudSync {
@@ -93,19 +94,21 @@ export class CloudSync {
     const key = `${ownerId}\0${localSaveId}`;
     return this.store.update(key, current => {
       if (current?.pending) throw new Error('LOCAL_UPLOAD_PENDING');
-      return { key, ownerId, localSaveId, cloudSaveId: remote.saveId, baseRevision: remote.revision, pending: null, conflict: null };
+      return { key, ownerId, localSaveId, cloudSaveId: remote.saveId, baseRevision: remote.revision, pending: null, conflict: null, failure: null };
     });
   }
   async enqueue(ownerId: string, save: LocalSave) {
     const key = `${ownerId}\0${save.saveId}`;
     return this.store.update(key, current => {
       const record = current ?? { key, ownerId, localSaveId: save.saveId, cloudSaveId: `archive-${crypto.randomUUID()}`, baseRevision: null, pending: null, conflict: null };
-      return { ...record, pending: envelopeFor(save, record.cloudSaveId, record.baseRevision === null ? 0 : record.baseRevision + 1) };
+      return { ...record, pending: envelopeFor(save, record.cloudSaveId, record.baseRevision === null ? 0 : record.baseRevision + 1), failure: null };
     });
   }
   async flush(ownerId: string) {
+    const summary = { uploaded: 0, failed: 0, conflicted: 0 };
     for (const item of await this.store.list(ownerId)) {
       if (!item.pending || item.conflict) continue;
+      try {
       let accepted: SaveEnvelope;
       try {
         const result = item.baseRevision === null
@@ -114,7 +117,24 @@ export class CloudSync {
         accepted = SaveEnvelopeSchema.parse(result.save);
       } catch (error) {
         if (!(error instanceof CloudHttpError) || error.status !== 409) throw error;
-        const remote = SaveEnvelopeSchema.parse((await this.request(`/api/saves/${encodeURIComponent(item.cloudSaveId)}`, 'GET', undefined, ownerId)).save);
+        let lookup: Record<string, unknown>;
+        try { lookup = await this.request(`/api/saves/${encodeURIComponent(item.cloudSaveId)}`, 'GET', undefined, ownerId); }
+        catch (lookupError) {
+          if (item.baseRevision === null && lookupError instanceof CloudHttpError && lookupError.status === 404) {
+            // A different account may have claimed the client-generated global ID.
+            // Retain the archive and choose a fresh transport identity for retry.
+            const replacement = `archive-${crypto.randomUUID()}`;
+            await this.store.update(item.key, current => {
+              if (!current) throw new Error('MISSING_QUEUE');
+              if (!current.pending || current.cloudSaveId !== item.cloudSaveId || current.baseRevision !== null ||
+                  mutation(current.pending) !== mutation(item.pending)) return current;
+              return { ...current, cloudSaveId: replacement, pending: { ...current.pending, saveId: replacement }, failure: 'UPLOAD_FAILED' };
+            });
+            summary.failed++; continue;
+          }
+          throw lookupError;
+        }
+        const remote = SaveEnvelopeSchema.parse(lookup.save);
         if (remote.saveId !== item.cloudSaveId) throw new Error('INVALID_CLOUD_ACK');
         archiveFromEnvelope(remote);
         if (mutation(remote) !== mutation(item.pending)) {
@@ -124,8 +144,8 @@ export class CloudSync {
             // its request is in flight. An old failure is not its new conflict.
             if (current.cloudSaveId !== item.cloudSaveId || current.baseRevision !== item.baseRevision ||
                 mutation(current.pending) !== mutation(item.pending)) return current;
-            return { ...current, conflict: remote };
-          }); continue;
+            return { ...current, conflict: remote, failure: null };
+          }); summary.conflicted++; continue;
         }
         accepted = remote; // Lost response/reload: this exact mutation already committed.
       }
@@ -138,9 +158,23 @@ export class CloudSync {
         if (current.cloudSaveId !== item.cloudSaveId ||
             (current.baseRevision !== null && current.baseRevision >= accepted.revision)) return current;
         const pending = mutation(current.pending) === mutation(item.pending) ? null : current.pending && { ...current.pending, revision: accepted.revision + 1 };
-        return { ...current, baseRevision: accepted.revision, pending, conflict: null };
+        return { ...current, baseRevision: accepted.revision, pending, conflict: null, failure: null };
       });
+      summary.uploaded++;
+      } catch (error) {
+        const failure = error instanceof CloudHttpError
+          ? error.status === 401 ? 'AUTH_REQUIRED' : error.status === 429 ? 'RATE_LIMITED' : error.status >= 500 ? 'SERVER_ERROR' : 'UPLOAD_FAILED'
+          : error instanceof TypeError ? 'NETWORK_ERROR' : error instanceof Error && /INVALID_(?:CLOUD|RESPONSE)/.test(error.message) ? 'INVALID_RESPONSE' : 'UPLOAD_FAILED';
+        await this.store.update(item.key, current => {
+          if (!current) throw new Error('MISSING_QUEUE');
+          if (current.cloudSaveId !== item.cloudSaveId || current.baseRevision !== item.baseRevision ||
+              mutation(current.pending) !== mutation(item.pending)) return current;
+          return { ...current, failure };
+        });
+        summary.failed++;
+      }
     }
+    return summary;
   }
   async keepLocal(record: CloudRecord) {
     // Explicit user decision, CAS against the reviewed remote revision. A newer remote still conflicts.
@@ -148,13 +182,13 @@ export class CloudSync {
       if (!current?.conflict || !current.pending || current.cloudSaveId !== record.cloudSaveId ||
           current.baseRevision !== record.baseRevision || mutation(current.pending) !== mutation(record.pending) ||
           mutation(current.conflict) !== mutation(record.conflict) || current.conflict.revision !== record.conflict?.revision) throw new Error('STALE_CONFLICT');
-      return { ...current, baseRevision: current.conflict.revision, pending: { ...current.pending, revision: current.conflict.revision + 1 }, conflict: null };
+      return { ...current, baseRevision: current.conflict.revision, pending: { ...current.pending, revision: current.conflict.revision + 1 }, conflict: null, failure: null };
     });
   }
   async discardUpload(record: CloudRecord) {
     return this.store.update(record.key, current => {
       if (!current || mutation(current.pending) !== mutation(record.pending) || current.conflict?.revision !== record.conflict?.revision) throw new Error('STALE_CONFLICT');
-      return { ...current, baseRevision: current.conflict?.revision ?? current.baseRevision, pending: null, conflict: null };
+      return { ...current, baseRevision: current.conflict?.revision ?? current.baseRevision, pending: null, conflict: null, failure: null };
     });
   }
 }

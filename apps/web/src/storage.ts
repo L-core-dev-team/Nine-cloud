@@ -38,7 +38,7 @@ export function isLocalSave(value: unknown): value is LocalSave {
   const valid = value.schemaVersion === 1 && typeof value.saveId === 'string' && value.saveId.length > 0
     && typeof value.name === 'string' && typeof value.createdAt === 'string'
     && typeof value.updatedAt === 'string' && typeof value.revision === 'number'
-    && Number.isInteger(value.revision) && value.revision >= 0
+    && Number.isSafeInteger(value.revision) && value.revision >= 0
     && typeof value.canonVersion === 'string' && typeof value.ruleVersion === 'string'
     && typeof value.memoryPolicyVersion === 'string' && isRecord(value.character)
     && typeof value.location === 'string' && value.status === 'pending_rules'

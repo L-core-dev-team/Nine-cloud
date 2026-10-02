@@ -21,6 +21,11 @@ export interface CloudSaveRepository {
 
 const MAX_POSTGRES_INTEGER = 2_147_483_647;
 const MAX_IDENTIFIER_LENGTH = 200;
+/** SEC-06: new cloud saves must use a restrictive identifier format. This keeps
+ *  the client-chosen global primary key from carrying path/URL meta-characters;
+ *  residual 201-vs-409 occupancy probing is inherent to client-chosen ids and is
+ *  tracked for the server-side-generation decision under the G-06 lifecycle review. */
+const SAVE_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$/;
 
 function requireOwnerId(ownerId: string): string {
   const normalized = ownerId.trim();
@@ -66,6 +71,7 @@ export class CloudSaveService {
 
   async create(ownerId: string, candidate: unknown): Promise<CloudSaveWriteResult> {
     const save = parseSave(candidate);
+    if (!SAVE_ID_PATTERN.test(save.saveId)) throw new TypeError('Save ID is invalid.');
     if (this.archiveOnly && save.state.facts.archiveKind !== 'local-untrusted-v1') throw new TypeError('Client archive required');
     if (save.revision !== 0) throw new TypeError('A new cloud save must start at revision zero.');
     const created = await this.repository.createForOwner(requireOwnerId(ownerId), save);

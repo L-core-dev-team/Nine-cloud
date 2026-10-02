@@ -15,7 +15,7 @@ suite('account lifecycle, isolated PostgreSQL only',()=>{
  const app=createApp(undefined,undefined,{service:auth,origin:'https://fixture.invalid',lifecycle,exporter});
  async function fixture(){const owner=randomUUID(),email=`${owner}@example.invalid`,token=randomBytes(32).toString('base64url');owners.push(owner);emails.push(email);await pool.query('INSERT INTO auth_accounts(id,email) VALUES($1,$2)',[owner,email]);await pool.query("INSERT INTO auth_sessions(token_hash,owner_id,expires_at) VALUES($1,$2,now()+interval '1 day')",[hashToken(token),owner]);return {owner,email,token,hash:hashToken(token)};}
  async function ready(f:Awaited<ReturnType<typeof fixture>>,operation:'close'|'delete'){const begun=await lifecycle.begin(f.owner,f.hash,operation);await lifecycle.verify(f.owner,f.hash,begun.operationId,sent.get(f.email));return begun.operationId;}
- afterAll(async()=>{for(const id of ids){await pool.query('DELETE FROM cloud_archive_trash WHERE save_id=$1',[id]);await pool.query('DELETE FROM turn_events WHERE save_id=$1',[id]);await pool.query('DELETE FROM turn_requests WHERE save_id=$1',[id]);await pool.query('DELETE FROM game_saves WHERE id=$1',[id]);}await pool.query('DELETE FROM auth_accounts WHERE id=ANY($1::text[])',[owners]);await pool.query('DELETE FROM auth_challenges WHERE email=ANY($1::text[])',[emails]);await pool.end();});
+ afterAll(async()=>{const client=await pool.connect();try{await client.query('BEGIN');await client.query("SELECT set_config('jiuxiao.account_erasure_operation','test-cleanup',true)");for(const id of ids){await client.query('DELETE FROM cloud_archive_trash WHERE save_id=$1',[id]);await client.query('DELETE FROM turn_events WHERE save_id=$1',[id]);await client.query('DELETE FROM turn_requests WHERE save_id=$1',[id]);await client.query('DELETE FROM game_saves WHERE id=$1',[id]);}await client.query('DELETE FROM auth_accounts WHERE id=ANY($1::text[])',[owners]);await client.query('DELETE FROM auth_challenges WHERE email=ANY($1::text[])',[emails]);await client.query('COMMIT');}catch(error){await client.query('ROLLBACK');throw error;}finally{client.release();}await pool.end();});
  it('requires old and new proof, binds the original session, revokes all sessions after changing email',async()=>{
   const f=await fixture(),other=await fixture(),newEmail=`new-${randomUUID()}@example.invalid`;emails.push(newEmail);const op=await lifecycle.begin(f.owner,f.hash,'email_change',newEmail);const oldCode=sent.get(f.email);
   await expect(lifecycle.verify(other.owner,other.hash,op.operationId,oldCode)).rejects.toThrow('INVALID_OR_EXPIRED_CODE');
@@ -50,6 +50,22 @@ suite('account lifecycle, isolated PostgreSQL only',()=>{
   expect((await pool.query('SELECT id FROM auth_accounts WHERE id=$1',[f.owner])).rowCount).toBe(0);expect((await pool.query('SELECT id FROM game_saves WHERE id=$1',[saveId])).rowCount).toBe(0);expect(await auth.resolve(f.token)).toBeNull();expect(await auth.resolve(b.token)).not.toBeNull();
   for(const table of ['turn_requests','npc_memory_journals','cloud_archive_trash'])expect((await pool.query(`SELECT save_id FROM ${table} WHERE save_id=$1`,[saveId])).rowCount).toBe(0);
   for(const table of ['entitlement_balances','entitlement_ledger_entries'])expect((await pool.query(`SELECT owner_id FROM ${table} WHERE owner_id=$1`,[f.owner])).rowCount).toBe(0);
+ });
+ it('SEC-01: turn events are append-only and archive rows are erasure-only',async()=>{
+  const f=await fixture(),saveId=randomUUID();ids.push(saveId);
+  await new PostgresCloudSaveRepository(pool,true).createForOwner(f.owner,{schemaVersion:1,saveId,revision:0,canonVersion:'fixture',ruleVersion:'fixture',memoryPolicyVersion:'fixture',state:{playerId:'p',locationId:'gate',elapsedMinutes:0,facts:{}}});
+  await pool.query("INSERT INTO turn_events(id,save_id,idempotency_key,sequence,event_type,source,rule_version,before_revision,after_revision,payload,occurred_at) VALUES($1,$2,$3,0,'fixture','MIGRATION','fixture',0,1,'{}'::jsonb,now())",[randomUUID(),saveId,randomUUID()]);
+  await expect(pool.query('UPDATE turn_events SET payload=$1::jsonb WHERE save_id=$2',['{"tampered":true}',saveId])).rejects.toThrow('append-only');
+  await expect(pool.query('DELETE FROM turn_events WHERE save_id=$1',[saveId])).rejects.toThrow('verified account erasure');
+  await expect(pool.query('DELETE FROM game_saves WHERE id=$1',[saveId])).rejects.toThrow('verified account erasure');
+  const spoof=await pool.connect();try{
+   await spoof.query('BEGIN');await spoof.query("SELECT set_config('jiuxiao.account_erasure_operation',$1,true)",[randomUUID()]);
+   await expect(spoof.query('DELETE FROM turn_events WHERE save_id=$1',[saveId])).rejects.toThrow('verified account erasure');
+   await spoof.query('ROLLBACK');
+  }finally{spoof.release();}
+  await expect(pool.query('UPDATE game_saves SET owner_id=$2 WHERE id=$1',[saveId,randomUUID()])).rejects.toThrow('identity is immutable');
+  await pool.query('UPDATE game_saves SET revision=1 WHERE id=$1',[saveId]);
+  await expect(pool.query('UPDATE game_saves SET revision=0 WHERE id=$1',[saveId])).rejects.toThrow('monotonic');
  });
  it('persists failed attempts and refuses the correct OTP after five failures',async()=>{
   const f=await fixture(),op=await lifecycle.begin(f.owner,f.hash,'close');const code=sent.get(f.email)!;const wrong=code==='000000'?'000001':'000000';

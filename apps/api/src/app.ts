@@ -18,10 +18,10 @@ export function createApp(database?: ReadinessDatabase, cloudSaves?: {
   service: CloudSaveService;
   auth: CloudSaveRouteAuth;
   archive?: CloudArchiveLifecycle;
-}, emailAuth?: { service: EmailAuthService; origin: string; cookieSameSite?: 'Strict' | 'None'; lifecycle?: AccountLifecycle; exporter?: AccountExport }, turns?: ServerTurnRouteDependencies) {
+}, emailAuth?: { service: EmailAuthService; origin: string; cookieSameSite?: 'Strict' | 'None'; trustedProxyAddresses?: readonly string[]; lifecycle?: AccountLifecycle; exporter?: AccountExport }, turns?: ServerTurnRouteDependencies) {
   const app = new Hono();
-  if (emailAuth) mountAuth(app, emailAuth.service, emailAuth.origin, emailAuth.cookieSameSite);
-  if (emailAuth?.lifecycle && emailAuth.exporter) mountAccount(app, emailAuth.service, emailAuth.lifecycle, emailAuth.exporter, emailAuth.origin);
+  if (emailAuth) mountAuth(app, emailAuth.service, emailAuth.origin, emailAuth.cookieSameSite, emailAuth.trustedProxyAddresses);
+  if (emailAuth?.lifecycle && emailAuth.exporter) mountAccount(app, emailAuth.service, emailAuth.lifecycle, emailAuth.exporter, emailAuth.origin, emailAuth.cookieSameSite);
 
   app.get('/health', c => c.json({ status: 'ok', service: 'jiuxiao-api',
     saveSchemaVersion: SAVE_SCHEMA_VERSION }));

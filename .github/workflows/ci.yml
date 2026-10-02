@@ -53,6 +53,18 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build
+      - name: Prove the release-target build stays fail-closed while media licenses are pending
+        # SEC-05: this step proves the media gate is actually wired into release
+        # builds. While sourceAndLicense is unverified the release build must fail
+        # with exactly LICENSE_PENDING; flip this step to require success once the
+        # manifest is verified (BIRD-04 / G-05 closure).
+        run: |
+          if pnpm --filter @jiuxiao/web build 2>media-gate.log; then
+            echo "release build must fail while media licenses are unverified"; exit 1
+          fi
+          grep -q "LICENSE_PENDING" media-gate.log
+        env:
+          JIUXIAO_BUILD_TARGET: release
       - name: Build and smoke the production API container
         run: |
           docker build --tag "jiuxiao-api-review:$REVIEW_SHA" --file apps/api/Dockerfile .

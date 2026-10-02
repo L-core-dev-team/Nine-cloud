@@ -25,6 +25,16 @@ describe('shared wire contracts', () => {
       occurredAt: '2026-09-23T00:00:00.000Z', source: 'RULES', ruleVersion: 'rules-0', payload: {} }).success).toBe(false);
   });
 
+  it('bounds event payloads and world facts before JSONB persistence', () => {
+    const save = { schemaVersion: 1, saveId: 'save-1', canonVersion: 'draft', ruleVersion: 'rules', memoryPolicyVersion: 'memory',
+      revision: 0, state: { playerId: 'player', locationId: 'gate', elapsedMinutes: 0, facts: { note: 'x'.repeat(256_000) } } };
+    expect(SaveEnvelopeSchema.safeParse(save).success).toBe(false);
+    const event = { id: '2fa2ebad-1065-4ef4-9a9b-51407a998ad5', saveId: 'save-1', type: 'PLAYER_MOVED',
+      beforeRevision: 0, afterRevision: 1, occurredAt: '2026-09-23T00:00:00.000Z', source: 'RULES', ruleVersion: 'rules', payload: {} };
+    let deep: unknown = 'leaf'; for (let index = 0; index < 33; index++) deep = { child: deep };
+    expect(DomainEventSchema.safeParse({ ...event, payload: { deep } }).success).toBe(false);
+  });
+
   it('accepts the two recorded legacy JSON shapes and rejects empty objects', () => {
     expect(LegacySaveFileSchema.safeParse({
       messages: [{ role: 'user', content: '走向山门' }], status: '姓名：测试修士',

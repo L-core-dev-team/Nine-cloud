@@ -150,4 +150,20 @@ describe('NPC memory turn journal', () => {
       lastTurn: { fromRevision: 0, toRevision: 1, eventIds: [EVENT_1, EVENT_1] },
     })).toThrow('Invalid NPC memory turn marker event IDs');
   });
+  it('retires the oldest observations when a long journal crosses its storage budget', () => {
+    const observations = Array.from({ length: 30 }, (_, index) => ({
+      npcId: 'npc-1', eventId: `00000000-0000-4000-8000-${String(index).padStart(12, '0')}`,
+      eventRevision: 1, observedAtMinute: index + 1, channel: 'witnessed' as const,
+      summary: `第 ${index} 条${'记'.repeat(3000)}`,
+    }));
+    const old = { ...createNpcMemoryJournal('save-1', 1), memories: [{ npcId: 'npc-1', policyVersion: 'exact-recall-v1' as const, observations }] };
+    const next = prepareNpcMemoryTurn({ journal: old, saveId: 'save-1', beforeRevision: 1, afterRevision: 2,
+      events: [makeEvent(EVENT_2, { beforeRevision: 1, afterRevision: 2 })], observedAtMinute: 40,
+      grantsForEvent: event => [{ npcId: 'npc-1', eventId: event.id, channel: 'witnessed', visibleSummary: '新观察' }],
+      policyForNpc: () => 'exact-recall-v1' });
+    expect(next.status).toBe('prepared');
+    expect(new TextEncoder().encode(serializeNpcMemoryJournal(next.journal)).byteLength).toBeLessThanOrEqual(64_000);
+    expect(next.journal.memories[0]?.observations.at(-1)?.summary).toBe('新观察');
+    expect(old.memories[0]?.observations).toHaveLength(30);
+  });
 });

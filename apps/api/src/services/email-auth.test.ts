@@ -5,9 +5,22 @@ import { EmailAuthService, hashToken, normalizeEmail, type AuthSession, type Ema
 class TestAuthRepository implements EmailAuthRepository {
   codes = new Map<string, { digest: string | null; attempts: number; expiresAt: Date; issuedAt: Date }>();
   sessions = new Map<string, AuthSession>();
+  ipCounts = new Map<string, number>();
+  ipWindows = new Map<string, number>();
   async issue(email: string, digest: string, now: Date, expiresAt: Date) {
     if ((this.codes.get(email)?.issuedAt.getTime() ?? -Infinity) > now.getTime() - 60_000) return false;
     this.codes.set(email, { digest, attempts: 0, expiresAt, issuedAt: now }); return true;
+  }
+  async issueIpLimit(ip: string, now: Date) {
+    const started = this.ipWindows.get(ip);
+    let count = this.ipCounts.get(ip) ?? 0;
+    if (started === undefined || now.getTime() - started > 3_600_000) { this.ipWindows.set(ip, now.getTime()); count = 0; }
+    if (count >= 60) return false;
+    this.ipCounts.set(ip, count + 1); return true;
+  }
+  async refundIssue(email: string, ip: string | null, now: Date) {
+    const code = this.codes.get(email); if (code) code.issuedAt = new Date(0);
+    if (ip) this.ipCounts.set(ip, Math.max((this.ipCounts.get(ip) ?? 1) - 1, 0));
   }
   async invalidate(email: string, digest: string) { const code = this.codes.get(email); if (code?.digest === digest) code.digest = null; }
   async consume(email: string, digest: string, hash: string, now: Date, expiresAt: Date) {
@@ -59,6 +72,20 @@ describe('email auth lifecycle', () => {
     const service = new EmailAuthService(f.repository, async () => { throw new Error('secret smtp failure'); }, 'x'.repeat(32));
     await expect(service.requestCode('b@example.invalid')).rejects.toThrow('MAIL_UNAVAILABLE');
     expect(f.repository.codes.get('b@example.invalid')?.digest).toBeNull();
+  });
+  it('applies a per-IP hourly mail budget and refunds it when delivery fails', async () => {
+    const repository = new TestAuthRepository(); let nowMs = Date.parse('2026-10-01T00:00:00Z');
+    const service = new EmailAuthService(repository, async () => {}, 'x'.repeat(32), () => new Date(nowMs));
+    for (let i = 0; i < 60; i++) expect(await service.requestCode(`u${i}@example.invalid`, '203.0.113.7')).toBe('sent');
+    expect(await service.requestCode('overflow@example.invalid', '203.0.113.7')).toBe('limited');
+    expect(await service.requestCode('other-ip@example.invalid', '198.51.100.9')).toBe('sent');
+    const failing = new EmailAuthService(repository, async () => { throw new Error('down'); }, 'x'.repeat(32), () => new Date(nowMs));
+    await expect(failing.requestCode('refund@example.invalid', '203.0.113.8')).rejects.toThrow('MAIL_UNAVAILABLE');
+    expect(repository.ipCounts.get('203.0.113.8')).toBe(0);
+    expect(await service.requestCode('after-refund@example.invalid', '203.0.113.8')).toBe('sent');
+    expect(await service.requestCode('still-limited@example.invalid', '203.0.113.7')).toBe('limited');
+    nowMs += 3_600_001;
+    expect(await service.requestCode('next-hour@example.invalid', '203.0.113.7')).toBe('sent');
   });
   it('requires strong secrets and rejects address/header injection', () => {
     expect(() => new EmailAuthService(new TestAuthRepository(), async () => {}, 'short')).toThrow();

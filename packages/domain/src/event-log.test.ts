@@ -152,7 +152,7 @@ describe('S3 event log and turn boundary', () => {
     expect(() => replayEvents(save, [{ ...event, ruleVersion: 'another-ruleset' }], reducer))
       .toThrowError(/rule version/);
     expect(() => replayEvents(save, [{ ...event, payload: { amount: Number.NaN } }], reducer))
-      .toThrowError(/persisted as JSON/);
+      .toThrowError(/JSON bounds|persisted as JSON/);
   });
 
   it('replays a 100-turn synthetic tail deterministically and resumes from a checkpoint', () => {

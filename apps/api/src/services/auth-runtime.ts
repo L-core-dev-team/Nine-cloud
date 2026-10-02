@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import { isIP } from 'node:net';
 import { createHash,randomUUID } from 'node:crypto';
 import { AuthFailure,classifyMailFailure } from './auth-failure.js';
 import type { Pool } from 'pg';
@@ -17,6 +18,8 @@ export function createEmailAuthRuntime(pool: Pool, env: NodeJS.ProcessEnv) {
   const secret = env.AUTH_SECRET || ''; if (Buffer.byteLength(secret) < 32) throw new Error('AUTH_SECRET requires at least 32 bytes');
   const cookieSameSite = env.AUTH_COOKIE_SAME_SITE || 'Strict';
   if (!['Strict','None'].includes(cookieSameSite) || (cookieSameSite === 'None' && local)) throw new Error('Invalid AUTH_COOKIE_SAME_SITE');
+  const trustedProxyAddresses = (env.AUTH_TRUSTED_PROXY_ADDRESSES || '').split(',').map(value => value.trim()).filter(Boolean);
+  if (trustedProxyAddresses.length > 8 || trustedProxyAddresses.some(value => isIP(value) === 0)) throw new Error('Invalid AUTH_TRUSTED_PROXY_ADDRESSES');
   const from = normalizeEmail(env.AUTH_MAIL_FROM);
   let smtp: URL;
   try { smtp = new URL(env.SMTP_URL || ''); } catch { throw new Error('Invalid SMTP_URL'); }
@@ -44,5 +47,5 @@ export function createEmailAuthRuntime(pool: Pool, env: NodeJS.ProcessEnv) {
     await send(email,'九霄账号操作验证',`账号操作验证码：${code}\n仅用于您刚刚发起的邮箱变更、关闭或删除操作。10 分钟内完成验证；不要把验证码交给他人。`);
   }, secret, policyVersion, env.ACCOUNT_DELETE_ENABLED === 'true');
   const verifyMail=async()=>{try{await mail.verify();return {status:'SMTP_CONNECTION_VERIFIED',delivery:'NOT_TESTED'};}catch(error){throw classifyMailFailure(error);}};
-  return { service, origin, cookieSameSite:cookieSameSite as 'Strict'|'None', lifecycle, exporter: new AccountExport(pool),verifyMail };
+  return { service, origin, cookieSameSite:cookieSameSite as 'Strict'|'None', trustedProxyAddresses, lifecycle, exporter: new AccountExport(pool),verifyMail };
 }

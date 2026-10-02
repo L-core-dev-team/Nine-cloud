@@ -4,6 +4,8 @@ const mocks=vi.hoisted(()=>({send:vi.fn(),verify:vi.fn(),invalidate:vi.fn()}));
 vi.mock('nodemailer',()=>({default:{createTransport:()=>({sendMail:mocks.send,verify:mocks.verify})}}));
 vi.mock('./postgres-email-auth.js',()=>({PostgresEmailAuthRepository:class {
  issue=async()=>true;
+ issueIpLimit=async()=>true;
+ refundIssue=async()=>{};
  invalidate=mocks.invalidate;
 }}));
 import {createEmailAuthRuntime} from './auth-runtime.js';

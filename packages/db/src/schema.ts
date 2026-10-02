@@ -26,6 +26,12 @@ export const authSessions = pgTable('auth_sessions', {
 export const authMailLimits = pgTable('auth_mail_limits', {
   bucket: bigint('bucket', { mode: 'number' }).primaryKey(), sent: integer('sent').notNull(),
 });
+/** SEC-02: per-IP hourly budget for verification-code mails (global bucket remains the backstop). */
+export const authIpMailLimits = pgTable('auth_ip_mail_limits', {
+  ip: text('ip').primaryKey(),
+  windowStartedAt: timestamp('window_started_at', { withTimezone: true }).notNull(),
+  count: integer('count').notNull(),
+});
 
 export const gameSaves = pgTable('game_saves', {
   id: text('id').primaryKey(),
@@ -63,8 +69,8 @@ export const turnEvents = pgTable('turn_events', {
   idempotencyKey: text('idempotency_key').notNull(),
   sequence: integer('sequence').notNull(),
   eventType: text('event_type').notNull(),
-  source: text('source'),
-  ruleVersion: text('rule_version'),
+  source: text('source').notNull(),
+  ruleVersion: text('rule_version').notNull(),
   beforeRevision: integer('before_revision').notNull(),
   afterRevision: integer('after_revision').notNull(),
   payload: jsonb('payload').notNull(),

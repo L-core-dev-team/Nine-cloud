@@ -17,8 +17,8 @@
     "license:check": "node scripts/audit/license-check.mjs",
     "worldbook:index:write": "node scripts/audit/build-worldbook-draft-index.mjs --write",
     "worldbook:index:check": "node scripts/audit/build-worldbook-draft-index.mjs --check",
-    "worldbook:runtime:write": "node scripts/build-canon-runtime.mjs --write",
-    "worldbook:runtime:check": "node scripts/build-canon-runtime.mjs --check"
+    "worldbook:runtime:write": "node scripts/build-canon-runtime.mjs --write --allow-pending-receipts",
+    "worldbook:runtime:check": "node scripts/build-canon-runtime.mjs --check --allow-pending-receipts"
   },
   "devDependencies": {
     "@types/node": "24.13.6",

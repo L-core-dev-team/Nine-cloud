@@ -2,6 +2,7 @@ import type { Hono } from 'hono';
 import { ActionIntentSchema } from '@jiuxiao/contracts';
 import { readJson, type CloudSaveRouteAuth } from './saves.js';
 import type { ServerTurnService } from '../services/server-turn.js';
+import { consumeAccountQuota } from '../services/account-rate-limit.js';
 
 export type ServerTurnRouteDependencies = { service: ServerTurnService; auth: CloudSaveRouteAuth };
 /** Client submits only an intent. Decisions, events, state and visibility stay server-owned. */
@@ -13,6 +14,8 @@ export function mountServerTurnRoutes(app: Hono, { service, auth }: ServerTurnRo
     if (!owner || !owner.trim() || owner.length > 200 || (expected !== undefined && expected !== owner)) {
       return c.json({ code: 'UNAUTHENTICATED' }, 401);
     }
+    // SEC-08: bound narrative waits per account (a requestNarrative=true probe can hold a worker up to 20 s).
+    if (!consumeAccountQuota(owner, 'turn', 30, 60_000)) return c.json({ code: 'RATE_LIMITED' }, 429);
     const body = await readJson(c.req.raw, 16_384);
     if (!body.ok) return c.json({ code: body.status === 413 ? 'REQUEST_TOO_LARGE' : 'INVALID_TURN' }, body.status);
     if (!body.value || typeof body.value !== 'object' || Array.isArray(body.value)) return c.json({ code: 'INVALID_TURN' }, 400);

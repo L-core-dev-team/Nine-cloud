@@ -94,9 +94,40 @@ describe('cloud archive queues and CAS decisions', () => {
       if (drop) { drop = false; throw new Error('disconnected after commit'); }
       return { save: remote };
     });
-    await sync.enqueue('a', save); await expect(sync.flush('a')).rejects.toThrow();
+    await sync.enqueue('a', save); expect(await sync.flush('a')).toMatchObject({ failed: 1, uploaded: 0 });
     expect((await sync.list('a'))[0]!.pending).not.toBeNull();
-    await sync.flush('a'); expect((await sync.list('a'))[0]).toMatchObject({ baseRevision: 0, pending: null, conflict: null });
+    expect((await sync.list('a'))[0]!.failure).toBe('UPLOAD_FAILED');
+    expect(await sync.flush('a')).toMatchObject({ uploaded: 1, failed: 0 });
+    expect((await sync.list('a'))[0]).toMatchObject({ baseRevision: 0, pending: null, conflict: null, failure: null });
+  });
+  it('keeps a failed item visible and still uploads the next item', async () => {
+    const store = new Store();
+    const sync = new CloudSync(store, async (_path, _method, body) => {
+      const envelope = (body as { save: SaveEnvelope }).save;
+      if (envelope.state.playerId === 'first') throw new CloudHttpError(503);
+      return { save: envelope };
+    });
+    await sync.enqueue('a', { ...save, saveId: 'first' });
+    await sync.enqueue('a', { ...save, saveId: 'second' });
+    expect(await sync.flush('a')).toEqual({ uploaded: 1, failed: 1, conflicted: 0 });
+    const records = await sync.list('a');
+    expect(records.find(record => record.localSaveId === 'first')).toMatchObject({ failure: 'SERVER_ERROR' });
+    expect(records.find(record => record.localSaveId === 'second')).toMatchObject({ pending: null, failure: null });
+  });
+  it('rekeys a new archive after a global ID collision cannot be read by its owner', async () => {
+    const store = new Store(); let first = true;
+    const sync = new CloudSync(store, async (_path, method, body) => {
+      if (method === 'GET') throw new CloudHttpError(404);
+      if (first) { first = false; throw new CloudHttpError(409); }
+      return { save: (body as { save: SaveEnvelope }).save };
+    });
+    const initial = await sync.enqueue('a', save);
+    expect(await sync.flush('a')).toMatchObject({ failed: 1 });
+    const rekeyed = (await sync.list('a'))[0]!;
+    expect(rekeyed.cloudSaveId).not.toBe(initial.cloudSaveId);
+    expect(rekeyed.pending?.saveId).toBe(rekeyed.cloudSaveId);
+    expect(await sync.flush('a')).toMatchObject({ uploaded: 1 });
+    expect((await sync.list('a'))[0]?.pending).toBeNull();
   });
   it('keeps both versions on conflict and requires explicit CAS against the reviewed version', async () => {
     const store = new Store(); let remote: SaveEnvelope;

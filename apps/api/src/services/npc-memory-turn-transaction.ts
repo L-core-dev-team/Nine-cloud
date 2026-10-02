@@ -9,6 +9,7 @@ import {
 import {
   createNpcMemoryJournal,
   parseNpcMemoryJournalJson,
+  serializeNpcMemoryJournal,
   type NpcMemoryJournal,
 } from '@jiuxiao/domain';
 import type { Pool, PoolClient, QueryResult, QueryResultRow } from 'pg';
@@ -222,7 +223,7 @@ export class PostgresNpcMemoryTurnRepository {
         'VALUES ($1, 1, $2, $3::jsonb, now()) ' +
         'ON CONFLICT (save_id) DO UPDATE SET schema_version = EXCLUDED.schema_version, ' +
         'revision = EXCLUDED.revision, payload = EXCLUDED.payload, updated_at = now()',
-        [commit.save.saveId, commit.nextJournal.revision, JSON.stringify(commit.nextJournal)],
+        [commit.save.saveId, commit.nextJournal.revision, serializeNpcMemoryJournal(commit.nextJournal)],
       );
 
       await client.query('COMMIT');
@@ -251,6 +252,7 @@ function normalizeCommit(input: AcceptedTurnCommitInput): NormalizedCommit {
   const events = input.events.map(event => DomainEventSchema.parse(event));
   const previousJournal = parseJournal(input.previousJournal);
   const nextJournal = parseJournal(input.nextJournal);
+  serializeNpcMemoryJournal(nextJournal);
 
   if (!Number.isSafeInteger(input.expectedRevision) || input.expectedRevision < 0 ||
     save.revision !== input.expectedRevision + 1 ||
