@@ -191,7 +191,7 @@ async function ready(url) {
       await page.getByRole('button', { name: '创建角色' }).click();
       assert.equal(await page.locator('h2').innerText(), '把自己写进山门。');
       assert.equal(await page.locator('.form input').count(), 5);
-      assert.equal(await page.locator('.form select').count(), 0);
+      assert.equal(await page.locator('.character-suggestions select').count(), 5, 'each person field has an optional suggestion picker');
       await page.locator('input').nth(0).fill(`测试修士-${width}`);
       const characterDetails = { age: '未知', personality: '冷静谨慎', origin: '散修', appearance: '青衣' };
       for (const [index, value] of Object.values(characterDetails).entries()) await page.locator('.form input').nth(index + 1).fill(value);
@@ -207,8 +207,8 @@ async function ready(url) {
       await page.getByRole('button', { name: '下一步' }).click();
       assert.equal(await page.locator('.form input').count(), 2);
       assert.equal(await page.locator('.form textarea').count(), 1);
-      await page.locator('.form label').filter({ hasText: '修为' }).locator('input').fill('炼气期');
-      await page.locator('.form label').filter({ hasText: '灵根' }).locator('input').fill('天灵根（金）');
+      await page.getByRole('textbox', { name: '修为', exact: true }).fill('炼气期');
+      await page.getByRole('textbox', { name: '灵根', exact: true }).fill('天灵根（金）');
       await page.locator('.form textarea').fill('天赋一\n天赋二\n天赋三\n天赋四');
       await page.reload();
       await page.getByRole('button', { name: '下一步' }).click();
@@ -228,7 +228,8 @@ async function ready(url) {
       await page.getByRole('button', { name: '下一步' }).click();
       await page.getByRole('button', { name: '下一步' }).click();
       assert.equal(await page.locator('.form textarea').inputValue(), '只想炼器', 'third-step fields survive refresh');
-       assert.equal(await page.locator('.form select').count(), 1);
+       assert.equal(await page.getByLabel('开局地域').count(), 1);
+       assert.equal(await page.locator('.character-suggestions select').count(), 1);
        assert.equal(await page.locator('.form textarea').count(), 1);
        const regionSelect = page.getByLabel('开局地域');
        const regionPreview = page.locator('.region-visual-reference img');
@@ -738,14 +739,14 @@ async function ready(url) {
       const storyTestButton = storyPanel.getByRole('button', { name: '测试此岗位' });
       assert.equal(await storyTestButton.isDisabled(), false, 'an enabled role may be tested only after the user grants permission');
       await storyTestButton.click();
-      await page.getByText(/连接成功，.*测试回复：通路已通/).waitFor();
+      await storyPanel.locator('.role-probe [role="status"]').filter({ hasText: /连接成功，\d+ ms/ }).waitFor();
       let testLogs = await page.evaluate(() => JSON.parse(sessionStorage.getItem('jx10_ai_call_log_v1') || '[]'));
       assert.equal(testLogs.at(-1).outcome, 'success');
       assert.equal(testLogs.at(-1).inputTokens, 9);
       assert.equal(testLogs.at(-1).outputTokens, 3);
       assert.equal(JSON.stringify(testLogs).includes('test-secret-not-persisted'), false, 'call logs must not retain API keys or provider response bodies');
       await storyTestButton.click();
-      await page.getByText(/服务返回 HTTP 401。.*响应正文未保存/).waitFor();
+      await page.locator('.ai-feedback').getByText(/服务返回 HTTP 401。.*响应正文未保存/).waitFor();
       testLogs = await page.evaluate(() => JSON.parse(sessionStorage.getItem('jx10_ai_call_log_v1') || '[]'));
       assert.equal(testLogs.at(-1).outcome, 'failure');
       assert.equal(testLogs.at(-1).status, 401);
@@ -780,7 +781,7 @@ async function ready(url) {
       });
       const logsBeforeTimeout = testLogs.length;
       await storyTestButton.click();
-      await page.getByText('超过 5 秒，连接已中止。可核对超时与服务商状态后重试。').waitFor();
+      await page.locator('.ai-feedback').getByText('超过 5 秒，连接已中止。可核对超时与服务商状态后重试。', { exact: true }).waitFor();
       testLogs = await page.evaluate(() => JSON.parse(sessionStorage.getItem('jx10_ai_call_log_v1') || '[]'));
       assert.equal(testLogs.length, logsBeforeTimeout + 1, 'timeout records exactly one failure');
       assert.equal(testLogs.at(-1).errorCode, 'TIMEOUT');
@@ -791,7 +792,7 @@ async function ready(url) {
       assert.equal(JSON.stringify(testLogs).includes('test-secret-not-persisted'), false);
       await page.evaluate(() => { window.fetch = window.originalTimeoutProbeFetch; });
       await storyTestButton.click();
-      await page.getByText(/连接成功，.*测试回复：通路已通/).waitFor();
+      await storyPanel.locator('.role-probe [role="status"]').filter({ hasText: /连接成功，\d+ ms/ }).waitFor();
       testLogs = await page.evaluate(() => JSON.parse(sessionStorage.getItem('jx10_ai_call_log_v1') || '[]'));
       assert.equal(testLogs.at(-1).outcome, 'success', 'explicit retry after timeout may succeed');
       assert.equal(probeCount, 5);
@@ -1380,6 +1381,7 @@ async function ready(url) {
       const restoredSaves = await page.evaluate(() => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves);
       assert.equal(restoredSaves.length, 2, 'mirror recovery must retain both saves migrated from duplicate legacy IDs');
       assert.equal(new Set(restoredSaves.map(save => save.saveId)).size, 2);
+      await require('./acceptance-feedback.cjs').checkFeedback(page);
       await context.close();
 
       const damagedContext = await browser.newContext({ viewport: { width, height } });

@@ -4,6 +4,8 @@ import { SAVE_SCHEMA_VERSION } from '@jiuxiao/contracts';
 import { SCENE_MANIFEST, sceneForLocation, type SceneId } from '@jiuxiao/content/scenes';
 import type { CanonRuntimeEntry } from '@jiuxiao/content/worldbook';
 import { AiSettings } from './ai-settings';
+import { ReadableData } from './components/ReadableData';
+import { CHARACTER_OPTIONS } from './character-options';
 import { CloudSettings } from './routes/CloudSettings';
 import { TurnWorkspace } from './routes/TurnWorkspace';
 import { MountainGateScene } from './scene';
@@ -218,7 +220,18 @@ function NewCharacter({ onSaved }: { onSaved: (save: LocalSave) => Promise<boole
   return <section className="page character-creation"><span className="eyebrow">建角 · {stepNames[step]}</span><h2>把自己写进山门。</h2>
     <p>依次记下人物、修行与去处。提交前可以回看修改；开局意图在规则未就绪时留在存档中。</p>
     <ol className="character-steps" aria-label="建角进度">{stepNames.map((label, index) => <li key={label} aria-current={index === step ? 'step' : undefined}><span>{index + 1}</span>{label}</li>)}</ol>
-    <div className="form">{fields.filter(([key]) => stepKeys[step]?.includes(key)).map(([key, label, hint]) => <label key={key}>{label}<small>{hint}</small>{key === 'region' ? <><select aria-label="开局地域" value={selectedRegion} onChange={event => set(key, event.target.value)}><option>中州天枢域</option><option>北境霜寒域</option><option>南疆万蛊域</option><option>东瀚龙吟域</option><option>西荒焚天域</option><option>完全自定义</option></select>{regionArtwork && <figure className="region-visual-reference"><img src={regionArtwork.src} alt="" loading="lazy" decoding="async" /><figcaption><strong>{selectedRegion}</strong><span>地域画影 · 只作辨识，设定以正文为准</span></figcaption></figure>}</> : key === 'talents' || key === 'goal' ? <textarea value={form[key] || ''} onChange={event => set(key, event.target.value)} /> : <input value={form[key] || ''} onChange={event => set(key, event.target.value)} />}</label>)}</div>
+    <div className="form">{fields.filter(([key]) => stepKeys[step]?.includes(key)).map(([key, label, hint]) => <div className="character-field" key={key}><label>{label}<small>{hint}</small>{key === 'region' ? <><select aria-label="开局地域" value={selectedRegion} onChange={event => set(key, event.target.value)}><option>中州天枢域</option><option>北境霜寒域</option><option>南疆万蛊域</option><option>东瀚龙吟域</option><option>西荒焚天域</option><option>完全自定义</option></select>{regionArtwork && <figure className="region-visual-reference"><img src={regionArtwork.src} alt="" loading="lazy" decoding="async" /><figcaption><strong>{selectedRegion}</strong><span>地域画影 · 只作辨识，设定以正文为准</span></figcaption></figure>}</> : key === 'talents' || key === 'goal' ? <textarea aria-label={label} value={form[key] || ''} onChange={event => set(key, event.target.value)} /> : <input aria-label={label} value={form[key] || ''} onChange={event => set(key, event.target.value)} />}</label>{CHARACTER_OPTIONS[key] && <label className="character-suggestions">{label}备选<select aria-label={`${label}备选`} value="" onChange={event => {
+      const value = event.target.value;
+      if (!value) return;
+      if (key === 'talents') {
+        const previous = (form[key] || '').split('\n').map(item => item.trim()).filter(Boolean);
+        if (previous.includes(value)) return;
+        if (previous.length >= 3) { setError('天赋最多三项，请先修改已有内容。'); return; }
+        set(key, [...previous, value].join('\n'));
+      } else set(key, value);
+      setError('');
+    }}><option value="">选择后仍可自由修改</option>{CHARACTER_OPTIONS[key]!.map(option => <option key={option} value={option}>{option}</option>)}</select></label>}</div>)}</div>
+    <p className="quiet-note">备选文字只填写角色草稿；修为、灵根与天赋仍须经过开局规则确认，不直接授予能力。</p>
     {step === 2 && <section className="character-summary" aria-label="角色提交前摘要"><h3>回看行传</h3><dl>{fields.map(([key, label]) => <div key={key}><dt>{label}</dt><dd>{form[key]?.trim() || (key === 'region' ? '中州天枢域' : key === 'name' ? '无名修士' : '未填写')}</dd></div>)}</dl></section>}
     {error && <p className="error" role="alert">{error}</p>}
     <div className="actions"><button className="secondary" onClick={() => step ? setStep(step - 1) : go('/lobby')}>{step ? '上一步' : '返回山门'}</button>
@@ -238,6 +251,22 @@ const atlasCollections: readonly { id: CandidateIllustrationCollection; label: s
   { id: 'texture', label: '纸墨氛围' },
 ];
 
+function SearchHighlight({ text, query }: { text: string; query: string }) {
+  const term = query.trim();
+  if (!term) return <>{text}</>;
+  const folded = text.toLocaleLowerCase();
+  const needle = term.toLocaleLowerCase();
+  const parts: ReactNode[] = [];
+  let start = 0;
+  let match = folded.indexOf(needle);
+  while (match !== -1) {
+    parts.push(text.slice(start, match), <mark key={match}>{text.slice(match, match + term.length)}</mark>);
+    start = match + term.length; match = folded.indexOf(needle, start);
+  }
+  parts.push(text.slice(start));
+  return <>{parts}</>;
+}
+
 function World({ onClose, save, onImportSupplement }: { onClose: () => void; save: LocalSave | undefined; onImportSupplement: (file: File, save: LocalSave) => void }) {
   const [worldQuery, setWorldQuery] = useState('');
   const [atlasQuery, setAtlasQuery] = useState('');
@@ -247,6 +276,7 @@ function World({ onClose, save, onImportSupplement }: { onClose: () => void; sav
   const [canonSearch, setCanonSearch] = useState<((query: string) => CanonRuntimeEntry[]) | null>(null);
   const [canonEntryCount, setCanonEntryCount] = useState<number | null>(null);
   const [canonLoadFailed, setCanonLoadFailed] = useState(false);
+  const firstResultRef = useRef<HTMLElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     let active = true;
@@ -275,9 +305,10 @@ function World({ onClose, save, onImportSupplement }: { onClose: () => void; sav
       <button aria-pressed={view === 'atlas'} onClick={() => setView('atlas')}>画卷图鉴 <small>44 幅视觉稿</small></button>
     </div>
     {view === 'text' && <div id="world-text-panel" aria-label="设定正文">
-       <label className="world-search">搜索已审核设定<input type="search" value={worldQuery} onChange={event => setWorldQuery(event.target.value)} placeholder="试试：中州、海上贸易、妖林外围" aria-label="搜索已审核世界设定" /></label>
-      <div className="worldbook-results" aria-live="polite">{canonLoadFailed ? <p className="worldbook-empty" role="status">设定正文暂时无法载入。请稍后重试；画卷图鉴仍可查看。</p> : !canonSearch ? <p className="worldbook-empty" role="status">正在载入已审核设定……</p> : entries.length ? entries.map(entry => <article className="worldbook-entry" key={entry.id}>
-      <span className="eyebrow">{canonCategoryLabel(entry.category)} · Canon {entry.canonVersion}</span><h3>{entry.title}</h3><div className="worldbook-body">{entry.content}</div>
+       <label className="world-search">搜索已审核设定<input type="search" value={worldQuery} onChange={event => setWorldQuery(event.target.value)} onKeyDown={event => { if (event.key === 'Enter' && entries.length) { event.preventDefault(); firstResultRef.current?.focus(); firstResultRef.current?.scrollIntoView({ block: 'start', behavior: 'auto' }); } }} placeholder="试试：中州、海上贸易、妖林外围" aria-label="搜索已审核世界设定" /></label>
+      {canonSearch && <div className="world-search-feedback"><p role="status">{worldQuery.trim() ? `“${worldQuery.trim()}”找到 ${entries.length} 条设定` : `共 ${entries.length} 条已审核设定`}</p>{worldQuery.trim() && entries.length > 0 && <button className="secondary" onClick={() => { firstResultRef.current?.focus(); firstResultRef.current?.scrollIntoView({ block: 'start', behavior: 'auto' }); }}>查看首条结果</button>}{worldQuery && <button className="quiet-action" onClick={() => setWorldQuery('')}>清空搜索</button>}</div>}
+      <div className="worldbook-results" aria-live="polite">{canonLoadFailed ? <p className="worldbook-empty" role="status">设定正文暂时无法载入。请稍后重试；画卷图鉴仍可查看。</p> : !canonSearch ? <p className="worldbook-empty" role="status">正在载入已审核设定……</p> : entries.length ? entries.map((entry, index) => <article className="worldbook-entry" key={entry.id} ref={index === 0 ? firstResultRef : undefined} tabIndex={-1}>
+      <span className="eyebrow">{canonCategoryLabel(entry.category)} · Canon {entry.canonVersion}</span><h3><SearchHighlight text={entry.title} query={worldQuery} /></h3><div className="worldbook-body"><SearchHighlight text={entry.content} query={worldQuery} /></div>
       {entry.publicSourceNote && <details><summary>来源与整理说明</summary><p>{entry.publicSourceNote}</p></details>}
       </article>) : <p className="worldbook-empty">没有找到这组字词。试试地点名、地貌或文化关键词。</p>}</div>
     </div>}
@@ -410,7 +441,7 @@ function Game({ save, onExport, onImportSupplement, onUpdate, onBranch, onReload
       <nav className="game-tools" aria-label="行囊工具"><button onClick={() => go('/turns')}>回合处理</button><button onClick={() => go('/world')}>世界设定</button><button onClick={() => onExport(save)}>导出存档</button><label>补充资料<input type="file" accept=".txt,.md" onChange={event => { const file = event.currentTarget.files?.[0]; if (file) onImportSupplement(file, save); event.currentTarget.value = ''; }} /></label></nav>
       <form className="intent-composer" onSubmit={event => { event.preventDefault(); void saveIntent(); }}><label htmlFor="player-intent">此刻欲行何事</label><textarea id="player-intent" value={intent} onChange={event => { setIntent(event.target.value); writeActionDraft(save.saveId, event.target.value); }} placeholder="写下行动意图……" maxLength={4000} /><div><small>本地草稿 · 规则结算尚未接入 · {pendingCount} 项待处理</small><button className="primary" type="submit">收入待处理</button></div>{feedback && <p role="status">{feedback}</p>}{conflictDraft && <div className="save-conflict-actions" role="group" aria-label="存档冲突处理"><button className="secondary" type="button" onClick={() => { void onReload().then(() => { setConflictDraft(null); setFeedback('已载入最新存档。检查当前行动后，可再次提交。'); }); }}>载入最新存档</button><button className="secondary" type="button" onClick={() => { void onBranch(conflictDraft).then(saved => { if (saved) { setConflictDraft(null); setIntent(''); writeActionDraft(save.saveId, ''); setFeedback('冲突内容已另存为独立分支；原存档保持不变。'); } else setFeedback('分支未写入。请先导出冲突副本，并检查本地存储空间。'); }); }}>另存为分支</button><button className="quiet-action" type="button" onClick={() => onExport(conflictDraft)}>下载冲突副本</button></div>}</form>
       </div>
-      {activePanel && <aside className="game-info-panel" aria-label={`${activePanel === 'character' ? '角色状态' : activePanel === 'intel' ? '综合情报' : '星记忆'}详情`}><div><span className="eyebrow">行囊所载</span><button aria-label="关闭资料面板" onClick={() => setActivePanel(null)}>×</button></div><pre aria-label="资料内容">{JSON.stringify(panelContent, null, 2)}</pre></aside>}
+      {activePanel && <aside className="game-info-panel" aria-label={`${activePanel === 'character' ? '角色状态' : activePanel === 'intel' ? '综合情报' : '星记忆'}详情`}><div><span className="eyebrow">行囊所载</span><button aria-label="关闭资料面板" onClick={() => setActivePanel(null)}>×</button></div><div className="game-readable-panel" aria-label="资料内容"><ReadableData value={panelContent} /></div></aside>}
     </div>
     <div className="game-statusline"><span>存档版本 {save.revision}</span><span>{pendingFromLegacy ? '旧档待恢复' : pendingCount ? `${pendingCount} 项待处理` : '等待规则结算'}</span><span>地点：{save.location}</span></div>
     <LegacyArchive save={save} />

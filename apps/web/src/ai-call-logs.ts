@@ -23,7 +23,7 @@ export function sanitizeCallLogs(values: unknown, retentionDays: number, now = D
     if (count(raw.status) && raw.status >= 100 && raw.status <= 599) log.status = raw.status;
     if (count(raw.inputTokens)) log.inputTokens = raw.inputTokens;
     if (count(raw.outputTokens)) log.outputTokens = raw.outputTokens;
-    if (typeof raw.errorCode === 'string' && /^(TIMEOUT|NETWORK_OR_FORMAT|HTTP_[1-5]\d{2})$/.test(raw.errorCode)) {
+    if (typeof raw.errorCode === 'string' && /^(TIMEOUT|CANCELLED|NETWORK_OR_FORMAT|HTTP_[1-5]\d{2})$/.test(raw.errorCode)) {
       log.errorCode = raw.errorCode;
     }
     logs.push(log);
