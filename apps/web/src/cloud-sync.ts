@@ -43,8 +43,9 @@ export class IndexedCloudQueue implements CloudQueueStore {
   }
 }
 export class CloudHttpError extends Error { constructor(readonly status: number) { super(`CLOUD_${status}`); } }
-export async function cloudRequest(path: string, method = 'GET', body?: unknown, expectedOwner?: string): Promise<Record<string, unknown>> {
-  const response = await fetch(path, { method, credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(20000),
+export async function cloudRequest(path: string, method = 'GET', body?: unknown, expectedOwner?: string, cancellation?: AbortSignal): Promise<Record<string, unknown>> {
+  const deadline = AbortSignal.timeout(20000);
+  const response = await fetch(path, { method, credentials: 'same-origin', cache: 'no-store', signal: cancellation ? AbortSignal.any([deadline, cancellation]) : deadline,
     headers: { ...(expectedOwner ? { 'x-jiuxiao-account': expectedOwner } : {}), ...(body === undefined ? {} : { 'content-type': 'application/json' }) },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
   if (!response.ok) throw new CloudHttpError(response.status);

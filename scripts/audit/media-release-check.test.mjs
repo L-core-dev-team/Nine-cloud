@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import { mkdtempSync, mkdirSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { createHash } from 'node:crypto';
+import { requireReleasedMedia } from './media-release-check.mjs';
+const root=mkdtempSync(join(tmpdir(),'jiuxiao-media-gate-'));mkdirSync(join(root,'scenes'));
+const bytes=Buffer.from('synthetic media fixture');writeFileSync(join(root,'scenes','test.webp'),bytes);const hash=createHash('sha256').update(bytes).digest('hex');
+const asset={path:'/scenes/test.webp',sha256:hash,licenseStatus:'approved',licenseEvidenceSha256:'a'.repeat(64),authorReceipts:['Bird','LYL'].map(author=>({author,assetSha256:hash,status:'approved'}))};
+const manifest={sourceAndLicense:'verified',authorApproval:'approved',files:[asset]};
+assert.throws(()=>requireReleasedMedia({...manifest,sourceAndLicense:'unverified'},root),/LICENSE_PENDING/);
+assert.throws(()=>requireReleasedMedia({...manifest,files:[{...asset,authorReceipts:asset.authorReceipts.slice(0,1)}]},root),/MEDIA_AUTHOR_APPROVAL_PENDING/);
+requireReleasedMedia(manifest,root);writeFileSync(join(root,'scenes','pending.mp4'),'not approved');assert.throws(()=>requireReleasedMedia(manifest,root),/UNLISTED_MEDIA_ASSET/);
+writeFileSync(join(root,'scenes','test.webp'),'altered');assert.throws(()=>requireReleasedMedia(manifest,root),/MEDIA_DIGEST_MISMATCH/);
+console.log('Media gate: pending license, missing reviewer, unlisted asset and digest mutation refused; synthetic approved fixture passed.');
