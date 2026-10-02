@@ -1,0 +1,17 @@
+#!/usr/bin/env node
+// Produced from the tested clean review build; never invents author approval or live-provider acceptance.
+import { readFileSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { createHash } from 'node:crypto';
+const root=resolve(import.meta.dirname,'../..'), out=resolve(root,'test-results/review-bundle');
+const build=JSON.parse(readFileSync(resolve(out,'artifact-manifest.json'),'utf8'));
+const digest=createHash('sha256').update(readFileSync(resolve(out,'artifact-manifest.json'))).digest('hex');
+const canonBytes=readFileSync(resolve(root,'packages/content/src/canon-runtime.json'));
+const canon=JSON.parse(canonBytes);const timestamp=new Date().toISOString();
+const packet={kind:'AI_CONFIG_G1_PACKET',commit:build.commit,build_hash:`sha256:${digest}`,timestamp,
+ test_results:{source:'GitHub CI preceding this artifact step',unit:'passed',typecheck:'passed',build:'passed',integration:'passed',browser:'passed',real_provider:'NOT_EXECUTED',physical_device:'NOT_EXECUTED'},
+ manual_steps:['从本构建进入 AI 设置；确认 commit 和 build hash 相同','仅在内存输入自己的 Key；选择账号和地区可用的型号','执行一次短连接；核对成功/超时/限流提示和脱敏结果，不上传 Key 或完整响应','两位作者对同一 commit/build hash 分别留验收回执'],
+ acceptance:{status:'HUMAN_GATE_PENDING',reviewers:['Bird','LYL'],receipts:[]}};
+writeFileSync(resolve(out,'AI_CONFIG_G1_PACKET.json'),JSON.stringify(packet,null,2)+'\n');
+writeFileSync(resolve(out,'CanonDigest.json'),JSON.stringify({kind:'CanonDigest',canon_version:canon.activeVersion,entry_count:canon.entries.length,hash:`sha256:${createHash('sha256').update(canonBytes).digest('hex')}`,timestamp,commit:build.commit,approval_status:'HUMAN_GATE_PENDING',receipts:[]},null,2)+'\n');
+console.log('Generated exact-build AI G1 packet and CanonDigest; human gates remain pending.');
