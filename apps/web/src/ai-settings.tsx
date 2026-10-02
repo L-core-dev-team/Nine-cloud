@@ -331,12 +331,14 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
     }
     try {
       sessionStorage.setItem(CONFIG_KEY, JSON.stringify(safeConfig(config)));
+    } catch { setError('当前浏览器无法保存设置；页面中的输入仍在，请先导出配置前确认不包含密钥。'); setSaved(false); return; }
+    try {
       const retained = readLogs(config.logRetentionDays);
       if (config.logRetentionDays === 0) sessionStorage.removeItem(LOG_KEY);
       else sessionStorage.setItem(LOG_KEY, JSON.stringify(retained));
       setLogs(retained);
       setError(''); setMessage('设置已保存到当前浏览器会话。API Key 只保留在当前页面内存，刷新页面后需重新输入。'); setSaved(true);
-    } catch { setError('当前浏览器无法保存设置；页面中的输入仍在，请先导出配置前确认不包含密钥。'); setSaved(false); }
+    } catch { setSaved(true); setError('设置已保存，但调用记录清理失败。请检查浏览器存储权限后重试；页面中的密钥仍只在内存中。'); }
   }
   function importLegacy() {
     if (!config.allowLegacyMigration) { setError('请先开启“允许旧配置迁移”，再主动执行导入。'); return; }
@@ -364,7 +366,7 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
     const timer = window.setTimeout(() => controller.abort('timeout'), active.timeoutSeconds * 1000);
     try {
       const request = buildProbeRequest(active.adapter, safeUrl(active.baseUrl), active.model.trim(), keys[roleId]?.trim() || '');
-      const response = await fetch(request.url, { method: 'POST', signal: controller.signal, headers: request.headers, body: JSON.stringify(request.body) });
+      const response = await fetch(request.url, { method: 'POST', signal: controller.signal, headers: request.headers, body: JSON.stringify(request.body), credentials: 'omit', redirect: 'error', referrerPolicy: 'no-referrer' });
       if (probeRef.current !== controller) return;
       if (!response.ok) {
         const elapsedMs = Math.round(performance.now() - start);

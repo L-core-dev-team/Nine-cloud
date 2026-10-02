@@ -44,6 +44,32 @@ async function checkFeedback(page) {
   await page.getByRole('button', { name: '保存配置', exact: true }).click();
   await page.locator('.ai-feedback [role=status]').filter({ hasText: '设置已保存' }).waitFor();
   assert.equal(await page.evaluate(() => sessionStorage.getItem('jx10_ai_config_v2').includes('feedback-synthetic-key')), false);
+  await page.getByLabel(/^调用记录最长保留/).selectOption('7');
+  await page.evaluate(() => {
+    window.__feedbackSetItem = Storage.prototype.setItem;
+    Storage.prototype.setItem = function (key, value) {
+      if (key === 'jx10_ai_call_log_v1') throw new DOMException('synthetic storage failure', 'QuotaExceededError');
+      return window.__feedbackSetItem.call(this, key, value);
+    };
+  });
+  await page.getByRole('button', { name: '保存配置', exact: true }).click();
+  await page.locator('.ai-feedback [role=alert]').filter({ hasText: '设置已保存，但调用记录清理失败' }).waitFor();
+  assert.equal(await page.evaluate(() => JSON.parse(sessionStorage.getItem('jx10_ai_config_v2')).logRetentionDays), 7);
+  await page.evaluate(() => {
+    Storage.prototype.setItem = function (key, value) {
+      if (key === 'jx10_ai_config_v2') throw new DOMException('synthetic storage failure', 'QuotaExceededError');
+      return window.__feedbackSetItem.call(this, key, value);
+    };
+  });
+  const beforeFailedSave = await page.evaluate(() => sessionStorage.getItem('jx10_ai_config_v2'));
+  await page.getByRole('button', { name: '保存配置', exact: true }).click();
+  await page.locator('.ai-feedback [role=alert]').filter({ hasText: '当前浏览器无法保存设置' }).waitFor();
+  assert.equal(await page.evaluate(() => sessionStorage.getItem('jx10_ai_config_v2')), beforeFailedSave);
+  await page.evaluate(() => { Storage.prototype.setItem = window.__feedbackSetItem; delete window.__feedbackSetItem; });
+  await page.getByRole('button', { name: '保存配置', exact: true }).click();
+  await page.locator('.ai-feedback [role=status]').filter({ hasText: '设置已保存' }).waitFor();
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await page.screenshot({ path: join(__dirname, '../../test-results/e2e', `acceptance-ai-feedback-${page.viewportSize().width}.png`) });
   await page.getByRole('button', { name: '调用记录', exact: true }).click();
   await page.getByRole('heading', { name: '调用记录', exact: true }).waitFor();
   await page.getByRole('button', { name: '关闭窗口', exact: true }).click();
