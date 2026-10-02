@@ -32,6 +32,49 @@ describe('protocol connection probes', () => {
 });
 
 describe('compatible multipart response parsing', () => {
+  it('excludes thinking and non-answer blocks while preserving final text', () => {
+    expect(parseProbeResponse('gemini-content', {
+      candidates: [{ content: { parts: [{ thought: true, text: 'internal' }, { text: 'final' }] } }],
+    }).text).toBe('final');
+    expect(parseProbeResponse('gemini-content', {
+      candidates: [{ content: { parts: [{ thought: true, text: 'internal only' }] } }],
+    }).text).toBe('');
+    expect(parseProbeResponse('anthropic-messages', {
+      content: [{ type: 'thinking', text: 'internal' }, { type: 'tool_use', text: 'tool' }, { type: 'text', text: 'final' }],
+    }).text).toBe('final');
+    expect(parseProbeResponse('openai-responses', {
+      output: [{ type: 'reasoning', content: [{ type: 'output_text', text: 'internal' }] },
+        { type: 'message', content: [{ type: 'output_text', text: 'final' }] }],
+    }).text).toBe('final');
+  });
+
+  it.each(['openai-chat', 'openai-responses', 'anthropic-messages', 'gemini-content'] as const)(
+    '%s rejects HTTP-200 error envelopes without exposing raw secrets', protocol => {
+      expect(parseProbeResponse(protocol, {
+        error: { message: 'secret-key' }, output_text: 'false success',
+        choices: [{ message: { content: 'false success' } }],
+        content: [{ type: 'text', text: 'false success' }],
+        candidates: [{ content: { parts: [{ text: 'false success' }] } }],
+      })).toEqual({ text: '' });
+    });
+
+  it.each([undefined, null, '3', -1, 1.5, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1])(
+    'keeps invalid token count %s unknown across all protocols', value => {
+      for (const protocol of ['openai-chat', 'openai-responses', 'anthropic-messages', 'gemini-content'] as const) {
+        const parsed = parseProbeResponse(protocol, {
+          usage: { prompt_tokens: value, completion_tokens: value, input_tokens: value, output_tokens: value },
+          usageMetadata: { promptTokenCount: value, candidatesTokenCount: value },
+        });
+        expect(parsed.inputTokens).toBeUndefined();
+        expect(parsed.outputTokens).toBeUndefined();
+      }
+    });
+
+  it('preserves explicitly reported zero usage', () => {
+    expect(parseProbeResponse('openai-chat', { usage: { prompt_tokens: 0, completion_tokens: 0 } }))
+      .toEqual({ text: '', inputTokens: 0, outputTokens: 0 });
+  });
+
   it('extracts text from content-part arrays across compatible protocols', () => {
     expect(parseProbeResponse('openai-chat', {
       choices: [{ message: { content: [{ type: 'text', text: '风' }, { type: 'image_url' }, { type: 'text', text: '起' }] } }],

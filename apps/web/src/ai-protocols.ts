@@ -40,7 +40,10 @@ function textFromParts(value: unknown): string {
   return value.map(part => {
     if (typeof part === 'string') return part;
     if (part && typeof part === 'object' && typeof (part as Record<string, unknown>).text === 'string') {
-      return (part as Record<string, unknown>).text as string;
+      const record = part as Record<string, unknown>;
+      if (record.thought === true) return '';
+      if (record.type !== undefined && record.type !== 'text' && record.type !== 'output_text') return '';
+      return record.text as string;
     }
     return '';
   }).join('');
@@ -48,6 +51,9 @@ function textFromParts(value: unknown): string {
 
 export function parseProbeResponse(protocol: ProtocolId, payload: unknown): { text: string; inputTokens?: number | undefined; outputTokens?: number | undefined } {
   const body = payload && typeof payload === 'object' ? payload as Record<string, unknown> : {};
+  // Compatible endpoints can return an error envelope with HTTP 200.
+  // Never expose its raw message or treat incidental text as a successful probe.
+  if (body.error !== undefined && body.error !== null) return { text: '' };
   if (protocol === 'openai-chat') {
     const choices = Array.isArray(body.choices) ? body.choices : [];
     const first = choices[0] && typeof choices[0] === 'object' ? choices[0] as Record<string, unknown> : {};
@@ -58,7 +64,12 @@ export function parseProbeResponse(protocol: ProtocolId, payload: unknown): { te
   if (protocol === 'openai-responses') {
     const usage = body.usage && typeof body.usage === 'object' ? body.usage as Record<string, unknown> : {};
     const output = Array.isArray(body.output) ? body.output : [];
-    const text = textFromParts(output.flatMap(item => item && typeof item === 'object' && Array.isArray((item as Record<string, unknown>).content) ? (item as Record<string, unknown>).content as unknown[] : []));
+    const text = textFromParts(output.flatMap(item => {
+      if (!item || typeof item !== 'object') return [];
+      const record = item as Record<string, unknown>;
+      if (record.type !== undefined && record.type !== 'message') return [];
+      return Array.isArray(record.content) ? record.content : [];
+    }));
     return { text: typeof body.output_text === 'string' ? body.output_text : text, inputTokens: numberOrUndefined(usage.input_tokens), outputTokens: numberOrUndefined(usage.output_tokens) };
   }
   if (protocol === 'anthropic-messages') {
@@ -75,4 +86,4 @@ export function parseProbeResponse(protocol: ProtocolId, payload: unknown): { te
   return { text: textFromParts(parts), inputTokens: numberOrUndefined(usage.promptTokenCount), outputTokens: numberOrUndefined(usage.candidatesTokenCount) };
 }
 
-function numberOrUndefined(value: unknown): number | undefined { return typeof value === 'number' && Number.isFinite(value) ? value : undefined; }
+function numberOrUndefined(value: unknown): number | undefined { return typeof value === 'number' && Number.isSafeInteger(value) && value >= 0 ? value : undefined; }

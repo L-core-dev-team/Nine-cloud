@@ -148,6 +148,7 @@ function SaveManager({ saves, onRename, onDelete, onExport }: {
   const [name, setName] = useState('');
   const [confirmation, setConfirmation] = useState('');
   const [feedback, setFeedback] = useState('');
+  const reviewedSaveRef = useRef<LocalSave | null>(null);
   return <section className="page save-manager"><span className="eyebrow">本地档案</span><h2>存档管理</h2>
     <p>改名只调整列表称呼。删除前请导出副本；其他标签页若改过同一存档，删除会被拒绝。</p>
     {!saves.length && <p>目前没有本地存档。</p>}
@@ -155,10 +156,10 @@ function SaveManager({ saves, onRename, onDelete, onExport }: {
       <div><h3>{save.name}</h3><p>{save.location} · 存档版本 {save.revision}</p></div>
       <div className="actions"><button className="secondary" onClick={() => go(`/game/${save.saveId}`)}>打开</button>
         <button className="secondary" onClick={() => onExport(save)}>导出</button>
-        <button className="secondary" onClick={() => { setEditingId(save.saveId); setDeletingId(null); setName(save.name); setFeedback(''); }}>改名</button>
-        <button className="quiet-action" onClick={() => { setDeletingId(save.saveId); setEditingId(null); setConfirmation(''); setFeedback(''); }}>删除</button></div>
+        <button className="secondary" onClick={() => { reviewedSaveRef.current = save; setEditingId(save.saveId); setDeletingId(null); setName(save.name); setFeedback(''); }}>改名</button>
+        <button className="quiet-action" onClick={() => { reviewedSaveRef.current = save; setDeletingId(save.saveId); setEditingId(null); setConfirmation(''); setFeedback(''); }}>删除</button></div>
       {editingId === save.saveId && <form className="save-manager-form" onSubmit={event => {
-        event.preventDefault(); void onRename(save, name).then(ok => {
+        event.preventDefault(); void onRename(reviewedSaveRef.current || save, name).then(ok => {
           if (ok) { setEditingId(null); setFeedback('存档名称已更新。'); }
           else setFeedback('改名未写入。请检查存储状态或重新载入列表。');
         });
@@ -169,7 +170,7 @@ function SaveManager({ saves, onRename, onDelete, onExport }: {
         <p>此操作会移除本机这份存档。请先导出，并输入完整名称确认。</p>
         <label>确认名称<input value={confirmation} onChange={event => setConfirmation(event.target.value)} /></label>
         <button className="primary" disabled={confirmation !== save.name} onClick={() => {
-          void onDelete(save).then(ok => {
+          void onDelete(reviewedSaveRef.current || save).then(ok => {
             if (ok) { setDeletingId(null); setFeedback('本地存档已删除。'); }
             else setFeedback('删除未完成。请检查另一标签页的改动后重试。');
           });
@@ -185,6 +186,8 @@ function NewCharacter({ onSaved }: { onSaved: (save: LocalSave) => Promise<boole
   const [form, setForm] = useState<Record<string, string>>(readDraft);
   const [step, setStep] = useState(0);
   const [error, setError] = useState('');
+  const submittingRef = useRef(false);
+  const [submitting, setSubmitting] = useState(false);
   useEffect(() => { if (!writeDraft(form)) setError('浏览器暂时无法保存草稿。提交前请保持页面打开。'); }, [form]);
   const set = (key: string, value: string) => setForm(previous => ({ ...previous, [key]: value }));
   const stepKeys: readonly (readonly string[])[] = [
@@ -197,13 +200,18 @@ function NewCharacter({ onSaved }: { onSaved: (save: LocalSave) => Promise<boole
   const regionArtworkId = REGION_VISUAL_IDS[selectedRegion] ?? 'world_jiuxiao';
   const regionArtwork = CANDIDATE_ILLUSTRATIONS.find(item => item.id === regionArtworkId);
   async function submit(mode: 'manual' | 'random' = 'manual') {
+    if (submittingRef.current) return;
     const talents = (form.talents || '').split('\n').map(value => value.trim()).filter(Boolean);
     if (talents.length > 3) { setError('天赋最多三项，请每行填写一项。'); return; }
+    submittingRef.current = true; setSubmitting(true); setError('');
+    try {
     const now = new Date().toISOString();
     const name = form.name?.trim() || '无名修士';
     const save: LocalSave = { schemaVersion: 1, saveId: createSaveId(), name, createdAt: now, updatedAt: now, revision: 0, canonVersion: 'pending-author-review', ruleVersion: 'rules-not-signed', memoryPolicyVersion: 'none', character: { ...form, name, talents }, location: form.region || '中州天枢域', status: 'pending_rules', messages: [], pending: { id: createSaveId(), text: mode === 'random' ? '按已录入资料生成随机角色并开始第一幕。当前尚无规则结算，因此此意图不会自行改变人物资料。' : '按已填写的角色设定，开始第一幕。', gm: false, source: mode === 'random' ? 'RANDOM_START' : 'CHARACTER_START' } };
     if (!await onSaved(save)) { setError('存档列表刚有变化，或浏览器存储不可用。角色草稿仍在；请刷新存档列表后再提交。'); return; }
     clearDraft();
+    } catch { setError('建角提交未完成。角色草稿仍在，请确认本地存储可用后重试。'); }
+    finally { submittingRef.current = false; setSubmitting(false); }
   }
   return <section className="page character-creation"><span className="eyebrow">建角 · {stepNames[step]}</span><h2>把自己写进山门。</h2>
     <p>依次记下人物、修行与去处。提交前可以回看修改；开局意图在规则未就绪时留在存档中。</p>
@@ -213,8 +221,8 @@ function NewCharacter({ onSaved }: { onSaved: (save: LocalSave) => Promise<boole
     {error && <p className="error" role="alert">{error}</p>}
     <div className="actions"><button className="secondary" onClick={() => step ? setStep(step - 1) : go('/lobby')}>{step ? '上一步' : '返回山门'}</button>
       {step < 2 ? <button className="primary" onClick={() => { setError(''); setStep(step + 1); }}>下一步</button> : <>
-        <button className="secondary" onClick={() => submit('random')}>按资料随机开局<span>保留随机开局意图</span></button>
-        <button className="primary" onClick={() => submit('manual')}>保存角色并进入<span>本地存档 · 待剧情规则接入</span></button>
+        <button className="secondary" disabled={submitting} onClick={() => submit('random')}>按资料随机开局<span>保留随机开局意图</span></button>
+        <button className="primary" disabled={submitting} onClick={() => submit('manual')}>保存角色并进入<span>本地存档 · 待剧情规则接入</span></button>
       </>}</div>
   </section>;
 }
@@ -442,7 +450,8 @@ function App() {
   }
   const [legacyText, setLegacyText] = useState<string | null>(null);
   const [indexedDbReady, setIndexedDbReady] = useState(true);
-  const [importPreview, setImportPreview] = useState<{ save: LocalSave; sourceName: string } | null>(null);
+  const [importPreview, setImportPreview] = useState<{ save: LocalSave; sourceName: string; expectedSaves: LocalSave[] } | null>(null);
+  const importReadRef = useRef(0);
   useLayoutEffect(() => {
     document.documentElement.dataset.theme = theme;
     try { localStorage.setItem('jx10_appearance', theme); } catch { /* Appearance remains available for this session. */ }
@@ -500,14 +509,17 @@ function App() {
     } catch { setNotice('旧 localStorage 存档无法通过校验，未写入新存储。原键和备份均保留。'); }
   }
   function importFile(file: File) {
+    const request = ++importReadRef.current;
+    setImportPreview(null);
     if (file.size > MAX_IMPORT_BYTES) { setNotice('导入失败：文件超过 20 MiB 上限，原存档未修改。'); return; }
     file.text().then(text => {
+      if (request !== importReadRef.current) return;
       downloadFileCopy(file, `九霄-导入前原文备份-${Date.now()}-${file.name}`);
       try {
         const save = parseLegacySave(file, text);
-        setImportPreview({ save, sourceName: file.name }); setNotice(`已读取「${file.name}」。原始文件副本已下载；核对字段后再选择导入。`);
+        setImportPreview({ save, sourceName: file.name, expectedSaves: saves }); setNotice(`已读取「${file.name}」。原始文件副本已下载；核对字段后再选择导入。`);
       } catch { setNotice('导入失败：文件格式或内容不符合旧档契约。原文件和已有存档未修改。'); }
-    }).catch(() => setNotice('导入失败：无法读取文件。原存档未修改。'));
+    }).catch(() => { if (request === importReadRef.current) setNotice('导入失败：无法读取文件。原存档未修改。'); });
   }
   async function commitImport(strategy: 'keep' | 'replace' | 'copy') {
     if (!importPreview) return;
@@ -516,7 +528,10 @@ function App() {
     if (collision && strategy === 'keep') { setNotice('此档 ID 已存在。请选择“替换现有存档”或“另存副本”。'); return; }
     const candidate = strategy === 'copy' ? { ...importPreview.save, saveId: createSaveId(), name: `${importPreview.save.name}（副本）`, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() } : importPreview.save;
     const next = collision && strategy === 'replace' ? current.map(item => item.saveId === candidate.saveId ? candidate : item) : [candidate, ...current];
-    const result = await commitSaves(saves, next);
+    // Replacing requires the version reviewed by the user, even after another
+    // tab's storage event has refreshed the visible save list.
+    const expected = strategy === 'replace' ? importPreview.expectedSaves : current;
+    const result = await commitSaves(expected, next);
     if (!result.ok) { setSaves(result.saves); setNotice(result.reason === 'conflict' ? '存档列表刚有变化，导入未覆盖任何内容。请核对最新列表后再选“另存副本”或重试。' : '浏览器数据库不可写，存档尚未导入。已下载的原始备份仍可使用。'); return; }
     setSaves(result.saves); setImportPreview(null); setNotice(commitSuccessMessage(result, `已导入「${candidate.name}」。原始旧档字段保存在历史资料区。`)); go(`/game/${candidate.saveId}`);
   }
@@ -549,6 +564,7 @@ function App() {
     onRename={async (save, name) => {
       const trimmed = name.trim();
       if (!trimmed || trimmed.length > 40) return false;
+      if (JSON.stringify(saves.find(item => item.saveId === save.saveId)) !== JSON.stringify(save)) return false;
       const next = saves.map(item => item.saveId === save.saveId ? { ...item, name: trimmed, updatedAt: new Date().toISOString() } : item);
       const result = await commitSaves(saves, next);
       setSaves(result.saves);
@@ -556,6 +572,7 @@ function App() {
       return result.ok;
     }}
     onDelete={async save => {
+      if (JSON.stringify(saves.find(item => item.saveId === save.saveId)) !== JSON.stringify(save)) return false;
       const result = await commitSaves(saves, saves.filter(item => item.saveId !== save.saveId));
       setSaves(result.saves);
       if (result.ok) {

@@ -193,11 +193,41 @@ async function ready(url) {
       assert.equal(await page.locator('.form input').count(), 5);
       assert.equal(await page.locator('.form select').count(), 0);
       await page.locator('input').nth(0).fill(`测试修士-${width}`);
+      const characterDetails = { age: '未知', personality: '冷静谨慎', origin: '散修', appearance: '青衣' };
+      for (const [index, value] of Object.values(characterDetails).entries()) await page.locator('.form input').nth(index + 1).fill(value);
+      const beforeCharacterDraft = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      await page.reload();
+      assert.equal(await page.locator('.form input').first().inputValue(), `测试修士-${width}`);
+      for (const [index, value] of Object.values(characterDetails).entries()) assert.equal(await page.locator('.form input').nth(index + 1).inputValue(), value);
+      await page.getByRole('button', { name: '返回山门', exact: true }).click();
+      assert.equal(new URL(page.url()).pathname, '/lobby');
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), beforeCharacterDraft, 'leaving creation must not create a save');
+      await page.getByRole('button', { name: /^新开一局/ }).click();
+      assert.equal(await page.locator('.form input').first().inputValue(), `测试修士-${width}`, 'returning to creation restores the draft');
       await page.getByRole('button', { name: '下一步' }).click();
       assert.equal(await page.locator('.form input').count(), 2);
       assert.equal(await page.locator('.form textarea').count(), 1);
       await page.locator('.form label').filter({ hasText: '修为' }).locator('input').fill('炼气期');
+      await page.locator('.form label').filter({ hasText: '灵根' }).locator('input').fill('天灵根（金）');
+      await page.locator('.form textarea').fill('天赋一\n天赋二\n天赋三\n天赋四');
+      await page.reload();
+      await page.getByRole('button', { name: '下一步' }).click();
+      assert.equal(await page.locator('.form input').first().inputValue(), '炼气期');
+      assert.equal(await page.locator('.form textarea').inputValue(), '天赋一\n天赋二\n天赋三\n天赋四');
        await page.getByRole('button', { name: '下一步' }).click();
+      for (const buttonName of ['保存角色并进入', '按资料随机开局']) {
+        await page.getByRole('button', { name: buttonName }).click();
+        await page.getByText('天赋最多三项，请每行填写一项。').waitFor();
+        assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), beforeCharacterDraft, 'over-limit talents must reject both start modes without creating a save');
+      }
+      await page.getByRole('button', { name: '上一步' }).click();
+      await page.locator('.form textarea').fill(' 天赋一 \n\n天赋二\n天赋三 ');
+      await page.getByRole('button', { name: '下一步' }).click();
+      await page.locator('.form textarea').fill('只想炼器');
+      await page.reload();
+      await page.getByRole('button', { name: '下一步' }).click();
+      await page.getByRole('button', { name: '下一步' }).click();
+      assert.equal(await page.locator('.form textarea').inputValue(), '只想炼器', 'third-step fields survive refresh');
        assert.equal(await page.locator('.form select').count(), 1);
        assert.equal(await page.locator('.form textarea').count(), 1);
        const regionSelect = page.getByLabel('开局地域');
@@ -220,10 +250,51 @@ async function ready(url) {
       await page.getByRole('button', { name: '上一步' }).click();
       assert.equal(await page.locator('.form input').first().inputValue(), '炼气期');
       await page.getByRole('button', { name: '下一步' }).click();
+      const beforeCreationFailure = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      await page.evaluate(() => {
+        const original = IDBDatabase.prototype.transaction;
+        window.restoreCreationDatabaseForTest = () => { IDBDatabase.prototype.transaction = original; };
+        IDBDatabase.prototype.transaction = function (stores, mode, options) {
+          if (mode === 'readwrite') throw new DOMException('synthetic creation write failure', 'QuotaExceededError');
+          return original.call(this, stores, mode, options);
+        };
+      });
       await page.getByRole('button', { name: '保存角色并进入' }).click();
+      await page.getByText(/角色草稿仍在/).waitFor();
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), beforeCreationFailure);
+      assert.equal(await page.getByRole('button', { name: '保存角色并进入' }).isEnabled(), true, 'failed creation must release its submit lock');
+      assert.ok((await page.locator('.character-summary').innerText()).includes(`测试修士-${width}`), 'failed creation must preserve edited character data');
+      await page.evaluate(() => {
+        window.restoreCreationDatabaseForTest(); delete window.restoreCreationDatabaseForTest;
+        const buttons = [...document.querySelectorAll('button')];
+        const manual = buttons.find(button => button.textContent.includes('保存角色并进入'));
+        const random = buttons.find(button => button.textContent.includes('按资料随机开局'));
+        manual.click(); manual.click(); random.click();
+      });
       await page.locator('.game-topline h1').filter({ hasText: `测试修士-${width}` }).waitFor();
+      const onceCreated = await page.evaluate(() => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves);
+      assert.equal(onceCreated.length, 1, 'rapid manual/random submissions must only create one save');
+      assert.equal(onceCreated[0].pending.source, 'CHARACTER_START', 'later clicks must not change the accepted start mode');
+      assert.deepEqual(onceCreated[0].character.talents, ['天赋一', '天赋二', '天赋三'], 'three nonempty trimmed talents must be accepted');
+      assert.equal(onceCreated[0].character.goal, '只想炼器');
+      for (const [field, value] of Object.entries(characterDetails)) assert.equal(onceCreated[0].character[field], value);
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_character_draft')), null, 'only successful creation clears the draft');
       assert.equal(await page.locator('h2').innerText(), `测试修士-${width}`);
       assert.match(await page.locator('body').innerText(), /\d+ 项待处理/);
+      const beforeMissingLink = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      for (const invalidId of ['missing-save-link', 'missing-save-%E4%B8%AD%E6%96%87']) {
+        await page.goto(`http://127.0.0.1:${webPort}/game/${invalidId}`);
+        await page.waitForFunction(() => document.documentElement.dataset.jxStorageHydrated === 'true');
+        await page.getByRole('heading', { name: '找不到这份存档' }).waitFor();
+        assert.equal(await page.locator('#player-intent').count(), 0, 'missing save links must not expose an actionable game');
+        await page.reload();
+        await page.getByRole('heading', { name: '找不到这份存档' }).waitFor();
+        await page.getByRole('button', { name: '回到首页', exact: true }).click();
+        await page.getByRole('button', { name: '进入世界', exact: true }).waitFor();
+        assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), beforeMissingLink, 'invalid link navigation and refresh must not create or modify saves');
+      }
+      await page.goto(`http://127.0.0.1:${webPort}/game/${onceCreated[0].saveId}`);
+      await page.locator('.game-topline h1').filter({ hasText: `测试修士-${width}` }).waitFor();
       const supplementInput = page.locator('.game-tools input[type="file"]');
       const supplementBytes = Buffer.from('旅途札记：在山门外遇见一位采药人。\n<script>不应作为网页执行</script>');
       await supplementInput.setInputFiles({ name: '旅途札记.txt', mimeType: 'text/plain', buffer: supplementBytes });
@@ -253,9 +324,48 @@ async function ready(url) {
         const save = JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2') || 'null').saves.find(item => item.saveId === saveId);
         return save.legacyArchive.payload.supplements.length;
       }), 2, 'oversized supplementary files must not modify the archive');
+      const beforeSupplementFailure = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      await page.evaluate(() => {
+        const original = File.prototype.text;
+        File.prototype.text = function () {
+          if (this.name === 'unreadable-notes.txt') return Promise.reject(new Error('synthetic read failure'));
+          if (this.name === 'delayed-notes.txt') return new Promise(resolve => { window.resolveSupplementForTest = resolve; });
+          return original.call(this);
+        };
+      });
+      await supplementInput.setInputFiles({ name: 'unreadable-notes.txt', mimeType: 'text/plain', buffer: Buffer.from('合成读取失败样本') });
+      await page.getByText('无法读取该补充资料，存档未修改。').waitFor();
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), beforeSupplementFailure, 'failed supplement reads must not write saves');
+      await supplementInput.setInputFiles([]);
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), beforeSupplementFailure, 'empty file selection must not write saves');
+      await supplementInput.setInputFiles({ name: 'delayed-notes.txt', mimeType: 'text/plain', buffer: Buffer.from('过时附加资料') });
+      await page.waitForFunction(() => typeof window.resolveSupplementForTest === 'function');
+      await page.locator('#player-intent').fill('补充资料读取期间写入的新行动');
+      await page.getByRole('button', { name: '收入待处理' }).click();
+      await page.waitForFunction(() => {
+        const mirror = JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2') || 'null');
+        return mirror?.saves?.some(save => save.pendingQueue?.some(item => item.text === '补充资料读取期间写入的新行动'));
+      });
+      const newerSupplementSnapshot = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      await page.evaluate(() => { window.resolveSupplementForTest('过时附加资料'); delete window.resolveSupplementForTest; });
+      await page.getByText('存档在读取补充资料期间发生变化，未覆盖较新版本；请重新附加。').waitFor();
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), newerSupplementSnapshot, 'stale supplement commit must preserve the newer action and snapshot');
+      await page.evaluate(() => {
+        const original = IDBDatabase.prototype.transaction;
+        window.restoreSupplementDatabaseForTest = () => { IDBDatabase.prototype.transaction = original; };
+        IDBDatabase.prototype.transaction = function (stores, mode, options) {
+          if (mode === 'readwrite') throw new DOMException('synthetic database write rejection', 'QuotaExceededError');
+          return original.call(this, stores, mode, options);
+        };
+      });
+      await supplementInput.setInputFiles({ name: 'database-failure-notes.txt', mimeType: 'text/plain', buffer: Buffer.from('不能写入的合成资料') });
+      await page.getByText('浏览器数据库不可写，补充资料没有写入。').waitFor();
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), newerSupplementSnapshot, 'failed IndexedDB supplement writes must not modify the mirror');
+      await page.evaluate(() => { window.restoreSupplementDatabaseForTest(); delete window.restoreSupplementDatabaseForTest; });
       await page.locator('#player-intent').fill('刷新后仍可恢复的行动草稿');
       await page.reload();
       await page.locator('.game-topline h1').waitFor();
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), newerSupplementSnapshot, 'refresh must recover the same durable snapshot after failed supplement writes');
       assert.equal(await page.locator('#player-intent').inputValue(), '刷新后仍可恢复的行动草稿');
       assert.equal(await page.locator('.game-workspace').count(), 1);
       assert.equal(await page.locator('.story-column').count(), 1);
@@ -343,6 +453,13 @@ async function ready(url) {
       await page.goto(`http://127.0.0.1:${webPort}/saves`);
       await page.screenshot({ path: join(screenshotDir, `${width === 390 ? '11-saves-mobile.png' : '12-saves-desktop.png'}`), fullPage: true });
       const branchCard = page.locator('.save-manager-list .card').filter({ hasText: '（冲突分支）' });
+      const savesBeforeRenameCancel = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      await branchCard.getByRole('button', { name: '改名' }).click();
+      await branchCard.getByRole('textbox', { name: '新名称' }).fill('   ');
+      assert.equal(await branchCard.getByRole('button', { name: '保存名称' }).isDisabled(), true);
+      await branchCard.getByRole('textbox', { name: '新名称' }).fill('不应保存的取消名称');
+      await branchCard.getByRole('button', { name: '取消', exact: true }).click();
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), savesBeforeRenameCancel, 'cancelled rename must not write saves');
       await branchCard.getByRole('button', { name: '改名' }).click();
       await branchCard.getByRole('textbox', { name: '新名称' }).fill(`旁支修士-${width}`);
       await branchCard.getByRole('button', { name: '保存名称' }).click();
@@ -355,6 +472,58 @@ async function ready(url) {
       const exportedBranch = JSON.parse(readFileSync(await branchDownload.path(), 'utf8'));
       assert.equal(exportedBranch.save.name, `旁支修士-${width}`);
       assert.equal(JSON.stringify(exportedBranch).includes('test-secret-not-persisted'), false, 'save export must never include AI API keys');
+      const savesBeforeDeleteCancel = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      await renamedCard.getByRole('button', { name: '删除' }).click();
+      await renamedCard.getByRole('textbox', { name: '确认名称' }).fill('不匹配的名称');
+      assert.equal(await renamedCard.getByRole('button', { name: '确认删除' }).isDisabled(), true);
+      await renamedCard.getByRole('button', { name: '取消', exact: true }).click();
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), savesBeforeDeleteCancel, 'cancelled deletion must not write saves');
+      await page.reload();
+      await renamedCard.waitFor();
+      assert.equal(await page.locator('.save-manager-list .card').count(), 2, 'cancelled deletion must survive refresh');
+      const beforeManagerFailure = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      await page.evaluate(() => {
+        const original = IDBDatabase.prototype.transaction;
+        window.restoreManagerDatabase = () => { IDBDatabase.prototype.transaction = original; };
+        IDBDatabase.prototype.transaction = function (stores, mode, options) {
+          if (mode === 'readwrite') throw new DOMException('synthetic management write failure', 'QuotaExceededError');
+          return original.call(this, stores, mode, options);
+        };
+      });
+      for (const operation of ['改名', '删除']) {
+        await renamedCard.getByRole('button', { name: operation, exact: true }).click();
+        if (operation === '改名') await renamedCard.getByRole('textbox', { name: '新名称' }).fill('不得提交的失败改名');
+        else await renamedCard.getByRole('textbox', { name: '确认名称' }).fill(`旁支修士-${width}`);
+        await renamedCard.getByRole('button', { name: operation === '改名' ? '保存名称' : '确认删除', exact: true }).click();
+        await page.getByText(operation === '改名' ? '改名未写入。请检查存储状态或重新载入列表。' : '删除未完成。请检查另一标签页的改动后重试。').waitFor();
+        assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), beforeManagerFailure, 'failed save management must not change the compatibility mirror');
+        assert.equal(await page.locator('.save-manager-list .card').count(), 2, 'failed deletion must retain both visible saves');
+        await renamedCard.getByRole('button', { name: '取消', exact: true }).click();
+      }
+      await page.evaluate(() => { window.restoreManagerDatabase(); });
+      await page.reload();
+      await page.waitForFunction(() => document.documentElement.dataset.jxStorageHydrated === 'true');
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), beforeManagerFailure, 'failed management must preserve authoritative data after hydration');
+      const managerConcurrentPage = await context.newPage();
+      await managerConcurrentPage.goto(`http://127.0.0.1:${webPort}/game/${exportedBranch.save.saveId}`);
+      for (const operation of ['改名', '删除']) {
+        await renamedCard.getByRole('button', { name: operation, exact: true }).click();
+        if (operation === '改名') await renamedCard.getByRole('textbox', { name: '新名称' }).fill('不得覆盖新进度的名称');
+        else await renamedCard.getByRole('textbox', { name: '确认名称' }).fill(`旁支修士-${width}`);
+        const beforeManagerConflict = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+        await managerConcurrentPage.locator('#player-intent').fill(`确认${operation}期间新增进度`);
+        await managerConcurrentPage.getByRole('button', { name: '收入待处理' }).click();
+        await page.waitForFunction(previous => localStorage.getItem('jiuxiao_1_local_saves_v2') !== previous, beforeManagerConflict);
+        await page.getByText('检测到另一个标签页修改了存档。已从本地数据库重新读取；同一存档再次提交前仍会核对版本。').waitFor();
+        const newerManagerSnapshot = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+        const newerManagedSave = JSON.parse(newerManagerSnapshot).saves.find(save => save.saveId === exportedBranch.save.saveId);
+        await renamedCard.getByText(new RegExp(`存档版本 ${newerManagedSave.revision}$`)).waitFor();
+        await renamedCard.getByRole('button', { name: operation === '改名' ? '保存名称' : '确认删除', exact: true }).click();
+        await page.getByText(operation === '改名' ? '改名未写入。请检查存储状态或重新载入列表。' : '删除未完成。请检查另一标签页的改动后重试。').waitFor();
+        assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), newerManagerSnapshot, 'stale management confirmation must preserve the whole latest library');
+        await renamedCard.getByRole('button', { name: '取消', exact: true }).click();
+      }
+      await managerConcurrentPage.close();
       await renamedCard.getByRole('button', { name: '删除' }).click();
       assert.equal(await renamedCard.getByRole('button', { name: '确认删除' }).isDisabled(), true);
       await renamedCard.getByRole('textbox', { name: '确认名称' }).fill(`旁支修士-${width}`);
@@ -470,12 +639,15 @@ async function ready(url) {
         const now = Date.now();
         sessionStorage.setItem('jx10_ai_call_log_v1', JSON.stringify([
           { at: new Date('2000-01-01T00:00:00.000Z').toISOString(), role: '过期岗位', model: 'expired-model', elapsedMs: 1, outcome: 'success' },
-          { at: new Date(now - 86_400_000).toISOString(), role: '近期岗位', model: 'retained-model', elapsedMs: 12, outcome: 'success' },
+          { at: new Date(now - 86_400_000).toISOString(), role: '近期岗位', model: 'retained-model', elapsedMs: 12, outcome: 'success', apiKey: 'synthetic-log-secret', response: 'synthetic-private-response', errorCode: 'synthetic-log-secret' },
+          { at: new Date(now + 86_400_000).toISOString(), role: '未来岗位', model: 'future-model', elapsedMs: 1, outcome: 'success' },
         ]));
       });
       await page.reload();
       const retainedLogs = await page.evaluate(() => JSON.parse(sessionStorage.getItem('jx10_ai_call_log_v1')));
       assert.deepEqual(retainedLogs.map(log => log.model), ['retained-model']);
+      assert.deepEqual(Object.keys(retainedLogs[0]).sort(), ['at', 'elapsedMs', 'model', 'outcome', 'role']);
+      assert.equal(JSON.stringify(retainedLogs).includes('synthetic-'), false, 'polluted old logs must be sanitized before storage rewrite');
       await page.getByRole('button', { name: '调用记录' }).click();
       assert.equal(await page.locator('.glass-dialog').isVisible(), true);
       assert.ok((await page.locator('.call-log-dialog-body').innerText()).includes('retained-model'));
@@ -550,10 +722,16 @@ async function ready(url) {
           await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({
             choices: [{ message: { content: '通路已通' } }], usage: { prompt_tokens: 9, completion_tokens: 3 },
           }) });
-        } else {
+        } else if (probeCount === 2) {
           await route.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({
             error: { message: 'synthetic provider error contains test-secret-not-persisted' },
           }) });
+        } else if (probeCount === 3) {
+          await route.abort('failed');
+        } else if (probeCount === 4) {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: '{invalid-json' });
+        } else {
+          await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ choices: [{ message: { content: '通路已通' } }] }) });
         }
       });
       await page.locator('.test-permission input').check();
@@ -573,6 +751,50 @@ async function ready(url) {
       assert.equal(testLogs.at(-1).status, 401);
       assert.equal(testLogs.at(-1).errorCode, 'HTTP_401');
       assert.equal(JSON.stringify(testLogs).includes('test-secret-not-persisted'), false, 'HTTP error bodies must not enter persisted diagnostics');
+      for (const expectedCount of [3, 4]) {
+        const priorLogCount = testLogs.length;
+        await storyTestButton.click();
+        await page.waitForFunction(previous => JSON.parse(sessionStorage.getItem('jx10_ai_call_log_v1') || '[]').length === previous + 1, priorLogCount);
+        testLogs = await page.evaluate(() => JSON.parse(sessionStorage.getItem('jx10_ai_call_log_v1') || '[]'));
+        assert.equal(testLogs.at(-1).outcome, 'failure');
+        assert.equal(testLogs.at(-1).errorCode, 'NETWORK_OR_FORMAT');
+        assert.equal(await storyTestButton.isEnabled(), true, 'network and format failures must release the test button');
+        assert.equal(probeCount, expectedCount, 'a failed probe must not automatically retry');
+      }
+      await storyPanel.getByRole('spinbutton', { name: '超时（秒）' }).fill('5');
+      await page.evaluate(() => {
+        window.originalTimeoutProbeFetch = window.fetch;
+        window.timeoutProbeCount = 0;
+        window.fetch = (input, init) => {
+          if (String(input) === 'https://api.deepseek.com/v1/chat/completions') {
+            window.timeoutProbeCount++;
+            return new Promise((resolve, reject) => {
+              init.signal.addEventListener('abort', () => {
+                window.timeoutProbeAborted = true;
+                reject(new DOMException('Synthetic aborted probe', 'AbortError'));
+              }, { once: true });
+            });
+          }
+          return window.originalTimeoutProbeFetch(input, init);
+        };
+      });
+      const logsBeforeTimeout = testLogs.length;
+      await storyTestButton.click();
+      await page.getByText('超过 5 秒，连接已中止。可核对超时与服务商状态后重试。').waitFor();
+      testLogs = await page.evaluate(() => JSON.parse(sessionStorage.getItem('jx10_ai_call_log_v1') || '[]'));
+      assert.equal(testLogs.length, logsBeforeTimeout + 1, 'timeout records exactly one failure');
+      assert.equal(testLogs.at(-1).errorCode, 'TIMEOUT');
+      assert.equal(testLogs.at(-1).outcome, 'failure');
+      assert.equal(await page.evaluate(() => window.timeoutProbeAborted), true, 'timeout must actually abort the signal');
+      assert.equal(await page.evaluate(() => window.timeoutProbeCount), 1, 'timeout must not auto-retry');
+      assert.equal(await storyTestButton.isEnabled(), true);
+      assert.equal(JSON.stringify(testLogs).includes('test-secret-not-persisted'), false);
+      await page.evaluate(() => { window.fetch = window.originalTimeoutProbeFetch; });
+      await storyTestButton.click();
+      await page.getByText(/连接成功，.*测试回复：通路已通/).waitFor();
+      testLogs = await page.evaluate(() => JSON.parse(sessionStorage.getItem('jx10_ai_call_log_v1') || '[]'));
+      assert.equal(testLogs.at(-1).outcome, 'success', 'explicit retry after timeout may succeed');
+      assert.equal(probeCount, 5);
       await page.getByRole('button', { name: '调用记录' }).click();
       const connectionLogText = await page.locator('.call-log-dialog-body').innerText();
       assert.ok(connectionLogText.includes('deepseek-flash'));
@@ -800,6 +1022,45 @@ async function ready(url) {
       await page.goto(`http://127.0.0.1:${webPort}/lobby`);
       await page.getByRole('button', { name: '菜单' }).click();
       const importInput = page.locator('aside input[type="file"]');
+      const beforeImportRace = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      await page.evaluate(() => {
+        window.originalImportText = File.prototype.text;
+        File.prototype.text = function () {
+          if (this.name === 'slow-import.json') return new Promise(resolve => { window.resolveSlowImport = resolve; });
+          if (this.name === 'stale-failure.json') return new Promise((resolve, reject) => { window.rejectStaleImport = reject; });
+          if (this.name === 'unreadable-import.json') return Promise.reject(new Error('synthetic read failure'));
+          return window.originalImportText.call(this);
+        };
+      });
+      await importInput.setInputFiles({ name: 'slow-import.json', mimeType: 'application/json', buffer: Buffer.from('{}') });
+      await page.waitForFunction(() => typeof window.resolveSlowImport === 'function');
+      const latestImport = { name: 'latest-import.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify({ messages: [{ role: 'user', content: '最新预览正文' }] })) };
+      await page.getByRole('button', { name: '菜单' }).click();
+      await Promise.all([page.waitForEvent('download'), importInput.setInputFiles(latestImport)]);
+      await page.locator('.import-preview').getByText(/来源：latest-import.json/).waitFor();
+      await page.evaluate(async () => {
+        window.resolveSlowImport(JSON.stringify({ messages: [{ role: 'user', content: '旧预览正文' }] }));
+        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      });
+      assert.match(await page.locator('.import-preview').innerText(), /来源：latest-import.json/, 'a late old read must not replace the latest preview');
+      await page.getByRole('button', { name: '菜单' }).click();
+      await importInput.setInputFiles({ name: 'stale-failure.json', mimeType: 'application/json', buffer: Buffer.from('{}') });
+      await page.waitForFunction(() => typeof window.rejectStaleImport === 'function');
+      await page.getByRole('button', { name: '菜单' }).click();
+      await Promise.all([page.waitForEvent('download'), importInput.setInputFiles(latestImport)]);
+      await page.locator('.import-preview').getByText(/来源：latest-import.json/).waitFor();
+      await page.evaluate(async () => {
+        window.rejectStaleImport(new Error('synthetic superseded failure'));
+        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      });
+      await page.getByText(/已读取「latest-import.json」/).waitFor();
+      await page.getByRole('button', { name: '菜单' }).click();
+      await importInput.setInputFiles({ name: 'unreadable-import.json', mimeType: 'application/json', buffer: Buffer.from('{}') });
+      await page.getByText(/导入失败：无法读取文件。原存档未修改。/).waitFor();
+      assert.equal(await page.locator('.import-preview').count(), 0, 'a failed new read must clear the old actionable preview');
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), beforeImportRace, 'read races and failures must not change saved data');
+      await page.evaluate(() => { File.prototype.text = window.originalImportText; });
+      await page.getByRole('button', { name: '菜单' }).click();
       const savesBeforeBadImport = await page.evaluate(() => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves.length);
       const [badBackup] = await Promise.all([
         page.waitForEvent('download'),
@@ -811,13 +1072,53 @@ async function ready(url) {
       assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves.length), savesBeforeBadImport, 'a malformed import must not alter existing saves');
       assert.equal(await page.locator('aside').count(), 0, 'selecting a file should close the menu before import review');
       if (width === 390) {
+        const boundarySnapshot = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+        const exactLimit = Buffer.alloc(20 * 1024 * 1024, 0x20);
+        Buffer.from(JSON.stringify({ messages: ['boundary story'], status: 'boundary status' })).copy(exactLimit);
+        await page.getByRole('button', { name: '菜单' }).click();
+        const [boundaryBackup] = await Promise.all([
+          page.waitForEvent('download'),
+          importInput.setInputFiles({ name: 'exact-limit.json', mimeType: 'application/json', buffer: exactLimit }),
+        ]);
+        await page.locator('.import-preview').getByText(/来源：exact-limit.json/).waitFor();
+        assert.deepEqual(readFileSync(await boundaryBackup.path()), exactLimit, 'the exact 20 MiB import backup must retain every original byte');
+        assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), boundarySnapshot, 'a valid boundary preview must not commit a save');
+        await page.locator('.import-preview').getByRole('button', { name: '取消', exact: true }).click();
+        assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), boundarySnapshot, 'cancelling a boundary preview must preserve saved data');
         const oversized = Buffer.alloc(20 * 1024 * 1024 + 1, 0x61);
         await page.getByRole('button', { name: '菜单' }).click();
         await importInput.setInputFiles({ name: 'oversized.json', mimeType: 'application/json', buffer: oversized });
         await page.getByText(/导入失败：文件超过 20 MiB 上限/).waitFor();
         assert.equal(await page.locator('.import-preview').count(), 0, 'an oversized file must be rejected before preview');
         assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves.length), savesBeforeBadImport, 'an oversized import must not alter existing saves');
+        assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), boundarySnapshot, 'over-limit rejection must preserve the complete saved library');
       }
+      const beforeInvalidImports = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      const invalidImports = [
+        ['empty.json', ''], ['object.json', '{}'], ['null.json', 'null'], ['array.json', '[]'], ['scalar.json', '42'],
+        ['messages-type.json', '{"messages":"not-an-array"}'], ['negative-turn.json', '{"turn":-1}'],
+        ['fractional-turn.json', '{"turn":1.5}'], ['revision-type.json', '{"revision":"1"}'],
+        ['player-type.json', '{"player":[]}'], ['world-type.json', '{"world":"not-an-object"}'],
+        ['unrecognized.json', '{"unknown":"not-a-save"}'],
+        ['bad-envelope.json', '{"format":"JIUXIAO_SAVE","version":0,"save":{"messages":[]}}'],
+        ['blank.txt', '   \n'], ['script-only.html', '<script>window.importScriptExecuted=true</script><style>body{display:none}</style>'],
+      ];
+      for (const [name, text] of invalidImports) {
+        const bytes = Buffer.from(text);
+        await page.getByRole('button', { name: '菜单' }).click();
+        const [invalidBackup] = await Promise.all([
+          page.waitForEvent('download'),
+          importInput.setInputFiles({ name, mimeType: name.endsWith('.json') ? 'application/json' : 'text/plain', buffer: bytes }),
+        ]);
+        await page.getByText(/导入失败：文件格式或内容不符合旧档契约/).waitFor();
+        assert.deepEqual(readFileSync(await invalidBackup.path()), bytes, `rejected ${name} must retain its exact original backup`);
+        assert.equal(await page.locator('.import-preview').count(), 0, `rejected ${name} must not enter preview`);
+        assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), beforeInvalidImports, `rejected ${name} must preserve the complete save library`);
+      }
+      assert.equal(await page.evaluate(() => window.importScriptExecuted), undefined, 'HTML import must not execute scripts');
+      await page.reload();
+      await page.waitForFunction(() => document.documentElement.dataset.jxStorageHydrated === 'true');
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), beforeInvalidImports, 'rejected imports must preserve authoritative saves after refresh');
       const legacyJson = JSON.stringify({
         messages: [{ role: 'user', content: '旧档正文' }],
         status: '姓名：迁移修士',
@@ -840,6 +1141,19 @@ async function ready(url) {
       assert.equal(await page.locator('.import-preview h2').innerText(), '导入旧局');
       assert.ok((await page.locator('.import-preview').innerText()).includes('status'));
       assert.equal(await page.locator('.import-preview h2').innerText(), '导入旧局');
+      const savesBeforeImportCancel = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      assert.equal(readFileSync(await backup.path(), 'utf8'), legacyJson, 'cancelled import still has the exact original backup');
+      await page.locator('.import-preview').getByRole('button', { name: '取消', exact: true }).click();
+      assert.equal(await page.locator('.import-preview').count(), 0);
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), savesBeforeImportCancel, 'cancelled import must not write saves');
+      await page.reload();
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), savesBeforeImportCancel, 'cancelled import must not change saves after refresh');
+      await page.getByRole('button', { name: '菜单' }).click();
+      await Promise.all([
+        page.waitForEvent('download'),
+        importInput.setInputFiles({ name: 'legacy-chat.json', mimeType: 'application/json', buffer: Buffer.from(legacyJson) }),
+      ]);
+      await page.locator('.import-preview').waitFor();
       await page.getByRole('button', { name: '导入此档' }).click();
       assert.equal(await page.locator('.game-topline h1').innerText(), '导入旧局');
       await page.getByRole('button', { name: '角色状态', exact: true }).click();
@@ -888,6 +1202,45 @@ async function ready(url) {
       assert.equal(sanitizedExport.save.legacyArchive.payload.world.key, '旧钥匙', 'non-credential game fields must survive export');
       assert.equal(sanitizedExport.save.legacyArchive.payload.memory, '曾与守门弟子交谈');
       await importedCard.getByRole('button', { name: '打开' }).click();
+      const collisionJson = JSON.stringify(sanitizedExport);
+      const collisionSnapshotBefore = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      await page.getByRole('button', { name: '菜单' }).click();
+      await Promise.all([
+        page.waitForEvent('download'),
+        importInput.setInputFiles({ name: 'same-id-import.json', mimeType: 'application/json', buffer: Buffer.from(collisionJson) }),
+      ]);
+      await page.locator('.import-preview').getByRole('button', { name: '导入此档', exact: true }).click();
+      await page.getByText('此档 ID 已存在。请选择“替换现有存档”或“另存副本”。').waitFor();
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), collisionSnapshotBefore, 'same-ID keep import must not silently replace');
+      const importConcurrentPage = await context.newPage();
+      await importConcurrentPage.goto(page.url());
+      await importConcurrentPage.locator('#player-intent').fill('导入预览后另一个标签保存的新进度');
+      await importConcurrentPage.getByRole('button', { name: '收入待处理' }).click();
+      await importConcurrentPage.getByText(/行动已加入本地待处理队列/).waitFor();
+      await page.getByText('检测到另一个标签页修改了存档。已从本地数据库重新读取；同一存档再次提交前仍会核对版本。').waitFor();
+      const collisionSnapshotNewer = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      assert.notEqual(collisionSnapshotNewer, collisionSnapshotBefore);
+      await page.locator('.import-preview').getByRole('button', { name: '替换现有存档' }).click();
+      await page.getByText('存档列表刚有变化，导入未覆盖任何内容。请核对最新列表后再选“另存副本”或重试。').waitFor();
+      assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), collisionSnapshotNewer, 'stale reviewed replacement must not overwrite new progress after a storage refresh');
+      await page.locator('.import-preview').getByRole('button', { name: '另存为副本' }).click();
+      await page.waitForFunction(name => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2') || 'null')?.saves?.some(save => save.name === name), `${sanitizedExport.save.name}（副本）`);
+      const recoveredCollisionSaves = await page.evaluate(() => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves);
+      const expectedLatest = JSON.parse(collisionSnapshotNewer).saves.find(save => save.saveId === sanitizedExport.save.saveId);
+      assert.deepEqual(recoveredCollisionSaves.find(save => save.saveId === expectedLatest.saveId), expectedLatest, 'copy recovery must preserve the entire latest original');
+      const collisionCopy = recoveredCollisionSaves.find(save => save.name === `${sanitizedExport.save.name}（副本）`);
+      assert.ok(collisionCopy && collisionCopy.saveId !== expectedLatest.saveId);
+      await importConcurrentPage.close();
+      await page.getByRole('button', { name: '菜单' }).click();
+      await Promise.all([
+        page.waitForEvent('download'),
+        importInput.setInputFiles({ name: 'freshly-reviewed-replacement.json', mimeType: 'application/json', buffer: Buffer.from(collisionJson) }),
+      ]);
+      await page.locator('.import-preview').getByRole('button', { name: '替换现有存档' }).click();
+      await page.waitForFunction(id => location.pathname === `/game/${id}` && !document.querySelector('.import-preview'), sanitizedExport.save.saveId);
+      const deliberatelyReplaced = await page.evaluate(id => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves.find(save => save.saveId === id), sanitizedExport.save.saveId);
+      assert.deepEqual(deliberatelyReplaced.pendingQueue, sanitizedExport.save.pendingQueue, 'a newly reviewed explicit replacement must still be allowed');
+      assert.deepEqual(deliberatelyReplaced.messages, sanitizedExport.save.messages);
       const privateSavePath = process.env.JIUXIAO_PRIVATE_LEGACY_SAVE;
       if (width === 390 && privateSavePath) {
         const sourceBytes = readFileSync(privateSavePath);
