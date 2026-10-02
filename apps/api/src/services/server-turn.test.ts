@@ -37,6 +37,14 @@ function fixture() {
 }
 
 describe('server turn orchestration (synthetic rules, never production gameplay)', () => {
+  it('records presentation status after commit without letting log failure undo settlement', async () => {
+    const f=fixture();const log=vi.fn<NonNullable<ServerTurnRepository['recordNarrativeStatus']>>(async()=>{expect(f.snapshot().save.revision).toBe(1);});f.repository.recordNarrativeStatus=log;
+    expect(await new ServerTurnService(f.repository,f.rules,async()=>'text').execute('owner',f.intent,true)).toMatchObject({status:'accepted',narrative:{status:'received'}});
+    expect(log.mock.calls.map(call=>call[4])).toEqual(['generating','received']);
+    log.mockImplementation(async()=>{throw new Error('fixture log failure');});
+    expect(await new ServerTurnService(f.repository,f.rules).execute('owner',f.intent,true)).toMatchObject({status:'accepted',duplicate:true,narrative:{code:'NARRATIVE_UNAVAILABLE'}});
+    expect(f.snapshot().save.revision).toBe(1);
+  });
   it('fails closed without rules and refuses foreign owners or client backups without writes', async () => {
     const f = fixture(); const service = new ServerTurnService(f.repository);
     expect(await service.execute('owner', f.intent)).toEqual({ status: 'rules_not_ready' });

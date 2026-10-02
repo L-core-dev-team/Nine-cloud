@@ -43,6 +43,13 @@
       "when": 1790913321543,
       "tag": "0005_fearless_shatterstar",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790915091978,
+      "tag": "0006_next_the_enforcers",
+      "breakpoints": true
     }
   ]
 }

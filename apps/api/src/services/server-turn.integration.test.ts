@@ -2,6 +2,8 @@ import { randomUUID } from 'node:crypto';
 import { afterAll, describe, expect, it } from 'vitest';
 import { Pool } from 'pg';
 import type { ActionIntent } from '@jiuxiao/contracts';
+import { replayEvents } from '@jiuxiao/domain';
+import { RuleResolver } from './rule-resolver.js';
 import { ServerTurnService, type ServerTurnRules } from './server-turn.js';
 import { createPostgresServerTurnRepository } from './postgres-server-turn.js';
 
@@ -12,6 +14,7 @@ suite('ServerTurnService on isolated PostgreSQL (synthetic rules only)', () => {
   const repository = createPostgresServerTurnRepository(pool);
   const owner = 'turn-fixture-owner-' + randomUUID(); const saveId = 'turn-fixture-save-' + randomUUID();
   const secondSaveId = 'turn-isolation-save-' + randomUUID();
+  const templateIds: string[] = [];
   const intent: ActionIntent = { kind: 'move', saveId, actorId: 'fixture-player', expectedRevision: 0,
     idempotencyKey: randomUUID(), payload: { destinationId: 'fixture-gate' } };
   const rules: ServerTurnRules = {
@@ -24,6 +27,7 @@ suite('ServerTurnService on isolated PostgreSQL (synthetic rules only)', () => {
     policyForNpc: () => 'exact-recall-v1',
   };
   afterAll(async () => {
+    for (const id of templateIds) { await pool.query('DELETE FROM turn_events WHERE save_id=$1',[id]); await pool.query('DELETE FROM turn_requests WHERE save_id=$1',[id]); await pool.query('DELETE FROM game_saves WHERE id=$1 AND owner_id=$2',[id,owner]); }
     await pool.query('DELETE FROM turn_events WHERE save_id = $1', [secondSaveId]);
     await pool.query('DELETE FROM turn_requests WHERE save_id = $1', [secondSaveId]);
     await pool.query('DELETE FROM game_saves WHERE id = $1 AND owner_id = $2', [secondSaveId, owner]);
@@ -66,5 +70,30 @@ suite('ServerTurnService on isolated PostgreSQL (synthetic rules only)', () => {
     expect((await new ServerTurnService(repository,secondRules).execute(owner,{...intent,saveId:secondSaveId,idempotencyKey:randomUUID()})).status).toBe('accepted');
     expect(await repository.getForOwner(owner,saveId)).toEqual(before);
     const second=await repository.getForOwner(owner,secondSaveId);expect(JSON.stringify(second)).toContain('Only second-save observation.');expect(JSON.stringify(second)).not.toContain('Public fixture event.');expect(JSON.stringify(second)).not.toContain('second-private');
+  });
+  it('six-class provider template commits, reloads and replays authored deltas without duplicate settlement', async () => {
+    const cases = [{kind:'move',payload:{destinationId:'fixture-gate'}},{kind:'cultivate',payload:{techniqueId:'fixture',minutes:1}},{kind:'use_item',payload:{itemId:'fixture'}},{kind:'talk',payload:{npcId:'fixture',utterance:'fixture'}},{kind:'combat',payload:{targetId:'fixture'}},{kind:'quest',payload:{questId:'fixture',choiceId:'fixture'}}];
+    const resolver = new RuleResolver({version:{ruleVersion:'fixture-only',ActionRulesVersion:'fixture-actions',CombatRulesVersion:'fixture-combat',canonVersion:'fixture-only',memoryPolicyVersion:'fixture-only'}, resolve:()=>({status:'accepted',delta:{timeChange:1,locationChange:null,factChanges:[{key:'fixtureCounter',before:{present:false},after:{present:true,value:1}}]}})},()=>[],()=>'exact-recall-v1');
+    for (const input of cases) {
+      const id=randomUUID();templateIds.push(id);
+      await pool.query('INSERT INTO game_saves(id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,snapshot) VALUES($1,$2,0,1,$3,$3,$3,$4::jsonb)',[id,owner,'fixture-only',JSON.stringify({playerId:'fixture-player',locationId:'origin',elapsedMinutes:0,facts:{}})]);
+      const before=(await repository.loadSave(owner,id))!;
+      const request={...input,saveId:id,actorId:'fixture-player',expectedRevision:0,idempotencyKey:randomUUID()} as ActionIntent;
+      const result=await new ServerTurnService(repository,resolver).execute(owner,request);
+      if(result.status!=='accepted'||result.receipt.decision.status!=='accepted')throw new Error('fixture commit failed');
+      const loaded=await repository.loadSave(owner,id);expect(replayEvents(before,result.receipt.decision.events,resolver.reduce.bind(resolver))).toEqual(loaded);
+      expect(await new ServerTurnService(createPostgresServerTurnRepository(pool),resolver).execute(owner,request)).toMatchObject({status:'accepted',duplicate:true});
+      expect((await repository.loadSave(owner,id))?.revision).toBe(1);
+    }
+  });
+  it('narrative retries cannot overwrite newer status or another owner\'s log', async () => {
+    const oldAttempt=randomUUID(),newAttempt=randomUUID();
+    await repository.recordNarrativeStatus!(owner,saveId,intent.idempotencyKey,oldAttempt,'generating');
+    await repository.recordNarrativeStatus!(owner,saveId,intent.idempotencyKey,newAttempt,'generating');
+    await repository.recordNarrativeStatus!(owner,saveId,intent.idempotencyKey,oldAttempt,'received');
+    await repository.recordNarrativeStatus!('foreign-owner',saveId,intent.idempotencyKey,newAttempt,'cancelled');
+    expect((await pool.query('SELECT narrative_status FROM turn_requests WHERE save_id=$1 AND idempotency_key=$2',[saveId,intent.idempotencyKey])).rows[0].narrative_status).toBe('generating');
+    await repository.recordNarrativeStatus!(owner,saveId,intent.idempotencyKey,newAttempt,'received');
+    expect((await pool.query('SELECT narrative_status FROM turn_requests WHERE save_id=$1 AND idempotency_key=$2',[saveId,intent.idempotencyKey])).rows[0].narrative_status).toBe('received');
   });
 });

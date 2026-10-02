@@ -51,6 +51,9 @@ export const turnRequests = pgTable('turn_requests', {
   idempotencyKey: text('idempotency_key').notNull(),
   expectedRevision: integer('expected_revision').notNull(),
   result: jsonb('result'),
+  narrativeAttemptId: text('narrative_attempt_id'),
+  narrativeStatus: text('narrative_status').notNull().default('not_requested'),
+  narrativeUpdatedAt: timestamp('narrative_updated_at', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 }, table => [primaryKey({ columns: [table.saveId, table.idempotencyKey] })]);
 
