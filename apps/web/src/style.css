@@ -230,6 +230,31 @@ input:focus, textarea:focus, select:focus { border-color: var(--accent); box-sha
 .log-list span, .log-list small { color: var(--muted); }
 .ai-actionbar { position: fixed; z-index: 8; right: 0; bottom: 0; left: 0; display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 10px; padding: 12px max(18px, calc((100vw - 1180px) / 2)) calc(12px + env(safe-area-inset-bottom)); background: #07131fee; border-top: 1px solid var(--line); backdrop-filter: blur(18px); }
 .ai-actionbar > button { min-height: 52px; align-items: center; justify-content: center; }
+.ai-actionbar { z-index: 100; font-family: 'Noto Serif SC', 'Songti SC', serif; }
+.ai-feedback { grid-column: 1 / -1; min-width: 0; max-height: 5.5rem; overflow: auto; color: var(--muted); font-size: .8rem; }
+.ai-feedback p { margin: 0; overflow-wrap: anywhere; }
+.ai-config-tools, .world-search-feedback { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.role-probe { display: grid; gap: 12px; }
+.role-probe p { margin: 0; overflow-wrap: anywhere; }
+.model-picker { display: grid; gap: 9px; padding: 14px; border: 1px solid var(--line); border-radius: 10px; }
+.model-picker small { color: var(--muted); line-height: 1.7; }
+.batch-targets { display: grid; gap: 12px; margin: 18px 0; padding: 16px; border: 1px solid var(--line); }
+.batch-preview { overflow-wrap: anywhere; }
+.ai-page { padding-bottom: calc(225px + env(safe-area-inset-bottom)); }
+.character-field, .character-field > label { display: grid; gap: 8px; }
+.character-suggestions { color: var(--muted); font-size: .78rem; }
+.world-search-feedback { margin: 12px 0 22px; }
+.worldbook-entry { scroll-margin-top: 22px; }
+.worldbook-entry mark { color: #172a38; background: #e5cca0; border-radius: 3px; padding: 0 2px; }
+.game-readable-panel { max-height: 56svh; overflow: auto; overflow-wrap: anywhere; padding-right: 6px; }
+.readable-data { margin: 0; }
+.readable-data > div { padding: 10px 0; border-top: 1px solid var(--line); }
+.readable-data dt { color: var(--muted); font-size: .8rem; }
+.readable-data dd { margin: 7px 0 0; }
+.data-prose { margin: 0; white-space: pre-wrap; line-height: 1.8; font-size: .87rem; }
+.data-empty { color: var(--muted); font-size: .82rem; }
+.data-list { margin: 0; padding-left: 1.2em; }
+.data-list li + li { margin-top: 8px; }
 .file-action { position: relative; align-items: center; justify-content: center; cursor: pointer; }
 .file-action input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 .home-saves { padding: 20px 0 64px; }
