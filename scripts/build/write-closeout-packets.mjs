@@ -15,3 +15,5 @@ const packet={kind:'AI_CONFIG_G1_PACKET',commit:build.commit,build_hash:`sha256:
 writeFileSync(resolve(out,'AI_CONFIG_G1_PACKET.json'),JSON.stringify(packet,null,2)+'\n');
 writeFileSync(resolve(out,'CanonDigest.json'),JSON.stringify({kind:'CanonDigest',canon_version:canon.activeVersion,entry_count:canon.entries.length,hash:`sha256:${createHash('sha256').update(canonBytes).digest('hex')}`,timestamp,commit:build.commit,approval_status:'HUMAN_GATE_PENDING',receipts:[]},null,2)+'\n');
 console.log('Generated exact-build AI G1 packet and CanonDigest; human gates remain pending.');
+const media=JSON.parse(readFileSync(resolve(root,'apps/web/public/scenes/candidate/asset-manifest.json'),'utf8'));
+writeFileSync(resolve(out,'MediaManifest.json'),JSON.stringify({kind:'MediaManifest',commit:build.commit,releaseApproved:false,assets:media.files.map(asset=>({asset_id:asset.sha256,scene:asset.sceneId,type:asset.mimeType,path:asset.path,license:'LICENSE_PENDING',fallback:`procedural:${asset.sceneId}`,sha256:asset.sha256}))},null,2)+'\n');

@@ -46,6 +46,8 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jiuxiao_test
       - run: pnpm license:check
+      - name: Test fail-closed media publication gate
+        run: node scripts/audit/media-release-check.test.mjs
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build
