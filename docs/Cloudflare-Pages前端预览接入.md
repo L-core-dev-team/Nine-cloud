@@ -27,6 +27,8 @@
 
 本任务仅在 `cloud-sync.ts` 的 fetch 地址处接入 `apiRequestUrl`，保留另一任务已提交的错误处理和全部认证/云档逻辑。现有 `credentials: 'same-origin'` 保持不变；跨域 staging API 的 CORS、Cookie、Session 与邮件验收由认证任务负责，本预览不证明这些链路已可用。
 
+未配置后端时停止请求的行为仅用于 Pages 预览构建；普通构建继续保留原有同源 `/api` 行为，避免影响既有部署和另一任务的认证验证。
+
 ## Pages 项目接入
 
 优先在 Cloudflare Workers & Pages 创建 Git 集成项目并连接 `L-core-dev-team/Nine-cloud`，按上面的根目录、命令和输出目录配置，只为独立预览分支开启预览构建。生产分支自动部署暂时关闭，避免把尚未配置的 main 发布为生产。

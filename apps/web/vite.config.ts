@@ -29,6 +29,7 @@ export default defineConfig(({ mode }) => {
   const pagesPreview = process.env.JIUXIAO_BUILD_TARGET === 'cloudflare-preview';
   if (pagesPreview) requirePublicPreviewApi(loadEnv(mode, webRoot, 'VITE_').VITE_API_BASE_URL);
   return {
+    define: { 'import.meta.env.JIUXIAO_PAGES_PREVIEW': JSON.stringify(pagesPreview) },
     // The public/ tree includes media awaiting provenance and author approval. A public
     // Pages preview ships only the OFL font; scene artwork and video stay local.
     publicDir: pagesPreview ? false : 'public',
