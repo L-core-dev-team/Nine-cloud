@@ -1,5 +1,11 @@
 export type RouterModel = {
   provider: 'openrouter';
+  displayName:string;
+  contextLimit:number|null;
+  capabilities:string[]|null;
+  pricingStatus:'known'|'partial'|'unknown'|'conflict';
+  pricingSource:string;
+  status:'active'|'unknown';
   modelId: string;
   capability: { outputModalities: string[] } | null;
   price: { input: number | null; output: number | null; currency: 'USD'; unit: 'million_tokens' };
@@ -49,6 +55,12 @@ export function normalizeRouterModels(payload: unknown, now = Date.now()): Route
       ? new Date(raw.created * 1000) : null;
     const created = date && Number.isFinite(date.getTime()) ? date.toISOString().slice(0, 10) : null;
     const model: RouterModel = {
+      displayName:typeof raw.name==='string'&&raw.name?raw.name:id,
+      contextLimit:typeof raw.context_length==='number'&&Number.isSafeInteger(raw.context_length)&&raw.context_length>0?raw.context_length:null,
+      capabilities:modalities.length?modalities.filter((value):value is string=>typeof value==='string'):null,
+      pricingStatus:price(raw.pricing?.prompt)!==null&&price(raw.pricing?.completion)!==null?'known':price(raw.pricing?.prompt)!==null||price(raw.pricing?.completion)!==null?'partial':'unknown',
+      pricingSource:'https://openrouter.ai/api/v1/models',
+      status:expiration&&Number.isFinite(Date.parse(expiration))?'active':'unknown',
       provider: 'openrouter', modelId: id,
       capability: modalities.length ? { outputModalities: modalities.filter((value): value is string => typeof value === 'string') } : null,
       price: { input: price(raw.pricing?.prompt), output: price(raw.pricing?.completion), currency: 'USD', unit: 'million_tokens' },
@@ -67,6 +79,7 @@ export function normalizeRouterModels(payload: unknown, now = Date.now()): Route
     };
     const previous = models.get(id);
     if (previous) {
+      if(previous.inputUsdPerMillion!==model.inputUsdPerMillion||previous.outputUsdPerMillion!==model.outputUsdPerMillion)previous.pricingStatus='conflict';
       // Conflicting duplicate quotes cannot safely become a single exact price.
       if (previous.inputUsdPerMillion !== model.inputUsdPerMillion) previous.inputUsdPerMillion = null;
       if (previous.outputUsdPerMillion !== model.outputUsdPerMillion) previous.outputUsdPerMillion = null;

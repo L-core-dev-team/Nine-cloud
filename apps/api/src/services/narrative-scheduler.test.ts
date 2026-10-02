@@ -32,4 +32,11 @@ describe('five existing narrative roles, synthetic adapters only', () => {
   await expect(scheduler.run(receipt,new AbortController().signal)).rejects.toThrow('NARRATIVE_UNAVAILABLE');
   await expect(scheduler.run({...receipt,resultingRevision:0,decision:{status:'rejected',code:'fixture',message:'fixture',revision:0}},new AbortController().signal)).rejects.toThrow('TURN_NOT_COMMITTED');
  });
+ it('requires earlier successful dependencies and treats diagnostics as non-authoritative',async()=>{
+  const call=vi.fn(async()=>({text:'story',outputTokens:1}));
+  expect(()=>new NarrativeScheduler({story:slot(call,{dependencies:['archive']})},20)).toThrow('Invalid role dependency');
+  await expect(new NarrativeScheduler({story:slot(call,{dependencies:['director']})},20).run(receipt,new AbortController().signal)).rejects.toThrow('NARRATIVE_DEPENDENCY_UNAVAILABLE');expect(call).not.toHaveBeenCalled();
+  await expect(new NarrativeScheduler({director:slot(async()=>{throw new Error('no');},{required:true}),story:slot(call)},20).run(receipt,new AbortController().signal)).rejects.toThrow('NARRATIVE_UNAVAILABLE');expect(call).not.toHaveBeenCalled();
+  const result=await new NarrativeScheduler({story:slot(call)},20,()=>{throw new Error('log failure');}).run(receipt,new AbortController().signal);expect(result.text).toBe('story');
+ });
 });

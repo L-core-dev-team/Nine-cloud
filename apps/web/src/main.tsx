@@ -1,3 +1,4 @@
+import {claimCharacterDraftId} from './idb';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { SAVE_SCHEMA_VERSION } from '@jiuxiao/contracts';
@@ -190,6 +191,9 @@ function NewCharacter({ onSaved }: { onSaved: (save: LocalSave) => Promise<boole
   const [form, setForm] = useState<Record<string, string>>(readDraft);
   const [step, setStep] = useState(0);
   const [error, setError] = useState('');
+  const draftIdentity=useRef<Promise<string>|null>(null);
+  function acquireDraft(){return draftIdentity.current??=claimCharacterDraftId().catch(error=>{draftIdentity.current=null;throw error;});}
+  useEffect(()=>{void acquireDraft().catch(()=>{});},[]);
   const submittingRef = useRef(false);
   const [submitting, setSubmitting] = useState(false);
   useEffect(() => { if (!writeDraft(form)) setError('浏览器暂时无法保存草稿。提交前请保持页面打开。'); }, [form]);
@@ -209,9 +213,10 @@ function NewCharacter({ onSaved }: { onSaved: (save: LocalSave) => Promise<boole
     if (talents.length > 3) { setError('天赋最多三项，请每行填写一项。'); return; }
     submittingRef.current = true; setSubmitting(true); setError('');
     try {
+    const draftId=await acquireDraft();
     const now = new Date().toISOString();
     const name = form.name?.trim() || '无名修士';
-    const save: LocalSave = { schemaVersion: 1, saveId: createSaveId(), name, createdAt: now, updatedAt: now, revision: 0, canonVersion: 'pending-author-review', ruleVersion: 'rules-not-signed', memoryPolicyVersion: 'none', character: { ...form, name, talents }, location: form.region || '中州天枢域', status: 'pending_rules', messages: [], pending: { id: createSaveId(), text: mode === 'random' ? '按已录入资料生成随机角色并开始第一幕。当前尚无规则结算，因此此意图不会自行改变人物资料。' : '按已填写的角色设定，开始第一幕。', gm: false, source: mode === 'random' ? 'RANDOM_START' : 'CHARACTER_START' } };
+    const save: LocalSave = { schemaVersion: 1, saveId: draftId, name, createdAt: now, updatedAt: now, revision: 0, canonVersion: 'pending-author-review', ruleVersion: 'rules-not-signed', memoryPolicyVersion: 'none', character: { ...form, name, talents }, location: form.region || '中州天枢域', status: 'pending_rules', messages: [], pending: { id: createSaveId(), text: mode === 'random' ? '按已录入资料生成随机角色并开始第一幕。当前尚无规则结算，因此此意图不会自行改变人物资料。' : '按已填写的角色设定，开始第一幕。', gm: false, source: mode === 'random' ? 'RANDOM_START' : 'CHARACTER_START' } };
     if (!await onSaved(save)) { setError('存档列表刚有变化，或浏览器存储不可用。角色草稿仍在；请刷新存档列表后再提交。'); return; }
     clearDraft();
     } catch { setError('建角提交未完成。角色草稿仍在，请确认本地存储可用后重试。'); }

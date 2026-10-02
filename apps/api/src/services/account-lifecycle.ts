@@ -5,14 +5,14 @@ export type AccountOperation='email_change'|'close'|'delete';
 export class AccountLifecycleError extends Error {constructor(readonly code:string){super(code);}}
 /** All workflow proof is HMAC'd, bound to the original owner/session, single use and durable. */
 export class AccountLifecycle {
- constructor(private readonly pool:Pool,private readonly send:AuthMailSender,private readonly secret:string,readonly policyVersion:string|null=null,readonly deletionEnabled=false){if(Buffer.byteLength(secret)<32)throw new Error('AUTH_SECRET_REQUIRED');}
- capabilities(){return {emailChange:true,close:Boolean(this.policyVersion),permanentDelete:Boolean(this.policyVersion&&this.deletionEnabled),policyVersion:this.policyVersion};}
+ constructor(private readonly pool:Pool,private readonly send:AuthMailSender,private readonly secret:string,readonly policyVersion:string|null=null,readonly deletionEnabled=false,private readonly policyValid:()=>boolean=()=>true){if(Buffer.byteLength(secret)<32)throw new Error('AUTH_SECRET_REQUIRED');}
+ capabilities(){return {emailChange:true,close:Boolean(this.policyVersion&&this.policyValid()),permanentDelete:Boolean(this.policyVersion&&this.deletionEnabled&&this.policyValid()),policyVersion:this.policyVersion};}
  async cancel(owner:string,sessionHash:string,id:string){const result=await this.pool.query("UPDATE account_operations SET phase='cancelled',digest=NULL WHERE id=$1 AND owner_id=$2 AND session_hash=$3 AND phase IN ('old','new','ready','failed')",[id,owner,sessionHash]);return {status:result.rowCount?'cancelled':'already_inactive'};}
  private digest(id:string,phase:string,email:string,code:string){return createHmac('sha256',this.secret).update(`account-operation\0${id}\0${phase}\0${email}\0${code}`).digest('hex');}
  private async account(c:PoolClient,owner:string,sessionHash:string){return (await c.query('SELECT a.id,a.email FROM auth_accounts a JOIN auth_sessions s ON s.owner_id=a.id WHERE a.id=$1 AND s.token_hash=$2 AND s.expires_at>now() AND a.closed_at IS NULL FOR UPDATE OF a',[owner,sessionHash])).rows[0];}
  async begin(owner:string,sessionHash:string,operation:AccountOperation,newEmailValue?:unknown){
   if(!['email_change','close','delete'].includes(operation))throw new AccountLifecycleError('INVALID_OPERATION');
-  if(operation!=='email_change'&&!this.policyVersion)throw new AccountLifecycleError('DATA_POLICY_NOT_READY');
+  if(operation!=='email_change'&&(!this.policyVersion||!this.policyValid()))throw new AccountLifecycleError('DATA_POLICY_NOT_READY');
   if(operation==='delete'&&!this.deletionEnabled)throw new AccountLifecycleError('DATA_POLICY_NOT_READY');
   const newEmail=operation==='email_change'?normalizeEmail(newEmailValue):null;
   const id=randomUUID(),code=String(randomInt(1_000_000)).padStart(6,'0');let oldEmail='';const c=await this.pool.connect();
@@ -53,7 +53,7 @@ export class AccountLifecycle {
    if(!row||row.phase!=='ready'||row.old_email!==account.email||new Date(row.expires_at).getTime()<=Date.now())throw new AccountLifecycleError('INVALID_OPERATION');
    const required={email_change:'CHANGE_EMAIL',close:'CLOSE_ACCOUNT',delete:'DELETE_ACCOUNT'}[row.operation as AccountOperation];
    if(confirmation!==required)throw new AccountLifecycleError('CONFIRMATION_REQUIRED');
-   if(row.operation!=='email_change'&&!this.policyVersion)throw new AccountLifecycleError('DATA_POLICY_NOT_READY');
+   if(row.operation!=='email_change'&&(!this.policyVersion||!this.policyValid()))throw new AccountLifecycleError('DATA_POLICY_NOT_READY');
    if(row.operation==='email_change')await c.query('UPDATE auth_accounts SET email=$2 WHERE id=$1',[owner,row.new_email]);
    else if(row.operation==='close')await c.query('UPDATE auth_accounts SET closed_at=now() WHERE id=$1',[owner]);
    else{
@@ -69,7 +69,7 @@ export class AccountLifecycle {
    await c.query('DELETE FROM auth_challenges WHERE email=$1 OR email=$2',[account.email,row.operation==='email_change'?row.new_email:account.email]);
    await c.query("UPDATE account_operations SET phase='completed',digest=NULL WHERE owner_id=$1",[owner]);
    if(row.operation==='delete')await c.query('DELETE FROM auth_accounts WHERE id=$1',[owner]);
-   await c.query('COMMIT');return {status:row.operation==='email_change'?'email_changed':row.operation==='close'?'account_closed':'account_deleted',dataHandling:row.operation==='close'?'retained_under_host_policy':row.operation==='delete'?'live_database_removed_backups_under_host_policy':'unchanged',policyVersion:this.policyVersion};
+   await c.query('COMMIT');console.info(JSON.stringify({event:'account_lifecycle_completed',operation:row.operation,operationId:id,policyVersion:this.policyVersion,liveDatabaseOnly:true}));return {status:row.operation==='email_change'?'email_changed':row.operation==='close'?'account_closed':'account_deleted',dataHandling:row.operation==='close'?'retained_under_host_policy':row.operation==='delete'?'live_database_removed_backups_under_host_policy':'unchanged',policyVersion:this.policyVersion};
   }catch(error){await c.query('ROLLBACK');if((error as {code?:string}).code==='23505')throw new AccountLifecycleError('EMAIL_UNAVAILABLE');throw error;}finally{c.release();}
  }
 }

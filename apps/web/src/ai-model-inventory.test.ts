@@ -67,4 +67,8 @@ describe('public model catalog boundaries', () => {
   it.each([null, [], {}, { data: null }, { data: {} }])('rejects unrecognized catalog root %j', payload => {
     expect(() => normalizeRouterModels(payload, now)).toThrow('型号目录返回格式无法识别');
   });
+  it('reports missing capability and quote conflicts without inventing model data',()=>{
+    const rows=normalizeRouterModels({data:[{id:'vendor/m',pricing:{prompt:'0.000001',completion:'0.000002'}},{id:'vendor/m',pricing:{prompt:'0.000003',completion:'0.000002'}}]},now);
+    expect(rows[0]).toMatchObject({provider:'openrouter',modelId:'vendor/m',displayName:'vendor/m',contextLimit:null,capabilities:null,pricingStatus:'conflict',price:{input:null,output:2,currency:'USD',unit:'million_tokens'},pricingSource:'https://openrouter.ai/api/v1/models',status:'unknown'});
+  });
 });

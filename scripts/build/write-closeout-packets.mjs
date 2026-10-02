@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Produced from the tested clean review build; never invents author approval or live-provider acceptance.
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync,readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
@@ -24,4 +24,11 @@ console.log('Generated exact-build AI G1 packet and CanonDigest; human gates rem
 const media=JSON.parse(readFileSync(resolve(root,'apps/web/public/scenes/candidate/asset-manifest.json'),'utf8'));
 writeFileSync(resolve(out,'MediaManifest.json'),JSON.stringify({kind:'MediaManifest',commit:build.commit,releaseApproved:false,assets:media.files.map(asset=>({asset_id:asset.sha256,scene:asset.sceneId,type:asset.mimeType,path:asset.path,license:'LICENSE_PENDING',fallback:`procedural:${asset.sceneId}`,sha256:asset.sha256}))},null,2)+'\n');
 writeFileSync(resolve(out,'DeviceTestRecord.json'),JSON.stringify({kind:'DeviceTestRecord',commit:build.commit,build_hash:`sha256:${digest}`,status:'DEVICE_TEST_PENDING',device:null,browser:null,quality:null,powerSaving:null,fps:null,memory:null,temperature:null,battery:null,network:null,durationMinutes:null,fallbackEvidence:null,reviewer:null},null,2)+'\n');
-writeFileSync(resolve(out,'S7ScopeGate.json'),JSON.stringify({kind:'S7ScopeGate',commit:build.commit,feature_flags:{billing:false,community:false},status:'OWNER_DECISION_PENDING',engineering_work:'deferred_pending_LYL_scope',release_scope_approved:false,receipts:[]},null,2)+'\n');
+writeFileSync(resolve(out,'S7ScopeGate.json'),JSON.stringify({kind:'S7ScopeGate',commit:build.commit,feature_flags:{billing:false,community:false},status:'DEFERRED_BY_DECISION',decision_source:'docs/adr/0004-1.0不含社区与收费.md',scope:'1.0 excludes community and billing'},null,2)+'\n');
+const schema=JSON.parse(readFileSync(resolve(root,'packages/db/dist/build-manifest.json'),'utf8'));
+const migrations=readdirSync(resolve(root,'packages/db/drizzle')).filter(name=>name.endsWith('.sql')).sort().map(name=>({name,sha256:createHash('sha256').update(readFileSync(resolve(root,'packages/db/drizzle',name))).digest('hex')}));
+writeFileSync(resolve(out,'RC_MANIFEST.json'),JSON.stringify({RC_SHA:build.commit,ARTIFACT_HASH:`sha256:${digest}`,CANON_DIGEST:`sha256:${createHash('sha256').update(canonBytes).digest('hex')}`,DB_SCHEMA_VERSION:migrations.at(-1)?.name,DB_SCHEMA:schema,migrations,BUILD_ID:`${build.commit}:${process.env.GITHUB_RUN_ID}`,CI_RUN:process.env.GITHUB_RUN_ID,releaseApproved:false},null,2)+'\n');
+
+const gateValues={RC_SHA:build.commit,ARTIFACT_HASH:`sha256:${digest}`,CANON_DIGEST:`sha256:${createHash('sha256').update(canonBytes).digest('hex')}`,DB_SCHEMA_VERSION:migrations.at(-1)?.name,BUILD_ID:`${build.commit}:${process.env.GITHUB_RUN_ID}`,CI_RUN:process.env.GITHUB_RUN_ID};
+const gates=readFileSync(resolve(root,'docs/FINAL_HUMAN_GATES.md'),'utf8').replace(/\{\{(\w+)\}\}/g,(_all,key)=>gateValues[key]??'UNKNOWN');
+writeFileSync(resolve(out,'FINAL_HUMAN_GATES.md'),gates);

@@ -77,6 +77,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 function publicError(error: unknown): Response {
+  if(error instanceof Error&&['DATA_POLICY_NOT_READY','CLOUD_QUOTA_EXCEEDED'].includes(error.message))return Response.json({code:error.message},{status:error.message==='CLOUD_QUOTA_EXCEEDED'?413:503});
   if (error instanceof TypeError) {
     return Response.json({ code: 'INVALID_SAVE', message: '存档内容不符合当前版本要求。' }, { status: 400 });
   }

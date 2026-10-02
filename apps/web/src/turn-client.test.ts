@@ -65,4 +65,10 @@ describe('durable turn recovery', () => {
   const abort = new AbortController(); abort.abort(); await expect(client.narrate(record, abort.signal)).rejects.toThrow('cancelled');
   narrative = true; expect(await client.narrate(record)).toBe('仅叙事'); expect(await client.read('owner','test')).toEqual(record);
  });
+ it('runs page-memory narration only after commit and never submits another settlement',async()=>{
+  const ack=await receipt(),request=vi.fn(async()=>({receipt:ack})),client=new TurnClient(new Store(),request);
+  const prepared=await client.prepare('owner',intent),render=vi.fn(async(r:TurnReceipt)=>{r.resultingRevision=99;return 'presentation';});
+  await expect(client.narrate(prepared,undefined,render)).rejects.toThrow('TURN_NOT_COMMITTED');expect(render).not.toHaveBeenCalled();
+  const confirmed=await client.submit(prepared);expect(await client.narrate(confirmed,undefined,render)).toBe('presentation');expect(request).toHaveBeenCalledOnce();expect((await client.read('owner','test'))?.receipt).toEqual(ack);
+ });
 });

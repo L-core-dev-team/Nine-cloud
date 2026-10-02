@@ -5,11 +5,26 @@
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "exports": { ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" } },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./narrative-scheduler": {
+      "types": "./dist/narrative-scheduler.d.ts",
+      "default": "./dist/narrative-scheduler.js"
+    },
+    "./provider-narrative": {
+      "types": "./dist/provider-narrative.d.ts",
+      "default": "./dist/provider-narrative.js"
+    }
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run"
   },
-  "dependencies": { "@jiuxiao/contracts": "workspace:*" }
+  "dependencies": {
+    "@jiuxiao/contracts": "workspace:*"
+  }
 }

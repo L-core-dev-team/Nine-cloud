@@ -96,4 +96,22 @@ suite('ServerTurnService on isolated PostgreSQL (synthetic rules only)', () => {
     await repository.recordNarrativeStatus!(owner,saveId,intent.idempotencyKey,newAttempt,'received');
     expect((await pool.query('SELECT narrative_status FROM turn_requests WHERE save_id=$1 AND idempotency_key=$2',[saveId,intent.idempotencyKey])).rows[0].narrative_status).toBe('received');
   });
+  it('replays a 120-turn persisted game across lost commit replies and service restarts',async()=>{
+    const id=randomUUID();templateIds.push(id);
+    await pool.query('INSERT INTO game_saves(id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,snapshot) VALUES($1,$2,0,1,$3,$3,$3,$4::jsonb)',[id,owner,'fixture-only',JSON.stringify({playerId:'fixture-player',locationId:'origin',elapsedMinutes:0,facts:{items:150}})]);
+    const resolver=new RuleResolver({version:{ruleVersion:'fixture-only',ActionRulesVersion:'fixture-actions',CombatRulesVersion:'fixture-combat',canonVersion:'fixture-only',memoryPolicyVersion:'fixture-only'},resolve:(_intent,save)=>({status:'accepted',delta:{timeChange:1,locationChange:null,factChanges:[{key:'items',before:{present:true,value:save.state.facts.items},after:{present:true,value:Number(save.state.facts.items)-1}}]}})},event=>[{npcId:'long-witness',eventId:event.id,channel:'witnessed',visibleSummary:'Synthetic committed fact.'}],()=>'exact-recall-v1');
+    const before=(await repository.loadSave(owner,id))!;const events:Parameters<typeof replayEvents>[1][number][]=[];
+    for(let step=0;step<120;step++){
+      const request:ActionIntent={kind:'free_text',saveId:id,actorId:'fixture-player',expectedRevision:step,idempotencyKey:randomUUID(),payload:{text:'Synthetic one-item consumption'}};
+      const restarted=createPostgresServerTurnRepository(pool);
+      if(step%17===0){const original=restarted.commitAcceptedTurn;restarted.commitAcceptedTurn=async input=>{await original(input);throw new Error('Synthetic lost reply after durable commit');};await expect(new ServerTurnService(restarted,resolver).execute(owner,request)).rejects.toThrow('lost reply');}
+      const result=await new ServerTurnService(repository,resolver).execute(owner,request);
+      if(result.status!=='accepted'||result.receipt.decision.status!=='accepted')throw new Error('Long-game fixture failed');events.push(...result.receipt.decision.events);
+      for(let repeat=0;repeat<2;repeat++)expect(await new ServerTurnService(repository,resolver).execute(owner,request)).toMatchObject({status:'accepted',duplicate:true});
+    }
+    const after=await repository.loadSave(owner,id);expect(after).toMatchObject({revision:120,state:{elapsedMinutes:120,facts:{items:30}}});
+    expect(replayEvents(before,events,resolver.reduce.bind(resolver))).toEqual(after);
+    expect((await repository.getForOwner(owner,id))?.memories[0]?.observations).toHaveLength(120);
+    const counts=await pool.query('SELECT count(*)::int AS count FROM turn_events WHERE save_id=$1',[id]);expect(counts.rows[0].count).toBe(120);
+  },30000);
 });

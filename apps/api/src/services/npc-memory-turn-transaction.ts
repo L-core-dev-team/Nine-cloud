@@ -72,7 +72,7 @@ type NormalizedCommit = Omit<AcceptedTurnCommitInput, 'ownerId' | 'receipt' | 's
  * and journal on the server; this repository never decides gameplay or visibility.
  */
 export class PostgresNpcMemoryTurnRepository {
-  constructor(private readonly database: Database, private readonly requiresLiveAccount = false) {}
+  constructor(private readonly database: Database, private readonly requiresLiveAccount = false,private readonly guard?: (client:PoolClient,commit:AcceptedTurnCommitInput)=>Promise<void>) {}
 
   async getReceiptForOwner(ownerId: string, saveId: string, requestId: string): Promise<TurnReceipt | null> {
     const owner = normalizeOwnerId(ownerId);
@@ -122,7 +122,7 @@ export class PostgresNpcMemoryTurnRepository {
     try {
       await client.query('BEGIN');
       inTransaction = true;
-      if (this.requiresLiveAccount && !(await client.query('SELECT id FROM auth_accounts WHERE id=$1 AND closed_at IS NULL FOR KEY SHARE', [commit.ownerId])).rowCount) {
+      if (this.requiresLiveAccount && !(await client.query('SELECT id FROM auth_accounts WHERE id=$1 AND closed_at IS NULL '+(this.guard?'FOR UPDATE':'FOR KEY SHARE'), [commit.ownerId])).rowCount) {
         return await rollbackWith(client, () => { inTransaction = false; return { kind: 'not_found' }; });
       }
 
@@ -160,6 +160,7 @@ export class PostgresNpcMemoryTurnRepository {
         });
       }
 
+      await this.guard?.(client,commit);
       const journalResult = await client.query<JournalRow>(
         'SELECT revision, payload FROM npc_memory_journals WHERE save_id = $1 FOR UPDATE',
         [commit.save.saveId],
