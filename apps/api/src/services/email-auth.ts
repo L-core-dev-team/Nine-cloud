@@ -1,4 +1,5 @@
 import { createHash, createHmac, randomBytes, randomInt } from 'node:crypto';
+import { AuthFailure } from './auth-failure.js';
 
 export type AuthSession = { ownerId: string; email: string; expiresAt: Date };
 export interface EmailAuthRepository {
@@ -21,17 +22,20 @@ export class EmailAuthService {
     const code = String(randomInt(0, 1_000_000)).padStart(6, '0');
     const digest = this.codeDigest(email, code);
     const now = this.now();
-    if (!await this.repository.issue(email, digest, now, new Date(now.getTime() + 600_000))) return 'limited';
+    try { if (!await this.repository.issue(email, digest, now, new Date(now.getTime() + 600_000))) return 'limited'; }
+    catch { throw new AuthFailure('VERIFICATION_STORE_FAILED','verification_store'); }
     try { await this.send(email, code); }
-    catch { await this.repository.invalidate(email, digest); throw new Error('MAIL_UNAVAILABLE'); }
+    catch (error) { try { await this.repository.invalidate(email, digest); } catch { throw new AuthFailure('VERIFICATION_STORE_FAILED','verification_store'); } throw error instanceof AuthFailure?error:new AuthFailure('MAIL_UNAVAILABLE','mail_send'); }
     return 'sent';
   }
   async verify(emailValue: unknown, code: unknown): Promise<{ session: AuthSession; token: string } | null> {
     const email = normalizeEmail(emailValue);
     if (typeof code !== 'string' || !/^\d{6}$/.test(code)) return null;
     const now = this.now(); const token = randomBytes(32).toString('base64url');
-    const session = await this.repository.consume(email, this.codeDigest(email, code), hashToken(token), now,
-      new Date(now.getTime() + SESSION_SECONDS * 1000));
+    let session: AuthSession | null;
+    try { session = await this.repository.consume(email, this.codeDigest(email, code), hashToken(token), now,
+      new Date(now.getTime() + SESSION_SECONDS * 1000)); }
+    catch { throw new AuthFailure('VERIFICATION_STORE_FAILED','verification_store'); }
     return session ? { session, token } : null;
   }
   async resolve(token: string | null): Promise<AuthSession | null> {

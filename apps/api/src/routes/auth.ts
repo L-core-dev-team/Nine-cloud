@@ -1,19 +1,35 @@
 import type { Hono } from 'hono';
 import { EmailAuthService, SESSION_SECONDS } from '../services/email-auth.js';
+import { AuthFailure } from '../services/auth-failure.js';
 
 export const AUTH_COOKIE = 'jx_session';
 export function sessionToken(request: Request): string | null {
   const values = (request.headers.get('cookie') || '').split(';').map(value => value.trim()).filter(value => value.startsWith(`${AUTH_COOKIE}=`));
   return values.length === 1 ? values[0]!.slice(AUTH_COOKIE.length + 1) : null;
 }
-export function mountAuth(app: Hono, service: EmailAuthService, origin: string): void {
+export function mountAuth(app: Hono, service: EmailAuthService, origin: string, sameSite: 'Strict' | 'None' = 'Strict'): void {
   const url = new URL(origin);
   const local = url.protocol === 'http:' && ['127.0.0.1', 'localhost'].includes(url.hostname);
   if (origin !== url.origin || (url.protocol !== 'https:' && !local)) throw new Error('AUTH_PUBLIC_ORIGIN must be an exact HTTPS origin');
   const secure = url.protocol === 'https:' ? '; Secure' : '';
-  const cookie = (token: string, age: number) => `${AUTH_COOKIE}=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${age}${secure}`;
+  if (sameSite === 'None' && !secure) throw new Error('Cross-site sessions require HTTPS');
+  const cookie = (token: string, age: number) => `${AUTH_COOKIE}=${token}; Path=/; HttpOnly; SameSite=${sameSite}; Max-Age=${age}${secure}`;
   app.use('/api/*', async (c, next) => {
     c.header('Cache-Control', 'no-store');
+    c.header('Vary', 'Origin');
+    const allowedOrigin = c.req.header('origin') === origin;
+    if (allowedOrigin) {
+      c.header('Access-Control-Allow-Origin', origin);
+      c.header('Access-Control-Allow-Credentials', 'true');
+    }
+    if (c.req.method === 'OPTIONS') {
+      const method = c.req.header('access-control-request-method');
+      const headers = (c.req.header('access-control-request-headers') || '').toLowerCase().split(',').map(value => value.trim()).filter(Boolean);
+      if (!allowedOrigin || !method || !['GET', 'POST', 'PUT', 'DELETE'].includes(method) || headers.some(value => !['content-type', 'x-jiuxiao-account'].includes(value))) return c.json({code:'ORIGIN_REJECTED'},403);
+      c.header('Access-Control-Allow-Methods','GET, POST, PUT, DELETE');
+      c.header('Access-Control-Allow-Headers','Content-Type, X-Jiuxiao-Account');
+      return c.body(null,204);
+    }
     if (!['GET', 'HEAD', 'OPTIONS'].includes(c.req.method) && c.req.header('origin') !== origin) {
       return c.json({ code: 'ORIGIN_REJECTED' }, 403);
     }
@@ -25,8 +41,9 @@ export function mountAuth(app: Hono, service: EmailAuthService, origin: string):
     if (!body) return c.json({ code: 'INVALID_REQUEST' }, 400);
     try {
       const result = await service.requestCode(body.email);
-      return result === 'sent' ? c.json({ status: 'sent' }, 202) : c.json({ code: 'RATE_LIMITED' }, 429);
-    } catch (error) { return c.json({ code: error instanceof TypeError ? 'INVALID_EMAIL' : 'MAIL_UNAVAILABLE' }, error instanceof TypeError ? 400 : 503); }
+      if(result==='limited')c.header('Retry-After','60');
+      return result === 'sent' ? c.json({ status: 'sent', resendAfterSeconds:60, expiresInSeconds:600 }, 202) : c.json({ code: 'RATE_LIMITED',retryAfterSeconds:60 }, 429);
+    } catch (error) { if(error instanceof AuthFailure)return c.json({code:error.code,stage:error.stage,requestId:error.requestId},503);return c.json({ code: error instanceof TypeError ? 'INVALID_EMAIL' : 'MAIL_UNAVAILABLE' }, error instanceof TypeError ? 400 : 503); }
   });
   app.post('/api/auth/verify', async c => {
     const body = await authBody(c.req.raw);
@@ -36,7 +53,7 @@ export function mountAuth(app: Hono, service: EmailAuthService, origin: string):
       if (!result) return c.json({ code: 'INVALID_OR_EXPIRED_CODE' }, 401);
       c.header('Set-Cookie', cookie(result.token, SESSION_SECONDS));
       return c.json({ account: { id: result.session.ownerId, email: result.session.email }, expiresAt: result.session.expiresAt.toISOString() });
-    } catch (error) { if (error instanceof TypeError) return c.json({ code: 'INVALID_EMAIL' }, 400); throw error; }
+    } catch (error) { if (error instanceof AuthFailure) return c.json({code:error.code,stage:error.stage,requestId:error.requestId},503); if (error instanceof TypeError) return c.json({ code: 'INVALID_EMAIL' }, 400); throw error; }
   });
   app.get('/api/auth/session', async c => {
     const session = await service.resolve(sessionToken(c.req.raw));

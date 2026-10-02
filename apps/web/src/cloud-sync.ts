@@ -42,14 +42,23 @@ export class IndexedCloudQueue implements CloudQueueStore {
     }); } finally { db.close(); }
   }
 }
-export class CloudHttpError extends Error { constructor(readonly status: number) { super(`CLOUD_${status}`); } }
+export class CloudHttpError extends Error { constructor(readonly status: number,readonly code?:string,readonly requestId?:string,readonly stage?:string) { super(`CLOUD_${status}`); } }
 export async function cloudRequest(path: string, method = 'GET', body?: unknown, expectedOwner?: string, cancellation?: AbortSignal, maximumBytes = 1_000_000): Promise<Record<string, unknown>> {
   if (!Number.isSafeInteger(maximumBytes) || maximumBytes < 1 || maximumBytes > 32_000_000) throw new Error('INVALID_RESPONSE_BOUND');
   const deadline = AbortSignal.timeout(20000);
   const response = await fetch(path, { method, credentials: 'same-origin', cache: 'no-store', signal: cancellation ? AbortSignal.any([deadline, cancellation]) : deadline,
     headers: { ...(expectedOwner ? { 'x-jiuxiao-account': expectedOwner } : {}), ...(body === undefined ? {} : { 'content-type': 'application/json' }) },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
-  if (!response.ok) throw new CloudHttpError(response.status);
+  if (!response.ok) {
+    // Bound and whitelist error metadata. Never retain raw server/provider messages.
+    const reader=response.body?.getReader();let text='';let size=0;
+    if(reader)try{const decoder=new TextDecoder();while(true){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>4096){await reader.cancel();text='';break;}text+=decoder.decode(value,{stream:true});}text+=decoder.decode();}finally{reader.releaseLock();}
+    let data:Record<string,unknown>={};try{const value=JSON.parse(text);if(value&&typeof value==='object'&&!Array.isArray(value))data=value;}catch{/* Non-JSON proxy failures still preserve HTTP status. */}
+    const code=typeof data.code==='string'&&/^[A-Z_]{1,60}$/.test(data.code)?data.code:undefined;
+    const requestId=typeof data.requestId==='string'&&/^[a-f0-9-]{36}$/i.test(data.requestId)?data.requestId:undefined;
+    const stage=typeof data.stage==='string'&&['verification_store','mail_connect','mail_send'].includes(data.stage)?data.stage:undefined;
+    throw new CloudHttpError(response.status,code,requestId,stage);
+  }
   const reader = response.body?.getReader(); if (!reader) throw new Error('INVALID_CLOUD_RESPONSE');
   const chunks: Uint8Array[] = []; let size = 0;
   try {
