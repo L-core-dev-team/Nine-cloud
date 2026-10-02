@@ -6,7 +6,7 @@ import { buildProbeRequest, parseProbeResponse, protocolLabels, type ProtocolId 
 import { filterRouterModels, normalizeRouterModels, type RouterModel } from './ai-model-inventory';
 import { modelSamplingPolicy } from './ai-model-compatibility';
 import { sanitizeCallLogs, type CallLog } from './ai-call-logs';
-import { estimateModelCost, MODEL_RATE_SNAPSHOT_DATE } from './ai-model-pricing';
+import { estimateModelCost, MODEL_RATE_SNAPSHOT_DATE, MODEL_RATE_VALID_UNTIL, modelRateSnapshotStatus } from './ai-model-pricing';
 
 const CONFIG_KEY = 'jx10_ai_config_v2';
 const LOG_KEY = 'jx10_ai_call_log_v1';
@@ -410,6 +410,8 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
     return providerCatalog.filter(provider => !query || [provider.name, provider.region, provider.summary, ...provider.capabilities].join(' ').toLocaleLowerCase().includes(query));
   }, [catalogSearch]);
   function presetEstimate(preset: Preset, rounds = 1) {
+    const freshness = modelRateSnapshotStatus();
+    if (freshness !== 'current') return freshness === 'expired' ? '快照已过期，待核价' : '日期无法核实，待核价';
     const totals: Record<string, number> = {};
     let unpricedRoles = 0;
     for (const role of roleMeta) {
@@ -438,7 +440,7 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
   return <section className="page ai-page">
     <h1 className="ai-title">AI 设定</h1>
     <p>配置五个岗位的模型与调用方式。密钥只在本页临时使用。</p>
-    <div className="ai-start-actions"><button className="provider-open" onClick={() => { setCatalogSearch(''); setModal({ kind: 'catalog', view: 'providers' }); }}><span>⌕</span><span><strong>模型与服务商目录</strong><small>查模型、接入方式与官方价格</small></span><b>打开目录　›</b></button><span className="catalog-date">服务商资料：{catalogVerifiedOn}　·　推荐价格快照：{MODEL_RATE_SNAPSHOT_DATE}</span></div>
+    <div className="ai-start-actions"><button className="provider-open" onClick={() => { setCatalogSearch(''); setModal({ kind: 'catalog', view: 'providers' }); }}><span>⌕</span><span><strong>模型与服务商目录</strong><small>查模型、接入方式与官方价格</small></span><b>打开目录　›</b></button><span className="catalog-date">服务商资料：{catalogVerifiedOn}　·　推荐价格快照：{MODEL_RATE_SNAPSHOT_DATE}（90 天有效，至 {MODEL_RATE_VALID_UNTIL} UTC；过期不估算）</span></div>
     <button className="comparison-link" onClick={() => setModal({ kind: 'catalog', view: 'comparison' })}><span>价格与能力总览比较</span><span>打开模型比较　›</span></button>
     <div className="recommend-heading"><div><span className="eyebrow">五岗位分别选型</span><h2>青鸟推荐</h2></div><p>先用推荐值起步；每个岗位都能单独改模型、参数和密钥。</p></div>
     {config.activePresetId && presets.find(item => item.id === config.activePresetId) && <div className="active-recipe" role="status"><span className="active-seal">青</span><span><strong>青鸟 · {presets.find(item => item.id === config.activePresetId)!.title}</strong><small>推荐参数已填入。请为启用的岗位填写对应 API Key；高级剧情默认停用。游戏回合调度尚未接入。</small></span><button className="text-button" onClick={() => setModal({ kind: 'catalog', view: 'providers' })}>打开服务商目录</button></div>}
@@ -543,7 +545,7 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
             <div className="estimate-inputs"><label>每日回合<input type="number" min="0" max="10000" value={dailyRounds} onChange={event => setDailyRounds(clampNumber(event.target.value, 0, 10000, 20, true))} /></label><label>每周回合<input type="number" min="0" max="70000" value={weeklyRounds} onChange={event => setWeeklyRounds(clampNumber(event.target.value, 0, 70000, 140, true))} /></label></div>
             <details className="usage-breakdown"><summary>按岗位调整调用频次与 tokens</summary><div className="usage-rows">{roleMeta.map(role => <div className="usage-row" key={role.id}><strong>{role.title}</strong><label>每百回合调用<input aria-label={`${role.title}每百回合调用次数`} type="number" min="0" max="500" step="1" value={estimateUsage[role.id].callsPer100} onChange={event => setEstimateUsage(current => ({ ...current, [role.id]: { ...current[role.id], callsPer100: clampNumber(event.target.value, 0, 500, current[role.id].callsPer100) } }))} /></label><label>单次输入<input aria-label={`${role.title}单次输入 tokens`} type="number" min="0" max="1000000" step="100" value={estimateUsage[role.id].inputTokens} onChange={event => setEstimateUsage(current => ({ ...current, [role.id]: { ...current[role.id], inputTokens: clampNumber(event.target.value, 0, 1000000, current[role.id].inputTokens, true) } }))} /></label><label>单次输出<input aria-label={`${role.title}单次输出 tokens`} type="number" min="0" max={modal.preset.maxTokens} step="100" value={estimateUsage[role.id].outputTokens} onChange={event => setEstimateUsage(current => ({ ...current, [role.id]: { ...current[role.id], outputTokens: clampNumber(event.target.value, 0, modal.preset.maxTokens, current[role.id].outputTokens, true) } }))} /></label></div>)}</div></details>
             <div className="estimate-totals"><strong>{presetEstimate(modal.preset)} / 回合</strong><span>{presetEstimate(modal.preset, dailyRounds)} / 日</span><span>{presetEstimate(modal.preset, weeklyRounds)} / 周</span></div>
-            <small>按 {MODEL_RATE_SNAPSHOT_DATE} 厂商公开价估算：DeepSeek 取直连峰时未命中缓存价，阿里云取中国（北京）标准档，火山方舟取常规在线推理价。GPT‑6 单次输入超过 272K tokens 时计入官方长上下文倍率；Gemini 3.8 Flash 到期后切换已公告的标准价。美元、人民币分列。输入输出 token 数由你填写；思考 token 也可能计入输出用量。尚未计缓存命中、地域/接入点差异、阶梯价、折扣、税费、工具费和失败请求。游戏岗位调度尚未接入，实际调用量未知；这不是账单。价格来源：<a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noreferrer">DeepSeek</a> · <a href="https://docs.volcengine.com/docs/ark/model-pricing?lang=zh" target="_blank" rel="noreferrer">火山方舟</a> · <a href="https://help.aliyun.com/en/model-studio/model-pricing" target="_blank" rel="noreferrer">阿里云</a> · <a href="https://platform.kimi.ai/" target="_blank" rel="noreferrer">Kimi</a> · <a href="https://developers.openai.com/api/docs/pricing" target="_blank" rel="noreferrer">OpenAI</a> · <a href="https://platform.claude.com/docs/en/models/overview" target="_blank" rel="noreferrer">Anthropic</a> · <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noreferrer">Google</a></small></section>
+            <small>按 {MODEL_RATE_SNAPSHOT_DATE} 厂商公开价估算：DeepSeek 取直连峰时未命中缓存价，阿里云取中国（北京）标准档，火山方舟取常规在线推理价。GPT‑6 单次输入超过 272K tokens 时计入官方长上下文倍率；此快照有效至 2026-12-27 UTC；到期后停止精确估算，须重新核验，不能沿用促销价或推算未来报价。美元、人民币分列。输入输出 token 数由你填写；思考 token 也可能计入输出用量。尚未计缓存命中、地域/接入点差异、阶梯价、折扣、税费、工具费和失败请求。游戏岗位调度尚未接入，实际调用量未知；这不是账单。价格来源：<a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noreferrer">DeepSeek</a> · <a href="https://docs.volcengine.com/docs/ark/model-pricing?lang=zh" target="_blank" rel="noreferrer">火山方舟</a> · <a href="https://help.aliyun.com/en/model-studio/model-pricing" target="_blank" rel="noreferrer">阿里云</a> · <a href="https://platform.kimi.ai/" target="_blank" rel="noreferrer">Kimi</a> · <a href="https://developers.openai.com/api/docs/pricing" target="_blank" rel="noreferrer">OpenAI</a> · <a href="https://platform.claude.com/docs/en/models/overview" target="_blank" rel="noreferrer">Anthropic</a> · <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noreferrer">Google</a></small></section>
         </>
         }
         {modal?.kind === 'logs' && <>
