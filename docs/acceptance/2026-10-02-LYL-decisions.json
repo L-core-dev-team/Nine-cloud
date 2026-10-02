@@ -1,0 +1,370 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-02",
+  "authorization": "LYL submitted these workbooks and explicitly requested analysis, reconciliation, repairs and GitHub upload in this conversation.",
+  "recordType": "author decisions and engineering verification; not an independent Bird signature or release approval",
+  "originalCandidate": {
+    "commit": "c345a1cadd3e6431e55a997fd41189fe92403d68",
+    "artifactManifestSha256": "41bffdc105b7ac191f0f8e54c2d528cd4278466b4e700bdf41d2e2166da86bc2",
+    "ciRunId": "36961781663",
+    "fileCount": 211,
+    "allArtifactFilesMatched": true
+  },
+  "engineeringBase": {
+    "commit": "629349b71f0d5f8c70a9750f1f7f8d56ff33ead9",
+    "pr": 33,
+    "isDraft": true,
+    "ciRunId": "36979136324",
+    "result": "SUCCESS",
+    "pr34MergedIntoPr33NotMain": true
+  },
+  "feedbackFixCommit": "66c0dd250a9603b85986c119e63c59fb49b07bb7",
+  "priceValidityFixCommit": "b507a637962e031be430ff5077f2bb3e21c37691",
+  "saveFeedbackAndRedirectFixCommit": "8fee3cdbc7a4f5202994e7a3195ff6d97536b0d6",
+  "additionalBirdIntegration": {
+    "commit": "0adda6a6bdcbbd6efa2874b2f589746e80dfeecb",
+    "ciRunId": "36994872364",
+    "result": "SUCCESS",
+    "localMergeCommit": "6f88861dbbac3db0831408ad3c0d53e65021c6a8",
+    "delivered": "SMTP connection preflight, recipient acceptance, safe diagnostics and HTTPS/CORS/cookie contract",
+    "notProven": "real inbox delivery, production deployment or cross-origin frontend session"
+  },
+  "localValidation": {
+    "testedMergeCommit": "6f88861dbbac3db0831408ad3c0d53e65021c6a8",
+    "typecheck": "passed",
+    "build": "passed; main JS 529.87 KB warning retained",
+    "coreRegressions": 28,
+    "legacyModelRegressions": 54,
+    "vitestPassed": 253,
+    "vitestDatabaseSkipped": 20,
+    "testDatabaseGuards": 7,
+    "browserViewports": [
+      "390x844",
+      "1366x768"
+    ],
+    "browserResult": "passed; synthetic credentials and injected storage faults, not physical-device acceptance"
+  },
+  "workbooks": [
+    {
+      "file": "LYL-01验收记录表-2026-10-02.xlsx",
+      "sourceSha256": "d7df06152f9054b98a6bea3e49118090560da9e67c58e6d76f57be6c24b22b2a",
+      "updatedSha256": "847057df1d33391a84c43d903205fe2a8154586f1b841b49f0605e16f458f148",
+      "sheetCount": 5,
+      "verified": "all cell values/formulas except 85 declared edits, merges, validations, freeze panes, sheet states; no formula errors; credential-pattern scan"
+    },
+    {
+      "file": "九霄1.0全缺口验收记录表-2026-10-02.xlsx",
+      "sourceSha256": "6c523fc3b144b041237aff6bb6c30805655368ed5d1de240f01d206428c1fb6f",
+      "updatedSha256": "99d4165e54c4127f62cac977c47e8d750e9662aa80a19a5c4fec756b4cac7fab",
+      "sheetCount": 10,
+      "verified": "all cell values/formulas except 85 declared edits, merges, validations, freeze panes, sheet states; no formula errors; credential-pattern scan"
+    }
+  ],
+  "walkthrough": {
+    "rows": 39,
+    "passed": 37,
+    "notApplicable": 2,
+    "historicalFailures": 0,
+    "laterUserDefects": [
+      "F-01",
+      "F-02",
+      "F-03",
+      "F-04",
+      "F-05"
+    ],
+    "enhancements": [
+      "S-01",
+      "S-02",
+      "S-03"
+    ],
+    "feedbackStatus": "candidate repaired, local synthetic regression passed; not yet merged into main or independently signed on the new artifact"
+  },
+  "manualProbe": {
+    "source": "LYL first-person report in this conversation",
+    "provider": "DeepSeek",
+    "result": "success",
+    "latencyMs": 199,
+    "modelId": null,
+    "httpStatus": null,
+    "reportedTokens": null,
+    "testedBuild": null,
+    "automatedEvidence": "separate historical timeout; not evidence against this manual report",
+    "keyCollected": false,
+    "doesNotProve": "all five roles, all protocols, or real game scheduling"
+  },
+  "decisions": [
+    {
+      "action": "LYL-03",
+      "scope": "all 34 runtime IDs selected confirmed",
+      "source": "全表/LYL-03 Canon34条决定!A4:E37",
+      "accepted": true,
+      "digestSignoffComplete": false
+    },
+    {
+      "action": "LYL-02",
+      "scope": "deterministic intent/events, AI no authority, retries/replay and memory constraints",
+      "accepted": true,
+      "formalRulesApproved": false,
+      "reason": "numeric slots missing and realm order conflict"
+    },
+    {
+      "action": "LYL-04",
+      "scope": "90 images and 2 videos in engineering preview",
+      "accepted": true,
+      "productionLicenseApproved": false
+    },
+    {
+      "action": "LYL-05",
+      "scope": "guest local play, optional OTP, manual CAS backup, logout keeps local, ADR0003 baseline",
+      "source": "全表/LYL-05 S6S7边界决定!C4:D7",
+      "accepted": true,
+      "productionDataPolicyApproved": false
+    },
+    {
+      "action": "BIRD-06",
+      "scope": "1.0 excludes community and billing",
+      "source": "全表/LYL-05 S6S7边界决定!C10:D10",
+      "status": "closed-by-scope",
+      "adr": "docs/adr/0004-1.0不含社区与收费.md"
+    },
+    {
+      "action": "LYL-07",
+      "scope": "25 finite providers, separate route/region/account provenance, manual prices/date/source, 90-day static validity",
+      "status": "decision-closed",
+      "engineeringGap": "G-08"
+    },
+    {
+      "action": "LYL-08",
+      "scope": "core/probe/UI required; advanced generation draft deferred; logit bias, arbitrary prompt/regex/proxy/raw-payload excluded; schemas/tools separately reviewed",
+      "status": "decision-closed",
+      "engineeringGap": "G-09"
+    }
+  ],
+  "canonDigestMismatch": {
+    "sourceCell": "全表/LYL-03 Canon34条决定!A39",
+    "declared": {
+      "runtime": "2688b23fd991d40943b6eda19a2bbc0854600c601d51dc5cadd88423f4d6edec",
+      "registry": "25bb5129a2d8643dcf8977798389f4fbba04c488b358a0d3d613013dd4e2e244"
+    },
+    "actual": {
+      "canon-runtime.json": "e0eda72e01d5b4a51206d96d2b981d2b656cf796f292e1dd3dc5a1c7a6128389",
+      "canon.registry.json": "a22f4d0cd82c3de5a1ffb9c73928482677ddbd5b2e93664431c4c39828ebf19f"
+    },
+    "cause": "not verified; neither current artifact nor repository file matches; tested line-ending variants do not explain it",
+    "idCount": 34,
+    "idSetMatches": true
+  },
+  "runtimeEntryFingerprints": {
+    "method": "SHA256 of sorted-key compact JSON with UTF-8 ensure_ascii=False, computed from runtime entries; not publisher reviewDigest and not a signature",
+    "entries": [
+      {
+        "id": "world_jiuxiao",
+        "title": "九霄大陆地图",
+        "sha256": "85549bff9dfb132cba2497826eb287d634fe2be983c5415f16cc8be2a37905a5"
+      },
+      {
+        "id": "region_zhongzhou_tianshu",
+        "title": "中州天枢域",
+        "sha256": "a0a85947c9a90b9e32e60fa37387c80e4e3538fd608320e3f8882e2e96c74159"
+      },
+      {
+        "id": "faction_haotian_jianzong",
+        "title": "昊天剑宗",
+        "sha256": "3685cbc64b3b7b65df892c73bf8b8a11922bc6b15d0c4dd7a31c45805b9d6a66"
+      },
+      {
+        "id": "faction_yuqing_ge",
+        "title": "玉清阁",
+        "sha256": "276aeba9ad125f1f5df91b9f5dfa96b3ba522510a62c554206f4820bb29a38a0"
+      },
+      {
+        "id": "faction_yantian_zong",
+        "title": "衍天宗",
+        "sha256": "8dfdc4387267fe1b4dca7e7346462d1b8b841739eecbd1b5799e52291afcbafd"
+      },
+      {
+        "id": "faction_sihai_shanghui",
+        "title": "四海商会",
+        "sha256": "f9a5f800d4b0301c033c6d534be785344c9f88d0262594f30f393c4b83564c66"
+      },
+      {
+        "id": "faction_tiangong_ge",
+        "title": "天工阁",
+        "sha256": "ec8726eebabf6b1c6d65bd7f66606d21c1155467bf7d2f6fe8be9b3777f05369"
+      },
+      {
+        "id": "faction_daguangming_si",
+        "title": "大光明寺",
+        "sha256": "11e0a3a9635eaa41aa0a8ec3dc97b27e9f6b826d9a4adea730adf614f3b92314"
+      },
+      {
+        "id": "faction_jixia_xuegong",
+        "title": "稷下学宫",
+        "sha256": "04b3a921b2812ecd9626aeca37a0b72dd1bed8cd606e506dad145988cf4fefa7"
+      },
+      {
+        "id": "region_donghan_longyin",
+        "title": "东瀚龙吟域",
+        "sha256": "7668e2bb7a5f498af0380a7aa22110387a0eadc51ddad86823ee5b8c82e4bffb"
+      },
+      {
+        "id": "faction_tingchao_ge",
+        "title": "听潮阁",
+        "sha256": "8b99fbd895bd38ac243bc9d9e0c9c4241c49a5ebc435a1cd0c3a7d3afef82879"
+      },
+      {
+        "id": "faction_fuhai_zong",
+        "title": "覆海宗",
+        "sha256": "1f23da95c1a94f658966afe52fe2447abdbc2903b81106ed2c35485fcbd3ffbc"
+      },
+      {
+        "id": "region_xihuang_fentian",
+        "title": "西荒焚天域",
+        "sha256": "395aa3e06406ec1f1c3e9cba824e73c8602c641e48d361f5f6861eab43de9ea7"
+      },
+      {
+        "id": "faction_shenghuo_jiao",
+        "title": "圣火教",
+        "sha256": "9e68680568ba104904deaa2b86c5493693d30c53ddbd6da50e357d7625ba8f79"
+      },
+      {
+        "id": "faction_jingang_buhai_gu",
+        "title": "金刚不坏谷",
+        "sha256": "4199b2ae5afa411ba13b51412c62e707ab5767cb918c5b494408d777403b3cc2"
+      },
+      {
+        "id": "region_beijing_shuanghan",
+        "title": "北境霜寒域",
+        "sha256": "98d7b34e853dd3f079c2c24723ced1d54b365a543429b4308fabdc65cadd55c2"
+      },
+      {
+        "id": "faction_bingshen_gong",
+        "title": "冰神宫",
+        "sha256": "7dab8d6e70d3171f80bb1acef771ff25da11e4d060355cf1401b2c2961cd42d2"
+      },
+      {
+        "id": "faction_beijing_lianmeng",
+        "title": "北境联盟",
+        "sha256": "31e0193b157f6f21f66506171d3655bc436fcdc1cf348d78d5f03ff5a01a623c"
+      },
+      {
+        "id": "region_nanjiang_wangu",
+        "title": "南疆万蛊域",
+        "sha256": "ced13bb63e3ad56fa78cf338530e1c5ff838f1ab4eeb08dd930e894793caf858"
+      },
+      {
+        "id": "faction_wudu_shenjiao",
+        "title": "五毒神教",
+        "sha256": "81c8b814f34591d17e2f6da7b56ae83a7778bebd3f6062fbd49d829de585c6b7"
+      },
+      {
+        "id": "faction_wanshou_shanzhuang",
+        "title": "万兽山庄 - 宗门设定详解",
+        "sha256": "82ce3d87459f9f52674bea42dc4312744da7d0e08211df198e01db5f22b4dd49"
+      },
+      {
+        "id": "faction_yanshi_fu",
+        "title": "偃师府",
+        "sha256": "e4a27d279a3a26a9e9d8572343b80a09c99550c206af667c3be143f0a2d6793c"
+      },
+      {
+        "id": "region_honghuang_yaolin",
+        "title": "妖域：洪荒妖林",
+        "sha256": "72c4528d0139455807f50651dd700fc4c39a074b049a52ac339506d663985fc0"
+      },
+      {
+        "id": "system_foundations",
+        "title": "修仙基础",
+        "sha256": "e9bdd68a760dbd073e9d1c071586933c8b5adb84090ef26badc0fd90576bb527"
+      },
+      {
+        "id": "system_cultivation_schools",
+        "title": "常见修炼流派",
+        "sha256": "7203d7b1275c5f3652f2388fc4345b8cdb5352239b932c4de7924a38d5ffebf7"
+      },
+      {
+        "id": "system_heterodox_cultivation",
+        "title": "邪修体系",
+        "sha256": "3de93d400191ce0efeffe587e15c0a816880344bb15b7102856c69099bbca10d"
+      },
+      {
+        "id": "system_resource_grade",
+        "title": "资源的品级与境界划分",
+        "sha256": "f04f3cd1b30ae04efd07565ce3b8a0e65f2b65a8f180f04034ee2bc71ffdcfef"
+      },
+      {
+        "id": "system_cultivation_realm",
+        "title": "修炼境界介绍",
+        "sha256": "9ba2cd574f459babb892d0496d3604150003108251e1f544e9880ea72ce4b331"
+      },
+      {
+        "id": "system_spiritual_root",
+        "title": "灵根资质与影响",
+        "sha256": "189be1f1eda2e8b6953320a426808dd3eead14714cd2f5023df3d6d13d77c0d6"
+      },
+      {
+        "id": "system_technique_grade",
+        "title": "功法的品阶划分",
+        "sha256": "832a1d1624fa7ad1a8aa7af3d9d196cacb251a21b0df44a0896270d598509290"
+      },
+      {
+        "id": "system_economy",
+        "title": "经济体系",
+        "sha256": "cd1b454bbd9cb6bcfd691e422ba490f189e02420601ee6ee4f53186e17b60c2d"
+      },
+      {
+        "id": "system_prices",
+        "title": "经济与物价参考",
+        "sha256": "86373fec96007c10327d160f13d5be406fef589fedff9dfcd8f38edcbb785f5f"
+      },
+      {
+        "id": "system_spirit_beasts",
+        "title": "妖兽体系总览",
+        "sha256": "f0e7804509e8e7e648eca284a864ed86e3fd4d95eaa2ce6c3341465d22a36418"
+      },
+      {
+        "id": "system_realm_faction_tiers",
+        "title": "境界金字塔与宗门设定",
+        "sha256": "966e0f79e6208902cb095eadca1af8bd910b692a16fc74fc7624c25fce647392"
+      }
+    ]
+  },
+  "rulesConflict": {
+    "sourceCell": "全表/LYL-02 六类规则签认表!E5",
+    "declared": "炼体→炼气→筑基→金丹→元婴→化神→合体→大乘→渡劫",
+    "canon": "炼体→炼气→筑基→结丹→元婴→合体→化神→大乘→渡劫",
+    "action": "author must resolve explicitly; do not silently rewrite the signed input"
+  },
+  "independentBirdReceipt": {
+    "present": false,
+    "existingLabel": "Bird（AI 代理复核）",
+    "boundary": "proxy text preserved as historical evidence, not person-level independent author acceptance"
+  },
+  "currentLedger": {
+    "path": "docs/九霄1.0阶段缺口与人工交接清单-2026-09-29.md",
+    "openGroups": [
+      "G-02",
+      "G-03",
+      "G-04a",
+      "G-04b",
+      "G-05",
+      "G-06",
+      "G-08",
+      "G-09"
+    ],
+    "activeActionCount": 14,
+    "closedActions": [
+      "LYL-07",
+      "LYL-08",
+      "BIRD-06"
+    ],
+    "closedGroup": "G-07"
+  },
+  "releaseGates": {
+    "rules": "RULES_NOT_READY",
+    "media": "LICENSE_PENDING",
+    "accountDataPolicy": "unapproved",
+    "productionDeployment": "not accepted",
+    "releaseApproved": false
+  }
+}
