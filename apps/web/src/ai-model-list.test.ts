@@ -2,6 +2,22 @@ import { describe, it, expect, vi } from 'vitest';
 import { fetchAvailableModels, modelListRequest, parseModelList } from './ai-model-list';
 
 describe('explicit credential-scoped model discovery', () => {
+  it('stops oversized streams by bytes before reading the remaining provider body', async () => {
+    const cancel = vi.fn(); let reads = 0;
+    const stream = new ReadableStream<Uint8Array>({
+      pull(controller) { reads++; controller.enqueue(new Uint8Array(1_000_001)); }, cancel,
+    }, { highWaterMark: 0 });
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response(stream));
+    await expect(fetchAvailableModels('openai-chat','https://api.example.test','',new AbortController().signal,fetcher)).rejects.toThrow('响应过大');
+    expect(reads).toBe(2); expect(cancel).toHaveBeenCalledOnce();
+  });
+  it('decodes multibyte names split across streamed chunks', async () => {
+    const bytes = new TextEncoder().encode(JSON.stringify({data:[{id:'test',display_name:'九霄'}]}));
+    const split = bytes.findIndex(value=>value>=0x80)+1;
+    const stream = new ReadableStream<Uint8Array>({start(c){c.enqueue(bytes.slice(0,split));c.enqueue(bytes.slice(split));c.close();}});
+    const fetcher = vi.fn<typeof fetch>().mockResolvedValue(new Response(stream));
+    expect(await fetchAvailableModels('openai-chat','https://api.example.test','',new AbortController().signal,fetcher)).toEqual([{id:'test',name:'九霄'}]);
+  });
   it('builds native headers and paths without putting credentials in URLs', () => {
     for (const protocol of ['openai-chat', 'openai-responses', 'anthropic-messages', 'gemini-content'] as const) {
       const request = modelListRequest(protocol, 'https://api.example.test/v1', 'fixture-key');
