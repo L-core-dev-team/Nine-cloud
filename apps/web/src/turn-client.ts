@@ -10,8 +10,16 @@ export interface TurnStore {
 export class IndexedTurnStore implements TurnStore {
   private open(): Promise<IDBDatabase> { return new Promise((resolve, reject) => {
     const req = indexedDB.open('jiuxiao-turns-1', 1);
+    let blocked = false;
     req.onupgradeneeded = () => req.result.createObjectStore('turns', { keyPath: 'key' });
-    req.onsuccess = () => resolve(req.result); req.onerror = req.onblocked = () => reject(new Error('TURN_STORAGE_UNAVAILABLE'));
+    req.onsuccess = () => {
+      const db = req.result;
+      if (blocked) { db.close(); return; }
+      db.onversionchange = () => db.close();
+      resolve(db);
+    };
+    req.onerror = () => reject(new Error('TURN_STORAGE_UNAVAILABLE'));
+    req.onblocked = () => { blocked = true; reject(new Error('TURN_STORAGE_UNAVAILABLE')); };
   }); }
   async read(key: string) { const db = await this.open(); try { return await new Promise<PendingTurn | null>((resolve, reject) => {
     const tx = db.transaction('turns', 'readonly'); const request = tx.objectStore('turns').get(key);
@@ -39,10 +47,12 @@ export class TurnClient {
     if (!live || live.intent.idempotencyKey !== record.intent.idempotencyKey || live.ownerId !== record.ownerId) throw new Error('STALE_TURN');
     if (live.phase === 'confirmed') return live;
     // Persist uncertainty before dispatch: a lost reply or page close must retry the exact intent.
-    await this.store.update(record.key, current => {
+    const dispatch = await this.store.update(record.key, current => {
       if (!current || current.intent.idempotencyKey !== record.intent.idempotencyKey) throw new Error('STALE_TURN');
+      if (current.phase === 'confirmed') return current;
       return { ...current, phase: 'unknown' };
     });
+    if (dispatch.phase === 'confirmed') return dispatch;
     const result = await this.request('/api/turns', 'POST', { intent: live.intent, requestNarrative: false }, live.ownerId);
     const receipt = TurnReceiptSchema.parse(result.receipt);
     await validateReceipt(live.intent, receipt);
@@ -71,5 +81,7 @@ function canonical(value: unknown): string {
 async function validateReceipt(intent: ActionIntent, receipt: TurnReceipt) {
   const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(canonical(intent)));
   const fingerprint = `sha256:v1:${Array.from(new Uint8Array(hash), byte => byte.toString(16).padStart(2, '0')).join('')}`;
-  if (receipt.saveId !== intent.saveId || receipt.idempotencyKey !== intent.idempotencyKey || receipt.requestFingerprint !== fingerprint) throw new Error('INVALID_TURN_RECEIPT');
+  const expectedResult = intent.expectedRevision + (receipt.decision.status === 'accepted' ? 1 : 0);
+  if (receipt.saveId !== intent.saveId || receipt.idempotencyKey !== intent.idempotencyKey || receipt.requestFingerprint !== fingerprint ||
+      receipt.resultingRevision !== expectedResult) throw new Error('INVALID_TURN_RECEIPT');
 }

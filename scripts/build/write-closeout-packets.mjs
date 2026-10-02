@@ -3,12 +3,18 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 const root=resolve(import.meta.dirname,'../..'), out=resolve(root,'test-results/review-bundle');
+// This packet reports preceding CI steps. A local invocation must not fabricate
+// their success, nor attach an older build to a different checked-out commit.
+if (process.env.GITHUB_ACTIONS !== 'true' || !/^\d+$/.test(process.env.GITHUB_RUN_ID || '')) throw new Error('CI_EVIDENCE_REQUIRED');
 const build=JSON.parse(readFileSync(resolve(out,'artifact-manifest.json'),'utf8'));
+const currentCommit=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
+if (build.commit !== currentCommit) throw new Error('STALE_BUILD_EVIDENCE');
 const digest=createHash('sha256').update(readFileSync(resolve(out,'artifact-manifest.json'))).digest('hex');
 const canonBytes=readFileSync(resolve(root,'packages/content/src/canon-runtime.json'));
 const canon=JSON.parse(canonBytes);const timestamp=new Date().toISOString();
-const packet={kind:'AI_CONFIG_G1_PACKET',commit:build.commit,build_hash:`sha256:${digest}`,timestamp,
+const packet={kind:'AI_CONFIG_G1_PACKET',commit:build.commit,build_hash:`sha256:${digest}`,timestamp,ci_run_id:process.env.GITHUB_RUN_ID,
  test_results:{source:'GitHub CI preceding this artifact step',unit:'passed',typecheck:'passed',build:'passed',integration:'passed',browser:'passed',real_provider:'NOT_EXECUTED',physical_device:'NOT_EXECUTED'},
  manual_steps:['从本构建进入 AI 设置；确认 commit 和 build hash 相同','仅在内存输入自己的 Key；选择账号和地区可用的型号','执行一次短连接；核对成功/超时/限流提示和脱敏结果，不上传 Key 或完整响应','两位作者对同一 commit/build hash 分别留验收回执'],
  acceptance:{status:'HUMAN_GATE_PENDING',reviewers:['Bird','LYL'],receipts:[]}};
