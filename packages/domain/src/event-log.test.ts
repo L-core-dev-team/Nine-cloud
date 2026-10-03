@@ -53,7 +53,7 @@ const acceptedDecision = (save: SaveEnvelope, ids = ['11111111-1111-4111-8111-11
 describe('S3 event log and turn boundary', () => {
   it('keeps production evaluation closed until gameplay rules are signed', () => {
     const save = initialSave();
-    expect(evaluate(intent(), save)).toMatchObject({ status: 'rejected', code: 'RULES_NOT_READY' });
+    expect(evaluate(intent(), save)).toMatchObject({ status: 'rejected', code: 'ENV_RULES_NOT_READY' });
   });
 
   it('prepares a multi-event turn as one deterministic revision transition', async () => {
