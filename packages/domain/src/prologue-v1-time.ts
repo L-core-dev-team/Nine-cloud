@@ -9,6 +9,12 @@ export interface DailyStaminaProjection {
   readonly staminaDayIndex: number;
 }
 
+export interface DaylightPolicy {
+  readonly dayMinutes: number;
+  readonly daylightStartMinute: number;
+  readonly duskStartMinute: number;
+}
+
 /** Apply the P1 game-day stamina reset when an action reads stamina. */
 export function projectDailyStamina(
   gameMinute: number,
@@ -28,9 +34,24 @@ export function projectDailyStamina(
   }
 
   const gameDayIndex = Math.floor((gameMinute - policy.resetAnchorMinute) / policy.dayMinutes);
+  if (state.staminaDayIndex > gameDayIndex) throw new RangeError('STAMINA_DAY_INDEX_AHEAD');
   return gameDayIndex > state.staminaDayIndex
     ? { stamina: policy.maxStamina, staminaDayIndex: gameDayIndex }
     : { ...state };
+}
+
+/** Classify time-of-day on a repeating game-day, independent of wall-clock time. */
+export function isDaylight(gameMinute: number, policy: DaylightPolicy): boolean {
+  assertSafeInteger(gameMinute, 'gameMinute');
+  assertSafeInteger(policy.dayMinutes, 'dayMinutes');
+  assertSafeInteger(policy.daylightStartMinute, 'daylightStartMinute');
+  assertSafeInteger(policy.duskStartMinute, 'duskStartMinute');
+  if (policy.dayMinutes <= 0 || policy.daylightStartMinute < 0 ||
+      policy.duskStartMinute <= policy.daylightStartMinute || policy.duskStartMinute >= policy.dayMinutes) {
+    throw new RangeError('INVALID_DAYLIGHT_POLICY');
+  }
+  const minuteOfDay = gameMinute % policy.dayMinutes;
+  return minuteOfDay >= policy.daylightStartMinute && minuteOfDay < policy.duskStartMinute;
 }
 
 function assertSafeInteger(value: number, name: string): void {

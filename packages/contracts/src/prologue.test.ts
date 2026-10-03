@@ -48,6 +48,24 @@ describe('P1 prologue facts contract', () => {
     }).success).toBe(false);
   });
 
+  it('enforces the signed eight-slot inventory cap', () => {
+    const inventory = Array.from({ length: 9 }, (_, index) => ({ itemId: `item_${index}`, quantity: 1 }));
+    expect(PrologueV1FactsSchema.safeParse({ ...validFacts, inventory }).success).toBe(false);
+  });
+
+  it('rejects duplicate item stacks, directed edges, and set-valued facts', () => {
+    expect(PrologueV1FactsSchema.safeParse({ ...validFacts,
+      inventory: [{ itemId: 'fixture_item', quantity: 1 }, { itemId: 'fixture_item', quantity: 2 }],
+    }).success).toBe(false);
+    expect(PrologueV1FactsSchema.safeParse({ ...validFacts,
+      locationGraph: [
+        { from: 'fixture_location', to: 'fixture_other', state: 'open' },
+        { from: 'fixture_location', to: 'fixture_other', state: 'blocked' },
+      ],
+    }).success).toBe(false);
+    expect(PrologueV1FactsSchema.safeParse({ ...validFacts, clues: ['same', 'same'] }).success).toBe(false);
+  });
+
   it('keeps quest completion derived without an unapproved active status', () => {
     expect(PrologueV1FactsSchema.safeParse({
       ...validFacts,

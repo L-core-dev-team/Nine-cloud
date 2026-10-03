@@ -1,5 +1,6 @@
 export * from './rules.js';
 export * from './prologue-v1-time.js';
+export * from './prologue-v1-rules.js';
 export * from './projection.js';
 export * from './event-log.js';
 export * from './state-delta.js';
