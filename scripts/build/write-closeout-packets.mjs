@@ -11,21 +11,42 @@ if (process.env.GITHUB_ACTIONS !== 'true' || !/^\d+$/.test(process.env.GITHUB_RU
 const build=JSON.parse(readFileSync(resolve(out,'artifact-manifest.json'),'utf8'));
 const currentCommit=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
 if (build.commit !== currentCommit) throw new Error('STALE_BUILD_EVIDENCE');
-// SEC-04: prove the referenced run exists on GitHub, succeeded, and built exactly
-// this commit. A locally spoofed GITHUB_* environment now fails here instead of
-// fabricating CI evidence. GITHUB_REPOSITORY is always set inside Actions; its
-// absence fails closed for local invocations.
+// SEC-04: prove this packet is running after the required successful steps in
+// the exact GitHub job and commit. The enclosing run cannot be successful until
+// this step finishes, so checking its final conclusion here is circular.
 const repositorySlug=process.env.GITHUB_REPOSITORY||'';
 if (!/^[^/\s]+\/[^/\s]+$/.test(repositorySlug)) throw new Error('CI_REPOSITORY_REQUIRED');
-const runResponse=await fetch(`https://api.github.com/repos/${repositorySlug}/actions/runs/${process.env.GITHUB_RUN_ID}`,{headers:{'user-agent':'jiuxiao-closeout',accept:'application/vnd.github+json',...(process.env.GITHUB_TOKEN?{authorization:`Bearer ${process.env.GITHUB_TOKEN}`}:{})}});
+if (!process.env.GITHUB_TOKEN || process.env.GITHUB_JOB !== 'verify') throw new Error('CI_JOB_AUTH_REQUIRED');
+const apiHeaders={'user-agent':'jiuxiao-closeout',accept:'application/vnd.github+json',authorization:`Bearer ${process.env.GITHUB_TOKEN}`};
+const runResponse=await fetch(`https://api.github.com/repos/${repositorySlug}/actions/runs/${process.env.GITHUB_RUN_ID}`,{headers:apiHeaders});
 if (!runResponse.ok) throw new Error(`CI_RUN_VERIFY_FAILED_HTTP_${runResponse.status}`);
 const run=await runResponse.json();
-if (run.head_sha !== currentCommit || run.status !== 'completed' || run.conclusion !== 'success') throw new Error(`CI_RUN_NOT_SUCCESSFUL_FOR_THIS_COMMIT:${run.head_sha?.slice(0,12)}/${run.status}/${run.conclusion}`);
+if (run.head_sha !== currentCommit || run.status !== 'in_progress' || run.conclusion !== null) throw new Error('CI_RUN_COMMIT_OR_STATE_MISMATCH');
+const requiredSteps=[
+ 'Migrate ephemeral test database','Run pnpm license:check','Test fail-closed media publication gate',
+ 'Run pnpm typecheck','Run pnpm test','Run pnpm build',
+ 'Prove the release-target build stays fail-closed while media licenses are pending',
+ 'Build and smoke the production API container','Run PostgreSQL integration tests',
+ 'Run pnpm test:e2e','Test durable turn UI recovery with synthetic receipts',
+ 'Test isolated SMTP and cloud browser path','Verify isolated database backup restoration',
+ 'Bind review artifacts to the tested commit'];
+let verified=false;
+for (let attempt=0;attempt<5 && !verified;attempt++) {
+ const jobsResponse=await fetch(`https://api.github.com/repos/${repositorySlug}/actions/runs/${process.env.GITHUB_RUN_ID}/jobs?per_page=100`,{headers:apiHeaders});
+ if (!jobsResponse.ok) throw new Error(`CI_JOBS_VERIFY_FAILED_HTTP_${jobsResponse.status}`);
+ const jobs=await jobsResponse.json();
+ const job=jobs.jobs?.find(candidate=>candidate.name==='verify' && candidate.status==='in_progress' && candidate.conclusion===null);
+ const steps=job?.steps||[];
+ const currentStep=steps.find(step=>step.name==='Generate exact-build G1 and Canon review packets');
+ verified=Boolean(currentStep?.status==='in_progress' && requiredSteps.every(name=>steps.find(step=>step.name===name)?.conclusion==='success'));
+ if (!verified && attempt<4) await new Promise(resolve=>setTimeout(resolve,2000));
+}
+if (!verified) throw new Error('CI_PRECEDING_STEPS_NOT_VERIFIED');
 const digest=createHash('sha256').update(readFileSync(resolve(out,'artifact-manifest.json'))).digest('hex');
 const canonBytes=readFileSync(resolve(root,'packages/content/src/canon-runtime.json'));
 const canon=JSON.parse(canonBytes);const timestamp=new Date().toISOString();
 const packet={kind:'AI_CONFIG_G1_PACKET',commit:build.commit,build_hash:`sha256:${digest}`,timestamp,ci_run_id:process.env.GITHUB_RUN_ID,
- test_results:{source:'GitHub CI preceding this artifact step',unit:'passed',typecheck:'passed',build:'passed',integration:'passed',browser:'passed',real_provider:'NOT_EXECUTED',physical_device:'NOT_EXECUTED'},
+ test_results:{source:'GitHub CI preceding steps verified; enclosing run is still in progress',unit:'passed',typecheck:'passed',build:'passed',integration:'passed',browser:'passed',real_provider:'NOT_EXECUTED',physical_device:'NOT_EXECUTED'},
  manual_steps:['从本构建进入 AI 设置；确认 commit 和 build hash 相同','仅在内存输入自己的 Key；选择账号和地区可用的型号','执行一次短连接；核对成功/超时/限流提示和脱敏结果，不上传 Key 或完整响应','两位作者对同一 commit/build hash 分别留验收回执'],
  acceptance:{status:'HUMAN_GATE_PENDING',reviewers:['Bird','LYL'],receipts:[]}};
 writeFileSync(resolve(out,'AI_CONFIG_G1_PACKET.json'),JSON.stringify(packet,null,2)+'\n');
