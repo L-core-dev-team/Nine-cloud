@@ -6,6 +6,7 @@ import {
   PROLOGUE_V1_ACTION_ORDER,
   PROLOGUE_V1_ERROR_CODES,
   PROLOGUE_V1_ERROR_MESSAGES,
+  PROLOGUE_V1_FREE_ACTION_TICK_MINUTES,
   PROLOGUE_V1_RULE_VERSION,
 } from './prologue-v1.constants.js';
 
@@ -28,6 +29,7 @@ describe('signed P1 prologue rule constants', () => {
     expect(PROLOGUE_V1.KEC_MINUTES).toBe(15);
     expect(PROLOGUE_V1.DAY_MINUTES).toBe(1440);
     expect(PROLOGUE_V1.SAVE_START_MINUTE).toBe(PROLOGUE_V1.STAMINA_RESET_ANCHOR);
+    expect(PROLOGUE_V1_FREE_ACTION_TICK_MINUTES).toBe(PROLOGUE_V1.KEC_MINUTES);
   });
 
   it('provides one player-readable message for every signed rule error code', () => {

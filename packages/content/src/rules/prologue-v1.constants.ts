@@ -30,6 +30,9 @@ export const PROLOGUE_V1 = {
   RETREAT_SPIRIT: 5,
 } as const;
 
+/** Accepted zero-stamina-cost actions still advance the world by one Ke. */
+export const PROLOGUE_V1_FREE_ACTION_TICK_MINUTES = PROLOGUE_V1.KEC_MINUTES;
+
 export const PROLOGUE_V1_ACTION_ORDER = [
   'move',
   'cultivate',
