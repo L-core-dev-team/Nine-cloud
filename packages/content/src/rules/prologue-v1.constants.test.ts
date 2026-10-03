@@ -4,6 +4,8 @@ import {
   minimumClearanceCost,
   PROLOGUE_V1,
   PROLOGUE_V1_ACTION_ORDER,
+  PROLOGUE_V1_ERROR_CODES,
+  PROLOGUE_V1_ERROR_MESSAGES,
   PROLOGUE_V1_RULE_VERSION,
 } from './prologue-v1.constants.js';
 
@@ -26,5 +28,14 @@ describe('signed P1 prologue rule constants', () => {
     expect(PROLOGUE_V1.KEC_MINUTES).toBe(15);
     expect(PROLOGUE_V1.DAY_MINUTES).toBe(1440);
     expect(PROLOGUE_V1.SAVE_START_MINUTE).toBe(PROLOGUE_V1.STAMINA_RESET_ANCHOR);
+  });
+
+  it('provides one player-readable message for every signed rule error code', () => {
+    expect(Object.keys(PROLOGUE_V1_ERROR_MESSAGES).sort()).toEqual(
+      Object.keys(PROLOGUE_V1_ERROR_CODES).sort(),
+    );
+    for (const message of Object.values(PROLOGUE_V1_ERROR_MESSAGES)) {
+      expect(message.trim().length).toBeGreaterThan(0);
+    }
   });
 });
