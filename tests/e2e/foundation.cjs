@@ -46,7 +46,7 @@ async function ready(url) {
   });
   run(viteFile, ['preview', '--host', '127.0.0.1', '--port', String(webPort), '--strictPort'], webRoot);
   const response = await ready(`http://127.0.0.1:${apiPort}/health`);
-  assert.equal((await response.json()).saveSchemaVersion, 1);
+  assert.equal((await response.json()).saveSchemaVersion, 2);
   await ready(`http://127.0.0.1:${webPort}/`);
   const edge = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
   const executablePath = process.env.PLAYWRIGHT_BROWSER_EXECUTABLE ||
@@ -803,7 +803,7 @@ async function ready(url) {
       assert.ok(connectionLogText.includes('HTTP 401'));
       assert.equal(connectionLogText.includes('test-secret-not-persisted'), false);
       await page.getByRole('button', { name: '关闭窗口' }).click();
-      assert.ok((await page.locator('body').innerText()).includes('契约 v1'));
+      assert.ok((await page.locator('body').innerText()).includes('契约 v2'));
       await page.getByRole('button', { name: '查看配置与成本' }).nth(2).click();
       assert.equal(await page.locator('.glass-dialog h2').innerText(), '长歌 · 旗舰');
       assert.ok((await page.locator('.preset-role-map').innerText()).includes('claude-opus-5-5'));
