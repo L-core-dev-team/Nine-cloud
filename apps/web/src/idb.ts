@@ -34,6 +34,22 @@ export async function readIndexedSaves(): Promise<LocalSave[]> {
   return (await readIndexedSnapshot()).saves;
 }
 
+/** Shared draft identity, without changing the merge policy for unrelated saves. */
+export async function claimCharacterDraftId():Promise<string>{
+ const database=await openDatabase();
+ try{return await new Promise<string>((resolve,reject)=>{
+  const tx=database.transaction([STORE,META],'readwrite'),meta=tx.objectStore(META),saves=tx.objectStore(STORE);let id='';
+  const fresh=()=>{id=crypto.randomUUID();meta.put({key:'characterDraftId',value:id});};
+  const request=meta.get('characterDraftId');
+  request.onsuccess=()=>{const current=request.result?.value;
+   if(typeof current!=='string'||!current){fresh();return;}
+   const existing=saves.get(current);existing.onsuccess=()=>{if(existing.result)fresh();else id=current;};
+  };
+  tx.oncomplete=()=>id?resolve(id):reject(new Error('CHARACTER_DRAFT_UNAVAILABLE'));
+  tx.onerror=tx.onabort=()=>reject(new Error('CHARACTER_DRAFT_UNAVAILABLE'));
+ });}finally{database.close();}
+}
+
 export async function readIndexedSnapshot(): Promise<IndexedSaveSnapshot> {
   const database = await openDatabase();
   try {

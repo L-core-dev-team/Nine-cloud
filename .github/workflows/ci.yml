@@ -6,11 +6,19 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   verify:
     runs-on: ubuntu-24.04
     services:
+      mailpit:
+        image: axllent/mailpit:v1.27
+        env:
+          MP_SMTP_DISABLE_RDNS: 'true'
+        ports:
+          - 11025:1025
+          - 18025:8025
       postgres:
         image: postgres:17-alpine
         env:
@@ -26,6 +34,8 @@ jobs:
           --health-retries 12
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
         with:
           version: 11.19.0
@@ -35,16 +45,76 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile --registry https://registry.npmjs.org
       - name: Migrate ephemeral test database
-        run: pnpm --filter @jiuxiao/db db:migrate
+        run: |
+          pnpm --filter @jiuxiao/db db:migrate
+          pnpm --filter @jiuxiao/db db:migrate
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jiuxiao_test
       - run: pnpm license:check
+      - name: Test GitHub evidence synchronization gate
+        run: node --test scripts/build/ci-evidence.test.mjs
+      - name: Test fail-closed media publication gate
+        run: node scripts/audit/media-release-check.test.mjs
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build
+      - name: Prove the release-target build stays fail-closed while media licenses are pending
+        # SEC-05: this step proves the media gate is actually wired into release
+        # builds. While sourceAndLicense is unverified the release build must fail
+        # with exactly LICENSE_PENDING; flip this step to require success once the
+        # manifest is verified (BIRD-04 / G-05 closure).
+        run: |
+          if pnpm --filter @jiuxiao/web build 2>"$RUNNER_TEMP/media-gate.log"; then
+            echo "release build must fail while media licenses are unverified"; exit 1
+          fi
+          grep -q "LICENSE_PENDING" "$RUNNER_TEMP/media-gate.log"
+        env:
+          JIUXIAO_BUILD_TARGET: release
+      - name: Build and smoke the production API container
+        run: |
+          docker build --tag "jiuxiao-api-review:$REVIEW_SHA" --file apps/api/Dockerfile .
+          TEST_API_IMAGE="jiuxiao-api-review:$REVIEW_SHA" node tests/integration/api-image-smoke.mjs
+        env:
+          REVIEW_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jiuxiao_test
       - name: Run PostgreSQL integration tests
         run: pnpm test:integration
         env:
           TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jiuxiao_test
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:e2e
+      - name: Test durable turn UI recovery with synthetic receipts
+        run: node tests/e2e/turns.cjs
+      - name: Test isolated SMTP and cloud browser path
+        run: node tests/e2e/cloud.cjs
+        env:
+          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jiuxiao_test
+          TEST_SMTP_URL: smtp://127.0.0.1:11025
+          MAILPIT_API_URL: http://127.0.0.1:18025
+      - name: Verify isolated database backup restoration
+        run: node tests/integration/database-restore.mjs
+        env:
+          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jiuxiao_test
+          TEST_POSTGRES_CONTAINER: ${{ job.services.postgres.id }}
+      - name: Bind review artifacts to the tested commit
+        run: node scripts/build/write-review-bundle.mjs
+      - name: Generate exact-build G1 and Canon review packets
+        run: node scripts/build/write-closeout-packets.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Upload engineering review artifacts and evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: jiuxiao-engineering-review-${{ github.event.pull_request.head.sha || github.sha }}
+          retention-days: 14
+          if-no-files-found: error
+          path: |
+            apps/web/dist/
+            apps/api/dist/
+            packages/db/dist/
+            packages/contracts/dist/
+            packages/domain/dist/
+            packages/content/dist/
+            test-results/review-bundle/
+            test-results/cloud/
+            test-results/turns/

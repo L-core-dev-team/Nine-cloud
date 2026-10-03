@@ -7,7 +7,8 @@ const result = spawnSync(windows ? 'cmd.exe' : 'pnpm',
   { encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
 if (result.status !== 0) throw new Error(`pnpm licenses failed: ${result.stderr}`);
 const groups = JSON.parse(result.stdout);
-const allowed = new Set(['MIT', 'Apache-2.0', 'BSD-3-Clause', 'ISC', 'MPL-2.0']);
+// Nodemailer 10 ships the MIT No Attribution license (MIT-0), reviewed in its package LICENSE.
+const allowed = new Set(['MIT', 'MIT-0', 'Apache-2.0', 'BSD-3-Clause', 'ISC', 'MPL-2.0']);
 const unknown = Object.entries(groups).filter(([license]) => !allowed.has(license))
   .flatMap(([license, packages]) => packages.map(({ name, versions }) => `${name}@${versions.join(',')} (${license})`));
 if (unknown.length) {

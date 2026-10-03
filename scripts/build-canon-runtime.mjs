@@ -45,18 +45,46 @@ const entries = registry.entries
     ...(publicSourceNote ? { publicSourceNote } : {}), sortOrder,
   }));
 
-const runtime = { schemaVersion: registry.schemaVersion, activeVersion: registry.activeVersion, entries };
+// SEC-03: fail-closed dual-review receipts. Every confirmed entry must carry a
+// matching LYL and Bird receipt from packages/content/src/canon-receipts.json
+// (content-only digest). Without that manifest the build refuses to run unless
+// --allow-pending-receipts is passed explicitly, which stamps the emitted
+// runtime with receiptsComplete:false instead of silently skipping the gate.
+const { createHash } = await import('node:crypto');
+const entryDigest = entry => createHash('sha256').update(entry.content).digest('hex');
+const receiptsUrl = new URL('../packages/content/src/canon-receipts.json', import.meta.url);
+let receiptManifest = null;
+try { receiptManifest = JSON.parse(await readFile(receiptsUrl, 'utf8')); } catch { receiptManifest = null; }
+const allowPendingReceipts = process.argv.includes('--allow-pending-receipts');
+const receiptsUsable = Boolean(receiptManifest && Array.isArray(receiptManifest.entries)
+  && receiptManifest.canonVersion === registry.activeVersion);
+let receiptsComplete = false;
+if (receiptsUsable) {
+  const byId = new Map(receiptManifest.entries.map(item => [item.id, item]));
+  receiptsComplete = entries.length > 0 && entries.every(entry => {
+    const digest = entryDigest(entry);
+    const reviews = byId.get(entry.id)?.reviews ?? [];
+    return ['LYL', 'Bird'].every(reviewer => reviews.some(item =>
+      item.reviewer === reviewer && item.decision === 'approved'
+      && item.contentSha256 === digest && Number.isFinite(Date.parse(item.reviewedAt))));
+  });
+}
+if (!receiptsComplete && !allowPendingReceipts) {
+  throw new Error('CANON_RECEIPTS_PENDING: confirmed entries lack matching LYL+Bird review receipts; provide packages/content/src/canon-receipts.json or pass --allow-pending-receipts to stamp the runtime as pending.');
+}
+
+const runtime = { schemaVersion: registry.schemaVersion, activeVersion: registry.activeVersion, receiptsComplete, entries };
 const serialized = `${JSON.stringify(runtime, null, 2)}\n`;
-if (process.argv.slice(2).some(argument => argument !== '--check' && argument !== '--write')
+if (process.argv.slice(2).some(argument => argument !== '--check' && argument !== '--write' && argument !== '--allow-pending-receipts')
   || process.argv.includes('--check') && process.argv.includes('--write')) {
-  throw new Error('Usage: node scripts/build-canon-runtime.mjs [--check|--write]');
+  throw new Error('Usage: node scripts/build-canon-runtime.mjs [--check|--write] [--allow-pending-receipts]');
 }
 
 if (process.argv.includes('--check')) {
   const current = await readFile(runtimeUrl, 'utf8');
-  if (current !== serialized) throw new Error('Public Canon runtime is stale; run `pnpm worldbook:runtime:write` and review the generated diff.');
-  console.log(`Verified public Canon runtime ${runtime.activeVersion}: ${entries.length} confirmed entries; private source metadata excluded.`);
+  if (current.replace(/\r\n/g,'\n') !== serialized) throw new Error('Public Canon runtime is stale; run `pnpm worldbook:runtime:write` and review the generated diff.');
+  console.log(`Verified public Canon runtime ${runtime.activeVersion}: ${entries.length} confirmed entries; receiptsComplete=${receiptsComplete}; private source metadata excluded.`);
 } else {
   await writeFile(runtimeUrl, serialized, 'utf8');
-  console.log(`Built public Canon runtime ${runtime.activeVersion}: ${entries.length} confirmed entries; pending/conflict/deprecated and private source metadata excluded.`);
+  console.log(`Built public Canon runtime ${runtime.activeVersion}: ${entries.length} confirmed entries; receiptsComplete=${receiptsComplete}; pending/conflict/deprecated and private source metadata excluded.`);
 }

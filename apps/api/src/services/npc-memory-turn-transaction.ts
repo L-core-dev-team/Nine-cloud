@@ -9,6 +9,7 @@ import {
 import {
   createNpcMemoryJournal,
   parseNpcMemoryJournalJson,
+  serializeNpcMemoryJournal,
   type NpcMemoryJournal,
 } from '@jiuxiao/domain';
 import type { Pool, PoolClient, QueryResult, QueryResultRow } from 'pg';
@@ -72,8 +73,20 @@ type NormalizedCommit = Omit<AcceptedTurnCommitInput, 'ownerId' | 'receipt' | 's
  * and journal on the server; this repository never decides gameplay or visibility.
  */
 export class PostgresNpcMemoryTurnRepository {
-  constructor(private readonly database: Database) {}
+  constructor(private readonly database: Database, private readonly requiresLiveAccount = false,private readonly guard?: (client:PoolClient,commit:AcceptedTurnCommitInput)=>Promise<void>) {}
 
+  async getReceiptForOwner(ownerId: string, saveId: string, requestId: string): Promise<TurnReceipt | null> {
+    const owner = normalizeOwnerId(ownerId);
+    if (!isValidId(saveId) || !/^[0-9a-f-]{36}$/i.test(requestId)) throw new TypeError('Invalid turn identity');
+    const result = await this.database.query<ReceiptRow>(
+      'SELECT r.result FROM turn_requests r JOIN game_saves s ON s.id = r.save_id ' +
+      'WHERE r.save_id = $1 AND s.owner_id = $2 AND r.idempotency_key = $3 ' +
+      'AND NOT EXISTS (SELECT 1 FROM cloud_archive_trash t WHERE t.save_id = s.id) LIMIT 1',
+      [saveId, owner, requestId],
+    );
+    if (!result.rows[0]) return null;
+    return TurnReceiptSchema.parse(result.rows[0].result);
+  }
   async getForOwner(ownerId: string, saveId: string): Promise<NpcMemoryJournal | null> {
     const owner = normalizeOwnerId(ownerId);
     if (!isValidId(saveId)) throw new TypeError('Save ID is invalid.');
@@ -110,6 +123,9 @@ export class PostgresNpcMemoryTurnRepository {
     try {
       await client.query('BEGIN');
       inTransaction = true;
+      if (this.requiresLiveAccount && !(await client.query('SELECT id FROM auth_accounts WHERE id=$1 AND closed_at IS NULL '+(this.guard?'FOR UPDATE':'FOR KEY SHARE'), [commit.ownerId])).rowCount) {
+        return await rollbackWith(client, () => { inTransaction = false; return { kind: 'not_found' }; });
+      }
 
       const locked = await client.query<SaveRow>(
         'SELECT id, revision FROM game_saves WHERE id = $1 AND owner_id = $2 FOR UPDATE',
@@ -145,6 +161,7 @@ export class PostgresNpcMemoryTurnRepository {
         });
       }
 
+      await this.guard?.(client,commit);
       const journalResult = await client.query<JournalRow>(
         'SELECT revision, payload FROM npc_memory_journals WHERE save_id = $1 FOR UPDATE',
         [commit.save.saveId],
@@ -207,7 +224,7 @@ export class PostgresNpcMemoryTurnRepository {
         'VALUES ($1, 1, $2, $3::jsonb, now()) ' +
         'ON CONFLICT (save_id) DO UPDATE SET schema_version = EXCLUDED.schema_version, ' +
         'revision = EXCLUDED.revision, payload = EXCLUDED.payload, updated_at = now()',
-        [commit.save.saveId, commit.nextJournal.revision, JSON.stringify(commit.nextJournal)],
+        [commit.save.saveId, commit.nextJournal.revision, serializeNpcMemoryJournal(commit.nextJournal)],
       );
 
       await client.query('COMMIT');
@@ -236,6 +253,7 @@ function normalizeCommit(input: AcceptedTurnCommitInput): NormalizedCommit {
   const events = input.events.map(event => DomainEventSchema.parse(event));
   const previousJournal = parseJournal(input.previousJournal);
   const nextJournal = parseJournal(input.nextJournal);
+  serializeNpcMemoryJournal(nextJournal);
 
   if (!Number.isSafeInteger(input.expectedRevision) || input.expectedRevision < 0 ||
     save.revision !== input.expectedRevision + 1 ||

@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { afterAll, describe, expect, it } from 'vitest';
+import { beforeAll, afterAll, describe, expect, it } from 'vitest';
 import { Pool } from 'pg';
 import type { DomainEvent, SaveEnvelope, TurnReceipt } from '@jiuxiao/contracts';
 import { createNpcMemoryJournal, prepareNpcMemoryTurn, type NpcMemoryJournal } from '@jiuxiao/domain';
@@ -74,12 +74,16 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
     return { event, save, receipt, previousJournal, nextJournal: prepared.journal };
   }
 
+  beforeAll(async()=>{for(const id of [ownerId])await pool.query('INSERT INTO auth_accounts(id,email) VALUES($1,$2) ON CONFLICT DO NOTHING',[id,id+'@fixture.invalid']);});
   afterAll(async () => {
     await pool.query('DROP TRIGGER IF EXISTS jiuxiao_test_reject_memory_write ON npc_memory_journals').catch(() => undefined);
     await pool.query('DROP FUNCTION IF EXISTS jiuxiao_test_reject_memory_write()').catch(() => undefined);
-    await pool.query('DELETE FROM turn_events WHERE save_id = $1', [saveId]).catch(() => undefined);
-    await pool.query('DELETE FROM turn_requests WHERE save_id = $1', [saveId]).catch(() => undefined);
-    await pool.query('DELETE FROM game_saves WHERE id = $1 AND owner_id = $2', [saveId, ownerId]).catch(() => undefined);
+    { const client = await pool.connect(); try { await client.query('BEGIN'); await client.query("SELECT set_config('jiuxiao.account_erasure_operation','test-cleanup',true)");
+      await client.query('DELETE FROM turn_events WHERE save_id = $1', [saveId]).catch(() => undefined);
+      await client.query('DELETE FROM turn_requests WHERE save_id = $1', [saveId]).catch(() => undefined);
+      await client.query('DELETE FROM game_saves WHERE id = $1 AND owner_id = $2', [saveId, ownerId]).catch(() => undefined);
+      await client.query('COMMIT');
+    } catch (error) { await client.query('ROLLBACK'); } finally { client.release(); } }
     await pool.end();
   });
 
@@ -106,11 +110,12 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
     const secondInput = makeTurn(firstResult.journal, 1);
     await pool.query(
       'CREATE FUNCTION jiuxiao_test_reject_memory_write() RETURNS trigger LANGUAGE plpgsql ' +
-      'AS $$ BEGIN RAISE EXCEPTION \'forced journal failure\'; END; $$',
+      'AS $$ BEGIN IF NEW.save_id = TG_ARGV[0] THEN RAISE EXCEPTION \'forced journal failure\'; END IF; RETURN NEW; END; $$',
     );
     await pool.query(
       'CREATE TRIGGER jiuxiao_test_reject_memory_write BEFORE INSERT OR UPDATE ON npc_memory_journals ' +
-      'FOR EACH ROW EXECUTE FUNCTION jiuxiao_test_reject_memory_write()',
+      // Only fail this fixture; parallel suites share the isolated test database.
+      `FOR EACH ROW EXECUTE FUNCTION jiuxiao_test_reject_memory_write('${saveId}')`,
     );
     try {
       await expect(repository.commitAcceptedTurn({

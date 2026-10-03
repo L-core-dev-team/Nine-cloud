@@ -16,7 +16,12 @@ describe('public Canon runtime', () => {
     expect(canonRuntimeEntries.flatMap(entry => entry.sections ?? [])
       .every(section => Object.keys(section).every(key => key === 'title' || key === 'content'))).toBe(true);
     const scriptPath = fileURLToPath(new URL('../../../scripts/build-canon-runtime.mjs', import.meta.url));
-    expect(execFileSync(process.execPath, [scriptPath, '--check'], { encoding: 'utf8' }))
+    // SEC-03: without a receipts manifest the unflagged invocation must fail closed…
+    expect(() => execFileSync(process.execPath, [scriptPath, '--check'], { encoding: 'utf8' }))
+      .toThrow(/CANON_RECEIPTS_PENDING/);
+    // …and the pending state stays explicit (receiptsComplete=false in the runtime).
+    expect((canonRuntime as { receiptsComplete?: boolean }).receiptsComplete).toBe(false);
+    expect(execFileSync(process.execPath, [scriptPath, '--check', '--allow-pending-receipts'], { encoding: 'utf8' }))
       .toContain('Verified public Canon runtime 1.0: 34 confirmed entries');
   });
 

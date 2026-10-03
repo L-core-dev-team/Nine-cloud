@@ -16,10 +16,10 @@ export function retrieveNpcMemories(memory: NpcMemory, options: {
     || !Number.isFinite(options.minAccessibility) || options.minAccessibility < 0 || options.minAccessibility > 1) {
     throw new Error('Invalid recall parameters');
   }
-  const needle = options.query.trim().normalize('NFKC').toLocaleLowerCase('zh-CN');
+  const needle = options.query.trim().normalize('NFKC').toLowerCase();
   return memory.observations.flatMap(observation => {
     if (observation.npcId !== memory.npcId || observation.observedAtMinute > options.nowMinute) throw new Error('Memory chronology or owner mismatch');
-    const text = observation.summary.normalize('NFKC').toLocaleLowerCase('zh-CN');
+    const text = observation.summary.normalize('NFKC').toLowerCase();
     if (needle && !text.includes(needle)) return [];
     const elapsed = options.nowMinute - observation.observedAtMinute;
     const accessibility = memory.policyVersion === 'exact-recall-v1'
@@ -27,6 +27,6 @@ export function retrieveNpcMemories(memory: NpcMemory, options: {
     return accessibility >= options.minAccessibility ? [{ observation, accessibility }] : [];
   }).sort((left, right) => right.accessibility - left.accessibility
     || right.observation.observedAtMinute - left.observation.observedAtMinute
-    || left.observation.eventId.localeCompare(right.observation.eventId))
+    || (left.observation.eventId < right.observation.eventId ? -1 : left.observation.eventId > right.observation.eventId ? 1 : 0))
     .slice(0, options.limit);
 }

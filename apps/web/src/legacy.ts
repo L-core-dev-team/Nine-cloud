@@ -11,6 +11,13 @@ function textOrFallback(value: unknown, fallback: string): string {
   return typeof value === 'string' && value.trim() ? value.trim() : fallback;
 }
 
+/** SEC-09: imported save ids must be safe for /game/<id> routes, storage keys and cloud paths. */
+const SAVE_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$/;
+function sanitizeLegacySaveId(value: unknown): string {
+  const candidate = textOrFallback(value, '');
+  return SAVE_ID_PATTERN.test(candidate) ? candidate : createSaveId();
+}
+
 function extractPlainText(text: string): string {
   return text.replace(/<script[\s\S]*?<\/script>/gi, '')
     .replace(/<style[\s\S]*?<\/style>/gi, '')
@@ -49,13 +56,21 @@ export function parseLegacySave(file: File, text: string): LocalSave {
   const parsed = payloadFromText(file, text);
   const raw = parsed.payload;
   const now = new Date().toISOString();
+  if (parsed.sourceFormat === 'JIUXIAO_SAVE' && parsed.sourceVersion === 1 && raw.revision !== undefined
+    && (!Number.isSafeInteger(raw.revision) || raw.revision < 0)) throw new Error('Invalid native save revision');
   if (parsed.sourceFormat === 'JIUXIAO_SAVE' && parsed.sourceVersion === 1 && isLocalSave(raw)) {
+    // SEC-09: a legacy saveId must not carry route/storage meta-characters; an
+    // invalid one is replaced with a freshly generated client-side id.
+    const saveId = typeof raw.saveId === 'string' && SAVE_ID_PATTERN.test(raw.saveId) ? raw.saveId : createSaveId();
     return {
-      ...raw,
-      updatedAt: now,
-      canonVersion: 'legacy-unverified',
-      ruleVersion: 'rules-not-signed',
-      memoryPolicyVersion: 'legacy-unknown',
+      schemaVersion: 1, saveId, name: raw.name, createdAt: raw.createdAt,
+      updatedAt: now, revision: raw.revision,
+      canonVersion: 'legacy-unverified', ruleVersion: 'rules-not-signed',
+      memoryPolicyVersion: 'legacy-unknown', character: raw.character,
+      location: raw.location, status: 'pending_rules', messages: raw.messages,
+      ...(raw.pending === undefined ? {} : { pending: raw.pending }),
+      ...(raw.pendingQueue === undefined ? {} : { pendingQueue: raw.pendingQueue }),
+      ...(raw.legacySupplement === undefined ? {} : { legacySupplement: raw.legacySupplement }),
       legacyArchive: raw.legacyArchive ?? {
         sourceFormat: 'JIUXIAO_SAVE',
         sourceVersion: 1,
@@ -65,7 +80,7 @@ export function parseLegacySave(file: File, text: string): LocalSave {
   }
   const character = isRecord(raw.character) ? raw.character : isRecord(raw.player) ? raw.player : {};
   const world = isRecord(raw.world) ? raw.world : {};
-  const id = textOrFallback(raw.saveId ?? raw.id, createSaveId());
+  const id = sanitizeLegacySaveId(raw.saveId ?? raw.id);
   const name = textOrFallback(raw.name ?? character.name ?? character['姓名'], '导入旧局');
   const location = textOrFallback(raw.location ?? world.location, '中州天枢域');
   const save: LocalSave = {

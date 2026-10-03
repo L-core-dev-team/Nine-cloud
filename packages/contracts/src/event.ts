@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isBoundedJson } from './json-bounds.js';
 
 export const DomainEventSchema = z.strictObject({
   id: z.uuid(),
@@ -9,7 +10,7 @@ export const DomainEventSchema = z.strictObject({
   occurredAt: z.iso.datetime(),
   source: z.enum(['RULES', 'MIGRATION']),
   ruleVersion: z.string().min(1),
-  payload: z.record(z.string(), z.unknown()),
+  payload: z.record(z.string(), z.unknown()).refine(value => isBoundedJson(value), { message: 'Event payload exceeds JSON bounds' }),
 }).refine(event => event.afterRevision > event.beforeRevision,
   { message: 'Event revision must advance' });
 

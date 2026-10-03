@@ -10,3 +10,15 @@ scripts
 *.zip
 **/dist
 .env
+
+!scripts/
+scripts/*
+!scripts/api-retention.mjs
+!scripts/verify-auth-mail.mjs
+!scripts/api-production-smoke.mjs
+**/.env*
+deployment/api.private.env
+deployment/runtime
+deployment/backups
+
+!scripts/api-account-expiry.mjs
