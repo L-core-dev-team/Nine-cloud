@@ -1,11 +1,14 @@
 import {
   ActionIntentSchema,
   DecisionSchema,
+  DecisionV2Schema,
   DomainEventSchema,
   SaveEnvelopeSchema,
   TurnReceiptSchema,
+  TurnReceiptV2Schema,
   WorldStateSchema,
   type ActionIntent,
+  type ActionIntentInput,
   type Decision,
   type DomainEvent,
   type SaveEnvelope,
@@ -81,7 +84,7 @@ export type TurnPreparation =
  * are bundled here.
  */
 export async function prepareTurn(options: {
-  intent: ActionIntent;
+  intent: ActionIntentInput;
   save: SaveEnvelope;
   priorReceipt?: TurnReceipt;
   decide: (intent: ActionIntent, save: SaveEnvelope) => Decision;
@@ -110,30 +113,62 @@ export async function prepareTurn(options: {
     if (decision.nextRevision !== save.revision + 1) {
       throw new TurnBoundaryError('INVALID_DECISION_REVISION', 'An accepted turn must advance one revision.');
     }
-    validateAcceptedEvents(decision.events, save, decision.nextRevision);
-    const nextSave = replayEvents(save, decision.events, options.reduce);
-    const receipt = TurnReceiptSchema.parse({
+    const committedEvents = decision.events.map(event => DomainEventSchema.parse(event));
+    validateAcceptedEvents(committedEvents, save, decision.nextRevision, intent.branchId);
+    const nextSave = replayEvents(save, committedEvents, options.reduce);
+    const currentDecision = DecisionV2Schema.safeParse(decision);
+    const receipt = currentDecision.success
+      ? TurnReceiptV2Schema.parse({
+        idempotencyKey: intent.idempotencyKey,
+        saveId: save.saveId,
+        requestFingerprint,
+        branchId: intent.branchId,
+        rulesVersion: save.ruleVersion,
+        clockMinute: readClockMinute(nextSave),
+        rng: { seed: null, draws: 0 },
+        decision: currentDecision.data,
+        resultingRevision: nextSave.revision,
+      })
+      : TurnReceiptSchema.parse({
+        idempotencyKey: intent.idempotencyKey,
+        saveId: save.saveId,
+        requestFingerprint,
+        decision,
+        resultingRevision: nextSave.revision,
+      });
+    return { status: 'prepared', receipt, save: nextSave };
+  }
+
+  const currentDecision = DecisionV2Schema.safeParse(decision);
+  const receipt = currentDecision.success
+    ? TurnReceiptV2Schema.parse({
+      idempotencyKey: intent.idempotencyKey,
+      saveId: save.saveId,
+      requestFingerprint,
+      branchId: intent.branchId,
+      rulesVersion: save.ruleVersion,
+      clockMinute: readClockMinute(save),
+      rng: { seed: null, draws: 0 },
+      decision: currentDecision.data,
+      resultingRevision: save.revision,
+    })
+    : TurnReceiptSchema.parse({
       idempotencyKey: intent.idempotencyKey,
       saveId: save.saveId,
       requestFingerprint,
       decision,
-      resultingRevision: nextSave.revision,
+      resultingRevision: save.revision,
     });
-    return { status: 'prepared', receipt, save: nextSave };
-  }
-
-  const receipt = TurnReceiptSchema.parse({
-    idempotencyKey: intent.idempotencyKey,
-    saveId: save.saveId,
-    requestFingerprint,
-    decision,
-    resultingRevision: save.revision,
-  });
   return { status: 'recorded', receipt };
 }
 
 async function fingerprintIntent(intent: ActionIntent): Promise<string> {
-  const canonical = canonicalJson(intent);
+  // `branchId: 'root'` is the v2 default. Omitting it from the root hash keeps
+  // retries compatible with receipts written before branch identity existed.
+  const fingerprintInput = intent.branchId === 'root'
+    ? Object.fromEntries(Object.entries(intent).filter(([key]) => key !== 'branchId'))
+    : intent;
+  const canonical = canonicalJson(fingerprintInput);
   const digest = await globalThis.crypto.subtle.digest('SHA-256', new TextEncoder().encode(canonical));
   return `sha256:v1:${Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('')}`;
 }
@@ -149,7 +184,7 @@ function canonicalJson(value: unknown): string {
   return encoded;
 }
 
-function validateAcceptedEvents(events: readonly DomainEvent[], save: SaveEnvelope, nextRevision: number): void {
+function validateAcceptedEvents(events: readonly DomainEvent[], save: SaveEnvelope, nextRevision: number, branchId: string): void {
   if (events.length === 0) throw new TurnBoundaryError('EMPTY_EVENT_BATCH', 'Accepted decisions require at least one event.');
   const seenIds = new Set<string>();
   for (const input of events) {
@@ -158,6 +193,9 @@ function validateAcceptedEvents(events: readonly DomainEvent[], save: SaveEnvelo
       throw new TurnBoundaryError('DUPLICATE_EVENT_ID', 'Event identifiers must be unique within a turn.');
     }
     seenIds.add(event.id);
+    if (event.branchId !== branchId) {
+      throw new TurnBoundaryError('EVENT_BRANCH_MISMATCH', 'Event branch does not match the submitted action.');
+    }
     if (event.saveId !== save.saveId || event.beforeRevision !== save.revision || event.afterRevision !== nextRevision) {
       throw new TurnBoundaryError('EVENT_REVISION_MISMATCH', 'Event batch does not match the input save revision.');
     }
@@ -166,6 +204,13 @@ function validateAcceptedEvents(events: readonly DomainEvent[], save: SaveEnvelo
     }
     assertJsonValue(event.payload);
   }
+}
+
+function readClockMinute(save: SaveEnvelope): number {
+  const gameMinute = save.state.facts.gameMinute;
+  if (typeof gameMinute === 'number' && Number.isSafeInteger(gameMinute) && gameMinute >= 0) return gameMinute;
+  // Pre-P1 snapshots only carried elapsedMinutes. New prologue rules write gameMinute.
+  return save.state.elapsedMinutes;
 }
 
 function validateTransition(event: DomainEvent, save: SaveEnvelope, seenIds: Set<string>): void {

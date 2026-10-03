@@ -1,17 +1,17 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { ActionIntent, TurnReceipt } from '@jiuxiao/contracts';
+import type { ActionIntent, TurnReceipt, TurnReceiptV2 } from '@jiuxiao/contracts';
 import { IndexedTurnStore, TurnClient, type PendingTurn, type TurnStore } from './turn-client';
 class Store implements TurnStore {
   rows = new Map<string, PendingTurn>();
   async read(key: string) { return structuredClone(this.rows.get(key) ?? null); }
   async update(key: string, change: (current: PendingTurn | null) => PendingTurn) { const next = change(structuredClone(this.rows.get(key) ?? null)); this.rows.set(key, structuredClone(next)); return next; }
 }
-const intent: ActionIntent = { kind: 'free_text', saveId: 'test', actorId: 'player', expectedRevision: 0, idempotencyKey: 'f00a9b36-dff1-4a4d-b810-e28b5eb5d18a', payload: { text: '测试' } };
+const intent: ActionIntent = { kind: 'free_text', saveId: 'test', actorId: 'player', branchId: 'root', expectedRevision: 0, idempotencyKey: 'f00a9b36-dff1-4a4d-b810-e28b5eb5d18a', payload: { text: '测试' } };
 function sorted(value: unknown): string { if (Array.isArray(value)) return `[${value.map(sorted).join(',')}]`; if (value !== null && typeof value === 'object') return `{${Object.entries(value).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([k,v]) => `${JSON.stringify(k)}:${sorted(v)}`).join(',')}}`; return JSON.stringify(value)!; }
-async function receipt(): Promise<TurnReceipt> {
+async function receipt(): Promise<TurnReceiptV2> {
  const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(sorted(intent)));
- return { saveId: intent.saveId, idempotencyKey: intent.idempotencyKey, requestFingerprint: `sha256:v1:${Array.from(new Uint8Array(hash), b => b.toString(16).padStart(2,'0')).join('')}`, resultingRevision: 1,
- decision: { status: 'accepted', nextRevision: 1, events: [{ id: '3719acb0-5296-48cd-b806-bc2966110ff7', saveId: 'test', type: 'fixture', beforeRevision: 0, afterRevision: 1, occurredAt: '2026-10-01T00:00:00.000Z', source: 'RULES', ruleVersion: 'fixture-only', payload: {} }] } };
+ return { saveId: intent.saveId, idempotencyKey: intent.idempotencyKey, requestFingerprint: `sha256:v1:${Array.from(new Uint8Array(hash), b => b.toString(16).padStart(2,'0')).join('')}`, branchId: 'root', rulesVersion: 'fixture-only', clockMinute: 0, rng: { seed: null, draws: 0 }, resultingRevision: 1,
+ decision: { status: 'accepted', outcome: 'success', nextRevision: 1, events: [{ id: '3719acb0-5296-48cd-b806-bc2966110ff7', saveId: 'test', branchId: 'root', type: 'fixture', beforeRevision: 0, afterRevision: 1, occurredAt: '2026-10-01T00:00:00.000Z', source: 'RULES', ruleVersion: 'fixture-only', payload: {} }] } };
 }
 describe('durable turn recovery', () => {
  it('closes a late blocked storage connection without reading a turn', async () => {
@@ -34,8 +34,13 @@ describe('durable turn recovery', () => {
  });
  it.each(['accepted', 'rejected'] as const)('rejects a %s receipt at an unrelated revision despite its matching fingerprint', async status => {
   const ack = await receipt();
-  const invalid: TurnReceipt = status === 'accepted' ? { ...ack, resultingRevision: 2, decision: { status, nextRevision: 2, events: ack.decision.status === 'accepted' ? ack.decision.events.map(event => ({ ...event, beforeRevision: 1, afterRevision: 2 })) : [] } }
-   : { ...ack, resultingRevision: 7, decision: { status, revision: 7, code: 'REFUSED', message: 'synthetic' } };
+  let invalid: TurnReceipt;
+  if (status === 'accepted') {
+   if (ack.decision.status !== 'accepted') throw new Error('Expected accepted fixture receipt');
+   invalid = { ...ack, resultingRevision: 2, decision: { ...ack.decision, nextRevision: 2, events: ack.decision.events.map(event => ({ ...event, beforeRevision: 1, afterRevision: 2 })) } };
+  } else {
+   invalid = { ...ack, resultingRevision: 7, decision: { status, revision: 7, code: 'INPUT_UNKNOWN_ACTION', message: 'synthetic' } };
+  }
   const client = new TurnClient(new Store(), async () => ({ receipt: invalid }));
   await expect(client.submit(await client.prepare('owner', intent))).rejects.toThrow('INVALID_TURN_RECEIPT');
   expect((await client.read('owner', 'test'))?.phase).toBe('unknown');
@@ -58,7 +63,7 @@ describe('durable turn recovery', () => {
   const request = async (_p: string, _m?: string, body?: unknown, _o?: string, signal?: AbortSignal) => {
    if (!(body as {requestNarrative:boolean}).requestNarrative) return {receipt:ack};
    if (signal?.aborted) throw new Error('cancelled');
-   return {receipt: JSON.parse(JSON.stringify({decision: ack.decision, resultingRevision:1, requestFingerprint:ack.requestFingerprint, saveId:'test', idempotencyKey:intent.idempotencyKey})), narrative: narrative ? {status:'received',text:'仅叙事'} : {status:'failed'}};
+   return {receipt: JSON.parse(JSON.stringify({decision: ack.decision, resultingRevision:1, requestFingerprint:ack.requestFingerprint, saveId:'test', idempotencyKey:intent.idempotencyKey, branchId:ack.branchId, rulesVersion:ack.rulesVersion, clockMinute:ack.clockMinute, rng:ack.rng})), narrative: narrative ? {status:'received',text:'仅叙事'} : {status:'failed'}};
   };
   const client = new TurnClient(store, request); const record = await client.submit(await client.prepare('owner', intent));
   await expect(client.narrate(record)).rejects.toThrow('NARRATIVE_UNAVAILABLE');

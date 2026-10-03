@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
+import { SAVE_SCHEMA_VERSION } from '@jiuxiao/contracts';
 import { app, createApp } from './app.js';
 
 describe('HTTP foundation', () => {
   it('returns a versioned health response without database credentials', async () => {
     const response = await app.request('/health');
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ status: 'ok', service: 'jiuxiao-api', saveSchemaVersion: 1 });
+    expect(await response.json()).toEqual({ status: 'ok', service: 'jiuxiao-api', saveSchemaVersion: SAVE_SCHEMA_VERSION });
   });
   it('does not expose unfinished save or auth routes', async () => {
     const response = await app.request('/api/saves');

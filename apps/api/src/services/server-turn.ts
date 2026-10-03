@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import {
-  ActionIntentSchema, SaveEnvelopeSchema, TurnReceiptSchema,
+  ActionIntentSchema, DomainEventSchema, SaveEnvelopeSchema, TurnReceiptSchema,
   type ActionIntent, type Decision, type SaveEnvelope, type TurnReceipt,
 } from '@jiuxiao/contracts';
 import {
@@ -85,14 +85,17 @@ export class ServerTurnService {
       }
       return { status: 'revision_conflict', currentRevision: journal.revision };
     }
+    const committedEvents = prepared.receipt.decision.status === 'accepted'
+      ? prepared.receipt.decision.events.map(event => DomainEventSchema.parse(event))
+      : [];
     const next = prepareNpcMemoryTurn({ journal, saveId: save.saveId,
       beforeRevision: save.revision, afterRevision: prepared.save.revision,
-      events: prepared.receipt.decision.status === 'accepted' ? prepared.receipt.decision.events : [],
+      events: committedEvents,
       observedAtMinute: prepared.save.state.elapsedMinutes,
       grantsForEvent: rules.grantsForEvent.bind(rules), policyForNpc: rules.policyForNpc.bind(rules) });
     const committed = await this.repository.commitAcceptedTurn({ ownerId, expectedRevision: save.revision,
       receipt: prepared.receipt, save: prepared.save,
-      events: prepared.receipt.decision.status === 'accepted' ? prepared.receipt.decision.events : [],
+      events: committedEvents,
       previousJournal: journal, nextJournal: next.journal });
     if (committed.kind === 'not_found') return { status: 'not_found' };
     if (committed.kind === 'idempotency_conflict') return { status: 'idempotency_conflict' };
