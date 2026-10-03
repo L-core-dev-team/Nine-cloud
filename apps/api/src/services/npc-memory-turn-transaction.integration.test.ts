@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { afterAll, describe, expect, it } from 'vitest';
+import { beforeAll, afterAll, describe, expect, it } from 'vitest';
 import { Pool } from 'pg';
 import type { DomainEvent, SaveEnvelope, TurnReceipt } from '@jiuxiao/contracts';
 import { createNpcMemoryJournal, prepareNpcMemoryTurn, type NpcMemoryJournal } from '@jiuxiao/domain';
@@ -74,6 +74,7 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
     return { event, save, receipt, previousJournal, nextJournal: prepared.journal };
   }
 
+  beforeAll(async()=>{for(const id of [ownerId])await pool.query('INSERT INTO auth_accounts(id,email) VALUES($1,$2) ON CONFLICT DO NOTHING',[id,id+'@fixture.invalid']);});
   afterAll(async () => {
     await pool.query('DROP TRIGGER IF EXISTS jiuxiao_test_reject_memory_write ON npc_memory_journals').catch(() => undefined);
     await pool.query('DROP FUNCTION IF EXISTS jiuxiao_test_reject_memory_write()').catch(() => undefined);

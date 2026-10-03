@@ -78,6 +78,20 @@
       "when": 1791018000000,
       "tag": "0010_retention_purge_receipt",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1791020000000,
+      "tag": "0011_closeout_runtime_controls",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1791020000001,
+      "tag": "0012_event_integrity_ownership",
+      "breakpoints": true
     }
   ]
 }

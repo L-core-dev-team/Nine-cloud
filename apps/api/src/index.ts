@@ -1,3 +1,4 @@
+import {configureAccountQuota} from './services/account-rate-limit.js';
 import {loadDataPolicy} from './services/data-policy.js';
 import {PolicyCloudSaveRepository} from './services/policy-cloud-save-repository.js';
 import { serve } from '@hono/node-server';
@@ -23,6 +24,7 @@ const databaseUrl = process.env.DATABASE_URL;
 if (!databaseUrl) throw new Error('DATABASE_URL is required');
 
 const pool = new Pool({ connectionString: databaseUrl, max: 5, connectionTimeoutMillis: 3_000 });
+configureAccountQuota(pool);
 pool.on('error', () => { console.error('Database connection unavailable.'); });
 const emailAuth = createEmailAuthRuntime(pool, process.env);
 if(process.env.AUTH_MAIL_PREFLIGHT==='true')await emailAuth?.verifyMail();
@@ -31,7 +33,7 @@ const runtime=plugin?prepareTurnRuntime(plugin,await loadNarrativeSlots(process.
 const dataPolicy=process.env.NODE_ENV==='production'?loadDataPolicy(process.env.ACCOUNT_DATA_POLICY_PATH):undefined;
 const cloudRepository=process.env.NODE_ENV==='production'?new PolicyCloudSaveRepository(pool,dataPolicy):new PostgresCloudSaveRepository(pool,true);
 const app = createApp({ query: sql => pool.query(sql) }, emailAuth ? {
-  service: new CloudSaveService(cloudRepository, true),
+  service: new CloudSaveService(cloudRepository, true, true),
   archive: new CloudArchiveLifecycle(pool, true),
   auth: { resolveOwnerId: async request => (await emailAuth.service.resolve(sessionToken(request)))?.ownerId || null },
 } : undefined, emailAuth, emailAuth ? {

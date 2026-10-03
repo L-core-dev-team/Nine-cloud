@@ -20,3 +20,5 @@ scripts/*
 deployment/api.private.env
 deployment/runtime
 deployment/backups
+
+!scripts/api-account-expiry.mjs

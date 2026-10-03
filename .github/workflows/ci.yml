@@ -44,7 +44,9 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile --registry https://registry.npmjs.org
       - name: Migrate ephemeral test database
-        run: pnpm --filter @jiuxiao/db db:migrate
+        run: |
+          pnpm --filter @jiuxiao/db db:migrate
+          pnpm --filter @jiuxiao/db db:migrate
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jiuxiao_test
       - run: pnpm license:check
@@ -59,10 +61,11 @@ jobs:
         # with exactly LICENSE_PENDING; flip this step to require success once the
         # manifest is verified (BIRD-04 / G-05 closure).
         run: |
-          if pnpm --filter @jiuxiao/web build 2>media-gate.log; then
+          mkdir -p test-results
+          if pnpm --filter @jiuxiao/web build 2>test-results/media-gate.log; then
             echo "release build must fail while media licenses are unverified"; exit 1
           fi
-          grep -q "LICENSE_PENDING" media-gate.log
+          grep -q "LICENSE_PENDING" test-results/media-gate.log
         env:
           JIUXIAO_BUILD_TARGET: release
       - name: Build and smoke the production API container

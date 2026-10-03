@@ -50,11 +50,11 @@ export function mountAuth(app: Hono, service: EmailAuthService, origin: string, 
       return result === 'sent' ? c.json({ status: 'sent', resendAfterSeconds:60, expiresInSeconds:600 }, 202) : c.json({ code: 'RATE_LIMITED',retryAfterSeconds:60 }, 429);
     } catch (error) { if(error instanceof AuthFailure)return c.json({code:error.code,stage:error.stage,requestId:error.requestId},503);return c.json({ code: error instanceof TypeError ? 'INVALID_EMAIL' : 'MAIL_UNAVAILABLE' }, error instanceof TypeError ? 400 : 503); }
   });
-  app.post('/api/auth/verify', async c => {
+  for(const path of ['/api/auth/verify','/api/auth/restore'])app.post(path, async c => {
     const body = await authBody(c.req.raw);
     if (!body) return c.json({ code: 'INVALID_REQUEST' }, 400);
     try {
-      const result = await service.verify(body.email, body.code);
+      const result = await service.verify(body.email, body.code,path.endsWith('/restore'));
       if (!result) return c.json({ code: 'INVALID_OR_EXPIRED_CODE' }, 401);
       c.header('Set-Cookie', cookie(result.token, SESSION_SECONDS));
       return c.json({ account: { id: result.session.ownerId, email: result.session.email }, expiresAt: result.session.expiresAt.toISOString() });

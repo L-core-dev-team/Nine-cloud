@@ -82,7 +82,7 @@ if (process.argv.slice(2).some(argument => argument !== '--check' && argument !=
 
 if (process.argv.includes('--check')) {
   const current = await readFile(runtimeUrl, 'utf8');
-  if (current !== serialized) throw new Error('Public Canon runtime is stale; run `pnpm worldbook:runtime:write` and review the generated diff.');
+  if (current.replace(/\r\n/g,'\n') !== serialized) throw new Error('Public Canon runtime is stale; run `pnpm worldbook:runtime:write` and review the generated diff.');
   console.log(`Verified public Canon runtime ${runtime.activeVersion}: ${entries.length} confirmed entries; receiptsComplete=${receiptsComplete}; private source metadata excluded.`);
 } else {
   await writeFile(runtimeUrl, serialized, 'utf8');

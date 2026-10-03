@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { afterAll, describe, expect, it } from 'vitest';
+import { beforeAll, afterAll, describe, expect, it } from 'vitest';
 import { Pool } from 'pg';
 import { CloudCapacityError, CloudSaveService } from './cloud-save-service.js';
 import { PostgresCloudSaveRepository } from './postgres-cloud-save-repository.js';
@@ -15,6 +15,7 @@ suite('PostgresCloudSaveRepository (TEST_DATABASE_URL)', () => {
   const saveId = `s6-${randomUUID()}`;
   const quotaOwner = `s6-quota-${randomUUID()}`;
 
+  beforeAll(async()=>{for(const id of [ownerA,ownerB,quotaOwner])await pool.query('INSERT INTO auth_accounts(id,email) VALUES($1,$2) ON CONFLICT DO NOTHING',[id,id+'@fixture.invalid']);});
   afterAll(async () => {
     { const client = await pool.connect(); try { await client.query('BEGIN'); await client.query("SELECT set_config('jiuxiao.account_erasure_operation','test-cleanup',true)"); await client.query('DELETE FROM game_saves WHERE owner_id = ANY($1::text[])', [[ownerA, quotaOwner]]); await client.query('COMMIT'); } catch (error) { await client.query('ROLLBACK'); throw error; } finally { client.release(); } }
     await pool.end();

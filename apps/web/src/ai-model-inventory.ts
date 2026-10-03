@@ -5,7 +5,7 @@ export type RouterModel = {
   capabilities:string[]|null;
   pricingStatus:'known'|'partial'|'unknown'|'conflict';
   pricingSource:string;
-  status:'active'|'unknown';
+  status:'active'|'deprecated'|'unavailable'|'unknown';
   modelId: string;
   capability: { outputModalities: string[] } | null;
   price: { input: number | null; output: number | null; currency: 'USD'; unit: 'million_tokens' };
@@ -23,7 +23,7 @@ export type RouterModel = {
 };
 
 type RouterRaw = {
-  id?: unknown; name?: unknown; description?: unknown; context_length?: unknown;
+  status?: unknown; id?: unknown; name?: unknown; description?: unknown; context_length?: unknown;
   created?: unknown; expiration_date?: unknown;
   pricing?: { prompt?: unknown; completion?: unknown };
   architecture?: { output_modalities?: unknown };
@@ -60,7 +60,7 @@ export function normalizeRouterModels(payload: unknown, now = Date.now()): Route
       capabilities:modalities.length?modalities.filter((value):value is string=>typeof value==='string'):null,
       pricingStatus:price(raw.pricing?.prompt)!==null&&price(raw.pricing?.completion)!==null?'known':price(raw.pricing?.prompt)!==null||price(raw.pricing?.completion)!==null?'partial':'unknown',
       pricingSource:'https://openrouter.ai/api/v1/models',
-      status:expiration&&Number.isFinite(Date.parse(expiration))?'active':'unknown',
+      status:raw.status==='deprecated'||raw.status==='unavailable'?raw.status:expiration&&Number.isFinite(Date.parse(expiration))?'active':'unknown',
       provider: 'openrouter', modelId: id,
       capability: modalities.length ? { outputModalities: modalities.filter((value): value is string => typeof value === 'string') } : null,
       price: { input: price(raw.pricing?.prompt), output: price(raw.pricing?.completion), currency: 'USD', unit: 'million_tokens' },
@@ -101,6 +101,16 @@ export const routerProviderAuthors: Record<string, string[]> = {
 export function filterRouterModels(models: RouterModel[], query: string, providerId?: string): RouterModel[] {
   const q = query.trim().toLocaleLowerCase();
   const authors = providerId ? (routerProviderAuthors[providerId] ?? ['__not-listed__']) : undefined;
-  return models.filter(model => (!authors || authors.includes(model.author))
+  return models.filter(model => !['deprecated','unavailable'].includes(model.status) && (!authors || authors.includes(model.author))
     && (!q || `${model.id} ${model.name} ${model.description} ${model.author}`.toLocaleLowerCase().includes(q)));
+}
+
+/** Only catalog evidence; disappearance does not prove an account/endpoint unavailable. */
+export function catalogSnapshotDiff(previous:RouterModel[],current:RouterModel[]){
+ const old=new Map(previous.map(m=>[m.modelId,m])),next=new Map(current.map(m=>[m.modelId,m]));
+ return {source:'https://openrouter.ai/api/v1/models',scope:'aggregator_catalog',
+  added:current.filter(m=>!old.has(m.modelId)).map(m=>m.modelId),
+  notReturned:previous.filter(m=>!next.has(m.modelId)).map(m=>({modelId:m.modelId,availability:'unknown'})),
+  changed:current.filter(m=>{const p=old.get(m.modelId);return p&&(JSON.stringify(p.price)!==JSON.stringify(m.price)||p.status!==m.status);}).map(m=>({modelId:m.modelId,status:m.status,pricingStatus:m.pricingStatus,price:m.price,source:m.pricingSource,updatedAt:m.updatedAt})),
+  unknownPrices:current.filter(m=>m.pricingStatus!=='known').map(m=>m.modelId)};
 }

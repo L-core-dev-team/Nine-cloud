@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { afterAll, describe, expect, it } from 'vitest';
+import { beforeAll, afterAll, describe, expect, it } from 'vitest';
 import { Pool } from 'pg';
 import type { ActionIntent } from '@jiuxiao/contracts';
 import { replayEvents } from '@jiuxiao/domain';
@@ -26,6 +26,7 @@ suite('ServerTurnService on isolated PostgreSQL (synthetic rules only)', () => {
     grantsForEvent: event => [{ npcId: 'visible-fixture-npc', eventId: event.id, channel: 'witnessed', visibleSummary: 'Public fixture event.' }],
     policyForNpc: () => 'exact-recall-v1',
   };
+  beforeAll(async()=>{for(const id of [owner])await pool.query('INSERT INTO auth_accounts(id,email) VALUES($1,$2) ON CONFLICT DO NOTHING',[id,id+'@fixture.invalid']);});
   afterAll(async () => {
     const client = await pool.connect();
     try {
@@ -118,6 +119,10 @@ suite('ServerTurnService on isolated PostgreSQL (synthetic rules only)', () => {
     const after=await repository.loadSave(owner,id);expect(after).toMatchObject({revision:120,state:{elapsedMinutes:120,facts:{items:30}}});
     expect(replayEvents(before,events,resolver.reduce.bind(resolver))).toEqual(after);
     expect((await repository.getForOwner(owner,id))?.memories[0]?.observations).toHaveLength(120);
+    expect((await pool.query('SELECT verify_turn_event_chain($1) AS ok',[id])).rows[0].ok).toBe(true);
+    const chain=await pool.query('SELECT previous_hash,event_hash FROM turn_events WHERE save_id=$1 ORDER BY sequence',[id]);expect(chain.rows[0].previous_hash).toBe('0'.repeat(64));expect(chain.rows[1].previous_hash).toBe(chain.rows[0].event_hash);
+    const tamper=await pool.connect();try{await tamper.query('BEGIN');await tamper.query("SELECT set_config('jiuxiao.account_erasure_operation','test-cleanup',true)");await tamper.query('DELETE FROM turn_events WHERE save_id=$1 AND sequence=61',[id]);expect((await tamper.query('SELECT verify_turn_event_chain($1) AS ok',[id])).rows[0].ok).toBe(false);await tamper.query('ROLLBACK');}finally{tamper.release();}
+
     const counts=await pool.query('SELECT count(*)::int AS count FROM turn_events WHERE save_id=$1',[id]);expect(counts.rows[0].count).toBe(120);
   },30000);
 });

@@ -99,16 +99,27 @@ export class CloudSync {
   }
   async enqueue(ownerId: string, save: LocalSave) {
     const key = `${ownerId}\0${save.saveId}`;
+    const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(ownerId));
+    const prefix=Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('').slice(0,16);
     return this.store.update(key, current => {
-      const record = current ?? { key, ownerId, localSaveId: save.saveId, cloudSaveId: `archive-${crypto.randomUUID()}`, baseRevision: null, pending: null, conflict: null };
+      const record = current ?? { key, ownerId, localSaveId: save.saveId, cloudSaveId: `archive-${prefix}-${crypto.randomUUID()}`, baseRevision: null, pending: null, conflict: null };
       return { ...record, pending: envelopeFor(save, record.cloudSaveId, record.baseRevision === null ? 0 : record.baseRevision + 1), failure: null };
     });
   }
   async flush(ownerId: string) {
+    const ownerDigest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(ownerId));
+    const ownerPrefix=Array.from(new Uint8Array(ownerDigest),b=>b.toString(16).padStart(2,'0')).join('').slice(0,16);
     const summary = { uploaded: 0, failed: 0, conflicted: 0 };
-    for (const item of await this.store.list(ownerId)) {
+    for (let item of await this.store.list(ownerId)) {
       if (!item.pending || item.conflict) continue;
       try {
+      if(item.baseRevision===null&&!item.cloudSaveId.startsWith(`archive-${ownerPrefix}-`)){
+        let missing=false;try{await this.request(`/api/saves/${encodeURIComponent(item.cloudSaveId)}`,'GET',undefined,ownerId);}catch(e){if(e instanceof CloudHttpError&&e.status===404)missing=true;else throw e;}
+        if(missing){const prior=item,replacement=`archive-${ownerPrefix}-${crypto.randomUUID()}`;
+          item=await this.store.update(item.key,current=>{if(!current)throw new Error('MISSING_QUEUE');if(current.cloudSaveId!==prior.cloudSaveId||current.baseRevision!==null||mutation(current.pending)!==mutation(prior.pending))return current;return {...current,cloudSaveId:replacement,pending:current.pending?{...current.pending,saveId:replacement}:null};});
+          if(!item.pending||item.conflict)continue;
+        }
+      }
       let accepted: SaveEnvelope;
       try {
         const result = item.baseRevision === null
@@ -123,7 +134,7 @@ export class CloudSync {
           if (item.baseRevision === null && lookupError instanceof CloudHttpError && lookupError.status === 404) {
             // A different account may have claimed the client-generated global ID.
             // Retain the archive and choose a fresh transport identity for retry.
-            const replacement = `archive-${crypto.randomUUID()}`;
+            const replacement = `archive-${ownerPrefix}-${crypto.randomUUID()}`;
             await this.store.update(item.key, current => {
               if (!current) throw new Error('MISSING_QUEUE');
               if (!current.pending || current.cloudSaveId !== item.cloudSaveId || current.baseRevision !== null ||

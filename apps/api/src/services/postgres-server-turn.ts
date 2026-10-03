@@ -15,7 +15,7 @@ export function createPostgresServerTurnRepository(pool: Pool, requiresLiveAccou
     checkQuota(p,{count:current.count,bytes:Number(current.bytes)},next,Number(before.bytes));
   }:undefined);
   return {
-    loadSave: (owner, id) => saves.getForOwner(owner, id),
+    loadSave: async(owner,id)=>{const save=await saves.getForOwner(owner,id);if(save&&!((await pool.query('SELECT verify_turn_event_chain($1) AS ok',[id])).rows[0].ok))throw new Error('EVENT_INTEGRITY_FAILED');return save;},
     getReceiptForOwner: (owner, id, key) => turns.getReceiptForOwner(owner, id, key),
     getForOwner: (owner, id) => turns.getForOwner(owner, id),
     commitAcceptedTurn: input => turns.commitAcceptedTurn(input),

@@ -1,3 +1,4 @@
+import {catalogSnapshotDiff} from './ai-model-inventory';
 import { describe, expect, it } from 'vitest';
 import { filterRouterModels, normalizeRouterModels } from './ai-model-inventory';
 
@@ -71,4 +72,11 @@ describe('public model catalog boundaries', () => {
     const rows=normalizeRouterModels({data:[{id:'vendor/m',pricing:{prompt:'0.000001',completion:'0.000002'}},{id:'vendor/m',pricing:{prompt:'0.000003',completion:'0.000002'}}]},now);
     expect(rows[0]).toMatchObject({provider:'openrouter',modelId:'vendor/m',displayName:'vendor/m',contextLimit:null,capabilities:null,pricingStatus:'conflict',price:{input:null,output:2,currency:'USD',unit:'million_tokens'},pricingSource:'https://openrouter.ai/api/v1/models',status:'unknown'});
   });
+ it('does not equate catalog disappearance with retirement and reports unknown/changed quotes',()=>{
+  const a=normalizeRouterModels({data:[{id:'v/a',pricing:{prompt:'1',completion:'2'}},{id:'v/b'}]},now);
+  const b=normalizeRouterModels({data:[{id:'v/a',status:'unavailable',pricing:{prompt:'3',completion:'2'}},{id:'v/c'}]},now);
+  expect(catalogSnapshotDiff(a,b)).toMatchObject({added:['v/c'],notReturned:[{modelId:'v/b',availability:'unknown'}],changed:[{modelId:'v/a',status:'unavailable'}],unknownPrices:['v/c']});
+  expect(filterRouterModels(b,'')).toHaveLength(1);
+ });
+
 });

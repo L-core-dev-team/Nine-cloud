@@ -11,8 +11,8 @@ export function mountAccount(app:Hono,auth:EmailAuthService,lifecycle:AccountLif
  app.get('/api/account/capabilities',async c=>await ownerFor(c.req.raw)?c.json(lifecycle.capabilities()):c.json({code:'UNAUTHENTICATED'},401));
  app.get('/api/account/export',async c=>{
   const account=await ownerFor(c.req.raw);if(!account)return c.json({code:'UNAUTHENTICATED'},401);
-  if(!consumeAccountQuota(account.owner,'export',6,3_600_000))return c.json({code:'RATE_LIMITED'},429);
-  try{const data=await exporter.read(account.owner);return data?c.json(data):c.json({code:'NOT_FOUND'},404);}catch(error){return c.json({code:error instanceof Error&&error.message==='EXPORT_REQUIRES_OFFLINE_TRANSFER'?'EXPORT_REQUIRES_OFFLINE_TRANSFER':'EXPORT_UNAVAILABLE'},503);}
+  if(!await consumeAccountQuota(account.owner,'export',6,3_600_000))return c.json({code:'RATE_LIMITED'},429);
+  try{const data=await exporter.read(account.owner);return data?c.json(data):c.json({code:'NOT_FOUND'},404);}catch(error){return c.json({code:error instanceof Error&&['EXPORT_REQUIRES_OFFLINE_TRANSFER','EXPORT_BUSY'].includes(error.message)?error.message:'EXPORT_UNAVAILABLE'},503);}
  });
  for(const step of ['begin','verify','complete','cancel'] as const)app.post(`/api/account/operation/${step}`,async c=>{
   const account=await ownerFor(c.req.raw);if(!account)return c.json({code:'UNAUTHENTICATED'},401);

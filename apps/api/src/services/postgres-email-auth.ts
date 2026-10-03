@@ -1,4 +1,4 @@
-import { randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
+import { createHash, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
 import type { AuthSession, EmailAuthRepository } from './email-auth.js';
 
@@ -57,7 +57,7 @@ export class PostgresEmailAuthRepository implements EmailAuthRepository {
   async invalidate(email: string, digest: string): Promise<void> {
     await this.pool.query('UPDATE auth_challenges SET digest = NULL WHERE email = $1 AND digest = $2', [email, digest]);
   }
-  async consume(email: string, digest: string, tokenHash: string, now: Date, expiresAt: Date): Promise<AuthSession | null> {
+  async consume(email: string, digest: string, tokenHash: string, now: Date, expiresAt: Date, restore=false): Promise<AuthSession | null> {
     const client = await this.pool.connect();
     try {
       await client.query('BEGIN');
@@ -74,6 +74,11 @@ export class PostgresEmailAuthRepository implements EmailAuthRepository {
       await client.query('UPDATE auth_challenges SET attempts = attempts + 1 WHERE email = $1', [email]);
       if (!/^[a-f0-9]{64}$/.test(challenge.digest) || !timingSafeEqual(Buffer.from(challenge.digest, 'hex'), Buffer.from(digest, 'hex'))) {
         await client.query('COMMIT'); return null;
+      }
+      if(restore){
+        const restored=await client.query("UPDATE auth_accounts SET closed_at=NULL WHERE email=$1 AND closed_at> $2::timestamptz-interval '30 days' RETURNING id",[email,now]);
+        if(!restored.rowCount){await client.query('UPDATE auth_challenges SET digest=NULL WHERE email=$1',[email]);await client.query('COMMIT');return null;}
+        await client.query("INSERT INTO account_lifecycle_audit(id,owner_digest,operation,policy_version) VALUES($1,$2,'restored','recovery-30d')",[randomUUID(),createHash('sha256').update(restored.rows[0].id).digest('hex')]);
       }
       const account = await client.query(`INSERT INTO auth_accounts (id, email) VALUES ($1, $2)
         ON CONFLICT (email) DO UPDATE SET email = EXCLUDED.email WHERE auth_accounts.closed_at IS NULL RETURNING id`, [randomUUID(), email]);

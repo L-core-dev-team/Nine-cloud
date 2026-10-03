@@ -74,4 +74,17 @@ suite('account lifecycle, isolated PostgreSQL only',()=>{
   await expect(lifecycle.verify(f.owner,f.hash,op.operationId,code)).rejects.toThrow('INVALID_OR_EXPIRED_CODE');
  });
  it('data policy pending disables closure/deletion without proof or mail writes',async()=>{const f=await fixture();const pending=new AccountLifecycle(pool,mail,secret);expect(pending.capabilities()).toMatchObject({close:false,permanentDelete:false});await expect(pending.begin(f.owner,f.hash,'delete')).rejects.toThrow('DATA_POLICY_NOT_READY');});
+ it('recovers only during the 30-day grace period, erases expired accounts and minimizes audit emails',async()=>{
+  const f=await fixture(),id=await ready(f,'close');await lifecycle.complete(f.owner,f.hash,id,'CLOSE_ACCOUNT');
+  expect((await pool.query('SELECT old_email,new_email FROM account_operations WHERE id=$1',[id])).rows[0]).toEqual({old_email:null,new_email:null});
+  await auth.requestCode(f.email);expect(await auth.verify(f.email,sent.get(f.email),true)).not.toBeNull();
+  const expired=await fixture(),closeId=await ready(expired,'close');await lifecycle.complete(expired.owner,expired.hash,closeId,'CLOSE_ACCOUNT');
+  await pool.query("UPDATE auth_accounts SET closed_at=now()-interval '31 days' WHERE id=$1",[expired.owner]);
+  await auth.requestCode(expired.email);expect(await auth.verify(expired.email,sent.get(expired.email),true)).toBeNull();
+  expect(await lifecycle.expireClosed()).toMatchObject({eligible:1,erased:0});
+  expect(await lifecycle.expireClosed(true)).toMatchObject({erased:1});
+  expect((await pool.query('SELECT id FROM auth_accounts WHERE id=$1',[expired.owner])).rowCount).toBe(0);
+  expect(JSON.stringify((await pool.query("SELECT * FROM account_lifecycle_audit WHERE operation='expired_erasure'")).rows)).not.toContain(expired.email);
+ });
+
 });

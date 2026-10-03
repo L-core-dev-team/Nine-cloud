@@ -7,7 +7,7 @@ export interface EmailAuthRepository {
   issueIpLimit(ip: string, now: Date): Promise<boolean>;
   refundIssue(email: string, ip: string | null, now: Date): Promise<void>;
   invalidate(email: string, digest: string): Promise<void>;
-  consume(email: string, digest: string, tokenHash: string, now: Date, expiresAt: Date): Promise<AuthSession | null>;
+  consume(email: string, digest: string, tokenHash: string, now: Date, expiresAt: Date, restore?: boolean): Promise<AuthSession | null>;
   resolve(tokenHash: string, now: Date): Promise<AuthSession | null>;
   rotate(tokenHash: string, nextHash: string, now: Date, expiresAt: Date): Promise<AuthSession | null>;
   revoke(tokenHash: string): Promise<void>;
@@ -38,13 +38,13 @@ export class EmailAuthService {
     }
     return 'sent';
   }
-  async verify(emailValue: unknown, code: unknown): Promise<{ session: AuthSession; token: string } | null> {
+  async verify(emailValue: unknown, code: unknown, restore=false): Promise<{ session: AuthSession; token: string } | null> {
     const email = normalizeEmail(emailValue);
     if (typeof code !== 'string' || !/^\d{6}$/.test(code)) return null;
     const now = this.now(); const token = randomBytes(32).toString('base64url');
     let session: AuthSession | null;
     try { session = await this.repository.consume(email, this.codeDigest(email, code), hashToken(token), now,
-      new Date(now.getTime() + SESSION_SECONDS * 1000)); }
+      new Date(now.getTime() + SESSION_SECONDS * 1000),restore); }
     catch { throw new AuthFailure('VERIFICATION_STORE_FAILED','verification_store'); }
     return session ? { session, token } : null;
   }

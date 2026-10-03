@@ -15,7 +15,7 @@ export function mountServerTurnRoutes(app: Hono, { service, auth }: ServerTurnRo
       return c.json({ code: 'UNAUTHENTICATED' }, 401);
     }
     // SEC-08: bound narrative waits per account (a requestNarrative=true probe can hold a worker up to 20 s).
-    if (!consumeAccountQuota(owner, 'turn', 30, 60_000)) return c.json({ code: 'RATE_LIMITED' }, 429);
+    if (!await consumeAccountQuota(owner, 'turn', 30, 60_000)) return c.json({ code: 'RATE_LIMITED' }, 429);
     const body = await readJson(c.req.raw, 16_384);
     if (!body.ok) return c.json({ code: body.status === 413 ? 'REQUEST_TOO_LARGE' : 'INVALID_TURN' }, body.status);
     if (!body.value || typeof body.value !== 'object' || Array.isArray(body.value)) return c.json({ code: 'INVALID_TURN' }, 400);

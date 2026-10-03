@@ -1,4 +1,4 @@
-import { createHmac, randomInt, randomUUID, timingSafeEqual } from 'node:crypto';
+import { createHash, createHmac, randomInt, randomUUID, timingSafeEqual } from 'node:crypto';
 import type { Pool,PoolClient } from 'pg';
 import { normalizeEmail, type AuthMailSender } from './email-auth.js';
 export type AccountOperation='email_change'|'close'|'delete';
@@ -68,9 +68,30 @@ export class AccountLifecycle {
    }
    await c.query('DELETE FROM auth_sessions WHERE owner_id=$1',[owner]);
    await c.query('DELETE FROM auth_challenges WHERE email=$1 OR email=$2',[account.email,row.operation==='email_change'?row.new_email:account.email]);
-   await c.query("UPDATE account_operations SET phase='completed',digest=NULL WHERE owner_id=$1",[owner]);
+   await c.query("UPDATE account_operations SET phase='completed',digest=NULL,old_email=NULL,new_email=NULL WHERE owner_id=$1",[owner]);
    if(row.operation==='delete')await c.query('DELETE FROM auth_accounts WHERE id=$1',[owner]);
-   await c.query('COMMIT');console.info(JSON.stringify({event:'account_lifecycle_completed',operation:row.operation,operationId:id,policyVersion:this.policyVersion,liveDatabaseOnly:true}));return {status:row.operation==='email_change'?'email_changed':row.operation==='close'?'account_closed':'account_deleted',dataHandling:row.operation==='close'?'retained_under_host_policy':row.operation==='delete'?'live_database_removed_backups_under_host_policy':'unchanged',policyVersion:this.policyVersion};
+   await c.query("INSERT INTO account_lifecycle_audit(id,owner_digest,operation,policy_version) VALUES($1,$2,$3,$4)",[randomUUID(),createHash('sha256').update(owner).digest('hex'),row.operation,this.policyVersion??'email-change']);
+   await c.query('COMMIT');console.info(JSON.stringify({event:'account_lifecycle_completed',operation:row.operation,operationId:id,policyVersion:this.policyVersion,liveDatabaseOnly:true}));return {status:row.operation==='email_change'?'email_changed':row.operation==='close'?'account_closed':'account_deleted',dataHandling:row.operation==='close'?'30_day_grace_then_policy_erasure':row.operation==='delete'?'live_database_removed_backups_under_host_policy':'unchanged',policyVersion:this.policyVersion};
   }catch(error){await c.query('ROLLBACK');if((error as {code?:string}).code==='23505')throw new AccountLifecycleError('EMAIL_UNAVAILABLE');throw error;}finally{c.release();}
  }
+ /** Scheduled, policy-approved erasure. Account lock serializes recovery vs expiry. */
+ async expireClosed(apply=false){
+  if(!this.policyVersion||!this.policyValid()||!this.deletionEnabled)throw new AccountLifecycleError('DATA_POLICY_NOT_READY');
+  const c=await this.pool.connect();try{await c.query('BEGIN');
+   const rows=(await c.query("SELECT id,email FROM auth_accounts WHERE closed_at<=now()-interval '30 days' ORDER BY id LIMIT 100 FOR UPDATE SKIP LOCKED")).rows;
+   if(apply)for(const account of rows){
+    const owner=account.id,id=randomUUID();
+    await c.query("INSERT INTO account_operations(id,owner_id,session_hash,operation,old_email,phase,expires_at) VALUES($1,$2,'scheduled-expiry','delete',NULL,'ready',now()+interval '1 minute')",[id,owner]);
+    await c.query("SELECT set_config('jiuxiao.account_erasure_operation',$1,true)",[id]);
+    for(const table of ['turn_events','turn_requests','npc_memory_journals'])await c.query(`DELETE FROM ${table} t USING game_saves s WHERE t.save_id=s.id AND s.owner_id=$1`,[owner]);
+    for(const table of ['cloud_archive_trash','game_saves','entitlement_ledger_entries','entitlement_balances'])await c.query(`DELETE FROM ${table} WHERE owner_id=$1`,[owner]);
+    await c.query('DELETE FROM auth_challenges WHERE email=$1',[account.email]);
+    await c.query("INSERT INTO account_lifecycle_audit(id,owner_digest,operation,policy_version) VALUES($1,$2,'expired_erasure',$3)",[randomUUID(),createHash('sha256').update(owner).digest('hex'),this.policyVersion]);
+    await c.query('DELETE FROM auth_accounts WHERE id=$1',[owner]);
+   }
+   if(apply){await c.query("UPDATE account_operations SET old_email=NULL,new_email=NULL,digest=NULL WHERE phase IN ('completed','cancelled','failed') OR expires_at<=now()");await c.query('DELETE FROM account_rate_limits WHERE expires_at<=now()');}
+   await c.query(apply?'COMMIT':'ROLLBACK');return {mode:apply?'applied':'dry_run',eligible:rows.length,erased:apply?rows.length:0,backups:'HOST_POLICY_PENDING'};
+  }catch(e){await c.query('ROLLBACK');throw e;}finally{c.release();}
+ }
+
 }
