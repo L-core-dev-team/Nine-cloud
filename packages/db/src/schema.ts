@@ -8,7 +8,7 @@ export const authAccounts = pgTable('auth_accounts', {
 }, table => [uniqueIndex('auth_accounts_email_idx').on(table.email)]);
 export const accountOperations = pgTable('account_operations', {
   id: text('id').primaryKey(), ownerId: text('owner_id').notNull().references(() => authAccounts.id, { onDelete:'cascade' }),
-  sessionHash: text('session_hash').notNull(), operation: text('operation').notNull(), oldEmail: text('old_email').notNull(), newEmail: text('new_email'),
+  sessionHash: text('session_hash').notNull(), operation: text('operation').notNull(), oldEmail: text('old_email'), newEmail: text('new_email'),
   phase: text('phase').notNull(), digest: text('digest'), attempts: integer('attempts').notNull().default(0),
   createdAt: timestamp('created_at', { withTimezone:true }).notNull().defaultNow(), expiresAt: timestamp('expires_at', { withTimezone:true }).notNull(),
 });
@@ -26,6 +26,12 @@ export const authSessions = pgTable('auth_sessions', {
 export const authMailLimits = pgTable('auth_mail_limits', {
   bucket: bigint('bucket', { mode: 'number' }).primaryKey(), sent: integer('sent').notNull(),
 });
+/** SEC-02: per-IP hourly budget for verification-code mails (global bucket remains the backstop). */
+export const authIpMailLimits = pgTable('auth_ip_mail_limits', {
+  ip: text('ip').primaryKey(),
+  windowStartedAt: timestamp('window_started_at', { withTimezone: true }).notNull(),
+  count: integer('count').notNull(),
+});
 
 export const gameSaves = pgTable('game_saves', {
   id: text('id').primaryKey(),
@@ -38,13 +44,13 @@ export const gameSaves = pgTable('game_saves', {
   snapshot: jsonb('snapshot').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
-}, table => [uniqueIndex('game_saves_owner_id_idx').on(table.ownerId, table.id)]);
+}, table => [uniqueIndex('game_saves_owner_id_idx').on(table.ownerId, table.id),foreignKey({columns:[table.ownerId],foreignColumns:[authAccounts.id],name:'game_saves_account_fk'})]);
 
 export const cloudArchiveTrash = pgTable('cloud_archive_trash', {
   saveId: text('save_id').primaryKey().references(() => gameSaves.id), ownerId: text('owner_id').notNull(),
   deletedRevision: integer('deleted_revision').notNull(), backup: jsonb('backup').notNull(), digest: text('digest').notNull(),
   deletedAt: timestamp('deleted_at', { withTimezone: true }).notNull().defaultNow(),
-});
+},table=>[foreignKey({columns:[table.ownerId,table.saveId],foreignColumns:[gameSaves.ownerId,gameSaves.id],name:'trash_owner_save_fk'})]);
 
 export const turnRequests = pgTable('turn_requests', {
   saveId: text('save_id').notNull().references(() => gameSaves.id),
@@ -63,8 +69,9 @@ export const turnEvents = pgTable('turn_events', {
   idempotencyKey: text('idempotency_key').notNull(),
   sequence: integer('sequence').notNull(),
   eventType: text('event_type').notNull(),
-  source: text('source'),
-  ruleVersion: text('rule_version'),
+  previousHash: text('previous_hash').notNull(),eventHash:text('event_hash').notNull(),
+  source: text('source').notNull(),
+  ruleVersion: text('rule_version').notNull(),
   beforeRevision: integer('before_revision').notNull(),
   afterRevision: integer('after_revision').notNull(),
   payload: jsonb('payload').notNull(),
@@ -115,3 +122,6 @@ export const npcMemoryJournals = pgTable('npc_memory_journals', {
   payload: jsonb('payload').notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });
+
+export const accountRateLimits=pgTable('account_rate_limits',{key:text('key').primaryKey(),expiresAt:timestamp('expires_at',{withTimezone:true}).notNull(),hits:integer('hits').notNull()});
+export const accountLifecycleAudit=pgTable('account_lifecycle_audit',{id:text('id').primaryKey(),ownerDigest:text('owner_digest').notNull(),operation:text('operation').notNull(),policyVersion:text('policy_version').notNull(),occurredAt:timestamp('occurred_at',{withTimezone:true}).notNull().defaultNow()});

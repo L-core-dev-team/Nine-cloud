@@ -4,8 +4,10 @@ import { AuthFailure } from './auth-failure.js';
 export type AuthSession = { ownerId: string; email: string; expiresAt: Date };
 export interface EmailAuthRepository {
   issue(email: string, digest: string, now: Date, expiresAt: Date): Promise<boolean>;
+  issueIpLimit(ip: string, now: Date): Promise<boolean>;
+  refundIssue(email: string, ip: string | null, now: Date): Promise<void>;
   invalidate(email: string, digest: string): Promise<void>;
-  consume(email: string, digest: string, tokenHash: string, now: Date, expiresAt: Date): Promise<AuthSession | null>;
+  consume(email: string, digest: string, tokenHash: string, now: Date, expiresAt: Date, restore?: boolean): Promise<AuthSession | null>;
   resolve(tokenHash: string, now: Date): Promise<AuthSession | null>;
   rotate(tokenHash: string, nextHash: string, now: Date, expiresAt: Date): Promise<AuthSession | null>;
   revoke(tokenHash: string): Promise<void>;
@@ -17,24 +19,32 @@ export class EmailAuthService {
     private readonly secret: string, private readonly now = () => new Date()) {
     if (Buffer.byteLength(secret) < 32) throw new Error('AUTH_SECRET requires at least 32 bytes');
   }
-  async requestCode(emailValue: unknown): Promise<'sent' | 'limited'> {
+  async requestCode(emailValue: unknown, clientIp?: string | null): Promise<'sent' | 'limited'> {
     const email = normalizeEmail(emailValue);
     const code = String(randomInt(0, 1_000_000)).padStart(6, '0');
     const digest = this.codeDigest(email, code);
     const now = this.now();
+    if (clientIp) {
+      try { if (!await this.repository.issueIpLimit(clientIp, now)) return 'limited'; }
+      catch { throw new AuthFailure('VERIFICATION_STORE_FAILED', 'verification_store'); }
+    }
     try { if (!await this.repository.issue(email, digest, now, new Date(now.getTime() + 600_000))) return 'limited'; }
     catch { throw new AuthFailure('VERIFICATION_STORE_FAILED','verification_store'); }
     try { await this.send(email, code); }
-    catch (error) { try { await this.repository.invalidate(email, digest); } catch { throw new AuthFailure('VERIFICATION_STORE_FAILED','verification_store'); } throw error instanceof AuthFailure?error:new AuthFailure('MAIL_UNAVAILABLE','mail_send'); }
+    catch (error) {
+      try { await this.repository.invalidate(email, digest); await this.repository.refundIssue(email, clientIp ?? null, this.now()); }
+      catch { throw new AuthFailure('VERIFICATION_STORE_FAILED','verification_store'); }
+      throw error instanceof AuthFailure?error:new AuthFailure('MAIL_UNAVAILABLE','mail_send');
+    }
     return 'sent';
   }
-  async verify(emailValue: unknown, code: unknown): Promise<{ session: AuthSession; token: string } | null> {
+  async verify(emailValue: unknown, code: unknown, restore=false): Promise<{ session: AuthSession; token: string } | null> {
     const email = normalizeEmail(emailValue);
     if (typeof code !== 'string' || !/^\d{6}$/.test(code)) return null;
     const now = this.now(); const token = randomBytes(32).toString('base64url');
     let session: AuthSession | null;
     try { session = await this.repository.consume(email, this.codeDigest(email, code), hashToken(token), now,
-      new Date(now.getTime() + SESSION_SECONDS * 1000)); }
+      new Date(now.getTime() + SESSION_SECONDS * 1000),restore); }
     catch { throw new AuthFailure('VERIFICATION_STORE_FAILED','verification_store'); }
     return session ? { session, token } : null;
   }

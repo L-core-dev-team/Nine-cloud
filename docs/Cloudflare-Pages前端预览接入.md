@@ -25,7 +25,7 @@
 
 上表尖括号内容须替换为实际公网地址，不能照抄。Pages 预览构建拒绝 HTTP、localhost、回环地址、URL 中的密码/查询参数及缺少 `/api` 前缀的地址。`http://localhost:4173` 是本地前端预览地址，无法充当公网后端。
 
-本任务仅在 `cloud-sync.ts` 的 fetch 地址处接入 `apiRequestUrl`，保留另一任务已提交的错误处理和全部认证/云档逻辑。现有 `credentials: 'same-origin'` 保持不变；跨域 staging API 的 CORS、Cookie、Session 与邮件验收由认证任务负责，本预览不证明这些链路已可用。
+本任务仅在 `cloud-sync.ts` 的 fetch 地址处接入 `apiRequestUrl`，保留另一任务已提交的错误处理和全部认证/云档逻辑。沿用最新 PR #33 的 `credentials: 'include'`，保留账号隔离、CAS 和上传失败分类。跨域 staging API 须由后端任务配置明确的允许来源、凭据 CORS 及适当的 Session Cookie 策略，并完成邮件与会话验收；本预览不证明这些链路已可用。
 
 未配置后端时停止请求的行为仅用于 Pages 预览构建；普通构建继续保留原有同源 `/api` 行为，避免影响既有部署和另一任务的认证验证。
 

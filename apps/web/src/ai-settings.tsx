@@ -1,10 +1,13 @@
+import { armPageNarrative } from './page-narrative';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { ModelPicker } from './components/ModelPicker';
 import { catalogVerifiedOn, providerCatalog } from './ai-provider-catalog';
 import { buildProbeRequest, parseProbeResponse, protocolLabels, type ProtocolId } from './ai-protocols';
 import { filterRouterModels, normalizeRouterModels, type RouterModel } from './ai-model-inventory';
 import { modelSamplingPolicy } from './ai-model-compatibility';
 import { sanitizeCallLogs, type CallLog } from './ai-call-logs';
-import { estimateModelCost, MODEL_RATE_SNAPSHOT_DATE } from './ai-model-pricing';
+import { estimateModelCost, MODEL_RATE_SNAPSHOT_DATE, MODEL_RATE_VALID_UNTIL, modelRateSnapshotStatus } from './ai-model-pricing';
 
 const CONFIG_KEY = 'jx10_ai_config_v2';
 const LOG_KEY = 'jx10_ai_call_log_v1';
@@ -232,8 +235,13 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
   const [error, setError] = useState('');
   const [logs, setLogs] = useState<CallLog[]>(() => readLogs(config.logRetentionDays));
   const [testing, setTesting] = useState(false);
+  const [testingRole, setTestingRole] = useState<RoleId | null>(null);
+  const [probeResults, setProbeResults] = useState<Partial<Record<RoleId, { text: string; error: boolean }>>>({});
+  const [batchSource, setBatchSource] = useState<RoleId>('story');
+  const [batchTargets, setBatchTargets] = useState<RoleId[]>(roleMeta.map(role => role.id));
+  const [batchWithKey, setBatchWithKey] = useState(true);
   const [saved, setSaved] = useState(false);
-  const [modal, setModal] = useState<{ kind: 'catalog'; view: 'providers' | 'provider' | 'comparison'; providerId?: string } | { kind: 'preset'; preset: Preset } | { kind: 'logs' } | null>(null);
+  const [modal, setModal] = useState<{ kind: 'catalog'; view: 'providers' | 'provider' | 'comparison'; providerId?: string } | { kind: 'preset'; preset: Preset } | { kind: 'logs' } | { kind: 'batch' } | null>(null);
   const [catalogSearch, setCatalogSearch] = useState('');
   const [routerModels, setRouterModels] = useState<RouterModel[]>([]);
   const [inventoryLoading, setInventoryLoading] = useState(false);
@@ -309,11 +317,12 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
     try {
       sessionStorage.setItem(CONFIG_KEY, JSON.stringify(safeConfig(next)));
       setSaved(true);
-      setMessage(`「青鸟 · ${preset.title}」已应用。五个岗位的协议、型号与非密钥参数已填入；请自行填入各服务商 API Key。游戏回合调度尚未接入，当前不会据此自动调用模型。`);
+      setMessage(`「青鸟 · ${preset.title}」已应用。五个岗位的协议、型号与非密钥参数已填入；请自行填入各服务商 API Key。保存配置和页面密钥后，可在已提交的权威回合中主动生成叙事。`);
     } catch { setMessage(`「青鸟 · ${preset.title}」已填入当前表单；请自行填入 API Key，再保存配置。`); }
     setModal(null);
   }
   function save() {
+    setMessage(''); setError(''); setSaved(false);
     for (const role of roleMeta) {
       const value = config.roles[role.id];
       if (value.enabled && !value.model.trim()) { setError(`${role.title}已启用，请填写服务商实际 Model ID。`); return; }
@@ -323,12 +332,15 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
     }
     try {
       sessionStorage.setItem(CONFIG_KEY, JSON.stringify(safeConfig(config)));
+      armPageNarrative(config.roles, keys,(row,elapsedMs)=>{addLog({at:new Date().toISOString(),role:row.role,model:config.roles[row.role].model,elapsedMs,outcome:row.status==='received'?'success':'failure',...(row.status==='received'?row.reportedOutputTokens===null?{}:{outputTokens:row.reportedOutputTokens}:{errorCode:'NETWORK_OR_FORMAT'})},config.logRetentionDays);});
+    } catch { setError('当前浏览器无法保存设置；页面中的输入仍在，请先导出配置前确认不包含密钥。'); setSaved(false); return; }
+    try {
       const retained = readLogs(config.logRetentionDays);
       if (config.logRetentionDays === 0) sessionStorage.removeItem(LOG_KEY);
       else sessionStorage.setItem(LOG_KEY, JSON.stringify(retained));
       setLogs(retained);
       setError(''); setMessage('设置已保存到当前浏览器会话。API Key 只保留在当前页面内存，刷新页面后需重新输入。'); setSaved(true);
-    } catch { setError('当前浏览器无法保存设置；页面中的输入仍在，请先导出配置前确认不包含密钥。'); setSaved(false); }
+    } catch { setSaved(true); setError('设置已保存，但调用记录清理失败。请检查浏览器存储权限后重试；页面中的密钥仍只在内存中。'); }
   }
   function importLegacy() {
     if (!config.allowLegacyMigration) { setError('请先开启“允许旧配置迁移”，再主动执行导入。'); return; }
@@ -345,17 +357,21 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
     if (!config.connectionTestAllowed) { setError('请先开启“允许连接测试”。测试会向所填地址发送一次短请求，并可能产生服务商费用。'); return; }
     if (!active.model.trim()) { setError('请先填写当前岗位的实际 Model ID。'); return; }
     if (!active.baseUrl.trim()) { setError('请先填写当前岗位的 Base URL。'); return; }
-    setTesting(true); setError(''); setMessage('正在测试，只发送“请仅回复：通路已通”。');
+    const report = (text: string, failed = false) => {
+      setProbeResults(previous => ({ ...previous, [roleId]: { text: `${active.model || '未填型号'} · ${text}`, error: failed } }));
+      if (failed) { setError(text); setMessage(''); } else { setMessage(text); setError(''); }
+    };
+    setTesting(true); setTestingRole(roleId); setSaved(false); report('正在测试，只发送一次短请求…');
     const start = performance.now();
     const controller = new AbortController();
     probeRef.current = controller;
-    const timer = window.setTimeout(() => controller.abort(), active.timeoutSeconds * 1000);
+    const timer = window.setTimeout(() => controller.abort('timeout'), active.timeoutSeconds * 1000);
     try {
       const request = buildProbeRequest(active.adapter, safeUrl(active.baseUrl), active.model.trim(), keys[roleId]?.trim() || '');
-      const response = await fetch(request.url, { method: 'POST', signal: controller.signal, headers: request.headers, body: JSON.stringify(request.body) });
+      const response = await fetch(request.url, { method: 'POST', signal: controller.signal, headers: request.headers, body: JSON.stringify(request.body), credentials: 'omit', redirect: 'error', referrerPolicy: 'no-referrer' });
       if (probeRef.current !== controller) return;
-      const elapsedMs = Math.round(performance.now() - start);
       if (!response.ok) {
+        const elapsedMs = Math.round(performance.now() - start);
         const entry: CallLog = { at: new Date().toISOString(), role: roleTitle, model: active.model.trim(), elapsedMs, outcome: 'failure', status: response.status, errorCode: `HTTP_${response.status}` };
         setLogs(addLog(entry, config.logRetentionDays));
         throw new Error(`服务返回 HTTP ${response.status}。请检查 Base URL、Key、Model ID 和账号权限；响应正文未保存。`);
@@ -364,21 +380,33 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
       if (probeRef.current !== controller) return;
       const parsed = parseProbeResponse(active.adapter, data);
       if (!parsed.text.trim()) throw new Error(`服务已响应，但返回格式无法由 ${protocolLabels[active.adapter]} 适配器识别。`);
+      const elapsedMs = Math.round(performance.now() - start);
       const entry: CallLog = {
         at: new Date().toISOString(), role: roleTitle, model: active.model.trim(), elapsedMs, outcome: 'success',
         ...(typeof parsed.inputTokens === 'number' ? { inputTokens: parsed.inputTokens } : {}),
         ...(typeof parsed.outputTokens === 'number' ? { outputTokens: parsed.outputTokens } : {}),
       };
-      setLogs(addLog(entry, config.logRetentionDays)); setMessage(`连接成功，${elapsedMs} ms。测试回复：${parsed.text.slice(0, 60)}`);
+      setLogs(addLog(entry, config.logRetentionDays)); report(`连接成功，${elapsedMs} ms。`);
     } catch (reason) {
       if (probeRef.current !== controller) return;
       const messageText = reason instanceof Error ? reason.message : '网络请求失败。';
       if (!messageText.startsWith('服务返回 HTTP')) {
-        const entry: CallLog = { at: new Date().toISOString(), role: roleTitle, model: active.model.trim(), elapsedMs: Math.round(performance.now() - start), outcome: 'failure', errorCode: controller.signal.aborted ? 'TIMEOUT' : 'NETWORK_OR_FORMAT' };
+        const entry: CallLog = { at: new Date().toISOString(), role: roleTitle, model: active.model.trim(), elapsedMs: Math.round(performance.now() - start), outcome: 'failure', errorCode: controller.signal.aborted ? controller.signal.reason === 'cancel' ? 'CANCELLED' : 'TIMEOUT' : 'NETWORK_OR_FORMAT' };
         setLogs(addLog(entry, config.logRetentionDays));
       }
-      setError(controller.signal.aborted ? `超过 ${active.timeoutSeconds} 秒，连接已中止。可核对超时与服务商状态后重试。` : messageText);
-    } finally { window.clearTimeout(timer); if (probeRef.current === controller) { probeRef.current = null; setTesting(false); } }
+      report(controller.signal.aborted ? controller.signal.reason === 'cancel' ? '测试已取消。未自动重试。' : `超过 ${active.timeoutSeconds} 秒，连接已中止。可核对超时与服务商状态后重试。` : messageText.startsWith('服务') ? messageText : '连接未完成。请核对地址、密钥、型号与浏览器跨域策略。', true);
+    } finally { window.clearTimeout(timer); if (probeRef.current === controller) { probeRef.current = null; setTesting(false); setTestingRole(null); } }
+  }
+
+  function applyBatch() {
+    const source = config.roles[batchSource];
+    if (!source.baseUrl.trim() || !source.model.trim()) { setError('请先填写来源岗位的 Base URL 与 Model ID。'); setMessage(''); return; }
+    try { safeUrl(source.baseUrl); } catch { setError('来源岗位的 Base URL 无效，未应用。'); setMessage(''); return; }
+    const targets = batchTargets.filter(id => id !== batchSource);
+    if (!targets.length) return;
+    setConfig(previous => ({ ...previous, activePresetId: null, roles: Object.fromEntries(roleMeta.map(role => [role.id, targets.includes(role.id) ? { ...previous.roles[role.id], adapter: source.adapter, baseUrl: source.baseUrl, model: source.model } : previous.roles[role.id]])) as AiConfig['roles'] }));
+    if (batchWithKey && keys[batchSource]?.trim()) setKeys(previous => ({ ...previous, ...Object.fromEntries(targets.map(id => [id, keys[batchSource]])) }));
+    setSaved(false); setError(''); setMessage(`已将接口、协议与型号填入 ${targets.length} 个岗位${batchWithKey && keys[batchSource]?.trim() ? '，密钥仅复制到页面内存' : ''}。岗位开关与生成参数保留；请保存配置。`); setModal(null);
   }
 
   const visibleProviders = useMemo(() => {
@@ -386,6 +414,8 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
     return providerCatalog.filter(provider => !query || [provider.name, provider.region, provider.summary, ...provider.capabilities].join(' ').toLocaleLowerCase().includes(query));
   }, [catalogSearch]);
   function presetEstimate(preset: Preset, rounds = 1) {
+    const freshness = modelRateSnapshotStatus();
+    if (freshness !== 'current') return freshness === 'expired' ? '快照已过期，待核价' : '日期无法核实，待核价';
     const totals: Record<string, number> = {};
     let unpricedRoles = 0;
     for (const role of roleMeta) {
@@ -414,14 +444,16 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
   return <section className="page ai-page">
     <h1 className="ai-title">AI 设定</h1>
     <p>配置五个岗位的模型与调用方式。密钥只在本页临时使用。</p>
-    <div className="ai-start-actions"><button className="provider-open" onClick={() => { setCatalogSearch(''); setModal({ kind: 'catalog', view: 'providers' }); }}><span>⌕</span><span><strong>模型与服务商目录</strong><small>查模型、接入方式与官方价格</small></span><b>打开目录　›</b></button><span className="catalog-date">服务商资料：{catalogVerifiedOn}　·　推荐价格快照：{MODEL_RATE_SNAPSHOT_DATE}</span></div>
+    <div className="ai-start-actions"><button className="provider-open" onClick={() => { setCatalogSearch(''); setModal({ kind: 'catalog', view: 'providers' }); }}><span>⌕</span><span><strong>模型与服务商目录</strong><small>查模型、接入方式与官方价格</small></span><b>打开目录　›</b></button><span className="catalog-date">服务商资料：{catalogVerifiedOn}　·　推荐价格快照：{MODEL_RATE_SNAPSHOT_DATE}（90 天有效，至 {MODEL_RATE_VALID_UNTIL} UTC；过期不估算）</span></div>
     <button className="comparison-link" onClick={() => setModal({ kind: 'catalog', view: 'comparison' })}><span>价格与能力总览比较</span><span>打开模型比较　›</span></button>
     <div className="recommend-heading"><div><span className="eyebrow">五岗位分别选型</span><h2>青鸟推荐</h2></div><p>先用推荐值起步；每个岗位都能单独改模型、参数和密钥。</p></div>
-    {config.activePresetId && presets.find(item => item.id === config.activePresetId) && <div className="active-recipe" role="status"><span className="active-seal">青</span><span><strong>青鸟 · {presets.find(item => item.id === config.activePresetId)!.title}</strong><small>推荐参数已填入。请为启用的岗位填写对应 API Key；高级剧情默认停用。游戏回合调度尚未接入。</small></span><button className="text-button" onClick={() => setModal({ kind: 'catalog', view: 'providers' })}>打开服务商目录</button></div>}
+    {config.activePresetId && presets.find(item => item.id === config.activePresetId) && <div className="active-recipe" role="status"><span className="active-seal">青</span><span><strong>青鸟 · {presets.find(item => item.id === config.activePresetId)!.title}</strong><small>推荐参数已填入。请为启用的岗位填写对应 API Key；高级剧情默认停用。已提交回合可在显式保存后主动生成叙事。</small></span><button className="text-button" onClick={() => setModal({ kind: 'catalog', view: 'providers' })}>打开服务商目录</button></div>}
     <section className="preset-grid" aria-label="青鸟推荐档位">
       {presets.map(preset => <article className={`preset-card ${config.activePresetId === preset.id ? 'preset-active' : ''}`} key={preset.id}><span className="preset-mark">{preset.title.slice(0, 1)}</span><h3>{preset.title}</h3><p>{preset.tone}</p><small>{preset.detail}</small><button className="secondary" onClick={() => setModal({ kind: 'preset', preset })}>{config.activePresetId === preset.id ? '查看已应用档位' : '查看配置与成本'}</button></article>)}
     </section>
     <div className="notice-inline"><strong>开用前看一眼</strong><span>不同地区的账号权限、Model ID 与价格可能不同。请按你开户地区的官方控制台复核；预设不会替你测试连接。</span></div>
+    <div className="ai-config-tools"><label className="toggle-line test-permission"><input type="checkbox" checked={config.connectionTestAllowed} onChange={event => { setSaved(false); setConfig(current => ({ ...current, connectionTestAllowed: event.target.checked })); }} />允许连接测试</label><button className="secondary" type="button" onClick={() => { setError(''); setModal({ kind: 'batch' }); }}>批量配置岗位</button></div>
+    <p className="quiet-note">连接测试可能产生服务商费用。结果会显示在被测岗位旁；耗时包含接口响应与读取，不会自动重试。</p>
     <section className="role-list" aria-label="五个 AI 岗位">
       {roleMeta.map((role, index) => {
         const active = config.roles[role.id];
@@ -433,7 +465,8 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
             <label className="setting-field">接口协议<select value={active.adapter} onChange={event => updateRole(role.id, 'adapter', event.target.value as ProtocolId)}>{Object.entries(protocolLabels).map(([id, title]) => <option key={id} value={id}>{title}</option>)}</select><small>选与你的服务商文档一致的接口；API 路径和鉴权方式会随协议变化。厂商对采样字段的支持仍可能不同。</small></label>
             <label className="setting-field">Model ID<input value={active.model} onChange={event => updateRole(role.id, 'model', event.target.value)} placeholder="填写服务商控制台显示的 ID" autoComplete="off" /></label>
             <label className="setting-field">Base URL<input value={active.baseUrl} onChange={event => updateRole(role.id, 'baseUrl', event.target.value)} placeholder="https://api.example.com" inputMode="url" autoComplete="url" /><small>填写服务商的 API 根地址，通常无需填写具体操作路径。非本机地址必须使用 HTTPS。</small></label>
-            <label className="setting-field">API Key（仅当前页面内存）<input type="password" value={keys[role.id] || ''} onChange={event => setKeys(current => ({ ...current, [role.id]: event.target.value }))} placeholder="粘贴当前岗位使用的密钥" autoComplete="new-password" /><small>不写入存档、设置文件或调用记录；离开页面或刷新后需要重输。不要把密钥发给协作者或提交到 Git。</small></label>
+            <label className="setting-field">API Key（仅当前页面内存）<input type="password" value={keys[role.id] || ''} onChange={event => setKeys(current => ({ ...current, [role.id]: event.target.value }))} placeholder="粘贴当前岗位使用的密钥" autoComplete="new-password" /><small>不写入存档、设置文件或调用记录；刷新或关闭标签页后需要重输；保存后可供回合叙事使用。不要把密钥发给协作者或提交到 Git。</small></label>
+            <ModelPicker protocol={active.adapter} baseUrl={active.baseUrl} apiKey={keys[role.id] || ''} model={active.model} onSelect={id => updateRole(role.id, 'model', id)} />
             <div className="number-grid">
               <label className="setting-field">Temperature<input type="number" min="0" max="2" step="0.05" value={active.temperature} disabled={!sampling.supported.temperature} onChange={event => updateRole(role.id, 'temperature', clampNumber(event.target.value, 0, 2, active.temperature))} />{!sampling.supported.temperature && <small>由该型号的默认设置控制。</small>}</label>
               <label className="setting-field">TopP<input type="number" min="0" max="1" step="0.01" value={active.topP} disabled={!sampling.supported.topP} onChange={event => updateRole(role.id, 'topP', clampNumber(event.target.value, 0, 1, active.topP))} />{!sampling.supported.topP && <small>由该型号的默认设置控制。</small>}</label>
@@ -451,14 +484,12 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
               <label className="setting-field">推理强度<select value={active.reasoningEffort} onChange={event => updateRole(role.id, 'reasoningEffort', event.target.value as RoleConfig['reasoningEffort'])}><option value="default">服务商默认</option><option value="low">低</option><option value="medium">中</option><option value="high">高</option></select><small>只有支持该参数的型号才能使用。</small></label>
               <label className="toggle-line"><input type="checkbox" checked={active.streaming} onChange={event => updateRole(role.id, 'streaming', event.target.checked)} />期望使用流式输出</label>
               <label className="setting-field advanced-wide">停止序列（每行一项）<textarea rows={3} maxLength={1000} value={active.stopSequences} onChange={event => updateRole(role.id, 'stopSequences', event.target.value.slice(0, 1000))} placeholder="留空表示不设置" /><small>不同服务商支持情况不同；当前仅保存，不会发送。</small></label>
-            </div>{sampling.note && <p className="quiet-note" role="note">{sampling.note}</p>}<p className="quiet-note">采样值目前只保存为本地草案；游戏回合尚未接入岗位调度。接入调度时，受限型号必须省略这些字段；未知 Model ID 仍须按服务商文档核对。</p><p className="quiet-note">世界 Canon、规则和状态契约不开放给自由提示词或正则表达式改写。模型不得凭输出直接改变生命、物品、任务等权威状态。</p></details>
-            <div className="connection-row"><span>该岗位的连接测试</span><button className="secondary" onClick={() => void testConnection(role.id)} disabled={testing || !config.connectionTestAllowed || !active.enabled}>{testing ? '测试中…' : '测试此岗位'}</button></div>
+            </div>{sampling.note && <p className="quiet-note" role="note">{sampling.note}</p>}<p className="quiet-note">采样值目前只保存为本地草案；已提交回合可主动使用保存的岗位配置生成叙事；延期草案不会发送。受限型号省略这些字段；未知 Model ID 仍须按服务商文档核对。</p><p className="quiet-note">世界 Canon、规则和状态契约不开放给自由提示词或正则表达式改写。模型不得凭输出直接改变生命、物品、任务等权威状态。</p></details>
+            <div className="role-probe"><label className="toggle-line"><input type="checkbox" checked={config.connectionTestAllowed} onChange={event => { setSaved(false); setConfig(current => ({ ...current, connectionTestAllowed: event.target.checked })); }} />允许连接测试（{role.title}）</label><div className="connection-row"><span>该岗位的连接测试</span><button className="secondary" onClick={() => void testConnection(role.id)} disabled={testing || !config.connectionTestAllowed || !active.enabled}>{testingRole === role.id ? '测试中…' : '测试此岗位'}</button>{testingRole === role.id && <button className="quiet-action" onClick={() => probeRef.current?.abort('cancel')}>取消测试</button>}</div>{probeResults[role.id] && <p className={probeResults[role.id]!.error ? 'error' : 'status-message'} role="status">{probeResults[role.id]!.text}</p>}</div>
           </div>
         </details>;
       })}
     </section>
-    <label className="toggle-line test-permission"><input type="checkbox" checked={config.connectionTestAllowed} onChange={event => setConfig(current => ({ ...current, connectionTestAllowed: event.target.checked }))} />允许连接测试</label>
-    <p className="quiet-note">测试会发送一次极短文本请求，可能产生费用。浏览器跨域策略也可能阻止直连；失败不代表 Model ID 一定错误。</p>
     <section className="card settings-card"><h3>全局调度与隐私</h3><div className="number-grid">
       <label className="setting-field">调用记录最长保留（天）<select value={config.logRetentionDays} onChange={event => setConfig(current => ({ ...current, logRetentionDays: Number(event.target.value) }))}><option value="0">不保存</option><option value="1">1 天</option><option value="7">7 天</option><option value="30">30 天</option><option value="90">90 天</option></select><small>只保存在当前标签页会话的 sessionStorage 中；关闭标签页后可能提前清除。所选天数是到期上限。</small></label>
       <label className="setting-field">世界档案整理周期（回合）<input type="number" min="1" max="100" value={config.archiveInterval} onChange={event => setConfig(current => ({ ...current, archiveInterval: clampNumber(event.target.value, 1, 100, config.archiveInterval, true) }))} /></label>
@@ -467,11 +498,11 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
       <label className="setting-field">重试间隔（秒）<input type="number" min="1" max="30" value={config.retryDelaySeconds} onChange={event => setConfig(current => ({ ...current, retryDelaySeconds: clampNumber(event.target.value, 1, 30, config.retryDelaySeconds, true) }))} /><small>后续将用有上限的退避；超时或结算后不会盲目重放。</small></label>
     </div><p className="quiet-note">调用记录仅包含岗位、Model ID、时间、耗时、HTTP 状态和服务商返回的 token 统计。不记录 API Key、提示词、剧情正文或响应正文。重试、上下文预算与采样字段尚未接入游戏回合。</p></section>
     <section className="card settings-card legacy-migration-card"><div className="migration-heading"><span aria-hidden="true" className="migration-seal">迁</span><div><h3>旧配置迁移</h3><p>只从当前浏览器会话读取旧 AI 配置。旧 HTML 文件与本网站来源隔离，旧存档 JSON 也不包含 API 设置。</p></div></div><div className={migrationPossible ? 'migration-status found' : 'migration-status'}><span className="migration-status-dot"/><div><strong>{migrationPossible ? '发现可读取的旧配置' : '当前浏览器未发现旧配置'}</strong><small>{migrationPossible ? '载入后先核对，再自行保存。原配置会保留。' : '如果旧配置只存在于 file:// 页面，请手动录入服务商地址、Model ID 与密钥。'}</small></div></div><label className="toggle-line migration-consent"><input type="checkbox" checked={config.allowLegacyMigration} onChange={event => setConfig(current => ({ ...current, allowLegacyMigration: event.target.checked }))} /><span><strong>允许读取并迁入表单</strong><small>读取前需要明确开启；密钥仅放入当前页面内存，不会写入新设置或存档。</small></span><span className="switch-visual" aria-hidden="true"/></label><div className="migration-footer"><button className="secondary" onClick={importLegacy} disabled={!config.allowLegacyMigration || !migrationPossible}>读取旧配置到表单</button><span>不会删除旧配置，也不会自动发起连接测试。</span></div></section>
-    {error && <p className="error" role="alert">{error}</p>}{message && <p className={saved ? 'success' : 'status-message'} role="status">{message}</p>}
-    <div className="ai-actionbar"><button className="primary" onClick={save}>保存配置</button><button className="secondary" onClick={() => setModal({ kind: 'logs' })}>调用记录</button><button className="secondary" onClick={onClose}>关闭</button></div>
+    {createPortal(<div className="ai-actionbar" aria-label="AI 设置操作"><div className="ai-feedback">{error ? <p className="error" role="alert">{error}</p> : message ? <p className={saved ? 'success' : 'status-message'} role="status">{message}</p> : <span>密钥只在本页临时使用</span>}</div><button className="primary" onClick={save}>保存配置</button><button className="secondary" onClick={() => setModal({ kind: 'logs' })}>调用记录</button><button className="secondary" onClick={onClose}>关闭</button></div>, document.body)}
     <dialog ref={dialogRef} className="glass-dialog" onClose={() => setModal(null)} aria-labelledby="ai-modal-title">
       <button className="dialog-close" onClick={closeDialog} aria-label="关闭窗口">×</button>
       <div className="dialog-scroll-region" key={modal?.kind === 'catalog' ? `${modal.view}-${modal.providerId || ''}` : modal?.kind}>
+        {modal?.kind === 'batch' && <><div className="dialog-heading"><h2 id="ai-modal-title">批量配置岗位</h2><p>只复制协议、Base URL、Model ID 和所选密钥。各岗位开关与生成参数保留。</p></div><label className="setting-field">从哪个岗位复制<select value={batchSource} onChange={event => setBatchSource(event.target.value as RoleId)}>{roleMeta.map(role => <option key={role.id} value={role.id}>{role.title}</option>)}</select></label><p className="batch-preview">接口：{config.roles[batchSource].baseUrl || '未填写'}<br />型号：{config.roles[batchSource].model || '未填写'}<br />协议：{protocolLabels[config.roles[batchSource].adapter]}</p><fieldset className="batch-targets"><legend>覆盖以下岗位的接口与型号</legend>{roleMeta.filter(role => role.id !== batchSource).map(role => <label className="toggle-line" key={role.id}><input type="checkbox" checked={batchTargets.includes(role.id)} onChange={event => setBatchTargets(previous => event.target.checked ? [...previous, role.id] : previous.filter(id => id !== role.id))} />{role.title}</label>)}</fieldset><label className="toggle-line"><input type="checkbox" checked={batchWithKey} onChange={event => setBatchWithKey(event.target.checked)} />同时复制来源岗位的密钥（仅页面内存）</label><p className="quiet-note">{keys[batchSource]?.trim() ? '来源岗位已输入密钥，预览不会显示密钥。' : '来源岗位没有密钥，目标岗位现有密钥将保留。'}不自动保存，不发起连接测试。</p><button className="primary" disabled={!batchTargets.some(id => id !== batchSource)} onClick={applyBatch}>确认覆盖所选岗位</button></>}
         {modal?.kind === 'catalog' && modal.view === 'providers' && <>
           <div className="dialog-heading"><span className="eyebrow">服务商</span><h2 id="ai-modal-title">模型与服务商目录</h2></div>
           <label className="catalog-search">查找厂商<input value={catalogSearch} onChange={event => setCatalogSearch(event.target.value)} placeholder="输入厂商名称" autoFocus /></label>
@@ -518,7 +549,7 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
             <div className="estimate-inputs"><label>每日回合<input type="number" min="0" max="10000" value={dailyRounds} onChange={event => setDailyRounds(clampNumber(event.target.value, 0, 10000, 20, true))} /></label><label>每周回合<input type="number" min="0" max="70000" value={weeklyRounds} onChange={event => setWeeklyRounds(clampNumber(event.target.value, 0, 70000, 140, true))} /></label></div>
             <details className="usage-breakdown"><summary>按岗位调整调用频次与 tokens</summary><div className="usage-rows">{roleMeta.map(role => <div className="usage-row" key={role.id}><strong>{role.title}</strong><label>每百回合调用<input aria-label={`${role.title}每百回合调用次数`} type="number" min="0" max="500" step="1" value={estimateUsage[role.id].callsPer100} onChange={event => setEstimateUsage(current => ({ ...current, [role.id]: { ...current[role.id], callsPer100: clampNumber(event.target.value, 0, 500, current[role.id].callsPer100) } }))} /></label><label>单次输入<input aria-label={`${role.title}单次输入 tokens`} type="number" min="0" max="1000000" step="100" value={estimateUsage[role.id].inputTokens} onChange={event => setEstimateUsage(current => ({ ...current, [role.id]: { ...current[role.id], inputTokens: clampNumber(event.target.value, 0, 1000000, current[role.id].inputTokens, true) } }))} /></label><label>单次输出<input aria-label={`${role.title}单次输出 tokens`} type="number" min="0" max={modal.preset.maxTokens} step="100" value={estimateUsage[role.id].outputTokens} onChange={event => setEstimateUsage(current => ({ ...current, [role.id]: { ...current[role.id], outputTokens: clampNumber(event.target.value, 0, modal.preset.maxTokens, current[role.id].outputTokens, true) } }))} /></label></div>)}</div></details>
             <div className="estimate-totals"><strong>{presetEstimate(modal.preset)} / 回合</strong><span>{presetEstimate(modal.preset, dailyRounds)} / 日</span><span>{presetEstimate(modal.preset, weeklyRounds)} / 周</span></div>
-            <small>按 {MODEL_RATE_SNAPSHOT_DATE} 厂商公开价估算：DeepSeek 取直连峰时未命中缓存价，阿里云取中国（北京）标准档，火山方舟取常规在线推理价。GPT‑6 单次输入超过 272K tokens 时计入官方长上下文倍率；Gemini 3.8 Flash 到期后切换已公告的标准价。美元、人民币分列。输入输出 token 数由你填写；思考 token 也可能计入输出用量。尚未计缓存命中、地域/接入点差异、阶梯价、折扣、税费、工具费和失败请求。游戏岗位调度尚未接入，实际调用量未知；这不是账单。价格来源：<a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noreferrer">DeepSeek</a> · <a href="https://docs.volcengine.com/docs/ark/model-pricing?lang=zh" target="_blank" rel="noreferrer">火山方舟</a> · <a href="https://help.aliyun.com/en/model-studio/model-pricing" target="_blank" rel="noreferrer">阿里云</a> · <a href="https://platform.kimi.ai/" target="_blank" rel="noreferrer">Kimi</a> · <a href="https://developers.openai.com/api/docs/pricing" target="_blank" rel="noreferrer">OpenAI</a> · <a href="https://platform.claude.com/docs/en/models/overview" target="_blank" rel="noreferrer">Anthropic</a> · <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noreferrer">Google</a></small></section>
+            <small>按 {MODEL_RATE_SNAPSHOT_DATE} 厂商公开价估算：DeepSeek 取直连峰时未命中缓存价，阿里云取中国（北京）标准档，火山方舟取常规在线推理价。GPT‑6 单次输入超过 272K tokens 时计入官方长上下文倍率；此快照有效至 2026-12-27 UTC；到期后停止精确估算，须重新核验，不能沿用促销价或推算未来报价。美元、人民币分列。输入输出 token 数由你填写；思考 token 也可能计入输出用量。尚未计缓存命中、地域/接入点差异、阶梯价、折扣、税费、工具费和失败请求。实际请求费用依服务商计量，未报告的调用量保持未知；这不是账单。价格来源：<a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noreferrer">DeepSeek</a> · <a href="https://docs.volcengine.com/docs/ark/model-pricing?lang=zh" target="_blank" rel="noreferrer">火山方舟</a> · <a href="https://help.aliyun.com/en/model-studio/model-pricing" target="_blank" rel="noreferrer">阿里云</a> · <a href="https://platform.kimi.ai/" target="_blank" rel="noreferrer">Kimi</a> · <a href="https://developers.openai.com/api/docs/pricing" target="_blank" rel="noreferrer">OpenAI</a> · <a href="https://platform.claude.com/docs/en/models/overview" target="_blank" rel="noreferrer">Anthropic</a> · <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noreferrer">Google</a></small></section>
         </>
         }
         {modal?.kind === 'logs' && <>

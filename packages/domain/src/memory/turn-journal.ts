@@ -37,6 +37,7 @@ export type PrepareNpcMemoryTurnOptions = {
 
 const MAX_EVENTS_PER_TURN = 1000;
 const MAX_VISIBLE_SUMMARY_LENGTH = 4000;
+const MAX_JOURNAL_BYTES = 64_000;
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 /**
@@ -117,14 +118,16 @@ export function serializeNpcMemoryJournal(journal: NpcMemoryJournal): string {
     schemaVersion: 1,
     saveId: journal.saveId,
     revision: journal.revision,
-    memories: [...journal.memories].sort((left, right) => left.npcId.localeCompare(right.npcId)),
+    memories: [...journal.memories].sort((left, right) => left.npcId < right.npcId ? -1 : left.npcId > right.npcId ? 1 : 0),
     lastTurn: journal.lastTurn ? {
       fromRevision: journal.lastTurn.fromRevision,
       toRevision: journal.lastTurn.toRevision,
       eventIds: [...journal.lastTurn.eventIds],
     } : null,
   };
-  return JSON.stringify(normalized);
+  const json = JSON.stringify(normalized);
+  if (new TextEncoder().encode(json).byteLength > MAX_JOURNAL_BYTES) throw new Error('NPC memory journal exceeds storage limit');
+  return json;
 }
 
 /**
@@ -201,11 +204,30 @@ export function prepareNpcMemoryTurn(input: PrepareNpcMemoryTurnOptions): NpcMem
     schemaVersion: 1,
     saveId: input.saveId,
     revision: input.afterRevision,
-    memories: [...memories.values()].sort((left, right) => left.npcId.localeCompare(right.npcId)),
+    memories: [...memories.values()].sort((left, right) => left.npcId < right.npcId ? -1 : left.npcId > right.npcId ? 1 : 0),
     lastTurn: marker,
   };
-  assertNpcMemoryJournal(journal);
-  return { status: 'prepared', journal, recordedObservations };
+  const bounded = trimJournal(journal);
+  assertNpcMemoryJournal(bounded);
+  return { status: 'prepared', journal: bounded, recordedObservations };
+}
+
+function trimJournal(journal: NpcMemoryJournal): NpcMemoryJournal {
+  const working = journal.memories.map(memory => ({ ...memory, observations: [...memory.observations] }));
+  const oldest = working.flatMap(memory => memory.observations.map(observation => ({ memory, observation })))
+    .sort((a, b) => a.observation.observedAtMinute - b.observation.observedAtMinute
+      || a.observation.eventRevision - b.observation.eventRevision
+      || (a.observation.eventId < b.observation.eventId ? -1 : a.observation.eventId > b.observation.eventId ? 1 : 0));
+  let candidate: NpcMemoryJournal = { ...journal, memories: working };
+  let bytes = new TextEncoder().encode(JSON.stringify(candidate)).byteLength;
+  for (const [index, item] of oldest.entries()) {
+    if (bytes <= MAX_JOURNAL_BYTES) return candidate;
+    item.memory.observations.splice(item.memory.observations.indexOf(item.observation), 1);
+    candidate = { ...journal, memories: working.filter(memory => memory.observations.length > 0) };
+    if (index % 8 === 7 || index === oldest.length - 1) bytes = new TextEncoder().encode(JSON.stringify(candidate)).byteLength;
+  }
+  if (bytes > MAX_JOURNAL_BYTES) throw new Error('NPC memory journal exceeds storage limit');
+  return candidate;
 }
 
 function sameTurn(left: NpcMemoryTurnMarker | null, right: NpcMemoryTurnMarker): boolean {

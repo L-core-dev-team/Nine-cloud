@@ -23,3 +23,6 @@ test-results/
 .env
 .env.*.local
 !.env.example
+deployment/api.private.env
+deployment/runtime/
+deployment/backups/

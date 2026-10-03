@@ -1,7 +1,9 @@
-import { describe, expect, it } from 'vitest';
-import { estimateModelCost, getModelRate, MODEL_RATE_SNAPSHOT_DATE } from './ai-model-pricing';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { estimateModelCost, getModelRate, MODEL_RATE_SNAPSHOT_DATE, modelRateSnapshotStatus } from './ai-model-pricing';
 
 describe('Bluebird price snapshot', () => {
+  beforeEach(() => { vi.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-10-02T00:00:00Z')); });
+  afterEach(() => { vi.restoreAllMocks(); });
   it('keeps the snapshot date explicit and separates current DeepSeek V4 Pro from Flash pricing', () => {
     expect(MODEL_RATE_SNAPSHOT_DATE).toBe('2026-09-28');
     expect(getModelRate('deepseek-v4-pro')).toMatchObject({ input: 1.32, output: 3.96, currency: 'USD' });
@@ -14,11 +16,15 @@ describe('Bluebird price snapshot', () => {
     expect(getModelRate('doubao-seed-2-1-pro-260915')).toBeUndefined();
   });
 
-  it('uses the announced Gemini 3.8 Flash introductory rate only through 2026-12-31', () => {
-    const beforeChange = Date.parse('2026-12-31T23:59:59+08:00');
-    const afterChange = Date.parse('2027-01-01T00:00:00+08:00');
-    expect(getModelRate('gemini-3.8-flash', beforeChange)).toMatchObject({ input: 0.75, output: 3.75 });
-    expect(getModelRate('gemini-3.8-flash', afterChange)).toMatchObject({ input: 1.5, output: 7.5 });
+  it('rejects a snapshot at the 90-day boundary rather than projecting future prices', () => {
+    const boundary = Date.parse('2026-12-27T00:00:00Z');
+    expect(getModelRate('gemini-3.8-flash', boundary - 1)).toMatchObject({ input: 0.75, output: 3.75 });
+    expect(modelRateSnapshotStatus(boundary)).toBe('expired');
+    expect(getModelRate('gemini-3.8-flash', boundary)).toBeUndefined();
+    expect(estimateModelCost('deepseek-flash', 1000, 1000, boundary)).toBeUndefined();
+    expect(getModelRate('gemini-3.8-flash', Date.parse('2027-01-01T00:00:00Z'))).toBeUndefined();
+    expect(modelRateSnapshotStatus(NaN)).toBe('invalid-clock');
+    expect(getModelRate('deepseek-flash', Date.parse('2026-09-27T00:00:00Z'))).toBeUndefined();
   });
 
   it('rejects unknown prices rather than presenting a fabricated estimate', () => {

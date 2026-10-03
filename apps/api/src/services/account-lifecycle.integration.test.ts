@@ -15,7 +15,7 @@ suite('account lifecycle, isolated PostgreSQL only',()=>{
  const app=createApp(undefined,undefined,{service:auth,origin:'https://fixture.invalid',lifecycle,exporter});
  async function fixture(){const owner=randomUUID(),email=`${owner}@example.invalid`,token=randomBytes(32).toString('base64url');owners.push(owner);emails.push(email);await pool.query('INSERT INTO auth_accounts(id,email) VALUES($1,$2)',[owner,email]);await pool.query("INSERT INTO auth_sessions(token_hash,owner_id,expires_at) VALUES($1,$2,now()+interval '1 day')",[hashToken(token),owner]);return {owner,email,token,hash:hashToken(token)};}
  async function ready(f:Awaited<ReturnType<typeof fixture>>,operation:'close'|'delete'){const begun=await lifecycle.begin(f.owner,f.hash,operation);await lifecycle.verify(f.owner,f.hash,begun.operationId,sent.get(f.email));return begun.operationId;}
- afterAll(async()=>{for(const id of ids){await pool.query('DELETE FROM cloud_archive_trash WHERE save_id=$1',[id]);await pool.query('DELETE FROM turn_events WHERE save_id=$1',[id]);await pool.query('DELETE FROM turn_requests WHERE save_id=$1',[id]);await pool.query('DELETE FROM game_saves WHERE id=$1',[id]);}await pool.query('DELETE FROM auth_accounts WHERE id=ANY($1::text[])',[owners]);await pool.query('DELETE FROM auth_challenges WHERE email=ANY($1::text[])',[emails]);await pool.end();});
+ afterAll(async()=>{const client=await pool.connect();try{await client.query('BEGIN');await client.query("SELECT set_config('jiuxiao.account_erasure_operation','test-cleanup',true)");for(const id of ids){await client.query('DELETE FROM cloud_archive_trash WHERE save_id=$1',[id]);await client.query('DELETE FROM turn_events WHERE save_id=$1',[id]);await client.query('DELETE FROM turn_requests WHERE save_id=$1',[id]);await client.query('DELETE FROM game_saves WHERE id=$1',[id]);}await client.query('DELETE FROM auth_accounts WHERE id=ANY($1::text[])',[owners]);await client.query('DELETE FROM auth_challenges WHERE email=ANY($1::text[])',[emails]);await client.query('COMMIT');}catch(error){await client.query('ROLLBACK');throw error;}finally{client.release();}await pool.end();});
  it('requires old and new proof, binds the original session, revokes all sessions after changing email',async()=>{
   const f=await fixture(),other=await fixture(),newEmail=`new-${randomUUID()}@example.invalid`;emails.push(newEmail);const op=await lifecycle.begin(f.owner,f.hash,'email_change',newEmail);const oldCode=sent.get(f.email);
   await expect(lifecycle.verify(other.owner,other.hash,op.operationId,oldCode)).rejects.toThrow('INVALID_OR_EXPIRED_CODE');
@@ -51,6 +51,22 @@ suite('account lifecycle, isolated PostgreSQL only',()=>{
   for(const table of ['turn_requests','npc_memory_journals','cloud_archive_trash'])expect((await pool.query(`SELECT save_id FROM ${table} WHERE save_id=$1`,[saveId])).rowCount).toBe(0);
   for(const table of ['entitlement_balances','entitlement_ledger_entries'])expect((await pool.query(`SELECT owner_id FROM ${table} WHERE owner_id=$1`,[f.owner])).rowCount).toBe(0);
  });
+ it('SEC-01: turn events are append-only and archive rows are erasure-only',async()=>{
+  const f=await fixture(),saveId=randomUUID();ids.push(saveId);
+  await new PostgresCloudSaveRepository(pool,true).createForOwner(f.owner,{schemaVersion:1,saveId,revision:0,canonVersion:'fixture',ruleVersion:'fixture',memoryPolicyVersion:'fixture',state:{playerId:'p',locationId:'gate',elapsedMinutes:0,facts:{}}});
+  await pool.query("INSERT INTO turn_events(id,save_id,idempotency_key,sequence,event_type,source,rule_version,before_revision,after_revision,payload,occurred_at) VALUES($1,$2,$3,0,'fixture','MIGRATION','fixture',0,1,'{}'::jsonb,now())",[randomUUID(),saveId,randomUUID()]);
+  await expect(pool.query('UPDATE turn_events SET payload=$1::jsonb WHERE save_id=$2',['{"tampered":true}',saveId])).rejects.toThrow('append-only');
+  await expect(pool.query('DELETE FROM turn_events WHERE save_id=$1',[saveId])).rejects.toThrow('verified account erasure');
+  await expect(pool.query('DELETE FROM game_saves WHERE id=$1',[saveId])).rejects.toThrow('verified account erasure');
+  const spoof=await pool.connect();try{
+   await spoof.query('BEGIN');await spoof.query("SELECT set_config('jiuxiao.account_erasure_operation',$1,true)",[randomUUID()]);
+   await expect(spoof.query('DELETE FROM turn_events WHERE save_id=$1',[saveId])).rejects.toThrow('verified account erasure');
+   await spoof.query('ROLLBACK');
+  }finally{spoof.release();}
+  await expect(pool.query('UPDATE game_saves SET owner_id=$2 WHERE id=$1',[saveId,randomUUID()])).rejects.toThrow('identity is immutable');
+  await pool.query('UPDATE game_saves SET revision=1 WHERE id=$1',[saveId]);
+  await expect(pool.query('UPDATE game_saves SET revision=0 WHERE id=$1',[saveId])).rejects.toThrow('monotonic');
+ });
  it('persists failed attempts and refuses the correct OTP after five failures',async()=>{
   const f=await fixture(),op=await lifecycle.begin(f.owner,f.hash,'close');const code=sent.get(f.email)!;const wrong=code==='000000'?'000001':'000000';
   for(let i=0;i<5;i++)await expect(lifecycle.verify(f.owner,f.hash,op.operationId,wrong)).rejects.toThrow('INVALID_OR_EXPIRED_CODE');
@@ -58,4 +74,17 @@ suite('account lifecycle, isolated PostgreSQL only',()=>{
   await expect(lifecycle.verify(f.owner,f.hash,op.operationId,code)).rejects.toThrow('INVALID_OR_EXPIRED_CODE');
  });
  it('data policy pending disables closure/deletion without proof or mail writes',async()=>{const f=await fixture();const pending=new AccountLifecycle(pool,mail,secret);expect(pending.capabilities()).toMatchObject({close:false,permanentDelete:false});await expect(pending.begin(f.owner,f.hash,'delete')).rejects.toThrow('DATA_POLICY_NOT_READY');});
+ it('recovers only during the 30-day grace period, erases expired accounts and minimizes audit emails',async()=>{
+  const f=await fixture(),id=await ready(f,'close');await lifecycle.complete(f.owner,f.hash,id,'CLOSE_ACCOUNT');
+  expect((await pool.query('SELECT old_email,new_email FROM account_operations WHERE id=$1',[id])).rows[0]).toEqual({old_email:null,new_email:null});
+  await auth.requestCode(f.email);expect(await auth.verify(f.email,sent.get(f.email),true)).not.toBeNull();
+  const expired=await fixture(),closeId=await ready(expired,'close');await lifecycle.complete(expired.owner,expired.hash,closeId,'CLOSE_ACCOUNT');
+  await pool.query("UPDATE auth_accounts SET closed_at=now()-interval '31 days' WHERE id=$1",[expired.owner]);
+  await auth.requestCode(expired.email);expect(await auth.verify(expired.email,sent.get(expired.email),true)).toBeNull();
+  expect(await lifecycle.expireClosed()).toMatchObject({eligible:1,erased:0});
+  expect(await lifecycle.expireClosed(true)).toMatchObject({erased:1});
+  expect((await pool.query('SELECT id FROM auth_accounts WHERE id=$1',[expired.owner])).rowCount).toBe(0);
+  expect(JSON.stringify((await pool.query("SELECT * FROM account_lifecycle_audit WHERE operation='expired_erasure'")).rows)).not.toContain(expired.email);
+ });
+
 });

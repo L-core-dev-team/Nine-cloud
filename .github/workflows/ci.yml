@@ -6,6 +6,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   verify:
@@ -44,15 +45,31 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile --registry https://registry.npmjs.org
       - name: Migrate ephemeral test database
-        run: pnpm --filter @jiuxiao/db db:migrate
+        run: |
+          pnpm --filter @jiuxiao/db db:migrate
+          pnpm --filter @jiuxiao/db db:migrate
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jiuxiao_test
       - run: pnpm license:check
+      - name: Test GitHub evidence synchronization gate
+        run: node --test scripts/build/ci-evidence.test.mjs
       - name: Test fail-closed media publication gate
         run: node scripts/audit/media-release-check.test.mjs
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build
+      - name: Prove the release-target build stays fail-closed while media licenses are pending
+        # SEC-05: this step proves the media gate is actually wired into release
+        # builds. While sourceAndLicense is unverified the release build must fail
+        # with exactly LICENSE_PENDING; flip this step to require success once the
+        # manifest is verified (BIRD-04 / G-05 closure).
+        run: |
+          if pnpm --filter @jiuxiao/web build 2>"$RUNNER_TEMP/media-gate.log"; then
+            echo "release build must fail while media licenses are unverified"; exit 1
+          fi
+          grep -q "LICENSE_PENDING" "$RUNNER_TEMP/media-gate.log"
+        env:
+          JIUXIAO_BUILD_TARGET: release
       - name: Build and smoke the production API container
         run: |
           docker build --tag "jiuxiao-api-review:$REVIEW_SHA" --file apps/api/Dockerfile .
@@ -83,6 +100,8 @@ jobs:
         run: node scripts/build/write-review-bundle.mjs
       - name: Generate exact-build G1 and Canon review packets
         run: node scripts/build/write-closeout-packets.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
       - name: Upload engineering review artifacts and evidence
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:

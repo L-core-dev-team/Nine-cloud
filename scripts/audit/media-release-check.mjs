@@ -25,7 +25,9 @@ export function requireReleasedMedia(manifest, publicRoot) {
       else if (/\.(webp|png|jpe?g|svg|mp4|webm|mp3|wav|ogg|m4a)$/i.test(entry.name) && !listed.has(path)) throw new Error('UNLISTED_MEDIA_ASSET');
     }
   };
-  walk(resolve(publicRoot, 'scenes'), '/scenes');
+  // SEC-05: walk the entire public tree, not only public/scenes — a media file
+  // placed anywhere outside the manifest must fail the release build.
+  walk(publicRoot, '');
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   const publicRoot = resolve(import.meta.dirname, '../../apps/web/public');

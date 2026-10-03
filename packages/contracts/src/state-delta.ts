@@ -8,7 +8,7 @@ export const StateDeltaSchema = z.strictObject({
 }).superRefine((delta, ctx) => {
   const keys = new Set<string>();
   for (const [index, change] of delta.factChanges.entries()) {
-    if (keys.has(change.key) || ['__proto__','prototype','constructor','archiveKind','localArchive'].includes(change.key)) ctx.addIssue({ code:'custom',path:['factChanges',index,'key'],message:'Duplicate or protected fact key' });
+    if (keys.has(change.key) || ['__proto__','prototype','constructor','archiveKind','localArchive','creationRequestHash'].includes(change.key)) ctx.addIssue({ code:'custom',path:['factChanges',index,'key'],message:'Duplicate or protected fact key' });
     keys.add(change.key);
   }
 });

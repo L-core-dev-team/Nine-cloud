@@ -1,19 +1,24 @@
 import type { Hono } from 'hono';
+import { isIP } from 'node:net';
 import { EmailAuthService, SESSION_SECONDS } from '../services/email-auth.js';
 import { AuthFailure } from '../services/auth-failure.js';
 
 export const AUTH_COOKIE = 'jx_session';
+export function authCookie(token: string, age: number, origin: string, sameSite: 'Strict' | 'None' = 'Strict'): string {
+  const secure = new URL(origin).protocol === 'https:' ? '; Secure' : '';
+  return `${AUTH_COOKIE}=${token}; Path=/; HttpOnly; SameSite=${sameSite}; Max-Age=${age}${secure}`;
+}
 export function sessionToken(request: Request): string | null {
   const values = (request.headers.get('cookie') || '').split(';').map(value => value.trim()).filter(value => value.startsWith(`${AUTH_COOKIE}=`));
   return values.length === 1 ? values[0]!.slice(AUTH_COOKIE.length + 1) : null;
 }
-export function mountAuth(app: Hono, service: EmailAuthService, origin: string, sameSite: 'Strict' | 'None' = 'Strict'): void {
+export function mountAuth(app: Hono, service: EmailAuthService, origin: string, sameSite: 'Strict' | 'None' = 'Strict', trustedProxyAddresses: readonly string[] = []): void {
   const url = new URL(origin);
   const local = url.protocol === 'http:' && ['127.0.0.1', 'localhost'].includes(url.hostname);
   if (origin !== url.origin || (url.protocol !== 'https:' && !local)) throw new Error('AUTH_PUBLIC_ORIGIN must be an exact HTTPS origin');
   const secure = url.protocol === 'https:' ? '; Secure' : '';
   if (sameSite === 'None' && !secure) throw new Error('Cross-site sessions require HTTPS');
-  const cookie = (token: string, age: number) => `${AUTH_COOKIE}=${token}; Path=/; HttpOnly; SameSite=${sameSite}; Max-Age=${age}${secure}`;
+  const cookie = (token: string, age: number) => authCookie(token, age, origin, sameSite);
   app.use('/api/*', async (c, next) => {
     c.header('Cache-Control', 'no-store');
     c.header('Vary', 'Origin');
@@ -40,16 +45,16 @@ export function mountAuth(app: Hono, service: EmailAuthService, origin: string, 
     const body = await authBody(c.req.raw);
     if (!body) return c.json({ code: 'INVALID_REQUEST' }, 400);
     try {
-      const result = await service.requestCode(body.email);
+      const result = await service.requestCode(body.email, clientIp(c, trustedProxyAddresses));
       if(result==='limited')c.header('Retry-After','60');
       return result === 'sent' ? c.json({ status: 'sent', resendAfterSeconds:60, expiresInSeconds:600 }, 202) : c.json({ code: 'RATE_LIMITED',retryAfterSeconds:60 }, 429);
     } catch (error) { if(error instanceof AuthFailure)return c.json({code:error.code,stage:error.stage,requestId:error.requestId},503);return c.json({ code: error instanceof TypeError ? 'INVALID_EMAIL' : 'MAIL_UNAVAILABLE' }, error instanceof TypeError ? 400 : 503); }
   });
-  app.post('/api/auth/verify', async c => {
+  for(const path of ['/api/auth/verify','/api/auth/restore'])app.post(path, async c => {
     const body = await authBody(c.req.raw);
     if (!body) return c.json({ code: 'INVALID_REQUEST' }, 400);
     try {
-      const result = await service.verify(body.email, body.code);
+      const result = await service.verify(body.email, body.code,path.endsWith('/restore'));
       if (!result) return c.json({ code: 'INVALID_OR_EXPIRED_CODE' }, 401);
       c.header('Set-Cookie', cookie(result.token, SESSION_SECONDS));
       return c.json({ account: { id: result.session.ownerId, email: result.session.email }, expiresAt: result.session.expiresAt.toISOString() });
@@ -85,4 +90,18 @@ async function authBody(request: Request): Promise<Record<string, unknown> | nul
     const value: unknown = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
     return value !== null && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : null;
   } catch { return null; } finally { reader.releaseLock(); }
+}
+/** Only a configured reverse proxy may supply X-Forwarded-For. Direct clients
+ * cannot choose their rate-limit identity by adding a request header. */
+export function clientIp(c: { req: { header(name: string): string | undefined }; env?: unknown }, trustedProxyAddresses: readonly string[]): string {
+  type Incoming = { socket?: { remoteAddress?: string } };
+  const bindings = c.env as { server?: { incoming?: Incoming }; incoming?: Incoming } | undefined;
+  const incoming = bindings?.server?.incoming ?? bindings?.incoming;
+  const remote = incoming?.socket?.remoteAddress?.replace(/^::ffff:/, '') || 'unidentified';
+  if (trustedProxyAddresses.includes(remote)) {
+    const forwarded = c.req.header('x-forwarded-for');
+    const candidate = forwarded?.split(',').map(value => value.trim()).filter(Boolean).at(-1);
+    if (candidate && candidate.length <= 45 && isIP(candidate) !== 0) return candidate;
+  }
+  return remote.slice(0, 45);
 }

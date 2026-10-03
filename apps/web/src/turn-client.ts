@@ -61,9 +61,10 @@ export class TurnClient {
       return { ...current, phase: 'confirmed', receipt };
     });
   }
-  async narrate(record: PendingTurn, cancellation?: AbortSignal) {
+  async narrate(record: PendingTurn, cancellation?: AbortSignal, renderer?:(receipt:TurnReceipt,signal:AbortSignal)=>Promise<string>) {
     const live = await this.store.read(record.key);
     if (!live || live.phase !== 'confirmed' || live.intent.idempotencyKey !== record.intent.idempotencyKey || live.receipt?.decision.status !== 'accepted') throw new Error('TURN_NOT_COMMITTED');
+    if(renderer){const text=await renderer(structuredClone(live.receipt),cancellation??new AbortController().signal);if(typeof text!=='string'||!text.trim()||text.length>100_000)throw new Error('NARRATIVE_UNAVAILABLE');return text;}
     const result = await this.request('/api/turns', 'POST', { intent: live.intent, requestNarrative: true }, live.ownerId, cancellation);
     const receipt = TurnReceiptSchema.parse(result.receipt);
     if (canonical(receipt) !== canonical(live.receipt)) throw new Error('INVALID_TURN_RECEIPT');

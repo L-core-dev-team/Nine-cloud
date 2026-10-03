@@ -59,6 +59,19 @@ describe('legacy save importer', () => {
     expect(twice.legacyArchive?.payload.legacyArchive).toBeUndefined();
   });
 
+  it('keeps unknown native fields only in the recoverable archive and rejects unsafe revisions', () => {
+    const native = { schemaVersion: 1, saveId: 'native-safe', name: '旧档', createdAt: '2026-09-01',
+      updatedAt: '2026-09-01', revision: 3, canonVersion: 'old', ruleVersion: 'old',
+      memoryPolicyVersion: 'old', character: {}, location: '山门', status: 'pending_rules', messages: [],
+      unexpectedState: { authority: 'forged' } };
+    const text = JSON.stringify({ format: 'JIUXIAO_SAVE', version: 1, save: native });
+    const imported = parseLegacySave(new File([text], 'native.json'), text);
+    expect('unexpectedState' in imported).toBe(false);
+    expect(imported.legacyArchive?.payload.unexpectedState).toEqual(native.unexpectedState);
+    const unsafe = JSON.stringify({ format: 'JIUXIAO_SAVE', version: 1, save: { ...native, revision: Number.MAX_SAFE_INTEGER + 1 } });
+    expect(() => parseLegacySave(new File([unsafe], 'unsafe.json'), unsafe)).toThrow();
+  });
+
   it('keeps legacy supplementary fields separate from authoritative state', () => {
     const text = JSON.stringify({ messages: [], status: '姓名：测试修士', intel: '地点：山门', memory: '初到山门' });
     const save = parseLegacySave(new File([text], 'legacy-chat.json'), text);

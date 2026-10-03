@@ -63,6 +63,9 @@ importers:
       '@jiuxiao/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@jiuxiao/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
       react:
         specifier: 19.3.0
         version: 19.3.0

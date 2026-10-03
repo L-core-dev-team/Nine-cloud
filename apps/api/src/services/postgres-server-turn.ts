@@ -1,14 +1,21 @@
+import {assertDataPolicy,checkQuota,type DataPolicy} from './data-policy.js';
 import type { Pool } from 'pg';
 import { PostgresCloudSaveRepository } from './postgres-cloud-save-repository.js';
 import { PostgresNpcMemoryTurnRepository } from './npc-memory-turn-transaction.js';
 import type { ServerTurnRepository } from './server-turn.js';
 
 /** Host-side adapter only: it does not publish or supply gameplay rules. */
-export function createPostgresServerTurnRepository(pool: Pool, requiresLiveAccount = false): ServerTurnRepository {
+export function createPostgresServerTurnRepository(pool: Pool, requiresLiveAccount = false,policy?:()=>DataPolicy|undefined): ServerTurnRepository {
   const saves = new PostgresCloudSaveRepository(pool);
-  const turns = new PostgresNpcMemoryTurnRepository(pool, requiresLiveAccount);
+  const turns = new PostgresNpcMemoryTurnRepository(pool, requiresLiveAccount,policy?async(c,commit)=>{
+    const p=policy();assertDataPolicy(p);
+    const current=(await c.query('SELECT count(*)::int AS count,coalesce(sum(octet_length(snapshot::text)),0)::text AS bytes FROM game_saves WHERE owner_id=$1',[commit.ownerId])).rows[0];
+    const before=(await c.query('SELECT octet_length(snapshot::text) AS bytes FROM game_saves WHERE id=$1 AND owner_id=$2',[commit.save.saveId,commit.ownerId])).rows[0];
+    const next=Number((await c.query('SELECT octet_length($1::jsonb::text) AS bytes',[JSON.stringify(commit.save.state)])).rows[0].bytes);
+    checkQuota(p,{count:current.count,bytes:Number(current.bytes)},next,Number(before.bytes));
+  }:undefined);
   return {
-    loadSave: (owner, id) => saves.getForOwner(owner, id),
+    loadSave: async(owner,id)=>{const save=await saves.getForOwner(owner,id);if(save&&!((await pool.query('SELECT verify_turn_event_chain($1) AS ok',[id])).rows[0].ok))throw new Error('EVENT_INTEGRITY_FAILED');return save;},
     getReceiptForOwner: (owner, id, key) => turns.getReceiptForOwner(owner, id, key),
     getForOwner: (owner, id) => turns.getForOwner(owner, id),
     commitAcceptedTurn: input => turns.commitAcceptedTurn(input),

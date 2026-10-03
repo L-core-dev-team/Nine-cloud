@@ -54,7 +54,7 @@ async function latestCode(email) {
     await a.setOffline(true); await page.getByRole('button', { name: '备份到云端', exact: true }).click();
     await page.getByText(/操作未完成/).waitFor(); await page.getByRole('button', { name: '取消待上传', exact: true }).waitFor();
     await a.setOffline(false); await page.reload(); await page.getByRole('button', { name: '重试待上传', exact: true }).click();
-    await page.getByText('已重试队列。冲突需要逐项选择。', { exact: true }).waitFor();
+    await page.getByRole('status').filter({ hasText: '已上传 1 份；0 份失败，0 份需核对冲突。' }).waitFor();
     const remote = await page.evaluate(async () => (await (await fetch('/api/saves')).json()).saves[0]);
     assert.equal(remote.revision, 0); assert.equal(remote.state.facts.localArchive.revision, 7);
     assert.ok(!JSON.stringify(remote).includes('never-upload-this-key'));

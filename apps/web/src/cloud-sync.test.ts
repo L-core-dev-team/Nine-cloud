@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { CloudHttpError, CloudSync, IndexedCloudQueue, archiveFromEnvelope, type CloudRecord, type CloudQueueStore } from './cloud-sync';
+import { cloudRequest, CloudHttpError, CloudSync, IndexedCloudQueue, archiveFromEnvelope, type CloudRecord, type CloudQueueStore } from './cloud-sync';
 import type { LocalSave } from './storage';
 import type { SaveEnvelope } from '@jiuxiao/contracts';
 
@@ -12,6 +12,10 @@ class Store implements CloudQueueStore {
   async update(key: string, change: (r: CloudRecord | undefined) => CloudRecord) { const next = change(structuredClone(this.rows.get(key))); this.rows.set(key, structuredClone(next)); return next; }
 }
 describe('cloud queue connections', () => {
+  it('sends session credentials at the Auth API transport boundary',async()=>{
+    const transport=vi.fn(async(_path:RequestInfo|URL,_init?:RequestInit)=>new Response('{}',{headers:{'content-type':'application/json'}}));vi.stubGlobal('fetch',transport);
+    try{await cloudRequest('/api/auth/session');expect(transport.mock.calls[0]?.[1]).toMatchObject({credentials:'include',cache:'no-store'});}finally{vi.unstubAllGlobals();}
+  });
   it('closes a late connection after reporting a blocked open, without starting a transaction', async () => {
     const close = vi.fn(); const transaction = vi.fn();
     const request = { result: { close, transaction }, onsuccess: null as (() => void) | null,
@@ -94,9 +98,40 @@ describe('cloud archive queues and CAS decisions', () => {
       if (drop) { drop = false; throw new Error('disconnected after commit'); }
       return { save: remote };
     });
-    await sync.enqueue('a', save); await expect(sync.flush('a')).rejects.toThrow();
+    await sync.enqueue('a', save); expect(await sync.flush('a')).toMatchObject({ failed: 1, uploaded: 0 });
     expect((await sync.list('a'))[0]!.pending).not.toBeNull();
-    await sync.flush('a'); expect((await sync.list('a'))[0]).toMatchObject({ baseRevision: 0, pending: null, conflict: null });
+    expect((await sync.list('a'))[0]!.failure).toBe('UPLOAD_FAILED');
+    expect(await sync.flush('a')).toMatchObject({ uploaded: 1, failed: 0 });
+    expect((await sync.list('a'))[0]).toMatchObject({ baseRevision: 0, pending: null, conflict: null, failure: null });
+  });
+  it('keeps a failed item visible and still uploads the next item', async () => {
+    const store = new Store();
+    const sync = new CloudSync(store, async (_path, _method, body) => {
+      const envelope = (body as { save: SaveEnvelope }).save;
+      if (envelope.state.playerId === 'first') throw new CloudHttpError(503);
+      return { save: envelope };
+    });
+    await sync.enqueue('a', { ...save, saveId: 'first' });
+    await sync.enqueue('a', { ...save, saveId: 'second' });
+    expect(await sync.flush('a')).toEqual({ uploaded: 1, failed: 1, conflicted: 0 });
+    const records = await sync.list('a');
+    expect(records.find(record => record.localSaveId === 'first')).toMatchObject({ failure: 'SERVER_ERROR' });
+    expect(records.find(record => record.localSaveId === 'second')).toMatchObject({ pending: null, failure: null });
+  });
+  it('rekeys a new archive after a global ID collision cannot be read by its owner', async () => {
+    const store = new Store(); let first = true;
+    const sync = new CloudSync(store, async (_path, method, body) => {
+      if (method === 'GET') throw new CloudHttpError(404);
+      if (first) { first = false; throw new CloudHttpError(409); }
+      return { save: (body as { save: SaveEnvelope }).save };
+    });
+    const initial = await sync.enqueue('a', save);
+    expect(await sync.flush('a')).toMatchObject({ failed: 1 });
+    const rekeyed = (await sync.list('a'))[0]!;
+    expect(rekeyed.cloudSaveId).not.toBe(initial.cloudSaveId);
+    expect(rekeyed.pending?.saveId).toBe(rekeyed.cloudSaveId);
+    expect(await sync.flush('a')).toMatchObject({ uploaded: 1 });
+    expect((await sync.list('a'))[0]?.pending).toBeNull();
   });
   it('keeps both versions on conflict and requires explicit CAS against the reviewed version', async () => {
     const store = new Store(); let remote: SaveEnvelope;

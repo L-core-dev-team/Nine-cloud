@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { afterAll, describe, expect, it } from 'vitest';
+import { beforeAll, afterAll, describe, expect, it } from 'vitest';
 import { Pool } from 'pg';
 import type { ActionIntent } from '@jiuxiao/contracts';
 import { replayEvents } from '@jiuxiao/domain';
@@ -26,14 +26,21 @@ suite('ServerTurnService on isolated PostgreSQL (synthetic rules only)', () => {
     grantsForEvent: event => [{ npcId: 'visible-fixture-npc', eventId: event.id, channel: 'witnessed', visibleSummary: 'Public fixture event.' }],
     policyForNpc: () => 'exact-recall-v1',
   };
+  beforeAll(async()=>{for(const id of [owner])await pool.query('INSERT INTO auth_accounts(id,email) VALUES($1,$2) ON CONFLICT DO NOTHING',[id,id+'@fixture.invalid']);});
   afterAll(async () => {
-    for (const id of templateIds) { await pool.query('DELETE FROM turn_events WHERE save_id=$1',[id]); await pool.query('DELETE FROM turn_requests WHERE save_id=$1',[id]); await pool.query('DELETE FROM game_saves WHERE id=$1 AND owner_id=$2',[id,owner]); }
-    await pool.query('DELETE FROM turn_events WHERE save_id = $1', [secondSaveId]);
-    await pool.query('DELETE FROM turn_requests WHERE save_id = $1', [secondSaveId]);
-    await pool.query('DELETE FROM game_saves WHERE id = $1 AND owner_id = $2', [secondSaveId, owner]);
-    await pool.query('DELETE FROM turn_events WHERE save_id = $1', [saveId]);
-    await pool.query('DELETE FROM turn_requests WHERE save_id = $1', [saveId]);
-    await pool.query('DELETE FROM game_saves WHERE id = $1 AND owner_id = $2', [saveId, owner]);
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query("SELECT set_config('jiuxiao.account_erasure_operation','test-cleanup',true)");
+      for (const id of templateIds) { await client.query('DELETE FROM turn_events WHERE save_id=$1',[id]); await client.query('DELETE FROM turn_requests WHERE save_id=$1',[id]); await client.query('DELETE FROM game_saves WHERE id=$1 AND owner_id=$2',[id,owner]); }
+      await client.query('DELETE FROM turn_events WHERE save_id = $1', [secondSaveId]);
+      await client.query('DELETE FROM turn_requests WHERE save_id = $1', [secondSaveId]);
+      await client.query('DELETE FROM game_saves WHERE id = $1 AND owner_id = $2', [secondSaveId, owner]);
+      await client.query('DELETE FROM turn_events WHERE save_id = $1', [saveId]);
+      await client.query('DELETE FROM turn_requests WHERE save_id = $1', [saveId]);
+      await client.query('DELETE FROM game_saves WHERE id = $1 AND owner_id = $2', [saveId, owner]);
+      await client.query('COMMIT');
+    } catch (error) { await client.query('ROLLBACK'); throw error; } finally { client.release(); }
     await pool.end();
   });
   it('commits state, events, receipt and visible memory once, even when ten clients race and narration fails', async () => {
@@ -96,4 +103,26 @@ suite('ServerTurnService on isolated PostgreSQL (synthetic rules only)', () => {
     await repository.recordNarrativeStatus!(owner,saveId,intent.idempotencyKey,newAttempt,'received');
     expect((await pool.query('SELECT narrative_status FROM turn_requests WHERE save_id=$1 AND idempotency_key=$2',[saveId,intent.idempotencyKey])).rows[0].narrative_status).toBe('received');
   });
+  it('replays a 120-turn persisted game across lost commit replies and service restarts',async()=>{
+    const id=randomUUID();templateIds.push(id);
+    await pool.query('INSERT INTO game_saves(id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,snapshot) VALUES($1,$2,0,1,$3,$3,$3,$4::jsonb)',[id,owner,'fixture-only',JSON.stringify({playerId:'fixture-player',locationId:'origin',elapsedMinutes:0,facts:{items:150}})]);
+    const resolver=new RuleResolver({version:{ruleVersion:'fixture-only',ActionRulesVersion:'fixture-actions',CombatRulesVersion:'fixture-combat',canonVersion:'fixture-only',memoryPolicyVersion:'fixture-only'},resolve:(_intent,save)=>({status:'accepted',delta:{timeChange:1,locationChange:null,factChanges:[{key:'items',before:{present:true,value:save.state.facts.items},after:{present:true,value:Number(save.state.facts.items)-1}}]}})},event=>[{npcId:'long-witness',eventId:event.id,channel:'witnessed',visibleSummary:'Synthetic committed fact.'}],()=>'exact-recall-v1');
+    const before=(await repository.loadSave(owner,id))!;const events:Parameters<typeof replayEvents>[1][number][]=[];
+    for(let step=0;step<120;step++){
+      const request:ActionIntent={kind:'free_text',saveId:id,actorId:'fixture-player',expectedRevision:step,idempotencyKey:randomUUID(),payload:{text:'Synthetic one-item consumption'}};
+      const restarted=createPostgresServerTurnRepository(pool);
+      if(step%17===0){const original=restarted.commitAcceptedTurn;restarted.commitAcceptedTurn=async input=>{await original(input);throw new Error('Synthetic lost reply after durable commit');};await expect(new ServerTurnService(restarted,resolver).execute(owner,request)).rejects.toThrow('lost reply');}
+      const result=await new ServerTurnService(repository,resolver).execute(owner,request);
+      if(result.status!=='accepted'||result.receipt.decision.status!=='accepted')throw new Error('Long-game fixture failed');events.push(...result.receipt.decision.events);
+      for(let repeat=0;repeat<2;repeat++)expect(await new ServerTurnService(repository,resolver).execute(owner,request)).toMatchObject({status:'accepted',duplicate:true});
+    }
+    const after=await repository.loadSave(owner,id);expect(after).toMatchObject({revision:120,state:{elapsedMinutes:120,facts:{items:30}}});
+    expect(replayEvents(before,events,resolver.reduce.bind(resolver))).toEqual(after);
+    expect((await repository.getForOwner(owner,id))?.memories[0]?.observations).toHaveLength(120);
+    expect((await pool.query('SELECT verify_turn_event_chain($1) AS ok',[id])).rows[0].ok).toBe(true);
+    const chain=await pool.query('SELECT previous_hash,event_hash FROM turn_events WHERE save_id=$1 ORDER BY sequence',[id]);expect(chain.rows[0].previous_hash).toBe('0'.repeat(64));expect(chain.rows[1].previous_hash).toBe(chain.rows[0].event_hash);
+    const tamper=await pool.connect();try{await tamper.query('BEGIN');await tamper.query("SELECT set_config('jiuxiao.account_erasure_operation','test-cleanup',true)");await tamper.query('DELETE FROM turn_events WHERE save_id=$1 AND sequence=61',[id]);expect((await tamper.query('SELECT verify_turn_event_chain($1) AS ok',[id])).rows[0].ok).toBe(false);await tamper.query('ROLLBACK');}finally{tamper.release();}
+
+    const counts=await pool.query('SELECT count(*)::int AS count FROM turn_events WHERE save_id=$1',[id]);expect(counts.rows[0].count).toBe(120);
+  },30000);
 });

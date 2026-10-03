@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { Pool } from 'pg';
-import { afterAll, describe, expect, it } from 'vitest';
+import { beforeAll, afterAll, describe, expect, it } from 'vitest';
 import { CloudArchiveLifecycle } from './cloud-archive-lifecycle.js';
 import { CloudSaveService } from './cloud-save-service.js';
 import { PostgresCloudSaveRepository } from './postgres-cloud-save-repository.js';
@@ -11,9 +11,15 @@ suite('PostgreSQL archive deletion and verified backup restoration', () => {
   const owner = randomUUID(), other = randomUUID(); const id = `trash-${randomUUID()}`, authoritativeId = `authority-${randomUUID()}`;
   const initial = { schemaVersion: 1 as const, saveId: id, canonVersion: 'test', ruleVersion: 'test', memoryPolicyVersion: 'test', revision: 0,
     state: { playerId: 'test-player', locationId: 'gate', elapsedMinutes: 0, facts: { archiveKind: 'local-untrusted-v1', localArchive: { name: '完整原档', messages: ['完整剧情'], core: '不简化' } } } };
+  beforeAll(async()=>{for(const id of [owner,other])await pool.query('INSERT INTO auth_accounts(id,email) VALUES($1,$2) ON CONFLICT DO NOTHING',[id,id+'@fixture.invalid']);});
   afterAll(async () => {
-    await pool.query('DELETE FROM cloud_archive_trash WHERE save_id = ANY($1::text[]) AND owner_id = $2', [[id, authoritativeId], owner]);
-    await pool.query('DELETE FROM game_saves WHERE id = ANY($1::text[]) AND owner_id = $2', [[id, authoritativeId], owner]); await pool.end();
+    const client = await pool.connect();
+    try { await client.query('BEGIN'); await client.query("SELECT set_config('jiuxiao.account_erasure_operation','test-cleanup',true)");
+      await client.query('DELETE FROM cloud_archive_trash WHERE save_id = ANY($1::text[]) AND owner_id = $2', [[id, authoritativeId], owner]);
+      await client.query('DELETE FROM game_saves WHERE id = ANY($1::text[]) AND owner_id = $2', [[id, authoritativeId], owner]);
+      await client.query('COMMIT');
+    } catch (error) { await client.query('ROLLBACK'); throw error; } finally { client.release(); }
+    await pool.end();
   });
   it('owner isolation, soft deletion, stale update refusal and one-winner backup restoration', async () => {
     await service.create(owner, initial);

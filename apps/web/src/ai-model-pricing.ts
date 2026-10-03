@@ -12,6 +12,14 @@ export type ModelRate = {
 };
 
 export const MODEL_RATE_SNAPSHOT_DATE = '2026-09-28';
+export const MODEL_RATE_VALID_UNTIL = '2026-12-27';
+const snapshotAt = Date.parse(`${MODEL_RATE_SNAPSHOT_DATE}T00:00:00Z`);
+const expiresAt = Date.parse(`${MODEL_RATE_VALID_UNTIL}T00:00:00Z`);
+
+export function modelRateSnapshotStatus(now = Date.now()): 'current' | 'expired' | 'invalid-clock' {
+  if (!Number.isFinite(now) || now < snapshotAt) return 'invalid-clock';
+  return now >= expiresAt ? 'expired' : 'current';
+}
 
 const DEEPSEEK_PRICING = 'https://api-docs.deepseek.com/quick_start/pricing/';
 const MODEL_RATES: Readonly<Record<string, ModelRate>> = {
@@ -74,11 +82,9 @@ const MODEL_RATES: Readonly<Record<string, ModelRate>> = {
 };
 
 export function getModelRate(model: string, now = Date.now()): ModelRate | undefined {
+  if (modelRateSnapshotStatus(now) !== 'current') return undefined;
   const rate = MODEL_RATES[model];
   if (!rate) return undefined;
-  if (model === 'gemini-3.8-flash' && now >= Date.parse('2027-01-01T00:00:00+08:00')) {
-    return { ...rate, input: 1.5, output: 7.5, note: '标准档促销价已于 2026-12-31 结束。' };
-  }
   return rate;
 }
 
