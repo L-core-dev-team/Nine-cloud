@@ -1102,13 +1102,33 @@ async function ready(url) {
         assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), boundarySnapshot, 'a valid boundary preview must not commit a save');
         await page.locator('.import-preview').getByRole('button', { name: '取消', exact: true }).click();
         assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), boundarySnapshot, 'cancelling a boundary preview must preserve saved data');
+        // Accepted boundary input must survive the final write and a real reload, not merely preview.
+        await page.reload();
+        await page.getByRole('button', { name: '菜单' }).click();
+        await Promise.all([page.waitForEvent('download'),importInput.setInputFiles({ name:'exact-limit-final.json',mimeType:'application/json',buffer:exactLimit })]);
+        await page.locator('.import-preview').getByRole('button',{name:'导入此档',exact:true}).click();
+        await page.waitForFunction(()=>JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves.some(save=>JSON.stringify(save).includes('boundary story')));
+        await page.reload();
+        assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves.some(save=>JSON.stringify(save).includes('boundary story'))),'the accepted 20 MiB source must persist its parsed archive after reload; original byte backup was separately verified');
+        // Remove only this isolated boundary fixture from the authoritative test DB.
+        await page.evaluate(()=>new Promise((resolve,reject)=>{
+          const opened=indexedDB.open('jiuxiao-1',2);
+          opened.onsuccess=()=>{const db=opened.result,tx=db.transaction(['saves','meta'],'readwrite'),store=tx.objectStore('saves'),meta=tx.objectStore('meta');
+            const rows=store.getAll();rows.onsuccess=()=>{for(const save of rows.result)if(JSON.stringify(save).includes('boundary story'))store.delete(save.saveId);};
+            const revision=meta.get('revision');revision.onsuccess=()=>meta.put({key:'revision',value:revision.result.value+1});
+            tx.oncomplete=()=>{db.close();resolve();};tx.onerror=tx.onabort=()=>{db.close();reject(new Error('boundary fixture cleanup failed'));};
+          };opened.onerror=()=>reject(new Error('boundary fixture cleanup open failed'));
+        }));
+        await page.reload();
+        await page.getByRole('button', { name: '菜单' }).waitFor();
+        const boundaryAfterCleanup = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
         const oversized = Buffer.alloc(20 * 1024 * 1024 + 1, 0x61);
         await page.getByRole('button', { name: '菜单' }).click();
         await importInput.setInputFiles({ name: 'oversized.json', mimeType: 'application/json', buffer: oversized });
         await page.getByText(/导入失败：文件超过 20 MiB 上限/).waitFor();
         assert.equal(await page.locator('.import-preview').count(), 0, 'an oversized file must be rejected before preview');
         assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves.length), savesBeforeBadImport, 'an oversized import must not alter existing saves');
-        assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), boundarySnapshot, 'over-limit rejection must preserve the complete saved library');
+        assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), boundaryAfterCleanup, 'over-limit rejection must preserve the complete saved library');
       }
       const beforeInvalidImports = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
       const invalidImports = [

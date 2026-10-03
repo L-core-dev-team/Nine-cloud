@@ -9,6 +9,8 @@ import type { CloudArchiveLifecycle } from './services/cloud-archive-lifecycle.j
 import { mountAccount } from './routes/account.js';
 import type { AccountLifecycle } from './services/account-lifecycle.js';
 import type { AccountExport } from './services/account-export.js';
+import {mountGames} from './routes/games.js';
+import type {AuthoritativeGameService} from './services/authoritative-game.js';
 
 export type ReadinessDatabase = {
   query: (sql: string) => Promise<unknown>;
@@ -18,7 +20,7 @@ export function createApp(database?: ReadinessDatabase, cloudSaves?: {
   service: CloudSaveService;
   auth: CloudSaveRouteAuth;
   archive?: CloudArchiveLifecycle;
-}, emailAuth?: { service: EmailAuthService; origin: string; cookieSameSite?: 'Strict' | 'None'; trustedProxyAddresses?: readonly string[]; lifecycle?: AccountLifecycle; exporter?: AccountExport }, turns?: ServerTurnRouteDependencies) {
+}, emailAuth?: { service: EmailAuthService; origin: string; cookieSameSite?: 'Strict' | 'None'; trustedProxyAddresses?: readonly string[]; lifecycle?: AccountLifecycle; exporter?: AccountExport }, turns?: ServerTurnRouteDependencies & {games?:AuthoritativeGameService}) {
   const app = new Hono();
   if (emailAuth) mountAuth(app, emailAuth.service, emailAuth.origin, emailAuth.cookieSameSite, emailAuth.trustedProxyAddresses);
   if (emailAuth?.lifecycle && emailAuth.exporter) mountAccount(app, emailAuth.service, emailAuth.lifecycle, emailAuth.exporter, emailAuth.origin, emailAuth.cookieSameSite);
@@ -42,6 +44,7 @@ export function createApp(database?: ReadinessDatabase, cloudSaves?: {
   // resolver. The production entry point supplies it only when auth is enabled.
   if (cloudSaves) mountCloudSaveRoutes(app, cloudSaves);
   if (turns) mountServerTurnRoutes(app, turns);
+  if (turns?.games) mountGames(app,turns.games,turns.auth);
 
   app.notFound(c => c.json({ code: 'NOT_FOUND', message: '接口不存在。' }, 404));
   return app;

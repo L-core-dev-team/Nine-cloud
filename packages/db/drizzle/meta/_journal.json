@@ -71,6 +71,13 @@
       "when": 1790955433115,
       "tag": "0009_overjoyed_crystal",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1791018000000,
+      "tag": "0010_retention_purge_receipt",
+      "breakpoints": true
     }
   ]
 }

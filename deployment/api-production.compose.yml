@@ -1,0 +1,42 @@
+# Backend only. Pages build/deployment belongs to the independent frontend task.
+services:
+  migrate:
+    image: ${API_IMAGE:?Set the immutable tested API image digest}
+    command: ["pnpm", "--filter", "@jiuxiao/db", "db:migrate"]
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?Set private production PostgreSQL URL}
+    restart: "no"
+  api:
+    image: ${API_IMAGE:?Set the immutable tested API image digest}
+    restart: unless-stopped
+    ports: ["127.0.0.1:8787:8787"]
+    environment:
+      NODE_ENV: production
+      API_HOST: 0.0.0.0
+      API_PORT: 8787
+      DATABASE_URL: ${DATABASE_URL:?Set private production PostgreSQL URL}
+      AUTH_ENABLED: "true"
+      AUTH_PUBLIC_ORIGIN: ${AUTH_PUBLIC_ORIGIN:?Set exact HTTPS frontend origin}
+      AUTH_SECRET: ${AUTH_SECRET:?Set random server secret of at least 32 bytes}
+      AUTH_MAIL_FROM: ${AUTH_MAIL_FROM:?Set approved sender}
+      SMTP_URL: ${SMTP_URL:?Set private SMTP connection}
+      AUTH_MAIL_PREFLIGHT: "true"
+      AUTH_COOKIE_SAME_SITE: ${AUTH_COOKIE_SAME_SITE:-Strict}
+      ACCOUNT_DATA_POLICY_PATH: ${ACCOUNT_DATA_POLICY_PATH:-}
+      ACCOUNT_DATA_POLICY_VERSION: ${ACCOUNT_DATA_POLICY_VERSION:-}
+      ACCOUNT_DELETE_ENABLED: ${ACCOUNT_DELETE_ENABLED:-false}
+      TURN_RULES_MODULE: ${TURN_RULES_MODULE:-}
+      NARRATIVE_CONFIG_PATH: ${NARRATIVE_CONFIG_PATH:-}
+      NARRATIVE_OUTPUT_BUDGET: ${NARRATIVE_OUTPUT_BUDGET:-32768}
+    # Optional host-owned reviewed rules/config/keys, mounted read-only; never web assets.
+    env_file: ["./api.private.env"]
+    volumes: ["./runtime:/run/jiuxiao:ro"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8787/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 4s
+      retries: 6
+      start_period: 10s

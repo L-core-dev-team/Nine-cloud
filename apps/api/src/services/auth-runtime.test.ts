@@ -12,6 +12,7 @@ describe('auth deployment configuration', () => {
   });
   it('rejects non-HTTPS origins, weak secrets and unexpected transport schemes', () => {
     expect(() => createEmailAuthRuntime(pool, { ...base, AUTH_PUBLIC_ORIGIN: 'http://game.example.invalid' })).toThrow('Invalid AUTH_PUBLIC_ORIGIN');
+    expect(() => createEmailAuthRuntime(pool, { ...base, NODE_ENV:'production', AUTH_PUBLIC_ORIGIN:'http://localhost:5173' })).toThrow('HTTPS');
     expect(() => createEmailAuthRuntime(pool, { ...base, AUTH_SECRET: 'short' })).toThrow('AUTH_SECRET');
     expect(() => createEmailAuthRuntime(pool, { ...base, SMTP_URL: 'https://example.invalid' })).toThrow('SMTP_URL must use SMTP');
   });

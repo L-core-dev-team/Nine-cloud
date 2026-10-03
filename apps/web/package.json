@@ -9,6 +9,17 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run"
   },
-  "dependencies": { "@jiuxiao/contracts": "workspace:*", "@jiuxiao/content": "workspace:*", "react": "19.3.0", "react-dom": "19.3.0" },
-  "devDependencies": { "@types/react": "19.3.0", "@types/react-dom": "19.3.0", "@vitejs/plugin-react": "6.1.1", "vite": "8.3.0" }
+  "dependencies": {
+    "@jiuxiao/contracts": "workspace:*",
+    "@jiuxiao/content": "workspace:*",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "@jiuxiao/domain": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.1",
+    "vite": "8.3.0"
+  }
 }

@@ -14,10 +14,10 @@ function canonical(v){if(Array.isArray(v))return `[${v.map(canonical).join(',')}
  let ready=false;for(let i=0;i<100;i++){try{if((await fetch(origin)).ok){ready=true;break;}}catch{}await new Promise(r=>setTimeout(r,100));}assert.ok(ready);
  const edge='C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';const executablePath=process.env.PLAYWRIGHT_BROWSER_EXECUTABLE||(process.platform==='win32'&&existsSync(edge)?edge:undefined);
  const browser=await chromium.launch(executablePath?{executablePath}:{});const evidence=[];
- try{for(const [width,height]of[[390,844],[393,852],[402,874],[430,932]]){
- const context=await browser.newContext({viewport:{width,height},isMobile:true,hasTouch:true});const page=await context.newPage();let committed=null,calls=0,narrationCalls=0;
+ try{await require('./creation-race.cjs').checkCreationRace(browser,origin);for(const [width,height]of[[390,844],[393,852],[402,874],[430,932]]){
+ const context=await browser.newContext({viewport:{width,height},isMobile:true,hasTouch:true});let page=await context.newPage();let committed=null,calls=0,narrationCalls=0;
  const save={schemaVersion:1,saveId:'fixture',canonVersion:'fixture-only',ruleVersion:'fixture-only',memoryPolicyVersion:'fixture-only',revision:0,state:{playerId:'player',locationId:'fixture-gate',elapsedMinutes:0,facts:{}}};
- await page.route('**/api/**',async route=>{const url=new URL(route.request().url());let body;
+ await context.route('**/api/**',async route=>{const url=new URL(route.request().url());let body;
  if(url.pathname==='/api/auth/session')body={account:{id:'fixture-owner',email:'synthetic@example.invalid'}};
  else if(url.pathname==='/api/saves')body={saves:[save]};
  else if(url.pathname==='/api/saves/fixture')body={save:{...save,revision:committed?1:0}};
@@ -28,11 +28,11 @@ function canonical(v){if(Array.isArray(v))return `[${v.map(canonical).join(',')}
  if(requestNarrative){narrationCalls++;if(narrationCalls===1){await new Promise(r=>setTimeout(r,500));try{await route.fulfill({json:{status:'accepted',receipt:committed,narrative:{status:'failed'}}});}catch{}return;}body={status:'accepted',receipt:committed,narrative:{status:'received',text:'规则已提交，只有叙事展示。'}};}
  else{calls++;if(calls===1){await route.abort('failed');return;}body={status:'accepted',duplicate:true,receipt:committed,narrative:{status:'not_requested'}};}
  }else throw new Error('Unexpected route');await route.fulfill({json:body});});
- await page.goto(`${origin}/turns`);await page.getByLabel('权威存档').selectOption('fixture');await page.getByLabel('行动意图').fill('测试行动');await page.getByRole('button',{name:'提交行动',exact:true}).click();
+ await page.goto(`${origin}/turns`);await page.getByLabel('权威存档').selectOption('fixture');await page.getByLabel('行动意图',{exact:true}).fill('测试行动');await page.getByRole('button',{name:'提交行动',exact:true}).click();
  await page.getByText('服务未就绪或结果尚未确认。原请求已保留；恢复时核对原请求，不会创建新的结算请求。',{exact:true}).waitFor();
- await page.reload();await page.getByLabel('权威存档').selectOption('fixture');const recover=page.getByRole('button',{name:'恢复核对原请求',exact:true});await recover.waitFor();await recover.click();await page.getByText('权威结果已确认，可单独生成叙事。',{exact:true}).waitFor();assert.equal(calls,2);
+ await page.close();page=await context.newPage();await page.goto(`${origin}/turns`);await page.getByLabel('权威存档').selectOption('fixture');const recover=page.getByRole('button',{name:'恢复核对原请求',exact:true});await recover.waitFor();await recover.click();await page.getByText('权威结果已确认，可单独生成叙事。',{exact:true}).waitFor();assert.equal(calls,2);
  await page.getByRole('button',{name:'生成或重试叙事'}).click();await page.getByRole('button',{name:'取消叙事生成'}).click();await page.getByText('回执已确认。叙事或状态刷新未完成，可重试；不会重复结算。',{exact:true}).waitFor();
  await page.getByRole('button',{name:'生成或重试叙事'}).click();await page.getByText('规则已提交，只有叙事展示。',{exact:true}).waitFor();assert.equal(calls,2);
- assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),width,'Mobile turn UI must not overflow');evidence.push({width,height,lostAckRecovered:true,cancelKeepsReceipt:true,syntheticFixture:true});await context.close();
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),width,'Mobile turn UI must not overflow');evidence.push({width,height,lostAckRecovered:true,pageClosedBeforeRecovery:true,cancelKeepsReceipt:true,syntheticFixture:true});await context.close();
  }}finally{await browser.close();}mkdirSync(join(root,'test-results/turns'),{recursive:true});writeFileSync(join(root,'test-results/turns/recovery.json'),JSON.stringify({physicalDeviceAcceptance:false,evidence},null,2)+'\n');console.log('Turn recovery: four mobile viewports passed (synthetic fixture).');
 })().catch(error=>{console.error(error);process.exitCode=1;}).finally(()=>child.kill());

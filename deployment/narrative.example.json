@@ -1,0 +1,11 @@
+{
+ "story": {
+  "enabled": false,
+  "required": true,
+  "dependencies": [],
+  "timeoutMs": 20000,
+  "maxOutputTokens": 4096,
+  "retries": 1,
+  "primary": {"protocol":"openai-chat","baseUrl":"https://provider.example.invalid","model":"REPLACE_WITH_APPROVED_MODEL","keyEnv":"NARRATIVE_KEY_STORY"}
+ }
+}

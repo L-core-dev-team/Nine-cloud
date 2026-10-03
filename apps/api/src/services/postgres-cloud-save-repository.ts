@@ -2,6 +2,7 @@ import type { SaveEnvelope } from '@jiuxiao/contracts';
 import { SaveEnvelopeSchema } from '@jiuxiao/contracts';
 import type { Pool, PoolClient, QueryResultRow } from 'pg';
 import { CloudCapacityError, type CloudSaveRepository } from './cloud-save-service.js';
+import { assertDataPolicy, checkQuota, type DataPolicy } from './data-policy.js';
 
 interface SaveRow extends QueryResultRow {
   id: string;
@@ -33,7 +34,30 @@ const MAX_ACCOUNT_BYTES = 10_000_000;
 
 /** PostgreSQL implementation; every read/write is scoped by the session owner. */
 export class PostgresCloudSaveRepository implements CloudSaveRepository {
-  constructor(private readonly pool: Pool, private readonly requiresLiveAccount = false) {}
+  constructor(private readonly pool: Pool, private readonly requiresLiveAccount = false, protected readonly policy?: DataPolicy) {}
+
+  private limits() {
+    if (this.policy) assertDataPolicy(this.policy);
+    return {
+      maxSaves: this.policy?.maxSaves ?? MAX_ACCOUNT_SAVES,
+      perSaveBytes: this.policy?.perSaveBytes ?? MAX_SAVE_BYTES,
+      totalBytes: this.policy?.totalBytes ?? MAX_ACCOUNT_BYTES,
+    };
+  }
+
+  private checkCapacity(usage: { count: number; bytes: number }, bytes: number, replacedBytes: number | null) {
+    if (this.policy) {
+      try { checkQuota(this.policy, usage, bytes, replacedBytes); }
+      catch (error) {
+        if (error instanceof Error && error.message === 'CLOUD_QUOTA_EXCEEDED') throw new CloudCapacityError();
+        throw error;
+      }
+      return;
+    }
+    const limits = this.limits();
+    if (bytes > limits.perSaveBytes || usage.bytes - (replacedBytes ?? 0) + bytes > limits.totalBytes ||
+      (replacedBytes === null && usage.count >= limits.maxSaves)) throw new CloudCapacityError();
+  }
 
   private async capacityTransaction<T>(ownerId: string, action: (client: PoolClient) => Promise<T>): Promise<T> {
     const client = await this.pool.connect();
@@ -89,11 +113,11 @@ export class PostgresCloudSaveRepository implements CloudSaveRepository {
   }
 
   async createForOwner(ownerId: string, save: SaveEnvelope): Promise<boolean> {
-    if (Buffer.byteLength(JSON.stringify(save), 'utf8') > MAX_SAVE_BYTES) throw new CloudCapacityError();
+    if (Buffer.byteLength(JSON.stringify(save), 'utf8') > this.limits().perSaveBytes) throw new CloudCapacityError();
     return this.capacityTransaction(ownerId, async client => {
       const usage = await this.accountUsage(client, ownerId);
       const bytes = await this.snapshotBytes(client, save.state);
-      if (usage.count >= MAX_ACCOUNT_SAVES || usage.bytes + bytes > MAX_ACCOUNT_BYTES) throw new CloudCapacityError();
+      this.checkCapacity(usage, bytes, null);
       const result = await client.query(
       `${this.requiresLiveAccount ? 'WITH live_account AS (SELECT id FROM auth_accounts WHERE id=$2 AND closed_at IS NULL FOR KEY SHARE) ' : ''}INSERT INTO game_saves
         (id, owner_id, revision, schema_version, canon_version, rule_version, memory_policy_version, snapshot)
@@ -112,7 +136,7 @@ export class PostgresCloudSaveRepository implements CloudSaveRepository {
     expectedRevision: number;
     next: SaveEnvelope;
   }): Promise<{ kind: 'updated' } | { kind: 'conflict'; currentRevision: number } | { kind: 'not_found' }> {
-    if (Buffer.byteLength(JSON.stringify(input.next), 'utf8') > MAX_SAVE_BYTES) throw new CloudCapacityError();
+    if (Buffer.byteLength(JSON.stringify(input.next), 'utf8') > this.limits().perSaveBytes) throw new CloudCapacityError();
     return this.capacityTransaction(input.ownerId, async client => {
     const current = await client.query<{ revision: number; bytes: number }>(
       `SELECT revision, octet_length(snapshot::text)::int AS bytes FROM game_saves WHERE id=$1 AND owner_id=$2
@@ -123,7 +147,7 @@ export class PostgresCloudSaveRepository implements CloudSaveRepository {
     if (current.rows[0].revision !== input.expectedRevision) return { kind: 'conflict', currentRevision: current.rows[0].revision };
     const usage = await this.accountUsage(client, input.ownerId);
     const bytes = await this.snapshotBytes(client, input.next.state);
-    if (usage.bytes - current.rows[0].bytes + bytes > MAX_ACCOUNT_BYTES) throw new CloudCapacityError();
+    this.checkCapacity(usage, bytes, current.rows[0].bytes);
     const result = await client.query(
       `${this.requiresLiveAccount ? 'WITH live_account AS (SELECT id FROM auth_accounts WHERE id=$2 AND closed_at IS NULL FOR KEY SHARE) ' : ''}UPDATE game_saves
          SET revision = $4, schema_version = $5, canon_version = $6, rule_version = $7,

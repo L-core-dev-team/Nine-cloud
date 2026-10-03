@@ -80,6 +80,9 @@ function publicError(error: unknown): Response {
   if (error instanceof CloudCapacityError) {
     return Response.json({ code: 'CAPACITY_EXCEEDED', message: '云端存档已达到数量或容量上限。请整理存档后重试。' }, { status: 413 });
   }
+  if (error instanceof Error && error.message === 'DATA_POLICY_NOT_READY') {
+    return Response.json({ code: 'DATA_POLICY_NOT_READY' }, { status: 503 });
+  }
   if (error instanceof TypeError) {
     return Response.json({ code: 'INVALID_SAVE', message: '存档内容不符合当前版本要求。' }, { status: 400 });
   }
