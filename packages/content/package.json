@@ -10,6 +10,10 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./realm-order": {
+      "types": "./dist/realm-order.d.ts",
+      "default": "./dist/realm-order.js"
+    },
     "./scenes": {
       "types": "./dist/scenes/manifest.d.ts",
       "default": "./dist/scenes/manifest.js"

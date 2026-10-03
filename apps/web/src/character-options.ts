@@ -1,4 +1,4 @@
-import { REALM_ORDER } from '@jiuxiao/content';
+import { REALM_ORDER } from '@jiuxiao/content/realm-order';
 
 // These are editable writing suggestions, never authoritative character grants.
 export const CHARACTER_OPTIONS: Record<string, readonly string[]> = {

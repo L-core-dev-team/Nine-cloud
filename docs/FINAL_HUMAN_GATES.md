@@ -13,7 +13,7 @@ CI 产物中的本文件会自动填入以下信息；源码模板中的占位�
 - BUILD_ID: {{BUILD_ID}}
 - CI_RUN: {{CI_RUN}}
 
-验收从 PR #33 的此 SHA 成功 CI 下载 `jiuxiao-engineering-review-<RC_SHA>`，核对 `review-bundle/RC_MANIFEST.json` 及 `artifact-manifest.sha256`。不要用旧截图、main 或后来改动的构建代签。任何修订先生成新 CI 和指纹。
+验收从**待审 PR 当前 head 的同 SHA 成功 CI**下载 `jiuxiao-engineering-review-<RC_SHA>`，核对 `review-bundle/RC_MANIFEST.json` 及 `artifact-manifest.sha256`。PR #33 已合入 main；它的旧产物只证明当时提交，不证明本次审计分支。不要用旧截图、旧 main 或后来改动的构建代签。任何修订先生成新 CI 和指纹。CI 只证明自动检查通过，不能替代作者、运营方或设备验收。
 
 ## G-03 / G-04b：作者正式规则与记忆语义
 
@@ -47,7 +47,7 @@ LYL 已报告的 DeepSeek 199 ms 成功保留，不重记为没测试；仍需�
 
 ## G-06 / EXT-01：真实生产资源和数据政策
 
-目前未提供已部署的公开 HTTPS API Base URL，状态 `PUBLIC_API_BASE_URL_PENDING`。正式客户端不能使用 localhost。本任务只交付 Auth API，Pages 部署由另一任务负责。
+截至本文件所记录的主线核查，未发现已部署的公开 HTTPS API Base URL，状态 `PUBLIC_API_BASE_URL_PENDING`。正式客户端不能使用 localhost。仓库提供 Auth API 与部署合同；Pages 部署和公开 API 资源须以实际环境证据单独核验。
 
 负责人提供：公网 HTTPS 后端/访问权、PostgreSQL、发件域与 SMTP 凭据、私有 AUTH_SECRET、准确前端 Origin、批准数据政策和冷备处理。密钥只设服务端私有环境，不发聊天或 Git。政策须包含版本/期限、双方真实批准、快照配额、软删保留、冷备清除依据；缺失/到期禁止生产写入和相关破坏性操作。
 
@@ -59,4 +59,4 @@ Pass：真实邮件到达、同一部署 SHA/Schema/policy 可追溯，账号隔
 
 ## 合并边界
 
-CI 绿色仅证明工程候选。没有以上必需回执前不 merge main，不发布。PR Ready 表示可审工程，不表示真人 Gate 已通过；不代签另一作者。
+工程修复可以在同 SHA CI 通过、同行审阅后单独合入 main；这只完成代码交付，不代表阶段签收或可发布。公开发布/生产启用前，仍须取得上列适用的规则、Canon、授权、联合 G1、数据政策和生产资源证据。PR Ready、main 合入与真人 Gate 是不同状态；不代签另一作者。
