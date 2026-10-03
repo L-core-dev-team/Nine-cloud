@@ -9,6 +9,7 @@ const validFacts = {
   cultivationProgress: 0,
   fatigueCount: 0,
   inventory: [{ itemId: 'fixture_item', quantity: 1 }],
+  collectedSources: [],
   effectFlags: [],
   clues: [],
   observationLog: [],
@@ -37,6 +38,13 @@ describe('P1 prologue facts contract', () => {
     expect(PrologueV1FactsSchema.safeParse({
       ...validFacts,
       locationGraph: [{ from: 'a', to: 'b', state: 'unknown' }],
+    }).success).toBe(false);
+  });
+
+  it('rejects duplicate one-time acquisition sources', () => {
+    expect(PrologueV1FactsSchema.safeParse({
+      ...validFacts,
+      collectedSources: ['source_a', 'source_a'],
     }).success).toBe(false);
   });
 

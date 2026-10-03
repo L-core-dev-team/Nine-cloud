@@ -47,6 +47,10 @@ export const PrologueV1FactsSchema = z.strictObject({
   cultivationProgress: z.int().min(0).max(10_000),
   fatigueCount: z.int().nonnegative(),
   inventory: z.array(inventoryEntrySchema).max(32),
+  collectedSources: z.array(id).max(512).refine(
+    sourceIds => new Set(sourceIds).size === sourceIds.length,
+    'collectedSources must not contain duplicate source IDs',
+  ),
   effectFlags: z.array(id).max(256),
   clues: z.array(id).max(512),
   observationLog: z.array(observationEntrySchema).max(2048),
