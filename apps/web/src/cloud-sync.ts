@@ -46,7 +46,7 @@ export class CloudHttpError extends Error { constructor(readonly status: number,
 export async function cloudRequest(path: string, method = 'GET', body?: unknown, expectedOwner?: string, cancellation?: AbortSignal, maximumBytes = 1_000_000): Promise<Record<string, unknown>> {
   if (!Number.isSafeInteger(maximumBytes) || maximumBytes < 1 || maximumBytes > 32_000_000) throw new Error('INVALID_RESPONSE_BOUND');
   const deadline = AbortSignal.timeout(20000);
-  const response = await fetch(path, { method, credentials: 'same-origin', cache: 'no-store', signal: cancellation ? AbortSignal.any([deadline, cancellation]) : deadline,
+  const response = await fetch(path, { method, credentials: 'include', cache: 'no-store', signal: cancellation ? AbortSignal.any([deadline, cancellation]) : deadline,
     headers: { ...(expectedOwner ? { 'x-jiuxiao-account': expectedOwner } : {}), ...(body === undefined ? {} : { 'content-type': 'application/json' }) },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
   if (!response.ok) {

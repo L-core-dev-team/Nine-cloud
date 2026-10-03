@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { CloudHttpError, CloudSync, IndexedCloudQueue, archiveFromEnvelope, type CloudRecord, type CloudQueueStore } from './cloud-sync';
+import { cloudRequest, CloudHttpError, CloudSync, IndexedCloudQueue, archiveFromEnvelope, type CloudRecord, type CloudQueueStore } from './cloud-sync';
 import type { LocalSave } from './storage';
 import type { SaveEnvelope } from '@jiuxiao/contracts';
 
@@ -12,6 +12,10 @@ class Store implements CloudQueueStore {
   async update(key: string, change: (r: CloudRecord | undefined) => CloudRecord) { const next = change(structuredClone(this.rows.get(key))); this.rows.set(key, structuredClone(next)); return next; }
 }
 describe('cloud queue connections', () => {
+  it('sends session credentials at the Auth API transport boundary',async()=>{
+    const transport=vi.fn(async(_path:RequestInfo|URL,_init?:RequestInit)=>new Response('{}',{headers:{'content-type':'application/json'}}));vi.stubGlobal('fetch',transport);
+    try{await cloudRequest('/api/auth/session');expect(transport.mock.calls[0]?.[1]).toMatchObject({credentials:'include',cache:'no-store'});}finally{vi.unstubAllGlobals();}
+  });
   it('closes a late connection after reporting a blocked open, without starting a transaction', async () => {
     const close = vi.fn(); const transaction = vi.fn();
     const request = { result: { close, transaction }, onsuccess: null as (() => void) | null,

@@ -26,10 +26,8 @@ export interface CloudSaveRepository {
 
 const MAX_POSTGRES_INTEGER = 2_147_483_647;
 const MAX_IDENTIFIER_LENGTH = 200;
-/** SEC-06: new cloud saves must use a restrictive identifier format. This keeps
- *  the client-chosen global primary key from carrying path/URL meta-characters;
- *  residual 201-vs-409 occupancy probing is inherent to client-chosen ids and is
- *  tracked for the server-side-generation decision under the G-06 lifecycle review. */
+/** SEC-06: bound legacy identifiers; production new archives additionally require
+ * the authenticated owner's namespace and never query global occupancy. */
 const SAVE_ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$/;
 
 function requireOwnerId(ownerId: string): string {

@@ -1,3 +1,4 @@
+import {createHash,randomUUID} from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import type { SaveEnvelope } from '@jiuxiao/contracts';
 import { CloudSaveService, type CloudSaveRepository } from './cloud-save-service.js';
@@ -49,6 +50,18 @@ class MemoryCloudSaveRepository implements CloudSaveRepository {
 }
 
 describe('CloudSaveService', () => {
+  it('does not distinguish absent and occupied foreign archive IDs in production',async()=>{
+    const repository=new MemoryCloudSaveRepository(),service=new CloudSaveService(repository,false,true);
+    const candidate={...envelope(),saveId:'archive-'+createHash('sha256').update('other').digest('hex').slice(0,16)+'-'+randomUUID()};
+    await expect(service.create('owner',candidate)).rejects.toThrow('Save ID is invalid.');
+    repository.records.set(candidate.saveId,{ownerId:'other',save:candidate});
+    await expect(service.create('owner',candidate)).rejects.toThrow('Save ID is invalid.');
+    const owned={...candidate,saveId:'archive-'+createHash('sha256').update('owner').digest('hex').slice(0,16)+'-'+randomUUID()};
+    expect((await service.create('owner',owned)).kind).toBe('created');
+    expect((await service.create('owner',owned)).kind).toBe('conflict');
+    repository.records.set('legacy-ack',{ownerId:'owner',save:{...candidate,saveId:'legacy-ack'}});
+    expect((await service.create('owner',{...candidate,saveId:'legacy-ack'})).kind).toBe('conflict');
+  });
   it('production client-archive mode cannot create or overwrite authoritative state', async () => {
     const repository = new MemoryCloudSaveRepository();
     await repository.createForOwner('a', envelope());
