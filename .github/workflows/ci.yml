@@ -61,11 +61,10 @@ jobs:
         # with exactly LICENSE_PENDING; flip this step to require success once the
         # manifest is verified (BIRD-04 / G-05 closure).
         run: |
-          mkdir -p test-results
-          if pnpm --filter @jiuxiao/web build 2>test-results/media-gate.log; then
+          if pnpm --filter @jiuxiao/web build 2>"$RUNNER_TEMP/media-gate.log"; then
             echo "release build must fail while media licenses are unverified"; exit 1
           fi
-          grep -q "LICENSE_PENDING" test-results/media-gate.log
+          grep -q "LICENSE_PENDING" "$RUNNER_TEMP/media-gate.log"
         env:
           JIUXIAO_BUILD_TARGET: release
       - name: Build and smoke the production API container

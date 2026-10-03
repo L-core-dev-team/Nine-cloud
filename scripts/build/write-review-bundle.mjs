@@ -6,7 +6,8 @@ import { resolve, relative } from 'node:path';
 
 const root = resolve(import.meta.dirname, '../..');
 const commit = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim();
-if (execFileSync('git', ['status', '--porcelain=v1'], { cwd: root, encoding: 'utf8' }).trim()) throw new Error('Review artifacts require a clean source tree');
+const dirtyPaths = execFileSync('git', ['status', '--porcelain=v1'], { cwd: root, encoding: 'utf8' }).trim();
+if (dirtyPaths) throw new Error(`Review artifacts require a clean source tree:\n${dirtyPaths}`);
 const files = [];
 const walk = path => {
   for (const entry of readdirSync(path, { withFileTypes: true }).sort((a,b) => a.name.localeCompare(b.name))) {
