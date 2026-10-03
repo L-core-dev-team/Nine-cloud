@@ -1,0 +1,77 @@
+{
+  "status": "internal-candidate",
+  "sourceAndLicense": "unverified",
+  "authorApproval": "pending",
+  "source": "packages/scene-gate/src/index.ts",
+  "seconds": 8,
+  "fps": 30,
+  "generatedAt": "2026-10-03T16:13:43.131Z",
+  "modelUsage": {
+    "exportModelCalls": 0,
+    "authoringTokens": null,
+    "authoringMetering": "unavailable in this Codex session"
+  },
+  "elapsedSeconds": 41,
+  "files": [
+    {
+      "path": "mountain-gate.landscape.mp4",
+      "sha256": "a3ff1d957caab3ecb224c904b838e47855359dec51132c6277d89bfa7d6ca9d4",
+      "bytes": 118184
+    },
+    {
+      "path": "mountain-gate.landscape.webp",
+      "sha256": "1e03ef5979f26de462aead91aa71b3d50368dfe60f1da576ac40f151378c7f92",
+      "bytes": 9080
+    },
+    {
+      "path": "mountain-gate.landscape.contact.png",
+      "sha256": "215f096fceaa2204b8df13e22c0397f5e45f3794845e084762bbf1453704c212",
+      "bytes": 242742
+    },
+    {
+      "path": "key-000.landscape.png",
+      "sha256": "b9f1445b8e72cecc471a072f37eedba6b933225d7a8c14eab5793aab4fcdfdd6",
+      "bytes": 91128
+    },
+    {
+      "path": "key-080.landscape.png",
+      "sha256": "29b9acb7180b18111ecaf2de523dd4953ef377e009d985bc3f0e653a7dd2978b",
+      "bytes": 91577
+    },
+    {
+      "path": "key-160.landscape.png",
+      "sha256": "d673355c92db362edbfbd7aa3b609bb2dafeb627609473fe8476468b1bab42da",
+      "bytes": 91270
+    },
+    {
+      "path": "mountain-gate.portrait.mp4",
+      "sha256": "5a9d09433501c16d770e69e6c9517c87b044d950261b1968aaeb447360c68e51",
+      "bytes": 84144
+    },
+    {
+      "path": "mountain-gate.portrait.webp",
+      "sha256": "7ddd1eee00847c56145c5d67b84ee300aaa3f847f7a5d52b04593ead36add4d6",
+      "bytes": 6946
+    },
+    {
+      "path": "mountain-gate.portrait.contact.png",
+      "sha256": "3130083acaa56f47d1dcc2e57c4728f9b019101f2984bdde0fffba761ae40715",
+      "bytes": 398480
+    },
+    {
+      "path": "key-000.portrait.png",
+      "sha256": "255b50f260ba4bb78a9e47a3319ae0316041ada8aa88c8f5bd6cda839c6a2a1b",
+      "bytes": 66298
+    },
+    {
+      "path": "key-080.portrait.png",
+      "sha256": "b863a4f04dfd4aede088b40bb60a7392ec0fd594e43f4a5f7ac3f239814effb0",
+      "bytes": 67180
+    },
+    {
+      "path": "key-160.portrait.png",
+      "sha256": "039e612fd3c8a26a226ded0ab01e56731a19e6962101b009150580a041a141a1",
+      "bytes": 66804
+    }
+  ]
+}
