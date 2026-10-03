@@ -266,13 +266,13 @@ function normalizeCommit(input: AcceptedTurnCommitInput): NormalizedCommit {
     nextJournal.saveId !== save.saveId ||
     nextJournal.revision !== save.revision ||
     events.length === 0 ||
-    canonicalJson(events) !== canonicalJson(receipt.decision.events)) {
+    canonicalJson(events) !== canonicalJson(receipt.decision.events.map(event => DomainEventSchema.parse(event)))) {
     throw new TypeError('Turn commit data does not describe one accepted save transition.');
   }
 
   const eventIds: string[] = [];
   for (const event of events) {
-    if (event.saveId !== save.saveId || event.beforeRevision !== input.expectedRevision ||
+    if (event.saveId !== save.saveId || event.branchId !== 'root' || event.beforeRevision !== input.expectedRevision ||
       event.afterRevision !== save.revision || event.source !== 'RULES' || event.ruleVersion !== save.ruleVersion) {
       throw new TypeError('Turn events do not match the accepted rules revision.');
     }

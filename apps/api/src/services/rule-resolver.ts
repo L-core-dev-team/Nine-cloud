@@ -21,9 +21,9 @@ export class RuleResolver implements ServerTurnRules {
   if(result.status==='clarify')return {...result,revision:save.revision};
   const delta=StateDeltaSchema.parse(result.delta), before=WorldStateSchema.parse(save.state), after=applyStateDelta(before,delta);
   const bytes=hash(`${save.saveId}\0${intent.idempotencyKey}`).slice(0,32).split('');bytes[12]='8';bytes[16]='8';const hex=bytes.join('');const eventId=`${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20)}`;
-  const event:DomainEvent={id:eventId,saveId:save.saveId,type:'RULE_STATE_DELTA_V1',beforeRevision:save.revision,afterRevision:save.revision+1,occurredAt:new Date().toISOString(),source:'RULES',ruleVersion:this.ruleVersion,
+  const event:DomainEvent={id:eventId,saveId:save.saveId,branchId:intent.branchId,type:'RULE_STATE_DELTA_V1',beforeRevision:save.revision,afterRevision:save.revision+1,occurredAt:new Date().toISOString(),source:'RULES',ruleVersion:this.ruleVersion,
    payload:{turnId:intent.idempotencyKey,action:intent.kind,stateBefore:before,stateDelta:delta,stateAfter:after,stateBeforeHash:hash(before),stateAfterHash:hash(after),ActionRulesVersion:this.version.ActionRulesVersion,CombatRulesVersion:this.version.CombatRulesVersion,narrativeStatus:'not_requested'}};
-  return {status:'accepted',events:[event],nextRevision:save.revision+1};
+  return {status:'accepted',outcome:'success',events:[event],nextRevision:save.revision+1};
  }
  reduce(state:Parameters<ServerTurnRules['reduce']>[0],event:DomainEvent){
   if(event.type!=='RULE_STATE_DELTA_V1'||event.ruleVersion!==this.ruleVersion||event.source!=='RULES')throw new Error('INVALID_RULE_EVENT');

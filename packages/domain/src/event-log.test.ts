@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { ActionIntent, Decision, DomainEvent, SaveEnvelope } from '@jiuxiao/contracts';
+import type { ActionIntent, ActionIntentInput, Decision, DomainEvent, SaveEnvelope, TurnReceipt } from '@jiuxiao/contracts';
 import { prepareTurn, replayEvents, TurnBoundaryError, type EventReducer } from './event-log.js';
 import { evaluate } from './rules.js';
+import { canonicalJson } from './state-delta.js';
 
 const initialSave = (): SaveEnvelope => ({
   schemaVersion: 1,
@@ -16,6 +17,7 @@ const initialSave = (): SaveEnvelope => ({
 const intent = (destinationId = 'fixture-destination', expectedRevision = 0): ActionIntent => ({
   saveId: 'fixture-save',
   actorId: 'fixture-player',
+  branchId: 'root',
   expectedRevision,
   idempotencyKey: '2fa2ebad-1065-4ef4-9a9b-51407a998ad5',
   kind: 'move',
@@ -32,10 +34,12 @@ const reducer: EventReducer = (state, event) => {
 
 const acceptedDecision = (save: SaveEnvelope, ids = ['11111111-1111-4111-8111-111111111111', '22222222-2222-4222-8222-222222222222']): Decision => ({
   status: 'accepted',
+  outcome: 'success',
   nextRevision: save.revision + 1,
   events: ids.map((id, index): DomainEvent => ({
     id,
     saveId: save.saveId,
+    branchId: 'root',
     type: 'FIXTURE_INCREMENT',
     beforeRevision: save.revision,
     afterRevision: save.revision + 1,
@@ -81,6 +85,40 @@ describe('S3 event log and turn boundary', () => {
     const duplicate = await prepareTurn({ intent: intent(), save: first.save, priorReceipt: first.receipt, decide: decision, reduce: reducer });
     expect(duplicate).toEqual({ status: 'duplicate', receipt: first.receipt });
     expect(decision).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps a root-branch retry compatible with a v1 fingerprint that omitted branchId', async () => {
+    const save = initialSave();
+    const legacyIntent: ActionIntentInput = {
+      saveId: 'fixture-save',
+      actorId: 'fixture-player',
+      expectedRevision: 0,
+      idempotencyKey: '2fa2ebad-1065-4ef4-9a9b-51407a998ad5',
+      kind: 'move',
+      payload: { destinationId: 'fixture-destination' },
+    };
+    const digest = await globalThis.crypto.subtle.digest(
+      'SHA-256',
+      new TextEncoder().encode(canonicalJson(legacyIntent)),
+    );
+    const requestFingerprint = `sha256:v1:${Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('')}`;
+    const priorReceipt: TurnReceipt = {
+      idempotencyKey: legacyIntent.idempotencyKey,
+      saveId: legacyIntent.saveId,
+      requestFingerprint,
+      decision: { status: 'rejected', code: 'INPUT_UNKNOWN_ACTION', message: 'legacy receipt', revision: 0 },
+      resultingRevision: 0,
+    };
+
+    const result = await prepareTurn({
+      intent: legacyIntent,
+      save,
+      priorReceipt,
+      decide: vi.fn(() => acceptedDecision(save)),
+      reduce: reducer,
+    });
+
+    expect(result).toEqual({ status: 'duplicate', receipt: priorReceipt });
   });
 
   it('rejects a duplicate receipt when the supplied snapshot belongs to another save', async () => {
