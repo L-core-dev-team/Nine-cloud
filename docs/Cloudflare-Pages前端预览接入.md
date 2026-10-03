@@ -8,7 +8,7 @@
 - 构建命令：`pnpm build:pages-preview`。
 - 输出目录：`apps/web/dist`。
 - 构建环境：Node 24；pnpm 版本以根 `packageManager` 为准。
-- 该命令只构建 contracts、content 和 web，并检查产物；不构建或启动 API。
+- 该命令只构建 contracts、content、domain 和 web，并检查产物；不构建或启动 API。
 - 场景素材仍标记为未完成授权/作者审批。本预览不复制 `public/scenes`，只发布已附 OFL 许可证的字体；界面使用现有程序绘制与颜色层，场景图片、视频和图鉴插图暂不可见。普通本地构建的素材规则保持原样。
 - 不创建顶层 `404.html`，使用 Pages 自带的 SPA 路由回退。
 
@@ -53,3 +53,5 @@ Cloudflare 会在成功上传后返回实际预览 URL。不能用项目名猜�
 - 本任务不修改 main，不签署登录链路或 1.0 生产发布验收。
 
 参考：[Pages 构建配置](https://developers.cloudflare.com/pages/configuration/build-configuration/)、[SPA 回退](https://developers.cloudflare.com/pages/configuration/serving-pages/)、[预览与 Access](https://developers.cloudflare.com/pages/configuration/preview-deployments/)、[Direct Upload](https://developers.cloudflare.com/pages/get-started/direct-upload/)。
+
+兼容交叉点：账号与云档页面仅为 API_BASE_URL_NOT_CONFIGURED 增加明确的预览提示；原认证、账号隔离、CAS、队列及其他错误处理保持不变。
