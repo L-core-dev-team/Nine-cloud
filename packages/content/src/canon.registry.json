@@ -1785,6 +1785,50 @@
       "updatedAt": "2026-09-26"
     }
   ],
+  "authorOriginalIntakes": [
+    {
+      "id": "p1_prologue_author_original_20261003",
+      "status": "approved_for_p1_candidate_input",
+      "recordedAt": "2026-10-03",
+      "reviewTargetSha": "0360185549154ee4267e6054500bc20afafab225",
+      "sourceArtifact": {
+        "path": "docs/acceptance/2026-10-03/九霄1.0-P0玩法双记忆验收记录表-2026-10-03.xlsx",
+        "sha256": "6f75e27850ba7aa574441f5f8f17a0cc96197be4b341d52375af6c7c83804db3"
+      },
+      "candidateDocument": "docs/九霄P1序章作者原创输入登记-2026-10-03.md",
+      "candidateDocumentSha256": "ddab728f02777cdcddeed46e6b37fc691586c346ae04d182398821b51cffc3ef",
+      "candidateIds": [
+        "npc_waimen_shixiong_a",
+        "task_morning_lesson",
+        "item_mu_sword",
+        "map_trial_sword_cliff_task_hall",
+        "state_p1_morning_lesson_start"
+      ],
+      "authorAcceptance": {
+        "scope": "P0 contract acceptance and P1 candidate-input approval; not per-entry Canon publication",
+        "evidence": "User confirmation on 2026-10-03 plus the A/B receipt sheets in the source workbook; non-cryptographic record",
+        "authors": [
+          {
+            "id": "LYL",
+            "role": "A product and Canon",
+            "decision": "approved_for_p1_candidate_input",
+            "record": "A产品裁决回执 A-05/A-07; 序章Canon输入裁决"
+          },
+          {
+            "id": "Bird",
+            "role": "B technology and rules",
+            "decision": "approved_for_p1_candidate_input",
+            "record": "B技术审查回执 B-08; user-confirmed co-acceptance"
+          }
+        ]
+      },
+      "canonPublication": {
+        "status": "pending_separate_s_track_review",
+        "activeEntriesChanged": false,
+        "runtimeProjectionChanged": false
+      }
+    }
+  ],
   "reviewQueue": [],
   "sourceRegistry": [
     {
