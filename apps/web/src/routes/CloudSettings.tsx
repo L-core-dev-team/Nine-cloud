@@ -31,14 +31,14 @@ export function CloudSettings({ saves, onRestore }: { saves: LocalSave[]; onRest
     let active = true;
     void cloudRequest('/api/auth/session').then(async result => {
       if (!active) return; const user = readAccount(result.account); setAccount(user); await refresh(user.id, 0); if (active) setNotice('已登录。云端备份需手动提交，本地存档始终保留。');
-    }).catch(error => { if (active) setNotice(error instanceof CloudHttpError && error.status === 401 ? '使用邮箱验证码登录。' : '云档服务尚未启用或暂不可用；本地功能不受影响。'); })
+    }).catch(error => { if (active) setNotice(error instanceof Error && error.message === 'API_BASE_URL_NOT_CONFIGURED' ? '预览尚未配置公网 API；登录与云同步暂不可用，本地功能不受影响。' : error instanceof CloudHttpError && error.status === 401 ? '使用邮箱验证码登录。' : '云档服务尚未启用或暂不可用；本地功能不受影响。'); })
       .finally(() => { if (active) { busyRef.current = false; setBusy(false); } });
     return () => { active = false; };
   }, []);
   const act = async (work: () => Promise<string>) => {
     if (busyRef.current) return; busyRef.current = true; setBusy(true);
     try { setNotice(await work()); } catch (error) {
-      setNotice(error instanceof CloudHttpError && error.status === 401 ? '会话失效或账号已切换，请重新登录。原账号队列保留。' : error instanceof CloudHttpError && error.status === 429 ? '验证码发送过于频繁，请稍后重试。' : '操作未完成。未确认的上传保留在队列，本地存档未覆盖；可稍后重试。');
+      setNotice(error instanceof Error && error.message === 'API_BASE_URL_NOT_CONFIGURED' ? '预览尚未配置公网 API；登录与云同步暂不可用，本地功能不受影响。' : error instanceof CloudHttpError && error.status === 401 ? '会话失效或账号已切换，请重新登录。原账号队列保留。' : error instanceof CloudHttpError && error.status === 429 ? '验证码发送过于频繁，请稍后重试。' : '操作未完成。未确认的上传保留在队列，本地存档未覆盖；可稍后重试。');
       if (error instanceof CloudHttpError && error.status === 401) { setAccount(null); setRemote([]); setQueue([]); setTrash([]); }
       else if (account) { try { setQueue(await sync.list(account.id)); } catch { /* Keep visible previous queue. */ } }
     } finally { busyRef.current = false; setBusy(false); }
