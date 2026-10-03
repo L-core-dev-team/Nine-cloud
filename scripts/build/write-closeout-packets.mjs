@@ -4,6 +4,7 @@ import { readFileSync, writeFileSync,readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
+import {waitForVerifiedSteps} from './ci-evidence.mjs';
 const root=resolve(import.meta.dirname,'../..'), out=resolve(root,'test-results/review-bundle');
 // This packet reports preceding CI steps. A local invocation must not fabricate
 // their success, nor attach an older build to a different checked-out commit.
@@ -22,10 +23,11 @@ const runResponse=await fetch(base,{headers});
 if (!runResponse.ok) throw new Error(`CI_RUN_VERIFY_FAILED_HTTP_${runResponse.status}`);
 const run=await runResponse.json();
 if(run.head_sha!==currentCommit||!['in_progress','completed'].includes(run.status)||(run.status==='completed'&&run.conclusion!=='success'))throw new Error('CI_RUN_HEAD_OR_STATUS_INVALID');
-const jobsResponse=await fetch(`${base}/jobs?per_page=100`,{headers});if(!jobsResponse.ok)throw new Error('CI_JOB_EVIDENCE_UNAVAILABLE');
 const required=['Migrate ephemeral test database','Run pnpm typecheck','Run pnpm test','Run pnpm build','Build and smoke the production API container','Run PostgreSQL integration tests','Run pnpm test:e2e','Test durable turn UI recovery with synthetic receipts','Test isolated SMTP and cloud browser path','Verify isolated database backup restoration','Bind review artifacts to the tested commit'];
-const jobs=(await jobsResponse.json()).jobs;
-if(!jobs.some(job=>job.name==='verify'&&required.every(name=>job.steps.some(step=>step.name===name&&step.status==='completed'&&step.conclusion==='success'))))throw new Error('CI_REQUIRED_STEPS_NOT_SUCCESSFUL');
+await waitForVerifiedSteps(async()=>{
+ const response=await fetch(`${base}/jobs?per_page=100`,{headers,signal:AbortSignal.timeout(10000)});
+ if(!response.ok)throw Error('CI_JOB_EVIDENCE_UNAVAILABLE');return (await response.json()).jobs;
+},required);
 const digest=createHash('sha256').update(readFileSync(resolve(out,'artifact-manifest.json'))).digest('hex');
 const canonBytes=readFileSync(resolve(root,'packages/content/src/canon-runtime.json'));
 const canon=JSON.parse(canonBytes);const timestamp=new Date().toISOString();
