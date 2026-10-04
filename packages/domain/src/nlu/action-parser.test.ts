@@ -163,6 +163,32 @@ describe('P1 deterministic action parser kernel', () => {
     expect(parse('使用旧驿符')).toMatchObject({ status: 'clarify', classification: 'unknown', decision: { candidates: [] } });
   });
 
+  it('does not turn an undiscovered location into a hidden move target', () => {
+    const text = '去洪荒妖林核心';
+    const result = parse(text);
+    expect(result).toMatchObject({
+      status: 'clarify',
+      classification: 'unknown',
+      decision: { candidates: [], missingSlots: [] },
+    });
+    if (result.status !== 'clarify') throw new Error('EXPECTED_CLARIFICATION');
+    expect(result.decision.question).not.toContain(text);
+    expect(result.presentationQuestion).toContain(text);
+  });
+
+  it('does not turn an absent NPC into a hidden talk target', () => {
+    const text = '对老李说：你来了';
+    const result = parse(text);
+    expect(result).toMatchObject({
+      status: 'clarify',
+      classification: 'unknown',
+      decision: { candidates: [], missingSlots: [] },
+    });
+    if (result.status !== 'clarify') throw new Error('EXPECTED_CLARIFICATION');
+    expect(result.decision.question).not.toContain(text);
+    expect(result.presentationQuestion).toContain(text);
+  });
+
   it('links a revised action to the prior clarification without changing world state', () => {
     const clarificationOf = 'f00a9b36-dff1-4a4d-b810-e28b5eb5d18a';
     const nextIdentity = { ...identity, idempotencyKey: '85178f7f-d705-42c5-8b16-85cb1f8e2c4d', clarificationOf };
