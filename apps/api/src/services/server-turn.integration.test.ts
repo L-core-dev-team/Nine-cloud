@@ -22,7 +22,8 @@ suite('ServerTurnService on isolated PostgreSQL (synthetic rules only)', () => {
     decide: (_, save) => ({ status: 'accepted', nextRevision: save.revision + 1,
       events: [{ id: randomUUID(), saveId, type: 'fixture.travel', beforeRevision: save.revision, afterRevision: save.revision + 1,
         source: 'RULES', ruleVersion: save.ruleVersion, occurredAt: new Date().toISOString(), payload: { destinationId: 'fixture-gate' } }] }),
-    reduce: state => ({ ...state, locationId: 'fixture-gate', elapsedMinutes: state.elapsedMinutes + 1 }),
+    reduce: state => ({ ...state, locationId: 'fixture-gate', elapsedMinutes: state.elapsedMinutes + 1,
+      facts: { ...state.facts, gameMinute: Number(state.facts.gameMinute) + 1 } }),
     grantsForEvent: event => [{ npcId: 'visible-fixture-npc', eventId: event.id, channel: 'witnessed', visibleSummary: 'Public fixture event.' }],
     policyForNpc: () => 'exact-recall-v1',
   };
@@ -45,7 +46,7 @@ suite('ServerTurnService on isolated PostgreSQL (synthetic rules only)', () => {
   });
   it('commits state, events, receipt and visible memory once, even when ten clients race and narration fails', async () => {
     await pool.query('INSERT INTO game_saves (id, owner_id, revision, schema_version, canon_version, rule_version, memory_policy_version, snapshot) VALUES ($1, $2, 0, 1, $3, $3, $3, $4::jsonb)',
-      [saveId, owner, 'fixture-only', JSON.stringify({ playerId: 'fixture-player', locationId: 'origin', elapsedMinutes: 0, facts: { privateFixture: 'do-not-disclose' } })]);
+      [saveId, owner, 'fixture-only', JSON.stringify({ playerId: 'fixture-player', locationId: 'origin', elapsedMinutes: 0, facts: { gameMinute: 0, privateFixture: 'do-not-disclose' } })]);
     const service = new ServerTurnService(repository, rules, async () => { throw new Error('provider-private-detail'); });
     const results = await Promise.all(Array.from({ length: 10 }, () => service.execute(owner, intent, true)));
     expect(results.every(result => result.status === 'accepted')).toBe(true);
@@ -71,7 +72,7 @@ suite('ServerTurnService on isolated PostgreSQL (synthetic rules only)', () => {
   it('the same NPC identity in a second save cannot contaminate the first save memory', async () => {
     const before = await repository.getForOwner(owner, saveId);
     await pool.query('INSERT INTO game_saves (id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,snapshot) VALUES ($1,$2,0,1,$3,$3,$3,$4::jsonb)',
-      [secondSaveId,owner,'fixture-only',JSON.stringify({playerId:'fixture-player',locationId:'second-origin',elapsedMinutes:0,facts:{privateFixture:'second-private'}})]);
+      [secondSaveId,owner,'fixture-only',JSON.stringify({playerId:'fixture-player',locationId:'second-origin',elapsedMinutes:0,facts:{gameMinute:0,privateFixture:'second-private'}})]);
     const secondRules: ServerTurnRules = {...rules, decide: (input, save) => ({status:'accepted',nextRevision:save.revision+1,events:[{id:randomUUID(),saveId:input.saveId,type:'fixture.second',beforeRevision:save.revision,afterRevision:save.revision+1,source:'RULES',ruleVersion:save.ruleVersion,occurredAt:new Date().toISOString(),payload:{}}]}),
       grantsForEvent:event=>[{npcId:'visible-fixture-npc',eventId:event.id,channel:'witnessed',visibleSummary:'Only second-save observation.'}]};
     expect((await new ServerTurnService(repository,secondRules).execute(owner,{...intent,saveId:secondSaveId,idempotencyKey:randomUUID()})).status).toBe('accepted');
@@ -80,10 +81,10 @@ suite('ServerTurnService on isolated PostgreSQL (synthetic rules only)', () => {
   });
   it('six-class provider template commits, reloads and replays authored deltas without duplicate settlement', async () => {
     const cases = [{kind:'move',payload:{destinationId:'fixture-gate'}},{kind:'cultivate',payload:{techniqueId:'fixture',minutes:1}},{kind:'use_item',payload:{itemId:'fixture'}},{kind:'talk',payload:{npcId:'fixture',utterance:'fixture'}},{kind:'combat',payload:{targetId:'fixture'}},{kind:'quest',payload:{questId:'fixture',choiceId:'fixture'}}];
-    const resolver = new RuleResolver({version:{ruleVersion:'fixture-only',ActionRulesVersion:'fixture-actions',CombatRulesVersion:'fixture-combat',canonVersion:'fixture-only',memoryPolicyVersion:'fixture-only'}, resolve:()=>({status:'accepted',delta:{timeChange:1,locationChange:null,factChanges:[{key:'fixtureCounter',before:{present:false},after:{present:true,value:1}}]}})},()=>[],()=>'exact-recall-v1');
+    const resolver = new RuleResolver({version:{ruleVersion:'fixture-only',ActionRulesVersion:'fixture-actions',CombatRulesVersion:'fixture-combat',canonVersion:'fixture-only',memoryPolicyVersion:'fixture-only'}, resolve:(_intent,save)=>({status:'accepted',delta:{timeChange:1,locationChange:null,factChanges:[{key:'fixtureCounter',before:{present:false},after:{present:true,value:1}},{key:'gameMinute',before:{present:true,value:save.state.facts.gameMinute},after:{present:true,value:Number(save.state.facts.gameMinute)+1}}]}})},()=>[],()=>'exact-recall-v1');
     for (const input of cases) {
       const id=randomUUID();templateIds.push(id);
-      await pool.query('INSERT INTO game_saves(id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,snapshot) VALUES($1,$2,0,1,$3,$3,$3,$4::jsonb)',[id,owner,'fixture-only',JSON.stringify({playerId:'fixture-player',locationId:'origin',elapsedMinutes:0,facts:{}})]);
+      await pool.query('INSERT INTO game_saves(id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,snapshot) VALUES($1,$2,0,1,$3,$3,$3,$4::jsonb)',[id,owner,'fixture-only',JSON.stringify({playerId:'fixture-player',locationId:'origin',elapsedMinutes:0,facts:{gameMinute:0}})]);
       const before=(await repository.loadSave(owner,id))!;
       const request={...input,saveId:id,actorId:'fixture-player',expectedRevision:0,idempotencyKey:randomUUID()} as ActionIntent;
       const result=await new ServerTurnService(repository,resolver).execute(owner,request);
@@ -105,8 +106,8 @@ suite('ServerTurnService on isolated PostgreSQL (synthetic rules only)', () => {
   });
   it('replays a 120-turn persisted game across lost commit replies and service restarts',async()=>{
     const id=randomUUID();templateIds.push(id);
-    await pool.query('INSERT INTO game_saves(id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,snapshot) VALUES($1,$2,0,1,$3,$3,$3,$4::jsonb)',[id,owner,'fixture-only',JSON.stringify({playerId:'fixture-player',locationId:'origin',elapsedMinutes:0,facts:{items:150}})]);
-    const resolver=new RuleResolver({version:{ruleVersion:'fixture-only',ActionRulesVersion:'fixture-actions',CombatRulesVersion:'fixture-combat',canonVersion:'fixture-only',memoryPolicyVersion:'fixture-only'},resolve:(_intent,save)=>({status:'accepted',delta:{timeChange:1,locationChange:null,factChanges:[{key:'items',before:{present:true,value:save.state.facts.items},after:{present:true,value:Number(save.state.facts.items)-1}}]}})},event=>[{npcId:'long-witness',eventId:event.id,channel:'witnessed',visibleSummary:'Synthetic committed fact.'}],()=>'exact-recall-v1');
+    await pool.query('INSERT INTO game_saves(id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,snapshot) VALUES($1,$2,0,1,$3,$3,$3,$4::jsonb)',[id,owner,'fixture-only',JSON.stringify({playerId:'fixture-player',locationId:'origin',elapsedMinutes:0,facts:{items:150,gameMinute:0}})]);
+    const resolver=new RuleResolver({version:{ruleVersion:'fixture-only',ActionRulesVersion:'fixture-actions',CombatRulesVersion:'fixture-combat',canonVersion:'fixture-only',memoryPolicyVersion:'fixture-only'},resolve:(_intent,save)=>({status:'accepted',delta:{timeChange:1,locationChange:null,factChanges:[{key:'items',before:{present:true,value:save.state.facts.items},after:{present:true,value:Number(save.state.facts.items)-1}},{key:'gameMinute',before:{present:true,value:save.state.facts.gameMinute},after:{present:true,value:Number(save.state.facts.gameMinute)+1}}]}})},event=>[{npcId:'long-witness',eventId:event.id,channel:'witnessed',visibleSummary:'Synthetic committed fact.'}],()=>'exact-recall-v1');
     const before=(await repository.loadSave(owner,id))!;const events:Parameters<typeof replayEvents>[1][number][]=[];
     for(let step=0;step<120;step++){
       const request:ActionIntent={kind:'free_text',saveId:id,actorId:'fixture-player',expectedRevision:step,idempotencyKey:randomUUID(),payload:{text:'Synthetic one-item consumption'}};
