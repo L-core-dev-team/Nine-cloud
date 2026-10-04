@@ -13,25 +13,23 @@ CI 产物中的本文件会自动填入以下信息；源码模板中的占位�
 - BUILD_ID: {{BUILD_ID}}
 - CI_RUN: {{CI_RUN}}
 
-验收从**待审 PR 当前 head 的同 SHA 成功 CI**下载 `jiuxiao-engineering-review-<RC_SHA>`，核对 `review-bundle/RC_MANIFEST.json` 及 `artifact-manifest.sha256`。PR #33 已合入 main；它的旧产物只证明当时提交，不证明本次审计分支。不要用旧截图、旧 main 或后来改动的构建代签。任何修订先生成新 CI 和指纹。CI 只证明自动检查通过，不能替代作者、运营方或设备验收。
+验收必须从待审候选提交对应的成功 GitHub Actions run 取得 `jiuxiao-engineering-review-<RC_SHA>`，核对 `review-bundle/RC_MANIFEST.json`、`artifact-manifest.sha256` 与 run 的 `head_sha` 完全一致。PR #45 已合并，但它的旧产物只证明当时提交，不证明后续候选。不要用旧截图、旧 main 或后来改动的构建代替当前证据。任何修订先生成新 CI 和指纹。CI 只证明自动检查通过，不能替代真人、运营方或设备验收。
 
-## G-03 / G-04b：作者正式规则与记忆语义
+## G-03 / G-04b：已签规则与记忆语义的运行验收
 
-负责人：LYL 提供六类规则的条件、费用、状态变化、失败/边界/反例、九境五域映射和版本；两作者签同一规则摘要。工程不替作者填写数值。
+作者对交付工作区中的规则与记忆语义决定已签署；不再把同一决定列为待签，也不要求重复签字。LYL 于 2026-10-03 更正九境顺序为“炼体→炼气→筑基→结丹→元婴→化神→合体→大乘→渡劫”。G-03 规则表和 G-04b 语义规范是已签材料的镜像，具体值与边界以签署版本为准。
 
-LYL 已于 2026-10-03 更正九境次序为“炼体→炼气→筑基→结丹→元婴→化神→合体→大乘→渡劫”。同日验收更正版及派生显示已更正；Bird 须复核旧来源覆盖与“化神前尝试合体”的拒绝反例。尚缺的规则值和正式版本仍按本节签收。
+当前工程门禁仍未开放：`AUTHOR_RULES_GATE=BLOCKED_BY_OWNER`，规则版本为空；API 不导入规则模块，符合契约的 `POST /api/turns` 仍返回 `503 RULES_NOT_READY`。PR #45 已合并并通过其 head CI，但 reducer 使用合成规则夹具，尚未接入与签署规则/Canon 匹配的生产运行时。签署是已完成的决定证据，不等于规则已部署或回合已验收。
 
-部署负责人依 `deployment/README.md` 安装只读本地规则模块并配置 TURN_RULES_MODULE。模块提供 ActionRuleProvider/version、initialState、事件观测授权和 NPC 策略；不是浏览器或 AI 传来的代码。
+部署负责人依 `deployment/README.md` 配置受信任的只读规则模块及版本绑定。不得仅靠环境变量启用；必须保持签署规则版本与运行模块一致，并由现有门禁 fail closed。
 
-配置 TURN_RULES_MODULE 本身不代表作者批准。当前 `AUTHOR_RULES_GATE` 仍为 `BLOCKED_BY_OWNER` 且规则版本为空，API 启动时不会导入该模块，合法 `POST /api/turns` 请求在读取存档前返回 `503 RULES_NOT_READY`。只有门禁开放并且模块版本与签署版本完全相同时，运行时才可加载规则。
+操作：在批准的候选环境中创建权威新局，按 G-03 已签规则覆盖适用行动及拒绝/合法失败；核对回执、事件、投影、回放、幂等、崩溃恢复。再按 G-04b 用权威事件覆盖授权观察、跨角色/存档隔离、supersession、唤回与遗忘，并验证叙事不能改权威状态或记忆。验收结果绑定同一候选 SHA、规则版本及 Canon 摘要，写回唯一缺口清单。当前门禁关闭期间不得结算。
 
-操作：打开批准的游戏网址 `/turns` → 登录 → 创建权威新局 → 选择六类行动并提交 → 核对回执、变化、拒绝/澄清 → 主动生成叙事 → 取消/重试 → 刷新或关页恢复。Pass：结果符合签署规则，重复/叙事重试不再扣费或推进，NPC 只获得授权观察且不影响别的存档。Fail：规则未加载仍结算、费用或结果与签署表不同、AI 改写状态。记录规则摘要、候选身份、样例和两人结论到唯一清单 G-03/G-04b。
+## G-04a：已签 Canon 回执与发布器绑定
 
-## G-04a：Canon 同摘要双作者回执
+39 条 Canon（34 `confirmed`、5 `deprecated`）的同摘要双作者回执已记录，签署对象是 commit `61ca62e096fe9456f2e46c356a62284bde31f628` 上的 registry/runtime 摘要。不得要求作者重签这些已签内容。当前 `origin/main` 的 registry 文件新增两条 `authorOriginalIntakes`，因此整文件 SHA 与签署时不同；已有 39 条逐项 `reviewDigest` 一致，runtime SHA 未变。当前 `receiptsComplete=false`，发布器尚未接受回执绑定，仍须 fail closed。
 
-34 条选择与已有私有逐图审核不用再 OCR。Bird 交付现成来源/裁定索引，LYL 核对现行 registry/runtime 与已填表摘要的差异，再决定采用哪组实际文件。不得改内容凑哈希。
-
-操作：用本候选 `CanonDigest.json` 的版本、34 条数量和 SHA-256；打开 `/world` 逐项检查批准内容及来源范围。两位作者分别记录姓名、时间、结论和同一摘要。Pass：两回执覆盖同一实际 digest，冲突裁定可追溯。Fail：仅“内容选择确认”、代理签字或另一摘要。回执进入现有 Canon 发布门禁；不把测试回执当批准。
+关闭步骤：核对新增 intake 的候选/非活动边界；修正校验器对签署对象、逐项回执与当前发布范围的机器绑定，并以测试证明未授权内容不能提升为 active、不能绕过回执。保持 `receiptsComplete=false` 直到正式验证通过。只有 Canon 实质内容或签署范围发生变化时，才讨论新增签署；不得手改状态位、凑文件哈希或重签原有 39 条。
 
 ## G-02 / G-08 / G-09：真实 Key 与联合 G1
 
@@ -39,7 +37,7 @@ LYL 已报告的 DeepSeek 199 ms 成功保留，不重记为没测试；仍需�
 
 操作：在本构建 `/settings/ai` 选择自己的接入点、协议、实际 Model ID，Key 只在页面输入；打开连接测试许可 → 测试 → 保存 → 在已接受回合生成叙事。预期：明确成功或脱敏错误，取消释放控件，Key 不入存档/配置导出/日志；延期参数不发出。刷新后 Key 需重输。服务商有浏览器 CORS 限制时记为该路径不可用，由运营方按已批准范围配置私有服务端适配，不用公共代理绕过。
 
-记录精确 Model ID、协议、账号区域、HTTP/脱敏错误、耗时、RC_SHA 和 ARTIFACT_HASH 到 `AI_CONFIG_G1_PACKET.json` 回执；不要上传 Key、完整提示词或响应。Bird/LYL 对同一构建独立签 G1。Pass：所选上线协议/型号实际通过且行为矩阵认可。Fail：只有探针成功却把全部游戏/厂商算验收，或用不同构建签字。
+记录精确 Model ID、协议、账号区域、HTTP/脱敏错误、耗时、RC_SHA 和 ARTIFACT_HASH 到 `AI_CONFIG_G1_PACKET.json` 回执；不要上传 Key、完整提示词或响应。LYL 与 Bird 对同一构建分别记录 G1 运行结果；这不要求重签现有作者决定。Pass：所选上线协议/型号实际通过且行为矩阵认可。Fail：只有探针成功却把全部游戏/厂商算验收，或用不同构建签字。
 
 ## G-05：媒体权利与实际手机
 
