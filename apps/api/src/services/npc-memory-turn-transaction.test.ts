@@ -46,12 +46,15 @@ function fixture() {
       npcId: 'npc-1',
       eventId: current.id,
       channel: 'reported',
+      authorizationPolicyVersion: 'visibility-v1',
+      authorizedFields: ['summary'],
+      authorizedFacts: { summary: '旅人已抵达山门。' },
       visibleSummary: '旅人已抵达山门。',
     }],
     policyForNpc: () => 'accessibility-v1',
   });
   if (prepared.status !== 'prepared') throw new Error('Expected a prepared NPC journal.');
-  return { event, save, receipt, previousJournal, nextJournal: prepared.journal };
+  return { event, save, receipt, previousJournal, nextJournal: prepared.journal, authorizedObservations: prepared.authorizedObservations };
 }
 
 class FakeTransactionClient {
@@ -60,6 +63,7 @@ class FakeTransactionClient {
   priorReceipt: unknown | null = null;
   storedJournal: unknown | null = null;
   failJournalWrite = false;
+  failOutboxWrite = false;
 
   async query<Row extends QueryResultRow = QueryResultRow>(sql: string, values: unknown[] = []): Promise<QueryResult<Row>> {
     const normalized = sql.replace(/\s+/g, ' ').trim();
@@ -81,6 +85,9 @@ class FakeTransactionClient {
     } else if (normalized.startsWith('INSERT INTO npc_memory_journals')) {
       if (this.failJournalWrite) throw new Error('synthetic journal write failure');
       this.storedJournal = { revision: Number(values[1]), payload: JSON.parse(String(values[2])) };
+      rowCount = 1;
+    } else if (normalized.startsWith('INSERT INTO npc_authorized_observation_outbox')) {
+      if (this.failOutboxWrite) throw new Error('synthetic outbox write failure');
       rowCount = 1;
     } else if (normalized.startsWith('INSERT INTO turn_requests') || normalized.startsWith('INSERT INTO turn_events')) {
       rowCount = 1;
@@ -114,6 +121,10 @@ describe('PostgresNpcMemoryTurnRepository', () => {
     expect(client.statements.some(statement => statement.sql.startsWith('INSERT INTO turn_events'))).toBe(true);
     expect(client.statements.some(statement => statement.sql.startsWith('UPDATE game_saves'))).toBe(true);
     expect(client.statements.some(statement => statement.sql.startsWith('INSERT INTO npc_memory_journals'))).toBe(true);
+    const outboxInsert = client.statements.find(statement => statement.sql.startsWith('INSERT INTO npc_authorized_observation_outbox'));
+    expect(outboxInsert?.values[9]).toBe('["summary"]');
+    expect(outboxInsert?.values[10]).toBe('{"summary":"旅人已抵达山门。"}');
+    expect(JSON.stringify(outboxInsert?.values)).not.toContain('destinationId');
     const eventInsert = client.statements.find(statement => statement.sql.startsWith('INSERT INTO turn_events'));
     expect(eventInsert?.sql).toContain('source, rule_version');
     expect(eventInsert?.values[5]).toBe('RULES');
@@ -150,6 +161,16 @@ describe('PostgresNpcMemoryTurnRepository', () => {
       events: [input.event],
     })).rejects.toThrow('synthetic journal write failure');
 
+    expect(client.statements.at(-1)?.sql).toBe('ROLLBACK');
+    expect(client.statements.some(statement => statement.sql === 'COMMIT')).toBe(false);
+  });
+
+  it('fails the whole turn if the durable authorized-observation write fails', async () => {
+    const client = new FakeTransactionClient();
+    client.failOutboxWrite = true;
+    const input = fixture();
+    await expect(repository(client).commitAcceptedTurn({ ownerId: 'owner-1', expectedRevision: 0, ...input, events: [input.event] }))
+      .rejects.toThrow('synthetic outbox write failure');
     expect(client.statements.at(-1)?.sql).toBe('ROLLBACK');
     expect(client.statements.some(statement => statement.sql === 'COMMIT')).toBe(false);
   });

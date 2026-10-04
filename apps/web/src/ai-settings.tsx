@@ -66,7 +66,7 @@ const presets: Preset[] = [
   {
     id: 'longform', title: '长歌 · 旗舰', tone: '把高阶模型留给正文、导演和关键场面；结构整理另选合适型号。',
     detail: '按职责混用 Claude、GPT、Gemini 与 Kimi。旗舰名称表示高配置候选，不是九霄专项评测的客观冠军。', temperature: 0.7, topP: 1, maxTokens: 8192,
-    models: { story: 'claude-opus-5-5', director: 'gpt-6-sol', stateManager: 'gemini-3.8-flash', archive: 'kimi-k3', premiumDirector: 'claude-opus-5-5' },
+    models: { story: 'claude-opus-5-5', director: 'gpt-6.1-sol', stateManager: 'gemini-3.8-flash', archive: 'kimi-k3', premiumDirector: 'claude-opus-5-5' },
     providers: { story: 'anthropic', director: 'openai', stateManager: 'google', archive: 'moonshot', premiumDirector: 'anthropic' },
     adapters: { story: 'anthropic-messages', director: 'openai-responses', stateManager: 'gemini-content', archive: 'openai-chat', premiumDirector: 'anthropic-messages' },
     reasons: { story: 'Claude Opus 系列定位复杂长文与多步推理；高价候选，先用同一批剧情样本盲测。', director: 'GPT-6 Sol 用于结构、节奏与分支候选；状态结算仍由规则代码掌握。', stateManager: 'Gemini 原生接口可支持结构化生成；仅把输出当作待验证提案。', archive: 'Kimi 长上下文适合长篇材料整理；输入规模会显著影响费用。', premiumDirector: 'Opus 留给关键转折；默认关闭，只有用户启用才会测试或产生费用。' },
@@ -82,7 +82,7 @@ const presets: Preset[] = [
   {
     id: 'multimodal', title: '万象 · 多模', tone: '跨厂商搭配长文、结构判断与多模态输入能力。',
     detail: '配置覆盖 Gemini、GPT、DeepSeek 与 Kimi。当前游戏没有图像、音频或视频剧情调用；多模态能力仅作后续兼容准备。', temperature: 0.76, topP: 0.9, maxTokens: 6144,
-    models: { story: 'gemini-3.8-flash', director: 'gpt-6-sol', stateManager: 'deepseek-flash', archive: 'kimi-k3', premiumDirector: 'claude-opus-5-5' },
+    models: { story: 'gemini-3.8-flash', director: 'gpt-6.1-sol', stateManager: 'deepseek-flash', archive: 'kimi-k3', premiumDirector: 'claude-opus-5-5' },
     providers: { story: 'google', director: 'openai', stateManager: 'deepseek', archive: 'moonshot', premiumDirector: 'anthropic' },
     adapters: { story: 'gemini-content', director: 'openai-responses', stateManager: 'openai-chat', archive: 'openai-chat', premiumDirector: 'anthropic-messages' },
     reasons: { story: 'Gemini Flash 厂商定位覆盖多模态与长上下文；九霄当前只发送文本。', director: 'GPT-6 Sol 作为高阶章节结构候选，不以通用排行榜分数代替叙事测试。', stateManager: 'DeepSeek Flash 的高频候选用于提取变化草案；规则引擎仍是状态权威。', archive: 'Kimi 承担较长历史归纳；需要按真实语料测算窗口与费用。', premiumDirector: '关键场面使用高阶 Claude 候选，默认停用并按需开启。' },
@@ -93,7 +93,7 @@ const MODEL_CONTEXT: Record<string, number> = {
   'deepseek-flash': 1_000_000, 'deepseek-v4-pro': 1_000_000,
   'doubao-seed-2.1-pro': 1_024_000, 'qwen3.8-flash': 1_000_000,
   'qwen3.8-max': 1_000_000, 'kimi-k3': 1_000_000,
-  'gpt-6-astra': 1_050_000, 'gpt-6-sol': 1_050_000, 'gpt-6-luna': 1_050_000,
+  'gpt-6-astra': 1_050_000, 'gpt-6.1-sol': 1_050_000, 'gpt-6-luna': 1_050_000,
   'claude-opus-5-5': 1_000_000, 'claude-sonnet-5': 1_000_000, 'gemini-3.8-flash': 1_048_576,
 };
 
@@ -414,18 +414,19 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
     return providerCatalog.filter(provider => !query || [provider.name, provider.region, provider.summary, ...provider.capabilities].join(' ').toLocaleLowerCase().includes(query));
   }, [catalogSearch]);
   function presetEstimate(preset: Preset, rounds = 1) {
-    const freshness = modelRateSnapshotStatus();
+    const now = Date.now();
+    const freshness = modelRateSnapshotStatus(now);
     if (freshness !== 'current') return freshness === 'expired' ? '快照已过期，待核价' : '日期无法核实，待核价';
     const totals: Record<string, number> = {};
     let unpricedRoles = 0;
     for (const role of roleMeta) {
       const model = preset.models[role.id];
-      const rates = estimateModelCost(model, 0, 0);
-      if (!rates) { if (estimateUsage[role.id].callsPer100 > 0) unpricedRoles += 1; continue; }
       const usage = estimateUsage[role.id];
       const calls = (Math.max(0, usage.callsPer100) / 100) * Math.max(0, rounds);
-      const amount = estimateModelCost(model, usage.inputTokens, usage.outputTokens)?.amount || 0;
-      totals[rates.currency] = (totals[rates.currency] || 0) + amount * calls;
+      if (calls <= 0) continue;
+      const quote = estimateModelCost(model, usage.inputTokens, usage.outputTokens, now);
+      if (!quote) { unpricedRoles += 1; continue; }
+      totals[quote.currency] = (totals[quote.currency] || 0) + quote.amount * calls;
     }
     const priced = Object.entries(totals).map(([currency, amount]) => `${currency === 'CNY' ? '¥' : '$'}${amount.toFixed(5)}`).join(' + ') || '价格待核';
     return unpricedRoles ? `${priced}（${unpricedRoles} 个岗位缺直连价）` : priced;
@@ -444,7 +445,7 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
   return <section className="page ai-page">
     <h1 className="ai-title">AI 设定</h1>
     <p>配置五个岗位的模型与调用方式。密钥只在本页临时使用。</p>
-    <div className="ai-start-actions"><button className="provider-open" onClick={() => { setCatalogSearch(''); setModal({ kind: 'catalog', view: 'providers' }); }}><span>⌕</span><span><strong>模型与服务商目录</strong><small>查模型、接入方式与官方价格</small></span><b>打开目录　›</b></button><span className="catalog-date">服务商资料：{catalogVerifiedOn}　·　推荐价格快照：{MODEL_RATE_SNAPSHOT_DATE}（90 天有效，至 {MODEL_RATE_VALID_UNTIL} UTC；过期不估算）</span></div>
+    <div className="ai-start-actions"><button className="provider-open" onClick={() => { setCatalogSearch(''); setModal({ kind: 'catalog', view: 'providers' }); }}><span>⌕</span><span><strong>模型与服务商目录</strong><small>查模型、接入方式与官方价格</small></span><b>打开目录　›</b></button><span className="catalog-date">服务商资料：{catalogVerifiedOn}　·　推荐价格快照：{MODEL_RATE_SNAPSHOT_DATE}（至 {MODEL_RATE_VALID_UNTIL} UTC；仅核验型号估算，目录非全球全集或实时价格）</span></div>
     <button className="comparison-link" onClick={() => setModal({ kind: 'catalog', view: 'comparison' })}><span>价格与能力总览比较</span><span>打开模型比较　›</span></button>
     <div className="recommend-heading"><div><span className="eyebrow">五岗位分别选型</span><h2>青鸟推荐</h2></div><p>先用推荐值起步；每个岗位都能单独改模型、参数和密钥。</p></div>
     {config.activePresetId && presets.find(item => item.id === config.activePresetId) && <div className="active-recipe" role="status"><span className="active-seal">青</span><span><strong>青鸟 · {presets.find(item => item.id === config.activePresetId)!.title}</strong><small>推荐参数已填入。请为启用的岗位填写对应 API Key；高级剧情默认停用。已提交回合可在显式保存后主动生成叙事。</small></span><button className="text-button" onClick={() => setModal({ kind: 'catalog', view: 'providers' })}>打开服务商目录</button></div>}
@@ -549,7 +550,7 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
             <div className="estimate-inputs"><label>每日回合<input type="number" min="0" max="10000" value={dailyRounds} onChange={event => setDailyRounds(clampNumber(event.target.value, 0, 10000, 20, true))} /></label><label>每周回合<input type="number" min="0" max="70000" value={weeklyRounds} onChange={event => setWeeklyRounds(clampNumber(event.target.value, 0, 70000, 140, true))} /></label></div>
             <details className="usage-breakdown"><summary>按岗位调整调用频次与 tokens</summary><div className="usage-rows">{roleMeta.map(role => <div className="usage-row" key={role.id}><strong>{role.title}</strong><label>每百回合调用<input aria-label={`${role.title}每百回合调用次数`} type="number" min="0" max="500" step="1" value={estimateUsage[role.id].callsPer100} onChange={event => setEstimateUsage(current => ({ ...current, [role.id]: { ...current[role.id], callsPer100: clampNumber(event.target.value, 0, 500, current[role.id].callsPer100) } }))} /></label><label>单次输入<input aria-label={`${role.title}单次输入 tokens`} type="number" min="0" max="1000000" step="100" value={estimateUsage[role.id].inputTokens} onChange={event => setEstimateUsage(current => ({ ...current, [role.id]: { ...current[role.id], inputTokens: clampNumber(event.target.value, 0, 1000000, current[role.id].inputTokens, true) } }))} /></label><label>单次输出<input aria-label={`${role.title}单次输出 tokens`} type="number" min="0" max={modal.preset.maxTokens} step="100" value={estimateUsage[role.id].outputTokens} onChange={event => setEstimateUsage(current => ({ ...current, [role.id]: { ...current[role.id], outputTokens: clampNumber(event.target.value, 0, modal.preset.maxTokens, current[role.id].outputTokens, true) } }))} /></label></div>)}</div></details>
             <div className="estimate-totals"><strong>{presetEstimate(modal.preset)} / 回合</strong><span>{presetEstimate(modal.preset, dailyRounds)} / 日</span><span>{presetEstimate(modal.preset, weeklyRounds)} / 周</span></div>
-            <small>按 {MODEL_RATE_SNAPSHOT_DATE} 厂商公开价估算：DeepSeek 取直连峰时未命中缓存价，阿里云取中国（北京）标准档，火山方舟取常规在线推理价。GPT‑6 单次输入超过 272K tokens 时计入官方长上下文倍率；此快照有效至 2026-12-27 UTC；到期后停止精确估算，须重新核验，不能沿用促销价或推算未来报价。美元、人民币分列。输入输出 token 数由你填写；思考 token 也可能计入输出用量。尚未计缓存命中、地域/接入点差异、阶梯价、折扣、税费、工具费和失败请求。实际请求费用依服务商计量，未报告的调用量保持未知；这不是账单。价格来源：<a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noreferrer">DeepSeek</a> · <a href="https://docs.volcengine.com/docs/ark/model-pricing?lang=zh" target="_blank" rel="noreferrer">火山方舟</a> · <a href="https://help.aliyun.com/en/model-studio/model-pricing" target="_blank" rel="noreferrer">阿里云</a> · <a href="https://platform.kimi.ai/" target="_blank" rel="noreferrer">Kimi</a> · <a href="https://developers.openai.com/api/docs/pricing" target="_blank" rel="noreferrer">OpenAI</a> · <a href="https://platform.claude.com/docs/en/models/overview" target="_blank" rel="noreferrer">Anthropic</a> · <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noreferrer">Google</a></small></section>
+            <small>按 {MODEL_RATE_SNAPSHOT_DATE} 官方公开价估算：DeepSeek 取直连峰时未命中缓存价；阿里云按 Global 标准档且单次输入不超过 1M tokens；火山方舟按中国大陆在线文本标准档；OpenAI 按短上下文标准价，输入超过 272K tokens 时应用长上下文档。Gemini 3.8 Flash 促销价仅至 2026-12-31，2027-01-01 起停止估算，避免提前沿用新价。美元、人民币分列。输入输出 token 数由你填写；思考 token 也可能计入输出用量。未核验、过期或区域不符的价格不估算，不以零代替。缓存、地域/接入点差异、阶梯价、折扣、税费、工具费和失败请求未计；这不是账单。价格来源：<a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noreferrer">DeepSeek</a> · <a href="https://docs.volcengine.com/docs/ark/model-pricing?lang=zh" target="_blank" rel="noreferrer">火山方舟</a> · <a href="https://help.aliyun.com/en/model-studio/model-pricing" target="_blank" rel="noreferrer">阿里云</a> · <a href="https://platform.kimi.ai/" target="_blank" rel="noreferrer">Kimi</a> · <a href="https://developers.openai.com/api/docs/pricing" target="_blank" rel="noreferrer">OpenAI</a> · <a href="https://platform.claude.com/docs/en/about-claude/pricing" target="_blank" rel="noreferrer">Anthropic</a> · <a href="https://ai.google.dev/gemini-api/docs/pricing" target="_blank" rel="noreferrer">Google</a></small></section>
         </>
         }
         {modal?.kind === 'logs' && <>

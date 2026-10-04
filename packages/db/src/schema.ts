@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { bigint, check, foreignKey, integer, jsonb, pgTable, primaryKey, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
+import { bigint, check, foreignKey, index, integer, jsonb, pgTable, primaryKey, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
 
 export const authAccounts = pgTable('auth_accounts', {
   id: text('id').primaryKey(), email: text('email').notNull(),
@@ -76,7 +76,10 @@ export const turnEvents = pgTable('turn_events', {
   afterRevision: integer('after_revision').notNull(),
   payload: jsonb('payload').notNull(),
   occurredAt: timestamp('occurred_at', { withTimezone: true }).notNull(),
-}, table => [uniqueIndex('turn_events_save_sequence_idx').on(table.saveId, table.sequence)]);
+  }, table => [
+    uniqueIndex('turn_events_save_sequence_idx').on(table.saveId, table.sequence),
+    uniqueIndex('turn_events_save_id_id_idx').on(table.saveId, table.id),
+  ]);
 
 /** S7 usage entitlements only. Monetary value and payment-provider records stay separate. */
 export const entitlementBalances = pgTable('entitlement_balances', {
@@ -122,6 +125,34 @@ export const npcMemoryJournals = pgTable('npc_memory_journals', {
   payload: jsonb('payload').notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 });
+
+/** Mode-neutral, frozen authorization facts. Never contains raw event payloads or narrative output. */
+export const npcAuthorizedObservationOutbox = pgTable('npc_authorized_observation_outbox', {
+  grantId: text('grant_id').primaryKey(),
+  saveId: text('save_id').notNull().references(() => gameSaves.id, { onDelete: 'cascade' }),
+  branchId: text('branch_id').notNull(),
+  npcId: text('npc_id').notNull(),
+  eventId: text('event_id').notNull(),
+  eventRevision: integer('event_revision').notNull(),
+  observedAtMinute: bigint('observed_at_minute', { mode: 'number' }).notNull(),
+  channel: text('channel').notNull(),
+  authorizationPolicyVersion: text('authorization_policy_version').notNull(),
+  authorizedFields: jsonb('authorized_fields').notNull(),
+  authorizedFacts: jsonb('authorized_facts').notNull(),
+  summary: text('summary').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+}, table => [
+  uniqueIndex('npc_authorized_observation_identity_idx').on(table.saveId, table.branchId, table.npcId, table.eventId),
+  foreignKey({ columns: [table.saveId, table.eventId], foreignColumns: [turnEvents.saveId, turnEvents.id], name: 'npc_authorized_observation_event_fk' }).onDelete('cascade'),
+  index('npc_authorized_observation_page_idx').on(table.saveId, table.npcId, table.eventRevision, table.grantId),
+  check('npc_authorized_observation_revision_check', sql`${table.eventRevision} > 0`),
+  check('npc_authorized_observation_minute_check', sql`${table.observedAtMinute} >= 0`),
+  check('npc_authorized_observation_branch_check', sql`${table.branchId} = 'root'`),
+  check('npc_authorized_observation_channel_check', sql`${table.channel} IN ('witnessed', 'reported')`),
+  check('npc_authorized_observation_fields_check', sql`jsonb_typeof(${table.authorizedFields}) = 'array'`),
+  check('npc_authorized_observation_facts_check', sql`jsonb_typeof(${table.authorizedFacts}) = 'object'`),
+  check('npc_authorized_observation_text_check', sql`length(${table.grantId}) BETWEEN 1 AND 2000 AND length(${table.npcId}) BETWEEN 1 AND 200 AND length(${table.authorizationPolicyVersion}) BETWEEN 1 AND 200 AND length(${table.summary}) BETWEEN 1 AND 4000`),
+]);
 
 export const accountRateLimits=pgTable('account_rate_limits',{key:text('key').primaryKey(),expiresAt:timestamp('expires_at',{withTimezone:true}).notNull(),hits:integer('hits').notNull()});
 export const accountLifecycleAudit=pgTable('account_lifecycle_audit',{id:text('id').primaryKey(),ownerDigest:text('owner_digest').notNull(),operation:text('operation').notNull(),policyVersion:text('policy_version').notNull(),occurredAt:timestamp('occurred_at',{withTimezone:true}).notNull().defaultNow()});

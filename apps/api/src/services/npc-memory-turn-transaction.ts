@@ -10,6 +10,8 @@ import {
   createNpcMemoryJournal,
   parseNpcMemoryJournalJson,
   serializeNpcMemoryJournal,
+  assertAuthorizedObservationOutboxRecord,
+  type AuthorizedObservationOutboxRecord,
   type NpcMemoryJournal,
 } from '@jiuxiao/domain';
 import type { Pool, PoolClient, QueryResult, QueryResultRow } from 'pg';
@@ -41,6 +43,21 @@ interface LoadedJournalRow extends QueryResultRow {
   journal_payload: unknown | null;
 }
 
+interface AuthorizedObservationRow extends QueryResultRow {
+  grant_id: string;
+  save_id: string;
+  branch_id: string;
+  npc_id: string;
+  event_id: string;
+  event_revision: number;
+  observed_at_minute: number | string;
+  channel: string;
+  authorization_policy_version: string;
+  authorized_fields: unknown;
+  authorized_facts: unknown;
+  summary: string;
+}
+
 export type AcceptedTurnCommitInput = {
   ownerId: string;
   expectedRevision: number;
@@ -49,6 +66,7 @@ export type AcceptedTurnCommitInput = {
   events: readonly DomainEvent[];
   previousJournal: NpcMemoryJournal;
   nextJournal: NpcMemoryJournal;
+  authorizedObservations: readonly AuthorizedObservationOutboxRecord[];
 };
 
 export type AcceptedTurnCommitResult =
@@ -59,13 +77,14 @@ export type AcceptedTurnCommitResult =
   | { kind: 'idempotency_conflict' }
   | { kind: 'not_found' };
 
-type NormalizedCommit = Omit<AcceptedTurnCommitInput, 'ownerId' | 'receipt' | 'save' | 'events' | 'previousJournal' | 'nextJournal'> & {
+type NormalizedCommit = Omit<AcceptedTurnCommitInput, 'ownerId' | 'receipt' | 'save' | 'events' | 'previousJournal' | 'nextJournal' | 'authorizedObservations'> & {
   ownerId: string;
   receipt: TurnReceipt;
   save: SaveEnvelope;
   events: DomainEvent[];
   previousJournal: NpcMemoryJournal;
   nextJournal: NpcMemoryJournal;
+  authorizedObservations: AuthorizedObservationOutboxRecord[];
 };
 
 /**
@@ -114,6 +133,33 @@ export class PostgresNpcMemoryTurnRepository {
       throw new Error('NPC memory journal is not aligned with the saved revision.');
     }
     return journal;
+  }
+
+  /** Reads frozen authorized facts only; caller must use these rows instead of reauthorizing source events. */
+  async getAuthorizedObservationPage(ownerId: string, saveId: string, npcId: string, cursor?: {
+    eventRevision: number; grantId: string;
+  }, limit = 50): Promise<{ items: AuthorizedObservationOutboxRecord[]; nextCursor: { eventRevision: number; grantId: string } | null }> {
+    const owner = normalizeOwnerId(ownerId);
+    if (!isValidId(saveId) || typeof npcId !== 'string' || !npcId.trim() || npcId.length > 200
+      || !Number.isSafeInteger(limit) || limit < 1 || limit > 100
+      || (cursor !== undefined && (!Number.isSafeInteger(cursor.eventRevision) || cursor.eventRevision < 1
+        || typeof cursor.grantId !== 'string' || !cursor.grantId.trim() || cursor.grantId.length > 2000))) {
+      throw new TypeError('Invalid authorized observation query.');
+    }
+    const result = await this.database.query<AuthorizedObservationRow>(
+      'SELECT o.grant_id,o.save_id,o.branch_id,o.npc_id,o.event_id,o.event_revision,o.observed_at_minute,' +
+      'o.channel,o.authorization_policy_version,o.authorized_fields,o.authorized_facts,o.summary ' +
+      'FROM npc_authorized_observation_outbox o JOIN game_saves s ON s.id=o.save_id ' +
+      'WHERE s.id=$1 AND s.owner_id=$2 AND o.npc_id=$3 ' +
+      'AND NOT EXISTS (SELECT 1 FROM cloud_archive_trash t WHERE t.save_id=s.id) ' +
+      'AND ($4::integer IS NULL OR o.event_revision>$4 OR (o.event_revision=$4 AND o.grant_id>$5)) ' +
+      'ORDER BY o.event_revision,o.grant_id LIMIT $6',
+      [saveId, owner, npcId, cursor?.eventRevision ?? null, cursor?.grantId ?? '', limit + 1],
+    );
+    const hasMore = result.rows.length > limit;
+    const items = result.rows.slice(0, limit).map(parseAuthorizedObservationRow);
+    const last = items.at(-1);
+    return { items, nextCursor: hasMore && last ? { eventRevision: last.eventRevision, grantId: last.grantId } : null };
   }
 
   async commitAcceptedTurn(input: AcceptedTurnCommitInput): Promise<AcceptedTurnCommitResult> {
@@ -210,6 +256,19 @@ export class PostgresNpcMemoryTurnRepository {
         nextSequence += 1;
       }
 
+      for (const observation of commit.authorizedObservations) {
+        await client.query(
+          'INSERT INTO npc_authorized_observation_outbox ' +
+          '(grant_id,save_id,branch_id,npc_id,event_id,event_revision,observed_at_minute,channel,' +
+          'authorization_policy_version,authorized_fields,authorized_facts,summary) ' +
+          'VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb,$11::jsonb,$12)',
+          [observation.grantId, observation.saveId, observation.branchId, observation.npcId, observation.eventId,
+            observation.eventRevision, observation.observedAtMinute, observation.channel,
+            observation.authorizationPolicyVersion, JSON.stringify(observation.authorizedFields),
+            JSON.stringify(observation.authorizedFacts), observation.summary],
+        );
+      }
+
       const updated = await client.query(
         'UPDATE game_saves SET revision = $4, schema_version = $5, canon_version = $6, rule_version = $7, ' +
         'memory_policy_version = $8, snapshot = $9::jsonb, updated_at = now() ' +
@@ -255,6 +314,8 @@ function normalizeCommit(input: AcceptedTurnCommitInput): NormalizedCommit {
   const events = input.events.map(event => DomainEventSchema.parse(event));
   const previousJournal = parseJournal(input.previousJournal);
   const nextJournal = parseJournal(input.nextJournal);
+  if (!Array.isArray(input.authorizedObservations)) throw new TypeError('Authorized observation outbox must be an array.');
+  const authorizedObservations = input.authorizedObservations.map(observation => structuredClone(observation));
   serializeNpcMemoryJournal(nextJournal);
 
   if (!Number.isSafeInteger(input.expectedRevision) || input.expectedRevision < 0 ||
@@ -273,12 +334,31 @@ function normalizeCommit(input: AcceptedTurnCommitInput): NormalizedCommit {
   }
 
   const eventIds: string[] = [];
+  const eventsById = new Map<string, DomainEvent>();
   for (const event of events) {
     if (event.saveId !== save.saveId || event.branchId !== 'root' || event.beforeRevision !== input.expectedRevision ||
       event.afterRevision !== save.revision || event.source !== 'RULES' || event.ruleVersion !== save.ruleVersion) {
       throw new TypeError('Turn events do not match the accepted rules revision.');
     }
     eventIds.push(event.id);
+    eventsById.set(event.id, event);
+  }
+
+  const grantIds = new Set<string>();
+  const observationKeys = new Set<string>();
+  for (const observation of authorizedObservations) {
+    assertAuthorizedObservationOutboxRecord(observation);
+    if (!observation || typeof observation !== 'object' || typeof observation.npcId !== 'string' || !observation.npcId.trim()
+      || observation.saveId !== save.saveId || observation.branchId !== 'root' || typeof observation.eventId !== 'string'
+      || grantIds.has(observation.grantId) || observationKeys.has(`${observation.eventId}\0${observation.npcId}`)) {
+      throw new TypeError('Authorized observation outbox does not match the accepted event batch.');
+    }
+    const event = eventsById.get(observation.eventId);
+    if (!event || event.branchId !== observation.branchId || event.afterRevision !== observation.eventRevision) {
+      throw new TypeError('Authorized observation outbox does not match its source event.');
+    }
+    grantIds.add(observation.grantId);
+    observationKeys.add(`${observation.eventId}\0${observation.npcId}`);
   }
 
   const marker = nextJournal.lastTurn;
@@ -287,7 +367,42 @@ function normalizeCommit(input: AcceptedTurnCommitInput): NormalizedCommit {
     throw new TypeError('NPC memory journal does not correspond to the accepted event batch.');
   }
 
-  return { ...input, ownerId, save, receipt, events, previousJournal, nextJournal };
+  return { ...input, ownerId, save, receipt, events, previousJournal, nextJournal, authorizedObservations };
+}
+
+function parseAuthorizedObservationRow(row: AuthorizedObservationRow): AuthorizedObservationOutboxRecord {
+  const eventRevision = Number(row.event_revision);
+  const observedAtMinute = Number(row.observed_at_minute);
+  const authorizedFields = parseJsonArray(row.authorized_fields);
+  const authorizedFacts = parseJsonObject(row.authorized_facts);
+  const observation: AuthorizedObservationOutboxRecord = {
+    grantId: row.grant_id,
+    saveId: row.save_id,
+    branchId: row.branch_id as 'root',
+    npcId: row.npc_id,
+    eventId: row.event_id,
+    eventRevision,
+    observedAtMinute,
+    channel: row.channel as 'witnessed' | 'reported',
+    authorizationPolicyVersion: row.authorization_policy_version,
+    authorizedFields,
+    authorizedFacts,
+    summary: row.summary,
+  };
+  assertAuthorizedObservationOutboxRecord(observation);
+  return observation;
+}
+
+function parseJsonArray(value: unknown): string[] {
+  const parsed = typeof value === 'string' ? JSON.parse(value) as unknown : value;
+  if (!Array.isArray(parsed) || !parsed.every(item => typeof item === 'string')) throw new Error('Stored authorized fields are invalid.');
+  return parsed;
+}
+
+function parseJsonObject(value: unknown): Readonly<Record<string, unknown>> {
+  const parsed = typeof value === 'string' ? JSON.parse(value) as unknown : value;
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error('Stored authorized facts are invalid.');
+  return parsed as Readonly<Record<string, unknown>>;
 }
 
 function parseJournal(value: unknown): NpcMemoryJournal {

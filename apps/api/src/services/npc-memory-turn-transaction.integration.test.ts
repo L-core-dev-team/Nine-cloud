@@ -20,11 +20,13 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
     receipt: TurnReceipt;
     previousJournal: NpcMemoryJournal;
     nextJournal: NpcMemoryJournal;
+    authorizedObservations: import('@jiuxiao/domain').AuthorizedObservationOutboxRecord[];
   } {
     const nextRevision = expectedRevision + 1;
     const event: DomainEvent = {
       id: randomUUID(),
       saveId,
+      branchId: 'root',
       type: 'travel.completed',
       beforeRevision: expectedRevision,
       afterRevision: nextRevision,
@@ -44,6 +46,9 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
         npcId: 'npc-s4-test',
         eventId: current.id,
         channel: 'reported',
+        authorizationPolicyVersion: 'visibility-v1',
+        authorizedFields: ['summary'],
+        authorizedFacts: { summary: '旅人抵达山门。' },
         visibleSummary: '旅人抵达山门。',
       }],
       policyForNpc: () => 'accessibility-v1',
@@ -68,10 +73,14 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
       idempotencyKey: randomUUID(),
       saveId,
       requestFingerprint: 'sha256:v1:' + 'a'.repeat(64),
-      decision: { status: 'accepted', events: [event], nextRevision },
+      branchId: 'root',
+      rulesVersion: 'rules-test-v1',
+      clockMinute: nextRevision * 5,
+      rng: { seed: null, draws: 0 },
+      decision: { status: 'accepted', outcome: 'success', events: [event], nextRevision },
       resultingRevision: nextRevision,
     };
-    return { event, save, receipt, previousJournal, nextJournal: prepared.journal };
+    return { event, save, receipt, previousJournal, nextJournal: prepared.journal, authorizedObservations: [...prepared.authorizedObservations] };
   }
 
   beforeAll(async()=>{for(const id of [ownerId])await pool.query('INSERT INTO auth_accounts(id,email) VALUES($1,$2) ON CONFLICT DO NOTHING',[id,id+'@fixture.invalid']);});
@@ -104,6 +113,28 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
     expect(firstResult.save.revision).toBe(1);
     expect(await repository.getForOwner(ownerId, saveId)).toEqual(firstResult.journal);
     expect(await repository.getForOwner('another-owner', saveId)).toBeNull();
+    const observations = await repository.getAuthorizedObservationPage(ownerId, saveId, 'npc-s4-test', undefined, 1);
+    expect(observations.items).toMatchObject([{ eventId: firstInput.event.id, authorizedFacts: { summary: '旅人抵达山门。' } }]);
+    expect(observations.nextCursor).toBeNull();
+    expect(await repository.getAuthorizedObservationPage('another-owner', saveId, 'npc-s4-test')).toMatchObject({ items: [], nextCursor: null });
+
+    const outbox = observations.items[0];
+    if (!outbox) throw new Error('Expected one durable authorized observation.');
+    await expect(pool.query('UPDATE npc_authorized_observation_outbox SET summary=$2 WHERE grant_id=$1', [outbox.grantId, '篡改']))
+      .rejects.toThrow('AUTHORIZED_OBSERVATION_IMMUTABLE');
+    await expect(pool.query('DELETE FROM npc_authorized_observation_outbox WHERE grant_id=$1', [outbox.grantId]))
+      .rejects.toThrow('AUTHORIZED_OBSERVATION_ERASURE_REQUIRED');
+    const spoof = await pool.connect();
+    try {
+      await spoof.query('BEGIN');
+      await spoof.query("SELECT set_config('jiuxiao.account_erasure_operation',$1,true)", [randomUUID()]);
+      await expect(spoof.query('DELETE FROM npc_authorized_observation_outbox WHERE grant_id=$1', [outbox.grantId]))
+        .rejects.toThrow('AUTHORIZED_OBSERVATION_ERASURE_REQUIRED');
+      await spoof.query('ROLLBACK');
+    } catch (error) {
+      await spoof.query('ROLLBACK').catch(() => undefined);
+      throw error;
+    } finally { spoof.release(); }
 
     // Use the exact in-memory journal returned by the first commit. PostgreSQL jsonb
     // may reorder object keys when read back, so persisted equality must be structural.
@@ -126,16 +157,18 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
       await pool.query('DROP FUNCTION IF EXISTS jiuxiao_test_reject_memory_write()');
     }
 
-    const [saveRows, eventRows, requestRows, journalRows] = await Promise.all([
+    const [saveRows, eventRows, requestRows, journalRows, outboxRows] = await Promise.all([
       pool.query('SELECT revision FROM game_saves WHERE id = $1', [saveId]),
       pool.query('SELECT count(*)::integer AS count FROM turn_events WHERE save_id = $1', [saveId]),
       pool.query('SELECT count(*)::integer AS count FROM turn_requests WHERE save_id = $1', [saveId]),
       pool.query('SELECT revision FROM npc_memory_journals WHERE save_id = $1', [saveId]),
+      pool.query('SELECT count(*)::integer AS count FROM npc_authorized_observation_outbox WHERE save_id = $1', [saveId]),
     ]);
     expect(saveRows.rows[0]?.revision).toBe(1);
     expect(eventRows.rows[0]?.count).toBe(1);
     expect(requestRows.rows[0]?.count).toBe(1);
     expect(journalRows.rows[0]?.revision).toBe(1);
+    expect(outboxRows.rows[0]?.count).toBe(1);
 
     const secondResult = await repository.commitAcceptedTurn({
       ownerId, expectedRevision: 1, ...secondInput, events: [secondInput.event],
@@ -143,6 +176,10 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
     if (secondResult.kind !== 'committed') throw new Error('Second database turn did not commit.');
     expect(secondResult.save.revision).toBe(2);
     expect(await repository.getForOwner(ownerId, saveId)).toEqual(secondResult.journal);
+    const secondPage = await repository.getAuthorizedObservationPage(ownerId, saveId, 'npc-s4-test', {
+      eventRevision: 1, grantId: firstInput.authorizedObservations[0]!.grantId,
+    });
+    expect(secondPage.items.map(item => item.eventId)).toEqual([secondInput.event.id]);
 
     const replay = await repository.commitAcceptedTurn({
       ownerId, expectedRevision: 1, ...secondInput, events: [secondInput.event],

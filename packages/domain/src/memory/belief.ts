@@ -1,5 +1,5 @@
 import type { DomainEvent } from '@jiuxiao/contracts';
-import { assertNpcMemory, type NpcMemory, type NpcObservation, type ObservationGrant } from './policy.js';
+import { assertNpcMemory, validAuthorizedFacts, type NpcMemory, type NpcObservation, type ObservationGrant } from './policy.js';
 
 /**
  * Records an explicitly granted observation. The caller must prove visibility
@@ -17,6 +17,9 @@ export function rememberObservedEvent(
   }
   if ((grant.channel !== 'witnessed' && grant.channel !== 'reported')
     || typeof grant.visibleSummary !== 'string' || !grant.visibleSummary.trim()
+    || typeof grant.authorizationPolicyVersion !== 'string' || !grant.authorizationPolicyVersion.trim()
+    || grant.authorizationPolicyVersion.length > 200
+    || !validAuthorizedFacts(grant.authorizedFields, grant.authorizedFacts, grant.visibleSummary)
     || !Number.isSafeInteger(observedAtMinute) || observedAtMinute < 0
     || !event || typeof event.id !== 'string' || !event.id.trim()
     || !Number.isSafeInteger(event.afterRevision) || event.afterRevision < 1) {

@@ -1,0 +1,143 @@
+{
+  "canonVersion": "1.0",
+  "algorithm": "sha256(entry.content) — 与 build-canon-runtime.mjs:54 一致",
+  "count": 34,
+  "entries": [
+    {
+      "id": "world_jiuxiao",
+      "contentSha256": "b7ceaa21f739a6edc5bb00924285baaf2984754bc90aaf122f27a9c89baa6a3b"
+    },
+    {
+      "id": "region_zhongzhou_tianshu",
+      "contentSha256": "fc9ac5e16e1476be4dcf08e39094ae2c33cc9e1f18a60940e46d1285eba98531"
+    },
+    {
+      "id": "faction_haotian_jianzong",
+      "contentSha256": "a366bc607c1598a30e9051cd81caeb11cc1a526969d3c7d7261ad63509b7d97b"
+    },
+    {
+      "id": "faction_yuqing_ge",
+      "contentSha256": "f1c25d84ff23b09767332c5af129ad2201e7ad4a3d535d6055be0122d5cfa765"
+    },
+    {
+      "id": "faction_yantian_zong",
+      "contentSha256": "eb65d2a7b10f5cfd7171f5af0adc6e0eda245d5a2a8bb91fb5164dfa13f1941b"
+    },
+    {
+      "id": "faction_sihai_shanghui",
+      "contentSha256": "f28dc835471dc85ebb3af33ff3f2211b1010d03926845da36443578e25e3b13c"
+    },
+    {
+      "id": "faction_tiangong_ge",
+      "contentSha256": "0c3e507834f3e1bbe75b2b5c9c0db39c0a14c70ced214dff5dcfabb96da85c76"
+    },
+    {
+      "id": "faction_daguangming_si",
+      "contentSha256": "c272e6e606b626d107aee243a695a5fe9c9b001902b15269c2e9df1a5a994bde"
+    },
+    {
+      "id": "faction_jixia_xuegong",
+      "contentSha256": "db6286b53e460712c37b461f2158f982d55f013f6597c59cc8ae536c3b13cbf7"
+    },
+    {
+      "id": "region_donghan_longyin",
+      "contentSha256": "6d91b50ec98b18ab9c58edeb64d848aeaffc0f2a38fe059c2331f221ad0f5f6c"
+    },
+    {
+      "id": "faction_tingchao_ge",
+      "contentSha256": "bf9811436e31053738947531bd38f1522c0e93b2a8e07019139afff62a3f21a2"
+    },
+    {
+      "id": "faction_fuhai_zong",
+      "contentSha256": "f1a68c9ccd8e0f00d57448a59f60502070aa27de8554774d146bf4d86457d1c1"
+    },
+    {
+      "id": "region_xihuang_fentian",
+      "contentSha256": "01513fef80c14ec793acc82b67769aa195b47f9c079a687c4b571eb527a418a1"
+    },
+    {
+      "id": "faction_shenghuo_jiao",
+      "contentSha256": "6bb27ba463d4e75ea4d750116d532c8bf1639d39eca264620440502e1ef6539f"
+    },
+    {
+      "id": "faction_jingang_buhai_gu",
+      "contentSha256": "1b5bb9c6c0a544cde057be112068f7b63fa81ebac3f8a1c8cb8096e10e43c9e8"
+    },
+    {
+      "id": "region_beijing_shuanghan",
+      "contentSha256": "3e5d6a21e9c97f7319fd4a5d977564bc5af5dcc189933a62be475ab7b190c482"
+    },
+    {
+      "id": "faction_bingshen_gong",
+      "contentSha256": "2661d732333b0d19139609edebb68f4cb5fcaf7c02cdec38966ad2c49aea412f"
+    },
+    {
+      "id": "faction_beijing_lianmeng",
+      "contentSha256": "0b5e005ade49223b6d4c6a6d07c6c2dcc49d179abc2e70b9850cb107eb74c8ab"
+    },
+    {
+      "id": "region_nanjiang_wangu",
+      "contentSha256": "64296d160735a576ddd0856b7dffbee1bff220df2d38165608c41d9356c16f50"
+    },
+    {
+      "id": "faction_wudu_shenjiao",
+      "contentSha256": "fe0d07096e6f94f65e960721370b7e360e5219f7a2251478e49c04fe0c48a76a"
+    },
+    {
+      "id": "faction_wanshou_shanzhuang",
+      "contentSha256": "295f1a7937ff70211fb1b19611aec31b9084b20b708d6a70621d896588bc4064"
+    },
+    {
+      "id": "faction_yanshi_fu",
+      "contentSha256": "83a7d29eceb1c689f8a28d4b11b1081dca6badb3d158397cf8e1de5fe8ec4c3d"
+    },
+    {
+      "id": "region_honghuang_yaolin",
+      "contentSha256": "0d157481cc3d3b8c8c6c995890ed792436f0c68f9671703353fe903057cf67c8"
+    },
+    {
+      "id": "system_cultivation_schools",
+      "contentSha256": "a53a1c3aac769351bf430fc9eb5cadde4cb8511369427961527ce7285143d1a5"
+    },
+    {
+      "id": "system_heterodox_cultivation",
+      "contentSha256": "612dbbb3fdf60e6477f5c56dfeac8f027a3f5a770deceaa2e7ae385b7b9d61eb"
+    },
+    {
+      "id": "system_resource_grade",
+      "contentSha256": "875b36bb5a10ac9d6a9c0ffb0672fe2979be781dcb8a741797859a6778d6cb04"
+    },
+    {
+      "id": "system_cultivation_realm",
+      "contentSha256": "0a04adc54dd0881e7ea50f28e40312e9359dd434dfaa40d1dc082c4c753aead4"
+    },
+    {
+      "id": "system_spiritual_root",
+      "contentSha256": "0a8ed66171f07bdac190be24d223b1fa284016af71c52d6060d86780220d6463"
+    },
+    {
+      "id": "system_technique_grade",
+      "contentSha256": "c3609136886b9dc6ba0199f9ba0482bff537b9a232bb47442adc0068a9c08075"
+    },
+    {
+      "id": "system_economy",
+      "contentSha256": "9422a54368615a6a0f4db59455a9b1e5eb8129d1a9c03eb4241f4f192b1f2e70"
+    },
+    {
+      "id": "system_prices",
+      "contentSha256": "0fcbab42ab87bbcde08182ec0a696eee811e2c260477c770c55680d255bdc5f7"
+    },
+    {
+      "id": "system_spirit_beasts",
+      "contentSha256": "a7dd835fdcd3bdae23776faa656302704a6335e926fe19571084080b98ffcf3f"
+    },
+    {
+      "id": "system_realm_faction_tiers",
+      "contentSha256": "9f7511d3083a92356fd81e99ec73b72c970b4fbcdbc3c8c06b627d40bf4e015b"
+    },
+    {
+      "id": "system_foundations",
+      "contentSha256": "a3ac1ed5b5c3fedbbd0e912fb0f072c802f9c81014b324316d18cd534b7e0673"
+    }
+  ]
+}

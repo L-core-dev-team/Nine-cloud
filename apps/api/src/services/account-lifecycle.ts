@@ -60,9 +60,9 @@ export class AccountLifecycle {
     if(!this.deletionEnabled)throw new AccountLifecycleError('DATA_POLICY_NOT_READY');
     await c.query('SELECT id FROM game_saves WHERE owner_id=$1 ORDER BY id FOR UPDATE',[owner]);
     // Transaction-local proof ID: authorizes the erasure-only delete triggers below
-    // (turn_events / game_saves) and the ledger erasure; ordinary mutations stay blocked.
+    // (including authorized observations), game data, and ledger erasure; other mutations stay blocked.
     await c.query("SELECT set_config('jiuxiao.account_erasure_operation',$1,true)",[id]);
-    for(const table of ['turn_events','turn_requests','npc_memory_journals'])await c.query(`DELETE FROM ${table} t USING game_saves s WHERE t.save_id=s.id AND s.owner_id=$1`,[owner]);
+    for(const table of ['npc_authorized_observation_outbox','turn_events','turn_requests','npc_memory_journals'])await c.query(`DELETE FROM ${table} t USING game_saves s WHERE t.save_id=s.id AND s.owner_id=$1`,[owner]);
     await c.query('DELETE FROM cloud_archive_trash WHERE owner_id=$1',[owner]);await c.query('DELETE FROM game_saves WHERE owner_id=$1',[owner]);
     await c.query('DELETE FROM entitlement_ledger_entries WHERE owner_id=$1',[owner]);await c.query('DELETE FROM entitlement_balances WHERE owner_id=$1',[owner]);
    }
@@ -83,7 +83,7 @@ export class AccountLifecycle {
     const owner=account.id,id=randomUUID();
     await c.query("INSERT INTO account_operations(id,owner_id,session_hash,operation,old_email,phase,expires_at) VALUES($1,$2,'scheduled-expiry','delete',NULL,'ready',now()+interval '1 minute')",[id,owner]);
     await c.query("SELECT set_config('jiuxiao.account_erasure_operation',$1,true)",[id]);
-    for(const table of ['turn_events','turn_requests','npc_memory_journals'])await c.query(`DELETE FROM ${table} t USING game_saves s WHERE t.save_id=s.id AND s.owner_id=$1`,[owner]);
+    for(const table of ['npc_authorized_observation_outbox','turn_events','turn_requests','npc_memory_journals'])await c.query(`DELETE FROM ${table} t USING game_saves s WHERE t.save_id=s.id AND s.owner_id=$1`,[owner]);
     for(const table of ['cloud_archive_trash','game_saves','entitlement_ledger_entries','entitlement_balances'])await c.query(`DELETE FROM ${table} WHERE owner_id=$1`,[owner]);
     await c.query('DELETE FROM auth_challenges WHERE email=$1',[account.email]);
     await c.query("INSERT INTO account_lifecycle_audit(id,owner_digest,operation,policy_version) VALUES($1,$2,'expired_erasure',$3)",[randomUUID(),createHash('sha256').update(owner).digest('hex'),this.policyVersion]);

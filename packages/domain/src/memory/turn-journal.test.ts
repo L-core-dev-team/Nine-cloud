@@ -30,11 +30,15 @@ function prepare(
   journal = createNpcMemoryJournal('save-1', 0),
   events: readonly DomainEvent[] = [makeEvent()],
   grantsForEvent: (event: DomainEvent) => readonly {
-    npcId: string; eventId: string; channel: 'witnessed' | 'reported'; visibleSummary: string;
+    npcId: string; eventId: string; channel: 'witnessed' | 'reported'; authorizationPolicyVersion: string;
+    authorizedFields: readonly string[]; authorizedFacts: Readonly<Record<string, unknown>>; visibleSummary: string;
   }[] = event => [{
     npcId: 'npc-1',
     eventId: event.id,
     channel: 'witnessed',
+    authorizationPolicyVersion: 'visibility-v1',
+    authorizedFields: ['summary'],
+    authorizedFacts: { summary: '只看到门外来客' },
     visibleSummary: '只看到门外来客',
   }],
 ) {
@@ -60,10 +64,36 @@ describe('NPC memory turn journal', () => {
     expect(result.journal.revision).toBe(1);
     expect(result.journal.memories).toHaveLength(1);
     expect(result.journal.memories[0]?.observations[0]?.summary).toBe('只看到门外来客');
+    expect(result.authorizedObservations).toHaveLength(1);
+    expect(result.authorizedObservations[0]).toMatchObject({
+      grantId: ['save-1', 'root', EVENT_1, 'npc-1'].map(part => `${part.length}:${part}`).join(''), branchId: 'root',
+      authorizedFields: ['summary'], authorizedFacts: { summary: '只看到门外来客' },
+    });
     expect(JSON.stringify(result.journal)).not.toContain('secret must not enter NPC memory');
+    expect(JSON.stringify(result.journal)).not.toContain('authorizationPolicyVersion');
 
     const restored = parseNpcMemoryJournalJson(serializeNpcMemoryJournal(result.journal));
     expect(restored).toEqual(result.journal);
+  });
+
+  it('continues to parse and serialize the original schema-1 journal shape', () => {
+    const legacyJson = JSON.stringify({
+      schemaVersion: 1,
+      saveId: 'save-1',
+      revision: 1,
+      memories: [{
+        npcId: 'npc-1',
+        policyVersion: 'accessibility-v1',
+        observations: [{
+          npcId: 'npc-1', eventId: EVENT_1, eventRevision: 1, observedAtMinute: 10,
+          channel: 'witnessed', summary: '旧版中已获准记下的见闻',
+        }],
+      }],
+      lastTurn: { fromRevision: 0, toRevision: 1, eventIds: [EVENT_1] },
+    });
+    const parsed = parseNpcMemoryJournalJson(legacyJson);
+    expect(parsed.memories[0]?.observations[0]?.summary).toBe('旧版中已获准记下的见闻');
+    expect(parseNpcMemoryJournalJson(serializeNpcMemoryJournal(parsed))).toEqual(parsed);
   });
 
   it('advances the journal for an event no NPC was authorized to observe', () => {
@@ -85,6 +115,7 @@ describe('NPC memory turn journal', () => {
       status: 'duplicate',
       journal: first.journal,
       recordedObservations: 0,
+      authorizedObservations: [],
     });
   });
 
@@ -110,6 +141,7 @@ describe('NPC memory turn journal', () => {
     const source = createNpcMemoryJournal('save-1', 0);
     expect(() => prepare(source, [makeEvent()], () => [{
       npcId: 'npc-1', eventId: EVENT_2, channel: 'witnessed', visibleSummary: '错误事件',
+      authorizationPolicyVersion: 'visibility-v1', authorizedFields: ['summary'], authorizedFacts: { summary: '错误事件' },
     }])).toThrow('grant does not match');
     expect(source).toEqual(createNpcMemoryJournal('save-1', 0));
 
@@ -125,6 +157,7 @@ describe('NPC memory turn journal', () => {
       observedAtMinute: 20,
       grantsForEvent: event => [{
         npcId: 'npc-1', eventId: event.id, channel: 'witnessed', visibleSummary: '第二条观察',
+        authorizationPolicyVersion: 'visibility-v1', authorizedFields: ['summary'], authorizedFacts: { summary: '第二条观察' },
       }],
       policyForNpc: () => 'exact-recall-v1',
     })).toThrow('policy change requires an explicit migration');
@@ -159,7 +192,8 @@ describe('NPC memory turn journal', () => {
     const old = { ...createNpcMemoryJournal('save-1', 1), memories: [{ npcId: 'npc-1', policyVersion: 'exact-recall-v1' as const, observations }] };
     const next = prepareNpcMemoryTurn({ journal: old, saveId: 'save-1', beforeRevision: 1, afterRevision: 2,
       events: [makeEvent(EVENT_2, { beforeRevision: 1, afterRevision: 2 })], observedAtMinute: 40,
-      grantsForEvent: event => [{ npcId: 'npc-1', eventId: event.id, channel: 'witnessed', visibleSummary: '新观察' }],
+      grantsForEvent: event => [{ npcId: 'npc-1', eventId: event.id, channel: 'witnessed',
+        authorizationPolicyVersion: 'visibility-v1', authorizedFields: ['summary'], authorizedFacts: { summary: '新观察' }, visibleSummary: '新观察' }],
       policyForNpc: () => 'exact-recall-v1' });
     expect(next.status).toBe('prepared');
     expect(new TextEncoder().encode(serializeNpcMemoryJournal(next.journal)).byteLength).toBeLessThanOrEqual(64_000);
