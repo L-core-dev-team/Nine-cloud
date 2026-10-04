@@ -1,6 +1,7 @@
 import { SaveEnvelopeSchema, type SaveEnvelope } from '@jiuxiao/contracts';
 import { isLocalSave, type LocalSave } from './storage';
 import { serializeSaveForExport } from './export-save';
+import { apiRequestUrl } from './api-url';
 
 export type CloudRecord = { key: string; ownerId: string; localSaveId: string; cloudSaveId: string; baseRevision: number | null;
   pending: SaveEnvelope | null; conflict: SaveEnvelope | null; failure?: 'AUTH_REQUIRED' | 'RATE_LIMITED' | 'SERVER_ERROR' | 'NETWORK_ERROR' | 'INVALID_RESPONSE' | 'UPLOAD_FAILED' | null };
@@ -46,7 +47,7 @@ export class CloudHttpError extends Error { constructor(readonly status: number,
 export async function cloudRequest(path: string, method = 'GET', body?: unknown, expectedOwner?: string, cancellation?: AbortSignal, maximumBytes = 1_000_000): Promise<Record<string, unknown>> {
   if (!Number.isSafeInteger(maximumBytes) || maximumBytes < 1 || maximumBytes > 32_000_000) throw new Error('INVALID_RESPONSE_BOUND');
   const deadline = AbortSignal.timeout(20000);
-  const response = await fetch(path, { method, credentials: 'include', cache: 'no-store', signal: cancellation ? AbortSignal.any([deadline, cancellation]) : deadline,
+  const response = await fetch(apiRequestUrl(path), { method, credentials: 'include', cache: 'no-store', signal: cancellation ? AbortSignal.any([deadline, cancellation]) : deadline,
     headers: { ...(expectedOwner ? { 'x-jiuxiao-account': expectedOwner } : {}), ...(body === undefined ? {} : { 'content-type': 'application/json' }) },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
   if (!response.ok) {
