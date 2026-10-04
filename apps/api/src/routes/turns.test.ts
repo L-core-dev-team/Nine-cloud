@@ -47,6 +47,16 @@ describe('turn HTTP boundary', () => {
     expect(f.repository.loadSave).not.toHaveBeenCalled();
     expect(f.repository.commitAcceptedTurn).not.toHaveBeenCalled();
   });
+  it('passes over-limit cultivation to the rules gate instead of masking its named rejection', async () => {
+    const f = fixture();
+    const intent = { ...f.intent, kind: 'cultivate', payload: { techniqueId: 'technique-1', minutes: 9 } };
+    const response = await f.request({ intent });
+    expect(response.status).toBe(503);
+    expect(await response.json()).toEqual({ code: 'RULES_NOT_READY' });
+    expect(f.repository.loadSave).not.toHaveBeenCalled();
+    expect(f.repository.recordNonAcceptedDecision).not.toHaveBeenCalled();
+    expect(f.repository.commitAcceptedTurn).not.toHaveBeenCalled();
+  });
   it('maps stale or forged clarification links to a conflict response', async () => {
     const f = fixture();
     f.service.execute = vi.fn(async () => ({ status: 'clarification_conflict' }));

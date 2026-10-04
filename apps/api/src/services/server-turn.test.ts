@@ -154,6 +154,36 @@ describe('server turn orchestration (synthetic rules, never production gameplay)
       .toEqual({ status: 'idempotency_conflict' });
     expect(f.snapshot()).toEqual(before);
   });
+  it('records over-limit cultivation as the named zero-effect rules rejection', async () => {
+    const f = fixture();
+    const intent = {
+      ...f.intent,
+      kind: 'cultivate' as const,
+      payload: { techniqueId: 'tech-fixture', minutes: 9 },
+    };
+    const overLimitRules: ServerTurnRules = {
+      ...f.rules,
+      decide: (_action, save) => ({
+        status: 'rejected',
+        code: 'INPUT_CULTIVATION_LIMIT',
+        message: '每次修炼最多八刻。',
+        revision: save.revision,
+      }),
+    };
+    const before = structuredClone(f.snapshot());
+    const result = await new ServerTurnService(f.repository, overLimitRules).execute('owner', intent);
+    expect(result).toMatchObject({
+      status: 'decision',
+      receipt: {
+        decision: { status: 'rejected', code: 'INPUT_CULTIVATION_LIMIT', revision: 0 },
+        resultingRevision: 0,
+        clockMinute: 30,
+      },
+    });
+    expect(f.repository.recordNonAcceptedDecision).toHaveBeenCalledTimes(1);
+    expect(f.repository.commitAcceptedTurn).not.toHaveBeenCalled();
+    expect(f.snapshot()).toEqual(before);
+  });
   it('requires clarificationOf to reference the same save, current revision and a persisted clarification', async () => {
     const f = fixture(); const service = new ServerTurnService(f.repository, f.rules);
     const missing = { ...f.intent, idempotencyKey: randomUUID(), clarificationOf: randomUUID() };

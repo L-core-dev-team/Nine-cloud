@@ -305,17 +305,17 @@ describe('versioned P1 prologue rule reducers', () => {
   it('hard rejects cultivation above eight Kec before creating an event', () => {
     const current = save({ stamina: 100 });
     const stateBefore = structuredClone(current.state);
-    const intent = {
+    const intent: ActionIntent = {
       saveId: current.saveId, actorId: current.state.playerId, expectedRevision: current.revision,
       idempotencyKey: '00000000-0000-4000-9000-000000000099', branchId: 'root',
       kind: 'cultivate', payload: { techniqueId: 'tech_fixture', minutes: 9 },
-    } as unknown as ActionIntent;
+    };
     const decision = module.decide(intent, current, { occurredAt: '2026-10-03T10:00:00.000Z', eventIds: allocatedIds, module });
     expect(decision).toMatchObject({ status: 'rejected', code: 'INPUT_CULTIVATION_LIMIT', revision: 0 });
     expect(decision.status === 'rejected' && 'events' in decision).toBe(false);
     expect(current.state).toEqual(stateBefore);
 
-    const evaluated = evaluate(intent as ActionIntent, current, {
+    const evaluated = evaluate(intent, current, {
       occurredAt: '2026-10-03T10:00:00.000Z', eventIds: allocatedIds, module,
     });
     expect(evaluated).toMatchObject({ status: 'rejected', code: 'INPUT_CULTIVATION_LIMIT', revision: 0 });

@@ -66,11 +66,13 @@ describe('shared wire contracts', () => {
     expect(ActionIntentSchema.safeParse({ ...base, kind: 'observe', payload: { targetId: 'clue-1', method: 'guess' } }).success).toBe(false);
   });
 
-  it('limits P1 cultivation actions to eight Kec', () => {
+  it('leaves the cultivation business limit to rules for its named rejection', () => {
     const base = { saveId: 'save-1', actorId: 'player', expectedRevision: 0, idempotencyKey,
       kind: 'cultivate', payload: { techniqueId: 'technique-1', minutes: 8 } };
     expect(ActionIntentSchema.safeParse(base).success).toBe(true);
-    expect(ActionIntentSchema.safeParse({ ...base, payload: { ...base.payload, minutes: 9 } }).success).toBe(false);
+    expect(ActionIntentSchema.safeParse({ ...base, payload: { ...base.payload, minutes: 9 } }).success).toBe(true);
+    expect(ActionIntentSchema.safeParse({ ...base, payload: { ...base.payload, minutes: 0 } }).success).toBe(false);
+    expect(ActionIntentSchema.safeParse({ ...base, payload: { ...base.payload, minutes: 1.5 } }).success).toBe(false);
   });
 
   it('keeps v1 saves readable and requires a consistent pinned policy for v2', () => {

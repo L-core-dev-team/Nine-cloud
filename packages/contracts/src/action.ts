@@ -15,7 +15,9 @@ const common = z.strictObject({
 // These are candidates. Only the domain rules may accept one and emit events.
 export const ActionIntentSchema = z.discriminatedUnion('kind', [
   common.extend({ kind: z.literal('move'), payload: z.strictObject({ destinationId: z.string().min(1) }) }),
-  common.extend({ kind: z.literal('cultivate'), payload: z.strictObject({ techniqueId: z.string().min(1), minutes: z.int().positive().max(MAX_CULTIVATION_KES_PER_ACTION) }) }),
+  // The rules layer owns the eight-Kec business limit so it can return the
+  // specified INPUT_CULTIVATION_LIMIT decision for over-limit requests.
+  common.extend({ kind: z.literal('cultivate'), payload: z.strictObject({ techniqueId: z.string().min(1), minutes: z.int().positive() }) }),
   common.extend({ kind: z.literal('acquire_item'), payload: z.strictObject({ itemId: z.string().min(1), quantity: z.int().positive() }) }),
   common.extend({ kind: z.literal('use_item'), payload: z.strictObject({ itemId: z.string().min(1), targetId: z.string().min(1).optional() }) }),
   common.extend({ kind: z.literal('talk'), payload: z.strictObject({ npcId: z.string().min(1), utterance: z.string().min(1) }) }),
