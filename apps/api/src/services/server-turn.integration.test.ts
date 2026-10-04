@@ -19,8 +19,8 @@ suite('ServerTurnService on isolated PostgreSQL (synthetic rules only)', () => {
     idempotencyKey: randomUUID(), payload: { destinationId: 'fixture-gate' } };
   const rules: ServerTurnRules = {
     ruleVersion: 'fixture-only', canonVersion: 'fixture-only', memoryPolicyVersion: 'fixture-only',
-    decide: (_, save) => ({ status: 'accepted', nextRevision: save.revision + 1,
-      events: [{ id: randomUUID(), saveId, type: 'fixture.travel', beforeRevision: save.revision, afterRevision: save.revision + 1,
+    decide: (action, save) => ({ status: 'accepted', nextRevision: save.revision + 1,
+      events: [{ id: randomUUID(), saveId: action.saveId, type: 'fixture.travel', beforeRevision: save.revision, afterRevision: save.revision + 1,
         source: 'RULES', ruleVersion: save.ruleVersion, occurredAt: new Date().toISOString(), payload: { destinationId: 'fixture-gate' } }] }),
     reduce: state => ({ ...state, locationId: 'fixture-gate', elapsedMinutes: state.elapsedMinutes + 1,
       facts: { ...state.facts, gameMinute: Number(state.facts.gameMinute) + 1 } }),
