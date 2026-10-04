@@ -1,7 +1,7 @@
 # PR-4 执行规格对照与边界裁定
 
-日期：2026-10-04  
-代码核对基线：`acc1e46fe668accbc38c166b5df0cc93d22be90e`  
+日期：2026-10-04
+代码核对基线：`acc1e46fe668accbc38c166b5df0cc93d22be90e`
 唯一执行依据：`docs/九霄1.0-P1-执行规格-GPT交付版-2026-10-03.md`，SHA-256 `64d576e849f5a23facb62a64cda829c7038281b35dffe2f440bfede43bc066f7`
 
 本文核对归档的 AI 辅助 MAP/NLU/技术审阅材料与现行执行规格。它不替代作者签署、Bird 独立代码审查、Canonical 内容双签或 P1 验收。
