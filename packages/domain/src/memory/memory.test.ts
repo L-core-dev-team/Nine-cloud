@@ -14,13 +14,15 @@ describe('NPC memory projection boundary', () => {
   it('requires an explicit matching observation grant and exposes only its visible summary', () => {
     const memory = createNpcMemory('npc-1', 'exact-recall-v1');
     expect(() => rememberObservedEvent(memory, event, undefined, 0)).toThrow('Observation grant');
-    expect(() => rememberObservedEvent(memory, event, { npcId: 'npc-2', eventId: event.id, channel: 'witnessed', visibleSummary: '看见来客' }, 0)).toThrow('Observation grant');
-    const grant = { npcId: 'npc-1', eventId: event.id, channel: 'witnessed' as const, visibleSummary: '看见来客' };
+    expect(() => rememberObservedEvent(memory, event, { npcId: 'npc-2', eventId: event.id, channel: 'witnessed',
+      authorizationPolicyVersion: 'visibility-v1', authorizedFields: ['summary'], authorizedFacts: { summary: '看见来客' }, visibleSummary: '看见来客' }, 0)).toThrow('Observation grant');
+    const grant = { npcId: 'npc-1', eventId: event.id, channel: 'witnessed' as const,
+      authorizationPolicyVersion: 'visibility-v1', authorizedFields: ['summary'], authorizedFacts: { summary: '看见来客' }, visibleSummary: '看见来客' };
     const next = rememberObservedEvent(memory, event, grant, 0);
     expect(next.observations).toHaveLength(1);
     expect(JSON.stringify(next)).not.toContain('not for NPC');
     expect(rememberObservedEvent(next, event, grant, 0)).toBe(next);
-    expect(() => rememberObservedEvent(next, event, { ...grant, visibleSummary: '另一版本' }, 0)).toThrow('Conflicting observation');
+    expect(() => rememberObservedEvent(next, event, { ...grant, visibleSummary: '另一版本', authorizedFacts: { summary: '另一版本' } }, 0)).toThrow('Conflicting observation');
     expect(memory.observations).toHaveLength(0);
   });
 
@@ -42,14 +44,16 @@ describe('NPC memory projection boundary', () => {
 
   it('rejects malformed observation grants before storing any NPC-visible summary', () => {
     const memory = createNpcMemory('npc-1', 'exact-recall-v1');
-    const grant = { npcId: 'npc-1', eventId: event.id, channel: 'unknown', visibleSummary: '看见来客' };
+    const grant = { npcId: 'npc-1', eventId: event.id, channel: 'unknown', authorizationPolicyVersion: 'visibility-v1',
+      authorizedFields: ['summary'], authorizedFacts: { summary: '看见来客' }, visibleSummary: '看见来客' };
     expect(() => rememberObservedEvent(memory, event, grant as never, 0)).toThrow('Invalid visible observation');
     expect(memory.observations).toHaveLength(0);
   });
 
   it('can fail to recall an old belief without changing the authoritative event or world state', () => {
     const state: WorldState = { playerId: 'player-1', locationId: 'gate', elapsedMinutes: 0, facts: { alive: false, itemOwner: 'player-1' } };
-    const grant = { npcId: 'npc-1', eventId: event.id, channel: 'reported' as const, visibleSummary: '来客带着旧物' };
+    const grant = { npcId: 'npc-1', eventId: event.id, channel: 'reported' as const,
+      authorizationPolicyVersion: 'visibility-v1', authorizedFields: ['summary'], authorizedFacts: { summary: '来客带着旧物' }, visibleSummary: '来客带着旧物' };
     const exact = rememberObservedEvent(createNpcMemory('npc-1', 'exact-recall-v1'), event, grant, 0);
     const accessibility = rememberObservedEvent(createNpcMemory('npc-1', 'accessibility-v1'), event, grant, 0);
     const options = { nowMinute: 14400, query: '旧物', limit: 4, minAccessibility: 0.5 };

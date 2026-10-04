@@ -1,4 +1,7 @@
 import {randomUUID,randomBytes} from 'node:crypto';
+import type { DomainEvent, SaveEnvelope, TurnReceipt } from '@jiuxiao/contracts';
+import { createNpcMemoryJournal, prepareNpcMemoryTurn } from '@jiuxiao/domain';
+import { PostgresNpcMemoryTurnRepository } from './npc-memory-turn-transaction.js';
 import {Pool} from 'pg';
 import {describe,it,expect,afterAll} from 'vitest';
 import {AccountLifecycle} from './account-lifecycle.js';
@@ -40,15 +43,25 @@ suite('account lifecycle, isolated PostgreSQL only',()=>{
  it('permanent deletion removes live account data rather than soft deleting; unrelated account survives',async()=>{
   const f=await fixture(),b=await fixture(),saveId=randomUUID();ids.push(saveId);
   await new PostgresCloudSaveRepository(pool,true).createForOwner(f.owner,{schemaVersion:1,saveId,revision:0,canonVersion:'fixture',ruleVersion:'fixture',memoryPolicyVersion:'fixture',state:{playerId:'p',locationId:'gate',elapsedMinutes:0,facts:{}}});
+  const event:DomainEvent={id:randomUUID(),saveId,branchId:'root',type:'fixture.visible',beforeRevision:0,afterRevision:1,occurredAt:new Date().toISOString(),source:'RULES',ruleVersion:'fixture',payload:{}};
+  const previousJournal=createNpcMemoryJournal(saveId,0);
+  const prepared=prepareNpcMemoryTurn({journal:previousJournal,saveId,beforeRevision:0,afterRevision:1,events:[event],observedAtMinute:1,grantsForEvent:current=>[{npcId:'npc-erasure-test',eventId:current.id,channel:'witnessed',authorizationPolicyVersion:'visibility-v1',authorizedFields:['summary'],authorizedFacts:{summary:'authorized fact'},visibleSummary:'authorized fact'}],policyForNpc:()=>'exact-recall-v1'});
+  if(prepared.status!=='prepared')throw new Error('Expected authorized observation to be prepared.');
+  const saved:SaveEnvelope={schemaVersion:1,saveId,canonVersion:'fixture',ruleVersion:'fixture',memoryPolicyVersion:'fixture',revision:1,state:{playerId:'p',locationId:'gate',elapsedMinutes:1,facts:{gameMinute:1}}};
+  const receipt:TurnReceipt={idempotencyKey:randomUUID(),saveId,requestFingerprint:'sha256:v1:'+'a'.repeat(64),branchId:'root',rulesVersion:'fixture',clockMinute:1,rng:{seed:null,draws:0},decision:{status:'accepted',outcome:'success',events:[event],nextRevision:1},resultingRevision:1};
+  const memoryRepository=new PostgresNpcMemoryTurnRepository(pool,true);
+  const committed=await memoryRepository.commitAcceptedTurn({ownerId:f.owner,expectedRevision:0,receipt,save:saved,events:[event],previousJournal,nextJournal:prepared.journal,authorizedObservations:prepared.authorizedObservations});
+  expect(committed.kind).toBe('committed');
+  expect((await pool.query('SELECT count(*)::integer AS count FROM npc_authorized_observation_outbox WHERE save_id=$1',[saveId])).rows[0]?.count).toBe(1);
   await pool.query("INSERT INTO turn_requests(save_id,idempotency_key,expected_revision,result) VALUES($1,$2,0,'{}'::jsonb)",[saveId,randomUUID()]);
-  await pool.query("INSERT INTO npc_memory_journals(save_id,payload) VALUES($1,'{}'::jsonb)",[saveId]);
+
   await pool.query("INSERT INTO cloud_archive_trash(save_id,owner_id,deleted_revision,backup,digest) VALUES($1,$2,0,'{}'::jsonb,$3)",[saveId,f.owner,'a'.repeat(64)]);
   await pool.query("INSERT INTO entitlement_balances(owner_id,entitlement_key,available_units) VALUES($1,'fixture',1)",[f.owner]);
   await pool.query("INSERT INTO entitlement_ledger_entries(id,owner_id,entitlement_key,entry_type,delta_units,balance_after,idempotency_key,request_hash) VALUES($1,$2,'fixture','grant',1,1,$3,$4)",[randomUUID(),f.owner,randomUUID(),'a'.repeat(64)]);
   await expect(pool.query('DELETE FROM entitlement_ledger_entries WHERE owner_id=$1',[f.owner])).rejects.toThrow('append-only');
   const id=await ready(f,'delete');expect(await lifecycle.complete(f.owner,f.hash,id,'DELETE_ACCOUNT')).toMatchObject({status:'account_deleted'});
   expect((await pool.query('SELECT id FROM auth_accounts WHERE id=$1',[f.owner])).rowCount).toBe(0);expect((await pool.query('SELECT id FROM game_saves WHERE id=$1',[saveId])).rowCount).toBe(0);expect(await auth.resolve(f.token)).toBeNull();expect(await auth.resolve(b.token)).not.toBeNull();
-  for(const table of ['turn_requests','npc_memory_journals','cloud_archive_trash'])expect((await pool.query(`SELECT save_id FROM ${table} WHERE save_id=$1`,[saveId])).rowCount).toBe(0);
+  for(const table of ['turn_requests','npc_memory_journals','npc_authorized_observation_outbox','cloud_archive_trash'])expect((await pool.query(`SELECT save_id FROM ${table} WHERE save_id=$1`,[saveId])).rowCount).toBe(0);
   for(const table of ['entitlement_balances','entitlement_ledger_entries'])expect((await pool.query(`SELECT owner_id FROM ${table} WHERE owner_id=$1`,[f.owner])).rowCount).toBe(0);
  });
  it('SEC-01: turn events are append-only and archive rows are erasure-only',async()=>{

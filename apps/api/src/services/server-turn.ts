@@ -97,7 +97,7 @@ export class ServerTurnService {
     const committed = await this.repository.commitAcceptedTurn({ ownerId, expectedRevision: save.revision,
       receipt: prepared.receipt, save: prepared.save,
       events: committedEvents,
-      previousJournal: journal, nextJournal: next.journal });
+      previousJournal: journal, nextJournal: next.journal, authorizedObservations: next.authorizedObservations });
     if (committed.kind === 'not_found') return { status: 'not_found' };
     if (committed.kind === 'idempotency_conflict') return { status: 'idempotency_conflict' };
     if (committed.kind === 'conflict' || committed.kind === 'memory_conflict') {

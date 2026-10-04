@@ -1,6 +1,6 @@
 import { DomainEventSchema, type DomainEvent } from '@jiuxiao/contracts';
 import { rememberObservedEvent } from './belief.js';
-import { assertNpcMemory, createNpcMemory, type MemoryPolicyVersion, type NpcMemory, type ObservationGrant } from './policy.js';
+import { assertNpcMemory, createNpcMemory, validAuthorizedFacts, type MemoryPolicyVersion, type NpcMemory, type ObservationGrant } from './policy.js';
 
 export type NpcMemoryTurnMarker = {
   fromRevision: number;
@@ -17,8 +17,24 @@ export type NpcMemoryJournal = {
 };
 
 export type NpcMemoryTurnPreparation =
-  | { status: 'prepared'; journal: NpcMemoryJournal; recordedObservations: number }
-  | { status: 'duplicate'; journal: NpcMemoryJournal; recordedObservations: 0 };
+  | { status: 'prepared'; journal: NpcMemoryJournal; recordedObservations: number; authorizedObservations: readonly AuthorizedObservationOutboxRecord[] }
+  | { status: 'duplicate'; journal: NpcMemoryJournal; recordedObservations: 0; authorizedObservations: readonly [] };
+
+/** Frozen, mode-neutral authorization record written atomically with a RULES turn. */
+export type AuthorizedObservationOutboxRecord = {
+  grantId: string;
+  saveId: string;
+  branchId: 'root';
+  npcId: string;
+  eventId: string;
+  eventRevision: number;
+  observedAtMinute: number;
+  channel: 'witnessed' | 'reported';
+  authorizationPolicyVersion: string;
+  authorizedFields: readonly string[];
+  authorizedFacts: Readonly<Record<string, unknown>>;
+  summary: string;
+};
 
 export type PrepareNpcMemoryTurnOptions = {
   journal: NpcMemoryJournal;
@@ -67,8 +83,7 @@ export function assertNpcMemoryJournal(value: unknown): asserts value is NpcMemo
     if (!Array.isArray(rawMemory.observations)) throw new Error('Invalid NPC memory');
     for (const rawObservation of rawMemory.observations) {
       assertRecord(rawObservation, 'Invalid NPC memory observation');
-      assertExactKeys(rawObservation,
-        ['npcId', 'eventId', 'eventRevision', 'observedAtMinute', 'channel', 'summary'],
+      assertExactKeys(rawObservation, ['npcId', 'eventId', 'eventRevision', 'observedAtMinute', 'channel', 'summary'],
         'Invalid NPC memory observation');
       if (typeof rawObservation.eventId !== 'string' || !UUID_PATTERN.test(rawObservation.eventId)) {
         throw new Error('Invalid NPC memory observation event ID');
@@ -130,6 +145,28 @@ export function serializeNpcMemoryJournal(journal: NpcMemoryJournal): string {
   return json;
 }
 
+/** Validate the durable grant independently from the bounded, legacy-compatible recall journal. */
+export function assertAuthorizedObservationOutboxRecord(value: unknown): asserts value is AuthorizedObservationOutboxRecord {
+  assertRecord(value, 'Invalid authorized observation outbox record');
+  assertExactKeys(value, ['grantId', 'saveId', 'branchId', 'npcId', 'eventId', 'eventRevision', 'observedAtMinute',
+    'channel', 'authorizationPolicyVersion', 'authorizedFields', 'authorizedFacts', 'summary'],
+  'Invalid authorized observation outbox record');
+  if (typeof value.saveId !== 'string' || !value.saveId.trim() || value.saveId.length > 200
+    || value.branchId !== 'root' || typeof value.npcId !== 'string' || !value.npcId.trim() || value.npcId.length > 200
+    || typeof value.eventId !== 'string' || !UUID_PATTERN.test(value.eventId)
+    || !Number.isSafeInteger(value.eventRevision) || (value.eventRevision as number) < 1
+    || !Number.isSafeInteger(value.observedAtMinute) || (value.observedAtMinute as number) < 0
+    || (value.channel !== 'witnessed' && value.channel !== 'reported')
+    || typeof value.authorizationPolicyVersion !== 'string' || !value.authorizationPolicyVersion.trim()
+    || value.authorizationPolicyVersion.length > 200
+    || typeof value.summary !== 'string' || !value.summary.trim() || value.summary.length > MAX_VISIBLE_SUMMARY_LENGTH
+    || !validAuthorizedFacts(value.authorizedFields as readonly string[], value.authorizedFacts as Readonly<Record<string, unknown>>, value.summary)
+    || typeof value.grantId !== 'string' || value.grantId !== stableGrantId(value.saveId, value.branchId, value.eventId, value.npcId)
+    || value.grantId.length > 2000) {
+    throw new Error('Invalid authorized observation outbox record');
+  }
+}
+
 /**
  * Prepares the NPC-visible memory projection for one already-decided rules turn.
  * This function is pure with respect to its input journal. Persist its returned
@@ -169,7 +206,7 @@ export function prepareNpcMemoryTurn(input: PrepareNpcMemoryTurnOptions): NpcMem
     eventIds: events.map(event => event.id),
   };
   if (input.journal.revision === input.afterRevision && sameTurn(input.journal.lastTurn, marker)) {
-    return { status: 'duplicate', journal: input.journal, recordedObservations: 0 };
+    return { status: 'duplicate', journal: input.journal, recordedObservations: 0, authorizedObservations: [] };
   }
   if (input.journal.revision !== input.beforeRevision) {
     throw new Error('NPC memory journal revision mismatch');
@@ -178,6 +215,7 @@ export function prepareNpcMemoryTurn(input: PrepareNpcMemoryTurnOptions): NpcMem
   const memories = new Map<string, NpcMemory>();
   for (const memory of input.journal.memories) memories.set(memory.npcId, memory);
   let recordedObservations = 0;
+  const authorizedObservations: AuthorizedObservationOutboxRecord[] = [];
   for (const event of events) {
     const grants = input.grantsForEvent(event);
     if (!Array.isArray(grants)) throw new Error('NPC visibility grants must be an array');
@@ -195,6 +233,22 @@ export function prepareNpcMemoryTurn(input: PrepareNpcMemoryTurnOptions): NpcMem
       const alreadyObserved = memory.observations.some(item => item.eventId === event.id);
       const nextMemory = rememberObservedEvent(memory, event, grant, input.observedAtMinute);
       assertNpcMemory(nextMemory);
+      const observation: AuthorizedObservationOutboxRecord = {
+        grantId: stableGrantId(input.saveId, event.branchId ?? 'root', event.id, grant.npcId),
+        saveId: input.saveId,
+        branchId: event.branchId ?? 'root',
+        npcId: grant.npcId,
+        eventId: event.id,
+        eventRevision: event.afterRevision,
+        observedAtMinute: input.observedAtMinute,
+        channel: grant.channel,
+        authorizationPolicyVersion: grant.authorizationPolicyVersion,
+        authorizedFields: [...grant.authorizedFields],
+        authorizedFacts: structuredClone(grant.authorizedFacts),
+        summary: grant.visibleSummary,
+      };
+      assertAuthorizedObservationOutboxRecord(observation);
+      authorizedObservations.push(observation);
       if (!alreadyObserved) recordedObservations += 1;
       memories.set(grant.npcId, nextMemory);
     }
@@ -209,7 +263,7 @@ export function prepareNpcMemoryTurn(input: PrepareNpcMemoryTurnOptions): NpcMem
   };
   const bounded = trimJournal(journal);
   assertNpcMemoryJournal(bounded);
-  return { status: 'prepared', journal: bounded, recordedObservations };
+  return { status: 'prepared', journal: bounded, recordedObservations, authorizedObservations };
 }
 
 function trimJournal(journal: NpcMemoryJournal): NpcMemoryJournal {
@@ -220,11 +274,11 @@ function trimJournal(journal: NpcMemoryJournal): NpcMemoryJournal {
       || (a.observation.eventId < b.observation.eventId ? -1 : a.observation.eventId > b.observation.eventId ? 1 : 0));
   let candidate: NpcMemoryJournal = { ...journal, memories: working };
   let bytes = new TextEncoder().encode(JSON.stringify(candidate)).byteLength;
-  for (const [index, item] of oldest.entries()) {
+  for (const item of oldest) {
     if (bytes <= MAX_JOURNAL_BYTES) return candidate;
     item.memory.observations.splice(item.memory.observations.indexOf(item.observation), 1);
     candidate = { ...journal, memories: working.filter(memory => memory.observations.length > 0) };
-    if (index % 8 === 7 || index === oldest.length - 1) bytes = new TextEncoder().encode(JSON.stringify(candidate)).byteLength;
+    bytes = new TextEncoder().encode(JSON.stringify(candidate)).byteLength;
   }
   if (bytes > MAX_JOURNAL_BYTES) throw new Error('NPC memory journal exceeds storage limit');
   return candidate;
@@ -238,14 +292,22 @@ function sameTurn(left: NpcMemoryTurnMarker | null, right: NpcMemoryTurnMarker):
 
 function assertObservationGrantShape(value: unknown): asserts value is ObservationGrant {
   assertRecord(value, 'Invalid NPC visibility grant');
-  assertExactKeys(value, ['npcId', 'eventId', 'channel', 'visibleSummary'], 'Invalid NPC visibility grant');
+  assertExactKeys(value, ['npcId', 'eventId', 'channel', 'authorizationPolicyVersion', 'authorizedFields', 'authorizedFacts', 'visibleSummary'], 'Invalid NPC visibility grant');
   if (typeof value.npcId !== 'string' || !value.npcId.trim()
+    || value.npcId.length > 200
     || typeof value.eventId !== 'string' || !UUID_PATTERN.test(value.eventId)
     || (value.channel !== 'witnessed' && value.channel !== 'reported')
     || typeof value.visibleSummary !== 'string' || !value.visibleSummary.trim()
-    || value.visibleSummary.length > MAX_VISIBLE_SUMMARY_LENGTH) {
+    || value.visibleSummary.length > MAX_VISIBLE_SUMMARY_LENGTH
+    || typeof value.authorizationPolicyVersion !== 'string' || !value.authorizationPolicyVersion.trim()
+    || value.authorizationPolicyVersion.length > 200
+    || !validAuthorizedFacts(value.authorizedFields as readonly string[], value.authorizedFacts as Readonly<Record<string, unknown>>, value.visibleSummary)) {
     throw new Error('Invalid NPC visibility grant');
   }
+}
+
+function stableGrantId(saveId: string, branchId: string, eventId: string, npcId: string): string {
+  return [saveId, branchId, eventId, npcId].map(part => `${part.length}:${part}`).join('');
 }
 
 function assertRecord(value: unknown, message: string): asserts value is Record<string, unknown> {
