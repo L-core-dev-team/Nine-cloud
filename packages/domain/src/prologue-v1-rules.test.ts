@@ -424,6 +424,24 @@ describe('versioned P1 prologue rule reducers', () => {
       .toMatchObject({ status: 'rejected', code: 'AUTH_UNAUTHORIZED_TARGET' });
   });
 
+  it('rejects rule-layer intents forged from NLU-10/13 hidden targets without committing events', () => {
+    const hiddenLocation = act('move', { destinationId: 'loc_honghuang_yaolin_core' });
+    expect(hiddenLocation.decision).toMatchObject({
+      status: 'rejected', code: 'INPUT_NO_SUCH_TARGET', revision: 0,
+    });
+    expect(hiddenLocation.decision.status === 'rejected' && 'events' in hiddenLocation.decision).toBe(false);
+    expect(hiddenLocation.current.state).toEqual(save().state);
+
+    // The parser must never bind this item because it is absent from inventory.
+    // This direct-intent probe independently verifies the reducer's no-side-effect guard.
+    const unownedItem = act('use_item', { itemId: 'item_jiuyifu' });
+    expect(unownedItem.decision).toMatchObject({
+      status: 'rejected', code: 'ENV_ITEM_NOT_OWNED', revision: 0,
+    });
+    expect(unownedItem.decision.status === 'rejected' && 'events' in unownedItem.decision).toBe(false);
+    expect(unownedItem.current.state).toEqual(save().state);
+  });
+
   it('supports scan, first study, repeated study, and dark-obstructed observations', () => {
     const scan = replay(act('observe', { targetId: 'target_stones', method: 'scan' }));
     expect(scan.state.facts).toMatchObject({ clues: ['clue_surface'], knownLocations: ['loc_gate', 'loc_town'],
