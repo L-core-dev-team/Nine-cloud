@@ -1,12 +1,13 @@
 import {describe,it,expect,vi} from 'vitest';
 import {randomUUID} from 'node:crypto';
+import {resolve} from 'node:path';
 import type {SaveEnvelope,TurnReceipt,DomainEvent} from '@jiuxiao/contracts';
 import {createNpcMemoryJournal,replayEvents,prepareNpcMemoryTurn} from '@jiuxiao/domain';
 import {prepareTurnRuntime,loadTurnPlugin,type TurnPlugin} from './turn-runtime.js';
 import {AuthoritativeGameService} from './authoritative-game.js';
 import {ServerTurnService,type ServerTurnRepository} from './server-turn.js';
 const plugin:TurnPlugin={
- provider:{version:{ruleVersion:'synthetic',ActionRulesVersion:'synthetic-action',CombatRulesVersion:'synthetic-combat',canonVersion:'synthetic',memoryPolicyVersion:'synthetic'},resolve:(_intent,save)=>({status:'accepted',delta:{timeChange:15,locationChange:null,factChanges:[{key:'items',before:{present:true,value:save.state.facts.items},after:{present:true,value:Number(save.state.facts.items)-1}},{key:'gameMinute',before:{present:true,value:save.state.facts.gameMinute},after:{present:true,value:Number(save.state.facts.gameMinute)+15}}]}})},
+ provider:{version:{ruleVersion:'synthetic',ActionRulesVersion:'synthetic-action',CombatRulesVersion:'synthetic-combat',canonVersion:'synthetic',memoryPolicyVersion:'synthetic'},resolve:(_intent,save)=>({status:'accepted',outcome:'success',delta:{timeChange:15,locationChange:null,factChanges:[{key:'items',before:{present:true,value:save.state.facts.items},after:{present:true,value:Number(save.state.facts.items)-1}},{key:'gameMinute',before:{present:true,value:save.state.facts.gameMinute},after:{present:true,value:Number(save.state.facts.gameMinute)+15}}]}})},
  initialState:()=>({playerId:'player',locationId:'origin',elapsedMinutes:0,facts:{items:200,gameMinute:0}}),
  grantsForEvent:event=>[{npcId:'witness',eventId:event.id,channel:'witnessed',visibleSummary:'Synthetic visible outcome.'}],policyForNpc:()=> 'exact-recall-v1',
 };
@@ -15,6 +16,7 @@ describe('host plugin and complete synthetic turn path',()=>{
   expect(await loadTurnPlugin(undefined)).toBeUndefined();const load=vi.fn();
   await expect(loadTurnPlugin('https://evil.invalid/rules.js',load)).rejects.toThrow('LOCAL_PATH');expect(load).not.toHaveBeenCalled();
   await expect(loadTurnPlugin('relative.js',load)).rejects.toThrow('LOCAL_PATH');
+  expect(await loadTurnPlugin(resolve('fixture.mjs'),load)).toBeUndefined();expect(load).not.toHaveBeenCalled();
  });
  it('creates a server-owned game once and refuses reused creation keys with changed choices',async()=>{
   const saves=new Map<string,SaveEnvelope>();const repo={getForOwner:async(owner:string,id:string)=>saves.get(owner+id)||null,createForOwner:async(owner:string,save:SaveEnvelope)=>{if(saves.has(owner+save.saveId))return false;saves.set(owner+save.saveId,save);return true;}};

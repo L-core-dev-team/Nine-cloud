@@ -54,6 +54,8 @@ export class ServerTurnService {
   async execute(ownerId: string, raw: unknown, requestNarrative = false, cancellation?: AbortSignal): Promise<ServerTurnResult> {
     if (!ownerId.trim() || ownerId.length > 200) throw new TypeError('Authenticated owner is required');
     const intent = ActionIntentSchema.parse(raw);
+    const rules = this.rules;
+    if (!rules) return { status: 'rules_not_ready' };
     const current = await this.repository.loadSave(ownerId, intent.saveId);
     if (!current) return { status: 'not_found' };
     const save = SaveEnvelopeSchema.parse(current);
@@ -61,8 +63,6 @@ export class ServerTurnService {
     if (save.state.facts.archiveKind === 'local-untrusted-v1') return { status: 'client_archive' };
     if (save.state.playerId !== intent.actorId) return { status: 'not_found' };
     const prior = await this.repository.getReceiptForOwner(ownerId, intent.saveId, intent.idempotencyKey);
-    const rules = this.rules;
-    if (!rules) return { status: 'rules_not_ready' };
     if (rules.ruleVersion !== save.ruleVersion || rules.canonVersion !== save.canonVersion ||
         rules.memoryPolicyVersion !== save.memoryPolicyVersion) return { status: 'version_mismatch' };
     const prepared = await prepareTurn({ intent, save, ...(prior ? { priorReceipt: prior } : {}),

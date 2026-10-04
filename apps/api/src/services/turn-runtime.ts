@@ -2,6 +2,7 @@ import { isAbsolute } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { WorldStateSchema, type WorldState } from '@jiuxiao/contracts';
 import { RuleResolver, type ActionRuleProvider } from './rule-resolver.js';
+import { AUTHOR_RULES_GATE } from './author-rules-gate.js';
 import type { ServerTurnRules } from './server-turn.js';
 import { NarrativeScheduler, type RoleSlot, type NarrativeRole } from './narrative-scheduler.js';
 
@@ -22,9 +23,14 @@ export async function loadTurnPlugin(path:string|undefined,load:(url:string)=>Pr
  if (!path) return undefined;
  // A request, URL, model output or environment-provided JavaScript string is never evaluated.
  if (!isAbsolute(path) || /[\r\n\0]/.test(path) || !/\.(mjs|js)$/.test(path)) throw new Error('TURN_PLUGIN_LOCAL_PATH_REQUIRED');
+ // A configured file is not evidence that its rules were approved. Keep the
+ // runtime closed until the author gate carries the exact signed versions.
+ const gate=AUTHOR_RULES_GATE;
+ if(gate.status==='BLOCKED_BY_OWNER'||!gate.ActionRulesVersion||!gate.CombatRulesVersion)return undefined;
  const module=await load(pathToFileURL(path).href);
  if (!module || typeof module!=='object' || !('default' in module)) throw new Error('INVALID_TURN_PLUGIN');
  const plugin=(module as {default:TurnPlugin}).default;
+ if(plugin.provider.version.ActionRulesVersion!==gate.ActionRulesVersion||plugin.provider.version.CombatRulesVersion!==gate.CombatRulesVersion)throw new Error('AUTHOR_RULES_VERSION_MISMATCH');
  prepareTurnRuntime(plugin);
  return plugin;
 }
