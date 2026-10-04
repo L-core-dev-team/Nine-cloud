@@ -24,7 +24,8 @@ suite('ServerTurnService on isolated PostgreSQL (synthetic rules only)', () => {
         source: 'RULES', ruleVersion: save.ruleVersion, occurredAt: new Date().toISOString(), payload: { destinationId: 'fixture-gate' } }] }),
     reduce: state => ({ ...state, locationId: 'fixture-gate', elapsedMinutes: state.elapsedMinutes + 1,
       facts: { ...state.facts, gameMinute: Number(state.facts.gameMinute) + 1 } }),
-    grantsForEvent: event => [{ npcId: 'visible-fixture-npc', eventId: event.id, channel: 'witnessed', visibleSummary: 'Public fixture event.' }],
+    grantsForEvent: event => [{ npcId: 'visible-fixture-npc', eventId: event.id, channel: 'witnessed', authorizationPolicyVersion: 'visibility-v1',
+      authorizedFields: ['summary'], authorizedFacts: { summary: 'Public fixture event.' }, visibleSummary: 'Public fixture event.' }],
     policyForNpc: () => 'exact-recall-v1',
   };
   beforeAll(async()=>{for(const id of [owner])await pool.query('INSERT INTO auth_accounts(id,email) VALUES($1,$2) ON CONFLICT DO NOTHING',[id,id+'@fixture.invalid']);});
@@ -109,7 +110,8 @@ suite('ServerTurnService on isolated PostgreSQL (synthetic rules only)', () => {
     await pool.query('INSERT INTO game_saves (id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,snapshot) VALUES ($1,$2,0,1,$3,$3,$3,$4::jsonb)',
       [secondSaveId,owner,'fixture-only',JSON.stringify({playerId:'fixture-player',locationId:'second-origin',elapsedMinutes:0,facts:{gameMinute:0,privateFixture:'second-private'}})]);
     const secondRules: ServerTurnRules = {...rules, decide: (input, save) => ({status:'accepted',nextRevision:save.revision+1,events:[{id:randomUUID(),saveId:input.saveId,type:'fixture.second',beforeRevision:save.revision,afterRevision:save.revision+1,source:'RULES',ruleVersion:save.ruleVersion,occurredAt:new Date().toISOString(),payload:{}}]}),
-      grantsForEvent:event=>[{npcId:'visible-fixture-npc',eventId:event.id,channel:'witnessed',visibleSummary:'Only second-save observation.'}]};
+      grantsForEvent:event=>[{npcId:'visible-fixture-npc',eventId:event.id,channel:'witnessed',authorizationPolicyVersion:'visibility-v1',
+        authorizedFields:['summary'],authorizedFacts:{summary:'Only second-save observation.'},visibleSummary:'Only second-save observation.'}]};
     expect((await new ServerTurnService(repository,secondRules).execute(owner,{...intent,saveId:secondSaveId,idempotencyKey:randomUUID()})).status).toBe('accepted');
     expect(await repository.getForOwner(owner,saveId)).toEqual(before);
     const second=await repository.getForOwner(owner,secondSaveId);expect(JSON.stringify(second)).toContain('Only second-save observation.');expect(JSON.stringify(second)).not.toContain('Public fixture event.');expect(JSON.stringify(second)).not.toContain('second-private');
@@ -142,7 +144,7 @@ suite('ServerTurnService on isolated PostgreSQL (synthetic rules only)', () => {
   it('replays a 120-turn persisted game across lost commit replies and service restarts',async()=>{
     const id=randomUUID();templateIds.push(id);
     await pool.query('INSERT INTO game_saves(id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,snapshot) VALUES($1,$2,0,1,$3,$3,$3,$4::jsonb)',[id,owner,'fixture-only',JSON.stringify({playerId:'fixture-player',locationId:'origin',elapsedMinutes:0,facts:{items:150,gameMinute:0}})]);
-    const resolver=new RuleResolver({version:{ruleVersion:'fixture-only',ActionRulesVersion:'fixture-actions',CombatRulesVersion:'fixture-combat',canonVersion:'fixture-only',memoryPolicyVersion:'fixture-only'},resolve:(_intent,save)=>({status:'accepted',outcome:'success',delta:{timeChange:1,locationChange:null,factChanges:[{key:'items',before:{present:true,value:save.state.facts.items},after:{present:true,value:Number(save.state.facts.items)-1}},{key:'gameMinute',before:{present:true,value:save.state.facts.gameMinute},after:{present:true,value:Number(save.state.facts.gameMinute)+1}}]}})},event=>[{npcId:'long-witness',eventId:event.id,channel:'witnessed',visibleSummary:'Synthetic committed fact.'}],()=>'exact-recall-v1');
+    const resolver=new RuleResolver({version:{ruleVersion:'fixture-only',ActionRulesVersion:'fixture-actions',CombatRulesVersion:'fixture-combat',canonVersion:'fixture-only',memoryPolicyVersion:'fixture-only'},resolve:(_intent,save)=>({status:'accepted',outcome:'success',delta:{timeChange:1,locationChange:null,factChanges:[{key:'items',before:{present:true,value:save.state.facts.items},after:{present:true,value:Number(save.state.facts.items)-1}},{key:'gameMinute',before:{present:true,value:save.state.facts.gameMinute},after:{present:true,value:Number(save.state.facts.gameMinute)+1}}]}})},event=>[{npcId:'long-witness',eventId:event.id,channel:'witnessed',authorizationPolicyVersion:'visibility-v1',authorizedFields:['summary'],authorizedFacts:{summary:'Synthetic committed fact.'},visibleSummary:'Synthetic committed fact.'}],()=>'exact-recall-v1');
     const before=(await repository.loadSave(owner,id))!;const events:Parameters<typeof replayEvents>[1][number][]=[];
     for(let step=0;step<120;step++){
       const request:ActionIntent={kind:'free_text',saveId:id,actorId:'fixture-player',expectedRevision:step,idempotencyKey:randomUUID(),payload:{text:'Synthetic one-item consumption'}};

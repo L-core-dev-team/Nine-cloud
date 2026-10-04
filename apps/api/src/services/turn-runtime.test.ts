@@ -9,7 +9,7 @@ import {ServerTurnService,type ServerTurnRepository} from './server-turn.js';
 const plugin:TurnPlugin={
  provider:{version:{ruleVersion:'synthetic',ActionRulesVersion:'synthetic-action',CombatRulesVersion:'synthetic-combat',canonVersion:'synthetic',memoryPolicyVersion:'synthetic'},resolve:(_intent,save)=>({status:'accepted',outcome:'success',delta:{timeChange:15,locationChange:null,factChanges:[{key:'items',before:{present:true,value:save.state.facts.items},after:{present:true,value:Number(save.state.facts.items)-1}},{key:'gameMinute',before:{present:true,value:save.state.facts.gameMinute},after:{present:true,value:Number(save.state.facts.gameMinute)+15}}]}})},
  initialState:()=>({playerId:'player',locationId:'origin',elapsedMinutes:0,facts:{items:200,gameMinute:0}}),
- grantsForEvent:event=>[{npcId:'witness',eventId:event.id,channel:'witnessed',visibleSummary:'Synthetic visible outcome.'}],policyForNpc:()=> 'exact-recall-v1',
+ grantsForEvent:event=>[{npcId:'witness',eventId:event.id,channel:'witnessed',authorizationPolicyVersion:'visibility-v1',authorizedFields:['summary'],authorizedFacts:{summary:'Synthetic visible outcome.'},visibleSummary:'Synthetic visible outcome.'}],policyForNpc:()=> 'exact-recall-v1',
 };
 describe('host plugin and complete synthetic turn path',()=>{
  it('never loads remote rules or derives rules when configuration is absent',async()=>{

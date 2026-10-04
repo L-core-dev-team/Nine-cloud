@@ -1,4 +1,5 @@
 import { readFile, writeFile } from 'node:fs/promises';
+import { assertCanonReceiptsComplete } from './build/canon-receipts.mjs';
 
 const registryUrl = new URL('../packages/content/src/canon.registry.json', import.meta.url);
 const runtimeUrl = new URL('../packages/content/src/canon-runtime.json', import.meta.url);
@@ -56,21 +57,12 @@ const receiptsUrl = new URL('../packages/content/src/canon-receipts.json', impor
 let receiptManifest = null;
 try { receiptManifest = JSON.parse(await readFile(receiptsUrl, 'utf8')); } catch { receiptManifest = null; }
 const allowPendingReceipts = process.argv.includes('--allow-pending-receipts');
-const receiptsUsable = Boolean(receiptManifest && Array.isArray(receiptManifest.entries)
-  && receiptManifest.canonVersion === registry.activeVersion);
 let receiptsComplete = false;
-if (receiptsUsable) {
-  const byId = new Map(receiptManifest.entries.map(item => [item.id, item]));
-  receiptsComplete = entries.length > 0 && entries.every(entry => {
-    const digest = entryDigest(entry);
-    const reviews = byId.get(entry.id)?.reviews ?? [];
-    return ['LYL', 'Bird'].every(reviewer => reviews.some(item =>
-      item.reviewer === reviewer && item.decision === 'approved'
-      && item.contentSha256 === digest && Number.isFinite(Date.parse(item.reviewedAt))));
-  });
-}
-if (!receiptsComplete && !allowPendingReceipts) {
-  throw new Error('CANON_RECEIPTS_PENDING: confirmed entries lack matching LYL+Bird review receipts; provide packages/content/src/canon-receipts.json or pass --allow-pending-receipts to stamp the runtime as pending.');
+try {
+  assertCanonReceiptsComplete(entries, receiptManifest, registry.activeVersion, entryDigest);
+  receiptsComplete = true;
+} catch (error) {
+  if (!allowPendingReceipts) throw error;
 }
 
 const runtime = { schemaVersion: registry.schemaVersion, activeVersion: registry.activeVersion, receiptsComplete, entries };

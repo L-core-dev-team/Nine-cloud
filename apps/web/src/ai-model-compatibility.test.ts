@@ -4,7 +4,7 @@ import { filterSamplingParameters, modelSamplingPolicy } from './ai-model-compat
 describe('model-specific sampling compatibility', () => {
   it('keeps the controls available for models without a documented restriction', () => {
     expect(modelSamplingPolicy('deepseek-flash').supported).toEqual({ temperature: true, topP: true, topK: true });
-    expect(filterSamplingParameters('gpt-6-sol', { temperature: 0.7, topP: 0.9, topK: 32 })).toEqual({ temperature: 0.7, topP: 0.9, topK: 32 });
+    expect(filterSamplingParameters('gpt-6.1-sol', { temperature: 0.7, topP: 0.9, topK: 32 })).toEqual({ temperature: 0.7, topP: 0.9, topK: 32 });
   });
 
   it.each(['claude-opus-5-5', 'claude-sonnet-5', 'gemini-3.8-flash'])(

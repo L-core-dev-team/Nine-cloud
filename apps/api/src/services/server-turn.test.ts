@@ -18,7 +18,8 @@ function fixture() {
   const rules: ServerTurnRules = { ruleVersion: 'fixture-only', canonVersion: 'fixture-only', memoryPolicyVersion: 'fixture-only',
     decide, reduce: (state, event) => ({ ...state, locationId: String(event.payload.destinationId), elapsedMinutes: state.elapsedMinutes + 1,
       facts: { ...state.facts, gameMinute: Number(state.facts.gameMinute) + 15 } }),
-    grantsForEvent: event => [{ npcId: 'visible-npc', eventId: event.id, channel: 'witnessed', visibleSummary: 'Visible test event.' }],
+    grantsForEvent: event => [{ npcId: 'visible-npc', eventId: event.id, channel: 'witnessed', authorizationPolicyVersion: 'visibility-v1',
+      authorizedFields: ['summary'], authorizedFacts: { summary: 'Visible test event.' }, visibleSummary: 'Visible test event.' }],
     policyForNpc: () => 'exact-recall-v1' };
   const repository: ServerTurnRepository = {
     loadSave: vi.fn(async owner => owner === 'owner' ? structuredClone(save) : null),
