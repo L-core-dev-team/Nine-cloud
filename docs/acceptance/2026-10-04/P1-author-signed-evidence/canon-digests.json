@@ -1,0 +1,21 @@
+{
+  "gitHead": "61ca62e096fe9456f2e46c356a62284bde31f628",
+  "files": {
+    "canon.registry.json": {
+      "sha256": "a22f4d0cd82c3de5a1ffb9c73928482677ddbd5b2e93664431c4c39828ebf19f",
+      "bytes": 303332
+    },
+    "canon-runtime.json": {
+      "sha256": "a65fc6e9b3e5c233407d7602180d51d372c5bb3159b0d8f99cc142f70eb4f8f2",
+      "bytes": 233589
+    }
+  },
+  "approvalMode": "author_delegated_adjudication",
+  "activeVersion": "1.0",
+  "reviewQueue": 0,
+  "entryCount": 39,
+  "statusDistribution": {
+    "confirmed": 34,
+    "deprecated": 5
+  }
+}
