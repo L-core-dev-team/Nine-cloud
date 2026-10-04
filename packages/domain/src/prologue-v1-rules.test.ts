@@ -4,6 +4,7 @@ import { PROLOGUE_V1, PROLOGUE_V1_ERROR_MESSAGES, PROLOGUE_V1_RULE_VERSION } fro
 import { evaluate } from './rules.js';
 import { createPrologueV1EventReducer, createPrologueV1RuleModule, type PrologueV1Rulebook } from './prologue-v1-rules.js';
 import { replayEvents } from './event-log.js';
+import { parseActionText } from './nlu/action-parser.js';
 
 const baseFacts: PrologueV1Facts = {
   gameMinute: 300,
@@ -73,6 +74,40 @@ const module = createPrologueV1RuleModule({
   rulebook: book,
   mechanics: PROLOGUE_V1,
   messages: PROLOGUE_V1_ERROR_MESSAGES,
+});
+
+it('routes parser observation targets to the rulebook targetId, not the locationId', () => {
+  const current = save();
+  const target = book.observations.find(candidate => candidate.locationId === current.state.locationId)!;
+  const parsed = parseActionText({
+    text: '观察石堆',
+    identity: {
+      saveId: current.saveId,
+      actorId: current.state.playerId,
+      branchId: 'root',
+      expectedRevision: current.revision,
+      idempotencyKey: '00000000-0000-4000-9000-000000000099',
+    },
+    visible: {
+      knownLocations: [],
+      npcPresence: [],
+      observationTargets: [{ id: target.targetId, label: '石堆' }],
+      clues: [],
+      inventory: [],
+    },
+    visibilityRevision: current.revision,
+    templates: [{ id: 'observe-scene-target', kind: 'observe', prefix: '观察', entitySource: 'observationTargets', fixedPayload: { method: 'scan' } }],
+  });
+  expect(parsed.status).toBe('ready');
+  if (parsed.status !== 'ready') throw new Error('EXPECTED_OBSERVE_INTENT');
+  expect(parsed.intent.payload).toEqual({ targetId: target.targetId, method: 'scan' });
+  const decision = evaluate(parsed.intent, current, {
+    occurredAt: '2026-10-03T10:00:00.000Z',
+    eventIds: allocatedIds,
+    module,
+  });
+  expect(decision.status).toBe('accepted');
+  if (decision.status === 'accepted') expect(decision.events[0]?.type).toBe('observe.result');
 });
 
 let requestCounter = 0;

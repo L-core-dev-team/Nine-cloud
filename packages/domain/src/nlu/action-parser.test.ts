@@ -12,13 +12,15 @@ const identity = {
 const visible: VisibleTargetCatalog = {
   knownLocations: [{ id: 'loc-wangqitai', label: '望气台' }],
   npcPresence: [{ id: 'npc-cenjiu', label: '岑九' }],
+  observationTargets: [{ id: 'target-ferry', label: '渡船' }],
   clues: [{ id: 'clue-crow-nest', label: '灰羽鸦' }],
   inventory: [{ id: 'item-bishuifu', label: '避水符' }],
 };
 
 const templates: readonly ActionTemplate[] = [
   { id: 'move-to', kind: 'move', prefix: '去', entitySource: 'knownLocations' },
-  { id: 'observe-location', kind: 'observe', prefix: '观察', entitySource: 'knownLocations', fixedPayload: { method: 'scan' }, labelPrefix: '环视' },
+  { id: 'observe-target', kind: 'observe', prefix: '观察', entitySource: 'observationTargets', fixedPayload: { method: 'scan' }, labelPrefix: '观察' },
+  { id: 'study-target', kind: 'observe', prefix: '细察', entitySource: 'observationTargets', fixedPayload: { method: 'study' }, labelPrefix: '细察' },
   { id: 'talk-to', kind: 'talk', prefix: '对', entitySource: 'npcPresence', capture: { separator: '说：', slot: 'utterance' } },
   { id: 'use-owned-item', kind: 'use_item', prefix: '使用', entitySource: 'inventory' },
 ];
@@ -32,6 +34,13 @@ describe('P1 deterministic action parser kernel', () => {
     expect(parse('去望气台。')).toEqual({
       status: 'ready',
       intent: { ...identity, kind: 'move', payload: { destinationId: 'loc-wangqitai' } },
+    });
+  });
+
+  it('binds observation targetId to the authorized observation target, not its containing location', () => {
+    expect(parse('细察渡船')).toEqual({
+      status: 'ready',
+      intent: { ...identity, kind: 'observe', payload: { targetId: 'target-ferry', method: 'study' } },
     });
   });
 
@@ -94,12 +103,13 @@ describe('P1 deterministic action parser kernel', () => {
 
   it('orders multi-action candidates by the contract action order', () => {
     const sameSurfaceTemplates: readonly ActionTemplate[] = [
-      { id: 'late-observe', kind: 'observe', prefix: '选择', entitySource: 'knownLocations', fixedPayload: { method: 'scan' }, labelPrefix: '观察 ' },
+      { id: 'late-observe', kind: 'observe', prefix: '选择', entitySource: 'observationTargets', fixedPayload: { method: 'scan' }, labelPrefix: '观察 ' },
       { id: 'early-move', kind: 'move', prefix: '选择', entitySource: 'knownLocations', labelPrefix: '前往 ' },
       { id: 'middle-use', kind: 'use_item', prefix: '选择', entitySource: 'inventory', labelPrefix: '使用 ' },
     ];
     const multiVisible: VisibleTargetCatalog = {
       knownLocations: [{ id: 'loc-a', label: '目标' }],
+      observationTargets: [{ id: 'target-a', label: '目标' }],
       npcPresence: [], clues: [], inventory: [{ id: 'item-a', label: '目标' }],
     };
     const result = parse('选择目标', { templates: sameSurfaceTemplates, visible: multiVisible });

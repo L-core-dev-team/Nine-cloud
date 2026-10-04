@@ -1834,7 +1834,7 @@
       "recordedAt": "2026-10-04",
       "sourceArtifact": {
         "path": "docs/九霄1.0-P1-执行规格-GPT交付版-2026-10-03.md",
-        "sha256": "ad5187b038a3e6375864a582351949d9bb6621cc0a048252621bfa5383c52c33"
+        "sha256": "64d576e849f5a23facb62a64cda829c7038281b35dffe2f440bfede43bc066f7"
       },
       "approvalRecord": {
         "path": "docs/acceptance/2026-10-03/九霄1.0-P1-玩法规则与序章-签署表-2026-10-03.xlsx",
@@ -1843,7 +1843,7 @@
         "precedence": "The current execution specification is normative. Author-confirmed 2026-10-04 facts supersede conflicting values in this earlier workbook."
       },
       "candidateDocument": "packages/content/src/prologue/prologue-v1.ts",
-      "candidateDocumentSha256": "9200dc2f03bb7ffbaade0b5f40b596f17f91f6f38d7998e54f6924b82ed8b95e",
+      "candidateDocumentSha256": "a4cce79004c27b15f120150518a22b8d436eb5d79d1ec4d5e1e93c309f4a5702",
       "candidateIds": [
         "loc_luhuadu",
         "loc_wangqitai",

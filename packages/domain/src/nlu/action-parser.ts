@@ -6,7 +6,7 @@ import {
   type DecisionV2,
 } from '@jiuxiao/contracts';
 
-export type VisibleTargetSource = 'knownLocations' | 'npcPresence' | 'clues' | 'inventory';
+export type VisibleTargetSource = 'knownLocations' | 'npcPresence' | 'observationTargets' | 'clues' | 'inventory';
 
 export interface VisibleTarget {
   readonly id: string;
@@ -20,6 +20,8 @@ export interface VisibleTarget {
 export interface VisibleTargetCatalog {
   readonly knownLocations: readonly VisibleTarget[];
   readonly npcPresence: readonly VisibleTarget[];
+  /** Rule-owned observation targets filtered to the player's current visible scene. */
+  readonly observationTargets: readonly VisibleTarget[];
   readonly clues: readonly VisibleTarget[];
   readonly inventory: readonly VisibleTarget[];
 }
@@ -37,7 +39,7 @@ type EntitySlotForKind = {
   move: { source: 'knownLocations'; slot: 'destinationId' };
   use_item: { source: 'inventory'; slot: 'itemId' };
   talk: { source: 'npcPresence'; slot: 'npcId' };
-  observe: { source: 'knownLocations'; slot: 'targetId' };
+  observe: { source: 'observationTargets'; slot: 'targetId' };
 };
 
 export type BoundActionKind = keyof EntitySlotForKind;
@@ -55,7 +57,7 @@ export type ActionTemplate =
   | (ActionTemplateBase & { readonly kind: 'move'; readonly entitySource: 'knownLocations'; readonly capture?: never })
   | (ActionTemplateBase & { readonly kind: 'use_item'; readonly entitySource: 'inventory'; readonly capture?: never })
   | (ActionTemplateBase & { readonly kind: 'talk'; readonly entitySource: 'npcPresence'; readonly capture: { readonly separator: string; readonly slot: 'utterance' } })
-  | (ActionTemplateBase & { readonly kind: 'observe'; readonly entitySource: 'knownLocations'; readonly capture?: never });
+  | (ActionTemplateBase & { readonly kind: 'observe'; readonly entitySource: 'observationTargets'; readonly capture?: never });
 
 export type ActionParseResult =
   | { readonly status: 'ready'; readonly intent: ActionIntent }
@@ -77,10 +79,10 @@ interface CandidateMatch {
 }
 
 const ENTITY_SLOT_POLICY: Readonly<Record<BoundActionKind, Readonly<Record<VisibleTargetSource, string | undefined>>>> = {
-  move: { knownLocations: 'destinationId', npcPresence: undefined, clues: undefined, inventory: undefined },
-  use_item: { knownLocations: undefined, npcPresence: undefined, clues: undefined, inventory: 'itemId' },
-  talk: { knownLocations: undefined, npcPresence: 'npcId', clues: undefined, inventory: undefined },
-  observe: { knownLocations: 'targetId', npcPresence: undefined, clues: undefined, inventory: undefined },
+  move: { knownLocations: 'destinationId', npcPresence: undefined, observationTargets: undefined, clues: undefined, inventory: undefined },
+  use_item: { knownLocations: undefined, npcPresence: undefined, observationTargets: undefined, clues: undefined, inventory: 'itemId' },
+  talk: { knownLocations: undefined, npcPresence: 'npcId', observationTargets: undefined, clues: undefined, inventory: undefined },
+  observe: { knownLocations: undefined, npcPresence: undefined, observationTargets: 'targetId', clues: undefined, inventory: undefined },
 };
 
 const ACTION_ORDER = new Map(CLARIFICATION_ACTION_ORDER.map((kind, index) => [kind, index]));
@@ -286,7 +288,7 @@ function validateTemplates(templates: readonly ActionTemplate[]): void {
 }
 
 function validateVisibleCatalog(catalog: VisibleTargetCatalog): void {
-  for (const source of ['knownLocations', 'npcPresence', 'clues', 'inventory'] as const) {
+  for (const source of ['knownLocations', 'npcPresence', 'observationTargets', 'clues', 'inventory'] as const) {
     if (!Array.isArray(catalog[source])) throw new TypeError('P1_NLU_CATALOG_INVALID');
     const ids = new Set<string>();
     for (const target of catalog[source]) {
