@@ -33,7 +33,7 @@
 | `pnpm test` | 0 | core regressions 28/28；contracts 17；content 41；domain 102；web 157；API 95 passed / 30 skipped。API/PG 集成因 `TEST_DATABASE_URL` 未设置而跳过。本地测试包含预期的 `CANON_RECEIPTS_PENDING` fail-closed 断言，Vitest 均通过。 |
 | `pnpm build` | 0 | `Verified public Canon runtime 1.0: 34 confirmed entries; receiptsComplete=false`；API/web/schema build 完成；保留既有 555.13 kB bundle warning |
 
-当前 head 的 GitHub Actions run `37217898217` 已完成安装、迁移、类型检查、单元测试、构建、容器冒烟和 PostgreSQL 集成；最后核对时 `pnpm test:e2e` 仍在运行，其余证据生成步骤尚未开始。因此完整 CI 暂不记为通过。定向测试在当前 head 重跑，3 个文件、63 个测试全部通过。
+实现 head `92b7f33c389b9bb6d9f03ce8976c025ec834ceb8` 的 GitHub Actions run `37217425498` 全步骤成功，包括 E2E、PostgreSQL 集成与验收证据生成。后续提交 `5425b38cbfd5de2cd40bdf53e69380ada2d3f399` 只改本文档和阶段记录；该文档 head 的 run `37218452563` 在最后核对时仍执行 E2E，故其完整 CI 暂不记为通过。定向测试在实现 head 之后的当前代码重跑，3 个文件、63 个测试全部通过。
 
 ## 仍未覆盖的边界
 

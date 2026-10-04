@@ -72,15 +72,14 @@ pnpm --filter @jiuxiao/domain exec vitest run src/nlu/action-parser-candidate-di
 
 因此 NLU-02/04 的旧模板结果已被新回归覆盖；NLU-10/13 的 parser unknown 与规则层直接意图拒绝分别测试。此处 2026-10-04 表格保留为历史诊断，不代表当前状态。
 
-## PR-4 退出前仍需完成
+## PR-4 退出裁决（2026-10-05）
 
-1. **已关闭**：review/标注人工交付由作者共同认可材料满足；不重交、不重填。
-2. **已完成本次核验**：NLU-01–14 逐例执行，样本分层为 ready 5 / missing 2 / unknown 7 / ambiguous 0，未发现该样本集内误接受；NLU-10/13 的规则层直接意图拒绝为零事件。
-3. **仍开放**：将共同认可的 MAP 输入与 P1 执行规格统一，并实现剩余目标目录/子区域字段；不得将其写成待作者补交。
-4. **仍开放**：生产 parser/catalog 装配、四类未覆盖行动的词法接口、NLU-11 规则 `refuse` 回执与完整玩法事务 E2E。
-5. PR-4 的技术退出须有当前 head CI 和上述规格/映射一致化证据后再评估；人工 review/标注门已关闭。
+1. **作者验收已完成**：用户确认其提供的 P1 审阅结论、A/B NLU 表及其他材料均为 LYL 与 Bird 共同认可，相关材料作为 review/双作者标签交付接收。不再要求重交或额外 GitHub review event。
+2. **语料验收已完成**：NLU-01–14 在固定模板和可见目标夹具上逐例执行，分层为 `ready=5 / missing=2 / unknown=7 / ambiguous=0`，该样本集未发现误接受；NLU-10/13 的直接规则探针拒绝且为零事件。
+3. **代码验证已完成**：实现 head `92b7f33c389b9bb6d9f03ce8976c025ec834ceb8` 的 Actions run `37217425498` 全步骤成功，含 E2E、PostgreSQL 集成和证据生成。后续 `5425b38cbfd5de2cd40bdf53e69380ada2d3f399` 只更新验收文档；其 Actions run `37218452563` 最后核对时仍在执行 E2E，因此不将该新 head 报为 CI 全绿。
+4. **阶段边界**：PR-4 按执行规格 §10 仅交付确定性解析、四态/候选约束和冻结语料。共同认可 MAP 输入与当前规则/内容存在的冲突、生产目标目录装配、NLU-11 的规则层 `refuse` 结果、完整 DomainEvent/投影及游客序章 E2E，是后续 P1 规格修订与事务阶段的工作，不是再次索取作者材料的理由，也不阻止将 PR-4 标记为完成。
 
-本次记录不改变 `POST /api/turns` 的 fail-closed 行为，不发布活动 Canon，不改迁移，不合并 PR，也不改 S/UI 台账。
+PR-4 交付已完成并记录到 P1 阶段清单。PR #51 仍为开放 PR；本记录不替代合并决定。`POST /api/turns` 保持 fail-closed，不发布活动 Canon，不修改既有迁移，不改 S/UI 台账。
 
 ## 新增代签审阅材料的核对（2026-10-05）
 
