@@ -41,6 +41,35 @@
 - 现有测试覆盖否定、条件、指代、可见性、观察目标隔离、澄清持久化边界和同 revision 约束。它们不等于冻结语料全量回归或双人盲标。
 - Bird 尚未在 PR #51 留下针对当前 head 的独立 review。历史 AI 技术审阅材料不代替该项。
 
+### 临时模板诊断（非验收）
+
+2026-10-04 以代码基线 `ad4a8fb11d1699d2d86205ad63e8af409d6cee96` 对 NLU-01–14 做过一次临时诊断。命令为：
+
+```text
+pnpm --filter @jiuxiao/domain exec vitest run src/nlu/action-parser-candidate-diagnostic.tmp.test.ts --reporter=verbose
+```
+
+该临时测试文件在运行后已删除。它只复用了 `action-parser.test.ts` 的五种测试模板（`去`、`观察`、`细察`、`对…说：`、`使用`），并使用合成的调用方可见目录；没有规则结算、事件写入、生产调用方或生产目录构造器。结果只是现有测试词法模板的行为快照，不是冻结语料回归、作者标签、Canonical 规则验收或生产能力证明。
+
+| 样本 | 临时模板诊断结果 | 对当前内核的解释 |
+| --- | --- | --- |
+| NLU-01 | `ready`：move，`destinationId=loc_wangqitai` | 精确模板与可见地点命中 |
+| NLU-02 | `unknown` | “走到”没有对应模板；不能据此断定作者期待应接受或拒绝 |
+| NLU-03 | `missing`：`destinationId` | 命中“去”模板，但目的地缺失 |
+| NLU-04 | `unknown` | “我看看”不匹配现有观察模板；不是 `missing` |
+| NLU-05 | `unknown` | “找岑九”没有当前模板，不能由此推导 talk 行动 |
+| NLU-06 | `unknown` | 否定句按解析器边界不生成移动意图 |
+| NLU-07 | `unknown` | 条件句未被当前模板接受 |
+| NLU-08 | `unknown` | “那边”没有已解析的指代上下文 |
+| NLU-09 | `unknown` | “找老李”不匹配可见 NPC 的对话模板 |
+| NLU-10 | `unknown` | 超范围地点没有绑定隐藏地点 ID；尚未执行规则层拒绝 |
+| NLU-11 | `ready`：talk，`npcId=npc_cenjiu`，保留原话 | 当前对话模板把内容绑定为岑九的发言，不把话内否定解析成玩家移动 |
+| NLU-12 | `ready`：observe，`targetId=obj_ferry`，`method=study` | 合成观察目录与“细察”模板命中 |
+| NLU-13 | `unknown` | 不在背包的物品未绑定 ActionIntent；尚未执行规则层拒绝 |
+| NLU-14 | `ready`：move，`destinationId=loc_wangqitai` | 编辑后的句子命中移动模板；不验证前序澄清回执事务 |
+
+因此 NLU-02、04 等是词表/预期标签需要作者盲标后裁定的样本；NLU-10、13 的当前结果只证明解析器未猜测隐藏目标。要验规则拒绝，须另用合法 schema 构造的 ActionIntent 单独检查零事件和拒绝回执。此诊断不得冻结任何输入、模板或 Canon 事实。
+
 ## PR-4 退出前仍需完成
 
 1. A、B 分别独立标注冻结语料中的 parse state、ActionIntent 槽位和零事件期望；再记录分歧并裁决。
