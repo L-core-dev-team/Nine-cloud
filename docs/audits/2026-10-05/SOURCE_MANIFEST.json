@@ -1,0 +1,58 @@
+[
+  {
+    "path": "convergence/BRANCH_MERGE_PLAN.md",
+    "sha256": "8f4b4b98b5119c75b07368362036a96254b88cfd9c013d61b9e61a7b3be1be51"
+  },
+  {
+    "path": "convergence/DEMO_GAP_ANALYSIS.md",
+    "sha256": "ca8eff5e4f891565df959e37b1220a0f1f56ec3a081bd3e858f5fce7b6437536"
+  },
+  {
+    "path": "convergence/FEATURE_ROADMAP.md",
+    "sha256": "7656057f4448fd9dabd69abc08cea2916782792167d832b5c827e12fc32e63d6"
+  },
+  {
+    "path": "convergence/NEXT_PHASE_PLAN.md",
+    "sha256": "2d3c5dee28e50d04ea60b62608fa16919988ed97c347827d509e62b5434591f3"
+  },
+  {
+    "path": "convergence/OWNER_CONVERGENCE_REPORT.md",
+    "sha256": "75e4f8d99d1dbdbc41e3d353d920b0efc516198aaf9c8aa93d35e939306344f8"
+  },
+  {
+    "path": "convergence/PR_MERGE_DECISION.md",
+    "sha256": "f6d0d61d2c975dc7b85f1b3151ded2f29675283194a8fbe95aa5ff50dd630e09"
+  },
+  {
+    "path": "history/BRANCH_AUDIT.md",
+    "sha256": "34c3116bbe7ea5cb37b351be6c11cb63177458e1f4ba4d23505a20d1ae21552d"
+  },
+  {
+    "path": "history/COMMIT_AUDIT.md",
+    "sha256": "f87e36fb7b5baa6c84d5ef78debff4b70375a4d396ca516a777a1abec3f3213d"
+  },
+  {
+    "path": "history/COMPLETION_CORRECTION.md",
+    "sha256": "226b584f4e28cba3ca65db758fd98b770edeb5240feec57f1e20a1617e7a9f43"
+  },
+  {
+    "path": "history/CURRENT_BASELINE.md",
+    "sha256": "ab0a15bb5c4be814a9b2af21725afe000df50415f47507985520541684bc5ed8"
+  },
+  {
+    "path": "history/FEATURE_REALITY_AUDIT.md",
+    "sha256": "17717a8b12c9db7a755407d712ef2d605a3daa85c0265f0af3d54ef827c216dc"
+  },
+  {
+    "path": "history/OWNER_SUMMARY.md",
+    "sha256": "4ba023a5fe67e467536e66f48dd182bd128ff3d558354ab0adbc9774541ae1f6"
+  },
+  {
+    "path": "history/PR_AUDIT.md",
+    "sha256": "69c2085bbc56c69e78259d03aabaa175e182c76e2feb4181376482c1282aa1c9"
+  },
+  {
+    "path": "history/STAGE_MAPPING.md",
+    "sha256": "322146a23afc6cca67e0c313f44c8343461b5f53fadd1b7eadf81cdef3ed29b6"
+  }
+]
