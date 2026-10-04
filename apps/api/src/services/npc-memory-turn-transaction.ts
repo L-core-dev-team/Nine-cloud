@@ -13,6 +13,7 @@ import {
   type NpcMemoryJournal,
 } from '@jiuxiao/domain';
 import type { Pool, PoolClient, QueryResult, QueryResultRow } from 'pg';
+import { requireV1PersistableSave } from './save-storage-contract.js';
 
 type Database = Pick<Pool, 'connect' | 'query'>;
 
@@ -249,6 +250,7 @@ function normalizeCommit(input: AcceptedTurnCommitInput): NormalizedCommit {
   if (!input || typeof input !== 'object') throw new TypeError('Turn commit input is required.');
   const ownerId = normalizeOwnerId(input.ownerId);
   const save = SaveEnvelopeSchema.parse(input.save);
+  requireV1PersistableSave(save);
   const receipt = TurnReceiptSchema.parse(input.receipt);
   const events = input.events.map(event => DomainEventSchema.parse(event));
   const previousJournal = parseJournal(input.previousJournal);

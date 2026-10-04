@@ -5,6 +5,7 @@ import {
 } from '@jiuxiao/contracts';
 import {
   prepareTurn, prepareNpcMemoryTurn,
+  readGameMinute,
   type EventReducer, type PrepareNpcMemoryTurnOptions, type NpcMemoryJournal,
 } from '@jiuxiao/domain';
 import type { AcceptedTurnCommitInput, AcceptedTurnCommitResult } from './npc-memory-turn-transaction.js';
@@ -91,7 +92,7 @@ export class ServerTurnService {
     const next = prepareNpcMemoryTurn({ journal, saveId: save.saveId,
       beforeRevision: save.revision, afterRevision: prepared.save.revision,
       events: committedEvents,
-      observedAtMinute: prepared.save.state.elapsedMinutes,
+      observedAtMinute: readGameMinute(prepared.save.state),
       grantsForEvent: rules.grantsForEvent.bind(rules), policyForNpc: rules.policyForNpc.bind(rules) });
     const committed = await this.repository.commitAcceptedTurn({ ownerId, expectedRevision: save.revision,
       receipt: prepared.receipt, save: prepared.save,

@@ -41,6 +41,12 @@ describe('P1 prologue facts contract', () => {
     }).success).toBe(false);
   });
 
+  it('caps known locations at the three signed P1 locations', () => {
+    expect(PrologueV1FactsSchema.safeParse({ ...validFacts,
+      knownLocations: ['loc_a', 'loc_b', 'loc_c', 'loc_d'],
+    }).success).toBe(false);
+  });
+
   it('rejects duplicate one-time acquisition sources', () => {
     expect(PrologueV1FactsSchema.safeParse({
       ...validFacts,

@@ -1,7 +1,8 @@
 export interface DailyStaminaPolicy {
   readonly maxStamina: number;
-  readonly resetAnchorMinute: number;
-  readonly dayMinutes: number;
+  readonly resetAnchorGameMinute: number;
+  readonly dayKecCount: number;
+  readonly gameMinutesPerKec: number;
 }
 
 export interface DailyStaminaProjection {
@@ -10,28 +11,42 @@ export interface DailyStaminaProjection {
 }
 
 export interface DaylightPolicy {
-  readonly dayMinutes: number;
-  readonly daylightStartMinute: number;
-  readonly duskStartMinute: number;
+  readonly dayStartGameMinute: number;
+  readonly dayKecCount: number;
+  readonly gameMinutesPerKec: number;
+  /** Number of complete Kec from the day anchor until dusk. */
+  readonly duskStartKec: number;
 }
 
-export interface TraditionalClockPolicy {
-  readonly dayMinutes: number;
-  readonly shichenMinutes: number;
-  readonly keMinutes: number;
-  readonly anchorMinute: number;
-  readonly anchorShichenIndex: number;
+export interface KecClockPolicy {
+  readonly dayStartGameMinute: number;
+  readonly dayKecCount: number;
+  readonly gameMinutesPerKec: number;
 }
 
-export interface TraditionalClockReading {
-  readonly shichen: string;
-  readonly shichenIndex: number;
-  readonly phase: '初' | '正';
-  readonly keIndex: number;
+export interface KecClockReading {
+  readonly gameDayIndex: number;
+  /** Zero-based Kec index within the current game day. */
+  readonly kecIndex: number;
   readonly label: string;
 }
 
-const SHICHEN_NAMES = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'] as const;
+function dayLengthGameMinutes(dayKecCount: number, gameMinutesPerKec: number): number {
+  assertSafeInteger(dayKecCount, 'dayKecCount');
+  assertSafeInteger(gameMinutesPerKec, 'gameMinutesPerKec');
+  if (dayKecCount <= 0 || gameMinutesPerKec <= 0) throw new RangeError('INVALID_KEC_POLICY');
+  return dayKecCount * gameMinutesPerKec;
+}
+
+function assertOnKecGrid(gameMinute: number, anchorGameMinute: number, gameMinutesPerKec: number): void {
+  assertSafeInteger(gameMinute, 'gameMinute');
+  assertSafeInteger(anchorGameMinute, 'anchorGameMinute');
+  assertSafeInteger(gameMinutesPerKec, 'gameMinutesPerKec');
+  if (gameMinute < anchorGameMinute) throw new RangeError('GAME_MINUTE_BEFORE_START');
+  if ((gameMinute - anchorGameMinute) % gameMinutesPerKec !== 0) {
+    throw new RangeError('GAME_MINUTE_OFF_KEC_GRID');
+  }
+}
 
 /** Apply the P1 game-day stamina reset when an action reads stamina. */
 export function projectDailyStamina(
@@ -39,74 +54,43 @@ export function projectDailyStamina(
   state: DailyStaminaProjection,
   policy: DailyStaminaPolicy,
 ): DailyStaminaProjection {
-  assertSafeInteger(gameMinute, 'gameMinute');
   assertSafeInteger(state.stamina, 'stamina');
   assertSafeInteger(state.staminaDayIndex, 'staminaDayIndex');
   assertSafeInteger(policy.maxStamina, 'maxStamina');
-  assertSafeInteger(policy.resetAnchorMinute, 'resetAnchorMinute');
-  assertSafeInteger(policy.dayMinutes, 'dayMinutes');
-  if (policy.maxStamina <= 0 || policy.dayMinutes <= 0) throw new RangeError('INVALID_STAMINA_POLICY');
-  if (gameMinute < policy.resetAnchorMinute) throw new RangeError('GAME_MINUTE_BEFORE_RESET_ANCHOR');
+  const dayLength = dayLengthGameMinutes(policy.dayKecCount, policy.gameMinutesPerKec);
+  assertOnKecGrid(gameMinute, policy.resetAnchorGameMinute, policy.gameMinutesPerKec);
+  if (policy.maxStamina <= 0) throw new RangeError('INVALID_STAMINA_POLICY');
   if (state.stamina < 0 || state.stamina > policy.maxStamina || state.staminaDayIndex < 0) {
     throw new RangeError('INVALID_STAMINA_STATE');
   }
 
-  const gameDayIndex = Math.floor((gameMinute - policy.resetAnchorMinute) / policy.dayMinutes);
+  const gameDayIndex = Math.floor((gameMinute - policy.resetAnchorGameMinute) / dayLength);
   if (state.staminaDayIndex > gameDayIndex) throw new RangeError('STAMINA_DAY_INDEX_AHEAD');
   return gameDayIndex > state.staminaDayIndex
     ? { stamina: policy.maxStamina, staminaDayIndex: gameDayIndex }
     : { ...state };
 }
 
-/** Classify time-of-day on a repeating game-day, independent of wall-clock time. */
+/** Classify daylight from a pure game-time Kec position, independent of wall-clock time. */
 export function isDaylight(gameMinute: number, policy: DaylightPolicy): boolean {
-  assertSafeInteger(gameMinute, 'gameMinute');
-  assertSafeInteger(policy.dayMinutes, 'dayMinutes');
-  assertSafeInteger(policy.daylightStartMinute, 'daylightStartMinute');
-  assertSafeInteger(policy.duskStartMinute, 'duskStartMinute');
-  if (policy.dayMinutes <= 0 || policy.daylightStartMinute < 0 ||
-      policy.duskStartMinute <= policy.daylightStartMinute || policy.duskStartMinute >= policy.dayMinutes) {
+  const dayLength = dayLengthGameMinutes(policy.dayKecCount, policy.gameMinutesPerKec);
+  assertOnKecGrid(gameMinute, policy.dayStartGameMinute, policy.gameMinutesPerKec);
+  assertSafeInteger(policy.duskStartKec, 'duskStartKec');
+  if (policy.duskStartKec <= 0 || policy.duskStartKec >= policy.dayKecCount) {
     throw new RangeError('INVALID_DAYLIGHT_POLICY');
   }
-  const minuteOfDay = gameMinute % policy.dayMinutes;
-  return minuteOfDay >= policy.daylightStartMinute && minuteOfDay < policy.duskStartMinute;
+  const kecIndex = Math.floor(((gameMinute - policy.dayStartGameMinute) % dayLength) / policy.gameMinutesPerKec);
+  return kecIndex < policy.duskStartKec;
 }
 
-/** Convert game time to the signed twelve-shichen clock, anchored at the P1 start. */
-export function readTraditionalClock(
-  gameMinute: number,
-  policy: TraditionalClockPolicy,
-): TraditionalClockReading {
-  assertSafeInteger(gameMinute, 'gameMinute');
-  assertSafeInteger(policy.dayMinutes, 'dayMinutes');
-  assertSafeInteger(policy.shichenMinutes, 'shichenMinutes');
-  assertSafeInteger(policy.keMinutes, 'keMinutes');
-  assertSafeInteger(policy.anchorMinute, 'anchorMinute');
-  assertSafeInteger(policy.anchorShichenIndex, 'anchorShichenIndex');
-  if (gameMinute < 0) throw new RangeError('INVALID_GAME_MINUTE');
-  if (policy.dayMinutes <= 0 || policy.shichenMinutes <= 0 || policy.keMinutes <= 0 ||
-      policy.dayMinutes !== SHICHEN_NAMES.length * policy.shichenMinutes ||
-      policy.shichenMinutes !== 8 * policy.keMinutes || policy.anchorMinute < 0 ||
-      policy.anchorMinute >= policy.dayMinutes || policy.anchorShichenIndex < 0 ||
-      policy.anchorShichenIndex >= SHICHEN_NAMES.length) {
-    throw new RangeError('INVALID_TRADITIONAL_CLOCK_POLICY');
-  }
-
-  const minuteOfDay = gameMinute % policy.dayMinutes;
-  const relativeMinute = (minuteOfDay - policy.anchorMinute + policy.dayMinutes) % policy.dayMinutes;
-  const shichenIndex = (policy.anchorShichenIndex + Math.floor(relativeMinute / policy.shichenMinutes)) % SHICHEN_NAMES.length;
-  const minuteWithinShichen = relativeMinute % policy.shichenMinutes;
-  const keIndex = Math.floor(minuteWithinShichen / policy.keMinutes);
-  const shichen = SHICHEN_NAMES[shichenIndex];
-  if (shichen === undefined) throw new RangeError('INVALID_TRADITIONAL_CLOCK_POLICY');
-  const phase = keIndex < 4 ? '初' : '正';
-  return Object.freeze({
-    shichen,
-    shichenIndex,
-    phase,
-    keIndex,
-    label: `${shichen}时${phase}刻${keIndex}`,
-  });
+/** Read the current game-day and Kec index without introducing another time unit. */
+export function readKecClock(gameMinute: number, policy: KecClockPolicy): KecClockReading {
+  const dayLength = dayLengthGameMinutes(policy.dayKecCount, policy.gameMinutesPerKec);
+  assertOnKecGrid(gameMinute, policy.dayStartGameMinute, policy.gameMinutesPerKec);
+  const elapsedGameMinutes = gameMinute - policy.dayStartGameMinute;
+  const gameDayIndex = Math.floor(elapsedGameMinutes / dayLength);
+  const kecIndex = Math.floor((elapsedGameMinutes % dayLength) / policy.gameMinutesPerKec);
+  return Object.freeze({ gameDayIndex, kecIndex, label: `第${kecIndex + 1}刻` });
 }
 
 function assertSafeInteger(value: number, name: string): void {

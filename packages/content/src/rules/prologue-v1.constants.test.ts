@@ -6,7 +6,7 @@ import {
   PROLOGUE_V1_ACTION_ORDER,
   PROLOGUE_V1_ERROR_CODES,
   PROLOGUE_V1_ERROR_MESSAGES,
-  PROLOGUE_V1_FREE_ACTION_TICK_MINUTES,
+  PROLOGUE_V1_FREE_ACTION_TICK_KEC_COUNT,
   PROLOGUE_V1_RULE_VERSION,
 } from './prologue-v1.constants.js';
 
@@ -25,11 +25,12 @@ describe('signed P1 prologue rule constants', () => {
     expect(PROLOGUE_V1_RULE_VERSION).toBe('prologue-v1');
   });
 
-  it('keeps time and resource units explicit', () => {
-    expect(PROLOGUE_V1.KEC_MINUTES).toBe(15);
-    expect(PROLOGUE_V1.DAY_MINUTES).toBe(1440);
-    expect(PROLOGUE_V1.SAVE_START_MINUTE).toBe(PROLOGUE_V1.STAMINA_RESET_ANCHOR);
-    expect(PROLOGUE_V1_FREE_ACTION_TICK_MINUTES).toBe(PROLOGUE_V1.KEC_MINUTES);
+  it('uses Kec as the action unit and gameMinute as the single persisted clock', () => {
+    expect(PROLOGUE_V1.GAME_MINUTES_PER_KEC).toBe(15);
+    expect(PROLOGUE_V1.DAY_KEC_COUNT).toBe(96);
+    expect(PROLOGUE_V1.SAVE_START_GAME_MINUTE).toBe(300);
+    expect(PROLOGUE_V1.DUSK_START_KEC).toBe(48);
+    expect(PROLOGUE_V1_FREE_ACTION_TICK_KEC_COUNT).toBe(1);
   });
 
   it('provides one player-readable message for every signed rule error code', () => {

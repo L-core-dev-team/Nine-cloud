@@ -11,7 +11,7 @@ const initialSave = (): SaveEnvelope => ({
   ruleVersion: 'unsigned-rules',
   memoryPolicyVersion: 'none-0',
   revision: 0,
-  state: { playerId: 'fixture-player', locationId: 'fixture-location', elapsedMinutes: 0, facts: { counter: 0 } },
+  state: { playerId: 'fixture-player', locationId: 'fixture-location', elapsedMinutes: 0, facts: { counter: 0, gameMinute: 0 } },
 });
 
 const intent = (destinationId = 'fixture-destination', expectedRevision = 0): ActionIntent => ({
@@ -74,6 +74,14 @@ describe('S3 event log and turn boundary', () => {
 
     const replayed = replayEvents(save, result.receipt.decision.status === 'accepted' ? result.receipt.decision.events : [], reducer);
     expect(replayed).toEqual(result.save);
+  });
+
+  it('never substitutes elapsedMinutes when a v2 receipt requires gameMinute', async () => {
+    const save = initialSave();
+    delete (save.state.facts as Record<string, unknown>).gameMinute;
+    await expect(prepareTurn({
+      intent: intent(), save, decide: (_action, snapshot) => acceptedDecision(snapshot), reduce: reducer,
+    })).rejects.toMatchObject({ code: 'GAME_MINUTE_NOT_READY' });
   });
 
   it('returns the first receipt for a duplicate before checking the now-stale revision', async () => {

@@ -2,6 +2,7 @@ import type { SaveEnvelope } from '@jiuxiao/contracts';
 import { SaveEnvelopeSchema } from '@jiuxiao/contracts';
 import type { Pool, PoolClient, QueryResultRow } from 'pg';
 import { CloudCapacityError, type CloudSaveRepository } from './cloud-save-service.js';
+import { requireV1PersistableSave, SaveSchemaNotReadyError } from './save-storage-contract.js';
 import { assertDataPolicy, checkQuota, type DataPolicy } from './data-policy.js';
 
 interface SaveRow extends QueryResultRow {
@@ -15,6 +16,7 @@ interface SaveRow extends QueryResultRow {
 }
 
 function rowToEnvelope(row: SaveRow): SaveEnvelope {
+  if (row.schema_version !== 1) throw new SaveSchemaNotReadyError();
   return SaveEnvelopeSchema.parse({
     schemaVersion: row.schema_version,
     saveId: row.id,
@@ -113,6 +115,7 @@ export class PostgresCloudSaveRepository implements CloudSaveRepository {
   }
 
   async createForOwner(ownerId: string, save: SaveEnvelope): Promise<boolean> {
+    requireV1PersistableSave(save);
     if (Buffer.byteLength(JSON.stringify(save), 'utf8') > this.limits().perSaveBytes) throw new CloudCapacityError();
     return this.capacityTransaction(ownerId, async client => {
       const usage = await this.accountUsage(client, ownerId);
@@ -136,6 +139,7 @@ export class PostgresCloudSaveRepository implements CloudSaveRepository {
     expectedRevision: number;
     next: SaveEnvelope;
   }): Promise<{ kind: 'updated' } | { kind: 'conflict'; currentRevision: number } | { kind: 'not_found' }> {
+    requireV1PersistableSave(input.next);
     if (Buffer.byteLength(JSON.stringify(input.next), 'utf8') > this.limits().perSaveBytes) throw new CloudCapacityError();
     return this.capacityTransaction(input.ownerId, async client => {
     const current = await client.query<{ revision: number; bytes: number }>(

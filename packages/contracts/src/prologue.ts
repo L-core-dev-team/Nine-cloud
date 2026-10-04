@@ -2,6 +2,8 @@ import { z } from 'zod';
 
 const id = z.string().min(1).max(128);
 
+export const PROLOGUE_V1_LOCATION_LIMIT = 3 as const;
+
 const inventoryEntrySchema = z.strictObject({
   itemId: id,
   quantity: z.int().positive(),
@@ -64,7 +66,7 @@ export const PrologueV1FactsSchema = z.strictObject({
     status: z.enum(['unavailable', 'completed']),
     rewardClaimed: z.boolean(),
   }),
-  knownLocations: z.array(id).max(256).refine(values => new Set(values).size === values.length),
+  knownLocations: z.array(id).max(PROLOGUE_V1_LOCATION_LIMIT).refine(values => new Set(values).size === values.length),
   locationGraph: z.array(locationEdgeSchema).max(512).refine(
     edges => new Set(edges.map(edge => `${edge.from}\0${edge.to}`)).size === edges.length,
     'locationGraph must contain one directed edge per location pair',

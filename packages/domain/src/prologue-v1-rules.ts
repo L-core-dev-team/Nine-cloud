@@ -1,5 +1,7 @@
 import {
   ActionIntentSchema,
+  MAX_CULTIVATION_KES_PER_ACTION,
+  PROLOGUE_V1_LOCATION_LIMIT,
   DomainEventSchema,
   PrologueV1FactsSchema,
   StateDeltaSchema,
@@ -17,12 +19,11 @@ import { bindRuleEvents, type RuleInvocationContext, type RuleEventDraft, type V
 import { isDaylight, projectDailyStamina } from './prologue-v1-time.js';
 
 export interface PrologueV1Mechanics {
-  readonly KEC_MINUTES: number;
-  readonly DAY_MINUTES: number;
-  readonly SAVE_START_MINUTE: number;
-  readonly DUSK_START_MINUTE: number;
+  readonly GAME_MINUTES_PER_KEC: number;
+  readonly DAY_KEC_COUNT: number;
+  readonly SAVE_START_GAME_MINUTE: number;
+  readonly DUSK_START_KEC: number;
   readonly STAMINA_MAX: number;
-  readonly STAMINA_RESET_ANCHOR: number;
   readonly SPIRIT_MAX: number;
   readonly CULTIVATION_MAX: number;
   readonly CULTIVATION_PER_KE: number;
@@ -44,6 +45,7 @@ export interface PrologueV1Rulebook {
   readonly ruleVersion: string;
   readonly canonVersion: string;
   readonly locationIds: readonly string[];
+  readonly initialKnownLocationIds: readonly string[];
   readonly itemIds: readonly string[];
   readonly clueIds: readonly string[];
   readonly effectFlagIds: readonly string[];
@@ -108,7 +110,7 @@ export interface PrologueV1Rulebook {
     readonly darkInjuryFlag: string;
     readonly retreatInjuryFlag: string;
   }[];
-  readonly quest?: {
+  readonly quest: {
     readonly questId: string;
     readonly rewardItemId: string;
     readonly unlockEdge: {
@@ -157,6 +159,11 @@ export function createPrologueV1RuleModule(dependencies: PrologueV1RuleDependenc
     ruleVersion: rulebook.ruleVersion,
     canonVersion: rulebook.canonVersion,
     decide(intent: ActionIntent, save: SaveEnvelope, context: RuleInvocationContext): DecisionV2 {
+      const rawIntent = intent as unknown as { kind?: unknown; payload?: { minutes?: unknown } };
+      if (rawIntent.kind === 'cultivate' && typeof rawIntent.payload?.minutes === 'number' &&
+          rawIntent.payload.minutes > MAX_CULTIVATION_KES_PER_ACTION) {
+        return rejected('INPUT_CULTIVATION_LIMIT', save.revision, messages);
+      }
       const parsedIntent = ActionIntentSchema.safeParse(intent);
       const parsedSave = WorldStateSchema.safeParse(save.state);
       if (!parsedIntent.success || !parsedSave.success) return rejected('ENV_PAYLOAD_INVALID', save.revision, messages);
@@ -280,9 +287,9 @@ function resolveMove(action: Extract<ActionIntent, { kind: 'move' }>, state: Wor
     const after = advance(state, { ...dailyFacts,
       stamina: debit(dailyFacts.stamina, m.MOVE_COST),
       travelLog: [...facts.travelLog, { toward: to, reason: 'unexplored' }],
-    }, m.KEC_MINUTES, state.locationId);
+    }, 1, m, state.locationId);
     return accepted('legal_failure', 'RULE_LOCATION_UNEXPLORED', [transition('move.blocked', {
-      toward: to, reason: 'unexplored', minutes: m.KEC_MINUTES,
+      toward: to, reason: 'unexplored', kecCount: 1,
     }, state, after)]);
   }
   if (!edge) return reject('ENV_ROUTE_NOT_CONNECTED');
@@ -301,59 +308,61 @@ function resolveMove(action: Extract<ActionIntent, { kind: 'move' }>, state: Wor
         obstacleState: bypass.clearsObstacle ? 'cleared' : facts.obstacleState,
         locationGraph: graph,
         injuryFlags: flags,
-      }, m.KEC_MINUTES * 2, to);
+      }, 2, m, to);
       const transitions = [transition('move.bypassed', {
-        toward: to, via: bypass.via, minutes: m.KEC_MINUTES * 2, extraMinutes: m.KEC_MINUTES,
+        toward: to, via: bypass.via, kecCount: 2, extraKecCount: 1,
       }, state, after)];
       return includeQuestCompletion(transitions, after, facts, book);
     }
     const after = advance(state, { ...dailyFacts,
       stamina: debit(dailyFacts.stamina, m.MOVE_BLOCKED_COST),
       travelLog: [...facts.travelLog, { toward: to, reason: 'rockslide' }],
-    }, m.KEC_MINUTES, state.locationId);
+    }, 1, m, state.locationId);
     return accepted('legal_failure', 'RULE_ROAD_BLOCKED', [transition('move.blocked', {
-      toward: to, reason: 'rockslide', minutes: m.KEC_MINUTES,
+      toward: to, reason: 'rockslide', kecCount: 1,
     }, state, after)]);
   }
 
   const after = advance(state, { ...dailyFacts,
     stamina: debit(dailyFacts.stamina, m.MOVE_COST),
-  }, m.KEC_MINUTES, to);
+  }, 1, m, to);
   return accepted('success', undefined, [transition('move.arrived', {
-    from: state.locationId, to, minutes: m.KEC_MINUTES,
+    from: state.locationId, to, kecCount: 1,
   }, state, after)]);
 }
 
 function resolveCultivation(action: Extract<ActionIntent, { kind: 'cultivate' }>, state: WorldState,
   facts: PrologueV1Facts, book: PrologueV1Rulebook, m: PrologueV1Mechanics): Resolution {
   if (!book.cultivationTechniqueIds.includes(action.payload.techniqueId)) return reject('ENV_TECHNIQUE_LOCKED');
+  if (facts.cultivationProgress >= m.CULTIVATION_MAX) return reject('ENV_CULTIVATION_COMPLETE');
   const ready = readDailyResources(facts, m);
   if (ready.stamina === 0) return reject('ENV_STAMINA_EMPTY');
 
-  const requestedKes = action.payload.minutes;
-  const normalKes = Math.min(requestedKes, Math.floor(ready.stamina / m.CULTIVATE_COST_PER_KE));
-  const remaining = ready.stamina - normalKes * m.CULTIVATE_COST_PER_KE;
-  const fatiguedKe = normalKes < requestedKes && remaining > 0;
-  const attemptedKes = normalKes + (fatiguedKe ? 1 : 0);
-  if (attemptedKes < 1) return reject('ENV_STAMINA_EMPTY');
+  const requestedKecCount = action.payload.minutes;
+  if (requestedKecCount > MAX_CULTIVATION_KES_PER_ACTION) return reject('INPUT_CULTIVATION_LIMIT');
+  const normalKecCount = Math.min(requestedKecCount, Math.floor(ready.stamina / m.CULTIVATE_COST_PER_KE));
+  const remaining = ready.stamina - normalKecCount * m.CULTIVATE_COST_PER_KE;
+  const fatiguedKec = normalKecCount < requestedKecCount && remaining > 0;
+  const attemptedKecCount = normalKecCount + (fatiguedKec ? 1 : 0);
+  if (attemptedKecCount < 1) return reject('ENV_STAMINA_EMPTY');
 
   const progress = Math.min(m.CULTIVATION_MAX,
-    facts.cultivationProgress + normalKes * m.CULTIVATION_PER_KE + (fatiguedKe ? m.CULTIVATION_FATIGUE : 0));
+    facts.cultivationProgress + normalKecCount * m.CULTIVATION_PER_KE + (fatiguedKec ? m.CULTIVATION_FATIGUE : 0));
   const after = advance(state, {
     ...ready,
-    stamina: fatiguedKe ? 0 : remaining,
+    stamina: fatiguedKec ? 0 : remaining,
     cultivationProgress: progress,
-    fatigueCount: facts.fatigueCount + (fatiguedKe ? 1 : 0),
-  }, attemptedKes * m.KEC_MINUTES, state.locationId);
-  const result = fatiguedKe ? 'fatigue' : 'progress';
+    fatigueCount: facts.fatigueCount + (fatiguedKec ? 1 : 0),
+  }, attemptedKecCount, m, state.locationId);
+  const result = fatiguedKec ? 'fatigue' : 'progress';
   const payload = {
     techniqueId: action.payload.techniqueId,
-    minutes: attemptedKes * m.KEC_MINUTES,
-    requestedKes,
-    attemptedKes,
+    kecCount: attemptedKecCount,
+    requestedKecCount,
+    attemptedKecCount,
     result,
   };
-  return accepted(fatiguedKe ? 'legal_failure' : 'success', fatiguedKe ? 'RULE_STAMINA_LOW' : undefined,
+  return accepted(fatiguedKec ? 'legal_failure' : 'success', fatiguedKec ? 'RULE_STAMINA_LOW' : undefined,
     [transition('cultivate.attempted', payload, state, after)]);
 }
 
@@ -364,17 +373,17 @@ function resolveAcquisition(action: Extract<ActionIntent, { kind: 'acquire_item'
   if (!source) return reject('INPUT_NO_SUCH_TARGET');
   if (facts.collectedSources.includes(source.sourceId)) return reject('ENV_SOURCE_ALREADY_CLAIMED');
   if (source.quantity !== action.payload.quantity) return reject('ENV_SOURCE_QUANTITY_INVALID');
-  if (!canAddInventory(facts, source.itemId, source.quantity, m.SLOT_MAX)) return reject('ENV_INVENTORY_FULL');
+  if (!canAddInventory(facts, source.itemId, source.quantity, m.SLOT_MAX)) return reject('INPUT_INVENTORY_FULL');
 
   const afterFacts = {
     ...facts,
     inventory: addInventory(facts.inventory, source.itemId, source.quantity),
     collectedSources: [...facts.collectedSources, source.sourceId],
   };
-  const after = advance(state, afterFacts, m.KEC_MINUTES, state.locationId);
+  const after = advance(state, afterFacts, 1, m, state.locationId);
   return accepted('success', undefined, [transition('item.acquired', {
     itemId: source.itemId, quantity: source.quantity, source: source.source, sourceId: source.sourceId,
-    minutes: m.KEC_MINUTES,
+    kecCount: 1,
   }, state, after)]);
 }
 
@@ -394,9 +403,9 @@ function resolveItemUse(action: Extract<ActionIntent, { kind: 'use_item' }>, sta
     ...facts,
     inventory,
     effectFlags: use.effectFlags.reduce((flags, effect) => appendUnique(flags, effect), [...facts.effectFlags]),
-  }, m.KEC_MINUTES, state.locationId);
+  }, 1, m, state.locationId);
   const transitions = [transition('item.consumed', {
-    itemId: item.itemId, quantity: 1, effect: [...use.effectFlags], minutes: m.KEC_MINUTES,
+    itemId: item.itemId, quantity: 1, effect: [...use.effectFlags], kecCount: 1,
   }, state, after)];
   if (item.quantity === 1) transitions.push(transition('item.depleted', { itemId: item.itemId }, after, after));
   return accepted('success', undefined, transitions);
@@ -420,9 +429,9 @@ function resolveTalk(action: Extract<ActionIntent, { kind: 'talk' }>, state: Wor
     }],
     ...(topic?.clearsObstacle ? { obstacleState: 'cleared' as const } : {}),
     ...(topic?.clearsObstacle ? { locationGraph: openObstacleRoute(facts.locationGraph, book) } : {}),
-  }, m.KEC_MINUTES, state.locationId);
+  }, 1, m, state.locationId);
   const transitions: Transition[] = [transition('talk.occurred', {
-    npcId: npc.npcId, topicTag: tag, outcome: topic ? 'on_topic' : 'idle', minutes: m.KEC_MINUTES,
+    npcId: npc.npcId, topicTag: tag, outcome: topic ? 'on_topic' : 'idle', kecCount: 1,
   }, state, after)];
 
   if (topic?.clueId && !facts.clues.includes(topic.clueId)) {
@@ -450,9 +459,10 @@ function resolveObservation(action: Extract<ActionIntent, { kind: 'observe' }>, 
   const repeatedStudy = action.payload.method === 'study' && facts.observationLog.some(entry =>
     entry.targetId === target.targetId && entry.method === 'study' && entry.result === 'found');
   const dark = !isDaylight(facts.gameMinute, {
-    dayMinutes: m.DAY_MINUTES,
-    daylightStartMinute: m.SAVE_START_MINUTE,
-    duskStartMinute: m.DUSK_START_MINUTE,
+    dayStartGameMinute: m.SAVE_START_GAME_MINUTE,
+    dayKecCount: m.DAY_KEC_COUNT,
+    gameMinutesPerKec: m.GAME_MINUTES_PER_KEC,
+    duskStartKec: m.DUSK_START_KEC,
   });
   const blockedReason = target.blocked && (target.blocked.when === 'always' || dark)
     ? target.blocked.reason : undefined;
@@ -472,10 +482,10 @@ function resolveObservation(action: Extract<ActionIntent, { kind: 'observe' }>, 
     stamina: debit(ready.stamina, cost),
     observationLog: [...facts.observationLog, observation],
     ...(result === 'found' && clueId ? { clues: appendUnique(facts.clues, clueId) } : {}),
-  }, kes * m.KEC_MINUTES, state.locationId);
+  }, kes, m, state.locationId);
   const typePayload = {
     targetId: target.targetId, method: action.payload.method, result,
-    minutes: kes * m.KEC_MINUTES,
+    kecCount: kes,
     ...(result === 'found' && clueId ? { clueId, clueLevel: kes } : {}),
     ...(blockedReason ? { blockedReason } : {}),
   };
@@ -492,14 +502,16 @@ function resolveCombat(action: Extract<ActionIntent, { kind: 'combat' }>, state:
   const target = book.combatTargets.find(candidate => candidate.targetId === action.payload.targetId);
   if (!target) return reject('INPUT_NO_SUCH_TARGET');
   if (target.locationId !== state.locationId) return reject('AUTH_UNAUTHORIZED_TARGET');
+  if (target.clearsObstacle && facts.obstacleState === 'cleared') return reject('ENV_TARGET_ALREADY_RESOLVED');
   const ready = readDailyResources(facts, m);
   if (ready.spiritStamina === 0) return reject('ENV_SPIRIT_STAMINA_EMPTY');
 
   const retreat = ready.stamina < m.CLEAR_THRESHOLD || ready.spiritStamina < m.CLEAR_THRESHOLD;
   const dark = !isDaylight(facts.gameMinute, {
-    dayMinutes: m.DAY_MINUTES,
-    daylightStartMinute: m.SAVE_START_MINUTE,
-    duskStartMinute: m.DUSK_START_MINUTE,
+    dayStartGameMinute: m.SAVE_START_GAME_MINUTE,
+    dayKecCount: m.DAY_KEC_COUNT,
+    gameMinutesPerKec: m.GAME_MINUTES_PER_KEC,
+    duskStartKec: m.DUSK_START_KEC,
   });
   const prepared = ready.stamina >= m.CLEAR_THRESHOLD &&
     ((target.workSiteLocationId !== undefined && state.locationId === target.workSiteLocationId) ||
@@ -514,10 +526,10 @@ function resolveCombat(action: Extract<ActionIntent, { kind: 'combat' }>, state:
     ...(retreat ? {} : target.clearsObstacle ? { obstacleState: 'cleared' as const } : {}),
     ...(retreat || !target.clearsObstacle ? {} : { locationGraph: openObstacleRoute(ready.locationGraph, book) }),
   };
-  const after = advance(state, nextFacts, m.KEC_MINUTES * 2,
+  const after = advance(state, nextFacts, 2, m,
     retreat ? target.retreatLocationId : state.locationId);
   const transitions: Transition[] = [transition('combat.resolved', {
-    targetId: target.targetId, outcome, ruleVersion: book.ruleVersion, minutes: m.KEC_MINUTES * 2,
+    targetId: target.targetId, outcome, ruleVersion: book.ruleVersion, kecCount: 2,
   }, state, after)];
   if (!retreat && target.clearsObstacle) {
     const withQuest = questCompletionState(after, facts, book);
@@ -537,7 +549,7 @@ function resolveQuest(action: Extract<ActionIntent, { kind: 'quest' }>, state: W
   if (action.payload.choiceId !== 'claim_reward') return reject('INPUT_UNKNOWN_ACTION');
   if (facts.questState.status !== 'completed') return reject('ENV_QUEST_NOT_READY');
   if (facts.questState.rewardClaimed) return reject('ENV_QUEST_ALREADY_CLAIMED');
-  if (!canAddInventory(facts, quest.rewardItemId, 1, m.SLOT_MAX)) return reject('ENV_INVENTORY_FULL');
+  if (!canAddInventory(facts, quest.rewardItemId, 1, m.SLOT_MAX)) return reject('INPUT_INVENTORY_FULL');
 
   const edge = facts.locationGraph.find(candidate => candidate.from === quest.unlockEdge.from && candidate.to === quest.unlockEdge.to);
   const graph = edge
@@ -548,10 +560,11 @@ function resolveQuest(action: Extract<ActionIntent, { kind: 'quest' }>, state: W
     ...facts,
     inventory: addInventory(facts.inventory, quest.rewardItemId, 1),
     questState: { ...facts.questState, rewardClaimed: true },
+    knownLocations: appendUnique(facts.knownLocations, quest.unlockEdge.to),
     locationGraph: graph,
-  }, m.KEC_MINUTES, state.locationId);
+  }, 1, m, state.locationId);
   return accepted('success', undefined, [transition('quest.reward_claimed', {
-    questId: quest.questId, rewardItemId: quest.rewardItemId, minutes: m.KEC_MINUTES,
+    questId: quest.questId, rewardItemId: quest.rewardItemId, kecCount: 1,
   }, state, after)]);
 }
 
@@ -580,8 +593,9 @@ function readDailyResources(facts: PrologueV1Facts, m: PrologueV1Mechanics): Pro
     staminaDayIndex: facts.staminaDayIndex,
   }, {
     maxStamina: m.STAMINA_MAX,
-    resetAnchorMinute: m.STAMINA_RESET_ANCHOR,
-    dayMinutes: m.DAY_MINUTES,
+    resetAnchorGameMinute: m.SAVE_START_GAME_MINUTE,
+    dayKecCount: m.DAY_KEC_COUNT,
+    gameMinutesPerKec: m.GAME_MINUTES_PER_KEC,
   });
   return PrologueV1FactsSchema.parse({
     ...facts,
@@ -591,13 +605,15 @@ function readDailyResources(facts: PrologueV1Facts, m: PrologueV1Mechanics): Pro
   });
 }
 
-function advance(state: WorldState, facts: PrologueV1Facts, minutes: number, locationId: string): WorldState {
-  if (!Number.isSafeInteger(minutes) || minutes < 0) throw new RangeError('INVALID_ACTION_MINUTES');
-  const projectedFacts = PrologueV1FactsSchema.parse({ ...facts, gameMinute: facts.gameMinute + minutes });
+function advance(state: WorldState, facts: PrologueV1Facts, kecCount: number, mechanics: PrologueV1Mechanics, locationId: string): WorldState {
+  if (!Number.isSafeInteger(kecCount) || kecCount < 0) throw new RangeError('INVALID_ACTION_KEC_COUNT');
+  const gameMinuteDelta = kecCount * mechanics.GAME_MINUTES_PER_KEC;
+  if (!Number.isSafeInteger(gameMinuteDelta)) throw new RangeError('INVALID_ACTION_GAME_MINUTE_DELTA');
+  const projectedFacts = PrologueV1FactsSchema.parse({ ...facts, gameMinute: facts.gameMinute + gameMinuteDelta });
   return WorldStateSchema.parse({
     ...state,
     locationId,
-    elapsedMinutes: state.elapsedMinutes + minutes,
+    elapsedMinutes: state.elapsedMinutes + gameMinuteDelta,
     facts: projectedFacts,
   });
 }
@@ -676,11 +692,18 @@ function validateDependencies({ rulebook, mechanics, messages }: PrologueV1RuleD
   assertId(rulebook.ruleVersion, 'RULE_VERSION_REQUIRED');
   assertId(rulebook.canonVersion, 'CANON_VERSION_REQUIRED');
   assertUnique(rulebook.locationIds, 'LOCATION_IDS');
+  assertUnique(rulebook.initialKnownLocationIds, 'INITIAL_KNOWN_LOCATION_IDS');
+  if (rulebook.locationIds.length !== PROLOGUE_V1_LOCATION_LIMIT ||
+      rulebook.initialKnownLocationIds.length !== PROLOGUE_V1_LOCATION_LIMIT - 1 ||
+      rulebook.initialKnownLocationIds.some(id => !rulebook.locationIds.includes(id))) {
+    throw new TypeError('INVALID_PROLOGUE_LOCATION_SET');
+  }
   assertUnique(rulebook.itemIds, 'ITEM_IDS');
   assertUnique(rulebook.clueIds, 'CLUE_IDS');
   assertUnique(rulebook.effectFlagIds, 'EFFECT_FLAG_IDS');
   assertUnique(rulebook.injuryFlagIds, 'INJURY_FLAG_IDS');
   assertUnique(rulebook.targetIds, 'TARGET_IDS');
+  for (const id of rulebook.initialKnownLocationIds) assertId(id, 'INVALID_INITIAL_KNOWN_LOCATION_ID');
   assertUnique(rulebook.initialLocationGraph.map(edge => `${edge.from}\0${edge.to}`), 'INITIAL_LOCATION_EDGES');
   assertUnique(rulebook.cultivationTechniqueIds, 'TECHNIQUE_IDS');
   assertUnique(rulebook.combatTechniqueIds, 'COMBAT_TECHNIQUE_IDS');
@@ -702,9 +725,9 @@ function validateDependencies({ rulebook, mechanics, messages }: PrologueV1RuleD
   for (const id of rulebook.combatTechniqueIds) assertId(id, 'INVALID_COMBAT_TECHNIQUE_ID');
   for (const edge of rulebook.initialLocationGraph) {
     assertId(edge.from, 'INVALID_INITIAL_ROUTE_FROM'); assertId(edge.to, 'INVALID_INITIAL_ROUTE_TO');
+    if (edge.via !== undefined) assertId(edge.via, 'INVALID_INITIAL_ROUTE_ID');
     if (!['open', 'blocked', 'locked'].includes(edge.state) ||
-        !rulebook.locationIds.includes(edge.from) || !rulebook.locationIds.includes(edge.to) ||
-        (edge.via !== undefined && !rulebook.locationIds.includes(edge.via))) {
+        !rulebook.locationIds.includes(edge.from) || !rulebook.locationIds.includes(edge.to)) {
       throw new TypeError('INITIAL_ROUTE_REFERENCE_NOT_FOUND');
     }
   }
@@ -785,7 +808,7 @@ function validateDependencies({ rulebook, mechanics, messages }: PrologueV1RuleD
   }
   for (const route of rulebook.bypassRoutes) {
     assertId(route.via, 'INVALID_ROUTE_VIA');
-    if (!rulebook.locationIds.includes(route.via) || (route.requiredItemId && !rulebook.itemIds.includes(route.requiredItemId))) {
+    if (route.requiredItemId && !rulebook.itemIds.includes(route.requiredItemId)) {
       throw new TypeError('BYPASS_REFERENCE_NOT_FOUND');
     }
     const blockedEdge = rulebook.initialLocationGraph.find(edge => edge.from === route.from && edge.to === route.to);
@@ -798,26 +821,30 @@ function validateDependencies({ rulebook, mechanics, messages }: PrologueV1RuleD
     'AUTH_UNAUTHORIZED_TARGET', 'ENV_RULES_NOT_READY', 'ENV_REVISION_STALE', 'ENV_PAYLOAD_INVALID',
     'ENV_ITEM_NOT_OWNED', 'ENV_TARGET_MISMATCH', 'ENV_ROUTE_NOT_CONNECTED', 'ENV_ROUTE_LOCKED',
     'ENV_SOURCE_ALREADY_CLAIMED', 'ENV_SOURCE_QUANTITY_INVALID', 'ENV_TECHNIQUE_LOCKED',
-    'ENV_STAMINA_EMPTY', 'ENV_INVENTORY_FULL', 'ENV_SPIRIT_STAMINA_EMPTY',
-    'ENV_QUEST_NOT_READY', 'ENV_QUEST_ALREADY_CLAIMED',
+    'ENV_CULTIVATION_COMPLETE', 'INPUT_CULTIVATION_LIMIT',
+    'ENV_STAMINA_EMPTY', 'INPUT_INVENTORY_FULL', 'ENV_SPIRIT_STAMINA_EMPTY',
+    'ENV_QUEST_NOT_READY', 'ENV_QUEST_ALREADY_CLAIMED', 'ENV_TARGET_ALREADY_RESOLVED',
   ];
   for (const code of requiredMessages) {
     if (typeof messages[code] !== 'string' || !messages[code]!.trim()) {
       throw new TypeError(`RULE_MESSAGE_REQUIRED_${code}`);
     }
   }
-  if (rulebook.quest) {
+  if (!rulebook.quest) throw new TypeError('QUEST_REQUIRED_FOR_THIRD_LOCATION');
+  {
     assertId(rulebook.quest.questId, 'INVALID_QUEST_ID'); assertId(rulebook.quest.rewardItemId, 'INVALID_REWARD_ITEM_ID');
     assertId(rulebook.quest.unlockEdge.from, 'INVALID_QUEST_EDGE'); assertId(rulebook.quest.unlockEdge.to, 'INVALID_QUEST_EDGE');
     if (!rulebook.itemIds.includes(rulebook.quest.rewardItemId) ||
         !rulebook.locationIds.includes(rulebook.quest.unlockEdge.from) || !rulebook.locationIds.includes(rulebook.quest.unlockEdge.to) ||
-        rulebook.quest.unlockEdge.state !== 'open' ||
-        (rulebook.quest.unlockEdge.via !== undefined && !rulebook.locationIds.includes(rulebook.quest.unlockEdge.via))) {
+        rulebook.initialKnownLocationIds.includes(rulebook.quest.unlockEdge.to) ||
+        !rulebook.initialKnownLocationIds.includes(rulebook.quest.unlockEdge.from) ||
+        rulebook.quest.unlockEdge.state !== 'open') {
       throw new TypeError('QUEST_REFERENCE_NOT_FOUND');
     }
     const initialQuestEdge = rulebook.initialLocationGraph.find(edge =>
       edge.from === rulebook.quest!.unlockEdge.from && edge.to === rulebook.quest!.unlockEdge.to);
-    if (initialQuestEdge && initialQuestEdge.state !== 'locked') throw new TypeError('QUEST_EDGE_MUST_START_LOCKED');
+    if (!initialQuestEdge || initialQuestEdge.state !== 'locked') throw new TypeError('QUEST_EDGE_MUST_START_LOCKED');
+    if (rulebook.quest.unlockEdge.via !== undefined) assertId(rulebook.quest.unlockEdge.via, 'INVALID_QUEST_ROUTE_ID');
   }
   if (!rulebook.injuryFlagIds.includes(rulebook.injuryFlags.shoulderScrape)) throw new TypeError('BYPASS_INJURY_REFERENCE_NOT_FOUND');
   assertId(rulebook.injuryFlags.shoulderScrape, 'INVALID_BYPASS_INJURY_FLAG');
@@ -827,14 +854,13 @@ function validateDependencies({ rulebook, mechanics, messages }: PrologueV1RuleD
   for (const [key, value] of Object.entries(mechanics)) {
     if (!Number.isSafeInteger(value) || value < 0) throw new TypeError(`INVALID_MECHANIC_${key}`);
   }
-  if (mechanics.KEC_MINUTES <= 0 || mechanics.DAY_MINUTES <= 0 || mechanics.SLOT_MAX <= 0 ||
+  if (mechanics.GAME_MINUTES_PER_KEC !== 15 || mechanics.DAY_KEC_COUNT !== 96 ||
+      mechanics.SAVE_START_GAME_MINUTE !== 300 || mechanics.DUSK_START_KEC !== 48 || mechanics.SLOT_MAX <= 0 ||
       mechanics.STAMINA_MAX <= 0 || mechanics.SPIRIT_MAX <= 0 || mechanics.CULTIVATE_COST_PER_KE <= 0 ||
       mechanics.STAMINA_MAX > 100 || mechanics.SPIRIT_MAX > 100 || mechanics.SLOT_MAX > 8 ||
       mechanics.CULTIVATION_MAX > 10_000 || mechanics.CULTIVATE_COST_PER_KE !== mechanics.FATIGUE_THRESHOLD ||
       mechanics.CLEAR_THRESHOLD <= 0 || mechanics.CLEAR_THRESHOLD > mechanics.STAMINA_MAX ||
-      mechanics.RETREAT_SPIRIT > mechanics.SPIRIT_MAX || mechanics.STAMINA_RESET_ANCHOR >= mechanics.DAY_MINUTES ||
-      mechanics.SAVE_START_MINUTE >= mechanics.DAY_MINUTES ||
-      mechanics.DUSK_START_MINUTE <= mechanics.SAVE_START_MINUTE || mechanics.DUSK_START_MINUTE >= mechanics.DAY_MINUTES) {
+      mechanics.RETREAT_SPIRIT > mechanics.SPIRIT_MAX) {
     throw new TypeError('INVALID_PROLOGUE_RULE_MECHANICS');
   }
 }
@@ -850,9 +876,16 @@ function validateFactsAgainstRulebook(
   const clues = new Set(book.clueIds);
   const effects = new Set(book.effectFlagIds);
   const injuries = new Set(book.injuryFlagIds);
-  const currentGameDay = Math.floor((facts.gameMinute - mechanics.STAMINA_RESET_ANCHOR) / mechanics.DAY_MINUTES);
-  if (facts.gameMinute < mechanics.STAMINA_RESET_ANCHOR || facts.staminaDayIndex > currentGameDay ||
-      !locations.has(state.locationId) || facts.knownLocations.some(id => !locations.has(id)) ||
+  const dayLengthGameMinutes = mechanics.DAY_KEC_COUNT * mechanics.GAME_MINUTES_PER_KEC;
+  const currentGameDay = Math.floor((facts.gameMinute - mechanics.SAVE_START_GAME_MINUTE) / dayLengthGameMinutes);
+  const unlockedLocations = [...book.initialKnownLocationIds, ...(facts.questState.rewardClaimed && book.quest
+    ? [book.quest.unlockEdge.to] : [])];
+  if (facts.gameMinute < mechanics.SAVE_START_GAME_MINUTE ||
+      (facts.gameMinute - mechanics.SAVE_START_GAME_MINUTE) % mechanics.GAME_MINUTES_PER_KEC !== 0 ||
+      facts.staminaDayIndex > currentGameDay || facts.knownLocations.length !== unlockedLocations.length ||
+      unlockedLocations.some(id => !facts.knownLocations.includes(id)) ||
+      !locations.has(state.locationId) || !facts.knownLocations.includes(state.locationId) ||
+      facts.knownLocations.some(id => !locations.has(id)) ||
       !validLocationGraph(facts, book) ||
       facts.inventory.some(entry => !items.has(entry.itemId)) ||
       facts.collectedSources.some(id => !book.acquisitionSources.some(source => source.sourceId === id)) ||
@@ -882,6 +915,9 @@ function validLocationGraph(facts: PrologueV1Facts, book: PrologueV1Rulebook): b
   const actual = new Map(facts.locationGraph.map(edge => [pair(edge.from, edge.to), edge]));
   const obstacleEdge = actual.get(pair(book.obstacleRoute.from, book.obstacleRoute.to));
   if (facts.obstacleState === 'cleared' && obstacleEdge?.state !== 'open') return false;
+  if (facts.obstacleState !== 'cleared' && obstacleEdge?.state === 'open' &&
+      !book.bypassRoutes.some(route => route.from === book.obstacleRoute.from &&
+        route.to === book.obstacleRoute.to && route.clearsObstacle !== true && route.via === obstacleEdge.via)) return false;
 
   for (const edge of book.initialLocationGraph) {
     const key = pair(edge.from, edge.to);

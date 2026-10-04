@@ -66,6 +66,13 @@ describe('shared wire contracts', () => {
     expect(ActionIntentSchema.safeParse({ ...base, kind: 'observe', payload: { targetId: 'clue-1', method: 'guess' } }).success).toBe(false);
   });
 
+  it('limits P1 cultivation actions to eight Kec', () => {
+    const base = { saveId: 'save-1', actorId: 'player', expectedRevision: 0, idempotencyKey,
+      kind: 'cultivate', payload: { techniqueId: 'technique-1', minutes: 8 } };
+    expect(ActionIntentSchema.safeParse(base).success).toBe(true);
+    expect(ActionIntentSchema.safeParse({ ...base, payload: { ...base.payload, minutes: 9 } }).success).toBe(false);
+  });
+
   it('keeps v1 saves readable and requires a consistent pinned policy for v2', () => {
     expect(SAVE_SCHEMA_VERSION).toBe(2);
     expect(SaveEnvelopeSchema.parse(v1Save)).toMatchObject({ schemaVersion: 1, memoryPolicyVersion: 'legacy-unknown' });

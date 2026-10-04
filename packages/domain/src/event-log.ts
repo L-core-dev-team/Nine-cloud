@@ -206,11 +206,17 @@ function validateAcceptedEvents(events: readonly DomainEvent[], save: SaveEnvelo
   }
 }
 
+/** Read the sole authoritative gameplay clock. Legacy elapsed time is not a clock fallback. */
+export function readGameMinute(state: Pick<WorldState, 'facts'>): number {
+  const gameMinute = state.facts.gameMinute;
+  if (typeof gameMinute !== 'number' || !Number.isSafeInteger(gameMinute) || gameMinute < 0) {
+    throw new TurnBoundaryError('GAME_MINUTE_NOT_READY', 'The save has no valid gameMinute clock.');
+  }
+  return gameMinute;
+}
+
 function readClockMinute(save: SaveEnvelope): number {
-  const gameMinute = save.state.facts.gameMinute;
-  if (typeof gameMinute === 'number' && Number.isSafeInteger(gameMinute) && gameMinute >= 0) return gameMinute;
-  // Pre-P1 snapshots only carried elapsedMinutes. New prologue rules write gameMinute.
-  return save.state.elapsedMinutes;
+  return readGameMinute(save.state);
 }
 
 function validateTransition(event: DomainEvent, save: SaveEnvelope, seenIds: Set<string>): void {

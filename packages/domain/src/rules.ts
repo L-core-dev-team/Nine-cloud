@@ -2,6 +2,7 @@ import {
   ActionIntentSchema,
   DecisionV2Schema,
   DomainEventSchema,
+  MAX_CULTIVATION_KES_PER_ACTION,
   SaveEnvelopeSchema,
   type ActionIntent,
   type DecisionV2,
@@ -65,6 +66,9 @@ export function evaluate(intent: ActionIntent, save: SaveEnvelope, context?: Rul
   const parsedIntent = ActionIntentSchema.safeParse(intent);
   const parsedSave = SaveEnvelopeSchema.safeParse(save);
   if (!parsedIntent.success || !parsedSave.success) {
+    if (parsedSave.success && exceedsCultivationLimit(intent)) {
+      return rejected('INPUT_CULTIVATION_LIMIT', '每次修炼最多八刻。', parsedSave.data.revision);
+    }
     return rejected('ENV_PAYLOAD_INVALID', '行动或存档不符合当前契约，未结算。', fallbackRevision);
   }
   const action = parsedIntent.data;
@@ -128,7 +132,14 @@ function validDecisionTransition(decision: ReturnType<typeof DecisionV2Schema.pa
     && event.ruleVersion === save.ruleVersion);
 }
 
-function rejected(code: `AUTH_${string}` | `ENV_${string}`, message: string, revision: number): DecisionV2 {
+function exceedsCultivationLimit(intent: unknown): boolean {
+  if (!intent || typeof intent !== 'object' || Array.isArray(intent)) return false;
+  const action = intent as { kind?: unknown; payload?: { minutes?: unknown } };
+  return action.kind === 'cultivate' && typeof action.payload?.minutes === 'number' &&
+    action.payload.minutes > MAX_CULTIVATION_KES_PER_ACTION;
+}
+
+function rejected(code: `INPUT_${string}` | `AUTH_${string}` | `ENV_${string}`, message: string, revision: number): DecisionV2 {
   return { status: 'rejected', code, message, revision };
 }
 

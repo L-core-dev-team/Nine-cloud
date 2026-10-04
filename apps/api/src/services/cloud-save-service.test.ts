@@ -15,6 +15,19 @@ function envelope(revision = 0, elapsedMinutes = 0): SaveEnvelope {
   };
 }
 
+function v2Envelope() {
+  const memoryPolicy = {
+    mode: 'continue', policyVersion: 'continue-v1', schemaVersion: 1,
+    clockBasis: 'game-minute+npc-grant-sequence-v1',
+    policyArtifactHash: `sha256:${'a'.repeat(64)}`, cueDictionaryHash: `sha256:${'b'.repeat(64)}`,
+    normalizerVersion: 'unicode-nfc-v1', retrievalVersion: 'exact-recall-v1',
+    visibilityPolicyVersion: 'npc-visibility-v1', visibilityPolicyHash: `sha256:${'c'.repeat(64)}`,
+    createdAtRevision: 0,
+  } as const;
+  return { ...envelope(), schemaVersion: 2 as const, memoryPolicyVersion: memoryPolicy.policyVersion,
+    memoryMode: memoryPolicy.mode, memoryPolicy };
+}
+
 class MemoryCloudSaveRepository implements CloudSaveRepository {
   readonly records = new Map<string, { ownerId: string; save: SaveEnvelope }>();
 
@@ -87,6 +100,13 @@ describe('CloudSaveService', () => {
     await expect(service.create('account-a', { ...envelope(), revision: 1 })).rejects.toThrow('start at revision zero');
     await expect(service.create('account-a', { ...envelope(), state: { playerId: '', locationId: 'gate' } }))
       .rejects.toThrow('supported save contract');
+    expect(repository.records.size).toBe(0);
+  });
+
+  it('refuses v2 writes until SQL persists the complete envelope, without touching the repository', async () => {
+    const repository = new MemoryCloudSaveRepository();
+    const service = new CloudSaveService(repository);
+    await expect(service.create('account-a', v2Envelope())).rejects.toThrow('SAVE_SCHEMA_NOT_READY');
     expect(repository.records.size).toBe(0);
   });
 

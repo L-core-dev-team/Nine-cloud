@@ -21,10 +21,11 @@ const baseFacts: PrologueV1Facts = {
   travelLog: [],
   injuryFlags: [],
   questState: { status: 'unavailable', rewardClaimed: false },
-  knownLocations: ['loc_gate', 'loc_town', 'loc_rock'],
+  knownLocations: ['loc_gate', 'loc_town'],
   locationGraph: [
-    { from: 'loc_gate', to: 'loc_town', state: 'open' },
-    { from: 'loc_gate', to: 'loc_rock', state: 'blocked' },
+    { from: 'loc_gate', to: 'loc_town', state: 'blocked' },
+    { from: 'loc_town', to: 'loc_gate', state: 'open' },
+    { from: 'loc_town', to: 'loc_rock', state: 'locked' },
   ],
   idleCount: 0,
   obstacleState: 'blocked',
@@ -34,24 +35,26 @@ const baseFacts: PrologueV1Facts = {
 const book: PrologueV1Rulebook = {
   ruleVersion: PROLOGUE_V1_RULE_VERSION,
   canonVersion: 'synthetic-fixture-v1',
-  locationIds: ['loc_gate', 'loc_town', 'loc_rock', 'loc_hidden', 'loc_ridge', 'loc_worksite', 'loc_new'],
+  locationIds: ['loc_gate', 'loc_town', 'loc_rock'],
+  initialKnownLocationIds: ['loc_gate', 'loc_town'],
   itemIds: ['item_ward', 'item_herb', 'item_reward'],
   clueIds: ['clue_surface', 'clue_detail', 'clue_route'],
   effectFlagIds: ['effect_warded', 'effect_herb_used'],
   injuryFlagIds: ['injury_shoulder', 'injury_scratched', 'injury_crowded', 'injury_retreat'],
   targetIds: ['loc_rock', 'loc_town', 'npc_guide', 'target_stones', 'target_crow'],
   initialLocationGraph: [
-    { from: 'loc_gate', to: 'loc_town', state: 'open' },
-    { from: 'loc_gate', to: 'loc_rock', state: 'blocked' },
+    { from: 'loc_gate', to: 'loc_town', state: 'blocked' },
+    { from: 'loc_town', to: 'loc_gate', state: 'open' },
+    { from: 'loc_town', to: 'loc_rock', state: 'locked' },
   ],
-  obstacleRoute: { from: 'loc_gate', to: 'loc_rock' },
-  unexploredEdges: [{ from: 'loc_gate', to: 'loc_hidden' }],
-  bypassRoutes: [{ from: 'loc_gate', to: 'loc_rock', via: 'loc_ridge', clearsObstacle: true }],
+  obstacleRoute: { from: 'loc_gate', to: 'loc_town' },
+  unexploredEdges: [{ from: 'loc_gate', to: 'loc_rock' }],
+  bypassRoutes: [{ from: 'loc_gate', to: 'loc_town', via: 'route_shallow_bypass', clearsObstacle: true }],
   cultivationTechniqueIds: ['tech_fixture'],
   combatTechniqueIds: ['combat_fixture'],
   acquisitionSources: [{ sourceId: 'source_herb', locationId: 'loc_gate', itemId: 'item_herb', source: 'field', quantity: 1 }],
   itemUses: [
-    { itemId: 'item_ward', targetIds: ['loc_rock'], effectFlags: ['effect_warded'] },
+    { itemId: 'item_ward', targetIds: ['target_crow'], effectFlags: ['effect_warded'] },
     { itemId: 'item_herb', targetIds: [], effectFlags: ['effect_herb_used'] },
   ],
   npcs: [{ npcId: 'npc_guide', locationId: 'loc_gate', topics: [
@@ -60,9 +63,9 @@ const book: PrologueV1Rulebook = {
   observations: [{ targetId: 'target_stones', locationId: 'loc_gate', scanClueId: 'clue_surface',
     studyClueId: 'clue_detail', blocked: { when: 'dark', reason: 'too_dark' } }],
   combatTargets: [{ targetId: 'target_crow', locationId: 'loc_gate', clearsObstacle: true,
-    workSiteLocationId: 'loc_worksite', protectionItemId: 'item_ward', retreatLocationId: 'loc_gate',
+    protectionItemId: 'item_ward', retreatLocationId: 'loc_gate',
     daytimeInjuryFlag: 'injury_scratched', darkInjuryFlag: 'injury_crowded', retreatInjuryFlag: 'injury_retreat' }],
-  quest: { questId: 'quest_fixture', rewardItemId: 'item_reward', unlockEdge: { from: 'loc_gate', to: 'loc_new', state: 'open' } },
+  quest: { questId: 'quest_fixture', rewardItemId: 'item_reward', unlockEdge: { from: 'loc_town', to: 'loc_rock', state: 'open' } },
   injuryFlags: { shoulderScrape: 'injury_shoulder' },
 };
 
@@ -121,6 +124,14 @@ function replay(result: ReturnType<typeof act>) {
 }
 
 describe('versioned P1 prologue rule reducers', () => {
+  it('rejects rulebooks that exceed the three signed locations', () => {
+    expect(() => createPrologueV1RuleModule({
+      rulebook: { ...book, locationIds: [...book.locationIds, 'loc_four'] },
+      mechanics: PROLOGUE_V1,
+      messages: PROLOGUE_V1_ERROR_MESSAGES,
+    })).toThrow('INVALID_PROLOGUE_LOCATION_SET');
+  });
+
   it('validates the clearance resource margin and rejects duplicate source identities', () => {
     expect(() => createPrologueV1RuleModule({
       rulebook: { ...book, acquisitionSources: [...book.acquisitionSources, ...book.acquisitionSources] },
@@ -141,21 +152,49 @@ describe('versioned P1 prologue rule reducers', () => {
     expect(invalid.decision).toMatchObject({ status: 'rejected', code: 'ENV_PAYLOAD_INVALID', revision: 0 });
     const futureResetIndex = act('talk', { npcId: 'npc_guide', utterance: '无关的话' }, save({ staminaDayIndex: 1 }));
     expect(futureResetIndex.decision).toMatchObject({ status: 'rejected', code: 'ENV_PAYLOAD_INVALID', revision: 0 });
+    const unknownCurrentLocation = act('move', { destinationId: 'loc_town' }, save({
+      knownLocations: ['loc_town'],
+    }));
+    expect(unknownCurrentLocation.decision).toMatchObject({ status: 'rejected', code: 'ENV_PAYLOAD_INVALID', revision: 0 });
+    const openedWithoutClearing = act('talk', { npcId: 'npc_guide', utterance: '无关的话' }, save({
+      locationGraph: baseFacts.locationGraph.map(edge => edge.from === 'loc_gate' && edge.to === 'loc_town'
+        ? { ...edge, state: 'open' as const } : edge),
+    }));
+    expect(openedWithoutClearing.decision).toMatchObject({
+      status: 'rejected', code: 'ENV_PAYLOAD_INVALID', revision: 0,
+    });
   });
 
-  it('rejects a forged open edge even when both endpoint locations exist in the rulebook', () => {
-    const invalid = act('move', { destinationId: 'loc_new' }, save({
-      knownLocations: [...baseFacts.knownLocations, 'loc_new'],
-      locationGraph: [...baseFacts.locationGraph, { from: 'loc_gate', to: 'loc_new', state: 'open' }],
+  it('rejects an unauthorized early unlock of the third location', () => {
+    const invalid = act('move', { destinationId: 'loc_rock' }, save({
+      knownLocations: [...baseFacts.knownLocations, 'loc_rock'],
+      locationGraph: baseFacts.locationGraph.map(edge => edge.from === 'loc_town' && edge.to === 'loc_rock'
+        ? { ...edge, state: 'open' as const } : edge),
     }));
     expect(invalid.decision).toMatchObject({ status: 'rejected', code: 'ENV_PAYLOAD_INVALID', revision: 0 });
   });
 
+  it('allows an explicitly configured bypass to open a route without clearing its obstacle', () => {
+    const nonClearingBook = { ...book, bypassRoutes: book.bypassRoutes.map(route => ({ ...route, clearsObstacle: false })) };
+    const nonClearingModule = createPrologueV1RuleModule({ rulebook: nonClearingBook,
+      mechanics: PROLOGUE_V1, messages: PROLOGUE_V1_ERROR_MESSAGES });
+    const result = act('move', { destinationId: 'loc_town' }, save(), nonClearingModule);
+    expect(result.decision).toMatchObject({ status: 'accepted', outcome: 'success' });
+    if (result.decision.status !== 'accepted') throw new Error('Expected an accepted bypass');
+    const replayed = replayEvents(result.current, result.decision.events, createPrologueV1EventReducer({
+      rulebook: nonClearingBook, mechanics: PROLOGUE_V1, messages: PROLOGUE_V1_ERROR_MESSAGES,
+    }));
+    expect(replayed.state.facts.obstacleState).toBe('blocked');
+    expect(replayed.state.facts.locationGraph).toContainEqual({
+      from: 'loc_gate', to: 'loc_town', state: 'open', via: 'route_shallow_bypass',
+    });
+  });
+
   it('moves over an open edge and replays the committed time/resource projection', () => {
-    const result = act('move', { destinationId: 'loc_town' });
+    const result = act('move', { destinationId: 'loc_gate' }, save({}, 'loc_town'));
     expect(result.decision).toMatchObject({ status: 'accepted', outcome: 'success', nextRevision: 1 });
     expect(replay(result)).toMatchObject({ revision: 1, state: {
-      locationId: 'loc_town', elapsedMinutes: 15,
+      locationId: 'loc_gate', elapsedMinutes: 15,
       facts: { gameMinute: 315, stamina: 95, staminaDayIndex: 0 },
     } });
   });
@@ -163,20 +202,27 @@ describe('versioned P1 prologue rule reducers', () => {
   it('clamps low move stamina, covers cultivation hard rejections, and records normal cultivation progress', () => {
     expect(act('move', { destinationId: 'loc_absent' }).decision)
       .toMatchObject({ status: 'rejected', code: 'INPUT_NO_SUCH_TARGET' });
-    expect(act('move', { destinationId: 'loc_hidden' }, save({
-      knownLocations: [...baseFacts.knownLocations, 'loc_hidden'],
-    })).decision).toMatchObject({ status: 'rejected', code: 'ENV_ROUTE_NOT_CONNECTED' });
-    const exhaustedMove = act('move', { destinationId: 'loc_town' }, save({ stamina: 0 }));
+    expect(act('move', { destinationId: 'loc_rock' }, save({}, 'loc_town')).decision)
+      .toMatchObject({ status: 'rejected', code: 'ENV_ROUTE_NOT_CONNECTED' });
+    const exhaustedMove = act('move', { destinationId: 'loc_town' }, save({
+      stamina: 0,
+      obstacleState: 'cleared',
+      ferryState: 'clear',
+      questState: { status: 'completed', rewardClaimed: false },
+      locationGraph: baseFacts.locationGraph.map(edge => edge.from === 'loc_gate' && edge.to === 'loc_town'
+        ? { ...edge, state: 'open' as const } : edge),
+    }));
     expect(exhaustedMove.decision).toMatchObject({ status: 'accepted', outcome: 'success' });
     expect(replay(exhaustedMove).state).toMatchObject({ locationId: 'loc_town',
       facts: { stamina: 0, gameMinute: 315 } });
 
-    const lockedGraph = baseFacts.locationGraph.map(edge => edge.to === 'loc_town' ? { ...edge, state: 'locked' as const } : edge);
+    const lockedGraph = baseFacts.locationGraph.map(edge => edge.from === 'loc_town' && edge.to === 'loc_gate'
+      ? { ...edge, state: 'locked' as const } : edge);
     const lockedBook = { ...book, initialLocationGraph: lockedGraph };
     const lockedModule = createPrologueV1RuleModule({
       rulebook: lockedBook, mechanics: PROLOGUE_V1, messages: PROLOGUE_V1_ERROR_MESSAGES,
     });
-    expect(act('move', { destinationId: 'loc_town' }, save({ locationGraph: lockedGraph }), lockedModule).decision)
+    expect(act('move', { destinationId: 'loc_gate' }, save({ locationGraph: lockedGraph }, 'loc_town'), lockedModule).decision)
       .toMatchObject({ status: 'rejected', code: 'ENV_ROUTE_LOCKED' });
 
     const cultivated = act('cultivate', { techniqueId: 'tech_fixture', minutes: 2 }, save({ stamina: 60 }));
@@ -186,6 +232,8 @@ describe('versioned P1 prologue rule reducers', () => {
       .toMatchObject({ status: 'rejected', code: 'ENV_TECHNIQUE_LOCKED' });
     expect(act('cultivate', { techniqueId: 'tech_fixture', minutes: 1 }, save({ stamina: 0 })).decision)
       .toMatchObject({ status: 'rejected', code: 'ENV_STAMINA_EMPTY' });
+    expect(act('cultivate', { techniqueId: 'tech_fixture', minutes: 1 }, save({ cultivationProgress: 10_000 }))
+      .decision).toMatchObject({ status: 'rejected', code: 'ENV_CULTIVATION_COMPLETE', revision: 0 });
   });
 
   it('records road blockage as a committed legal failure with cost and time', () => {
@@ -193,35 +241,56 @@ describe('versioned P1 prologue rule reducers', () => {
       rulebook: { ...book, bypassRoutes: book.bypassRoutes.map(route => ({ ...route, requiredItemId: 'item_herb' })) },
       mechanics: PROLOGUE_V1, messages: PROLOGUE_V1_ERROR_MESSAGES,
     });
-    const result = act('move', { destinationId: 'loc_rock' }, save(), noBypass);
+    const result = act('move', { destinationId: 'loc_town' }, save(), noBypass);
     expect(result.decision).toMatchObject({ status: 'accepted', outcome: 'legal_failure', code: 'RULE_ROAD_BLOCKED' });
     expect(replay(result)).toMatchObject({ state: { locationId: 'loc_gate', elapsedMinutes: 15,
-      facts: { gameMinute: 315, stamina: 90, travelLog: [{ toward: 'loc_rock', reason: 'rockslide' }] } } });
+      facts: { gameMinute: 315, stamina: 90, travelLog: [{ toward: 'loc_town', reason: 'rockslide' }] } } });
   });
 
-  it('allows an adjacent unknown location to produce the specified unexplored failure', () => {
-    const result = act('move', { destinationId: 'loc_hidden' });
+  it('allows the quest location to produce an unexplored failure without revealing it', () => {
+    const result = act('move', { destinationId: 'loc_rock' });
     expect(result.decision).toMatchObject({ status: 'accepted', outcome: 'legal_failure', code: 'RULE_LOCATION_UNEXPLORED' });
     expect(replay(result)).toMatchObject({ state: { locationId: 'loc_gate', facts: {
-      knownLocations: ['loc_gate', 'loc_town', 'loc_rock'],
-      travelLog: [{ toward: 'loc_hidden', reason: 'unexplored' }],
+      knownLocations: ['loc_gate', 'loc_town'],
+      travelLog: [{ toward: 'loc_rock', reason: 'unexplored' }],
       stamina: 95,
     } } });
   });
 
   it('uses the configured bypass, records its injury, and completes the quest in one revision', () => {
-    const result = act('move', { destinationId: 'loc_rock' });
+    const result = act('move', { destinationId: 'loc_town' });
     expect(result.decision).toMatchObject({ status: 'accepted', outcome: 'success', nextRevision: 1 });
     expect(result.decision.status === 'accepted' && result.decision.events.map(event => event.type))
       .toEqual(['move.bypassed', 'quest.completed']);
-    expect(replay(result)).toMatchObject({ revision: 1, state: { locationId: 'loc_rock', elapsedMinutes: 30,
+    expect(replay(result)).toMatchObject({ revision: 1, state: { locationId: 'loc_town', elapsedMinutes: 30,
       facts: { gameMinute: 330, stamina: 85, obstacleState: 'cleared', ferryState: 'clear',
         questState: { status: 'completed', rewardClaimed: false }, injuryFlags: ['injury_shoulder'] } } });
+  });
+
+  it('hard rejects cultivation above eight Kec before creating an event', () => {
+    const current = save({ stamina: 100 });
+    const stateBefore = structuredClone(current.state);
+    const intent = {
+      saveId: current.saveId, actorId: current.state.playerId, expectedRevision: current.revision,
+      idempotencyKey: '00000000-0000-4000-9000-000000000099', branchId: 'root',
+      kind: 'cultivate', payload: { techniqueId: 'tech_fixture', minutes: 9 },
+    } as unknown as ActionIntent;
+    const decision = module.decide(intent, current, { occurredAt: '2026-10-03T10:00:00.000Z', eventIds: allocatedIds, module });
+    expect(decision).toMatchObject({ status: 'rejected', code: 'INPUT_CULTIVATION_LIMIT', revision: 0 });
+    expect(decision.status === 'rejected' && 'events' in decision).toBe(false);
+    expect(current.state).toEqual(stateBefore);
+
+    const evaluated = evaluate(intent as ActionIntent, current, {
+      occurredAt: '2026-10-03T10:00:00.000Z', eventIds: allocatedIds, module,
+    });
+    expect(evaluated).toMatchObject({ status: 'rejected', code: 'INPUT_CULTIVATION_LIMIT', revision: 0 });
   });
 
   it('caps cultivation work by available stamina and records one fatigue attempt', () => {
     const result = act('cultivate', { techniqueId: 'tech_fixture', minutes: 4 }, save({ stamina: 25 }));
     expect(result.decision).toMatchObject({ status: 'accepted', outcome: 'legal_failure', code: 'RULE_STAMINA_LOW' });
+    const event = result.decision.status === 'accepted' ? result.decision.events[0] : undefined;
+    expect(event?.payload).toMatchObject({ kecCount: 2, requestedKecCount: 4, attemptedKecCount: 2 });
     expect(replay(result)).toMatchObject({ state: { elapsedMinutes: 30, facts: {
       gameMinute: 330, stamina: 0, cultivationProgress: 1000, fatigueCount: 1,
     } } });
@@ -254,8 +323,12 @@ describe('versioned P1 prologue rule reducers', () => {
       rulebook: fullBook, mechanics: PROLOGUE_V1, messages: PROLOGUE_V1_ERROR_MESSAGES,
     });
     const fullInventory = fullItemIds.map(itemId => ({ itemId, quantity: 1 }));
-    expect(act('acquire_item', { itemId: 'item_herb', quantity: 1 }, save({ inventory: fullInventory }), fullModule).decision)
-      .toMatchObject({ status: 'rejected', code: 'ENV_INVENTORY_FULL' });
+    const fullSave = save({ inventory: fullInventory });
+    const stateBefore = structuredClone(fullSave.state);
+    const fullAttempt = act('acquire_item', { itemId: 'item_herb', quantity: 1 }, fullSave, fullModule);
+    expect(fullAttempt.decision).toMatchObject({ status: 'rejected', code: 'INPUT_INVENTORY_FULL', revision: 0 });
+    expect(fullAttempt.decision.status === 'rejected' && 'events' in fullAttempt.decision).toBe(false);
+    expect(fullAttempt.current.state).toEqual(stateBefore);
   });
 
   it('rejects item target mismatch without consuming it and commits a valid use', () => {
@@ -263,7 +336,7 @@ describe('versioned P1 prologue rule reducers', () => {
     expect(invalid.decision).toMatchObject({ status: 'rejected', code: 'ENV_TARGET_MISMATCH', revision: 0 });
     expect(act('use_item', { itemId: 'item_herb' }).decision)
       .toMatchObject({ status: 'rejected', code: 'ENV_ITEM_NOT_OWNED' });
-    const valid = act('use_item', { itemId: 'item_ward', targetId: 'loc_rock' });
+    const valid = act('use_item', { itemId: 'item_ward', targetId: 'target_crow' });
     expect(valid.decision.status === 'accepted' && valid.decision.events.map(event => event.type))
       .toEqual(['item.consumed', 'item.depleted']);
     expect(replay(valid).state.facts).toMatchObject({ inventory: [], effectFlags: ['effect_warded'], gameMinute: 315 });
@@ -279,14 +352,16 @@ describe('versioned P1 prologue rule reducers', () => {
       clues: ['clue_route'], obstacleState: 'cleared', questState: { status: 'completed', rewardClaimed: false },
       locationGraph: [
         { from: 'loc_gate', to: 'loc_town', state: 'open' },
-        { from: 'loc_gate', to: 'loc_rock', state: 'open' },
+        { from: 'loc_town', to: 'loc_gate', state: 'open' },
+        { from: 'loc_town', to: 'loc_rock', state: 'locked' },
       ],
     });
     const opened = replay(result);
+    expect(opened.state.facts.knownLocations).toEqual(['loc_gate', 'loc_town']);
     const move = act('move', { destinationId: 'loc_rock' }, opened);
-    expect(move.decision).toMatchObject({ status: 'accepted', outcome: 'success' });
-    expect(replay(move).state).toMatchObject({ locationId: 'loc_rock', elapsedMinutes: 30,
-      facts: { stamina: 95, injuryFlags: [] } });
+    expect(move.decision).toMatchObject({ status: 'accepted', outcome: 'legal_failure', code: 'RULE_LOCATION_UNEXPLORED' });
+    expect(replay(move).state).toMatchObject({ locationId: 'loc_gate', elapsedMinutes: 30,
+      facts: { stamina: 95, knownLocations: ['loc_gate', 'loc_town'] } });
   });
 
   it('records unmatched talk as a time-advancing legal failure', () => {
@@ -316,7 +391,7 @@ describe('versioned P1 prologue rule reducers', () => {
 
   it('supports scan, first study, repeated study, and dark-obstructed observations', () => {
     const scan = replay(act('observe', { targetId: 'target_stones', method: 'scan' }));
-    expect(scan.state.facts).toMatchObject({ clues: ['clue_surface'],
+    expect(scan.state.facts).toMatchObject({ clues: ['clue_surface'], knownLocations: ['loc_gate', 'loc_town'],
       observationLog: [{ result: 'found', clueLevel: 1 }], stamina: 97 });
     const repeatedScan = act('observe', { targetId: 'target_stones', method: 'scan' }, scan);
     expect(repeatedScan.decision).toMatchObject({ status: 'accepted', outcome: 'legal_failure', code: 'RULE_NO_NEW_DISCOVERY' });
@@ -338,12 +413,16 @@ describe('versioned P1 prologue rule reducers', () => {
       obstacleState: 'cleared', questState: { status: 'completed' },
       locationGraph: [
         { from: 'loc_gate', to: 'loc_town', state: 'open' },
-        { from: 'loc_gate', to: 'loc_rock', state: 'open' },
+        { from: 'loc_town', to: 'loc_gate', state: 'open' },
+        { from: 'loc_town', to: 'loc_rock', state: 'locked' },
       ],
     });
     const combatCleared = replay(prepared);
     const moveAfterCombat = act('move', { destinationId: 'loc_rock' }, combatCleared);
-    expect(moveAfterCombat.decision).toMatchObject({ status: 'accepted', outcome: 'success' });
+    expect(moveAfterCombat.decision).toMatchObject({ status: 'accepted', outcome: 'legal_failure', code: 'RULE_LOCATION_UNEXPLORED' });
+    expect(replay(moveAfterCombat).state.facts.knownLocations).toEqual(['loc_gate', 'loc_town']);
+    expect(act('combat', { targetId: 'target_crow' }, combatCleared).decision)
+      .toMatchObject({ status: 'rejected', code: 'ENV_TARGET_ALREADY_RESOLVED', revision: combatCleared.revision });
 
     const dark = act('combat', { targetId: 'target_crow' }, save({ gameMinute: 1020 }));
     expect(dark.decision).toMatchObject({ status: 'accepted', outcome: 'success' });
@@ -375,13 +454,18 @@ describe('versioned P1 prologue rule reducers', () => {
 
   it('claims the completed quest reward once and opens the configured edge', () => {
     const result = act('quest', { questId: 'quest_fixture', choiceId: 'claim_reward' }, save({
-      locationGraph: baseFacts.locationGraph.map(edge => edge.to === 'loc_rock' ? { ...edge, state: 'open' as const } : edge),
+      locationGraph: baseFacts.locationGraph.map(edge => edge.from === 'loc_gate' && edge.to === 'loc_town'
+        ? { ...edge, state: 'open' as const } : edge),
       obstacleState: 'cleared', questState: { status: 'completed', rewardClaimed: false }, ferryState: 'clear',
     }));
     expect(replay(result).state.facts).toMatchObject({ inventory: [
       { itemId: 'item_ward', quantity: 1 }, { itemId: 'item_reward', quantity: 1 },
-    ], questState: { status: 'completed', rewardClaimed: true },
-      locationGraph: [...baseFacts.locationGraph.map(edge => edge.to === 'loc_rock' ? { ...edge, state: 'open' } : edge), book.quest!.unlockEdge] });
+    ], knownLocations: ['loc_gate', 'loc_town', 'loc_rock'], questState: { status: 'completed', rewardClaimed: true },
+      locationGraph: baseFacts.locationGraph.map(edge => {
+        if (edge.from === 'loc_gate' && edge.to === 'loc_town') return { ...edge, state: 'open' };
+        if (edge.from === 'loc_town' && edge.to === 'loc_rock') return { ...edge, state: 'open' };
+        return edge;
+      }) });
     const completed = replay(result);
     expect(act('quest', { questId: 'quest_fixture', choiceId: 'claim_reward' }, completed).decision)
       .toMatchObject({ status: 'rejected', code: 'ENV_QUEST_ALREADY_CLAIMED' });
@@ -401,14 +485,19 @@ describe('versioned P1 prologue rule reducers', () => {
       rulebook: fullBook, mechanics: PROLOGUE_V1, messages: PROLOGUE_V1_ERROR_MESSAGES,
     });
     const fullInventory = fullItemIds.map(itemId => ({ itemId, quantity: 1 }));
-    const invalid = act('quest', { questId: 'quest_fixture', choiceId: 'claim_reward' }, save({
+    const fullSave = save({
       inventory: fullInventory,
-      locationGraph: baseFacts.locationGraph.map(edge => edge.to === 'loc_rock' ? { ...edge, state: 'open' as const } : edge),
+      locationGraph: baseFacts.locationGraph.map(edge => edge.from === 'loc_gate' && edge.to === 'loc_town'
+        ? { ...edge, state: 'open' as const } : edge),
       obstacleState: 'cleared',
       questState: { status: 'completed', rewardClaimed: false },
       ferryState: 'clear',
-    }), fullModule);
-    expect(invalid.decision).toMatchObject({ status: 'rejected', code: 'ENV_INVENTORY_FULL' });
+    });
+    const stateBefore = structuredClone(fullSave.state);
+    const invalid = act('quest', { questId: 'quest_fixture', choiceId: 'claim_reward' }, fullSave, fullModule);
+    expect(invalid.decision).toMatchObject({ status: 'rejected', code: 'INPUT_INVENTORY_FULL', revision: 0 });
+    expect(invalid.decision.status === 'rejected' && 'events' in invalid.decision).toBe(false);
+    expect(invalid.current.state).toEqual(stateBefore);
   });
 
   it('clarifies unparsed natural language without writing an event', () => {

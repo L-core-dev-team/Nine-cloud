@@ -193,4 +193,24 @@ describe('PostgresNpcMemoryTurnRepository', () => {
     })).rejects.toThrow();
     expect(client.statements).toEqual([]);
   });
+
+  it('refuses v2 envelope persistence before opening a transaction', async () => {
+    const client = new FakeTransactionClient();
+    const input = fixture();
+    const memoryPolicy = {
+      mode: 'continue', policyVersion: 'continue-v1', schemaVersion: 1,
+      clockBasis: 'game-minute+npc-grant-sequence-v1',
+      policyArtifactHash: `sha256:${'a'.repeat(64)}`, cueDictionaryHash: `sha256:${'b'.repeat(64)}`,
+      normalizerVersion: 'unicode-nfc-v1', retrievalVersion: 'exact-recall-v1',
+      visibilityPolicyVersion: 'npc-visibility-v1', visibilityPolicyHash: `sha256:${'c'.repeat(64)}`,
+      createdAtRevision: 0,
+    } as const;
+    const v2Save = { ...input.save, schemaVersion: 2 as const, memoryPolicyVersion: memoryPolicy.policyVersion,
+      memoryMode: memoryPolicy.mode, memoryPolicy };
+
+    await expect(repository(client).commitAcceptedTurn({
+      ownerId: 'owner-1', expectedRevision: 0, ...input, save: v2Save, events: [input.event],
+    })).rejects.toThrow('SAVE_SCHEMA_NOT_READY');
+    expect(client.statements).toEqual([]);
+  });
 });

@@ -9,6 +9,19 @@ function envelope(revision = 0): SaveEnvelope {
     state: { playerId: 'player-1', locationId: 'gate', elapsedMinutes: revision, facts: {} } };
 }
 
+function v2Envelope() {
+  const memoryPolicy = {
+    mode: 'continue', policyVersion: 'continue-v1', schemaVersion: 1,
+    clockBasis: 'game-minute+npc-grant-sequence-v1',
+    policyArtifactHash: `sha256:${'a'.repeat(64)}`, cueDictionaryHash: `sha256:${'b'.repeat(64)}`,
+    normalizerVersion: 'unicode-nfc-v1', retrievalVersion: 'exact-recall-v1',
+    visibilityPolicyVersion: 'npc-visibility-v1', visibilityPolicyHash: `sha256:${'c'.repeat(64)}`,
+    createdAtRevision: 0,
+  } as const;
+  return { ...envelope(), schemaVersion: 2, memoryPolicyVersion: memoryPolicy.policyVersion,
+    memoryMode: memoryPolicy.mode, memoryPolicy };
+}
+
 class MemoryRepository implements CloudSaveRepository {
   private records = new Map<string, { owner: string; save: SaveEnvelope }>();
   async listForOwner(owner: string) { return [...this.records.values()].filter(row => row.owner === owner).map(row => row.save); }
@@ -76,5 +89,13 @@ describe('authenticated cloud save routes', () => {
     expect((await update(1)).status).toBe(200);
     expect((await update(1)).status).toBe(409);
     expect((await app.request('/api/saves', { method: 'GET' })).status).toBe(200);
+  });
+
+  it('returns an explicit not-ready response instead of accepting a lossy v2 save', async () => {
+    const { app } = setup();
+    const response = await app.request('/api/saves', { method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ save: v2Envelope() }) });
+    expect(response.status).toBe(503);
+    expect(await response.json()).toMatchObject({ code: 'SAVE_SCHEMA_NOT_READY' });
   });
 });

@@ -6,8 +6,8 @@ import {prepareTurnRuntime,loadTurnPlugin,type TurnPlugin} from './turn-runtime.
 import {AuthoritativeGameService} from './authoritative-game.js';
 import {ServerTurnService,type ServerTurnRepository} from './server-turn.js';
 const plugin:TurnPlugin={
- provider:{version:{ruleVersion:'synthetic',ActionRulesVersion:'synthetic-action',CombatRulesVersion:'synthetic-combat',canonVersion:'synthetic',memoryPolicyVersion:'synthetic'},resolve:(_intent,save)=>({status:'accepted',delta:{timeChange:1,locationChange:null,factChanges:[{key:'items',before:{present:true,value:save.state.facts.items},after:{present:true,value:Number(save.state.facts.items)-1}}]}})},
- initialState:()=>({playerId:'player',locationId:'origin',elapsedMinutes:0,facts:{items:200}}),
+ provider:{version:{ruleVersion:'synthetic',ActionRulesVersion:'synthetic-action',CombatRulesVersion:'synthetic-combat',canonVersion:'synthetic',memoryPolicyVersion:'synthetic'},resolve:(_intent,save)=>({status:'accepted',delta:{timeChange:15,locationChange:null,factChanges:[{key:'items',before:{present:true,value:save.state.facts.items},after:{present:true,value:Number(save.state.facts.items)-1}},{key:'gameMinute',before:{present:true,value:save.state.facts.gameMinute},after:{present:true,value:Number(save.state.facts.gameMinute)+15}}]}})},
+ initialState:()=>({playerId:'player',locationId:'origin',elapsedMinutes:0,facts:{items:200,gameMinute:0}}),
  grantsForEvent:event=>[{npcId:'witness',eventId:event.id,channel:'witnessed',visibleSummary:'Synthetic visible outcome.'}],policyForNpc:()=> 'exact-recall-v1',
 };
 describe('host plugin and complete synthetic turn path',()=>{
@@ -39,12 +39,12 @@ describe('host plugin and complete synthetic turn path',()=>{
    const intent={kind:'free_text',saveId:save.saveId,actorId:'player',expectedRevision:turn,idempotencyKey:randomUUID(),payload:{text:'Synthetic consume one item; not a production rule.'}};
    expect(await service.execute('a',intent,true)).toMatchObject({status:'accepted',duplicate:false,narrative:{status:'failed'}});
    for(let repeat=0;repeat<10;repeat++)expect(await service.execute('a',intent,repeat===0)).toMatchObject({status:'accepted',duplicate:true});
-   expect(save.revision).toBe(turn+1);expect(save.state.facts.items).toBe(199-turn);expect(save.state.elapsedMinutes).toBe(turn+1);
+   expect(save.revision).toBe(turn+1);expect(save.state.facts.items).toBe(199-turn);expect(save.state.elapsedMinutes).toBe((turn+1)*15);expect(save.state.facts.gameMinute).toBe((turn+1)*15);
   }
   expect(receipts.size).toBe(150);expect(new Set(events.map(e=>e.id)).size).toBe(150);
   expect(replayEvents(initial,events,runtime.rules.reduce.bind(runtime.rules))).toEqual(save);
   let rebuilt=createNpcMemoryJournal(save.saveId,0);
-  for(const event of events)rebuilt=prepareNpcMemoryTurn({journal:rebuilt,saveId:save.saveId,beforeRevision:event.beforeRevision,afterRevision:event.afterRevision,events:[event],observedAtMinute:event.afterRevision,grantsForEvent:plugin.grantsForEvent,policyForNpc:plugin.policyForNpc}).journal;
+  for(const event of events)rebuilt=prepareNpcMemoryTurn({journal:rebuilt,saveId:save.saveId,beforeRevision:event.beforeRevision,afterRevision:event.afterRevision,events:[event],observedAtMinute:event.afterRevision*15,grantsForEvent:plugin.grantsForEvent,policyForNpc:plugin.policyForNpc}).journal;
   expect(rebuilt).toEqual(journal);expect(journal.memories[0]?.observations).toHaveLength(150);
   expect(await new ServerTurnService(repository,runtime.rules).execute('b',{kind:'free_text',saveId:save.saveId,actorId:'player',expectedRevision:150,idempotencyKey:randomUUID(),payload:{text:'blocked'}})).toEqual({status:'not_found'});
  });

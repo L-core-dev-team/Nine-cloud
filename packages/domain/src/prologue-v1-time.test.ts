@@ -1,11 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { isDaylight, projectDailyStamina, readTraditionalClock } from './prologue-v1-time.js';
+import { isDaylight, projectDailyStamina, readKecClock } from './prologue-v1-time.js';
 
-const signedPolicy = { maxStamina: 100, resetAnchorMinute: 300, dayMinutes: 1440 };
+const signedPolicy = {
+  maxStamina: 100,
+  resetAnchorGameMinute: 300,
+  dayKecCount: 96,
+  gameMinutesPerKec: 15,
+};
 
 describe('P1 game-time stamina recovery', () => {
-  it('preserves stamina during the same game day', () => {
-    expect(projectDailyStamina(1439, { stamina: 35, staminaDayIndex: 0 }, signedPolicy))
+  it('preserves stamina within the same Kec-counted game day', () => {
+    expect(projectDailyStamina(1710, { stamina: 35, staminaDayIndex: 0 }, signedPolicy))
       .toEqual({ stamina: 35, staminaDayIndex: 0 });
   });
 
@@ -21,57 +26,60 @@ describe('P1 game-time stamina recovery', () => {
       .toEqual({ stamina: 100, staminaDayIndex: 3 });
   });
 
-  it('rejects invalid time, state, or schedule inputs', () => {
+  it('rejects a pre-start or off-Kec game clock', () => {
     expect(() => projectDailyStamina(299, { stamina: 35, staminaDayIndex: 0 }, signedPolicy))
-      .toThrow('GAME_MINUTE_BEFORE_RESET_ANCHOR');
+      .toThrow('GAME_MINUTE_BEFORE_START');
+    expect(() => projectDailyStamina(301, { stamina: 35, staminaDayIndex: 0 }, signedPolicy))
+      .toThrow('GAME_MINUTE_OFF_KEC_GRID');
+  });
+
+  it('rejects invalid stamina state or Kec schedule', () => {
     expect(() => projectDailyStamina(300, { stamina: 101, staminaDayIndex: 0 }, signedPolicy))
       .toThrow('INVALID_STAMINA_STATE');
     expect(() => projectDailyStamina(300, { stamina: 35, staminaDayIndex: 1 }, signedPolicy))
       .toThrow('STAMINA_DAY_INDEX_AHEAD');
-    expect(() => projectDailyStamina(300, { stamina: 35, staminaDayIndex: 0 }, { ...signedPolicy, dayMinutes: 0 }))
-      .toThrow('INVALID_STAMINA_POLICY');
+    expect(() => projectDailyStamina(300, { stamina: 35, staminaDayIndex: 0 }, { ...signedPolicy, dayKecCount: 0 }))
+      .toThrow('INVALID_KEC_POLICY');
   });
 });
 
-describe('P1 repeating day/night window', () => {
-  const daylight = { dayMinutes: 1440, daylightStartMinute: 300, duskStartMinute: 1020 };
+describe('P1 daylight window in Kec', () => {
+  const daylight = {
+    dayStartGameMinute: 300,
+    dayKecCount: 96,
+    gameMinutesPerKec: 15,
+    duskStartKec: 48,
+  };
 
-  it('wraps daylight classification across later game days', () => {
+  it('wraps the daylight boundary across game days', () => {
     expect(isDaylight(300, daylight)).toBe(true);
-    expect(isDaylight(1019, daylight)).toBe(true);
+    expect(isDaylight(1005, daylight)).toBe(true);
     expect(isDaylight(1020, daylight)).toBe(false);
     expect(isDaylight(1740, daylight)).toBe(true);
     expect(isDaylight(2460, daylight)).toBe(false);
   });
 
-  it('rejects an invalid time-band policy', () => {
-    expect(() => isDaylight(300, { ...daylight, duskStartMinute: 1440 })).toThrow('INVALID_DAYLIGHT_POLICY');
+  it('rejects an invalid dusk Kec boundary', () => {
+    expect(() => isDaylight(300, { ...daylight, duskStartKec: 96 })).toThrow('INVALID_DAYLIGHT_POLICY');
   });
 });
 
-describe('P1 traditional clock conversion', () => {
+describe('P1 Kec clock display', () => {
   const clock = {
-    dayMinutes: 1440,
-    shichenMinutes: 120,
-    keMinutes: 15,
-    anchorMinute: 300,
-    anchorShichenIndex: 3,
+    dayStartGameMinute: 300,
+    dayKecCount: 96,
+    gameMinutesPerKec: 15,
   };
 
-  it('aligns the signed start and shichen boundaries', () => {
-    expect(readTraditionalClock(300, clock).label).toBe('卯时初刻0');
-    expect(readTraditionalClock(360, clock).label).toBe('卯时正刻4');
-    expect(readTraditionalClock(420, clock).label).toBe('辰时初刻0');
-    expect(readTraditionalClock(1020, clock).label).toBe('酉时初刻0');
+  it('reports only Kec and game-day index', () => {
+    expect(readKecClock(300, clock)).toEqual({ gameDayIndex: 0, kecIndex: 0, label: '第1刻' });
+    expect(readKecClock(315, clock)).toEqual({ gameDayIndex: 0, kecIndex: 1, label: '第2刻' });
+    expect(readKecClock(1020, clock)).toEqual({ gameDayIndex: 0, kecIndex: 48, label: '第49刻' });
+    expect(readKecClock(1740, clock)).toEqual({ gameDayIndex: 1, kecIndex: 0, label: '第1刻' });
   });
 
-  it('wraps deterministically across the game-day boundary', () => {
-    expect(readTraditionalClock(0, clock).label).toBe('子时正刻4');
-    expect(readTraditionalClock(1440, clock)).toEqual(readTraditionalClock(0, clock));
-  });
-
-  it('rejects negative time and inconsistent calendar policy', () => {
-    expect(() => readTraditionalClock(-1, clock)).toThrow('INVALID_GAME_MINUTE');
-    expect(() => readTraditionalClock(300, { ...clock, keMinutes: 20 })).toThrow('INVALID_TRADITIONAL_CLOCK_POLICY');
+  it('rejects negative and off-grid game time', () => {
+    expect(() => readKecClock(-1, clock)).toThrow('GAME_MINUTE_BEFORE_START');
+    expect(() => readKecClock(301, clock)).toThrow('GAME_MINUTE_OFF_KEC_GRID');
   });
 });
