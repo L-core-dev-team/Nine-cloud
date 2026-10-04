@@ -76,6 +76,22 @@ describe('S3 event log and turn boundary', () => {
     expect(replayed).toEqual(result.save);
   });
 
+  it('stores clarification ancestry in the durable receipt without writing it into world state', async () => {
+    const save = initialSave();
+    const clarificationOf = '3c4f3c66-69f8-48c4-a2fe-9cf577d78901';
+    const linked = { ...intent(), clarificationOf };
+    const result = await prepareTurn({
+      intent: linked,
+      save,
+      decide: (_action, snapshot) => acceptedDecision(snapshot),
+      reduce: reducer,
+    });
+    expect(result.status).toBe('prepared');
+    if (result.status !== 'prepared') throw new Error('Expected linked action to prepare');
+    expect(result.receipt.clarificationOf).toBe(clarificationOf);
+    expect(result.save.state.facts).not.toHaveProperty('clarificationOf');
+  });
+
   it('never substitutes elapsedMinutes when a v2 receipt requires gameMinute', async () => {
     const save = initialSave();
     delete (save.state.facts as Record<string, unknown>).gameMinute;

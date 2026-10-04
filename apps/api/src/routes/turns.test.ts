@@ -9,14 +9,16 @@ function fixture() {
   const save: SaveEnvelope = { schemaVersion: 1, saveId: 'route-fixture', revision: 0, canonVersion: 'fixture', ruleVersion: 'fixture', memoryPolicyVersion: 'fixture',
     state: { playerId: 'player', locationId: 'origin', elapsedMinutes: 0, facts: {} } };
   const repository: ServerTurnRepository = { loadSave: vi.fn(async () => save), getReceiptForOwner: async () => null,
-    getForOwner: async () => null, commitAcceptedTurn: vi.fn(async () => { throw new Error('Must not commit'); }) };
+    getForOwner: async () => null,
+    recordNonAcceptedDecision: vi.fn(async () => { throw new Error('Must not record before rules are ready'); }),
+    commitAcceptedTurn: vi.fn(async () => { throw new Error('Must not commit'); }) };
   const auth = { resolveOwnerId: vi.fn(async (request: Request) => request.headers.get('cookie') === 'test-session' ? 'owner' : null) };
   const intent = { kind: 'move', saveId: save.saveId, actorId: 'player', expectedRevision: 0, idempotencyKey: randomUUID(), payload: { destinationId: 'gate' } };
   const service = new ServerTurnService(repository);
   const app = createApp(undefined, undefined, { origin: 'https://game.example.invalid', service: {} as EmailAuthService }, { service, auth });
   const request = (body: unknown, headers: Record<string, string> = {}) => app.request('/api/turns', { method: 'POST',
     headers: { 'content-type': 'application/json', origin: 'https://game.example.invalid', cookie: 'test-session', ...headers }, body: JSON.stringify(body) });
-  return { request, repository, intent, app, auth };
+  return { request, repository, intent, app, auth, service };
 }
 describe('turn HTTP boundary', () => {
   it('requires a verified session, matches expected account and enforces write Origin', async () => {
@@ -44,5 +46,12 @@ describe('turn HTTP boundary', () => {
     expect(response.status).toBe(503); expect(await response.json()).toEqual({ code: 'RULES_NOT_READY' });
     expect(f.repository.loadSave).not.toHaveBeenCalled();
     expect(f.repository.commitAcceptedTurn).not.toHaveBeenCalled();
+  });
+  it('maps stale or forged clarification links to a conflict response', async () => {
+    const f = fixture();
+    f.service.execute = vi.fn(async () => ({ status: 'clarification_conflict' }));
+    const response = await f.request({ intent: f.intent });
+    expect(response.status).toBe(409);
+    expect(await response.json()).toEqual({ code: 'CLARIFICATION_CONFLICT' });
   });
 });

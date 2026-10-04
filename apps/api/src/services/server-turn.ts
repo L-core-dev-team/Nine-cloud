@@ -8,7 +8,10 @@ import {
   readGameMinute,
   type EventReducer, type PrepareNpcMemoryTurnOptions, type NpcMemoryJournal,
 } from '@jiuxiao/domain';
-import type { AcceptedTurnCommitInput, AcceptedTurnCommitResult } from './npc-memory-turn-transaction.js';
+import type {
+  AcceptedTurnCommitInput, AcceptedTurnCommitResult,
+  NonAcceptedTurnRecordInput, NonAcceptedTurnRecordResult,
+} from './npc-memory-turn-transaction.js';
 
 /** Supplied only by the host's versioned rules and visibility implementation. */
 export interface ServerTurnRules {
@@ -24,6 +27,7 @@ export interface ServerTurnRepository {
   loadSave(ownerId: string, saveId: string): Promise<SaveEnvelope | null>;
   getReceiptForOwner(ownerId: string, saveId: string, requestId: string): Promise<TurnReceipt | null>;
   getForOwner(ownerId: string, saveId: string): Promise<NpcMemoryJournal | null>;
+  recordNonAcceptedDecision(input: NonAcceptedTurnRecordInput): Promise<NonAcceptedTurnRecordResult>;
   commitAcceptedTurn(input: AcceptedTurnCommitInput): Promise<AcceptedTurnCommitResult>;
   recordNarrativeStatus?(ownerId:string,saveId:string,requestId:string,attemptId:string,status:'generating'|'received'|'unavailable'|'timeout'|'cancelled'):Promise<void>;
 }
@@ -32,7 +36,7 @@ export type NarrativeResult =
   | { status: 'received'; text: string }
   | { status: 'failed'; code: 'NARRATIVE_UNAVAILABLE' | 'NARRATIVE_TIMEOUT' | 'NARRATIVE_CANCELLED' };
 export type ServerTurnResult =
-  | { status: 'not_found' | 'client_archive' | 'rules_not_ready' | 'version_mismatch' | 'idempotency_conflict' }
+  | { status: 'not_found' | 'client_archive' | 'rules_not_ready' | 'version_mismatch' | 'idempotency_conflict' | 'clarification_conflict' }
   | { status: 'revision_conflict'; currentRevision: number }
   | { status: 'decision'; receipt: TurnReceipt }
   | { status: 'accepted'; duplicate: boolean; receipt: TurnReceipt; narrative: NarrativeResult };
@@ -65,11 +69,30 @@ export class ServerTurnService {
     const prior = await this.repository.getReceiptForOwner(ownerId, intent.saveId, intent.idempotencyKey);
     if (rules.ruleVersion !== save.ruleVersion || rules.canonVersion !== save.canonVersion ||
         rules.memoryPolicyVersion !== save.memoryPolicyVersion) return { status: 'version_mismatch' };
+    if (!prior && intent.expectedRevision !== save.revision) {
+      return { status: 'revision_conflict', currentRevision: save.revision };
+    }
+    if (!prior && intent.clarificationOf) {
+      const priorClarification = await this.repository.getReceiptForOwner(ownerId, intent.saveId, intent.clarificationOf);
+      if (!isCurrentPriorClarification(priorClarification, intent.saveId, save.ruleVersion,
+        intent.clarificationOf, save.revision, intent.idempotencyKey)) {
+        return { status: 'clarification_conflict' };
+      }
+    }
     const prepared = await prepareTurn({ intent, save, ...(prior ? { priorReceipt: prior } : {}),
       decide: rules.decide.bind(rules), reduce: rules.reduce.bind(rules) });
     if (prepared.status === 'revision-conflict') return { status: 'revision_conflict', currentRevision: prepared.actualRevision };
     if (prepared.status === 'idempotency-conflict') return { status: 'idempotency_conflict' };
-    if (prepared.status === 'recorded') return { status: 'decision', receipt: prepared.receipt };
+    if (prepared.status === 'recorded') {
+      const stored = await this.repository.recordNonAcceptedDecision({ ownerId, expectedRevision: save.revision, receipt: prepared.receipt });
+      if (stored.kind === 'not_found') return { status: 'not_found' };
+      if (stored.kind === 'conflict') return { status: 'revision_conflict', currentRevision: stored.currentRevision };
+      if (stored.kind === 'idempotency_conflict') return { status: 'idempotency_conflict' };
+      if (stored.receipt.decision.status === 'accepted') {
+        return this.completed(ownerId, stored.receipt, true, requestNarrative, cancellation);
+      }
+      return { status: 'decision', receipt: stored.receipt };
+    }
     if (prepared.status === 'duplicate') return this.completed(ownerId, prepared.receipt, true, requestNarrative, cancellation);
 
     const journal = await this.repository.getForOwner(ownerId, save.saveId);
@@ -142,4 +165,23 @@ export class ServerTurnService {
     }
     return { status: 'accepted', duplicate, receipt, narrative };
   }
+}
+
+function isCurrentPriorClarification(
+  receipt: TurnReceipt | null,
+  saveId: string,
+  rulesVersion: string,
+  interactionId: string,
+  currentRevision: number,
+  currentIdempotencyKey: string,
+): boolean {
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(interactionId) ||
+      interactionId === currentIdempotencyKey || !receipt || receipt.decision.status !== 'clarify' ||
+      !('interactionId' in receipt.decision) || ('branchId' in receipt && receipt.branchId !== 'root') ||
+      !('rulesVersion' in receipt) || receipt.rulesVersion !== rulesVersion) return false;
+  return receipt.saveId === saveId
+    && receipt.idempotencyKey === interactionId
+    && receipt.decision.interactionId === interactionId
+    && receipt.decision.revision === currentRevision
+    && receipt.resultingRevision === currentRevision;
 }
