@@ -1,7 +1,7 @@
 # P1 PR-4 NLU 语料执行记录
 
 日期：2026-10-05  
-代码基线：`4dbefcc71efec885ddeab34127ea682faaa90737`（本次改动尚未提交）  
+代码基线：解析器与语料实现 `92b7f33c389b9bb6d9f03ce8976c025ec834ceb8`；当前 PR head `67f51c51c9cb34e6317167db9836e3adbbecbefb` 未再修改这些代码。2026-10-05 已在当前 head 重跑定向测试。
 作者验收依据：[`P1-作者共同认可与PR-4验收裁决-2026-10-05.md`](../2026-10-04/P1-author-inputs/P1-作者共同认可与PR-4验收裁决-2026-10-05.md)
 
 ## 实现内容
@@ -33,10 +33,11 @@
 | `pnpm test` | 0 | core regressions 28/28；contracts 17；content 41；domain 102；web 157；API 95 passed / 30 skipped。API/PG 集成因 `TEST_DATABASE_URL` 未设置而跳过。本地测试包含预期的 `CANON_RECEIPTS_PENDING` fail-closed 断言，Vitest 均通过。 |
 | `pnpm build` | 0 | `Verified public Canon runtime 1.0: 34 confirmed entries; receiptsComplete=false`；API/web/schema build 完成；保留既有 555.13 kB bundle warning |
 
+当前 head 的 GitHub Actions run `37217898217` 已完成安装、迁移、类型检查、单元测试、构建、容器冒烟和 PostgreSQL 集成；最后核对时 `pnpm test:e2e` 仍在运行，其余证据生成步骤尚未开始。因此完整 CI 暂不记为通过。定向测试在当前 head 重跑，3 个文件、63 个测试全部通过。
+
 ## 仍未覆盖的边界
 
-- `NLU-11` parser 产出正确的 `talk` intent；表内 `talk.occurred outcome='refuse'` 尚未由当前规则模块验证。规则代码当前只产生 `on_topic` 或 `idle`，不生成 `refuse`。
+- `NLU-11` parser 产出正确的 `talk` intent；表内 `talk.occurred outcome='refuse'` 尚未由当前规则模块验证。该项与共同认可的 MAP-02 / 现行规则簿存在规格一致化和实现工作，不能以 parser 通过替代。
 - NLU-01/12 的事件、任务及 Canon 输出不由本语料测试证明；测试只验 parser 状态/槽位。完整事务闭环属后续 P1 阶段验收。
 - 生产代码仍未调用 `parseActionText`，也没有生产 `VisibleTargetCatalog` 构造器；`cultivate`、`acquire_item`、`combat`、`quest` 没有本语料覆盖的自然语言模板。
 - `receiptsComplete=false`、活动 Canon 状态与 `/api/turns` 的 `503 RULES_NOT_READY` 均保持原样。
-
