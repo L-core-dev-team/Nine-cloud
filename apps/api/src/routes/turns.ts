@@ -3,6 +3,7 @@ import { ActionIntentSchema } from '@jiuxiao/contracts';
 import { readJson, type CloudSaveRouteAuth } from './saves.js';
 import type { ServerTurnService } from '../services/server-turn.js';
 import { consumeAccountQuota } from '../services/account-rate-limit.js';
+import { SaveSchemaNotReadyError } from '../services/save-storage-contract.js';
 
 export type ServerTurnRouteDependencies = { service: ServerTurnService; auth: CloudSaveRouteAuth };
 /** Client submits only an intent. Decisions, events, state and visibility stay server-owned. */
@@ -35,6 +36,9 @@ export function mountServerTurnRoutes(app: Hono, { service, auth }: ServerTurnRo
         case 'revision_conflict': return c.json({ code: 'REVISION_CONFLICT', currentRevision: result.currentRevision }, 409);
         default: return c.json(result);
       }
-    } catch { return c.json({ code: 'TURN_UNAVAILABLE' }, 503); }
+    } catch (error) {
+      if (error instanceof SaveSchemaNotReadyError) return c.json({ code: 'SAVE_SCHEMA_NOT_READY' }, 503);
+      return c.json({ code: 'TURN_UNAVAILABLE' }, 503);
+    }
   });
 }

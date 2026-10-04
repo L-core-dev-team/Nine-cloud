@@ -1,5 +1,6 @@
 import {createHash} from 'node:crypto';
 import { SaveEnvelopeSchema, type SaveEnvelope } from '@jiuxiao/contracts';
+import { requireV1PersistableSave } from './save-storage-contract.js';
 
 export type CloudSaveWriteResult =
   | { kind: 'created'; save: SaveEnvelope }
@@ -39,6 +40,7 @@ function requireOwnerId(ownerId: string): string {
 function parseSave(value: unknown): SaveEnvelope {
   const parsed = SaveEnvelopeSchema.safeParse(value);
   if (!parsed.success) throw new TypeError('Cloud save does not match the supported save contract.');
+  requireV1PersistableSave(parsed.data);
   const { saveId, canonVersion, ruleVersion, memoryPolicyVersion } = parsed.data;
   if (!saveId.trim() || saveId !== saveId.trim() || saveId.length > MAX_IDENTIFIER_LENGTH ||
     [canonVersion, ruleVersion, memoryPolicyVersion].some(version => version.length > 100)) {

@@ -39,12 +39,10 @@ describe('turn HTTP boundary', () => {
     expect((await f.app.request('/api/turns', { method: 'POST', headers: { origin: 'https://game.example.invalid', cookie: 'test-session' }, body: '{invalid' })).status).toBe(400);
     expect(f.repository.loadSave).not.toHaveBeenCalled();
   });
-  it('exposes the explicit rules gate and never treats a client backup as authoritative', async () => {
+  it('exposes the explicit rules gate before reading a save', async () => {
     const f = fixture(); const response = await f.request({ intent: f.intent });
     expect(response.status).toBe(503); expect(await response.json()).toEqual({ code: 'RULES_NOT_READY' });
-    const loaded = await f.repository.loadSave('owner', f.intent.saveId); loaded!.state.facts.archiveKind = 'local-untrusted-v1';
-    const archived = await f.request({ intent: f.intent }); expect(archived.status).toBe(400);
-    expect(await archived.json()).toEqual({ code: 'CLIENT_ARCHIVE_NOT_AUTHORITATIVE' });
+    expect(f.repository.loadSave).not.toHaveBeenCalled();
     expect(f.repository.commitAcceptedTurn).not.toHaveBeenCalled();
   });
 });

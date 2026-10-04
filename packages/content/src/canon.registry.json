@@ -1827,6 +1827,75 @@
         "activeEntriesChanged": false,
         "runtimeProjectionChanged": false
       }
+    },
+    {
+      "id": "p1_luhuadu_prologue_author_original_20261004",
+      "status": "approved_for_p1_candidate_input",
+      "recordedAt": "2026-10-04",
+      "sourceArtifact": {
+        "path": "docs/九霄1.0-P1-执行规格-GPT交付版-2026-10-03.md",
+        "sha256": "ad5187b038a3e6375864a582351949d9bb6621cc0a048252621bfa5383c52c33"
+      },
+      "approvalRecord": {
+        "path": "docs/acceptance/2026-10-03/九霄1.0-P1-玩法规则与序章-签署表-2026-10-03.xlsx",
+        "sha256": "33b6c8f6708d76f3420df12eb29f1439c5059f67f4cb7320ffe7810ed071c1bd",
+        "role": "historical-signoff-evidence",
+        "precedence": "The current execution specification is normative. Author-confirmed 2026-10-04 facts supersede conflicting values in this earlier workbook."
+      },
+      "candidateDocument": "packages/content/src/prologue/prologue-v1.ts",
+      "candidateDocumentSha256": "9200dc2f03bb7ffbaade0b5f40b596f17f91f6f38d7998e54f6924b82ed8b95e",
+      "candidateIds": [
+        "loc_luhuadu",
+        "loc_wangqitai",
+        "loc_zheguiping",
+        "npc_cenjiu",
+        "obj_ferry",
+        "item_bishuifu",
+        "item_jiuyifu",
+        "obstacle_rockslide",
+        "quest_first_clearance",
+        "clue_ferry_stuck",
+        "clue_ferry_scrubbed",
+        "clue_wrong_way",
+        "clue_rockslide",
+        "clue_crow_nest",
+        "text_prologue_opening",
+        "text_observation_none",
+        "text_dialogue_topics",
+        "text_smalltalk_fallbacks",
+        "text_idle_three_hook",
+        "text_combat_clear",
+        "text_combat_clear_wounded",
+        "text_combat_retreat",
+        "text_bypass",
+        "text_stamina_exhausted",
+        "text_crossing_complete",
+        "text_south_white_hook",
+        "text_wangqitai_night"
+      ],
+      "authorAcceptance": {
+        "scope": "P1 author-original content transcribed from the exact-hash execution specification; candidate content only, not per-entry Canon publication.",
+        "evidence": "Author-confirmed P1 facts effective 2026-10-04 and the current execution-spec digest. The 2026-10-03 workbook is retained as prior signoff evidence only; its conflicting values do not govern implementation.",
+        "authors": [
+          {
+            "id": "LYL",
+            "role": "A product and Canon",
+            "decision": "approved_for_p1_candidate_input",
+            "record": "2026-10-04 author facts and current execution-spec digest"
+          },
+          {
+            "id": "Bird",
+            "role": "B technology and rules",
+            "decision": "approved_for_p1_candidate_input",
+            "record": "2026-10-04 author facts and current execution-spec digest"
+          }
+        ]
+      },
+      "canonPublication": {
+        "status": "pending_separate_s_track_review",
+        "activeEntriesChanged": false,
+        "runtimeProjectionChanged": false
+      }
     }
   ],
   "reviewQueue": [],

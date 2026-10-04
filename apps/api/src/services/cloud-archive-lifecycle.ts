@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import type { Pool } from 'pg';
 import { SaveEnvelopeSchema } from '@jiuxiao/contracts';
+import { requireV1PersistableSave } from './save-storage-contract.js';
 
 export function archiveDigest(value: unknown): string {
   const canonical = (entry: unknown): string => {
@@ -39,10 +40,12 @@ export class CloudArchiveLifecycle {
       if (operation === 'delete') {
         const backup = SaveEnvelopeSchema.parse({ schemaVersion: row.schema_version, saveId, canonVersion: row.canon_version,
           ruleVersion: row.rule_version, memoryPolicyVersion: row.memory_policy_version, revision: row.revision, state: row.snapshot });
+        requireV1PersistableSave(backup);
         await client.query('INSERT INTO cloud_archive_trash (save_id, owner_id, deleted_revision, backup, digest) VALUES ($1, $2, $3, $4::jsonb, $5)', [saveId, owner, nextRevision, JSON.stringify(backup), archiveDigest(backup)]);
         await client.query('UPDATE game_saves SET revision = $3, updated_at = now() WHERE id = $1 AND owner_id = $2', [saveId, owner, nextRevision]);
       } else {
         const backup = SaveEnvelopeSchema.parse(archived.backup);
+        requireV1PersistableSave(backup);
         if (backup.saveId !== saveId || backup.state.facts.archiveKind !== 'local-untrusted-v1' || archiveDigest(backup) !== archived.digest) throw new Error('BACKUP_INTEGRITY_FAILED');
         await client.query(`UPDATE game_saves SET revision = $3, schema_version = $4, canon_version = $5, rule_version = $6,
           memory_policy_version = $7, snapshot = $8::jsonb, updated_at = now() WHERE id = $1 AND owner_id = $2`,

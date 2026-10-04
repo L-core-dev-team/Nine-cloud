@@ -7,3 +7,4 @@ export * from './errors.js';
 export * from './legacy-save.js';
 export * from './turn.js';
 export * from './state-delta.js';
+export * from './prologue.js';

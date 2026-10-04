@@ -23,6 +23,8 @@ LYL 已于 2026-10-03 更正九境次序为“炼体→炼气→筑基→结丹�
 
 部署负责人依 `deployment/README.md` 安装只读本地规则模块并配置 TURN_RULES_MODULE。模块提供 ActionRuleProvider/version、initialState、事件观测授权和 NPC 策略；不是浏览器或 AI 传来的代码。
 
+配置 TURN_RULES_MODULE 本身不代表作者批准。当前 `AUTHOR_RULES_GATE` 仍为 `BLOCKED_BY_OWNER` 且规则版本为空，API 启动时不会导入该模块，合法 `POST /api/turns` 请求在读取存档前返回 `503 RULES_NOT_READY`。只有门禁开放并且模块版本与签署版本完全相同时，运行时才可加载规则。
+
 操作：打开批准的游戏网址 `/turns` → 登录 → 创建权威新局 → 选择六类行动并提交 → 核对回执、变化、拒绝/澄清 → 主动生成叙事 → 取消/重试 → 刷新或关页恢复。Pass：结果符合签署规则，重复/叙事重试不再扣费或推进，NPC 只获得授权观察且不影响别的存档。Fail：规则未加载仍结算、费用或结果与签署表不同、AI 改写状态。记录规则摘要、候选身份、样例和两人结论到唯一清单 G-03/G-04b。
 
 ## G-04a：Canon 同摘要双作者回执

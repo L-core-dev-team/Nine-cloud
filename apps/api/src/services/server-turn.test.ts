@@ -8,7 +8,7 @@ import { ServerTurnService, type ServerTurnRepository, type ServerTurnRules } fr
 function fixture() {
   let save: SaveEnvelope = { schemaVersion: 1, saveId: 'test-turn', revision: 0,
     ruleVersion: 'fixture-only', canonVersion: 'fixture-only', memoryPolicyVersion: 'fixture-only',
-    state: { playerId: 'player', locationId: 'origin', elapsedMinutes: 0, facts: {} } };
+    state: { playerId: 'player', locationId: 'origin', elapsedMinutes: 900, facts: { gameMinute: 30 } } };
   let journal = createNpcMemoryJournal(save.saveId, 0);
   const receipts = new Map<string, TurnReceipt>();
   const decide = vi.fn<ServerTurnRules['decide']>((intent, current) => ({ status: 'accepted', nextRevision: current.revision + 1,
@@ -16,11 +16,12 @@ function fixture() {
       afterRevision: current.revision + 1, occurredAt: new Date().toISOString(), source: 'RULES', ruleVersion: current.ruleVersion,
       payload: { destinationId: intent.kind === 'move' ? intent.payload.destinationId : 'fixture' } }] }));
   const rules: ServerTurnRules = { ruleVersion: 'fixture-only', canonVersion: 'fixture-only', memoryPolicyVersion: 'fixture-only',
-    decide, reduce: (state, event) => ({ ...state, locationId: String(event.payload.destinationId), elapsedMinutes: state.elapsedMinutes + 1 }),
+    decide, reduce: (state, event) => ({ ...state, locationId: String(event.payload.destinationId), elapsedMinutes: state.elapsedMinutes + 1,
+      facts: { ...state.facts, gameMinute: Number(state.facts.gameMinute) + 15 } }),
     grantsForEvent: event => [{ npcId: 'visible-npc', eventId: event.id, channel: 'witnessed', visibleSummary: 'Visible test event.' }],
     policyForNpc: () => 'exact-recall-v1' };
   const repository: ServerTurnRepository = {
-    loadSave: async owner => owner === 'owner' ? structuredClone(save) : null,
+    loadSave: vi.fn(async owner => owner === 'owner' ? structuredClone(save) : null),
     getReceiptForOwner: async (_, __, id) => structuredClone(receipts.get(id) ?? null),
     getForOwner: async () => structuredClone(journal),
     commitAcceptedTurn: vi.fn(async input => {
@@ -39,11 +40,11 @@ function fixture() {
 
 describe('server turn orchestration (synthetic rules, never production gameplay)', () => {
   it('preserves class-based resolver context during settlement and duplicate recovery', async () => {
-    const f=fixture();const rules=new RuleResolver({version:{ruleVersion:'fixture-only',ActionRulesVersion:'fixture-action',CombatRulesVersion:'fixture-combat',canonVersion:'fixture-only',memoryPolicyVersion:'fixture-only'},resolve:()=>({status:'accepted',delta:{timeChange:1,locationChange:{before:'origin',after:'gate'},factChanges:[]}})},()=>[],()=>'exact-recall-v1');
+    const f=fixture();const rules=new RuleResolver({version:{ruleVersion:'fixture-only',ActionRulesVersion:'fixture-action',CombatRulesVersion:'fixture-combat',canonVersion:'fixture-only',memoryPolicyVersion:'fixture-only'},resolve:()=>({status:'accepted',outcome:'success',delta:{timeChange:1,locationChange:{before:'origin',after:'gate'},factChanges:[{key:'gameMinute',before:{present:true,value:30},after:{present:true,value:31}}]}})},()=>[],()=>'exact-recall-v1');
     const service=new ServerTurnService(f.repository,rules);
     expect(await service.execute('owner',f.intent)).toMatchObject({status:'accepted',duplicate:false});
     expect(await service.execute('owner',f.intent)).toMatchObject({status:'accepted',duplicate:true});
-    expect(f.snapshot().save).toMatchObject({revision:1,state:{locationId:'gate',elapsedMinutes:1}});
+    expect(f.snapshot().save).toMatchObject({revision:1,state:{locationId:'gate',elapsedMinutes:901}});
   });
   it('records presentation status after commit without letting log failure undo settlement', async () => {
     const f=fixture();const log=vi.fn<NonNullable<ServerTurnRepository['recordNarrativeStatus']>>(async()=>{expect(f.snapshot().save.revision).toBe(1);});f.repository.recordNarrativeStatus=log;
@@ -53,11 +54,25 @@ describe('server turn orchestration (synthetic rules, never production gameplay)
     expect(await new ServerTurnService(f.repository,f.rules).execute('owner',f.intent,true)).toMatchObject({status:'accepted',duplicate:true,narrative:{code:'NARRATIVE_UNAVAILABLE'}});
     expect(f.snapshot().save.revision).toBe(1);
   });
-  it('fails closed without rules and refuses foreign owners or client backups without writes', async () => {
+  it('fails closed before reading saves when rules are not ready', async () => {
     const f = fixture(); const service = new ServerTurnService(f.repository);
     expect(await service.execute('owner', f.intent)).toEqual({ status: 'rules_not_ready' });
-    expect(await service.execute('other', f.intent)).toEqual({ status: 'not_found' });
-    f.setArchive(); expect(await service.execute('owner', f.intent)).toEqual({ status: 'client_archive' });
+    expect(f.repository.loadSave).not.toHaveBeenCalled();
+    expect(f.repository.commitAcceptedTurn).not.toHaveBeenCalled();
+  });
+  it('still rejects foreign owners and client backups once an authorized rule set is supplied', async () => {
+    const f = fixture();
+    expect(await new ServerTurnService(f.repository,f.rules).execute('other', f.intent)).toEqual({ status: 'not_found' });
+    f.setArchive(); expect(await new ServerTurnService(f.repository,f.rules).execute('owner', f.intent)).toEqual({ status: 'client_archive' });
+    expect(f.repository.commitAcceptedTurn).not.toHaveBeenCalled();
+  });
+  it('does not fall back to elapsedMinutes for NPC observation time', async () => {
+    const f = fixture();
+    f.snapshot().save.state.facts = {};
+    const legacyRules = { ...f.rules, reduce: (state: Parameters<ServerTurnRules['reduce']>[0], event: Parameters<ServerTurnRules['reduce']>[1]) =>
+      ({ ...state, locationId: String(event.payload.destinationId), elapsedMinutes: state.elapsedMinutes + 1 }) };
+    await expect(new ServerTurnService(f.repository, legacyRules).execute('owner', f.intent))
+      .rejects.toMatchObject({ code: 'GAME_MINUTE_NOT_READY' });
     expect(f.repository.commitAcceptedTurn).not.toHaveBeenCalled();
   });
   it('commits only once across ten sequential retries and rejects request ID reuse with altered content', async () => {
@@ -68,6 +83,8 @@ describe('server turn orchestration (synthetic rules, never production gameplay)
     }
     expect(f.decide).toHaveBeenCalledTimes(1); expect(f.snapshot().save.revision).toBe(1);
     expect(f.snapshot().journal.memories).toHaveLength(1);
+    expect(f.snapshot().journal.memories[0]?.observations[0]?.observedAtMinute).toBe(45);
+    expect(f.snapshot().journal.memories[0]?.observations[0]?.observedAtMinute).not.toBe(f.snapshot().save.state.elapsedMinutes);
     expect(await service.execute('owner', { ...f.intent, payload: { destinationId: 'other' } })).toEqual({ status: 'idempotency_conflict' });
   });
   it('arbitrates concurrent identical requests through the atomic commit receipt', async () => {

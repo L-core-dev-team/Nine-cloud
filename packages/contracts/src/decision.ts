@@ -87,6 +87,8 @@ export const DecisionV2Schema = z.union([
   ClarifyDecisionV2Schema,
 ]);
 
+export type DecisionV2 = z.infer<typeof DecisionV2Schema>;
+
 export const DecisionV1Schema = z.discriminatedUnion('status', [
   AcceptedDecisionV1Schema,
   RejectedDecisionV1Schema,

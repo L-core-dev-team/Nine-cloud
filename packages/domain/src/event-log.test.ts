@@ -11,7 +11,7 @@ const initialSave = (): SaveEnvelope => ({
   ruleVersion: 'unsigned-rules',
   memoryPolicyVersion: 'none-0',
   revision: 0,
-  state: { playerId: 'fixture-player', locationId: 'fixture-location', elapsedMinutes: 0, facts: { counter: 0 } },
+  state: { playerId: 'fixture-player', locationId: 'fixture-location', elapsedMinutes: 0, facts: { counter: 0, gameMinute: 0 } },
 });
 
 const intent = (destinationId = 'fixture-destination', expectedRevision = 0): ActionIntent => ({
@@ -53,7 +53,7 @@ const acceptedDecision = (save: SaveEnvelope, ids = ['11111111-1111-4111-8111-11
 describe('S3 event log and turn boundary', () => {
   it('keeps production evaluation closed until gameplay rules are signed', () => {
     const save = initialSave();
-    expect(evaluate(intent(), save)).toMatchObject({ status: 'rejected', code: 'RULES_NOT_READY' });
+    expect(evaluate(intent(), save)).toMatchObject({ status: 'rejected', code: 'ENV_RULES_NOT_READY' });
   });
 
   it('prepares a multi-event turn as one deterministic revision transition', async () => {
@@ -74,6 +74,14 @@ describe('S3 event log and turn boundary', () => {
 
     const replayed = replayEvents(save, result.receipt.decision.status === 'accepted' ? result.receipt.decision.events : [], reducer);
     expect(replayed).toEqual(result.save);
+  });
+
+  it('never substitutes elapsedMinutes when a v2 receipt requires gameMinute', async () => {
+    const save = initialSave();
+    delete (save.state.facts as Record<string, unknown>).gameMinute;
+    await expect(prepareTurn({
+      intent: intent(), save, decide: (_action, snapshot) => acceptedDecision(snapshot), reduce: reducer,
+    })).rejects.toMatchObject({ code: 'GAME_MINUTE_NOT_READY' });
   });
 
   it('returns the first receipt for a duplicate before checking the now-stale revision', async () => {

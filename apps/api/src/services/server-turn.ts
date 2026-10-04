@@ -5,6 +5,7 @@ import {
 } from '@jiuxiao/contracts';
 import {
   prepareTurn, prepareNpcMemoryTurn,
+  readGameMinute,
   type EventReducer, type PrepareNpcMemoryTurnOptions, type NpcMemoryJournal,
 } from '@jiuxiao/domain';
 import type { AcceptedTurnCommitInput, AcceptedTurnCommitResult } from './npc-memory-turn-transaction.js';
@@ -53,6 +54,8 @@ export class ServerTurnService {
   async execute(ownerId: string, raw: unknown, requestNarrative = false, cancellation?: AbortSignal): Promise<ServerTurnResult> {
     if (!ownerId.trim() || ownerId.length > 200) throw new TypeError('Authenticated owner is required');
     const intent = ActionIntentSchema.parse(raw);
+    const rules = this.rules;
+    if (!rules) return { status: 'rules_not_ready' };
     const current = await this.repository.loadSave(ownerId, intent.saveId);
     if (!current) return { status: 'not_found' };
     const save = SaveEnvelopeSchema.parse(current);
@@ -60,8 +63,6 @@ export class ServerTurnService {
     if (save.state.facts.archiveKind === 'local-untrusted-v1') return { status: 'client_archive' };
     if (save.state.playerId !== intent.actorId) return { status: 'not_found' };
     const prior = await this.repository.getReceiptForOwner(ownerId, intent.saveId, intent.idempotencyKey);
-    const rules = this.rules;
-    if (!rules) return { status: 'rules_not_ready' };
     if (rules.ruleVersion !== save.ruleVersion || rules.canonVersion !== save.canonVersion ||
         rules.memoryPolicyVersion !== save.memoryPolicyVersion) return { status: 'version_mismatch' };
     const prepared = await prepareTurn({ intent, save, ...(prior ? { priorReceipt: prior } : {}),
@@ -91,7 +92,7 @@ export class ServerTurnService {
     const next = prepareNpcMemoryTurn({ journal, saveId: save.saveId,
       beforeRevision: save.revision, afterRevision: prepared.save.revision,
       events: committedEvents,
-      observedAtMinute: prepared.save.state.elapsedMinutes,
+      observedAtMinute: readGameMinute(prepared.save.state),
       grantsForEvent: rules.grantsForEvent.bind(rules), policyForNpc: rules.policyForNpc.bind(rules) });
     const committed = await this.repository.commitAcceptedTurn({ ownerId, expectedRevision: save.revision,
       receipt: prepared.receipt, save: prepared.save,
