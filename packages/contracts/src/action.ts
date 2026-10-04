@@ -8,6 +8,8 @@ const common = z.strictObject({
   branchId: z.literal('root').default('root'),
   expectedRevision: z.int().nonnegative(),
   idempotencyKey: z.uuid(),
+  /** Links a clarified, revised command to the prior clarification interaction. */
+  clarificationOf: z.string().min(1).max(128).optional(),
 });
 
 // These are candidates. Only the domain rules may accept one and emit events.

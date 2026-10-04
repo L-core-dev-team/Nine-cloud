@@ -24,6 +24,15 @@ function fixture() {
     loadSave: vi.fn(async owner => owner === 'owner' ? structuredClone(save) : null),
     getReceiptForOwner: async (_, __, id) => structuredClone(receipts.get(id) ?? null),
     getForOwner: async () => structuredClone(journal),
+    recordNonAcceptedDecision: vi.fn(async input => {
+      const prior = receipts.get(input.receipt.idempotencyKey);
+      if (prior) return prior.requestFingerprint === input.receipt.requestFingerprint
+        ? { kind: 'duplicate' as const, receipt: structuredClone(prior) }
+        : { kind: 'idempotency_conflict' as const };
+      if (input.expectedRevision !== save.revision) return { kind: 'conflict' as const, currentRevision: save.revision };
+      receipts.set(input.receipt.idempotencyKey, structuredClone(input.receipt));
+      return { kind: 'recorded' as const, receipt: structuredClone(input.receipt) };
+    }),
     commitAcceptedTurn: vi.fn(async input => {
       const prior = receipts.get(input.receipt.idempotencyKey);
       if (prior) return prior.requestFingerprint === input.receipt.requestFingerprint
@@ -35,7 +44,9 @@ function fixture() {
     }),
   };
   const intent = { kind: 'move' as const, saveId: save.saveId, actorId: 'player', expectedRevision: 0, idempotencyKey: randomUUID(), payload: { destinationId: 'gate' } };
-  return { repository, rules, decide, intent, snapshot: () => ({ save, journal }), setArchive: () => { save.state.facts.archiveKind = 'local-untrusted-v1'; } };
+  return { repository, rules, decide, intent, snapshot: () => ({ save, journal }),
+    addReceipt: (receipt: TurnReceipt) => { receipts.set(receipt.idempotencyKey, structuredClone(receipt)); },
+    setArchive: () => { save.state.facts.archiveKind = 'local-untrusted-v1'; } };
 }
 
 describe('server turn orchestration (synthetic rules, never production gameplay)', () => {
@@ -130,8 +141,60 @@ describe('server turn orchestration (synthetic rules, never production gameplay)
   it('returns rules rejection or clarification without creating events or requesting narrative', async () => {
     const f = fixture(); const narrate = vi.fn(async () => 'Must not run');
     const denied: ServerTurnRules = { ...f.rules, decide: (_, save) => ({ status: 'rejected', code: 'FIXTURE_REJECTED', message: 'Synthetic refusal.', revision: save.revision }) };
-    expect(await new ServerTurnService(f.repository, denied, narrate).execute('owner', f.intent, true)).toMatchObject({ status: 'decision', receipt: { decision: { status: 'rejected' } } });
+    const before = structuredClone(f.snapshot());
+    const result = await new ServerTurnService(f.repository, denied, narrate).execute('owner', f.intent, true);
+    expect(result).toMatchObject({ status: 'decision', receipt: { decision: { status: 'rejected' } } });
+    expect(f.repository.recordNonAcceptedDecision).toHaveBeenCalledTimes(1);
     expect(f.repository.commitAcceptedTurn).not.toHaveBeenCalled(); expect(narrate).not.toHaveBeenCalled();
+    expect(f.snapshot()).toEqual(before);
+    expect(await new ServerTurnService(f.repository, denied).execute('owner', f.intent)).toEqual(result);
+    expect(f.repository.recordNonAcceptedDecision).toHaveBeenCalledTimes(1);
+    expect(await new ServerTurnService(f.repository, denied).execute('owner', { ...f.intent, payload: { destinationId: 'changed' } }))
+      .toEqual({ status: 'idempotency_conflict' });
+    expect(f.snapshot()).toEqual(before);
+  });
+  it('requires clarificationOf to reference the same save, current revision and a persisted clarification', async () => {
+    const f = fixture(); const service = new ServerTurnService(f.repository, f.rules);
+    const missing = { ...f.intent, idempotencyKey: randomUUID(), clarificationOf: randomUUID() };
+    expect(await service.execute('owner', missing)).toEqual({ status: 'clarification_conflict' });
+    expect(f.decide).not.toHaveBeenCalled();
+    expect(f.repository.commitAcceptedTurn).not.toHaveBeenCalled();
+
+    const interactionId = randomUUID();
+    f.addReceipt({
+      idempotencyKey: interactionId,
+      saveId: f.intent.saveId,
+      requestFingerprint: `sha256:v1:${'a'.repeat(64)}`,
+      branchId: 'root',
+      rulesVersion: 'fixture-only',
+      clockMinute: 30,
+      rng: { seed: null, draws: 0 },
+      decision: { status: 'clarify', question: '你要去哪里？', missingSlots: ['destinationId'], candidates: [], interactionId, revision: 0 },
+      resultingRevision: 0,
+    });
+    const followUp = { ...f.intent, idempotencyKey: randomUUID(), clarificationOf: interactionId };
+    expect(await service.execute('owner', followUp)).toMatchObject({
+      status: 'accepted', receipt: { clarificationOf: interactionId },
+    });
+    expect(await service.execute('owner', followUp)).toMatchObject({ status: 'accepted', duplicate: true });
+  });
+  it('rejects a clarification pointer after another turn has advanced the save', async () => {
+    const f = fixture(); const interactionId = randomUUID();
+    f.addReceipt({
+      idempotencyKey: interactionId,
+      saveId: f.intent.saveId,
+      requestFingerprint: `sha256:v1:${'b'.repeat(64)}`,
+      branchId: 'root',
+      rulesVersion: 'fixture-only',
+      clockMinute: 30,
+      rng: { seed: null, draws: 0 },
+      decision: { status: 'clarify', question: '你要去哪里？', missingSlots: ['destinationId'], candidates: [], interactionId, revision: 1 },
+      resultingRevision: 1,
+    });
+    expect(await new ServerTurnService(f.repository, f.rules).execute('owner', {
+      ...f.intent, idempotencyKey: randomUUID(), clarificationOf: interactionId,
+    })).toEqual({ status: 'clarification_conflict' });
+    expect(f.decide).not.toHaveBeenCalled();
   });
   it('cancels only narration, preserving the committed receipt and aborting the provider', async () => {
     const f = fixture(); const cancel = new AbortController(); let providerSignal: AbortSignal | undefined;

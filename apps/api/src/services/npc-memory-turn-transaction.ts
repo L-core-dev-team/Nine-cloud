@@ -59,6 +59,19 @@ export type AcceptedTurnCommitResult =
   | { kind: 'idempotency_conflict' }
   | { kind: 'not_found' };
 
+export type NonAcceptedTurnRecordInput = {
+  ownerId: string;
+  expectedRevision: number;
+  receipt: TurnReceipt;
+};
+
+export type NonAcceptedTurnRecordResult =
+  | { kind: 'recorded'; receipt: TurnReceipt }
+  | { kind: 'duplicate'; receipt: TurnReceipt }
+  | { kind: 'conflict'; currentRevision: number }
+  | { kind: 'idempotency_conflict' }
+  | { kind: 'not_found' };
+
 type NormalizedCommit = Omit<AcceptedTurnCommitInput, 'ownerId' | 'receipt' | 'save' | 'events' | 'previousJournal' | 'nextJournal'> & {
   ownerId: string;
   receipt: TurnReceipt;
@@ -114,6 +127,72 @@ export class PostgresNpcMemoryTurnRepository {
       throw new Error('NPC memory journal is not aligned with the saved revision.');
     }
     return journal;
+  }
+
+  /** Records a rejection or clarification as an idempotent receipt only; no event, save or memory projection changes. */
+  async recordNonAcceptedDecision(input: NonAcceptedTurnRecordInput): Promise<NonAcceptedTurnRecordResult> {
+    if (!input || typeof input !== 'object') throw new TypeError('Turn decision input is required.');
+    const ownerId = normalizeOwnerId(input.ownerId);
+    const receipt = TurnReceiptSchema.parse(input.receipt);
+    if (!Number.isSafeInteger(input.expectedRevision) || input.expectedRevision < 0 ||
+        receipt.decision.status === 'accepted' || receipt.resultingRevision !== input.expectedRevision ||
+        receipt.decision.revision !== input.expectedRevision) {
+      throw new TypeError('Non-accepted decision must retain the current save revision.');
+    }
+
+    const client = await this.database.connect();
+    let inTransaction = false;
+    try {
+      await client.query('BEGIN');
+      inTransaction = true;
+      if (this.requiresLiveAccount && !(await client.query(
+        'SELECT id FROM auth_accounts WHERE id=$1 AND closed_at IS NULL ' + (this.guard ? 'FOR UPDATE' : 'FOR KEY SHARE'),
+        [ownerId],
+      )).rowCount) {
+        return await rollbackWith(client, () => { inTransaction = false; return { kind: 'not_found' }; });
+      }
+
+      const locked = await client.query<SaveRow>(
+        'SELECT id, revision FROM game_saves WHERE id = $1 AND owner_id = $2 FOR UPDATE',
+        [receipt.saveId, ownerId],
+      );
+      const current = locked.rows[0];
+      if (!current) return await rollbackWith(client, () => { inTransaction = false; return { kind: 'not_found' }; });
+
+      const priorResult = await client.query<ReceiptRow>(
+        'SELECT result FROM turn_requests WHERE save_id = $1 AND idempotency_key = $2 LIMIT 1',
+        [receipt.saveId, receipt.idempotencyKey],
+      );
+      const prior = priorResult.rows[0];
+      if (prior) {
+        const parsedPrior = TurnReceiptSchema.safeParse(prior.result);
+        if (!parsedPrior.success) throw new Error('Stored turn receipt is invalid.');
+        if (parsedPrior.data.saveId !== receipt.saveId || parsedPrior.data.requestFingerprint !== receipt.requestFingerprint) {
+          return await rollbackWith(client, () => { inTransaction = false; return { kind: 'idempotency_conflict' }; });
+        }
+        return await rollbackWith(client, () => { inTransaction = false; return { kind: 'duplicate', receipt: parsedPrior.data }; });
+      }
+
+      const currentRevision = Number(current.revision);
+      if (currentRevision !== input.expectedRevision) {
+        return await rollbackWith(client, () => { inTransaction = false; return { kind: 'conflict', currentRevision }; });
+      }
+
+      await client.query(
+        'INSERT INTO turn_requests (save_id, idempotency_key, expected_revision, result) VALUES ($1, $2, $3, $4::jsonb)',
+        [receipt.saveId, receipt.idempotencyKey, input.expectedRevision, JSON.stringify(receipt)],
+      );
+      await client.query('COMMIT');
+      inTransaction = false;
+      return { kind: 'recorded', receipt };
+    } catch (error) {
+      if (inTransaction) {
+        try { await client.query('ROLLBACK'); } catch { /* Preserve the original error. */ }
+      }
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 
   async commitAcceptedTurn(input: AcceptedTurnCommitInput): Promise<AcceptedTurnCommitResult> {

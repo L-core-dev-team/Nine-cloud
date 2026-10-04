@@ -122,6 +122,7 @@ export async function prepareTurn(options: {
         idempotencyKey: intent.idempotencyKey,
         saveId: save.saveId,
         requestFingerprint,
+        ...(intent.clarificationOf ? { clarificationOf: intent.clarificationOf } : {}),
         branchId: intent.branchId,
         rulesVersion: save.ruleVersion,
         clockMinute: readClockMinute(nextSave),
@@ -133,6 +134,7 @@ export async function prepareTurn(options: {
         idempotencyKey: intent.idempotencyKey,
         saveId: save.saveId,
         requestFingerprint,
+        ...(intent.clarificationOf ? { clarificationOf: intent.clarificationOf } : {}),
         decision,
         resultingRevision: nextSave.revision,
       });
@@ -145,6 +147,7 @@ export async function prepareTurn(options: {
       idempotencyKey: intent.idempotencyKey,
       saveId: save.saveId,
       requestFingerprint,
+      ...(intent.clarificationOf ? { clarificationOf: intent.clarificationOf } : {}),
       branchId: intent.branchId,
       rulesVersion: save.ruleVersion,
       clockMinute: readClockMinute(save),
@@ -156,6 +159,7 @@ export async function prepareTurn(options: {
       idempotencyKey: intent.idempotencyKey,
       saveId: save.saveId,
       requestFingerprint,
+      ...(intent.clarificationOf ? { clarificationOf: intent.clarificationOf } : {}),
       decision,
       resultingRevision: save.revision,
     });

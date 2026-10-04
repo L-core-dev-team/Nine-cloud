@@ -10,6 +10,7 @@ const receiptIdentity = {
   idempotencyKey: z.uuid(),
   saveId: z.string().min(1),
   requestFingerprint: z.string().regex(/^sha256:v1:[\da-f]{64}$/i),
+  clarificationOf: z.string().min(1).max(128).optional(),
 };
 
 const RngReceiptSchema = z.strictObject({
@@ -39,6 +40,9 @@ const CurrentTurnReceiptSchema = z.strictObject({
 
 function validateReceipt(receipt: z.infer<typeof LegacyTurnReceiptSchema> | z.infer<typeof CurrentTurnReceiptSchema>, context: z.RefinementCtx): void {
   const isCurrent = 'branchId' in receipt;
+  if (receipt.clarificationOf !== undefined && receipt.clarificationOf === receipt.idempotencyKey) {
+    context.addIssue({ code: 'custom', path: ['clarificationOf'], message: 'A turn cannot point to its own request key' });
+  }
   if (receipt.decision.status === 'accepted' && receipt.resultingRevision !== receipt.decision.nextRevision) {
     context.addIssue({ code: 'custom', message: 'Accepted receipt revision does not match its decision' });
   }
