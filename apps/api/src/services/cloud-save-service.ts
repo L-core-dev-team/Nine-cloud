@@ -1,11 +1,13 @@
 import {createHash} from 'node:crypto';
 import { SaveEnvelopeSchema, type SaveEnvelope } from '@jiuxiao/contracts';
-import { requireV1PersistableSave } from './save-storage-contract.js';
+import { requireLegacyArchiveSave, requirePersistableSave } from './save-storage-contract.js';
 
 export type CloudSaveWriteResult =
   | { kind: 'created'; save: SaveEnvelope }
   | { kind: 'updated'; save: SaveEnvelope }
   | { kind: 'conflict'; currentRevision?: number }
+  | { kind: 'schema_version_conflict' }
+  | { kind: 'memory_policy_pinned' }
   | { kind: 'not_found' };
 
 export class CloudCapacityError extends Error {
@@ -22,7 +24,8 @@ export interface CloudSaveRepository {
     saveId: string;
     expectedRevision: number;
     next: SaveEnvelope;
-  }): Promise<{ kind: 'updated' } | { kind: 'conflict'; currentRevision: number } | { kind: 'not_found' }>;
+  }): Promise<{ kind: 'updated' } | { kind: 'conflict'; currentRevision: number } |
+    { kind: 'schema_version_conflict' } | { kind: 'memory_policy_pinned' } | { kind: 'not_found' }>;
 }
 
 const MAX_POSTGRES_INTEGER = 2_147_483_647;
@@ -40,10 +43,10 @@ function requireOwnerId(ownerId: string): string {
 function parseSave(value: unknown): SaveEnvelope {
   const parsed = SaveEnvelopeSchema.safeParse(value);
   if (!parsed.success) throw new TypeError('Cloud save does not match the supported save contract.');
-  requireV1PersistableSave(parsed.data);
+  requirePersistableSave(parsed.data);
   const { saveId, canonVersion, ruleVersion, memoryPolicyVersion } = parsed.data;
   if (!saveId.trim() || saveId !== saveId.trim() || saveId.length > MAX_IDENTIFIER_LENGTH ||
-    [canonVersion, ruleVersion, memoryPolicyVersion].some(version => version.length > 100)) {
+    canonVersion.length > 100 || ruleVersion.length > 100 || memoryPolicyVersion.length > 200) {
     throw new TypeError('Cloud save identity or version metadata is outside the supported range.');
   }
   return parsed.data;
@@ -77,7 +80,10 @@ export class CloudSaveService {
   async create(ownerId: string, candidate: unknown): Promise<CloudSaveWriteResult> {
     const save = parseSave(candidate);
     if (!SAVE_ID_PATTERN.test(save.saveId)) throw new TypeError('Save ID is invalid.');
-    if (this.archiveOnly && save.state.facts.archiveKind !== 'local-untrusted-v1') throw new TypeError('Client archive required');
+    if (this.archiveOnly) {
+      requireLegacyArchiveSave(save);
+      if (save.state.facts.archiveKind !== 'local-untrusted-v1') throw new TypeError('Client archive required');
+    }
     if (save.revision !== 0) throw new TypeError('A new cloud save must start at revision zero.');
     if(this.scopedIds){const prefix='archive-'+createHash('sha256').update(requireOwnerId(ownerId)).digest('hex').slice(0,16)+'-';if((!save.saveId.startsWith(prefix)||!/^[-a-f0-9]{36}$/i.test(save.saveId.slice(prefix.length)))&&!await this.repository.getForOwner(requireOwnerId(ownerId),save.saveId))throw new TypeError('Save ID is invalid.');}
     const created = await this.repository.createForOwner(requireOwnerId(ownerId), save);
@@ -99,9 +105,10 @@ export class CloudSaveService {
 
     const next = parseSave(candidate);
     if (this.archiveOnly) {
+      requireLegacyArchiveSave(next);
       if (next.state.facts.archiveKind !== 'local-untrusted-v1') throw new TypeError('Client archive required');
       const current = await this.repository.getForOwner(requireOwnerId(ownerId), saveId);
-      if (!current || current.state.facts.archiveKind !== 'local-untrusted-v1') return { kind: 'not_found' };
+      if (!current || current.schemaVersion !== 1 || current.state.facts.archiveKind !== 'local-untrusted-v1') return { kind: 'not_found' };
     }
     if (next.saveId !== saveId || next.revision !== expectedRevision + 1) {
       throw new TypeError('Cloud save identity or next revision does not match the request.');

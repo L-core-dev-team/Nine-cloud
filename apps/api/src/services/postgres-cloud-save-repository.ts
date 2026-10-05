@@ -1,8 +1,9 @@
 import type { SaveEnvelope } from '@jiuxiao/contracts';
 import { SaveEnvelopeSchema } from '@jiuxiao/contracts';
+import { isDeepStrictEqual } from 'node:util';
 import type { Pool, PoolClient, QueryResultRow } from 'pg';
 import { CloudCapacityError, type CloudSaveRepository } from './cloud-save-service.js';
-import { requireV1PersistableSave, SaveSchemaNotReadyError } from './save-storage-contract.js';
+import { requirePersistableSave, SaveSchemaNotReadyError } from './save-storage-contract.js';
 import { assertDataPolicy, checkQuota, type DataPolicy } from './data-policy.js';
 
 interface SaveRow extends QueryResultRow {
@@ -12,24 +13,45 @@ interface SaveRow extends QueryResultRow {
   canon_version: string;
   rule_version: string;
   memory_policy_version: string;
+  memory_mode: string | null;
+  memory_policy: unknown | null;
   snapshot: unknown;
 }
 
 function rowToEnvelope(row: SaveRow): SaveEnvelope {
-  if (row.schema_version !== 1) throw new SaveSchemaNotReadyError();
-  return SaveEnvelopeSchema.parse({
-    schemaVersion: row.schema_version,
-    saveId: row.id,
-    canonVersion: row.canon_version,
-    ruleVersion: row.rule_version,
-    memoryPolicyVersion: row.memory_policy_version,
-    revision: row.revision,
-    state: row.snapshot,
-  });
+  if (row.schema_version === 1) {
+    if (row.memory_mode !== null || row.memory_policy !== null) throw new Error('Legacy save contains unexpected memory-policy metadata.');
+    return SaveEnvelopeSchema.parse({
+      schemaVersion: row.schema_version,
+      saveId: row.id,
+      canonVersion: row.canon_version,
+      ruleVersion: row.rule_version,
+      memoryPolicyVersion: row.memory_policy_version,
+      revision: row.revision,
+      state: row.snapshot,
+    });
+  }
+  if (row.schema_version === 2) {
+    if (row.memory_mode === null || row.memory_policy === null) throw new SaveSchemaNotReadyError();
+    const save = SaveEnvelopeSchema.parse({
+      schemaVersion: row.schema_version,
+      saveId: row.id,
+      canonVersion: row.canon_version,
+      ruleVersion: row.rule_version,
+      memoryPolicyVersion: row.memory_policy_version,
+      memoryMode: row.memory_mode,
+      memoryPolicy: row.memory_policy,
+      revision: row.revision,
+      state: row.snapshot,
+    });
+    requirePersistableSave(save);
+    return save;
+  }
+  throw new SaveSchemaNotReadyError();
 }
 
 const SELECT_FIELDS = `id, revision, schema_version, canon_version, rule_version,
-  memory_policy_version, snapshot`;
+  memory_policy_version, memory_mode, memory_policy, snapshot`;
 const MAX_ACCOUNT_SAVES = 20;
 const MAX_SAVE_BYTES = 1_000_000;
 const MAX_ACCOUNT_BYTES = 10_000_000;
@@ -78,14 +100,18 @@ export class PostgresCloudSaveRepository implements CloudSaveRepository {
 
   private async accountUsage(client: PoolClient, ownerId: string) {
     const result = await client.query<{ count: number; bytes: string }>(
-      'SELECT count(*)::int AS count, coalesce(sum(octet_length(snapshot::text)), 0)::bigint AS bytes FROM game_saves WHERE owner_id=$1',
+      'SELECT count(*)::int AS count, coalesce(sum(octet_length(snapshot::text) + coalesce(octet_length(memory_policy::text), 0)), 0)::bigint AS bytes FROM game_saves WHERE owner_id=$1',
       [ownerId],
     );
     return { count: result.rows[0]!.count, bytes: Number(result.rows[0]!.bytes) };
   }
 
-  private async snapshotBytes(client: PoolClient, state: SaveEnvelope['state']): Promise<number> {
-    const result = await client.query<{ bytes: number }>('SELECT octet_length($1::jsonb::text)::int AS bytes', [JSON.stringify(state)]);
+  private async persistedPayloadBytes(client: PoolClient, save: SaveEnvelope): Promise<number> {
+    const policy = save.schemaVersion === 2 ? JSON.stringify(save.memoryPolicy) : null;
+    const result = await client.query<{ bytes: number }>(
+      'SELECT (octet_length($1::jsonb::text) + coalesce(octet_length($2::jsonb::text), 0))::int AS bytes',
+      [JSON.stringify(save.state), policy],
+    );
     return result.rows[0]!.bytes;
   }
 
@@ -115,19 +141,20 @@ export class PostgresCloudSaveRepository implements CloudSaveRepository {
   }
 
   async createForOwner(ownerId: string, save: SaveEnvelope): Promise<boolean> {
-    requireV1PersistableSave(save);
+    requirePersistableSave(save);
     if (Buffer.byteLength(JSON.stringify(save), 'utf8') > this.limits().perSaveBytes) throw new CloudCapacityError();
     return this.capacityTransaction(ownerId, async client => {
       const usage = await this.accountUsage(client, ownerId);
-      const bytes = await this.snapshotBytes(client, save.state);
+      const bytes = await this.persistedPayloadBytes(client, save);
       this.checkCapacity(usage, bytes, null);
       const result = await client.query(
       `${this.requiresLiveAccount ? 'WITH live_account AS (SELECT id FROM auth_accounts WHERE id=$2 AND closed_at IS NULL FOR KEY SHARE) ' : ''}INSERT INTO game_saves
-        (id, owner_id, revision, schema_version, canon_version, rule_version, memory_policy_version, snapshot)
-       ${this.requiresLiveAccount ? 'SELECT $1,$2,$3,$4,$5,$6,$7,$8::jsonb FROM live_account' : 'VALUES ($1, $2, $3, $4, $5, $6, $7, $8::jsonb)'}
+        (id, owner_id, revision, schema_version, canon_version, rule_version, memory_policy_version, memory_mode, memory_policy, snapshot)
+       ${this.requiresLiveAccount ? 'SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,$10::jsonb FROM live_account' : 'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb, $10::jsonb)'}
        ON CONFLICT (id) DO NOTHING`,
       [save.saveId, ownerId, save.revision, save.schemaVersion, save.canonVersion,
-        save.ruleVersion, save.memoryPolicyVersion, JSON.stringify(save.state)],
+        save.ruleVersion, save.memoryPolicyVersion, save.schemaVersion === 2 ? save.memoryMode : null,
+        save.schemaVersion === 2 ? JSON.stringify(save.memoryPolicy) : null, JSON.stringify(save.state)],
     );
       return result.rowCount === 1;
     });
@@ -138,28 +165,37 @@ export class PostgresCloudSaveRepository implements CloudSaveRepository {
     saveId: string;
     expectedRevision: number;
     next: SaveEnvelope;
-  }): Promise<{ kind: 'updated' } | { kind: 'conflict'; currentRevision: number } | { kind: 'not_found' }> {
-    requireV1PersistableSave(input.next);
+  }): Promise<{ kind: 'updated' } | { kind: 'conflict'; currentRevision: number } |
+    { kind: 'schema_version_conflict' } | { kind: 'memory_policy_pinned' } | { kind: 'not_found' }> {
+    requirePersistableSave(input.next);
     if (Buffer.byteLength(JSON.stringify(input.next), 'utf8') > this.limits().perSaveBytes) throw new CloudCapacityError();
     return this.capacityTransaction(input.ownerId, async client => {
-    const current = await client.query<{ revision: number; bytes: number }>(
-      `SELECT revision, octet_length(snapshot::text)::int AS bytes FROM game_saves WHERE id=$1 AND owner_id=$2
+    const current = await client.query<{ revision: number; bytes: number; schema_version: number; memory_mode: string | null; memory_policy_version: string; memory_policy: unknown | null }>(
+      `SELECT revision, schema_version, memory_mode, memory_policy_version, memory_policy,
+         (octet_length(snapshot::text) + coalesce(octet_length(memory_policy::text), 0))::int AS bytes FROM game_saves WHERE id=$1 AND owner_id=$2
        AND NOT EXISTS (SELECT 1 FROM cloud_archive_trash t WHERE t.save_id=game_saves.id) FOR UPDATE`,
       [input.saveId, input.ownerId],
     );
     if (!current.rows[0]) return { kind: 'not_found' };
     if (current.rows[0].revision !== input.expectedRevision) return { kind: 'conflict', currentRevision: current.rows[0].revision };
+    if (current.rows[0].schema_version !== input.next.schemaVersion) return { kind: 'schema_version_conflict' };
+    if (input.next.schemaVersion === 2 && (
+      current.rows[0].memory_mode !== input.next.memoryMode ||
+      current.rows[0].memory_policy_version !== input.next.memoryPolicyVersion ||
+      !isDeepStrictEqual(current.rows[0].memory_policy, input.next.memoryPolicy)
+    )) return { kind: 'memory_policy_pinned' };
     const usage = await this.accountUsage(client, input.ownerId);
-    const bytes = await this.snapshotBytes(client, input.next.state);
+    const bytes = await this.persistedPayloadBytes(client, input.next);
     this.checkCapacity(usage, bytes, current.rows[0].bytes);
     const result = await client.query(
       `${this.requiresLiveAccount ? 'WITH live_account AS (SELECT id FROM auth_accounts WHERE id=$2 AND closed_at IS NULL FOR KEY SHARE) ' : ''}UPDATE game_saves
-         SET revision = $4, schema_version = $5, canon_version = $6, rule_version = $7,
-             memory_policy_version = $8, snapshot = $9::jsonb, updated_at = now()
+       SET revision = $4, schema_version = $5, canon_version = $6, rule_version = $7,
+             memory_policy_version = $8, memory_mode = $9, memory_policy = $10::jsonb, snapshot = $11::jsonb, updated_at = now()
        WHERE id = $1 AND owner_id = $2 AND revision = $3 ${this.requiresLiveAccount ? 'AND EXISTS (SELECT 1 FROM live_account)' : ''} AND NOT EXISTS (SELECT 1 FROM cloud_archive_trash t WHERE t.save_id = game_saves.id)`,
       [input.saveId, input.ownerId, input.expectedRevision, input.next.revision,
         input.next.schemaVersion, input.next.canonVersion, input.next.ruleVersion,
-        input.next.memoryPolicyVersion, JSON.stringify(input.next.state)],
+        input.next.memoryPolicyVersion, input.next.schemaVersion === 2 ? input.next.memoryMode : null,
+        input.next.schemaVersion === 2 ? JSON.stringify(input.next.memoryPolicy) : null, JSON.stringify(input.next.state)],
     );
     if (result.rowCount === 1) return { kind: 'updated' };
 

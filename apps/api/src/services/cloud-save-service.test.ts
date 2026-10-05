@@ -1,4 +1,5 @@
 import {createHash,randomUUID} from 'node:crypto';
+import { isDeepStrictEqual } from 'node:util';
 import { describe, expect, it } from 'vitest';
 import type { SaveEnvelope } from '@jiuxiao/contracts';
 import { CloudSaveService, type CloudSaveRepository } from './cloud-save-service.js';
@@ -57,6 +58,12 @@ class MemoryCloudSaveRepository implements CloudSaveRepository {
     if (record.save.revision !== input.expectedRevision) {
       return { kind: 'conflict' as const, currentRevision: record.save.revision };
     }
+    if (record.save.schemaVersion !== input.next.schemaVersion) return { kind: 'schema_version_conflict' as const };
+    if (input.next.schemaVersion === 2 && (
+      record.save.schemaVersion !== 2 || record.save.memoryMode !== input.next.memoryMode ||
+      record.save.memoryPolicyVersion !== input.next.memoryPolicyVersion ||
+      !isDeepStrictEqual(record.save.memoryPolicy, input.next.memoryPolicy)
+    )) return { kind: 'memory_policy_pinned' as const };
     this.records.set(input.saveId, { ownerId: input.ownerId, save: input.next });
     return { kind: 'updated' as const };
   }
@@ -80,6 +87,7 @@ describe('CloudSaveService', () => {
     await repository.createForOwner('a', envelope());
     const service = new CloudSaveService(repository, true);
     await expect(service.create('a', envelope())).rejects.toThrow('Client archive required');
+    await expect(service.create('a', v2Envelope())).rejects.toThrow('Client archive must use the legacy v1 envelope.');
     expect(await service.replace('a', 'save-one', 0, { ...envelope(1), state: { ...envelope().state, facts: { archiveKind: 'local-untrusted-v1' } } })).toEqual({ kind: 'not_found' });
     expect(await repository.getForOwner('a', 'save-one')).toEqual(envelope());
   });
@@ -103,11 +111,30 @@ describe('CloudSaveService', () => {
     expect(repository.records.size).toBe(0);
   });
 
-  it('refuses v2 writes until SQL persists the complete envelope, without touching the repository', async () => {
+  it('creates and round-trips v2 saves with complete pinned memory metadata', async () => {
     const repository = new MemoryCloudSaveRepository();
     const service = new CloudSaveService(repository);
-    await expect(service.create('account-a', v2Envelope())).rejects.toThrow('SAVE_SCHEMA_NOT_READY');
-    expect(repository.records.size).toBe(0);
+    const initial = v2Envelope();
+    expect(await service.create('account-a', initial)).toMatchObject({ kind: 'created', save: initial });
+    expect(await service.get('account-a', initial.saveId)).toEqual(initial);
+    expect(await service.replace('account-a', initial.saveId, 0, { ...initial, revision: 1,
+      state: { ...initial.state, elapsedMinutes: 1 } })).toMatchObject({ kind: 'updated' });
+  });
+
+  it('does not permit save schema changes or mutation of a pinned v2 policy', async () => {
+    const repository = new MemoryCloudSaveRepository();
+    const service = new CloudSaveService(repository);
+    await service.create('account-a', envelope());
+    expect(await service.replace('account-a', 'save-one', 0, { ...v2Envelope(), revision: 1 }))
+      .toEqual({ kind: 'schema_version_conflict' });
+
+    const initial = { ...v2Envelope(), saveId: 'save-two' };
+    await service.create('account-a', initial);
+    const changedPolicy = { ...initial, revision: 1,
+      memoryPolicy: { ...initial.memoryPolicy, retrievalVersion: 'changed-retrieval-v2' } };
+    expect(await service.replace('account-a', initial.saveId, 0, changedPolicy))
+      .toEqual({ kind: 'memory_policy_pinned' });
+    expect(await service.get('account-a', initial.saveId)).toEqual(initial);
   });
 
   it('keeps another account unable to read a save and returns no ownership side channel', async () => {

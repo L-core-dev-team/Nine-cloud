@@ -7,6 +7,19 @@ import { PostgresNpcMemoryTurnRepository } from './npc-memory-turn-transaction.j
 
 const databaseUrl = process.env.TEST_DATABASE_URL;
 const suite = databaseUrl ? describe : describe.skip;
+const memoryPolicy = {
+  mode: 'continue' as const,
+  policyVersion: 'continue-v1',
+  schemaVersion: 1,
+  clockBasis: 'game-minute+npc-grant-sequence-v1' as const,
+  policyArtifactHash: `sha256:${'a'.repeat(64)}`,
+  cueDictionaryHash: `sha256:${'b'.repeat(64)}`,
+  normalizerVersion: 'unicode-nfc-v1',
+  retrievalVersion: 'exact-recall-v1',
+  visibilityPolicyVersion: 'npc-visibility-v1',
+  visibilityPolicyHash: `sha256:${'c'.repeat(64)}`,
+  createdAtRevision: 0,
+};
 
 suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
   const pool = new Pool({ connectionString: databaseUrl, max: 4 });
@@ -56,11 +69,13 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
     if (prepared.status !== 'prepared') throw new Error('Expected a prepared NPC journal.');
 
     const save: SaveEnvelope = {
-      schemaVersion: 1,
+      schemaVersion: 2,
       saveId,
       canonVersion: 'canon-test-v1',
       ruleVersion: 'rules-test-v1',
-      memoryPolicyVersion: 'memory-test-v1',
+      memoryPolicyVersion: memoryPolicy.policyVersion,
+      memoryMode: memoryPolicy.mode,
+      memoryPolicy,
       revision: nextRevision,
       state: {
         playerId: 'player-s4-test',
@@ -99,10 +114,10 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
   it('round-trips JSONB journals, retries idempotently, and rolls back a failed projection', async () => {
     await pool.query(
       'INSERT INTO game_saves ' +
-      '(id, owner_id, revision, schema_version, canon_version, rule_version, memory_policy_version, snapshot) ' +
-      'VALUES ($1, $2, 0, 1, $3, $4, $5, $6::jsonb)',
-      [saveId, ownerId, 'canon-test-v1', 'rules-test-v1', 'memory-test-v1',
-        JSON.stringify({ playerId: 'player-s4-test', locationId: 'origin', elapsedMinutes: 0, facts: {} })],
+      '(id, owner_id, revision, schema_version, canon_version, rule_version, memory_policy_version, memory_mode, memory_policy, snapshot) ' +
+      'VALUES ($1, $2, 0, 2, $3, $4, $5, $6, $7::jsonb, $8::jsonb)',
+      [saveId, ownerId, 'canon-test-v1', 'rules-test-v1', memoryPolicy.policyVersion, memoryPolicy.mode,
+        JSON.stringify(memoryPolicy), JSON.stringify({ playerId: 'player-s4-test', locationId: 'origin', elapsedMinutes: 0, facts: {} })],
     );
 
     const firstInput = makeTurn(createNpcMemoryJournal(saveId, 0), 0);
@@ -111,6 +126,14 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
     });
     if (firstResult.kind !== 'committed') throw new Error('First database turn did not commit.');
     expect(firstResult.save.revision).toBe(1);
+    expect(firstResult.save).toMatchObject({ schemaVersion: 2, memoryMode: 'continue', memoryPolicy });
+    expect((await pool.query('SELECT branch_id FROM turn_events WHERE save_id=$1', [saveId])).rows).toEqual([{ branch_id: 'root' }]);
+    await expect(pool.query(
+      `INSERT INTO turn_events (id,save_id,idempotency_key,sequence,event_type,source,rule_version,before_revision,after_revision,payload,occurred_at,branch_id)
+       SELECT $1,save_id,idempotency_key || '-invalid-branch',sequence+1,event_type,source,rule_version,before_revision,after_revision,payload,occurred_at,'branch-preview'
+       FROM turn_events WHERE save_id=$2 LIMIT 1`,
+      [`invalid-branch-${randomUUID()}`, saveId],
+    )).rejects.toThrow('turn_events_branch_id_check');
     expect(await repository.getForOwner(ownerId, saveId)).toEqual(firstResult.journal);
     expect(await repository.getForOwner('another-owner', saveId)).toBeNull();
     const observations = await repository.getAuthorizedObservationPage(ownerId, saveId, 'npc-s4-test', undefined, 1);

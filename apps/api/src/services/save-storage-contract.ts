@@ -1,6 +1,6 @@
 import type { SaveEnvelope, SaveEnvelopeV1 } from '@jiuxiao/contracts';
 
-/** The current SQL schema stores only the v1 envelope metadata and WorldState. */
+/** Raised when a database row uses a save version without a complete storage adapter. */
 export class SaveSchemaNotReadyError extends Error {
   constructor() {
     super('SAVE_SCHEMA_NOT_READY');
@@ -8,7 +8,12 @@ export class SaveSchemaNotReadyError extends Error {
   }
 }
 
-/** Prevent v2 policy metadata from being silently discarded by v1-only SQL columns. */
-export function requireV1PersistableSave(save: SaveEnvelope): asserts save is SaveEnvelopeV1 {
-  if (save.schemaVersion !== 1) throw new SaveSchemaNotReadyError();
+/** Fail closed for runtime values outside the versioned envelope union. */
+export function requirePersistableSave(save: SaveEnvelope): void {
+  if (save.schemaVersion !== 1 && save.schemaVersion !== 2) throw new SaveSchemaNotReadyError();
+}
+
+/** Untrusted client archives intentionally remain the original v1-only format. */
+export function requireLegacyArchiveSave(save: SaveEnvelope): asserts save is SaveEnvelopeV1 {
+  if (save.schemaVersion !== 1) throw new TypeError('Client archive must use the legacy v1 envelope.');
 }
