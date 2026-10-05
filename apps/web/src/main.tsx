@@ -19,6 +19,7 @@ import { MAX_IMPORT_BYTES, migrateLegacyLibraryText, parseLegacySave } from './l
 import { serializeJsonWithCredentialRedaction, serializeSaveForExport } from './export-save';
 import { clearDraft, commitSaves, createIdempotencyKey, createSaveId, hydrateSaves, readActionDraft, readDraft, readLegacyLibraryText, readSaves, writeActionDraft, writeDraft, type LocalSave } from './storage';
 import type { SaveCommitResult } from './idb';
+import { mediaUrlForBrowser } from './media-compat';
 import './style.css';
 
 const fields = [
@@ -99,10 +100,15 @@ function Shell({ children, saves, notice, noticeAction, theme, onThemeChange, on
   const isLanding = route() === '/';
   const showNavigation = !isLanding;
   const scene = SCENE_MANIFEST.find(candidate => candidate.id === sceneId);
+  const desktopPoster = scene?.desktopPoster ?? '/scenes/gate-moonlight.webp';
+  const mobilePoster = scene?.mobilePoster ?? '/scenes/gate-moonlight-mobile.webp';
+  const gatePoster = '/scenes/gate-moonlight.webp';
+  const paperTexture = theme === 'day' ? '/scenes/candidate/atlas/texture_day-paper.webp' : '/scenes/candidate/atlas/texture_night-ink.webp';
   const backgroundStyle = {
-    '--jx-scene-poster-desktop': `url("${scene?.desktopPoster ?? '/scenes/gate-moonlight.webp'}")`,
-    '--jx-scene-poster-mobile': `url("${scene?.mobilePoster ?? '/scenes/gate-moonlight-mobile.webp'}")`,
-    '--jx-paper-texture': `url("${theme === 'day' ? '/scenes/candidate/atlas/texture_day-paper.webp' : '/scenes/candidate/atlas/texture_night-ink.webp'}")`,
+    '--jx-scene-poster-desktop': `url("${mediaUrlForBrowser(desktopPoster)}")`,
+    '--jx-scene-poster-mobile': `url("${mediaUrlForBrowser(mobilePoster)}")`,
+    '--jx-gate-poster': `url("${mediaUrlForBrowser(gatePoster)}")`,
+    '--jx-paper-texture': `url("${mediaUrlForBrowser(paperTexture)}")`,
   } as CSSProperties;
   return <div className={isLanding ? 'jx-shell landing-shell' : 'jx-shell'} style={backgroundStyle}><SceneAtmosphere sceneId={sceneId} theme={theme} settings={graphicsSettings} /><header><button className="brand" onClick={() => go('/')}>踏月过山门，天地任君行。</button>{showNavigation && <nav><button onClick={() => go('/lobby')}>山门</button><button onClick={() => go('/world')}>世界设定</button><button onClick={() => go('/settings/ai')}>AI 设置</button><button onClick={() => go('/settings/graphics')}>画面与声音</button><button onClick={() => go('/settings/cloud')}>账号与云档</button></nav>}<button className={`ambient-toggle${ambientAudioActive ? ' is-active' : ''}`} aria-pressed={ambientAudioActive} onClick={onToggleAmbientAudio}>{ambientAudioActive ? '水声已启' : '启水声'}</button><button className="theme-toggle" aria-label={`切换到${nextThemeLabel}配色`} onClick={onThemeChange}>{themeLabel}</button><button className="menu" aria-expanded={menu} onClick={() => setMenu(open => !open)}>菜单</button></header>{menu && <aside><strong>{saves.length ? `${saves.length} 份本地存档` : '暂无存档'}</strong>{showNavigation && <><button onClick={() => { setMenu(false); go('/lobby'); }}>回到山门</button><button onClick={() => { setMenu(false); go('/new'); }}>新开一局</button><button onClick={() => { setMenu(false); go('/world'); }}>阅读世界设定</button><button onClick={() => { setMenu(false); go('/settings/ai'); }}>AI 设置</button><button onClick={() => { setMenu(false); go('/settings/graphics'); }}>画面与声音</button><button onClick={() => { setMenu(false); go('/settings/cloud'); }}>账号与云档</button></>}<button onClick={() => { setMenu(false); onExport(); }}>导出存档</button><button onClick={themeAction}>切换到{nextThemeLabel}配色</button><label>导入旧档 / JSON<input type="file" accept=".json,.txt,.html,.htm" onChange={event => { const file = event.target.files?.[0]; if (file) { setMenu(false); onImport(file); } event.currentTarget.value = ''; }} /></label></aside>}{notice && <p className="notice" role="status">{notice} {noticeAction}</p>}<main>{children}</main><footer><span>本地优先 · API 密钥不写入存档</span><span>契约 v{SAVE_SCHEMA_VERSION}</span></footer></div>;
 }
@@ -225,7 +231,7 @@ function NewCharacter({ onSaved }: { onSaved: (save: LocalSave) => Promise<boole
   return <section className="page character-creation"><span className="eyebrow">建角 · {stepNames[step]}</span><h2>把自己写进山门。</h2>
     <p>依次记下人物、修行与去处。提交前可以回看修改；开局意图在规则未就绪时留在存档中。</p>
     <ol className="character-steps" aria-label="建角进度">{stepNames.map((label, index) => <li key={label} aria-current={index === step ? 'step' : undefined}><span>{index + 1}</span>{label}</li>)}</ol>
-    <div className="form">{fields.filter(([key]) => stepKeys[step]?.includes(key)).map(([key, label, hint]) => <div className="character-field" key={key}><label>{label}<small>{hint}</small>{key === 'region' ? <><select aria-label="开局地域" value={selectedRegion} onChange={event => set(key, event.target.value)}><option>中州天枢域</option><option>北境霜寒域</option><option>南疆万蛊域</option><option>东瀚龙吟域</option><option>西荒焚天域</option><option>完全自定义</option></select>{regionArtwork && <figure className="region-visual-reference"><img src={regionArtwork.src} alt="" loading="lazy" decoding="async" /><figcaption><strong>{selectedRegion}</strong><span>地域画影 · 只作辨识，设定以正文为准</span></figcaption></figure>}</> : key === 'talents' || key === 'goal' ? <textarea aria-label={label} value={form[key] || ''} onChange={event => set(key, event.target.value)} /> : <input aria-label={label} value={form[key] || ''} onChange={event => set(key, event.target.value)} />}</label>{CHARACTER_OPTIONS[key] && <label className="character-suggestions">{label}备选<select aria-label={`${label}备选`} value="" onChange={event => {
+    <div className="form">{fields.filter(([key]) => stepKeys[step]?.includes(key)).map(([key, label, hint]) => <div className="character-field" key={key}><label>{label}<small>{hint}</small>{key === 'region' ? <><select aria-label="开局地域" value={selectedRegion} onChange={event => set(key, event.target.value)}><option>中州天枢域</option><option>北境霜寒域</option><option>南疆万蛊域</option><option>东瀚龙吟域</option><option>西荒焚天域</option><option>完全自定义</option></select>{regionArtwork && <figure className="region-visual-reference"><img src={mediaUrlForBrowser(regionArtwork.src)} alt="" loading="lazy" decoding="async" /><figcaption><strong>{selectedRegion}</strong><span>地域画影 · 只作辨识，设定以正文为准</span></figcaption></figure>}</> : key === 'talents' || key === 'goal' ? <textarea aria-label={label} value={form[key] || ''} onChange={event => set(key, event.target.value)} /> : <input aria-label={label} value={form[key] || ''} onChange={event => set(key, event.target.value)} />}</label>{CHARACTER_OPTIONS[key] && <label className="character-suggestions">{label}备选<select aria-label={`${label}备选`} value="" onChange={event => {
       const value = event.target.value;
       if (!value) return;
       if (key === 'talents') {
@@ -318,16 +324,16 @@ function World({ onClose, save, onImportSupplement }: { onClose: () => void; sav
       </article>) : <p className="worldbook-empty">没有找到这组字词。试试地点名、地貌或文化关键词。</p>}</div>
     </div>}
     {view === 'atlas' && <div id="world-atlas-panel" aria-label="画卷图鉴">
-      <div className="atlas-intro"><img src="/scenes/candidate/atlas/brand_calligraphy.webp" alt="九霄书法题字与云山图" loading="lazy" decoding="async" /><div><span className="eyebrow">案头画卷</span><h3>九霄山河图鉴</h3><p>按素材原名与目录归卷。点开可细看。</p></div></div>
+      <div className="atlas-intro"><img src={mediaUrlForBrowser('/scenes/candidate/atlas/brand_calligraphy.webp')} alt="九霄书法题字与云山图" loading="lazy" decoding="async" /><div><span className="eyebrow">案头画卷</span><h3>九霄山河图鉴</h3><p>按素材原名与目录归卷。点开可细看。</p></div></div>
        <label className="world-search">查找画卷<input type="search" value={atlasQuery} onChange={event => setAtlasQuery(event.target.value)} placeholder="地域、宗门、功法或图鉴名称" aria-label="搜索画卷图鉴" /></label>
       <div className="atlas-collections" role="group" aria-label="画卷分类">{atlasCollections.map(item => <button key={item.id} aria-pressed={collection === item.id} onClick={() => setCollection(item.id)}>{item.label}<small>{CANDIDATE_ILLUSTRATIONS.filter(art => art.collection === item.id).length} 幅</small></button>)}</div>
       <p className="atlas-boundary">这些画面是视觉参考，不构成设定正文或审核证据。具体地域、势力关系与修炼规则，以已审核文字和游戏规则为准。</p>
       <div className="atlas-grid" aria-live="polite">{illustrations.length ? illustrations.map(illustration => <button className="atlas-card" key={illustration.id} onClick={() => setSelectedIllustration(illustration)} aria-label={`放大查看：${illustration.title}`}>
-        <img src={illustration.src} alt={illustration.title} loading="lazy" decoding="async" />
+        <img src={mediaUrlForBrowser(illustration.src)} alt={illustration.title} loading="lazy" decoding="async" />
          <span>{illustration.title}</span>
       </button>) : <p className="worldbook-empty">这一卷里没有找到对应画面。</p>}</div>
       <dialog className="atlas-dialog" ref={dialogRef} aria-labelledby="atlas-dialog-title" onClose={() => setSelectedIllustration(null)}>
-        {selectedIllustration && <><button className="atlas-dialog-close" aria-label="关闭画卷" onClick={() => dialogRef.current?.close()}>×</button><img src={selectedIllustration.src} alt={selectedIllustration.title} /><div><h3 id="atlas-dialog-title">{selectedIllustration.title}</h3><p>项目视觉参考 · 设定以已审核正文为准</p></div></>}
+        {selectedIllustration && <><button className="atlas-dialog-close" aria-label="关闭画卷" onClick={() => dialogRef.current?.close()}>×</button><img src={mediaUrlForBrowser(selectedIllustration.src)} alt={selectedIllustration.title} /><div><h3 id="atlas-dialog-title">{selectedIllustration.title}</h3><p>项目视觉参考 · 设定以已审核正文为准</p></div></>}
       </dialog>
     </div>}
     <div className="card worldbook-scope"><strong>资料范围</strong><p>正文只收录已审核并发布的世界设定{canonEntryCount === null ? '' : `，当前 ${canonEntryCount} 条`}。尚待核验的 OCR 与补充材料不会混入正文；完成审核后再逐条纳入。画卷图鉴中的图片仅作视觉参考，不构成设定依据。</p>

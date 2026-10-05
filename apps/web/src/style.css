@@ -409,7 +409,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 .provider-open > span:first-child { border-radius: 9px; }
 .glass-dialog { position: fixed; display: flex; flex-direction: column; width: min(1040px, calc(100vw - 40px)); height: min(880px, 88dvh); max-height: 88dvh; overflow: hidden; isolation: isolate; background: linear-gradient(135deg, rgba(25, 43, 59, .79), rgba(8, 19, 30, .83) 68%, rgba(15, 30, 43, .81)); border-color: rgba(212, 225, 232, .27); border-radius: 16px; box-shadow: 0 30px 110px #0009, inset 0 1px 0 #ffffff28; backdrop-filter: blur(25px) saturate(1.26); }
 .glass-dialog:not([open]) { display: none; }
-.glass-dialog::before { position: absolute; z-index: -1; inset: 0; pointer-events: none; background: linear-gradient(135deg, rgba(8, 17, 28, .88), rgba(8, 18, 29, .79) 45%, rgba(8, 17, 28, .91)), url('/scenes/gate-moonlight.webp') center 51% / cover, radial-gradient(ellipse at 12% 0%, #a9c3d311, transparent 36%); content: ''; }
+.glass-dialog::before { position: absolute; z-index: -1; inset: 0; pointer-events: none; background: linear-gradient(135deg, rgba(8, 17, 28, .88), rgba(8, 18, 29, .79) 45%, rgba(8, 17, 28, .91)), var(--jx-gate-poster, url('/scenes/gate-moonlight.webp')) center 51% / cover, radial-gradient(ellipse at 12% 0%, #a9c3d311, transparent 36%); content: ''; }
 .glass-dialog::backdrop { background: rgba(3, 9, 15, .62); backdrop-filter: blur(7px) saturate(.8); }
 .dialog-close { position: absolute; top: 13px; right: 14px; z-index: 3; float: none; margin: 0; width: 38px; height: 38px; background: #f4f8fa0c; }
 .dialog-scroll-region { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-color: #728a9e88 transparent; scrollbar-width: thin; }
@@ -466,7 +466,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 .estimate-inputs label input { min-width: 0; padding: 9px 10px; color: inherit; background: #07131d75; border: 1px solid #abbfc532; border-radius: 7px; }
 .dialog-actions { flex: none; z-index: 2; position: relative; padding-bottom: calc(13px + env(safe-area-inset-bottom)); }
 :root[data-theme='day'] .glass-dialog { color: #344550; background: linear-gradient(135deg, rgba(247, 248, 244, .89), rgba(228, 235, 236, .91) 68%, rgba(239, 240, 233, .89)); border-color: rgba(69, 91, 105, .28); box-shadow: 0 30px 90px #1c293535, inset 0 1px 0 #ffffffd8; }
-:root[data-theme='day'] .glass-dialog::before { background: linear-gradient(135deg, rgba(242, 242, 231, .83), rgba(231, 237, 234, .77) 45%, rgba(244, 241, 231, .86)), url('/scenes/gate-moonlight.webp') center 51% / cover, radial-gradient(ellipse at 12% 0%, #ffffffa8, transparent 36%); }
+:root[data-theme='day'] .glass-dialog::before { background: linear-gradient(135deg, rgba(242, 242, 231, .83), rgba(231, 237, 234, .77) 45%, rgba(244, 241, 231, .86)), var(--jx-gate-poster, url('/scenes/gate-moonlight.webp')) center 51% / cover, radial-gradient(ellipse at 12% 0%, #ffffffa8, transparent 36%); }
 :root[data-theme='day'] .comparison-link { color: #334550; border-color: #566d7d42; }
 :root[data-theme='day'] .provider-name-list button { color: #334550; border-color: #566d7d24; }
 :root[data-theme='day'] .provider-name-list button:hover { background: #465d6a0a; }

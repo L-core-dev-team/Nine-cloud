@@ -34,6 +34,35 @@ export function verifyPagesPreview({ includeApprovedMedia = false } = {}) {
       expected.add(name);
       mediaDigests.set(name, asset.sha256);
     }
+
+    const imageAssets = assets.filter((asset) => asset.path.endsWith('.webp'));
+    const fallbackManifest = JSON.parse(readFileSync(resolve(repoRoot, 'apps/web/pages-preview-media/fallback-manifest.json'), 'utf8'));
+    if (fallbackManifest.recordType !== 'ios-jpeg-fallback-manifest'
+      || !Array.isArray(fallbackManifest.files)
+      || fallbackManifest.files.length !== imageAssets.length) {
+      throw new Error('Pages preview iOS JPEG fallback count mismatch');
+    }
+    const approvedImagesByPath = new Map(imageAssets.map((asset) => [asset.path, asset]));
+    const coveredWebpPaths = new Set();
+    for (const fallback of fallbackManifest.files) {
+      const approved = approvedImagesByPath.get(fallback.webpPath);
+      if (!approved || approved.sha256 !== fallback.webpSha256
+        || typeof fallback.jpegPath !== 'string'
+        || !/^\/scenes\/[a-zA-Z0-9/._-]+\.jpg$/.test(fallback.jpegPath)
+        || fallback.jpegPath.includes('..')
+        || fallback.jpegPath !== fallback.webpPath.replace(/\.webp$/, '.jpg')
+        || !/^[a-f0-9]{64}$/.test(fallback.jpegSha256)
+        || coveredWebpPaths.has(fallback.webpPath)) {
+        throw new Error('Pages preview iOS JPEG fallback entry is invalid');
+      }
+      const name = fallback.jpegPath.slice(1);
+      expected.add(name);
+      mediaDigests.set(name, fallback.jpegSha256);
+      coveredWebpPaths.add(fallback.webpPath);
+    }
+    if (coveredWebpPaths.size !== imageAssets.length) {
+      throw new Error('Pages preview iOS JPEG fallback coverage is incomplete');
+    }
   }
   const found = new Set();
   const bundles = new Set();
@@ -67,6 +96,6 @@ export function verifyPagesPreview({ includeApprovedMedia = false } = {}) {
     if (actualDigest !== expectedDigest) throw new Error(`Pages preview media digest mismatch: ${name}`);
   }
   console.log(includeApprovedMedia
-    ? `Pages preview output checked: SPA entry, frontend bundles, OFL font and ${mediaDigests.size} approved runtime media files.`
+    ? `Pages preview output checked: SPA entry, frontend bundles, OFL font and ${mediaDigests.size} approved runtime media files/fallbacks.`
     : 'Pages preview output checked: SPA entry, frontend bundles and OFL font; runtime media excluded.');
 }

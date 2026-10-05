@@ -1,9 +1,14 @@
+import { mediaUrlForBrowser } from './media-compat';
+
 /** Artwork is a local, optimized project asset; water, mist, petals and light remain independent layers. */
 export function MountainGateScene() {
+  const mobilePoster = mediaUrlForBrowser('/scenes/gate-moonlight-mobile.webp');
+  const desktopPoster = mediaUrlForBrowser('/scenes/gate-moonlight.webp');
+  const mobilePosterType = mobilePoster.endsWith('.jpg') ? 'image/jpeg' : 'image/webp';
   return <div className="scene" aria-hidden="true">
     <picture className="scene-picture">
-      <source media="(max-width: 720px)" srcSet="/scenes/gate-moonlight-mobile.webp" type="image/webp" />
-      <img className="scene-base" src="/scenes/gate-moonlight.webp" alt="" draggable={false} />
+      <source media="(max-width: 720px)" srcSet={mobilePoster} type={mobilePosterType} />
+      <img className="scene-base" src={desktopPoster} alt="" draggable={false} />
     </picture>
     <div className="scene-mist scene-mist-back" />
     <div className="scene-mist scene-mist-front" />

@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, isAbsolute, relative, resolve } from 'node:path';
@@ -9,7 +10,11 @@ const includeApprovedMedia = process.argv.includes('--include-user-approved-medi
 for (const name of ['@jiuxiao/contracts', '@jiuxiao/content', '@jiuxiao/domain', '@jiuxiao/web']) {
   const result = spawnSync(process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm', ['--filter', name, 'build'], {
     cwd: root, stdio: 'inherit', shell: process.platform === 'win32',
-    env: { ...process.env, JIUXIAO_BUILD_TARGET: 'cloudflare-preview' },
+    env: {
+      ...process.env,
+      JIUXIAO_BUILD_TARGET: 'cloudflare-preview',
+      VITE_IOS_JPEG_FALLBACK: name === '@jiuxiao/web' && includeApprovedMedia ? 'true' : 'false',
+    },
   });
   if (result.error) throw result.error;
   if (result.status !== 0) process.exit(result.status ?? 1);
@@ -58,7 +63,52 @@ if (includeApprovedMedia) {
     mkdirSync(dirname(destination), { recursive: true });
     copyFileSync(source, destination);
   }
-  console.log(`Included ${assets.length} explicitly approved runtime media files in the public-demo package.`);
+
+  const approvedImages = assets.filter((asset) => asset.path.endsWith('.webp'));
+  const fallbackManifestPath = resolve(root, 'apps/web/pages-preview-media/fallback-manifest.json');
+  const fallbackSourceRoot = resolve(root, 'apps/web/pages-preview-media');
+  const fallbackManifest = JSON.parse(readFileSync(fallbackManifestPath, 'utf8'));
+  if (fallbackManifest.recordType !== 'ios-jpeg-fallback-manifest'
+    || !Array.isArray(fallbackManifest.files)
+    || fallbackManifest.files.length !== approvedImages.length) {
+    throw new Error('PUBLIC_DEMO_IOS_FALLBACK_MANIFEST_UNEXPECTED');
+  }
+
+  const approvedByPath = new Map(approvedImages.map((asset) => [asset.path, asset]));
+  const coveredWebpPaths = new Set();
+  for (const fallback of fallbackManifest.files) {
+    const approved = approvedByPath.get(fallback.webpPath);
+    if (!approved || fallback.webpSha256 !== approved.sha256
+      || typeof fallback.jpegPath !== 'string'
+      || !/^\/scenes\/[a-zA-Z0-9/._-]+\.jpg$/.test(fallback.jpegPath)
+      || fallback.jpegPath.includes('..')
+      || fallback.jpegPath !== fallback.webpPath.replace(/\.webp$/, '.jpg')
+      || !/^[a-f0-9]{64}$/.test(fallback.jpegSha256)
+      || coveredWebpPaths.has(fallback.webpPath)) {
+      throw new Error('PUBLIC_DEMO_IOS_FALLBACK_ENTRY_INVALID');
+    }
+
+    const source = resolve(fallbackSourceRoot, `.${fallback.jpegPath}`);
+    const destination = resolve(outputRoot, `.${fallback.jpegPath}`);
+    const sourceRelative = relative(fallbackSourceRoot, source);
+    const outputRelative = relative(outputRoot, destination);
+    if (isAbsolute(sourceRelative) || sourceRelative.startsWith('..')
+      || isAbsolute(outputRelative) || outputRelative.startsWith('..')) {
+      throw new Error('PUBLIC_DEMO_IOS_FALLBACK_PATH_OUTSIDE_ROOT');
+    }
+    if (!existsSync(source)) throw new Error(`PUBLIC_DEMO_IOS_FALLBACK_MISSING: ${fallback.jpegPath}`);
+    const actualDigest = createHash('sha256').update(readFileSync(source)).digest('hex');
+    if (actualDigest !== fallback.jpegSha256) {
+      throw new Error(`PUBLIC_DEMO_IOS_FALLBACK_DIGEST_MISMATCH: ${fallback.jpegPath}`);
+    }
+    mkdirSync(dirname(destination), { recursive: true });
+    copyFileSync(source, destination);
+    coveredWebpPaths.add(fallback.webpPath);
+  }
+  if (coveredWebpPaths.size !== approvedImages.length) {
+    throw new Error('PUBLIC_DEMO_IOS_FALLBACK_COVERAGE_INCOMPLETE');
+  }
+  console.log(`Included ${assets.length} approved runtime media files and ${coveredWebpPaths.size} iOS JPEG fallbacks in the public-demo package.`);
 }
 
 verifyPagesPreview({ includeApprovedMedia });
