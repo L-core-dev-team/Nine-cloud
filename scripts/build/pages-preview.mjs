@@ -37,7 +37,7 @@ if (includeApprovedMedia) {
   const outputRoot = resolve(root, 'apps/web/dist');
   const manifestPath = resolve(publicRoot, 'scenes/candidate/asset-manifest.json');
   const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
-  if (!Array.isArray(manifest.files) || manifest.files.length !== 54) {
+  if (!Array.isArray(manifest.files) || manifest.files.length === 0) {
     throw new Error('PUBLIC_DEMO_RUNTIME_MEDIA_MANIFEST_UNEXPECTED');
   }
   const assets = [

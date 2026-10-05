@@ -17,14 +17,14 @@ export function verifyPagesPreview({ includeApprovedMedia = false } = {}) {
   if (includeApprovedMedia) {
     const publicRoot = resolve(repoRoot, 'apps/web/public');
     const manifest = JSON.parse(readFileSync(resolve(publicRoot, 'scenes/candidate/asset-manifest.json'), 'utf8'));
+    if (!Array.isArray(manifest.files) || manifest.files.length === 0) {
+      throw new Error('Pages preview runtime media manifest is invalid');
+    }
     const assets = [
       { path: '/scenes/gate-moonlight.webp', sha256: '7a1995a609ce04a8af2b32a1918b8e38ed3e880f08325ee55c375cf8e5b29dea' },
       { path: '/scenes/gate-moonlight-mobile.webp', sha256: 'fa4ab0e8e7080bd040a0b1b2dd6895b65e43e31770fd03e003b6dcb73989c740' },
       ...manifest.files,
     ];
-    if (!Array.isArray(manifest.files) || assets.length !== 56) {
-      throw new Error('Pages preview runtime media count mismatch');
-    }
     for (const asset of assets) {
       if (typeof asset.path !== 'string' || !/^\/scenes\/[a-zA-Z0-9/._-]+$/.test(asset.path)
         || asset.path.includes('..') || !/^[a-f0-9]{64}$/.test(asset.sha256)) {

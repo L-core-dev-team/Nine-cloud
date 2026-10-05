@@ -433,6 +433,246 @@
       "jpegSha256": "f9836ef53c6d0643c6f7395d081cdf935d9b5c93aa81ee6f0cc408cb6a95eaa7",
       "jpegBytes": 265136,
       "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/artifact_ice_marrow_vial.webp",
+      "jpegPath": "/scenes/candidate/atlas/artifact_ice_marrow_vial.jpg",
+      "webpSha256": "14b9a63f4b521899fde06344bc45e6b36f1c514b786d3952fd399b8147718443",
+      "jpegSha256": "6e48da9d4bac04fe3be1db70dcd4e019adf2c3f2fe0baf59b030f9c58e33228b",
+      "jpegBytes": 130569,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/artifact_message_mirror.webp",
+      "jpegPath": "/scenes/candidate/atlas/artifact_message_mirror.jpg",
+      "webpSha256": "39f277717cbbf6bfd136becb3811c602d5f704bd31d082043c227f8fd0bc6365",
+      "jpegSha256": "dfa0896277f5e43b2ff331be034ba0bc8a3fd8b584c04b308dd0ab8fe60ec78e",
+      "jpegBytes": 101196,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/artifact_haotian_sword_token.webp",
+      "jpegPath": "/scenes/candidate/atlas/artifact_haotian_sword_token.jpg",
+      "webpSha256": "9bc8deb0faf83added622db3bf6b875429d64d61e1d7fad234347b04c89d3a7d",
+      "jpegSha256": "d95ba38c7bb101a85870e1e5a9ee134d84b9866a3fb1fa2c93e9984c0ccaf53a",
+      "jpegBytes": 88689,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/artifact_protective_mirror.webp",
+      "jpegPath": "/scenes/candidate/atlas/artifact_protective_mirror.jpg",
+      "webpSha256": "803c5de39f3beaa4864dc7011d003e5230dfe896012aa3185174ffe1ade678c7",
+      "jpegSha256": "65f637c50f4c5af031b0be8cc84a4085c2094536ad7ba77a7b6b5b40c738ee8c",
+      "jpegBytes": 115778,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/artifact_binding_rope.webp",
+      "jpegPath": "/scenes/candidate/atlas/artifact_binding_rope.jpg",
+      "webpSha256": "db069cc485ba4b6140f13e8b0ccd96bd41a612c3c2669646c7264fba8ace83a7",
+      "jpegSha256": "58346d5e0f994624be2d311996a24d056b6f838454255ea03b362bef5890bfd4",
+      "jpegBytes": 140589,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/artifact_mountain_river_fan.webp",
+      "jpegPath": "/scenes/candidate/atlas/artifact_mountain_river_fan.jpg",
+      "webpSha256": "adf7295c9cdb4faa3c2be07608ffdb26de1d9cdb95475beffdc1443ad581ec25",
+      "jpegSha256": "a8ff74d240e648aae72d47aea90653125cdd06c828b4dd370c1de2dbba67b62c",
+      "jpegBytes": 115563,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/artifact_sacred_fire_token.webp",
+      "jpegPath": "/scenes/candidate/atlas/artifact_sacred_fire_token.jpg",
+      "webpSha256": "e1586a6189e7c0a70799e44277a9404659d8912d623f940199bf046a5f4262c8",
+      "jpegSha256": "fe2db0240278a344acee936067ebcfca7d8062bae10823defec96f4df891a207",
+      "jpegBytes": 107538,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/artifact_five_poison_vessel.webp",
+      "jpegPath": "/scenes/candidate/atlas/artifact_five_poison_vessel.jpg",
+      "webpSha256": "6d73c068d674153ce028867da5df9cf8f1cfcbd965662e981a1f3826780da0c8",
+      "jpegSha256": "447a00ba4f0ac69225bc0160af6a52da473bac4b30bd3e037233baacce3d395f",
+      "jpegBytes": 128353,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/artifact_wind_boat.webp",
+      "jpegPath": "/scenes/candidate/atlas/artifact_wind_boat.jpg",
+      "webpSha256": "e9557c741d4ffd5c4e20cb4462d72f2ca8c6a53eb50f74576bcf08ddc451124f",
+      "jpegSha256": "58fd20e740c19fac52bb1648c4f5043c07071995206c758c01a8834671a4536e",
+      "jpegBytes": 101627,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/artifact_purple_gold_gourd.webp",
+      "jpegPath": "/scenes/candidate/atlas/artifact_purple_gold_gourd.jpg",
+      "webpSha256": "d8ec5efe12b60eb03b86579baad09ab97b937559199d75bdbbe9288b37f3a7df",
+      "jpegSha256": "7d321a4e93f7bf0d4cc3ebccb4a8b1d1f8718dcfc23d3f45c21347679d2673f2",
+      "jpegBytes": 128794,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/character_white_robed_sword_cultivator.webp",
+      "jpegPath": "/scenes/candidate/atlas/character_white_robed_sword_cultivator.jpg",
+      "webpSha256": "e6072c80ce08884f8fdebc58961878b70b6eaa3e9c3ad215db6a2b6f78ee5dc0",
+      "jpegSha256": "3200aef4377f9739581ebc42e875014b05244262e630dddeafa49b549ea2545e",
+      "jpegBytes": 122573,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/character_icefield_messenger.webp",
+      "jpegPath": "/scenes/candidate/atlas/character_icefield_messenger.jpg",
+      "webpSha256": "648ac4a05894c55b11c334f896a7d9ff1caff204c57eb6fa8fe447492114f9e1",
+      "jpegSha256": "072a29fa25242c378dfc2a2e140635f8f09fbdc5d73425fab03c4ab755610238",
+      "jpegBytes": 201538,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/character_aged_wanderer.webp",
+      "jpegPath": "/scenes/candidate/atlas/character_aged_wanderer.jpg",
+      "webpSha256": "e82197a153ffc1752f10ab64cbb50d245235f27191c7301959e5d86d1d317e2f",
+      "jpegSha256": "e071b5f1cf8854f5f0c2472fe699c775c57a60f9ec2e5681de8392a45ab6c9d0",
+      "jpegBytes": 295480,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/character_dan_room_cultivator.webp",
+      "jpegPath": "/scenes/candidate/atlas/character_dan_room_cultivator.jpg",
+      "webpSha256": "35f500c1db09be4102b5375286f6df39cd6a97d86b9c53545d19245dc2ecf9ad",
+      "jpegSha256": "4cff8504b43d37275fb73abca739fb665b9229ee568d3dad40ad12510abe4299",
+      "jpegBytes": 246725,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/character_black_robed_heretic.webp",
+      "jpegPath": "/scenes/candidate/atlas/character_black_robed_heretic.jpg",
+      "webpSha256": "3a3a2842f0d31ea6528aa26d12e49b4963a964d7325d760adf427d22dc46c1b3",
+      "jpegSha256": "95d2eee256da573c5be99cc402dc65be2905a2f18c18eb7d5b2bc8ce9e1f8c8c",
+      "jpegBytes": 251735,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/character_brocade_merchant.webp",
+      "jpegPath": "/scenes/candidate/atlas/character_brocade_merchant.jpg",
+      "webpSha256": "9616179d6fd3bad3ed92dec2b1c96e6cbfea8f7f38633f8ab0668b7d9a3e8339",
+      "jpegSha256": "eacb8407efbd23421f38822c01b082adaa59d8e5737d44b265d30d3e09cc1b5e",
+      "jpegBytes": 291437,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/character_wilderness_hunter.webp",
+      "jpegPath": "/scenes/candidate/atlas/character_wilderness_hunter.jpg",
+      "webpSha256": "69a6f89d58ce0e8ff6a569fc9d51156169b25575b07891c1f86f17c56d0045b1",
+      "jpegSha256": "3551593d800d18b1ed304b8eddcee6e53e45f00a625b662502d19bc075edd8e0",
+      "jpegBytes": 265085,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/character_miaojiang_gu_master.webp",
+      "jpegPath": "/scenes/candidate/atlas/character_miaojiang_gu_master.jpg",
+      "webpSha256": "d2e231006e4b803956aeb13bcb3b21ef1cfcaa547c3a9f4cfb69ea9e57580277",
+      "jpegSha256": "090cd532aa33e56f2dad925d352c1a78edac48f24b8f652b4f34ea5bbe3ef4f4",
+      "jpegBytes": 243118,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/character_yanshi_craftsman.webp",
+      "jpegPath": "/scenes/candidate/atlas/character_yanshi_craftsman.jpg",
+      "webpSha256": "e73cb88c09c88511ef2759b9611f672a8e0762178c66579179a49ef55e0f6607",
+      "jpegSha256": "ae300bb7c58e7aadb87aeb09c09ec8876a980ce5eb93fb0163660f10be4b038e",
+      "jpegBytes": 300929,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/character_wandering_monk.webp",
+      "jpegPath": "/scenes/candidate/atlas/character_wandering_monk.jpg",
+      "webpSha256": "7b9253a03b9010667bf552dfee2680bf202e2f2476358defaa9e14b1cbf8e4ee",
+      "jpegSha256": "dd53fe39cdc6907e1ef58a7d39f3c69b6a15390c036304035fa4b76eb820abdf",
+      "jpegBytes": 149756,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/atmosphere_dawn_cloud_sea.webp",
+      "jpegPath": "/scenes/candidate/atlas/atmosphere_dawn_cloud_sea.jpg",
+      "webpSha256": "fbe0f588fcd293e0ef30b46bab52ddf1311f627fe4a4c8e010795db2db67917d",
+      "jpegSha256": "7f82c49deebf8abf96e3941cf5cc6ef47b5824fe7496f4c90dc38a5c81eaad94",
+      "jpegBytes": 157476,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/atmosphere_spring_rain_ferry.webp",
+      "jpegPath": "/scenes/candidate/atlas/atmosphere_spring_rain_ferry.jpg",
+      "webpSha256": "70eb811e0f0afae769010121e01336e3617c391d1f656887c1c819b76f9ad273",
+      "jpegSha256": "3337ddac0ff85106cc038df7b479e6f9777102bca4571fa520c67e8f55e9b5d0",
+      "jpegBytes": 188287,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/atmosphere_stormy_night_temple.webp",
+      "jpegPath": "/scenes/candidate/atlas/atmosphere_stormy_night_temple.jpg",
+      "webpSha256": "0d30f843a0825e0427ba9fab1e2569b21b5a31364262a301d79247c3e2b5c4b1",
+      "jpegSha256": "81352813aa9d15a8b010b328961b88ac7c97f0d50f777e71999b0facb6b9664f",
+      "jpegBytes": 208242,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/atmosphere_misty_forest.webp",
+      "jpegPath": "/scenes/candidate/atlas/atmosphere_misty_forest.jpg",
+      "webpSha256": "308ea5f303d4370b76f5f543e4fce4572fe131d5d23940765a9664f565f5e4b0",
+      "jpegSha256": "2378433d4ee87673ba07b120fa30d084b007e8ccecd6aae67884dc588fad044c",
+      "jpegBytes": 187103,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/atmosphere_autumn_red_leaf_road.webp",
+      "jpegPath": "/scenes/candidate/atlas/atmosphere_autumn_red_leaf_road.jpg",
+      "webpSha256": "2b238c9a0f6e6580f58004625002808f26531778c2495245a9f72874b83cfe4a",
+      "jpegSha256": "12be35c92c0419348e2e0205140c0079c2df81db4304273850c0898f1932bcd8",
+      "jpegBytes": 320300,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/atmosphere_moonlit_snow_gate.webp",
+      "jpegPath": "/scenes/candidate/atlas/atmosphere_moonlit_snow_gate.jpg",
+      "webpSha256": "fbf9e7643a241e68188d1b6496db806e82f9f577db5c152399ca470386861399",
+      "jpegSha256": "e68baaeb29d5b11710f3a6cbc4820a40921a7a86fa2714bbf90cd22e5a48563f",
+      "jpegBytes": 171601,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/battle_sword_duel.webp",
+      "jpegPath": "/scenes/candidate/atlas/battle_sword_duel.jpg",
+      "webpSha256": "7310089b7acc12c0b92f8963dbe0c65b716de19386dbcb23275258cdcad9e81e",
+      "jpegSha256": "6d6583449ed27b0e46727295df81fdf803bb41f48b04b7072662217c17265f2c",
+      "jpegBytes": 212872,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/battle_beast_clash.webp",
+      "jpegPath": "/scenes/candidate/atlas/battle_beast_clash.jpg",
+      "webpSha256": "8d3387686f1a3ce3bdedd4b1eecb5f2767b233e08b998155accae2439f078724",
+      "jpegSha256": "974bb7605820a4f73d284912eaa1144f8852cc981898bd4f42593edc0a07d343",
+      "jpegBytes": 356794,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/battle_spell_exchange.webp",
+      "jpegPath": "/scenes/candidate/atlas/battle_spell_exchange.jpg",
+      "webpSha256": "4b7d12adb22f8cddde2c78078599664cd3acbf79cdf949d405cbf9ea0c06eda0",
+      "jpegSha256": "7991cab841f5334acb33b1404b93f74ac980ea03e6790526c59f41528620f372",
+      "jpegBytes": 222877,
+      "quality": 82
+    },
+    {
+      "webpPath": "/scenes/candidate/atlas/battle_flying_sword_travel.webp",
+      "jpegPath": "/scenes/candidate/atlas/battle_flying_sword_travel.jpg",
+      "webpSha256": "aa3032a11dedc7dd5b1c0a5fbd3f8789ebd88f42fe244c1d532a1289660b52f8",
+      "jpegSha256": "76ab141de5a77a359bffcf0f88eca36cf6dc946fc44de26bc935befc0a2f1d66",
+      "jpegBytes": 201264,
+      "quality": 82
     }
   ]
 }
