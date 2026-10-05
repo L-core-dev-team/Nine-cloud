@@ -1,0 +1,18 @@
+{
+  "recordType": "user-attested-public-demo-media-approval",
+  "recordedOn": "2026-10-05",
+  "attestedBy": "LYL",
+  "reportedApprovers": [
+    "LYL",
+    "Bird"
+  ],
+  "scope": "runtime-media-in-apps-web-public-scenes",
+  "source": "Direct user statements in the active Codex conversation on 2026-10-05.",
+  "reportedApproval": "LYL stated that LYL and Bird approved all project content and matters; LYL subsequently reiterated that all project images had been reviewed.",
+  "directBirdSignature": false,
+  "sha256Meaning": "File integrity only; it is not proof of ownership, license, or approval.",
+  "releaseBoundary": "This record documents user-reported approval for a public demo. It does not create a Bird-signed receipt or change the separate formal media-release gate for the 1.0 release.",
+  "reaffirmedByUser": "LYL",
+  "reaffirmedOn": "2026-10-05",
+  "reaffirmedScope": "all-project-images"
+}

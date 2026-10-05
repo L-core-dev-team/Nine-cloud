@@ -30,8 +30,9 @@ export default defineConfig(({ mode }) => {
   if (pagesPreview) requirePublicPreviewApi(loadEnv(mode, webRoot, 'VITE_').VITE_API_BASE_URL);
   return {
     define: { 'import.meta.env.JIUXIAO_PAGES_PREVIEW': JSON.stringify(pagesPreview) },
-    // The public/ tree includes media awaiting provenance and author approval. A public
-    // Pages preview ships only the OFL font; scene artwork and video stay local.
+    // Do not copy public/ wholesale into a Pages preview. The preview packager copies
+    // only runtime scene media after an explicit public-demo approval flag; release
+    // builds continue to use the stricter media receipt gate below.
     publicDir: pagesPreview ? false : 'public',
     plugins: [react(), { name: 'media-release-gate', apply: 'build', buildStart() {
       if (process.env.JIUXIAO_BUILD_TARGET === 'release') {
