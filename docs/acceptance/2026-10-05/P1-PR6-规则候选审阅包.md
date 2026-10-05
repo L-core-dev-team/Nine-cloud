@@ -131,3 +131,12 @@ Codex 依用户明确授权替代可由软件完成的人工检查，对本候�
 | P 轨与 S/UI 轨分开 | 已核对 | 只更新 P 轨代码、测试和文档；没有改写 S/UI 台账。 |
 
 因此，在新 head CI 通过之后，九项总退出里仍有一项按用户裁决保持开放：游客首局。PR-7 的 15 分钟真实设备记录是另一项独立阶段门；当前生成的 `DeviceTestRecord.json` 仍为 `DEVICE_TEST_PENDING`。二者都不能由本地浏览器模拟数据代填。生产 `AUTHOR_RULES_GATE` / Canon 收据继续按 S 轨既有 fail-closed 门禁处理，不并入 P1 销账。
+
+
+## 2026-10-05 已验收代码 head CI 与退出状态
+
+PR #61 的实现提交 1c655d1db2e37fcbf102cd6bba6b7ab9e7471d0a 对应 CI run 37303409239 已全部通过。冻结安装、许可证检查、typecheck、单测、build、release-target fail-closed、API 容器、PostgreSQL 集成、全量 E2E、耐久回执恢复、邮件/云浏览器路径、数据库恢复、manifest 绑定及审阅包上传均成功。前一 run 37301439149 在新增状态建议 GET 的合成 mock 缺失时失败；实现提交加入 mock 后，node tests/e2e/turns.cjs 本地四视口通过，完整 CI 复验成功。
+
+从该 run 下载的工程制品核对结果：RC_MANIFEST.json 的 RC_SHA 与 PR head 完全相同；CI_RUN 为 37303409239；ARTIFACT_HASH 为 sha256:cafe17601a727a1f8b792d70876b3d72e7e46a433e508ec604f5afd14b62ac60。独立计算 artifact-manifest.json SHA-256 与 artifact-manifest.sha256 sidecar、RC_MANIFEST.ARTIFACT_HASH 三方相同。DeviceTestRecord.json 仍为 DEVICE_TEST_PENDING，releaseApproved=false。
+
+P1 九项总退出现有八项通过证据，唯一未关闭项是用户此前决定保留邮箱登录并维持开放的游客零配置首局；PR-7 的 15 分钟真实设备记录是额外阶段门，不能由浏览器模拟补填。AUTHOR_RULES_GATE / Canon 仍按 S 轨 fail-closed，不因本候选 CI 改变。以上内容覆盖早期“工作树未提交 / 新 head CI 待跑”的历史快照。
