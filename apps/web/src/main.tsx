@@ -9,6 +9,7 @@ import { ReadableData } from './components/ReadableData';
 import { CHARACTER_OPTIONS } from './character-options';
 import { CloudSettings } from './routes/CloudSettings';
 import { TurnWorkspace } from './routes/TurnWorkspace';
+import { INTERNAL_TURN_WORKSPACE_ENABLED } from './internal-turn-workspace';
 import { MountainGateScene } from './scene';
 import { startSyntheticWaterAmbience, type AmbientAudioHandle } from './ambient-audio';
 import { DEFAULT_GRAPHICS_SETTINGS, loadGraphicsSettings, saveGraphicsSettings, type GraphicsSettings } from './graphics-settings';
@@ -47,16 +48,17 @@ function canonCategoryLabel(category: string): string {
 
 const route = () => window.location.pathname.replace(/\/+$/, '') || '/';
 const go = (path: string) => {
-  if (path.startsWith('/game/')) {
-    try { sessionStorage.setItem('jiuxiao_active_save_id', decodeURIComponent(path.slice('/game/'.length))); } catch { /* Route navigation does not depend on this preference. */ }
+  const destination = path === '/turns' && !INTERNAL_TURN_WORKSPACE_ENABLED ? '/lobby' : path;
+  if (destination.startsWith('/game/')) {
+    try { sessionStorage.setItem('jiuxiao_active_save_id', decodeURIComponent(destination.slice('/game/'.length))); } catch { /* Route navigation does not depend on this preference. */ }
   }
   const returnTo = route();
-  history.pushState(path === '/world' || path === '/settings/ai' ? { returnTo } : {}, '', path);
+  history.pushState(destination === '/world' || destination === '/settings/ai' ? { returnTo } : {}, '', destination);
   dispatchEvent(new PopStateEvent('popstate'));
 };
 const returnFromReading = () => {
   const candidate = history.state?.returnTo;
-  const safeReturnRoutes = new Set(['/','/lobby','/new','/intro','/saves','/settings/ai','/settings/graphics','/settings/cloud','/turns','/world']);
+  const safeReturnRoutes = new Set(['/','/lobby','/new','/intro','/saves','/settings/ai','/settings/graphics','/settings/cloud','/world']);
   const hasSafeReturn = typeof candidate === 'string' && (safeReturnRoutes.has(candidate) || /^\/game\/[^/]+$/.test(candidate));
   if (hasSafeReturn) {
     // The destination already exists immediately behind this reader in the
@@ -443,7 +445,7 @@ function Game({ save, onExport, onImportSupplement, onUpdate, onBranch, onReload
         {pendingText && <article className="pending-intent"><span>{pendingFromLegacy ? '旧档待处理意图 · 尚未恢复' : '开局意图 · 尚未结算'}</span><p>{pendingText}</p></article>}
         {pendingQueue.map((item, index) => <article className="pending-intent" key={String(item.idempotencyKey || index)}><span>待处理行动 {index + 1} · 尚未结算</span><p>{String(item.text)}</p></article>)}
       </div>
-      <nav className="game-tools" aria-label="行囊工具"><button onClick={() => go('/turns')}>回合处理</button><button onClick={() => go('/world')}>世界设定</button><button onClick={() => onExport(save)}>导出存档</button><label>补充资料<input type="file" accept=".txt,.md" onChange={event => { const file = event.currentTarget.files?.[0]; if (file) onImportSupplement(file, save); event.currentTarget.value = ''; }} /></label></nav>
+      <nav className="game-tools" aria-label="行囊工具"><button onClick={() => go('/world')}>世界设定</button><button onClick={() => onExport(save)}>导出存档</button><label>补充资料<input type="file" accept=".txt,.md" onChange={event => { const file = event.currentTarget.files?.[0]; if (file) onImportSupplement(file, save); event.currentTarget.value = ''; }} /></label></nav>
       <form className="intent-composer" onSubmit={event => { event.preventDefault(); void saveIntent(); }}><label htmlFor="player-intent">此刻欲行何事</label><textarea id="player-intent" value={intent} onChange={event => { setIntent(event.target.value); writeActionDraft(save.saveId, event.target.value); }} placeholder="写下行动意图……" maxLength={4000} /><div><small>本地草稿 · 规则结算尚未接入 · {pendingCount} 项待处理</small><button className="primary" type="submit">收入待处理</button></div>{feedback && <p role="status">{feedback}</p>}{conflictDraft && <div className="save-conflict-actions" role="group" aria-label="存档冲突处理"><button className="secondary" type="button" onClick={() => { void onReload().then(() => { setConflictDraft(null); setFeedback('已载入最新存档。检查当前行动后，可再次提交。'); }); }}>载入最新存档</button><button className="secondary" type="button" onClick={() => { void onBranch(conflictDraft).then(saved => { if (saved) { setConflictDraft(null); setIntent(''); writeActionDraft(save.saveId, ''); setFeedback('冲突内容已另存为独立分支；原存档保持不变。'); } else setFeedback('分支未写入。请先导出冲突副本，并检查本地存储空间。'); }); }}>另存为分支</button><button className="quiet-action" type="button" onClick={() => onExport(conflictDraft)}>下载冲突副本</button></div>}</form>
       </div>
       {activePanel && <aside className="game-info-panel" aria-label={`${activePanel === 'character' ? '角色状态' : activePanel === 'intel' ? '综合情报' : '星记忆'}详情`}><div><span className="eyebrow">行囊所载</span><button aria-label="关闭资料面板" onClick={() => setActivePanel(null)}>×</button></div><div className="game-readable-panel" aria-label="资料内容"><ReadableData value={panelContent} /></div></aside>}
@@ -455,6 +457,11 @@ function Game({ save, onExport, onImportSupplement, onUpdate, onBranch, onReload
 
 function App() {
   const [saves, setSaves] = useState<LocalSave[]>(readSaves);
+  useEffect(() => {
+    if (!INTERNAL_TURN_WORKSPACE_ENABLED && route() === '/turns') {
+      history.replaceState({}, '', '/lobby');
+    }
+  }, []);
   const [theme, setTheme] = useState<Theme>(() => {
     try { return localStorage.getItem('jx10_appearance') === 'day' ? 'day' : 'night'; }
     catch { return 'night'; }
@@ -635,7 +642,7 @@ function App() {
         catch { /* Navigation remains available. */ }
       }
       return result.ok;
-    }} /> : currentRoute === '/turns' ? <TurnWorkspace onBack={() => go('/lobby')} onLogin={() => go('/settings/cloud')} /> : currentRoute.startsWith('/game/') ? <Game save={game} onExport={exportFile} onImportSupplement={importSupplement}
+    }} /> : currentRoute === '/turns' ? INTERNAL_TURN_WORKSPACE_ENABLED ? <TurnWorkspace onBack={() => go('/lobby')} onLogin={() => go('/settings/cloud')} /> : <WorldHub saves={saves} /> : currentRoute.startsWith('/game/') ? <Game save={game} onExport={exportFile} onImportSupplement={importSupplement}
     onUpdate={async next => {
       if (!saves.some(item => item.saveId === next.saveId)) {
         return { ok: false, reason: 'conflict', saves, conflictIds: [next.saveId], revision: 0 };
