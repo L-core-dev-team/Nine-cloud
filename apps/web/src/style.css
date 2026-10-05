@@ -1,6 +1,6 @@
 :root {
   color-scheme: dark;
-  font-family: 'Noto Serif SC', 'Songti SC', serif;
+  font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Noto Serif CJK SC', 'Songti SC', serif;
   color: #eee8df;
   background: #07121e;
   --line: rgba(224, 213, 204, 0.2);
@@ -30,12 +30,15 @@ button:disabled { cursor: not-allowed; opacity: 0.5; }
 
 .jx-shell { min-height: 100vh; display: flex; flex-direction: column; }
 header { position: relative; z-index: 4; display: flex; align-items: center; justify-content: space-between; height: 72px; padding: 0 clamp(18px, 5vw, 72px); border-bottom: 1px solid var(--line); background: #040b1290; backdrop-filter: blur(16px); }
-.brand { padding: 0; color: rgba(242, 233, 225, .9); background: none; font-family: 'Ma Shan Zheng Brand', serif; font-size: 1.1rem; letter-spacing: 0.08em; text-shadow: 0 1px 14px #0008; white-space: nowrap; }
+.brand { padding: 0; color: rgba(242, 233, 225, .9); background: none; font-family: 'Ma Shan Zheng Brand', 'KaiTi', 'STKaiti', serif; font-size: 1.1rem; letter-spacing: 0.08em; text-shadow: 0 1px 14px #0008; white-space: nowrap; }
 nav { display: flex; gap: 22px; }
 nav button, .menu, .links button { color: var(--muted); background: none; font: 0.85rem system-ui; }
 nav button:hover, .links button:hover { color: #fff; }
 .menu { padding: 9px 14px; border: 1px solid var(--line); border-radius: 99px; }
-aside { position: absolute; z-index: 5; top: 64px; right: clamp(18px, 5vw, 72px); display: grid; gap: 11px; width: 230px; padding: 18px; background: #0a1b2a; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 24px 70px #0008; }
+.header-tools { display: flex; align-items: center; gap: 8px; }
+.menu-overlay { position: fixed; z-index: 3; inset: 0; background: rgba(2, 8, 14, .28); }
+:root[data-theme='day'] .menu-overlay { background: rgba(56, 65, 72, .16); }
+aside { position: absolute; z-index: 5; top: 76px; right: clamp(18px, 5vw, 72px); display: grid; gap: 11px; width: 230px; padding: 18px; background: #0a1b2a; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 24px 70px #0008; }
 aside strong, aside button, aside label { font: 0.82rem system-ui; }
 aside button, aside label { padding: 10px; text-align: left; background: #ffffff0f; border-radius: 8px; }
 aside input { display: none; }
@@ -50,7 +53,7 @@ footer { display: flex; justify-content: space-between; padding: 18px clamp(18px
 .hero > div:first-child { position: relative; z-index: 3; display: flex; min-height: inherit; max-width: 1180px; margin: 0 auto; padding: clamp(34px, 7vh, 78px) 24px; flex-direction: column; align-items: flex-start; justify-content: center; }
 .eyebrow { color: var(--accent); font: 0.72rem system-ui; letter-spacing: 0.25em; }
 .hero h1 { margin: 20px 0; font-size: clamp(3rem, 6vw, 6rem); font-weight: 400; line-height: 1.08; letter-spacing: 0.08em; }
-.hero .hero-mark { margin: 14px 0 0; color: rgba(246, 238, 237, .94); font-family: 'Ma Shan Zheng Brand', 'Kaiti SC', 'STKaiti', serif; font-size: clamp(6rem, 12vw, 9.5rem); font-weight: 400; line-height: 1; letter-spacing: .2em; text-shadow: 0 3px 34px rgba(221, 208, 178, .24); }
+.hero .hero-mark { margin: 14px 0 0; color: rgba(246, 238, 237, .94); font-family: 'Ma Shan Zheng Brand', 'Kaiti SC', 'STKaiti', 'KaiTi', serif; font-size: clamp(6rem, 12vw, 9.5rem); font-weight: 400; line-height: 1; letter-spacing: .2em; text-shadow: 0 3px 34px rgba(221, 208, 178, .24); }
 .hero .hero-deck { max-width: 25em; margin: 12px 0 0; color: rgba(231, 232, 235, .72); font-size: clamp(.92rem, 1.25vw, 1.08rem); letter-spacing: .12em; line-height: 1.7; }
 h2 { margin: 16px 0; font-size: clamp(2.1rem, 5vw, 4.2rem); font-weight: 400; letter-spacing: 0.08em; }
 p { max-width: 650px; color: #c3ccd3; line-height: 1.9; }
@@ -63,7 +66,7 @@ p { max-width: 650px; color: #c3ccd3; line-height: 1.9; }
 .theme-toggle { padding: 8px 12px; color: var(--muted); background: #ffffff08; border: 1px solid var(--line); border-radius: 999px; font: 0.78rem system-ui; }
 .theme-toggle:hover { color: #fff; border-color: #bdcad788; }
 .landing-copy { padding-left: clamp(24px, 5vw, 64px) !important; }
-.portal-enter { position: relative; isolation: isolate; display: inline-flex; min-width: 236px; min-height: 60px; align-items: center; justify-content: center; margin-top: 26px; padding: 14px 32px; overflow: hidden; color: #f5f0e8; background: linear-gradient(115deg, #c8d7e01b, #6b8da624 52%, #dfdfd41c); border: 1px solid rgba(225, 231, 235, .76); clip-path: polygon(7% 0, 93% 0, 100% 50%, 93% 100%, 7% 100%, 0 50%); font: 1rem/1.2 'Noto Serif SC', 'Songti SC', serif; letter-spacing: .32em; text-shadow: 0 1px 12px #000d; box-shadow: inset 0 0 0 2px rgba(231, 238, 242, .22), 0 0 22px rgba(179, 202, 220, .22); transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease; }
+.portal-enter { position: relative; isolation: isolate; display: inline-flex; min-width: 236px; min-height: 60px; align-items: center; justify-content: center; margin-top: 26px; padding: 14px 32px; overflow: hidden; color: #f5f0e8; background: linear-gradient(115deg, #c8d7e01b, #6b8da624 52%, #dfdfd41c); border: 1px solid rgba(225, 231, 235, .76); clip-path: polygon(7% 0, 93% 0, 100% 50%, 93% 100%, 7% 100%, 0 50%); font: 1rem/1.2 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; letter-spacing: .32em; text-shadow: 0 1px 12px #000d; box-shadow: inset 0 0 0 2px rgba(231, 238, 242, .22), 0 0 22px rgba(179, 202, 220, .22); transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease; }
 .portal-enter > span { position: relative; z-index: 2; }
 .portal-enter::before { position: absolute; z-index: 1; inset: 3px 10px; border: 1px solid rgba(222, 231, 236, .25); content: ''; clip-path: polygon(6% 0, 94% 0, 100% 50%, 94% 100%, 6% 100%, 0 50%); pointer-events: none; }
 .portal-enter::after { position: absolute; z-index: 1; top: -70%; bottom: -70%; left: -48%; width: 38%; background: linear-gradient(90deg, transparent, rgba(237, 246, 251, .28), transparent); content: ''; transform: translateX(-150%) skewX(-18deg); animation: portal-glint 7.5s ease-in-out infinite; pointer-events: none; }
@@ -135,6 +138,9 @@ p { max-width: 650px; color: #c3ccd3; line-height: 1.9; }
 input, textarea, select { width: 100%; padding: 12px; color: #f2eee9; background: #fff1; border: 1px solid var(--line); border-radius: 8px; outline: none; }
 textarea { min-height: 96px; resize: vertical; }
 input:focus, textarea:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px #bdcad722; }
+/* Keep every text-entry surface at 16px or larger: iOS Safari zooms the
+   viewport when a focused control renders below that size. */
+input:not([type='range']):not([type='checkbox']), select, textarea { font-size: max(1em, 16px); }
 .error { color: #ffadb1; }
 .success { color: #a9e7c0; }
 .card { max-width: 720px; padding: 24px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; }
@@ -176,6 +182,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--accent); box-sha
   .atlas-dialog > img { max-height: calc(92svh - 110px); }
   .theme-toggle { padding: 7px 9px; font-size: .72rem; }
   header { gap: 10px; }
+  aside { top: 70px; }
   .lobby-actions { grid-template-columns: 1fr; }
   .scene-base { object-position: center center; }
   .scene-motion:not(.scene-motion-mobile) { display: none; }
@@ -189,7 +196,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--accent); box-sha
 }
 
 /* AI settings retain the old five-role workflow while clarifying responsibility and state. */
-.ai-page { padding-bottom: calc(112px + env(safe-area-inset-bottom)); }
+.ai-page { padding-bottom: calc(225px + env(safe-area-inset-bottom)); }
 .preset-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 28px 0; }
 .preset-card { display: grid; align-content: start; gap: 9px; min-height: 230px; padding: 20px; background: linear-gradient(155deg, #172b3c, #0b1926); border: 1px solid var(--line); border-radius: 16px; }
 .preset-card h3, .preset-card p { margin: 0; }
@@ -231,7 +238,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--accent); box-sha
 .log-list span, .log-list small { color: var(--muted); }
 .ai-actionbar { position: fixed; z-index: 8; right: 0; bottom: 0; left: 0; display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 10px; padding: 12px max(18px, calc((100vw - 1180px) / 2)) calc(12px + env(safe-area-inset-bottom)); background: #07131fee; border-top: 1px solid var(--line); backdrop-filter: blur(18px); }
 .ai-actionbar > button { min-height: 52px; align-items: center; justify-content: center; }
-.ai-actionbar { z-index: 100; font-family: 'Noto Serif SC', 'Songti SC', serif; }
+.ai-actionbar { z-index: 100; font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
 .ai-feedback { grid-column: 1 / -1; min-width: 0; max-height: 5.5rem; overflow: auto; color: var(--muted); font-size: .8rem; }
 .ai-feedback p { margin: 0; overflow-wrap: anywhere; }
 .ai-config-tools, .world-search-feedback { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
@@ -245,7 +252,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--accent); box-sha
 .character-field, .character-field > label { display: grid; gap: 8px; }
 .character-suggestions { color: var(--muted); font-size: .78rem; }
 .world-search-feedback { margin: 12px 0 22px; }
-.worldbook-entry { scroll-margin-top: 22px; }
+.worldbook-entry { scroll-margin-top: 22px; content-visibility: auto; contain-intrinsic-size: auto 420px; }
 .worldbook-entry mark { color: #172a38; background: #e5cca0; border-radius: 3px; padding: 0 2px; }
 .game-readable-panel { max-height: 56svh; overflow: auto; overflow-wrap: anywhere; padding-right: 6px; }
 .readable-data { margin: 0; }
@@ -392,7 +399,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 }
 
 /* AI settings: editorial hierarchy outside; a single glass surface for focused tasks. */
-.ai-page > .ai-title { margin: 0 0 8px; font: 400 clamp(2rem, 4vw, 3rem)/1.25 'Noto Serif SC', 'Songti SC', serif; letter-spacing: .08em; }
+.ai-page > .ai-title { margin: 0 0 8px; font: 400 clamp(2rem, 4vw, 3rem)/1.25 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; letter-spacing: .08em; }
 .ai-page > p { margin: 0; color: var(--muted); font-size: .88rem; }
 .comparison-link { display: flex; align-items: center; justify-content: space-between; gap: 18px; width: 100%; padding: 15px 18px; color: #e5e1d5; background: transparent; border: 1px solid #b5c7d13d; border-radius: 10px; text-align: left; transition: background 180ms ease, border-color 180ms ease; }
 .comparison-link:hover { background: #b5c7d10c; border-color: #c8d5dd88; }
@@ -410,13 +417,13 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 .provider-open > span:first-child { border-radius: 9px; }
 .glass-dialog { position: fixed; display: flex; flex-direction: column; width: min(1040px, calc(100vw - 40px)); height: min(880px, 88dvh); max-height: 88dvh; overflow: hidden; isolation: isolate; background: linear-gradient(135deg, rgba(25, 43, 59, .79), rgba(8, 19, 30, .83) 68%, rgba(15, 30, 43, .81)); border-color: rgba(212, 225, 232, .27); border-radius: 16px; box-shadow: 0 30px 110px #0009, inset 0 1px 0 #ffffff28; backdrop-filter: blur(25px) saturate(1.26); }
 .glass-dialog:not([open]) { display: none; }
-.glass-dialog::before { position: absolute; z-index: -1; inset: 0; pointer-events: none; background: linear-gradient(135deg, rgba(8, 17, 28, .88), rgba(8, 18, 29, .79) 45%, rgba(8, 17, 28, .91)), url('/scenes/gate-moonlight.webp') center 51% / cover, radial-gradient(ellipse at 12% 0%, #a9c3d311, transparent 36%); content: ''; }
+.glass-dialog::before { position: absolute; z-index: -1; inset: 0; pointer-events: none; background: linear-gradient(135deg, rgba(8, 17, 28, .88), rgba(8, 18, 29, .79) 45%, rgba(8, 17, 28, .91)), var(--jx-gate-poster, url('/scenes/gate-moonlight.webp')) center 51% / cover, radial-gradient(ellipse at 12% 0%, #a9c3d311, transparent 36%); content: ''; }
 .glass-dialog::backdrop { background: rgba(3, 9, 15, .62); backdrop-filter: blur(7px) saturate(.8); }
 .dialog-close { position: absolute; top: 13px; right: 14px; z-index: 3; float: none; margin: 0; width: 38px; height: 38px; background: #f4f8fa0c; }
 .dialog-scroll-region { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-color: #728a9e88 transparent; scrollbar-width: thin; }
 .dialog-heading { padding: 30px 34px 20px; }
 .dialog-heading h2 { letter-spacing: .04em; }
-.dialog-heading h2, .preset-card h3 { font-family: 'Ma Shan Zheng Brand', 'Kaiti SC', 'STKaiti', serif; font-weight: 400; letter-spacing: .08em; }
+.dialog-heading h2, .preset-card h3 { font-family: 'Ma Shan Zheng Brand', 'Kaiti SC', 'STKaiti', 'KaiTi', serif; font-weight: 400; letter-spacing: .08em; }
 .catalog-search { padding: 16px 26px; }
 .catalog-search input { min-height: 44px; padding: 9px 13px; color: inherit; background: #07131d75; border: 1px solid #abbfc532; border-radius: 8px; }
 .provider-name-list { display: grid; gap: 2px; padding: 2px 26px 24px; }
@@ -467,7 +474,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 .estimate-inputs label input { min-width: 0; padding: 9px 10px; color: inherit; background: #07131d75; border: 1px solid #abbfc532; border-radius: 7px; }
 .dialog-actions { flex: none; z-index: 2; position: relative; padding-bottom: calc(13px + env(safe-area-inset-bottom)); }
 :root[data-theme='day'] .glass-dialog { color: #344550; background: linear-gradient(135deg, rgba(247, 248, 244, .89), rgba(228, 235, 236, .91) 68%, rgba(239, 240, 233, .89)); border-color: rgba(69, 91, 105, .28); box-shadow: 0 30px 90px #1c293535, inset 0 1px 0 #ffffffd8; }
-:root[data-theme='day'] .glass-dialog::before { background: linear-gradient(135deg, rgba(242, 242, 231, .83), rgba(231, 237, 234, .77) 45%, rgba(244, 241, 231, .86)), url('/scenes/gate-moonlight.webp') center 51% / cover, radial-gradient(ellipse at 12% 0%, #ffffffa8, transparent 36%); }
+:root[data-theme='day'] .glass-dialog::before { background: linear-gradient(135deg, rgba(242, 242, 231, .83), rgba(231, 237, 234, .77) 45%, rgba(244, 241, 231, .86)), var(--jx-gate-poster, url('/scenes/gate-moonlight.webp')) center 51% / cover, radial-gradient(ellipse at 12% 0%, #ffffffa8, transparent 36%); }
 :root[data-theme='day'] .comparison-link { color: #334550; border-color: #566d7d42; }
 :root[data-theme='day'] .provider-name-list button { color: #334550; border-color: #566d7d24; }
 :root[data-theme='day'] .provider-name-list button:hover { background: #465d6a0a; }
@@ -574,14 +581,14 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 .landing-shell::before { opacity: .18; }
 
 /* The settings page uses calligraphic display type and a legible Song body face. */
-.ai-page { font-family: 'Noto Serif SC', 'Songti SC', serif; }
+.ai-page { font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
 .ai-page > .ai-title,
 .ai-page .recommend-heading h2,
 .ai-page .preset-card h3,
 .ai-page .role-summary strong,
 .ai-page .settings-card h3,
 .ai-page .migration-heading h3,
-.glass-dialog .dialog-heading h2 { font-family: 'Ma Shan Zheng Brand', 'Kaiti SC', 'STKaiti', serif; font-weight: 400; letter-spacing: .09em; }
+.glass-dialog .dialog-heading h2 { font-family: 'Ma Shan Zheng Brand', 'Kaiti SC', 'STKaiti', 'KaiTi', serif; font-weight: 400; letter-spacing: .09em; }
 .ai-page .recommend-heading p,
 .ai-page .preset-card p,
 .ai-page .preset-card small,
@@ -597,21 +604,21 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 .ai-page .migration-status,
 .ai-page .migration-footer,
 .ai-page .ai-actionbar button,
-.glass-dialog { font-family: 'Noto Serif SC', 'Songti SC', serif; }
+.glass-dialog { font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
 .ai-page .ai-title { font-size: clamp(2.25rem, 4.4vw, 3.25rem); }
 .ai-page .role-summary strong { font-size: 1.22rem; }
 .ai-page .settings-card { background: linear-gradient(140deg, rgba(19, 37, 52, .84), rgba(8, 20, 30, .78)); border-color: rgba(186, 204, 214, .23); backdrop-filter: blur(13px) saturate(1.08); }
 .ai-page .legacy-migration-card { display: grid; gap: 17px; padding: clamp(20px, 3vw, 30px); }
 .migration-heading { display: flex; align-items: center; gap: 14px; }
 .migration-heading h3 { margin: 0 0 5px !important; font-size: 1.52rem !important; }
-.migration-heading p { margin: 0; color: var(--muted); font: .82rem/1.7 'Noto Serif SC', 'Songti SC', serif; }
-.migration-seal { display: grid; flex: none; place-items: center; width: 42px; height: 42px; color: #e0d5b6; border: 1px solid rgba(216, 198, 141, .55); border-radius: 50%; font: 1.28rem 'Ma Shan Zheng Brand', serif; box-shadow: 0 0 18px rgba(203, 190, 148, .09); }
+.migration-heading p { margin: 0; color: var(--muted); font: .82rem/1.7 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
+.migration-seal { display: grid; flex: none; place-items: center; width: 42px; height: 42px; color: #e0d5b6; border: 1px solid rgba(216, 198, 141, .55); border-radius: 50%; font: 1.28rem 'Ma Shan Zheng Brand', 'KaiTi', 'STKaiti', serif; box-shadow: 0 0 18px rgba(203, 190, 148, .09); }
 .migration-status { display: flex; align-items: flex-start; gap: 11px; padding: 14px 16px; color: #dce5e9; background: rgba(5, 16, 25, .42); border: 1px solid rgba(176, 197, 208, .18); border-radius: 11px; }
 .migration-status-dot { width: 8px; height: 8px; flex: none; margin-top: 7px; background: #9caab1; border-radius: 50%; box-shadow: 0 0 10px #a5b4bd55; }
 .migration-status.found .migration-status-dot { background: #b7d6c1; box-shadow: 0 0 11px #a9d0b855; }
 .migration-status div, .migration-consent > span:nth-of-type(1) { display: grid; gap: 4px; }
 .migration-status strong, .migration-consent strong { font-weight: 500; }
-.migration-status small, .migration-consent small, .migration-footer > span { color: var(--muted); font: .73rem/1.55 'Noto Serif SC', 'Songti SC', serif; }
+.migration-status small, .migration-consent small, .migration-footer > span { color: var(--muted); font: .73rem/1.55 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
 .migration-consent { position: relative; display: flex; width: 100%; justify-content: flex-start; gap: 14px; min-height: 54px; }
 .migration-consent > span:nth-of-type(1) { margin-right: auto; }
 .migration-consent input { position: absolute; right: 0; z-index: 2; width: 52px; height: 30px; opacity: 0; cursor: pointer; }
@@ -626,7 +633,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 .call-log-dialog-body .logs-heading { padding-bottom: 12px; border-bottom: 1px solid var(--line); }
 .call-log-dialog-body .log-list { margin: 0; }
 .logs-empty { display: grid; justify-items: center; gap: 7px; padding: clamp(38px, 9vh, 82px) 18px; text-align: center; }
-.logs-empty > span { color: var(--accent); font: 2rem 'Ma Shan Zheng Brand', serif; }
+.logs-empty > span { color: var(--accent); font: 2rem 'Ma Shan Zheng Brand', 'KaiTi', 'STKaiti', serif; }
 .logs-empty strong { font: 400 1.5rem 'Ma Shan Zheng Brand', 'Kaiti SC', serif; letter-spacing: .08em; }
 .logs-empty p { margin: 0; color: var(--muted); font-size: .82rem; }
 :root[data-theme='day'] .ai-page .settings-card { color: #344550; background: linear-gradient(140deg, rgba(255, 254, 250, .88), rgba(230, 235, 234, .83)); border-color: #62788838; }
@@ -637,11 +644,12 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 .game-page { width: min(1320px, calc(100vw - 32px)); min-height: calc(100svh - 140px); margin: 0 auto; padding: 14px 0 30px; }
 .game-topline { position: static; z-index: auto; display: flex; height: auto; min-height: 0; align-items: center; justify-content: space-between; gap: 18px; padding: 8px 0 16px; border-bottom: 1px solid var(--line); background: transparent; backdrop-filter: none; }
 .game-topline h1 { margin: 5px 0 0; font: 400 clamp(1.5rem, 3vw, 2.2rem) 'Ma Shan Zheng Brand', 'Kaiti SC', serif; letter-spacing: .08em; }
-.quiet-action { display: inline-flex; flex-direction: column; gap: 3px; padding: 10px 15px; color: #e8e6dc; background: rgba(12, 28, 42, .67); border: 1px solid var(--line); border-radius: 10px; font: 500 .88rem 'Noto Serif SC', 'Songti SC', serif; }
+.quiet-action { display: inline-flex; flex-direction: column; gap: 3px; padding: 10px 15px; color: #e8e6dc; background: rgba(12, 28, 42, .67); border: 1px solid var(--line); border-radius: 10px; font: 500 .88rem 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
 .quiet-action span { color: var(--muted); font-size: .69rem; }
 .game-workspace { display: grid; grid-template-columns: 150px minmax(0, 680px) minmax(220px, 310px); justify-content: center; align-items: start; gap: 20px; padding: 26px 0 14px; }
-.game-rail { position: sticky; top: 16px; display: grid; gap: 8px; padding-top: 8px; }
-.game-rail button, .game-tools button, .game-tools label { min-height: 39px; padding: 9px 11px; color: #d4dce0; background: rgba(9, 24, 37, .67); border: 1px solid rgba(191, 207, 214, .19); border-radius: 9px; font: .75rem 'Noto Serif SC', 'Songti SC', serif; text-align: center; }
+.game-rail { position: sticky; top: 16px; display: grid; gap: 4px; padding: 8px; background: rgba(9, 24, 37, .55); border: 1px solid rgba(191, 207, 214, .16); border-radius: 12px; }
+.game-rail button, .game-tools button, .game-tools label { min-height: 39px; padding: 9px 11px; color: #d4dce0; background: rgba(9, 24, 37, .67); border: 1px solid rgba(191, 207, 214, .19); border-radius: 9px; font: .75rem 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; text-align: center; }
+.game-rail button { background: transparent; border-color: transparent; }
 .game-rail button[aria-pressed='true'] { color: #f2e7c7; border-color: #d7c69688; background: #d7c69618; }
 .story-column { display: grid; gap: 12px; min-width: 0; }
 .story-scroll { display: flex; min-height: min(62svh, 680px); max-height: min(68svh, 740px); overflow: auto; flex-direction: column; gap: 17px; padding: clamp(19px, 3.3vw, 38px); color: #e0e6e8; background: linear-gradient(160deg, rgba(13, 29, 44, .9), rgba(7, 18, 29, .86)); border: 1px solid rgba(183, 203, 214, .25); border-radius: 16px; box-shadow: 0 18px 55px #0005, inset 0 1px 0 #fff1; backdrop-filter: blur(18px) saturate(1.05); scrollbar-color: #8fa5b566 transparent; }
@@ -650,9 +658,9 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 .story-opening { display: grid; gap: 10px; align-content: center; min-height: 340px; margin: auto 0; text-align: center; }
 .story-opening > span { color: #d0c394; font: .78rem 'Noto Serif SC', serif; letter-spacing: .18em; }
 .story-opening h2 { margin: 5px 0; color: #f1ece2; font: 400 clamp(2rem, 5vw, 3rem) 'Ma Shan Zheng Brand', 'Kaiti SC', serif; }
-.story-opening p { margin: 0 auto; color: #d4dde1; font: 1rem/2 'Noto Serif SC', 'Songti SC', serif; }
+.story-opening p { margin: 0 auto; color: #d4dde1; font: 1rem/2 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
 .story-opening small { color: #9fadb7; font: .72rem 'Noto Serif SC', serif; }
-.story-message { display: grid; gap: 5px; color: #d7e0e4; font: .9rem/2 'Noto Serif SC', 'Songti SC', serif; white-space: pre-wrap; overflow-wrap: anywhere; }
+.story-message { display: grid; gap: 5px; color: #d7e0e4; font: .9rem/2 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; white-space: pre-wrap; overflow-wrap: anywhere; }
 .story-message > span, .pending-intent > span { color: #cfc08f; font: .72rem 'Noto Serif SC', serif; letter-spacing: .08em; }
 .story-message p, .pending-intent p { margin: 0; color: inherit; white-space: pre-wrap; overflow-wrap: anywhere; }
 .player-line { padding: 2px 0 2px 13px; background: linear-gradient(90deg, #8da8bb10, transparent 18%); }
@@ -660,13 +668,15 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 .game-tools { display: flex; flex-wrap: wrap; justify-content: center; gap: 7px; }
 .game-tools label { position: relative; cursor: pointer; }
 .game-tools input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-.intent-composer { display: grid; gap: 9px; padding: 15px; background: rgba(7, 19, 30, .77); border: 1px solid rgba(183, 203, 214, .25); border-radius: 13px; }
+.intent-composer { position: sticky; bottom: 10px; z-index: 3; display: grid; gap: 9px; padding: 15px; background: rgba(7, 19, 30, .96); border: 1px solid rgba(183, 203, 214, .25); border-radius: 13px; box-shadow: 0 -16px 40px rgba(2, 8, 14, .42); }
 .intent-composer > label { color: #e6e2d5; font: 400 1.06rem 'Ma Shan Zheng Brand', 'Kaiti SC', serif; letter-spacing: .06em; }
-.intent-composer textarea { min-height: 92px; resize: vertical; padding: 12px 13px; color: #eef1ef; background: #06121c88; border-color: #b4c8d033; font: .86rem/1.8 'Noto Serif SC', serif; }
+.intent-composer textarea { min-height: 92px; resize: vertical; padding: 12px 13px; color: #eef1ef; background: #06121c88; border-color: #b4c8d033; font: 1rem/1.75 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
 .intent-composer > div { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .intent-composer small { color: var(--muted); font: .7rem 'Noto Serif SC', serif; }
-.intent-composer .primary { min-height: 40px; padding: 10px 15px; }
+.intent-composer .primary { min-height: 40px; padding: 10px 15px; white-space: nowrap; }
 .intent-composer > p { margin: 0; color: #d5c998; font: .74rem/1.6 'Noto Serif SC', serif; }
+.intent-composer .game-tools { margin-top: 2px; padding-top: 11px; border-top: 1px solid rgba(183, 203, 214, .16); }
+.intent-composer .game-tools button, .intent-composer .game-tools label { min-height: 36px; padding: 7px 12px; background: transparent; border-color: rgba(191, 207, 214, .22); }
 .save-conflict-actions { flex-wrap: wrap; justify-content: flex-start !important; padding-top: 10px; border-top: 1px solid var(--line); }
 .save-conflict-actions button { min-height: 38px; font: .78rem 'Noto Serif SC', serif; }
 .game-info-panel { position: sticky; top: 14px; min-width: 0; padding: 16px; color: #dce2e4; background: rgba(8, 21, 32, .82); border: 1px solid rgba(183, 203, 214, .23); border-radius: 13px; backdrop-filter: blur(15px); }
@@ -675,20 +685,24 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 .game-info-panel h2 { margin: 9px 0 15px; font: 400 1.4rem 'Ma Shan Zheng Brand', 'Kaiti SC', serif; }
 .game-info-panel pre { max-height: 56svh; overflow: auto; margin: 0; padding: 12px; color: #dbe1e1; background: #06111b99; border: 1px solid #b5c4cb21; border-radius: 9px; font: .71rem/1.55 ui-monospace, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
 .game-statusline { display: flex; justify-content: center; gap: 18px; color: #bfccd2; font: .7rem 'Noto Serif SC', serif; }
-.intro-page h2, .world-page h2 { font: 400 clamp(2.4rem, 5vw, 4rem)/1.3 'Ma Shan Zheng Brand', 'Kaiti SC', 'STKaiti', serif; letter-spacing: .1em; }
+.game-tools { justify-content: flex-start; }
+.game-tools button, .game-tools label { min-height: 36px; padding: 7px 12px; }
+:root[data-theme='day'] .game-rail { background: rgba(248, 249, 246, .72); border-color: #62788833; }
+:root[data-theme='day'] .game-rail button[aria-pressed='true'] { color: #6b5320; background: #d7c69630; border-color: #b39b5e88; }
+.intro-page h2, .world-page h2 { font: 400 clamp(2.4rem, 5vw, 4rem)/1.3 'Ma Shan Zheng Brand', 'Kaiti SC', 'STKaiti', 'KaiTi', serif; letter-spacing: .1em; }
 .intro-prose { max-width: 850px; margin: 30px 0; padding: clamp(22px, 4vw, 40px); color: #e1e7e8; background: linear-gradient(150deg, rgba(12, 28, 42, .84), rgba(7, 19, 30, .8)); border: 1px solid rgba(183, 203, 214, .21); border-radius: 14px; backdrop-filter: blur(14px); }
-.intro-prose p { margin: 0; color: inherit; font: 1rem/2.15 'Noto Serif SC', 'Songti SC', serif; text-indent: 2em; }
+.intro-prose p { margin: 0; color: inherit; font: 1rem/2.15 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; text-indent: 2em; }
 .intro-prose p + p { margin-top: 17px; }
-.world-search { display: grid; gap: 8px; max-width: 720px; margin: 22px 0; color: #e0e6e8; font: .9rem 'Noto Serif SC', 'Songti SC', serif; }
-.world-search input { min-height: 48px; padding: 11px 14px; color: inherit; background: rgba(8, 20, 31, .78); border: 1px solid rgba(183, 203, 214, .3); border-radius: 10px; font: .9rem 'Noto Serif SC', 'Songti SC', serif; }
+.world-search { display: grid; gap: 8px; max-width: 720px; margin: 22px 0; color: #e0e6e8; font: .9rem 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
+.world-search input { min-height: 48px; padding: 11px 14px; color: inherit; background: rgba(8, 20, 31, .78); border: 1px solid rgba(183, 203, 214, .3); border-radius: 10px; font: 1rem 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
 .worldbook-results { display: grid; gap: 13px; }
 .worldbook-entry { padding: clamp(18px, 3.2vw, 30px); color: #dce3e5; background: linear-gradient(150deg, rgba(12, 28, 42, .87), rgba(7, 19, 30, .84)); border: 1px solid rgba(183, 203, 214, .2); border-radius: 14px; backdrop-filter: blur(14px); }
 .worldbook-entry h3 { margin: 8px 0 16px; color: #eee8d9; font: 400 clamp(1.4rem, 3vw, 2rem) 'Ma Shan Zheng Brand', 'Kaiti SC', serif; letter-spacing: .06em; }
-.worldbook-body { margin: 0; color: #d4dde1; font: .95rem/2 'Noto Serif SC', 'Songti SC', serif; white-space: pre-wrap; }
-.worldbook-entry details { margin-top: 18px; padding-top: 12px; border-top: 1px solid rgba(183, 203, 214, .14); color: #aebcc4; font: .74rem/1.7 'Noto Serif SC', 'Songti SC', serif; }
+.worldbook-body { margin: 0; color: #d4dde1; font: .95rem/2 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; white-space: pre-wrap; }
+.worldbook-entry details { margin-top: 18px; padding-top: 12px; border-top: 1px solid rgba(183, 203, 214, .14); color: #aebcc4; font: .74rem/1.7 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
 .worldbook-entry details summary { color: #c8c098; cursor: pointer; }
 .worldbook-entry details p { margin: 8px 0; }
-.worldbook-empty, .worldbook-scope { color: #d3dcdf; font: .85rem/1.8 'Noto Serif SC', 'Songti SC', serif; }
+.worldbook-empty, .worldbook-scope { color: #d3dcdf; font: .85rem/1.8 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
 .worldbook-scope { display: grid; gap: 10px; margin-top: 18px; padding: 18px; }
 .worldbook-scope p { margin: 0; }
 :root[data-theme='day'] .world-search, :root[data-theme='day'] .worldbook-entry, :root[data-theme='day'] .worldbook-scope { color: #394c58; }
@@ -699,7 +713,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 :root[data-theme='day'] .worldbook-entry details summary { color: #796f47; }
 .world-import { width: fit-content; margin: 14px 0; }
 .world-view-switch { display: flex; gap: 8px; margin: 24px 0 8px; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
-.world-view-switch button { display: inline-flex; align-items: center; gap: 9px; min-height: 42px; padding: 7px 13px; color: #c3ccd3; background: transparent; border: 1px solid transparent; border-radius: 9px; font: .86rem 'Noto Serif SC', 'Songti SC', serif; }
+.world-view-switch button { display: inline-flex; align-items: center; gap: 9px; min-height: 42px; padding: 7px 13px; color: #c3ccd3; background: transparent; border: 1px solid transparent; border-radius: 9px; font: .86rem 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
 .world-view-switch button[aria-selected='true'] { color: #f0e8df; background: #b9c8d112; border-color: #bdcad744; }
 .world-view-switch small, .atlas-collections small { color: var(--muted); font: .68rem system-ui; }
 .atlas-intro { display: grid; grid-template-columns: minmax(150px, 270px) 1fr; align-items: center; gap: clamp(16px, 3vw, 30px); max-width: 920px; margin: 20px 0; overflow: hidden; color: #e6e2dc; background: linear-gradient(110deg, #0b1824df, #0b182477); border: 1px solid var(--line); border-radius: 13px; }
@@ -715,7 +729,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 .atlas-card { display: grid; align-content: start; gap: 8px; min-width: 0; padding: 9px; overflow: hidden; color: #eee8df; text-align: left; background: linear-gradient(150deg, #122638df, #07131fe8); border: 1px solid #bdcad733; border-radius: 12px; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
 .atlas-card:hover, .atlas-card:focus-visible { transform: translateY(-2px); border-color: #d6cba995; box-shadow: 0 12px 28px #0005; }
 .atlas-card img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 7px; background: #07121c; }
-.atlas-card span { padding: 2px 3px 0; font: .88rem 'Noto Serif SC', 'Songti SC', serif; }
+.atlas-card span { padding: 2px 3px 0; font: .88rem 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
 .atlas-card small { padding: 0 3px 2px; color: var(--muted); font: .65rem ui-monospace, monospace; }
 .atlas-dialog { position: fixed; width: min(1100px, calc(100vw - 32px)); max-width: none; max-height: min(92svh, 980px); padding: 12px; overflow: auto; color: #eee8df; background: #091522ed; border: 1px solid #d4dbe477; border-radius: 16px; box-shadow: 0 24px 90px #000b; backdrop-filter: blur(22px); }
 .atlas-dialog::backdrop { background: #02070dcc; backdrop-filter: blur(8px); }
@@ -747,13 +761,21 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 :root[data-theme='day'] .story-opening p, :root[data-theme='day'] .story-message, :root[data-theme='day'] .pending-intent p { color: #40535e; }
 :root[data-theme='day'] .intent-composer { background: rgba(250, 250, 246, .84); }
 :root[data-theme='day'] .intent-composer > label, :root[data-theme='day'] .game-info-panel h2 { color: #334857; }
+:root[data-theme='day'] .intent-composer { background: rgba(250, 250, 246, .95); box-shadow: 0 -14px 34px rgba(90, 105, 115, .16); }
 :root[data-theme='day'] .intent-composer textarea, :root[data-theme='day'] .game-info-panel pre { color: #344550; background: #fffdf8c9; border-color: #62788836; }
 :root[data-theme='day'] .game-statusline { color: #495e6a; }
+/* Day-theme golden accents must stay legible on paper surfaces. */
+:root[data-theme='day'] .chapter-mark { color: #8a6f3c; }
+:root[data-theme='day'] .chapter-mark i { background: linear-gradient(90deg, #8a6f3c66, transparent); }
+:root[data-theme='day'] .story-message > span, :root[data-theme='day'] .pending-intent > span { color: #8a6f3c; }
+:root[data-theme='day'] .story-opening small { color: #5d707c; }
 @media (max-width: 900px) {
   .game-workspace { grid-template-columns: 1fr; gap: 12px; }
-  .game-rail { position: static; display: flex; overflow-x: auto; padding: 0; }
-  .game-rail button { flex: 1 0 auto; }
+  .game-rail { position: static; display: flex; overflow-x: auto; padding: 0; background: none; border: 0; }
+  .game-rail button { flex: 1 0 auto; background: rgba(9, 24, 37, .67); border: 1px solid rgba(191, 207, 214, .19); }
   .game-info-panel { position: static; }
+  /* Solid gradient surfaces read the same without the GPU blur on phones. */
+  .story-scroll, .game-info-panel, .worldbook-entry, .intro-prose { backdrop-filter: none; }
   .story-scroll { min-height: 52svh; max-height: 58svh; }
 }
 @media (max-width: 520px) {
@@ -783,44 +805,44 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 .jx-shell > header { z-index: 4; }
 .jx-shell > main, .jx-shell > footer { position: relative; z-index: 1; }
 .jx-shell > .notice { position: relative; z-index: 2; }
-.ambient-toggle { flex: none; padding: 8px 11px; color: #d5dfe5; background: rgba(255,255,255,.045); border: 1px solid var(--line); border-radius: 999px; font: .73rem 'Noto Serif SC', 'Songti SC', serif; transition: background 160ms ease, border-color 160ms ease; }
+.ambient-toggle { flex: none; padding: 8px 11px; color: #d5dfe5; background: rgba(255,255,255,.045); border: 1px solid var(--line); border-radius: 999px; font: .73rem 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; transition: background 160ms ease, border-color 160ms ease; }
 .ambient-toggle.is-active { color: #e4d6ac; border-color: rgba(218, 205, 161, .58); background: rgba(218, 205, 161, .1); }
 .ambient-toggle:hover { border-color: rgba(218, 225, 229, .64); }
 
 /* Graphics controls use the same mountain-metal surface as AI settings. */
 .graphics-page { width: min(1080px, calc(100vw - 36px)); padding-bottom: 72px; }
-.graphics-page > h2 { margin: 8px 0 9px; color: #eee8df; font: 400 clamp(2.3rem, 5vw, 3.6rem)/1.25 'Ma Shan Zheng Brand', 'Kaiti SC', 'STKaiti', serif; letter-spacing: .1em; }
-.graphics-lede { margin: 0 0 25px; color: #bec9d0; font: .9rem/1.85 'Noto Serif SC', 'Songti SC', serif; }
+.graphics-page > h2 { margin: 8px 0 9px; color: #eee8df; font: 400 clamp(2.3rem, 5vw, 3.6rem)/1.25 'Ma Shan Zheng Brand', 'Kaiti SC', 'STKaiti', 'KaiTi', serif; letter-spacing: .1em; }
+.graphics-lede { margin: 0 0 25px; color: #bec9d0; font: .9rem/1.85 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
 .graphics-section { display: grid; gap: 19px; margin: 16px 0; padding: clamp(18px, 3.4vw, 30px); color: #e0e7e8; background: linear-gradient(148deg, rgba(14, 30, 44, .88), rgba(7, 17, 27, .83)); border: 1px solid rgba(186, 205, 216, .24); border-radius: 15px; box-shadow: inset 0 1px 0 rgba(255,255,255,.04); backdrop-filter: blur(16px) saturate(1.05); }
 .graphics-section-heading { display: flex; align-items: end; justify-content: space-between; gap: 18px; padding-bottom: 13px; border-bottom: 1px solid rgba(190, 208, 218, .17); }
 .graphics-section-heading h3 { margin: 4px 0 0; color: #eee8df; font: 400 clamp(1.45rem, 3vw, 1.95rem)/1.25 'Ma Shan Zheng Brand', 'Kaiti SC', serif; letter-spacing: .08em; }
-.graphics-kicker { color: #bdcad7; font: .72rem 'Noto Serif SC', 'Songti SC', serif; letter-spacing: .15em; }
-.graphics-status { color: #a9b7c0; font: .7rem/1.5 'Noto Serif SC', 'Songti SC', serif; text-align: right; }
+.graphics-kicker { color: #bdcad7; font: .72rem 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; letter-spacing: .15em; }
+.graphics-status { color: #a9b7c0; font: .7rem/1.5 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; text-align: right; }
 .scene-choice-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 9px; }
 .scene-choice { display: grid; align-content: start; gap: 7px; min-height: 84px; padding: 13px 14px; color: #dce5e8; text-align: left; background: rgba(255,255,255,.035); border: 1px solid rgba(190,208,218,.2); border-radius: 10px; transition: background 150ms ease, border-color 150ms ease, transform 150ms ease; }
 .scene-choice:hover { transform: translateY(-1px); border-color: rgba(215, 224, 229, .48); }
 .scene-choice[aria-pressed='true'] { background: linear-gradient(130deg, rgba(188, 206, 217, .16), rgba(188, 206, 217, .045)); border-color: rgba(204, 218, 226, .68); box-shadow: inset 0 0 18px rgba(195, 216, 229, .06), 0 0 18px rgba(178, 202, 215, .08); }
 .scene-choice strong { font: 400 1.05rem 'Ma Shan Zheng Brand', 'Kaiti SC', serif; letter-spacing: .04em; }
-.scene-choice small { color: #9fadb6; font: .68rem/1.5 'Noto Serif SC', 'Songti SC', serif; }
-.graphics-page .quiet-note { margin: 0; color: #96a6b0; font: .72rem/1.75 'Noto Serif SC', 'Songti SC', serif; }
-.graphics-field { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 9px 18px; color: #dfe6e8; font: .82rem 'Noto Serif SC', 'Songti SC', serif; }
-.graphics-field > span { color: #d8c88f; font: .78rem 'Noto Serif SC', 'Songti SC', serif; }
+.scene-choice small { color: #9fadb6; font: .68rem/1.5 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
+.graphics-page .quiet-note { margin: 0; color: #96a6b0; font: .72rem/1.75 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
+.graphics-field { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 9px 18px; color: #dfe6e8; font: .82rem 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
+.graphics-field > span { color: #d8c88f; font: .78rem 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
 .graphics-field select { grid-column: 1 / -1; min-height: 45px; color: #e8edef; background: rgba(5, 16, 26, .65); border-color: rgba(188, 205, 215, .3); }
 .graphics-field select option { color: #e8edef; background: #122333; }
-.quality-description { margin-top: -13px; color: #9eacb5; font: .72rem/1.6 'Noto Serif SC', 'Songti SC', serif; }
+.quality-description { margin-top: -13px; color: #9eacb5; font: .72rem/1.6 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
 .frame-control { margin-top: 4px; }
 .frame-control input[type='range'], .audio-section input[type='range'] { grid-column: 1 / -1; width: 100%; height: 26px; margin: 0; padding: 0; accent-color: #c6d3da; background: transparent; border: 0; box-shadow: none; cursor: pointer; }
-.range-markers { display: flex; justify-content: space-between; grid-column: 1 / -1; margin-top: -10px; color: #81919b; font: .65rem 'Noto Serif SC', 'Songti SC', serif; }
+.range-markers { display: flex; justify-content: space-between; grid-column: 1 / -1; margin-top: -10px; color: #81919b; font: .65rem 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
 .graphics-toggle-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 24px; border-top: 1px solid rgba(190,208,218,.14); }
 .graphics-toggle { display: flex; align-items: flex-start; gap: 12px; min-height: 74px; padding: 16px 0; border-bottom: 1px solid rgba(190,208,218,.14); cursor: pointer; }
 .graphics-toggle input { flex: none; width: 18px; height: 18px; margin: 2px 0 0; accent-color: #bccbd4; }
 .graphics-toggle > span { display: grid; gap: 5px; }
-.graphics-toggle strong { color: #e3e8e8; font: 400 .88rem 'Noto Serif SC', 'Songti SC', serif; }
-.graphics-toggle small { color: #9faeb6; font: .68rem/1.6 'Noto Serif SC', 'Songti SC', serif; }
-.renderer-readout { display: grid; grid-template-columns: repeat(3, auto auto); justify-content: start; align-items: baseline; gap: 8px 12px; padding: 12px 14px; color: #aab8c0; background: rgba(3, 11, 18, .35); border-left: 1px solid rgba(199, 213, 222, .5); font: .69rem 'Noto Serif SC', 'Songti SC', serif; }
+.graphics-toggle strong { color: #e3e8e8; font: 400 .88rem 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
+.graphics-toggle small { color: #9faeb6; font: .68rem/1.6 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
+.renderer-readout { display: grid; grid-template-columns: repeat(3, auto auto); justify-content: start; align-items: baseline; gap: 8px 12px; padding: 12px 14px; color: #aab8c0; background: rgba(3, 11, 18, .35); border-left: 1px solid rgba(199, 213, 222, .5); font: .69rem 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
 .renderer-readout strong { color: #e5e9e7; font-size: .79rem; font-weight: 400; }
-.audio-section > p { margin: -7px 0 0; color: #b2bfc6; font: .82rem/1.8 'Noto Serif SC', 'Songti SC', serif; }
-.graphics-audio-button { width: fit-content; min-width: 148px; align-items: center; justify-content: center; font: .85rem 'Noto Serif SC', 'Songti SC', serif; }
+.audio-section > p { margin: -7px 0 0; color: #b2bfc6; font: .82rem/1.8 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
+.graphics-audio-button { width: fit-content; min-width: 148px; align-items: center; justify-content: center; font: .85rem 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
 :root[data-theme='day'] .graphics-page > h2, :root[data-theme='day'] .graphics-section-heading h3 { color: #334857; }
 :root[data-theme='day'] .graphics-lede { color: #53656f; }
 :root[data-theme='day'] .graphics-section { color: #384c57; background: linear-gradient(148deg, rgba(255,254,250,.9), rgba(230,236,235,.86)); border-color: #64798542; }
