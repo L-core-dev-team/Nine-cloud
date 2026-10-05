@@ -183,7 +183,7 @@
       "height": 900,
       "sourcePath": "05-世界与地域/九霄大陆-全图.jpg",
       "sourceSha256": "9c2100a6db3b15be0b5378eddfd68bbeee6fe37c1303efd0d531908d30df059f",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "7cf40335d072e9fd0b9c1cdb378a89c8a891500dbede5dd5f365388f1087cdec",
       "bytes": 272808,
       "sourceDimensions": [
@@ -204,7 +204,7 @@
       "height": 900,
       "sourcePath": "05-世界与地域/地域-中州天枢域.jpg",
       "sourceSha256": "06883cadd7b5159b691422880589bf330cdbc2b51565cf716cb03fca63b45941",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "a2bc6a40339d206824f519a0c9b2a9e926897320e2e029a22941c7308035c5ff",
       "bytes": 198244,
       "sourceDimensions": [
@@ -225,7 +225,7 @@
       "height": 900,
       "sourcePath": "05-世界与地域/地域-东瀚龙吟域.jpg",
       "sourceSha256": "79969d53d0801d1e3024aa243a4dbe9da4f453c1bffb5b2c4bb149a8be497fa1",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "d3e7df2f4ffa95c5f01733fcc513629b4d6f41fb370dd5216e73e5c8466713e1",
       "bytes": 261746,
       "sourceDimensions": [
@@ -246,7 +246,7 @@
       "height": 900,
       "sourcePath": "05-世界与地域/地域-西荒焚天域.jpg",
       "sourceSha256": "aacaa0b673d902e56c4290d65a7874bd6caa55a39a587b30bd4472e8e96fc580",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "58efff005b9654df3265528203478ee31ec3b0427525c689e7881c64a3097c8e",
       "bytes": 174742,
       "sourceDimensions": [
@@ -267,7 +267,7 @@
       "height": 900,
       "sourcePath": "05-世界与地域/地域-北境霜寒域.jpg",
       "sourceSha256": "52340573db4702dc4e9676f245d6c86bfd7bc93d5fa32eb4fcc4ac6f9c920043",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "75f594af202b266fd62f525d206444ce33b22cb67ad2e9093710d9a5f6f978b8",
       "bytes": 170950,
       "sourceDimensions": [
@@ -288,7 +288,7 @@
       "height": 900,
       "sourcePath": "05-世界与地域/地域-南疆万蛊域.jpg",
       "sourceSha256": "e557bfd6f52e9e15648a98e98af43e8fcc4a8ce9178d637e41fc90eb692034e5",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "b09ff3267d2b9c3e9ccc34b235130893e882f0c8ed1bebf7a4aaaff2ba6ff798",
       "bytes": 242614,
       "sourceDimensions": [
@@ -309,7 +309,7 @@
       "height": 900,
       "sourcePath": "05-世界与地域/地域-洪荒妖林.jpg",
       "sourceSha256": "3859c1d252cbe93d6dd5194ffb15a151695bc7eacbb185f861fa09f2f0716153",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "d5b40a8f30415d288186314777bf61e3ddcd45888dee5593d287606cf06e6d1c",
       "bytes": 234096,
       "sourceDimensions": [
@@ -330,7 +330,7 @@
       "height": 900,
       "sourcePath": "06-势力宗门/昊天剑宗-天枢剑山.jpg",
       "sourceSha256": "a708b383c1b1d0b82406c2168561b7a6db0925bffd15794175917f20b30e3f91",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "6054813b48b5fbbdbbdd4c8503d689f043f0cf1a8ea01bae19998ba6c08c4ae3",
       "bytes": 278158,
       "sourceDimensions": [
@@ -351,7 +351,7 @@
       "height": 900,
       "sourcePath": "06-势力宗门/玉清阁-百草谷.jpg",
       "sourceSha256": "053c2c637a4cd0afe2a536f598b66e07abadc94171796ad44981e8c7f14b6d2e",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "6fc16a38ebdee06f7eef09c98a887a8a062540874e34c5f241409a4d90a4ffb3",
       "bytes": 250388,
       "sourceDimensions": [
@@ -372,7 +372,7 @@
       "height": 900,
       "sourcePath": "06-势力宗门/衍天宗-天衍城.jpg",
       "sourceSha256": "7540ae8a9d6b3d7c75b6eeb21f87bdd0e8018fd4878ad064b2e0866c0c89e7e5",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "fbe06a62df39ba6c8e543c7c5548d2e366da01ec82a236d664210b02fba0472f",
       "bytes": 224036,
       "sourceDimensions": [
@@ -393,7 +393,7 @@
       "height": 900,
       "sourcePath": "06-势力宗门/四海商会-万宝阁内景.jpg",
       "sourceSha256": "06f73ea2c3dd47cc179a6ae377273df5f796b1dfd6bea4df9c4b19574da02ebc",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "d60ace6ad242242032f59cfca2e2d5c89f3dd4e776b0b855d180ed238b88e9ef",
       "bytes": 284894,
       "sourceDimensions": [
@@ -414,7 +414,7 @@
       "height": 900,
       "sourcePath": "06-势力宗门/天工阁-熔炉巨构.jpg",
       "sourceSha256": "e1344532c29a3097162940eaf1427f77e3208752e8f6358f2246996136b22b1b",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "6541a859798af70eec6120b1085223c19529b7212dc2f797679bfa4567ea2698",
       "bytes": 237728,
       "sourceDimensions": [
@@ -435,7 +435,7 @@
       "height": 900,
       "sourcePath": "06-势力宗门/大光明寺-菩提山.jpg",
       "sourceSha256": "0d98d0eeb5af22763c4e021684496467ffa43079f34a565f1e49fb8b2c067725",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "f7404dd41a60d465321bb80d4cc112c280cd46e1d7ffc0cdc5650d3b87c06cec",
       "bytes": 188516,
       "sourceDimensions": [
@@ -456,7 +456,7 @@
       "height": 900,
       "sourcePath": "06-势力宗门/稷下学宫-问圣山.jpg",
       "sourceSha256": "07c8f5c3ffe5eb3f3cd7bade8711aebac8bcdecad75bf7635fe10028989dc2d9",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "87470619036f7a41d956cc5ef4a6ed74aee5f99c11f507584cb16e594e11a5f2",
       "bytes": 261106,
       "sourceDimensions": [
@@ -477,7 +477,7 @@
       "height": 900,
       "sourcePath": "06-势力宗门/听潮阁-静音岛.jpg",
       "sourceSha256": "689f1461c5d96a52f4001eb44b0bb5101a9986a8b91357b4c77f593589d5ad27",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "60ee246d94a8e92de7c3275a92773069a5785c8254f781312fff146cdaa80372",
       "bytes": 137686,
       "sourceDimensions": [
@@ -498,7 +498,7 @@
       "height": 900,
       "sourcePath": "06-势力宗门/覆海宗-镇海城.jpg",
       "sourceSha256": "48057dd5a7bd6e7dcffb565d2ed49faf29b2c843af1d307e6fb914325657899c",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "516459a5cce746e950654952c26bb4a616ce70c32aa82143ced22b7f3803b08f",
       "bytes": 251972,
       "sourceDimensions": [
@@ -519,7 +519,7 @@
       "height": 900,
       "sourcePath": "06-势力宗门/圣火教-圣焰山火城.jpg",
       "sourceSha256": "4a19ad99217babc6ced1629b5e7c211a6bd7bff4256fc5b776a8f8156fa2ab18",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "fba7702da871c4ccb384afa4c62d54fcf347aebd3e5a800dd0ecbf95336205d8",
       "bytes": 225246,
       "sourceDimensions": [
@@ -540,7 +540,7 @@
       "height": 900,
       "sourcePath": "06-势力宗门/金刚不坏谷-万丈渊.jpg",
       "sourceSha256": "1de312a4620f7956c1fd660a594ab6f1436aa823b7659c50ef3ac226c423bc6e",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "af3140898605a7ee85fce54d02c0dbf6db4f3d1e4c7ac0f8baa74a33405b702b",
       "bytes": 212674,
       "sourceDimensions": [
@@ -561,7 +561,7 @@
       "height": 900,
       "sourcePath": "06-势力宗门/冰神宫-无垢冰城.jpg",
       "sourceSha256": "3bde803ccc93ab1c0da46b1b5ee2fcfdcd99a06c01c75d4a0020606feea896b9",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "fa2ec6953e8e5a3cfc3af5c3b9ceee9b5702336a41d6f94f886e113d309893ae",
       "bytes": 159222,
       "sourceDimensions": [
@@ -582,7 +582,7 @@
       "height": 900,
       "sourcePath": "06-势力宗门/北境联盟-狼神山.jpg",
       "sourceSha256": "c134170d2689abadda2647c93d558bf227ecb459aeb05d88c8c08e38938ee5f2",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "ea82b1ada17f99810d3f32d22dc8ee327f9be217f58f17630649281d1eaf1240",
       "bytes": 171000,
       "sourceDimensions": [
@@ -603,7 +603,7 @@
       "height": 900,
       "sourcePath": "06-势力宗门/五毒神教-万毒沼泽.jpg",
       "sourceSha256": "9ef3b9d3b79debc85f04897dfa648770932176bdfb1602b8939999586c7d2d32",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "096bd16cb272254e7b1e9cd753e0c5b6dae9cbf6d5abf9a513f4232ccd267211",
       "bytes": 254976,
       "sourceDimensions": [
@@ -624,7 +624,7 @@
       "height": 900,
       "sourcePath": "06-势力宗门/万兽山庄-兽神殿.jpg",
       "sourceSha256": "4522ff4663aa8f43910957abff645706074ac3220fd5c2b7089da66b21d892af",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "8228130bc9b4acb59b6079f1b527843fc1b5a24bb65bfbd1b4d9c24bfb35310f",
       "bytes": 271070,
       "sourceDimensions": [
@@ -645,7 +645,7 @@
       "height": 900,
       "sourcePath": "06-势力宗门/偃师府-千机城.jpg",
       "sourceSha256": "ec7cf8e1c5c4c5b0ffb994024a415e2c042d0ed59b064a211a5153009691cdf6",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "20528e90f7ec022ceb341c125880acfaf9fc10937e9548785adf3ccdcdfcc8b9",
       "bytes": 286014,
       "sourceDimensions": [
@@ -666,7 +666,7 @@
       "height": 1200,
       "sourcePath": "07-体系图鉴/修仙基础-吐纳灵气.jpg",
       "sourceSha256": "a03068c8a2f7e54040e99d732e9cbfb5e78be201ef6f841466981c1a52991199",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "86bdcfcb31c6ae70a07ea3cdf0be6f0f56e1b55b54e5d5513848b4faf9c8b7fb",
       "bytes": 98076,
       "sourceDimensions": [
@@ -687,7 +687,7 @@
       "height": 1200,
       "sourcePath": "07-体系图鉴/修炼流派-九修器物.jpg",
       "sourceSha256": "f0464c9c0642eead1ba65764f4c007ad4051076bb9b4fac83a4707e51f29cc95",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "4f4e0573892223baab3050e73bdfe562b9705fee15aca1fc0c1112293f68c3e3",
       "bytes": 184502,
       "sourceDimensions": [
@@ -708,7 +708,7 @@
       "height": 1200,
       "sourcePath": "07-体系图鉴/邪修体系-禁忌器物.jpg",
       "sourceSha256": "248fd7aee2c93670259dcd642041327962979462f10e8984c0020004163940bd",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "e0c5692153e1f36bdccef336d0160ba3bc3ef92ca7d1d2c433517fd5cdb6afe0",
       "bytes": 137368,
       "sourceDimensions": [
@@ -729,7 +729,7 @@
       "height": 1200,
       "sourcePath": "07-体系图鉴/资源品级-天材地宝.jpg",
       "sourceSha256": "501b3360d957f4660b99ba12f6c7630a3600fb8a1707f7438f264677e8c88131",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "62b282b7fd7bd40e7103a7afdd017310aae2af7a53e819a243ee4c2bad4af690",
       "bytes": 131396,
       "sourceDimensions": [
@@ -750,7 +750,7 @@
       "height": 1200,
       "sourcePath": "07-体系图鉴/修炼境界-结丹金丹.jpg",
       "sourceSha256": "0b30cfda29a683d27d5c8daec5095e1ab47ae891f0ed54c3bb526fcd95fdf346",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "d104c0e0d76741e5d9c80b613a79ef165f75dd00298d69ae3d2c783b2c084c2c",
       "bytes": 147470,
       "sourceDimensions": [
@@ -771,7 +771,7 @@
       "height": 1200,
       "sourcePath": "07-体系图鉴/修炼境界-元婴.jpg",
       "sourceSha256": "85afb1c32bdae22654c9deefec9cb54c779c8ae27a5a63748958cd7d85d02ee5",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "3d6072e58ae2626b98242675dbf760916d0be40e8fc9b508628f964e6ccd647b",
       "bytes": 153934,
       "sourceDimensions": [
@@ -792,7 +792,7 @@
       "height": 675,
       "sourcePath": "07-体系图鉴/修炼境界-渡劫天雷.jpg",
       "sourceSha256": "1619b7d97f926f0d8316c2758c24364896df96e2216259370f240db20d2da7ac",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "cf466bd2fbdaf1df838462fb7fdf7d598c685f6b308ae6e3890a46452530bea5",
       "bytes": 103838,
       "sourceDimensions": [
@@ -813,7 +813,7 @@
       "height": 1200,
       "sourcePath": "07-体系图鉴/灵根资质-五行灵根.jpg",
       "sourceSha256": "ea738508d7ddc2bee0f04d85c1e21cd0ab2d69266f1abf92f862381038dff3ec",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "6ad19f2d0cd5fd509eb177311ffdb64298982cf190d7d688c1016a55e8718b76",
       "bytes": 138730,
       "sourceDimensions": [
@@ -834,7 +834,7 @@
       "height": 1200,
       "sourcePath": "07-体系图鉴/功法品阶-玉牒玉简.jpg",
       "sourceSha256": "9cca4634c389b1c22aed78398fd96a5a0f65f89b77a8f2cf98f2d2f7b04bd240",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "1f466e7cd9c713b2a0f6eacb60f720b4ef0f231c81acd18b2c9567c7e176e85e",
       "bytes": 132436,
       "sourceDimensions": [
@@ -855,7 +855,7 @@
       "height": 1200,
       "sourcePath": "07-体系图鉴/经济体系-灵石货币.jpg",
       "sourceSha256": "14ac8965d275e3d7bbdd5917d64b84833d42ba0030cf85f4ee9dce7f98c47279",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "ca819a3df7f1ba10cb20d2e8f930edb78a0a3c3bef224fa942a97d4f7cc292cd",
       "bytes": 115962,
       "sourceDimensions": [
@@ -876,7 +876,7 @@
       "height": 1200,
       "sourcePath": "07-体系图鉴/物价参考-坊市交易.jpg",
       "sourceSha256": "3ff02eaff7c5d4aee6a6c1c650c49817e0a1ebe7ab2efcdd78d307b290f9d102",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "7e2602257fe6d25abbce290d7c077f791a7c37b0ffbb7ba7422efd57b71755bf",
       "bytes": 150072,
       "sourceDimensions": [
@@ -897,7 +897,7 @@
       "height": 675,
       "sourcePath": "07-体系图鉴/妖兽体系-上古神兽群像.jpg",
       "sourceSha256": "026f743f4d9fdb98e9e77b9715b4c4f4e165a050f6b116d63df89b5203c30712",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "8bc192985896f9479db3a8f21a7841a3e51f2adde44afc1c3134321ce39fac4c",
       "bytes": 173746,
       "sourceDimensions": [
@@ -918,7 +918,7 @@
       "height": 1200,
       "sourcePath": "07-体系图鉴/妖兽体系-上古凶兽.jpg",
       "sourceSha256": "d6c4851c272fd11de20615ca12990780d16d7085394d65a24451dec29cf3ed3c",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "8f00a023981a689baa098b6ae265b6c9f4f9d8790f8c9ad8c2481261ea820280",
       "bytes": 188962,
       "sourceDimensions": [
@@ -939,7 +939,7 @@
       "height": 1200,
       "sourcePath": "07-体系图鉴/境界金字塔-登天天梯.jpg",
       "sourceSha256": "2a1db065023b68f1a8a9e74e4536f6ffccb941b9c919711f15b57ec4173677a4",
-      "sourceManifestVerification": "not-listed-in-source-manifest",
+      "sourceManifestVerification": "verified",
       "sha256": "d433726bea569cde347a7a13c3ad726ca97f17d04b1ef9b6963ad6511270e38b",
       "bytes": 156090,
       "sourceDimensions": [
@@ -1089,6 +1089,636 @@
       "sourceManifestVerification": "verified",
       "sha256": "12936e29457eba51dcd22b2b31df9fa8e1364c8f7cc48a924b1c8d3f8132574c",
       "bytes": 76260,
+      "sourceDimensions": [
+        2730,
+        1536
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "artifact_ice_marrow_vial",
+      "collection": "artifact",
+      "title": "冰髓玉瓶",
+      "topicTag": "artifact_ice_marrow_vial",
+      "path": "/scenes/candidate/atlas/artifact_ice_marrow_vial.webp",
+      "mimeType": "image/webp",
+      "width": 1000,
+      "height": 1000,
+      "sourcePath": "08-法宝器物/法宝-冰髓玉瓶.jpg",
+      "sourceSha256": "8341b0d9c27eabe6f028bd701d9d3d71d9793a1c0f9be8185990126ffe532439",
+      "sourceManifestVerification": "verified",
+      "sha256": "14b9a63f4b521899fde06344bc45e6b36f1c514b786d3952fd399b8147718443",
+      "bytes": 95026,
+      "sourceDimensions": [
+        2048,
+        2048
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "artifact_message_mirror",
+      "collection": "artifact",
+      "title": "传讯铜镜",
+      "topicTag": "artifact_message_mirror",
+      "path": "/scenes/candidate/atlas/artifact_message_mirror.webp",
+      "mimeType": "image/webp",
+      "width": 1000,
+      "height": 1000,
+      "sourcePath": "08-法宝器物/法宝-传讯铜镜.jpg",
+      "sourceSha256": "31c048c1571ca85cc9f3dfd864a8e1e18806805745c074d0ace3fe89457688d8",
+      "sourceManifestVerification": "verified",
+      "sha256": "39f277717cbbf6bfd136becb3811c602d5f704bd31d082043c227f8fd0bc6365",
+      "bytes": 71554,
+      "sourceDimensions": [
+        2048,
+        2048
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "artifact_haotian_sword_token",
+      "collection": "artifact",
+      "title": "昊天剑令",
+      "topicTag": "artifact_haotian_sword_token",
+      "path": "/scenes/candidate/atlas/artifact_haotian_sword_token.webp",
+      "mimeType": "image/webp",
+      "width": 1000,
+      "height": 1000,
+      "sourcePath": "08-法宝器物/法宝-昊天剑令.jpg",
+      "sourceSha256": "a8d61acbfa2802966b38f3fb09927280db014f6dd7fa6edce561c95f3d496cfd",
+      "sourceManifestVerification": "verified",
+      "sha256": "9bc8deb0faf83added622db3bf6b875429d64d61e1d7fad234347b04c89d3a7d",
+      "bytes": 63848,
+      "sourceDimensions": [
+        2048,
+        2048
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "artifact_protective_mirror",
+      "collection": "artifact",
+      "title": "护身灵镜",
+      "topicTag": "artifact_protective_mirror",
+      "path": "/scenes/candidate/atlas/artifact_protective_mirror.webp",
+      "mimeType": "image/webp",
+      "width": 1000,
+      "height": 1000,
+      "sourcePath": "08-法宝器物/法宝-护身灵镜.jpg",
+      "sourceSha256": "42e33cc35cdb3e61478d0424ca51376ca61a4eba7d57aa9136d24b67a50116ed",
+      "sourceManifestVerification": "verified",
+      "sha256": "803c5de39f3beaa4864dc7011d003e5230dfe896012aa3185174ffe1ade678c7",
+      "bytes": 80742,
+      "sourceDimensions": [
+        2048,
+        2048
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "artifact_binding_rope",
+      "collection": "artifact",
+      "title": "捆仙索",
+      "topicTag": "artifact_binding_rope",
+      "path": "/scenes/candidate/atlas/artifact_binding_rope.webp",
+      "mimeType": "image/webp",
+      "width": 1000,
+      "height": 1000,
+      "sourcePath": "08-法宝器物/法宝-捆仙索.jpg",
+      "sourceSha256": "d32a9c02ad92ef8c81308b45362b5d5f03a883789932a7c86e61eaa246e00bb5",
+      "sourceManifestVerification": "verified",
+      "sha256": "db069cc485ba4b6140f13e8b0ccd96bd41a612c3c2669646c7264fba8ace83a7",
+      "bytes": 107860,
+      "sourceDimensions": [
+        2048,
+        2048
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "artifact_mountain_river_fan",
+      "collection": "artifact",
+      "title": "山河扇",
+      "topicTag": "artifact_mountain_river_fan",
+      "path": "/scenes/candidate/atlas/artifact_mountain_river_fan.webp",
+      "mimeType": "image/webp",
+      "width": 1000,
+      "height": 1000,
+      "sourcePath": "08-法宝器物/法宝-山河扇.jpg",
+      "sourceSha256": "6af9e1de7f84ac63b99e44d4c88b1d81e8a2845dd6836fc41fbf3e1031b57c5f",
+      "sourceManifestVerification": "verified",
+      "sha256": "adf7295c9cdb4faa3c2be07608ffdb26de1d9cdb95475beffdc1443ad581ec25",
+      "bytes": 84080,
+      "sourceDimensions": [
+        2048,
+        2048
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "artifact_sacred_fire_token",
+      "collection": "artifact",
+      "title": "圣火令",
+      "topicTag": "artifact_sacred_fire_token",
+      "path": "/scenes/candidate/atlas/artifact_sacred_fire_token.webp",
+      "mimeType": "image/webp",
+      "width": 1000,
+      "height": 1000,
+      "sourcePath": "08-法宝器物/法宝-圣火令.jpg",
+      "sourceSha256": "ce745fe21215192ae7b9934284738285a42d225e762e701edb5cd6bbf19f2a2f",
+      "sourceManifestVerification": "verified",
+      "sha256": "e1586a6189e7c0a70799e44277a9404659d8912d623f940199bf046a5f4262c8",
+      "bytes": 78912,
+      "sourceDimensions": [
+        2048,
+        2048
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "artifact_five_poison_vessel",
+      "collection": "artifact",
+      "title": "五毒蛊盅",
+      "topicTag": "artifact_five_poison_vessel",
+      "path": "/scenes/candidate/atlas/artifact_five_poison_vessel.webp",
+      "mimeType": "image/webp",
+      "width": 1000,
+      "height": 1000,
+      "sourcePath": "08-法宝器物/法宝-五毒蛊盅.jpg",
+      "sourceSha256": "67b6f84b1f1a8b492ddd5741973e64548ed90960fe7e749cd477ad0bfbb5f55a",
+      "sourceManifestVerification": "verified",
+      "sha256": "6d73c068d674153ce028867da5df9cf8f1cfcbd965662e981a1f3826780da0c8",
+      "bytes": 94346,
+      "sourceDimensions": [
+        2048,
+        2048
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "artifact_wind_boat",
+      "collection": "artifact",
+      "title": "御风灵舟",
+      "topicTag": "artifact_wind_boat",
+      "path": "/scenes/candidate/atlas/artifact_wind_boat.webp",
+      "mimeType": "image/webp",
+      "width": 1000,
+      "height": 1000,
+      "sourcePath": "08-法宝器物/法宝-御风灵舟.jpg",
+      "sourceSha256": "ee6ad00a5b6b42da961602c65bbd7aa07582f1d5233587a2eb6bc8531f647d6a",
+      "sourceManifestVerification": "verified",
+      "sha256": "e9557c741d4ffd5c4e20cb4462d72f2ca8c6a53eb50f74576bcf08ddc451124f",
+      "bytes": 77360,
+      "sourceDimensions": [
+        2048,
+        2048
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "artifact_purple_gold_gourd",
+      "collection": "artifact",
+      "title": "紫金葫芦",
+      "topicTag": "artifact_purple_gold_gourd",
+      "path": "/scenes/candidate/atlas/artifact_purple_gold_gourd.webp",
+      "mimeType": "image/webp",
+      "width": 1000,
+      "height": 1000,
+      "sourcePath": "08-法宝器物/法宝-紫金葫芦.jpg",
+      "sourceSha256": "b4ed55ec7b13cfbecece7dac89e4ba7de7802cd21823c635c071c42838418cc3",
+      "sourceManifestVerification": "verified",
+      "sha256": "d8ec5efe12b60eb03b86579baad09ab97b937559199d75bdbbe9288b37f3a7df",
+      "bytes": 97586,
+      "sourceDimensions": [
+        2048,
+        2048
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "character_white_robed_sword_cultivator",
+      "collection": "character",
+      "title": "白衣剑修",
+      "topicTag": "character_white_robed_sword_cultivator",
+      "path": "/scenes/candidate/atlas/character_white_robed_sword_cultivator.webp",
+      "mimeType": "image/webp",
+      "width": 900,
+      "height": 1600,
+      "sourcePath": "09-人物志/人物-白衣剑修.jpg",
+      "sourceSha256": "55651a4b2f68330d13b64e4779d57df131bfb5bee6299fb285579bd4b371f796",
+      "sourceManifestVerification": "verified",
+      "sha256": "e6072c80ce08884f8fdebc58961878b70b6eaa3e9c3ad215db6a2b6f78ee5dc0",
+      "bytes": 70528,
+      "sourceDimensions": [
+        1536,
+        2730
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "character_icefield_messenger",
+      "collection": "character",
+      "title": "冰原使者",
+      "topicTag": "character_icefield_messenger",
+      "path": "/scenes/candidate/atlas/character_icefield_messenger.webp",
+      "mimeType": "image/webp",
+      "width": 900,
+      "height": 1600,
+      "sourcePath": "09-人物志/人物-冰原使者.jpg",
+      "sourceSha256": "178237307e19886688a2b17f5d0ef4009c7ea4655b65dd9fbd14c1854907b85b",
+      "sourceManifestVerification": "verified",
+      "sha256": "648ac4a05894c55b11c334f896a7d9ff1caff204c57eb6fa8fe447492114f9e1",
+      "bytes": 146614,
+      "sourceDimensions": [
+        1536,
+        2730
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "character_aged_wanderer",
+      "collection": "character",
+      "title": "苍老散修",
+      "topicTag": "character_aged_wanderer",
+      "path": "/scenes/candidate/atlas/character_aged_wanderer.webp",
+      "mimeType": "image/webp",
+      "width": 900,
+      "height": 1600,
+      "sourcePath": "09-人物志/人物-苍老散修.jpg",
+      "sourceSha256": "d427b300f9c480974793c35dfcbdbfca147280bb5779961de79872e01d0cd847",
+      "sourceManifestVerification": "verified",
+      "sha256": "e82197a153ffc1752f10ab64cbb50d245235f27191c7301959e5d86d1d317e2f",
+      "bytes": 246660,
+      "sourceDimensions": [
+        1536,
+        2730
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "character_dan_room_cultivator",
+      "collection": "character",
+      "title": "丹房女修",
+      "topicTag": "character_dan_room_cultivator",
+      "path": "/scenes/candidate/atlas/character_dan_room_cultivator.webp",
+      "mimeType": "image/webp",
+      "width": 900,
+      "height": 1600,
+      "sourcePath": "09-人物志/人物-丹房女修.jpg",
+      "sourceSha256": "a27874e649381debf38469615bd7c523d48880af5d4b5dde7beab548570dfb9c",
+      "sourceManifestVerification": "verified",
+      "sha256": "35f500c1db09be4102b5375286f6df39cd6a97d86b9c53545d19245dc2ecf9ad",
+      "bytes": 177598,
+      "sourceDimensions": [
+        1536,
+        2730
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "character_black_robed_heretic",
+      "collection": "character",
+      "title": "黑袍邪修",
+      "topicTag": "character_black_robed_heretic",
+      "path": "/scenes/candidate/atlas/character_black_robed_heretic.webp",
+      "mimeType": "image/webp",
+      "width": 900,
+      "height": 1600,
+      "sourcePath": "09-人物志/人物-黑袍邪修.jpg",
+      "sourceSha256": "a3ffa3bc28c0d6081f63f66e27ed0c86c5f9a2f9eeb772df830ec8309c8a830f",
+      "sourceManifestVerification": "verified",
+      "sha256": "3a3a2842f0d31ea6528aa26d12e49b4963a964d7325d760adf427d22dc46c1b3",
+      "bytes": 191382,
+      "sourceDimensions": [
+        1536,
+        2730
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "character_brocade_merchant",
+      "collection": "character",
+      "title": "锦袍商贾",
+      "topicTag": "character_brocade_merchant",
+      "path": "/scenes/candidate/atlas/character_brocade_merchant.webp",
+      "mimeType": "image/webp",
+      "width": 900,
+      "height": 1600,
+      "sourcePath": "09-人物志/人物-锦袍商贾.jpg",
+      "sourceSha256": "51a045f955ad1bafee274d008f4b2786646040e593f00508249e17f99f56d96d",
+      "sourceManifestVerification": "verified",
+      "sha256": "9616179d6fd3bad3ed92dec2b1c96e6cbfea8f7f38633f8ab0668b7d9a3e8339",
+      "bytes": 233788,
+      "sourceDimensions": [
+        1536,
+        2730
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "character_wilderness_hunter",
+      "collection": "character",
+      "title": "蛮荒猎手",
+      "topicTag": "character_wilderness_hunter",
+      "path": "/scenes/candidate/atlas/character_wilderness_hunter.webp",
+      "mimeType": "image/webp",
+      "width": 900,
+      "height": 1600,
+      "sourcePath": "09-人物志/人物-蛮荒猎手.jpg",
+      "sourceSha256": "b7f81c7bc71ca06b8c53859e3f237d5e097672a21dab05632818cd0bd7213637",
+      "sourceManifestVerification": "verified",
+      "sha256": "69a6f89d58ce0e8ff6a569fc9d51156169b25575b07891c1f86f17c56d0045b1",
+      "bytes": 205848,
+      "sourceDimensions": [
+        1536,
+        2730
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "character_miaojiang_gu_master",
+      "collection": "character",
+      "title": "苗疆蛊师",
+      "topicTag": "character_miaojiang_gu_master",
+      "path": "/scenes/candidate/atlas/character_miaojiang_gu_master.webp",
+      "mimeType": "image/webp",
+      "width": 900,
+      "height": 1600,
+      "sourcePath": "09-人物志/人物-苗疆蛊师.jpg",
+      "sourceSha256": "37049b4f2dba93e65785a603a10575cf89c3f0ddf47f09e0525aa584f537f81a",
+      "sourceManifestVerification": "verified",
+      "sha256": "d2e231006e4b803956aeb13bcb3b21ef1cfcaa547c3a9f4cfb69ea9e57580277",
+      "bytes": 182116,
+      "sourceDimensions": [
+        1536,
+        2730
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "character_yanshi_craftsman",
+      "collection": "character",
+      "title": "偃师匠人",
+      "topicTag": "character_yanshi_craftsman",
+      "path": "/scenes/candidate/atlas/character_yanshi_craftsman.webp",
+      "mimeType": "image/webp",
+      "width": 900,
+      "height": 1600,
+      "sourcePath": "09-人物志/人物-偃师匠人.jpg",
+      "sourceSha256": "304a6efc4edcf8cfbba49ff0acc443056221375e0f81b1e75ba8c4e50a564ba4",
+      "sourceManifestVerification": "verified",
+      "sha256": "e73cb88c09c88511ef2759b9611f672a8e0762178c66579179a49ef55e0f6607",
+      "bytes": 244664,
+      "sourceDimensions": [
+        1536,
+        2730
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "character_wandering_monk",
+      "collection": "character",
+      "title": "游方僧人",
+      "topicTag": "character_wandering_monk",
+      "path": "/scenes/candidate/atlas/character_wandering_monk.webp",
+      "mimeType": "image/webp",
+      "width": 900,
+      "height": 1600,
+      "sourcePath": "09-人物志/人物-游方僧人.jpg",
+      "sourceSha256": "b8de8cd4e25099ea3a2816a4807617e96bbc961418dfe20af90f4b0d83bcd524",
+      "sourceManifestVerification": "verified",
+      "sha256": "7b9253a03b9010667bf552dfee2680bf202e2f2476358defaa9e14b1cbf8e4ee",
+      "bytes": 91052,
+      "sourceDimensions": [
+        1536,
+        2730
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "atmosphere_dawn_cloud_sea",
+      "collection": "atmosphere",
+      "title": "朝霞云海",
+      "topicTag": "atmosphere_dawn_cloud_sea",
+      "path": "/scenes/candidate/atlas/atmosphere_dawn_cloud_sea.webp",
+      "mimeType": "image/webp",
+      "width": 1600,
+      "height": 900,
+      "sourcePath": "10-氛围天气/氛围-朝霞云海.jpg",
+      "sourceSha256": "20cad586e6f2a2bfd49e30c6b6d094806bcd4c6e52e10e40385af254ec189bde",
+      "sourceManifestVerification": "verified",
+      "sha256": "fbe0f588fcd293e0ef30b46bab52ddf1311f627fe4a4c8e010795db2db67917d",
+      "bytes": 110984,
+      "sourceDimensions": [
+        2730,
+        1536
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "atmosphere_spring_rain_ferry",
+      "collection": "atmosphere",
+      "title": "春雨江南渡口",
+      "topicTag": "atmosphere_spring_rain_ferry",
+      "path": "/scenes/candidate/atlas/atmosphere_spring_rain_ferry.webp",
+      "mimeType": "image/webp",
+      "width": 1600,
+      "height": 900,
+      "sourcePath": "10-氛围天气/氛围-春雨江南渡口.jpg",
+      "sourceSha256": "35b591aa494ed0fadadb3380f169ccee628e111a978b3e0f8b41f875b0d72c67",
+      "sourceManifestVerification": "verified",
+      "sha256": "70eb811e0f0afae769010121e01336e3617c391d1f656887c1c819b76f9ad273",
+      "bytes": 132858,
+      "sourceDimensions": [
+        2730,
+        1536
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "atmosphere_stormy_night_temple",
+      "collection": "atmosphere",
+      "title": "雷雨夜荒庙",
+      "topicTag": "atmosphere_stormy_night_temple",
+      "path": "/scenes/candidate/atlas/atmosphere_stormy_night_temple.webp",
+      "mimeType": "image/webp",
+      "width": 1600,
+      "height": 900,
+      "sourcePath": "10-氛围天气/氛围-雷雨夜荒庙.jpg",
+      "sourceSha256": "7ee382c278f909726afc6157dcd0e4e17e9d6d84c07ea97236e70701fc07276e",
+      "sourceManifestVerification": "verified",
+      "sha256": "0d30f843a0825e0427ba9fab1e2569b21b5a31364262a301d79247c3e2b5c4b1",
+      "bytes": 155646,
+      "sourceDimensions": [
+        2730,
+        1536
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "atmosphere_misty_forest",
+      "collection": "atmosphere",
+      "title": "浓雾深林",
+      "topicTag": "atmosphere_misty_forest",
+      "path": "/scenes/candidate/atlas/atmosphere_misty_forest.webp",
+      "mimeType": "image/webp",
+      "width": 1600,
+      "height": 900,
+      "sourcePath": "10-氛围天气/氛围-浓雾深林.jpg",
+      "sourceSha256": "fe21744db508719a3048475a7116a95612317ce17728c33d367abf13f36bd629",
+      "sourceManifestVerification": "verified",
+      "sha256": "308ea5f303d4370b76f5f543e4fce4572fe131d5d23940765a9664f565f5e4b0",
+      "bytes": 131378,
+      "sourceDimensions": [
+        2730,
+        1536
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "atmosphere_autumn_red_leaf_road",
+      "collection": "atmosphere",
+      "title": "秋山红叶古道",
+      "topicTag": "atmosphere_autumn_red_leaf_road",
+      "path": "/scenes/candidate/atlas/atmosphere_autumn_red_leaf_road.webp",
+      "mimeType": "image/webp",
+      "width": 1600,
+      "height": 900,
+      "sourcePath": "10-氛围天气/氛围-秋山红叶古道.jpg",
+      "sourceSha256": "e42a849c61da18f0a9df72db2a09a55caf1b3aa0a62dba20dd075564b5ed207e",
+      "sourceManifestVerification": "verified",
+      "sha256": "2b238c9a0f6e6580f58004625002808f26531778c2495245a9f72874b83cfe4a",
+      "bytes": 292854,
+      "sourceDimensions": [
+        2730,
+        1536
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "atmosphere_moonlit_snow_gate",
+      "collection": "atmosphere",
+      "title": "月夜雪景山门",
+      "topicTag": "atmosphere_moonlit_snow_gate",
+      "path": "/scenes/candidate/atlas/atmosphere_moonlit_snow_gate.webp",
+      "mimeType": "image/webp",
+      "width": 1600,
+      "height": 900,
+      "sourcePath": "10-氛围天气/氛围-月夜雪景山门.jpg",
+      "sourceSha256": "07802ca2026ae698b90b7310e65e0b928588bd2749ab392ede92f0022b32fc3c",
+      "sourceManifestVerification": "verified",
+      "sha256": "fbf9e7643a241e68188d1b6496db806e82f9f577db5c152399ca470386861399",
+      "bytes": 120024,
+      "sourceDimensions": [
+        2730,
+        1536
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "battle_sword_duel",
+      "collection": "battle",
+      "title": "剑修斗法",
+      "topicTag": "battle_sword_duel",
+      "path": "/scenes/candidate/atlas/battle_sword_duel.webp",
+      "mimeType": "image/webp",
+      "width": 1600,
+      "height": 900,
+      "sourcePath": "11-战斗场景/战斗-剑修斗法.jpg",
+      "sourceSha256": "d86091f94e178c3bf9aaee56ca9bae60f139d7c18a8c6266e7cd4de0c5c91cc8",
+      "sourceManifestVerification": "verified",
+      "sha256": "7310089b7acc12c0b92f8963dbe0c65b716de19386dbcb23275258cdcad9e81e",
+      "bytes": 150450,
+      "sourceDimensions": [
+        2730,
+        1536
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "battle_beast_clash",
+      "collection": "battle",
+      "title": "灵兽相搏",
+      "topicTag": "battle_beast_clash",
+      "path": "/scenes/candidate/atlas/battle_beast_clash.webp",
+      "mimeType": "image/webp",
+      "width": 1600,
+      "height": 900,
+      "sourcePath": "11-战斗场景/战斗-灵兽相搏.jpg",
+      "sourceSha256": "26b603bd8d097b7f320cc8738e205ffb4960924eba9af5192636fb8fc77111bb",
+      "sourceManifestVerification": "verified",
+      "sha256": "8d3387686f1a3ce3bdedd4b1eecb5f2767b233e08b998155accae2439f078724",
+      "bytes": 305360,
+      "sourceDimensions": [
+        2730,
+        1536
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "battle_spell_exchange",
+      "collection": "battle",
+      "title": "修士斗法",
+      "topicTag": "battle_spell_exchange",
+      "path": "/scenes/candidate/atlas/battle_spell_exchange.webp",
+      "mimeType": "image/webp",
+      "width": 1600,
+      "height": 900,
+      "sourcePath": "11-战斗场景/战斗-修士斗法.jpg",
+      "sourceSha256": "8e34d0f04a4e50236ba6668e6c907ce807a5061bb5e484f544262b14e672d9fb",
+      "sourceManifestVerification": "verified",
+      "sha256": "4b7d12adb22f8cddde2c78078599664cd3acbf79cdf949d405cbf9ea0c06eda0",
+      "bytes": 162762,
+      "sourceDimensions": [
+        2730,
+        1536
+      ],
+      "metadataValuesCopied": false,
+      "visualOnly": true
+    },
+    {
+      "assetId": "battle_flying_sword_travel",
+      "collection": "battle",
+      "title": "行动 · 御剑飞行",
+      "topicTag": "action_flying_sword_travel",
+      "path": "/scenes/candidate/atlas/battle_flying_sword_travel.webp",
+      "mimeType": "image/webp",
+      "width": 1600,
+      "height": 900,
+      "sourcePath": "11-战斗场景/战斗-御剑飞行.jpg",
+      "sourceSha256": "59fe5d42510736aac85b4e52603aee2028463f2ffa63289883ba11c048245743",
+      "sourceManifestVerification": "verified",
+      "sha256": "aa3032a11dedc7dd5b1c0a5fbd3f8789ebd88f42fe244c1d532a1289660b52f8",
+      "bytes": 155644,
       "sourceDimensions": [
         2730,
         1536

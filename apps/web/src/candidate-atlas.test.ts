@@ -18,11 +18,11 @@ describe('candidate illustration atlas', () => {
     const paths = new Set(illustrations.map(item => item.path));
 
     expect(manifest).toMatchObject({ sourceAndLicense: 'unverified', authorApproval: 'pending', runtimeIntegrated: true });
-    expect(manifest.files).toHaveLength(54);
-    expect(CANDIDATE_ILLUSTRATIONS).toHaveLength(44);
-    expect(Object.fromEntries(['world', 'faction', 'system', 'brand', 'texture'].map(collection => [
+    expect(manifest.files).toHaveLength(84);
+    expect(CANDIDATE_ILLUSTRATIONS).toHaveLength(74);
+    expect(Object.fromEntries(['world', 'faction', 'system', 'brand', 'texture', 'artifact', 'character', 'atmosphere', 'battle'].map(collection => [
       collection, CANDIDATE_ILLUSTRATIONS.filter(item => item.collection === collection).length,
-    ]))).toEqual({ world: 7, faction: 16, system: 14, brand: 4, texture: 3 });
+    ]))).toEqual({ world: 7, faction: 16, system: 14, brand: 4, texture: 3, artifact: 10, character: 10, atmosphere: 6, battle: 4 });
     expect(ids.size).toBe(CANDIDATE_ILLUSTRATIONS.length);
     expect(illustrations).toHaveLength(CANDIDATE_ILLUSTRATIONS.length);
     for (const illustration of CANDIDATE_ILLUSTRATIONS) {
