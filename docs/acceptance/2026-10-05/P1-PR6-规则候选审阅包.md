@@ -55,7 +55,7 @@ a4b8fbf7e612084007112ed3fac52d711deb461f652788a71fd791ce05ebc0e2
 | `pnpm --filter @jiuxiao/contracts test` | 退出 0；2 files / 17 tests passed |
 | `pnpm test` | 退出 0；core 28/28，contracts 17，content 43，domain 112，API 97 passed / 31 skipped，Web 157 passed |
 | `TEST_DATABASE_URL=<isolated jiuxiao_test_pr6> pnpm test:integration` | 退出 0；10 files / 36 tests passed。使用隔离容器 `jx-p1-pr5-pg` 内新建的 `jiuxiao_test_pr6`；该库已应用 16 条迁移。此套件覆盖既有 API/DB 集成，不等同于 PR-6 游客玩法 E2E。 |
-| `TEST_DATABASE_URL=<isolated jiuxiao_test_pr6> pnpm test:e2e` | 退出 0；既有手机/桌面 UI 回归通过；新增 P1 普通 HTTP API 门禁预检通过，真实 session 下 `/api/games` 与 `/api/turns` 均返回 `503 RULES_NOT_READY`，未写入存档/回执/事件/NPC 记忆。完整玩法旅程仍未运行。 |
+| `TEST_DATABASE_URL=<isolated jiuxiao_test_pr6> pnpm test:e2e` | 本表记录早期基线：仅完成普通 API fail-closed 预检。其后邮箱会话下的非生产候选玩法旅程见下方 2026-10-05 更新。 |
 | `pnpm typecheck` | 退出 0；contracts、content、domain、db、api、web 六个项目通过 |
 | `pnpm build` | 退出 0；Canon runtime 34 confirmed entries；`receiptsComplete=false`；保留 >500 kB chunk warning |
 | `git diff --check` | 退出 0；无输出 |
@@ -71,7 +71,7 @@ a4b8fbf7e612084007112ed3fac52d711deb461f652788a71fd791ce05ebc0e2
 - Candidate rulebook 未从 `packages/content/src/index.ts` 导出；只由精确 review plugin 在非 production 环境加载。活动 Canon/runtime 与 `receiptsComplete=false` 均未改变。
 - 本摘要是供作者审阅的精确候选，不是作者批准记录、生产版本号、Canon 发布回执或 P1/PR-6 完成声明。
 - LYL 在 Codex 对话中明确代表两位作者批准上述完整摘要；记录见 [`P1-PR6 规则摘要双作者批准记录`](P1-PR6-规则摘要双作者批准记录.md)。批准仅支持该精确包进入非生产运行时核验，不等于生产授权、活动 Canon 或 GitHub review event。
-- PR-6 仍缺：普通游客 API 零配置验收（用户决定保留邮箱登录，因此该门保持未完成）、首个可点行动 ≤3 秒与首个任务 ≤3 分钟证据、自然语言到生产规则 API 接线、将 NPC 授权记忆召回注入叙事层。邮箱会话非生产旅程通过，不可替代这些门。
+- 此处早期记录的缺口已由下方更新逐项复核。授权观察 outbox 召回已接入叙事路径；剩余项目以文末“当前未关闭的验收门”为准，不再把已完成的记忆接线重复计作缺口。
 - 本次未改 deployment、未改既有迁移、未解除任何 production fail-closed 门禁、未启用活动 Canon。当前改动位于隔离 worktree；需按仓库提交授权交给 PR #61 审阅，并等待新 head CI。
 
 ## 2026-10-05 非生产运行时与认证旅程更新
@@ -91,4 +91,43 @@ a4b8fbf7e612084007112ed3fac52d711deb461f652788a71fd791ce05ebc0e2
 
 叙事边界：NPC 回忆从追加写入的授权观察 outbox 重建，并按 V2 存档中的策略版本检索；只有当前直接交谈的 NPC 会被注入上下文。服务层测试证明上下文被过滤并传给 narrator，provider 测试证明 prompt 显式约束其用途；E2E 没有启用模型，故未证明模型确实按回忆作出合格回应，也未验证真人长局中的遗忘体验。模型不可用时，服务从同一已提交 receipt 生成确定性文本，不重跑规则。review plugin 源码 SHA-256 为 `94c57793bfde874469b81c1d97c914ab5591d628631564679f07d7e3aef83735`，运行时非生产加载前校验。
 
-总体验收边界：此旅程使用测试夹具预置邮箱 session，只在 `NODE_ENV=test` 加载精确 review plugin。它不是游客旅程，也不把候选规则发布为 Canon。生产 API 仍由 `AUTHOR_RULES_GATE` fail-closed，Canon `receiptsComplete=false` 未变。用户要求保留邮箱登录并维持游客门未完成；因此 PR-6/P1 不得宣称完成。自然语言到生产规则 API 接线、活动 Canon 的独立门禁、PR-7/8、15 分钟真人设备记录等仍开放。
+总体验收边界：此旅程使用测试夹具预置邮箱 session，只在 `NODE_ENV=test` 加载精确 review plugin。它不是游客旅程，也不把候选规则发布为 Canon。生产 API 仍由 `AUTHOR_RULES_GATE` fail-closed，Canon `receiptsComplete=false` 未变。用户要求保留邮箱登录并维持游客门未完成；因此 PR-6/P1 不得宣称完成。PR-8 的时段规则和自动化测试已在该候选包中通过；PR-7、首屏/首任务限时证据、真实设备记录仍开放。
+
+## 2026-10-05 精确 head CI 与制品复核
+
+PR #61 head `1517a4a9c6cb467c08fc6594903af7c69f6cef7e` 的 Actions run [`37290513895`](https://github.com/L-core-dev-team/Nine-cloud/actions/runs/37290513895) 已完成且结论为 success。run 中冻结安装、许可证检查、typecheck、单测、build、规则 fail-closed、API 容器、PostgreSQL 集成、E2E、耐久 UI、邮件/云浏览器、备份恢复、制品绑定和审阅包上传均成功。CI 工程包包含 `RC_MANIFEST.json`，绑定同一 commit 与 artifact hash `sha256:ecf9af82fbed2e36e26a48e59450b0d97db66e60662dd8522ebc1d958cf64176`；`CI_STATUS_AT_GENERATION` 为 `in_progress`，但其所绑定的 run 后续已结束并通过。`DeviceTestRecord.json` 的状态仍为 `DEVICE_TEST_PENDING`，设备、浏览器、时长、帧率、内存、温度与审核人均为空；CI 不能代替真人 15 分钟实机记录。
+
+### 当前未关闭的验收门
+
+- 普通游客零配置完成首个任务 ≤3 分钟：依用户指示保留邮箱登录且游客门保持未完成。邮箱会话 E2E 不替代游客验收。
+- 确定性解析器已接入精确获批的非生产 candidate runtime；解析只使用当前存档授权的可见目标目录。生产 `AUTHOR_RULES_GATE` 仍关闭，不允许该 candidate 进入生产 `/api/turns`。
+- PR-7 工程实现已包括状态派生建议、点击后写入可编辑 free-text、低体力描写、岑九伤势回应、第三次闲谈钩子及 W3/W8 自动检查；本轮仍需精确 head CI 和 15 分钟真实设备记录，才可判断 PR-7 阶段退出。
+- 390×844 浏览器视口 E2E 通过，选档后首条建议按钮 28 ms 可见。这是模拟视口证据，不满足实机记录。
+- `DeviceTestRecord.json` 仍待填入实际设备、浏览器、持续时间、帧率、内存、温度与审核人。
+- 活动 Canon 与生产规则门仍受 S 轨 G-03/G-04a 独立门禁约束；这不是 PR-6 候选 E2E 的通过证据，也不并入 P 轨销账。
+
+## 2026-10-05 PR-6/PR-7 本地工程复验
+
+基于 PR #61 已通过 CI 的父提交 `1517a4a9c6cb467c08fc6594903af7c69f6cef7e`，本次工作树新增 free-text 到确定性 parser/reducer 的 candidate-only 接线、存档状态派生的建议接口与可编辑按钮、状态派生叙事提示和对应测试。解析器不读取自然语言模型输出作为权限或结算依据；候选 runtime 仅在精确摘要审核路径里可加载。新建存档时写入的 `creationRequestHash` 是持久化幂等元数据，不属于严格 P1 facts；parser/建议目录构造前将它剥离，避免存储字段使整份游戏事实解析失败。
+
+同一工作树的 `pnpm test:e2e` 退出码为 0。它包括 390/1366px 浏览器视口基础回归、API `RULES_NOT_READY` 负向门、邮箱会话下两种记忆策略的候选规则旅程，以及新增的建议按钮 UI 回归。建议按钮在选档后 28 ms 可见；点选后行动类别仍为 `free_text`，文本仍可编辑。此数据来自 emulated Chromium 视口，不是物理设备。
+
+本地 `pnpm install --frozen-lockfile`、`pnpm typecheck`、`pnpm test`、隔离 PostgreSQL 的 `pnpm test:integration`、`pnpm build`、`pnpm license:check` 均退出 0。完整单测中 API/PG 的 31 项因为未设置 `TEST_DATABASE_URL` 而跳过；独立集成套件在 `jiuxiao_test_pr6` 上 10 文件 / 36 项通过。build 仍以 `receiptsComplete=false` 执行显式 pending-receipts 路径；34 条 confirmed runtime 记录和 >500 kB 前端 chunk 提示均保留。
+
+Codex 依用户明确授权替代可由软件完成的人工检查，对本候选文本及三条 runtime hint 逐条检查了 §3.8 W1–W10 和自检三问：当前固定语料中 W3 无破折号，W8 每条完整文本均命中 SHA 校验过的作者来源；低体力、岑九伤势问句及第三次闲谈钩子只由提交后状态/回执触发，且不写入事实投影。体力/伤势提示仅在当前存档 revision 与回执 `resultingRevision` 一致时读取，避免旧回执叙事引用更晚存档的状态。这个模型辅助审读不是 Bird 的 GitHub review，也不能证明未来任意模型输出都符合写作纪律；运行时 W3/W8 门禁只覆盖登记文本与这三条固定提示。
+
+### 当前退出计数
+
+| P1 总退出项 | 状态 | 依据 |
+| --- | --- | --- |
+| 八类行动与结构化结算样例 | 本地通过 | 规则候选测试覆盖 move、cultivate、acquire_item、use_item、talk、observe、combat、quest，并覆盖成功、合法失败和零事件拒绝。 |
+| 游客零配置首任务 ≤3 分钟 | **保持开放** | 用户明确要求保留邮箱登录并暂不关闭游客门。不能用预置 session 测试替代。 |
+| 幂等重试 / 叙事重试不重结算 | 本地通过 | candidate E2E 检查相同 receipt、事件 id、回退叙事及数据库事件计数。 |
+| 观察每次返回 clue 或 `none` | 本地通过 | candidate/reducer 测试覆盖找到线索、重复观察 `none` 和暗时段阻断。 |
+| 双账号隔离 | 本地通过 | PostgreSQL integration 对 foreign owner 查询返回 not-found，且不泄漏存档存在性。 |
+| NLU-01–14 语料与作者共同认可 | 已记录 | 依用户确认的共同认可材料及 PR-4 执行记录；不再要求重复盲标或 Bird review。 |
+| `RULES_NOT_READY` fail-closed | 本地通过 | E2E 负向路径确认错误规则模块不写存档、回执、事件或 NPC memory。 |
+| 同一提交 RC manifest / artifact hash | **待新 head CI** | 当前工作树尚未推送；父提交 CI 不覆盖本次改动。 |
+| P 轨与 S/UI 轨分开 | 已核对 | 只更新 P 轨代码、测试和文档；没有改写 S/UI 台账。 |
+
+因此，在新 head CI 通过之后，九项总退出里仍有一项按用户裁决保持开放：游客首局。PR-7 的 15 分钟真实设备记录是另一项独立阶段门；当前生成的 `DeviceTestRecord.json` 仍为 `DEVICE_TEST_PENDING`。二者都不能由本地浏览器模拟数据代填。生产 `AUTHOR_RULES_GATE` / Canon 收据继续按 S 轨既有 fail-closed 门禁处理，不并入 P1 销账。

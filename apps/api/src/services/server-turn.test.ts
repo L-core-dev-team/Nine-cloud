@@ -186,6 +186,8 @@ describe('server turn orchestration (synthetic rules, never production gameplay)
     expect(result).toMatchObject({ status: 'accepted', narrative: { status: 'received', source: 'model' } });
     expect(reader).toHaveBeenCalledOnce();
     expect(received).toEqual([{
+      playerConditionLines: [],
+      npcUtterances: [],
       npcMemories: [{ npcId: 'visible-npc', observations: [{
         summary: 'topicTag=topic_route;outcome=on_topic', accessibility: 1,
       }] }],

@@ -17,8 +17,15 @@ describe('five existing narrative roles, synthetic adapters only', () => {
   const adapter:RoleAdapter=vi.fn(async input=>{expect(input.context).toEqual(context);return {text:'story',outputTokens:1};});
   await new NarrativeScheduler({story:slot(adapter)},20).run(receipt,new AbortController().signal,context);
   expect(adapter).toHaveBeenCalledOnce();
-  await expect(new NarrativeScheduler({story:slot(adapter)},20).run(receipt,new AbortController().signal,
+ await expect(new NarrativeScheduler({story:slot(adapter)},20).run(receipt,new AbortController().signal,
    {npcMemories:[{npcId:'npc_cenjiu',observations:[{summary:'x',accessibility:2}]}]})).rejects.toThrow('INVALID_NARRATIVE_CONTEXT');
+ });
+ it('passes bounded state-derived cues and speaker-bound authored utterances',async()=>{
+  const context={npcMemories:[],playerConditionLines:['手在抖'],npcUtterances:[{npcId:'npc_cenjiu',line:'肩上怎么了'}]};
+  const adapter:RoleAdapter=vi.fn(async input=>{expect(input.context).toEqual(context);return {text:'story',outputTokens:1};});
+  await new NarrativeScheduler({story:slot(adapter)},20).run(receipt,new AbortController().signal,context);
+  await expect(new NarrativeScheduler({story:slot(adapter)},20).run(receipt,new AbortController().signal,
+   {npcMemories:[],playerConditionLines:['x'.repeat(241)]})).rejects.toThrow('INVALID_NARRATIVE_CONTEXT');
  });
  it('times out an uncooperative provider, reserves its budget and uses bounded fallback', async () => {
   const never: RoleAdapter = vi.fn(async () => new Promise(() => {})); const fallback: RoleAdapter = vi.fn(async () => ({text:'fallback story',outputTokens:2}));

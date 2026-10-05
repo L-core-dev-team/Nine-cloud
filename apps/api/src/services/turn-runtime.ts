@@ -8,6 +8,7 @@ import { AUTHOR_RULES_GATE } from './author-rules-gate.js';
 import type { ServerTurnRules } from './server-turn.js';
 import { NarrativeScheduler, type NarrativeContext, type RoleSlot, type NarrativeRole } from './narrative-scheduler.js';
 import { P1_REVIEW_RULE_APPROVAL, type P1ReviewRuleApproval } from './p1-review-rule-approval.js';
+import { loadP1NluRuntime, type P1NluRuntime } from './p1-nlu-runtime.js';
 
 /** A review-only candidate must match the pinned author-approved digest. */
 export type TurnPlugin = {
@@ -18,13 +19,28 @@ export type TurnPlugin = {
  policyForNpc: ServerTurnRules['policyForNpc'];
  initialState: (input: {ownerId:string;saveId:string;choices:Readonly<Record<string,unknown>>}) => WorldState;
  narrativeFallback?: (receipt: TurnReceipt, context: NarrativeContext) => string;
+ resolveFreeText?: P1NluRuntime['resolveFreeText'];
+ actionSuggestions?: P1NluRuntime['actionSuggestions'];
 };
 export function prepareTurnRuntime(plugin: TurnPlugin, slots:Partial<Record<NarrativeRole,RoleSlot>>={},budget=32768) {
  if (!plugin || typeof plugin.grantsForEvent!=='function' || typeof plugin.policyForNpc!=='function' || typeof plugin.initialState!=='function' || (plugin.narrativeFallback!==undefined&&typeof plugin.narrativeFallback!=='function') || (!!plugin.rules === !!plugin.provider)) throw new Error('INVALID_TURN_PLUGIN');
- const rules=plugin.rules ?? new RuleResolver(plugin.provider!,plugin.grantsForEvent,plugin.policyForNpc);
- if(typeof rules.decide!=='function'||typeof rules.reduce!=='function'||typeof rules.ruleVersion!=='string'||typeof rules.canonVersion!=='string'||typeof rules.memoryPolicyVersion!=='string')throw new Error('INVALID_TURN_PLUGIN_RULES');
+ const baseRules=plugin.rules ?? new RuleResolver(plugin.provider!,plugin.grantsForEvent,plugin.policyForNpc);
+ if(typeof baseRules.decide!=='function'||typeof baseRules.reduce!=='function'||typeof baseRules.ruleVersion!=='string'||typeof baseRules.canonVersion!=='string'||typeof baseRules.memoryPolicyVersion!=='string')throw new Error('INVALID_TURN_PLUGIN_RULES');
+ const rules:ServerTurnRules=plugin.resolveFreeText?{
+  ruleVersion:baseRules.ruleVersion,
+  canonVersion:baseRules.canonVersion,
+  memoryPolicyVersion:baseRules.memoryPolicyVersion,
+  grantsForEvent:baseRules.grantsForEvent,
+  policyForNpc:baseRules.policyForNpc.bind(baseRules),
+  decide(intent,save){return intent.kind==='free_text'
+   ?plugin.resolveFreeText!(intent,save,baseRules.decide.bind(baseRules))
+   :baseRules.decide(intent,save);},
+  reduce:baseRules.reduce.bind(baseRules),
+ }:baseRules;
  const scheduler=new NarrativeScheduler(slots,budget,trace=>console.info(JSON.stringify({event:'narrative_job',...trace})));
- return {rules,narrator:scheduler.narrator(),narrativeFallback:plugin.narrativeFallback,initialState:(input:Parameters<TurnPlugin['initialState']>[0])=>WorldStateSchema.parse(plugin.initialState(structuredClone(input)))};
+ return {rules,narrator:scheduler.narrator(),narrativeFallback:plugin.narrativeFallback,
+  ...(plugin.actionSuggestions?{actionSuggestions:plugin.actionSuggestions}:{}),
+  initialState:(input:Parameters<TurnPlugin['initialState']>[0])=>WorldStateSchema.parse(plugin.initialState(structuredClone(input)))};
 }
 export async function loadTurnPlugin(path:string|undefined,load:(url:string)=>Promise<unknown>=url=>import(url)):Promise<TurnPlugin|undefined>{
  if (!path) return undefined;
@@ -40,8 +56,9 @@ export async function loadTurnPlugin(path:string|undefined,load:(url:string)=>Pr
   if(!module||typeof module!=='object'||!('default' in module))throw new Error('INVALID_TURN_PLUGIN');
   const plugin=(module as {default:TurnPlugin}).default;
   if(!matchesApprovedReviewPlugin(plugin))throw new Error('P1_REVIEW_RULE_APPROVAL_MISMATCH');
-  prepareTurnRuntime(plugin);
-  return plugin;
+  const reviewedPlugin:TurnPlugin={...plugin,...await loadP1NluRuntime()};
+  prepareTurnRuntime(reviewedPlugin);
+  return reviewedPlugin;
  }
  // A configured file is not evidence that production rules were approved.
  // Keep the normal runtime closed until its independent author gate is signed.

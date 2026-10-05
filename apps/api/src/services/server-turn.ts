@@ -14,6 +14,7 @@ import type {
 } from './npc-memory-turn-transaction.js';
 import type { NarrativeContext } from './narrative-scheduler.js';
 import { buildNarrativeMemoryContext, type AuthorizedObservationPageReader } from './narrative-memory-context.js';
+import { buildP1NarrativeHints, ensureP1NarrativeHints } from './p1-narrative-hints.js';
 
 /** Supplied only by the host's versioned rules and visibility implementation. */
 export interface ServerTurnRules {
@@ -131,7 +132,7 @@ export class ServerTurnService {
     if (committed.kind === 'conflict' || committed.kind === 'memory_conflict') {
       return { status: 'revision_conflict', currentRevision: committed.currentRevision };
     }
-    return this.completed(ownerId, committed.receipt, committed.kind === 'duplicate', requestNarrative, cancellation, save);
+    return this.completed(ownerId, committed.receipt, committed.kind === 'duplicate', requestNarrative, cancellation, prepared.save);
   }
 
   private async completed(ownerId:string, raw: TurnReceipt, duplicate: boolean, requestNarrative: boolean, cancellation?: AbortSignal, save?: SaveEnvelope): Promise<ServerTurnResult> {
@@ -147,13 +148,13 @@ export class ServerTurnService {
       await log('generating');
       if (cancellation?.aborted) narrative = { status: 'failed', code: 'NARRATIVE_CANCELLED' };
       else {
-        let context: NarrativeContext = { npcMemories: [] };
+        let context: NarrativeContext = { npcMemories: [], ...buildP1NarrativeHints(receipt, save) };
         let memoryContextReady = true;
         try {
           if (save?.schemaVersion === 2) {
             const readAuthorizedPage = this.repository.getAuthorizedObservationPage?.bind(this.repository);
-            context = await buildNarrativeMemoryContext({ ownerId, receipt, save: save as SaveEnvelopeV2,
-              ...(readAuthorizedPage ? { readAuthorizedPage } : {}) });
+            context = { ...(await buildNarrativeMemoryContext({ ownerId, receipt, save: save as SaveEnvelopeV2,
+              ...(readAuthorizedPage ? { readAuthorizedPage } : {}) })), ...buildP1NarrativeHints(receipt, save) };
           }
         } catch {
           // If authorized recall cannot be read, do not send an incomplete or
@@ -194,6 +195,9 @@ export class ServerTurnService {
           } catch {
             // Deterministic presentation failure cannot undo the committed rules turn.
           }
+        }
+        if (narrative.status === 'received') {
+          narrative = { ...narrative, text: ensureP1NarrativeHints(narrative.text, receipt, context) };
         }
       }
       await log(narrative.status==='received'?'received':narrative.status==='failed'?narrative.code==='NARRATIVE_CANCELLED'?'cancelled':narrative.code==='NARRATIVE_TIMEOUT'?'timeout':'unavailable':'unavailable');

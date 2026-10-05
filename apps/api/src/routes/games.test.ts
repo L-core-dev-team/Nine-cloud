@@ -7,6 +7,9 @@ it('binds game creation to server owner and rejects malformed/oversized or cross
  const repo={getForOwner:vi.fn(async()=>null),createForOwner:vi.fn(async()=>false)},app=new Hono();
  mountGames(app,new AuthoritativeGameService(repo),{resolveOwnerId:async()=> 'a'});
  const request=(body:unknown,extra:Record<string,string>={})=>app.request('/api/games',{method:'POST',headers:{'content-type':'application/json',...extra},body:JSON.stringify(body)});
+ expect((await app.request('/api/games/save-one/action-suggestions',{headers:{'x-jiuxiao-account':'b'}})).status).toBe(401);
+ const suggestions=await app.request('/api/games/save-one/action-suggestions');
+ expect(suggestions.status).toBe(503);expect(await suggestions.json()).toEqual({code:'RULES_NOT_READY'});
  const body={idempotencyKey:'request-key',choices:{name:'test'}};
  expect((await request(body,{'x-jiuxiao-account':'b'})).status).toBe(401);
  for(const invalid of [null,[],{...body,owner:'b'},{...body,idempotencyKey:'bad'},{...body,choices:[]}])expect((await request(invalid)).status).toBe(400);

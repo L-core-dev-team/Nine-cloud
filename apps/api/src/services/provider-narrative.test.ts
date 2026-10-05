@@ -15,9 +15,11 @@ it('sends only the filtered NPC recall context as presentation input',async()=>{
  const fetcher=vi.fn<typeof fetch>().mockResolvedValue(Response.json({choices:[{message:{content:'story'}}]}));
  const adapter=providerAdapter({protocol:'openai-chat',baseUrl:'https://provider.example.invalid',model:'fixture',keyEnv:'NARRATIVE_KEY_STORY'},{NARRATIVE_KEY_STORY:'synthetic'},fetcher);
  const summary='topicTag=obstacle_rockslide;outcome=refuse';
- await adapter({...input,context:{npcMemories:[{npcId:'npc_cenjiu',observations:[{summary,accessibility:0.35}]}]}},new AbortController().signal);
+ await adapter({...input,context:{npcMemories:[{npcId:'npc_cenjiu',observations:[{summary,accessibility:0.35}]}],playerConditionLines:['手在抖'],npcUtterances:[{npcId:'npc_cenjiu',line:'肩上怎么了'}]}},new AbortController().signal);
  const body=JSON.parse(String(fetcher.mock.calls[0]?.[1]?.body)) as {messages?:{content?:string}[]};
  expect(body.messages?.[0]?.content).toContain(summary);
+ expect(body.messages?.[0]?.content).toContain('playerConditionLines');
+ expect(body.messages?.[0]?.content).toContain('肩上怎么了');
  expect(body.messages?.[0]?.content).toContain('按 NPC 授权');
 });
 it('fails closed for missing keys, non-HTTPS endpoints, invalid JSON and invalid usage',async()=>{

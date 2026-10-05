@@ -156,14 +156,27 @@ async function waitFor(url, child, stderr) {
       return { result, intent };
     }
 
+    async function actionSuggestions(save) {
+      const response = await fetch(`${origin}/api/games/${encodeURIComponent(save.saveId)}/action-suggestions`, { headers });
+      assert.equal(response.status, 200, await response.clone().text());
+      const result = await response.json();
+      assert.equal(result.revision, save.revision);
+      return result.actions;
+    }
+
     // First prove that a hard rejection leaves the save usable at its original revision.
     let forgetting = await createGame('forgetting');
+    const firstSuggestions = await actionSuggestions(forgetting);
+    assert.ok(firstSuggestions.some(row => row.text === '去望气台'));
+    assert.ok(firstSuggestions.some(row => row.text === '观察渡船'));
+    assert.ok(firstSuggestions.some(row => row.text === '对岑九说：'));
+    assert.ok(!firstSuggestions.some(row => row.kind === 'combat'));
     const invalid = await act(forgetting, 'move', { destinationId: 'loc_unlisted' });
     assert.equal(invalid.result.receipt.decision.status, 'rejected');
     const afterReject = await pool.query('SELECT revision FROM game_saves WHERE id=$1 AND owner_id=$2', [forgetting.saveId, ownerId]);
     assert.equal(afterReject.rows[0].revision, 0);
 
-    const talk = await act(forgetting, 'talk', { npcId: 'npc_cenjiu', utterance: '这石头怎么办' }, randomUUID(), true);
+    const talk = await act(forgetting, 'free_text', { text: '对岑九说：这石头怎么办' }, randomUUID(), true);
     assert.equal(talk.result.receipt.decision.status, 'accepted');
     assert.equal(talk.result.receipt.decision.events[0].type, 'talk.occurred');
     assert.equal(talk.result.narrative.source, 'deterministic');
@@ -179,13 +192,16 @@ async function waitFor(url, child, stderr) {
     assert.equal(duplicateResult.receipt.decision.events[0].id, talk.result.receipt.decision.events[0].id);
     assert.equal(duplicateResult.narrative.text, talk.result.narrative.text);
 
-    const toWangqitai = await act(forgetting, 'move', { destinationId: 'loc_wangqitai' });
+    const toWangqitai = await act(forgetting, 'free_text', { text: '去望气台' });
     assert.equal(toWangqitai.result.receipt.decision.status, 'accepted');
     forgetting.revision++;
-    const scan = await act(forgetting, 'observe', { targetId: 'obstacle_rockslide', method: 'scan' });
+    const scan = await act(forgetting, 'free_text', { text: '观察落石堵渡' });
     assert.equal(scan.result.receipt.decision.events[0].payload.clueId, 'clue_rockslide');
     forgetting.revision++;
-    const bypass = await act(forgetting, 'move', { destinationId: 'loc_luhuadu' });
+    const study = await act(forgetting, 'free_text', { text: '细察落石堵渡' });
+    assert.equal(study.result.receipt.decision.events[0].payload.clueId, 'clue_crow_nest');
+    forgetting.revision++;
+    const bypass = await act(forgetting, 'free_text', { text: '去芦花渡' });
     assert.equal(bypass.result.receipt.decision.events[0].type, 'move.bypassed');
     forgetting.revision++;
     const bypassQuest = await act(forgetting, 'quest', { questId: 'quest_first_clearance', choiceId: 'claim_reward' });
@@ -193,20 +209,24 @@ async function waitFor(url, child, stderr) {
     forgetting.revision++;
 
     let continuing = await createGame('continue');
-    const continueTalk = await act(continuing, 'talk', { npcId: 'npc_cenjiu', utterance: '这石头怎么办' }, randomUUID(), true);
+    const continueTalk = await act(continuing, 'free_text', { text: '对岑九说：这石头怎么办' }, randomUUID(), true);
     assert.equal(continueTalk.result.receipt.decision.events[0].type, 'talk.occurred');
     assert.equal(continueTalk.result.narrative.source, 'deterministic');
     continuing.revision++;
     const pickup = await act(continuing, 'acquire_item', { itemId: 'item_bishuifu', quantity: 1 });
     assert.equal(pickup.result.receipt.decision.events[0].type, 'item.acquired');
     continuing.revision++;
-    const toBerm = await act(continuing, 'move', { destinationId: 'subloc_ferry_berm' });
+    const pickupSuggestions = await actionSuggestions({ ...continuing, revision: continuing.revision });
+    assert.ok(pickupSuggestions.some(row => row.text === '去渡口作业位'));
+    const toBerm = await act(continuing, 'free_text', { text: '去渡口作业位' });
     assert.equal(toBerm.result.receipt.decision.status, 'accepted');
     continuing.revision++;
-    const ward = await act(continuing, 'use_item', { itemId: 'item_bishuifu', targetId: 'subloc_ferry_berm' });
+    const bermSuggestions = await actionSuggestions({ ...continuing, revision: continuing.revision });
+    assert.ok(bermSuggestions.some(row => row.text === '使用避水符在渡口作业位'));
+    const ward = await act(continuing, 'free_text', { text: '使用避水符在渡口作业位' });
     assert.equal(ward.result.receipt.decision.events[0].type, 'item.consumed');
     continuing.revision++;
-    const combat = await act(continuing, 'combat', { targetId: 'npc_shuiyuya' });
+    const combat = await act(continuing, 'free_text', { text: '赶走灰羽鸦' });
     assert.equal(combat.result.receipt.decision.events[0].type, 'combat.resolved');
     assert.equal(combat.result.receipt.decision.events[0].payload.outcome, 'clear');
     continuing.revision++;
@@ -223,14 +243,14 @@ async function waitFor(url, child, stderr) {
       WHERE s.owner_id=$1 ORDER BY s.id`, [ownerId]);
     assert.equal(rows.rows.length, 2);
     const byMode = new Map(rows.rows.map(row => [row.memory_mode, row]));
-    assert.equal(byMode.get('forgetting').revision, 5);
+    assert.equal(byMode.get('forgetting').revision, 6);
     assert.equal(byMode.get('continue').revision, 6);
-    assert.equal(byMode.get('forgetting').journal_revision, 5);
+    assert.equal(byMode.get('forgetting').journal_revision, 6);
     assert.equal(byMode.get('continue').journal_revision, 6);
     assert.equal(byMode.get('forgetting').observations, 1);
     assert.equal(byMode.get('continue').observations, 1);
     for (const [mode, expectedPolicy, expectedMinute, expectedRevision] of [
-      ['forgetting', 'forgetting-v1', 390, 5],
+      ['forgetting', 'forgetting-v1', 420, 6],
       ['continue', 'continue-v1', 405, 6],
     ]) {
       const row = byMode.get(mode);

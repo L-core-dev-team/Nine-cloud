@@ -3,6 +3,17 @@ import {readJson,type CloudSaveRouteAuth} from './saves.js';
 import type {AuthoritativeGameService} from '../services/authoritative-game.js';
 import {CloudCapacityError} from '../services/cloud-save-service.js';
 export function mountGames(app:Hono,service:AuthoritativeGameService,auth:CloudSaveRouteAuth){
+ app.get('/api/games/:saveId/action-suggestions',async c=>{
+  let owner:string|null;try{owner=await auth.resolveOwnerId(c.req.raw);}catch{return c.json({code:'UNAUTHENTICATED'},401);}
+  const expected=c.req.header('x-jiuxiao-account');
+  if(!owner||(expected!==undefined&&expected!==owner))return c.json({code:'UNAUTHENTICATED'},401);
+  try{
+   const result=await service.actionSuggestions(owner,c.req.param('saveId'));
+   if(result.status==='rules_not_ready')return c.json({code:'RULES_NOT_READY'},503);
+   if(result.status==='not_found')return c.json({code:'NOT_FOUND'},404);
+   return c.json(result);
+  }catch{return c.json({code:'GAME_UNAVAILABLE'},503);}
+ });
  app.post('/api/games',async c=>{
   let owner:string|null;try{owner=await auth.resolveOwnerId(c.req.raw);}catch{return c.json({code:'UNAUTHENTICATED'},401);}
   const expected=c.req.header('x-jiuxiao-account');

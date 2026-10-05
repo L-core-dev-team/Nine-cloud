@@ -8,6 +8,9 @@ export type NarrativeContext = {
     npcId: string;
     observations: readonly { summary: string; accessibility: number }[];
   }[];
+  /** Deterministic, state-derived prose constraints for the current turn. */
+  playerConditionLines?: readonly string[];
+  npcUtterances?: readonly { npcId: string; line: string }[];
 };
 export type RoleAdapter = (input: { role: NarrativeRole; receipt: TurnReceipt; candidates: Partial<Record<NarrativeRole, string>>; context: NarrativeContext; maxOutputTokens: number }, signal: AbortSignal) => Promise<RoleOutput>;
 export type RoleSlot = { enabled: boolean; required?:boolean; dependencies?:readonly NarrativeRole[]; timeoutMs: number; maxOutputTokens: number; retries: number; primary: RoleAdapter; fallback?: RoleAdapter };
@@ -58,7 +61,11 @@ export class NarrativeScheduler {
 }
 
 function validateNarrativeContext(value: NarrativeContext): NarrativeContext {
-  if (!value || typeof value !== 'object' || Object.keys(value).length !== 1 || !Array.isArray(value.npcMemories) || value.npcMemories.length > 16) {
+  if (!value || typeof value !== 'object' ||
+      Object.keys(value).some(key => !['npcMemories', 'playerConditionLines', 'npcUtterances'].includes(key)) ||
+      !Array.isArray(value.npcMemories) || value.npcMemories.length > 16 ||
+      (value.playerConditionLines !== undefined && (!Array.isArray(value.playerConditionLines) || value.playerConditionLines.length > 4)) ||
+      (value.npcUtterances !== undefined && (!Array.isArray(value.npcUtterances) || value.npcUtterances.length > 8))) {
     throw new Error('INVALID_NARRATIVE_CONTEXT');
   }
   const seenNpcIds = new Set<string>();
@@ -77,6 +84,17 @@ function validateNarrativeContext(value: NarrativeContext): NarrativeContext {
         throw new Error('INVALID_NARRATIVE_CONTEXT');
       }
     }
+  }
+  for (const line of value.playerConditionLines ?? []) {
+    if (typeof line !== 'string' || !line.trim() || line.length > 240) throw new Error('INVALID_NARRATIVE_CONTEXT');
+  }
+  const seenUtterances = new Set<string>();
+  for (const utterance of value.npcUtterances ?? []) {
+    if (!utterance || typeof utterance !== 'object' || Object.keys(utterance).length !== 2 ||
+        typeof utterance.npcId !== 'string' || !utterance.npcId.trim() || utterance.npcId.length > 200 ||
+        typeof utterance.line !== 'string' || !utterance.line.trim() || utterance.line.length > 240 ||
+        seenUtterances.has(`${utterance.npcId}\0${utterance.line}`)) throw new Error('INVALID_NARRATIVE_CONTEXT');
+    seenUtterances.add(`${utterance.npcId}\0${utterance.line}`);
   }
   return structuredClone(value);
 }

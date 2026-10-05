@@ -6,6 +6,14 @@ import { createP1SaveMemoryPolicy } from './p1-memory-policy.js';
 export type GameRepository={getForOwner(owner:string,id:string):Promise<SaveEnvelope|null>;createForOwner(owner:string,save:SaveEnvelope):Promise<boolean>};
 export class AuthoritativeGameService {
  constructor(private readonly repository:GameRepository,private readonly runtime?:ReturnType<typeof prepareTurnRuntime>){}
+ async actionSuggestions(ownerId:string,saveId:string){
+  if(!this.runtime?.actionSuggestions)return {status:'rules_not_ready'} as const;
+  const stored=await this.repository.getForOwner(ownerId,saveId);
+  if(!stored)return {status:'not_found'} as const;
+  const save=SaveEnvelopeSchema.parse(stored);
+  if(save.state.facts.archiveKind==='local-untrusted-v1')return {status:'not_found'} as const;
+  return {status:'ready',revision:save.revision,actions:this.runtime.actionSuggestions(save)} as const;
+ }
  async create(ownerId:string,key:string,choices:Record<string,unknown>){
   if(!this.runtime)return {status:'rules_not_ready'} as const;
   const modeInput=choices.memoryMode??'continue';
