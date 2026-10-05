@@ -1,0 +1,856 @@
+{
+  "recordType": "cloudflare-pages-public-demo-deployment-inventory",
+  "recordedAt": "2026-10-05",
+  "deployment": {
+    "project": "jiuxiaogame-public-demo",
+    "deploymentId": "530bc170-e629-4bf9-bab9-79e8eb194aed",
+    "environment": "production",
+    "createdAtUtc": "2026-10-05T04:24Z",
+    "urls": [
+      "https://play.jiuxiaogame.cn",
+      "https://jiuxiaogame.cn",
+      "https://www.jiuxiaogame.cn"
+    ],
+    "sourceCommit": "84d426b91b109a35d30696987d53ad0f519adafb",
+    "sourceGitBranch": "codex/pages-runtime-assets-20261005",
+    "deploymentMetadataBranch": "main",
+    "sourceWorkingTreeWasDirtyAtUpload": true
+  },
+  "scope": "All files emitted into the website runtime package and all 56 runtime scene media assets; this is not a copy of every repository or source-material file.",
+  "assetStore": {
+    "manifestAssetCount": 61,
+    "runtimeMediaCount": 56,
+    "runtimeMediaTypes": {
+      "webp": 54,
+      "mp4": 2
+    },
+    "newlyUploadedToCloudflareAssetStore": 56,
+    "alreadyPresentBeforeUpload": 5,
+    "missingAfterUpload": 0,
+    "totalBytes": 12970285,
+    "contentHashAlgorithm": "BLAKE3(base64(file bytes) + lowercase file extension), first 32 lowercase hex characters, matching the Cloudflare Wrangler Pages upload implementation.",
+    "files": [
+      {
+        "path": "/assets/index-C1nZ5gYP.js",
+        "bytes": 768293,
+        "mimeType": "application/javascript",
+        "sha256": "d99f97dbbe6b92c99e7f5936256656fafceae761ce1f7bc9bc2f0a9e40e9bc43",
+        "cloudflarePagesContentHash": "0f7373491c96efae13139a000cf1aafc",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/assets/index-C1nZ5gYP.js",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/assets/index-C1SY29O3.css",
+        "bytes": 71513,
+        "mimeType": "text/css",
+        "sha256": "ad7656da4c81e3814ec5a64703ab64e5834c277c3ec849ca3266cba9e11cc8aa",
+        "cloudflarePagesContentHash": "b2951d672869c168f279d93c45ed7cc4",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/assets/index-C1SY29O3.css",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/fonts/ma-shan-zheng-brand.woff2",
+        "bytes": 9460,
+        "mimeType": "font/woff2",
+        "sha256": "e3fd0372cd63d9a1f4aa97f67e40dd8527b899b136e8f797d2d6d2bb59cd1257",
+        "cloudflarePagesContentHash": "057b06beb6298ff162f99cf6c7e7db3f",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/fonts/ma-shan-zheng-brand.woff2",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/fonts/OFL-MaShanZheng.txt",
+        "bytes": 4396,
+        "mimeType": "text/plain",
+        "sha256": "54107539e415cc21d97752b7b1738c3d152451863f65e2c4e51556d3ceab1ab9",
+        "cloudflarePagesContentHash": "4c9bb7c82ba323b71824774b37653cbe",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/fonts/OFL-MaShanZheng.txt",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/index.html",
+        "bytes": 410,
+        "mimeType": "text/html",
+        "sha256": "3308d5c87c8ba4f641f73fefc1514f4fa70b9126a36099b78e5e44b956d3074f",
+        "cloudflarePagesContentHash": "33a302573f554f69d7f2639e65b34f60",
+        "httpProbe": {
+          "status": 308,
+          "finalPath": "/",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": false
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/brand_calligraphy.webp",
+        "bytes": 46118,
+        "mimeType": "image/webp",
+        "sha256": "64500b1664b485875b9493d904408a0957451aecc2bc6dbcd0185dbc8aad7c2a",
+        "cloudflarePagesContentHash": "aef4e3bcecbae2d9d9a44607a212cdbe",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/brand_calligraphy.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/brand_plum.webp",
+        "bytes": 28230,
+        "mimeType": "image/webp",
+        "sha256": "0b502f3b0dc76310807c3f0aec38374b60bdae636f7df8f45fdcadf51546696f",
+        "cloudflarePagesContentHash": "17d68d5a579be794d3aac60808fa3cae",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/brand_plum.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/brand_scroll.webp",
+        "bytes": 118792,
+        "mimeType": "image/webp",
+        "sha256": "3d62d3fa53a3189f66ad0b2e02416afc02a6d6815b2452edfe2eacefa3849aaa",
+        "cloudflarePagesContentHash": "f85b822fb7029c7f3cfac23d35ca1d93",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/brand_scroll.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/brand_seal.webp",
+        "bytes": 57320,
+        "mimeType": "image/webp",
+        "sha256": "a54b0ba22b95ae9aefa669204f0cd58862a2ebdf5820a6829dc3b161c6dbbd28",
+        "cloudflarePagesContentHash": "de139896bfea63fc2f8043209faf1bd2",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/brand_seal.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/faction_beijing_lianmeng.webp",
+        "bytes": 171000,
+        "mimeType": "image/webp",
+        "sha256": "ea82b1ada17f99810d3f32d22dc8ee327f9be217f58f17630649281d1eaf1240",
+        "cloudflarePagesContentHash": "96aa058042981151a6118e73bcd67dde",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/faction_beijing_lianmeng.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/faction_bingshen_gong.webp",
+        "bytes": 159222,
+        "mimeType": "image/webp",
+        "sha256": "fa2ec6953e8e5a3cfc3af5c3b9ceee9b5702336a41d6f94f886e113d309893ae",
+        "cloudflarePagesContentHash": "939bf060182cc2d49282526d5ba01ec0",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/faction_bingshen_gong.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/faction_daguangming_si.webp",
+        "bytes": 188516,
+        "mimeType": "image/webp",
+        "sha256": "f7404dd41a60d465321bb80d4cc112c280cd46e1d7ffc0cdc5650d3b87c06cec",
+        "cloudflarePagesContentHash": "5682411f81d9b6a0fc8817f213a142fa",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/faction_daguangming_si.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/faction_fuhai_zong.webp",
+        "bytes": 251972,
+        "mimeType": "image/webp",
+        "sha256": "516459a5cce746e950654952c26bb4a616ce70c32aa82143ced22b7f3803b08f",
+        "cloudflarePagesContentHash": "304ab8fd09cd423785c79e3adde3f16c",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/faction_fuhai_zong.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/faction_haotian_jianzong.webp",
+        "bytes": 278158,
+        "mimeType": "image/webp",
+        "sha256": "6054813b48b5fbbdbbdd4c8503d689f043f0cf1a8ea01bae19998ba6c08c4ae3",
+        "cloudflarePagesContentHash": "f453a0dba72f5b8264b345493c582c20",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/faction_haotian_jianzong.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/faction_jingang_buhai_gu.webp",
+        "bytes": 212674,
+        "mimeType": "image/webp",
+        "sha256": "af3140898605a7ee85fce54d02c0dbf6db4f3d1e4c7ac0f8baa74a33405b702b",
+        "cloudflarePagesContentHash": "58d6cf498a754061b52f085b645c8d43",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/faction_jingang_buhai_gu.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/faction_jixia_xuegong.webp",
+        "bytes": 261106,
+        "mimeType": "image/webp",
+        "sha256": "87470619036f7a41d956cc5ef4a6ed74aee5f99c11f507584cb16e594e11a5f2",
+        "cloudflarePagesContentHash": "75558f7769a2a0fddddfd2fedb0172b6",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/faction_jixia_xuegong.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/faction_shenghuo_jiao.webp",
+        "bytes": 225246,
+        "mimeType": "image/webp",
+        "sha256": "fba7702da871c4ccb384afa4c62d54fcf347aebd3e5a800dd0ecbf95336205d8",
+        "cloudflarePagesContentHash": "fd9e68ea1a5889f2a4402bb0eba4f7e8",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/faction_shenghuo_jiao.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/faction_sihai_shanghui.webp",
+        "bytes": 284894,
+        "mimeType": "image/webp",
+        "sha256": "d60ace6ad242242032f59cfca2e2d5c89f3dd4e776b0b855d180ed238b88e9ef",
+        "cloudflarePagesContentHash": "22b08a9cb6d5540b2162601330a199bf",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/faction_sihai_shanghui.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/faction_tiangong_ge.webp",
+        "bytes": 237728,
+        "mimeType": "image/webp",
+        "sha256": "6541a859798af70eec6120b1085223c19529b7212dc2f797679bfa4567ea2698",
+        "cloudflarePagesContentHash": "ca2e4660238e8127a83b3e147c4a8a40",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/faction_tiangong_ge.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/faction_tingchao_ge.webp",
+        "bytes": 137686,
+        "mimeType": "image/webp",
+        "sha256": "60ee246d94a8e92de7c3275a92773069a5785c8254f781312fff146cdaa80372",
+        "cloudflarePagesContentHash": "ed19b36d211d76d9e107932b37bd755f",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/faction_tingchao_ge.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/faction_wanshou_shanzhuang.webp",
+        "bytes": 271070,
+        "mimeType": "image/webp",
+        "sha256": "8228130bc9b4acb59b6079f1b527843fc1b5a24bb65bfbd1b4d9c24bfb35310f",
+        "cloudflarePagesContentHash": "7c0ad391dcd8e5951794c09d7cc3ff43",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/faction_wanshou_shanzhuang.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/faction_wudu_shenjiao.webp",
+        "bytes": 254976,
+        "mimeType": "image/webp",
+        "sha256": "096bd16cb272254e7b1e9cd753e0c5b6dae9cbf6d5abf9a513f4232ccd267211",
+        "cloudflarePagesContentHash": "e8ede003b52dc2c5f5d5ec7725cc604c",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/faction_wudu_shenjiao.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/faction_yanshi_fu.webp",
+        "bytes": 286014,
+        "mimeType": "image/webp",
+        "sha256": "20528e90f7ec022ceb341c125880acfaf9fc10937e9548785adf3ccdcdfcc8b9",
+        "cloudflarePagesContentHash": "cbed27fdbb3f18392f8a166e8d9eda52",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/faction_yanshi_fu.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/faction_yantian_zong.webp",
+        "bytes": 224036,
+        "mimeType": "image/webp",
+        "sha256": "fbe06a62df39ba6c8e543c7c5548d2e366da01ec82a236d664210b02fba0472f",
+        "cloudflarePagesContentHash": "3ad92a620471e512d188deabd25406cc",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/faction_yantian_zong.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/faction_yuqing_ge.webp",
+        "bytes": 250388,
+        "mimeType": "image/webp",
+        "sha256": "6fc16a38ebdee06f7eef09c98a887a8a062540874e34c5f241409a4d90a4ffb3",
+        "cloudflarePagesContentHash": "e1bcf191d58ddbc56acc94fea6149eb0",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/faction_yuqing_ge.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/region_beijing_shuanghan.webp",
+        "bytes": 170950,
+        "mimeType": "image/webp",
+        "sha256": "75f594af202b266fd62f525d206444ce33b22cb67ad2e9093710d9a5f6f978b8",
+        "cloudflarePagesContentHash": "d8520ff97e893f73e8c8bfc6fe432de4",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/region_beijing_shuanghan.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/region_donghan_longyin.webp",
+        "bytes": 261746,
+        "mimeType": "image/webp",
+        "sha256": "d3e7df2f4ffa95c5f01733fcc513629b4d6f41fb370dd5216e73e5c8466713e1",
+        "cloudflarePagesContentHash": "a80f911e683d03b49448b7f85eea2b50",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/region_donghan_longyin.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/region_honghuang_yaolin.webp",
+        "bytes": 234096,
+        "mimeType": "image/webp",
+        "sha256": "d5b40a8f30415d288186314777bf61e3ddcd45888dee5593d287606cf06e6d1c",
+        "cloudflarePagesContentHash": "6c1c74774fb498c6a13e9cec8ec3093a",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/region_honghuang_yaolin.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/region_nanjiang_wangu.webp",
+        "bytes": 242614,
+        "mimeType": "image/webp",
+        "sha256": "b09ff3267d2b9c3e9ccc34b235130893e882f0c8ed1bebf7a4aaaff2ba6ff798",
+        "cloudflarePagesContentHash": "eb17154aeff366dfadc08bbb5fabb5a3",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/region_nanjiang_wangu.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/region_xihuang_fentian.webp",
+        "bytes": 174742,
+        "mimeType": "image/webp",
+        "sha256": "58efff005b9654df3265528203478ee31ec3b0427525c689e7881c64a3097c8e",
+        "cloudflarePagesContentHash": "853d0f35dd6c9e9d2653c4b942cdb297",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/region_xihuang_fentian.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/region_zhongzhou_tianshu.webp",
+        "bytes": 198244,
+        "mimeType": "image/webp",
+        "sha256": "a2bc6a40339d206824f519a0c9b2a9e926897320e2e029a22941c7308035c5ff",
+        "cloudflarePagesContentHash": "3bf857536a58aa94a3598ac5585e0345",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/region_zhongzhou_tianshu.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/system_cultivation_realm_core.webp",
+        "bytes": 147470,
+        "mimeType": "image/webp",
+        "sha256": "d104c0e0d76741e5d9c80b613a79ef165f75dd00298d69ae3d2c783b2c084c2c",
+        "cloudflarePagesContentHash": "e5c7d9648f12fd9e09bb08a816223e39",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/system_cultivation_realm_core.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/system_cultivation_realm_nascent.webp",
+        "bytes": 153934,
+        "mimeType": "image/webp",
+        "sha256": "3d6072e58ae2626b98242675dbf760916d0be40e8fc9b508628f964e6ccd647b",
+        "cloudflarePagesContentHash": "fbf897f54c02bb0b0409cf7d9c1f940c",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/system_cultivation_realm_nascent.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/system_cultivation_realm_tribulation.webp",
+        "bytes": 103838,
+        "mimeType": "image/webp",
+        "sha256": "cf466bd2fbdaf1df838462fb7fdf7d598c685f6b308ae6e3890a46452530bea5",
+        "cloudflarePagesContentHash": "7e68d73573aa8ac178fc3bc3aeae63ad",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/system_cultivation_realm_tribulation.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/system_cultivation_schools.webp",
+        "bytes": 184502,
+        "mimeType": "image/webp",
+        "sha256": "4f4e0573892223baab3050e73bdfe562b9705fee15aca1fc0c1112293f68c3e3",
+        "cloudflarePagesContentHash": "a3d78acbd666ccbfcb8c5e2e61ceff9e",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/system_cultivation_schools.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/system_economy.webp",
+        "bytes": 115962,
+        "mimeType": "image/webp",
+        "sha256": "ca819a3df7f1ba10cb20d2e8f930edb78a0a3c3bef224fa942a97d4f7cc292cd",
+        "cloudflarePagesContentHash": "4616aa60182d11d4bec15393556dc5e7",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/system_economy.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/system_foundations.webp",
+        "bytes": 98076,
+        "mimeType": "image/webp",
+        "sha256": "86bdcfcb31c6ae70a07ea3cdf0be6f0f56e1b55b54e5d5513848b4faf9c8b7fb",
+        "cloudflarePagesContentHash": "cee1d0deab950f94fd021dc2f254f9da",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/system_foundations.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/system_heterodox_cultivation.webp",
+        "bytes": 137368,
+        "mimeType": "image/webp",
+        "sha256": "e0c5692153e1f36bdccef336d0160ba3bc3ef92ca7d1d2c433517fd5cdb6afe0",
+        "cloudflarePagesContentHash": "ce2b257a49873306d0ad5191a3e845b3",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/system_heterodox_cultivation.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/system_prices.webp",
+        "bytes": 150072,
+        "mimeType": "image/webp",
+        "sha256": "7e2602257fe6d25abbce290d7c077f791a7c37b0ffbb7ba7422efd57b71755bf",
+        "cloudflarePagesContentHash": "a8a900e70a532d5f0128fd62c12fa9da",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/system_prices.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/system_realm_faction_tiers.webp",
+        "bytes": 156090,
+        "mimeType": "image/webp",
+        "sha256": "d433726bea569cde347a7a13c3ad726ca97f17d04b1ef9b6963ad6511270e38b",
+        "cloudflarePagesContentHash": "32537002921ab23c02a0d597affd11c0",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/system_realm_faction_tiers.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/system_resource_grade.webp",
+        "bytes": 131396,
+        "mimeType": "image/webp",
+        "sha256": "62b282b7fd7bd40e7103a7afdd017310aae2af7a53e819a243ee4c2bad4af690",
+        "cloudflarePagesContentHash": "20865526f76ce5322afb56e0bb7fe259",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/system_resource_grade.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/system_spirit_beasts.webp",
+        "bytes": 173746,
+        "mimeType": "image/webp",
+        "sha256": "8bc192985896f9479db3a8f21a7841a3e51f2adde44afc1c3134321ce39fac4c",
+        "cloudflarePagesContentHash": "7b946da9d5ef521f90769fb31a9f6f48",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/system_spirit_beasts.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/system_spirit_beasts_feral.webp",
+        "bytes": 188962,
+        "mimeType": "image/webp",
+        "sha256": "8f00a023981a689baa098b6ae265b6c9f4f9d8790f8c9ad8c2481261ea820280",
+        "cloudflarePagesContentHash": "0df2c547de50727f53af92dd12ca7473",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/system_spirit_beasts_feral.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/system_spiritual_root.webp",
+        "bytes": 138730,
+        "mimeType": "image/webp",
+        "sha256": "6ad19f2d0cd5fd509eb177311ffdb64298982cf190d7d688c1016a55e8718b76",
+        "cloudflarePagesContentHash": "af2899857b0641114a2fb3f5697a2941",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/system_spiritual_root.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/system_technique_grade.webp",
+        "bytes": 132436,
+        "mimeType": "image/webp",
+        "sha256": "1f466e7cd9c713b2a0f6eacb60f720b4ef0f231c81acd18b2c9567c7e176e85e",
+        "cloudflarePagesContentHash": "9bf9f566f2ef727928c6b6b7ce54bf6b",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/system_technique_grade.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/texture_day-paper.webp",
+        "bytes": 70638,
+        "mimeType": "image/webp",
+        "sha256": "c54233446430a7e95422ec6f88e71cb5d2ec5a6cd58e110984be7f59e42041a8",
+        "cloudflarePagesContentHash": "2dfc2587cee3ade45ee10992e066c3da",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/texture_day-paper.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/texture_mist-mountains.webp",
+        "bytes": 76260,
+        "mimeType": "image/webp",
+        "sha256": "12936e29457eba51dcd22b2b31df9fa8e1364c8f7cc48a924b1c8d3f8132574c",
+        "cloudflarePagesContentHash": "c32358d2ef90d1f69314a188b8ad22d9",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/texture_mist-mountains.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/texture_night-ink.webp",
+        "bytes": 29080,
+        "mimeType": "image/webp",
+        "sha256": "a1f0b823804903b9cd7fd959a8c526bf9d7f0fa9f65323ac91214d3ec2a6a817",
+        "cloudflarePagesContentHash": "b6631f586c2ee6febf7ef591652f439a",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/texture_night-ink.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/atlas/world_jiuxiao.webp",
+        "bytes": 272808,
+        "mimeType": "image/webp",
+        "sha256": "7cf40335d072e9fd0b9c1cdb378a89c8a891500dbede5dd5f365388f1087cdec",
+        "cloudflarePagesContentHash": "fd7f76cf36253b406475d15f2a6dcc90",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/atlas/world_jiuxiao.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/battle-anomaly.desktop.webp",
+        "bytes": 336146,
+        "mimeType": "image/webp",
+        "sha256": "e02598934b30a11f7446fd5d85469a3fd2c84eba282887ead43367a8ec05e078",
+        "cloudflarePagesContentHash": "f1405e59c22af3a3814b34e0730ef64a",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/battle-anomaly.desktop.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/battle-anomaly.mobile.webp",
+        "bytes": 460062,
+        "mimeType": "image/webp",
+        "sha256": "40b087b58f667e9c066c728785dfe274d440430f2ae9a054266ee0e571a8a0d6",
+        "cloudflarePagesContentHash": "6bb10781b19fa3a474e241a9595bc1ba",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/battle-anomaly.mobile.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/mountain-gate.desktop.webp",
+        "bytes": 220310,
+        "mimeType": "image/webp",
+        "sha256": "53e5df04cef3d76d774cc37fb519ca6f4ca1fc1f3d5cb3792f74b475f1c18f35",
+        "cloudflarePagesContentHash": "a8be5498fdd11166c2a3ca114c511520",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/mountain-gate.desktop.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/mountain-gate.loop.mp4",
+        "bytes": 766596,
+        "mimeType": "video/mp4",
+        "sha256": "d70c0124b69931ad12cbed47dfbbdc41faf7799dd833835453af3515ebea3951",
+        "cloudflarePagesContentHash": "ac7ff4ca5f0f1ffc628192ed26d6389e",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/mountain-gate.loop.mp4",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/mountain-gate.mobile.webp",
+        "bytes": 333064,
+        "mimeType": "image/webp",
+        "sha256": "e89f5c2e2d964a9949d4ea035d5f5dacb1943de87b47880002b16a042183beec",
+        "cloudflarePagesContentHash": "edb60eba7f0a883cb3186b2457c1db97",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/mountain-gate.mobile.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/sect-town.desktop.webp",
+        "bytes": 226284,
+        "mimeType": "image/webp",
+        "sha256": "8657b4d725763202a63ecb0c535f824755d217009d7f02ee0f66b09761cdf9d8",
+        "cloudflarePagesContentHash": "00684214379dd8631d33838cb3877adc",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/sect-town.desktop.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/sect-town.mobile.webp",
+        "bytes": 354318,
+        "mimeType": "image/webp",
+        "sha256": "bd49b32d2cb11363e00cf538d250443b377ca43b2010628e0cfc507c038bae30",
+        "cloudflarePagesContentHash": "a2b701842539bc1b5df8d2b552b33039",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/sect-town.mobile.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/wilderness.desktop.webp",
+        "bytes": 178834,
+        "mimeType": "image/webp",
+        "sha256": "5caa0f24db1e9a1f6b0cb70024e45be15cc8ed766c096a027483a339bf4ebe98",
+        "cloudflarePagesContentHash": "860c4e32d19be978a06cd2dba71026ad",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/wilderness.desktop.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/wilderness.loop.mp4",
+        "bytes": 739617,
+        "mimeType": "video/mp4",
+        "sha256": "0e3fcb5b694c79606744df07aa1db836749f06f4b66fe3ae66ba8c041be50f8b",
+        "cloudflarePagesContentHash": "3a1c83d80a80a87f070708b5280e6771",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/wilderness.loop.mp4",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/candidate/wilderness.mobile.webp",
+        "bytes": 330146,
+        "mimeType": "image/webp",
+        "sha256": "875fb60f34901b333d81bb791a8af3f7074b703b448d108f1d5c9442d54e8cd2",
+        "cloudflarePagesContentHash": "6c91fba74390a4741f42e12f1d5ecf00",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/candidate/wilderness.mobile.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/gate-moonlight-mobile.webp",
+        "bytes": 252508,
+        "mimeType": "image/webp",
+        "sha256": "fa4ab0e8e7080bd040a0b1b2dd6895b65e43e31770fd03e003b6dcb73989c740",
+        "cloudflarePagesContentHash": "26e52ec92a4fd70912bb8f131bb62835",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/gate-moonlight-mobile.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      },
+      {
+        "path": "/scenes/gate-moonlight.webp",
+        "bytes": 229422,
+        "mimeType": "image/webp",
+        "sha256": "7a1995a609ce04a8af2b32a1918b8e38ed3e880f08325ee55c375cf8e5b29dea",
+        "cloudflarePagesContentHash": "8d74f7beaca55c2344e7dd3d98b0c0a6",
+        "httpProbe": {
+          "status": 200,
+          "finalPath": "/scenes/gate-moonlight.webp",
+          "finalStatus": 200,
+          "exactBodyAndMimeMatch": true
+        }
+      }
+    ]
+  },
+  "httpVerification": {
+    "origin": "https://play.jiuxiaogame.cn",
+    "checkedAssetPaths": 61,
+    "exactBodyAndMimeMatches": 60,
+    "indexHtmlPathBehavior": "GET /index.html returned 308 and canonicalized to /; the saved path probe then saw Cloudflare-injected beacon HTML and did not match local bytes.",
+    "canonicalRootCheck": {
+      "path": "/",
+      "status": 200,
+      "mimeType": "text/html; charset=utf-8",
+      "bytes": 410,
+      "sha256": "3308d5c87c8ba4f641f73fefc1514f4fa70b9126a36099b78e5e44b956d3074f",
+      "matchesLocalDistIndexHtml": true
+    },
+    "runtimeMediaExactMatches": 56
+  },
+  "notPublished": {
+    "sourceCollection": "九霄素材-水墨古风",
+    "sourceCollectionFileCountsByExtension": {
+      ".json": 1,
+      ".md": 2,
+      ".jpg": 90,
+      ".mp4": 2
+    },
+    "auditImageCount": 12,
+    "reason": "These are source/reference material or internal audit screenshots, not files emitted or referenced by the website runtime package. Their omission does not mean a website runtime dependency is missing."
+  },
+  "approvalRecord": "docs/audit/public-demo-media-approval.json",
+  "integrityNote": "SHA-256 and Cloudflare content hashes identify file bytes. They do not independently prove ownership, licensing, or approval."
+}

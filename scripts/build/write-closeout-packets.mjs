@@ -17,17 +17,29 @@ if (build.commit !== currentCommit) throw new Error('STALE_BUILD_EVIDENCE');
 // Do not require this still-running job to already be completed (circular gate).
 const repositorySlug=process.env.GITHUB_REPOSITORY||'';
 if (!/^[^/\s]+\/[^/\s]+$/.test(repositorySlug)) throw new Error('CI_REPOSITORY_REQUIRED');
-const headers={'user-agent':'jiuxiao-closeout',accept:'application/vnd.github+json',...(process.env.GITHUB_TOKEN?{authorization:`Bearer ${process.env.GITHUB_TOKEN}`}:{})};
+if (!process.env.GITHUB_TOKEN || process.env.GITHUB_JOB !== 'verify') throw new Error('CI_JOB_AUTH_REQUIRED');
+const headers={'user-agent':'jiuxiao-closeout',accept:'application/vnd.github+json',authorization:`Bearer ${process.env.GITHUB_TOKEN}`};
 const base=`https://api.github.com/repos/${repositorySlug}/actions/runs/${process.env.GITHUB_RUN_ID}`;
 const runResponse=await fetch(base,{headers});
 if (!runResponse.ok) throw new Error(`CI_RUN_VERIFY_FAILED_HTTP_${runResponse.status}`);
 const run=await runResponse.json();
-if(run.head_sha!==currentCommit||!['in_progress','completed'].includes(run.status)||(run.status==='completed'&&run.conclusion!=='success'))throw new Error('CI_RUN_HEAD_OR_STATUS_INVALID');
-const required=['Migrate ephemeral test database','Run pnpm typecheck','Run pnpm test','Run pnpm build','Build and smoke the production API container','Run PostgreSQL integration tests','Run pnpm test:e2e','Test durable turn UI recovery with synthetic receipts','Test isolated SMTP and cloud browser path','Verify isolated database backup restoration','Bind review artifacts to the tested commit'];
+if(run.head_sha!==currentCommit||run.status!=='in_progress'||run.conclusion!==null)throw new Error('CI_RUN_HEAD_OR_STATUS_INVALID');
+const required=['Migrate ephemeral test database','Run pnpm license:check','Test GitHub evidence synchronization gate','Test fail-closed media publication gate','Run pnpm typecheck','Run pnpm test','Run pnpm build','Prove the release-target build stays fail-closed while media licenses are pending','Build and smoke the production API container','Run PostgreSQL integration tests','Run pnpm test:e2e','Test durable turn UI recovery with synthetic receipts','Test isolated SMTP and cloud browser path','Verify isolated database backup restoration','Bind review artifacts to the tested commit'];
 await waitForVerifiedSteps(async()=>{
- const response=await fetch(`${base}/jobs?per_page=100`,{headers,signal:AbortSignal.timeout(10000)});
- if(!response.ok)throw Error('CI_JOB_EVIDENCE_UNAVAILABLE');return (await response.json()).jobs;
+ const response=await fetch(base+'/jobs?per_page=100',{headers,signal:AbortSignal.timeout(10000)});
+ if(!response.ok)throw new Error('CI_JOB_EVIDENCE_UNAVAILABLE_HTTP_'+response.status);
+ return (await response.json()).jobs;
 },required);
+let packetStepInProgress=false;
+for(let attempt=0;attempt<20&&!packetStepInProgress;attempt++){
+ const response=await fetch(base+'/jobs?per_page=100',{headers,signal:AbortSignal.timeout(10000)});
+ if(!response.ok)throw new Error('CI_JOB_EVIDENCE_UNAVAILABLE_HTTP_'+response.status);
+ const jobs=(await response.json()).jobs||[];
+ const job=jobs.find(candidate=>candidate.name==='verify'&&candidate.status==='in_progress'&&candidate.conclusion===null);
+ packetStepInProgress=job?.steps?.some(step=>step.name==='Generate exact-build G1 and Canon review packets'&&step.status==='in_progress')??false;
+ if(!packetStepInProgress&&attempt<19)await new Promise(resolve=>setTimeout(resolve,2000));
+}
+if(!packetStepInProgress)throw new Error('CI_PACKET_GENERATION_STEP_NOT_IN_PROGRESS');
 const digest=createHash('sha256').update(readFileSync(resolve(out,'artifact-manifest.json'))).digest('hex');
 const canonBytes=readFileSync(resolve(root,'packages/content/src/canon-runtime.json'));
 const canon=JSON.parse(canonBytes);const timestamp=new Date().toISOString();

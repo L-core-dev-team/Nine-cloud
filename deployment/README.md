@@ -4,14 +4,16 @@
 
 ## 安装与启动
 
-1. 使用最终 RC 同一 SHA 构建 `apps/api/Dockerfile`，将镜像发布到部署方已有镜像仓库并记录不可变 image digest。将 `API_IMAGE` 设为此 digest。
+1. 下载与目标 `$RC_SHA` 完全相同的 CI 工程评审包；在干净检出中固定该 SHA 后构建 API 镜像。记录源码 SHA、Dockerfile、镜像 registry digest 与推送回执，再将 `API_IMAGE` 固定为 digest。当前 CI 包不含生产镜像，且 `releaseApproved:false` 不代表发布批准。
 2. 私有环境填写 api.private.env.example 所列字段，保存成 api.private.env，权限限制为部署账号可读。此文件与 runtime/、backups/ 已忽略；密钥不放 Pages、不上传。
-3. 准备 PostgreSQL，并在启用前备份已有数据库。命令：`docker compose --env-file deployment/api.private.env -f deployment/api-production.compose.yml up -d`。迁移完成后 API 才启动；SMTP 连接预检失败会阻止启动。
-4. 部署方配置真实域名、TLS 和反向代理，将该域名代理至宿主 127.0.0.1:8787。TLS/域名由已有平台提供；Compose 不自行签发或购买资源，不暴露 PostgreSQL。代理不得缓存认证路径，须保留 Origin 与 Cookie。
-5. 设置 PUBLIC_API_BASE_URL 后运行 `node --env-file=deployment/api.private.env scripts/api-production-smoke.mjs`。它检查 health/ready 与未登录 session 401，不发邮件。
-6. 实际邮箱、两账号和手机验收按唯一缺口清单进行，Mailpit 结果不能替代生产投递。
+3. 准备 PostgreSQL，并在启用前备份已有数据库。数据库保持仅监听宿主 `127.0.0.1`。先运行 Compose `create` 建立 bridge 网络；检查实际 gateway/subnet，再准备只绑定该 gateway 的宿主 TCP 转发到 PostgreSQL 回环端口。防火墙仅允许该 Compose 子网访问转发端口。`DATABASE_URL` 不得填写容器内 `127.0.0.1`；公网不得开放 5432 或转发端口。核实连接路径后再启动迁移。
+4. 核对路线 A/B 与 `deployment/api-production.compose.yml`：当前 Compose 固定启用邮箱认证及 SMTP 启动预检。路线 A 若要保持“不开放账号”，必须先完成经批准的入口封锁和预检方案；否则不得声称该路线已落地。路线 B 必须先有有效双作者数据政策和真实邮件资源。
+5. 配置同源 `/api/*`、`/health`、`/ready` 路径转发，再将 `PUBLIC_API_BASE_URL` 设为用户访问的同源 HTTPS 根地址。普通构建须让 `VITE_API_BASE_URL` 保持未设置，客户端才默认请求同源 `/api`；Pages 预览构建可设置该变量指向独立 staging API。边缘层与 API 反代须保留 `Origin`、`Cookie`，不可缓存认证路径，并支持至少 180 秒的回合请求超时。VPS 证书覆盖边缘入口连接的源站主机名；前端 origin 的 HTTPS 由边缘/前端托管方提供。
+6. 执行 `docker compose --env-file deployment/api.private.env -f deployment/api-production.compose.yml up -d`。迁移完成后 API 才启动；SMTP 连接预检失败会阻止启动。
+7. 设置 `PUBLIC_API_BASE_URL` 后运行 `node --env-file=deployment/api.private.env scripts/api-production-smoke.mjs`。它检查 health/ready 与未登录 session 401，不发邮件。
+8. 实际邮箱、两账号和手机验收按唯一缺口清单进行；Mailpit 结果不能替代生产投递。数据政策生效前禁止云档写入。
 
-前端任务配置 `VITE_API_BASE_URL` 或其正式等价变量为同一公开 HTTPS 地址；独立后端域名请求须 `credentials: include`。优先同站自定义域名 + Strict Cookie；完全跨站需 None + Secure，但 Safari 可能阻止第三方 Cookie，应由前端部署任务改为同站域名/同源转发。AUTH_PUBLIC_ORIGIN 是前端 origin，不是 API 域名。
+前端 `cloud-sync.ts` 通过 `apiRequestUrl('/api/…')` 构造地址；普通构建未设置 `VITE_API_BASE_URL` 时默认同源 `/api/*` 并发送 `credentials: 'include'`。生产方案保持该变量未设置，并由 Pages Functions/Worker 等边缘入口转发 `/api/*`、`/health` 与 `/ready` 到 VPS API。Pages 预览可以使用独立 HTTPS staging API，但那条跨域路径须另验 CORS 和 Cookie。`AUTH_PUBLIC_ORIGIN` 是前端 origin，不是 VPS API 的 origin。
 
 ## 正式规则与叙事接入
 
