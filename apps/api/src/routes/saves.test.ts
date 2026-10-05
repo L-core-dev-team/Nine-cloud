@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { isDeepStrictEqual } from 'node:util';
 import type { SaveEnvelope } from '@jiuxiao/contracts';
 import { createApp } from '../app.js';
 import { CloudSaveService, type CloudSaveRepository } from '../services/cloud-save-service.js';
@@ -34,6 +35,11 @@ class MemoryRepository implements CloudSaveRepository {
     const row = this.records.get(input.saveId);
     if (!row || row.owner !== input.ownerId) return { kind: 'not_found' as const };
     if (row.save.revision !== input.expectedRevision) return { kind: 'conflict' as const, currentRevision: row.save.revision };
+    if (row.save.schemaVersion !== input.next.schemaVersion) return { kind: 'schema_version_conflict' as const };
+    if (row.save.schemaVersion === 2 && input.next.schemaVersion === 2 && (
+      row.save.memoryMode !== input.next.memoryMode || row.save.memoryPolicyVersion !== input.next.memoryPolicyVersion ||
+      !isDeepStrictEqual(row.save.memoryPolicy, input.next.memoryPolicy)
+    )) return { kind: 'memory_policy_pinned' as const };
     this.records.set(input.saveId, { owner: input.ownerId, save: input.next }); return { kind: 'updated' as const };
   }
 }
@@ -91,11 +97,24 @@ describe('authenticated cloud save routes', () => {
     expect((await app.request('/api/saves', { method: 'GET' })).status).toBe(200);
   });
 
-  it('returns an explicit not-ready response instead of accepting a lossy v2 save', async () => {
+  it('persists v2 save mode and rejects mutation of its pinned memory policy', async () => {
     const { app } = setup();
+    const initial = v2Envelope();
     const response = await app.request('/api/saves', { method: 'POST', headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ save: v2Envelope() }) });
-    expect(response.status).toBe(503);
-    expect(await response.json()).toMatchObject({ code: 'SAVE_SCHEMA_NOT_READY' });
+      body: JSON.stringify({ save: initial }) });
+    expect(response.status).toBe(201);
+    expect(await (await app.request('/api/saves/route-save')).json()).toMatchObject({ save: { memoryMode: 'continue', memoryPolicy: initial.memoryPolicy } });
+    const changed = { ...initial, revision: 1,
+      memoryPolicy: { ...initial.memoryPolicy, retrievalVersion: 'changed-retrieval-v2' } };
+    const update = await app.request('/api/saves/route-save', { method: 'PUT', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ expectedRevision: 0, save: changed }) });
+    expect(update.status).toBe(409);
+    expect(await update.json()).toMatchObject({ code: 'SAVE_MEMORY_POLICY_PINNED' });
+    const downgrade = { schemaVersion: 1 as const, saveId: initial.saveId, canonVersion: initial.canonVersion,
+      ruleVersion: initial.ruleVersion, memoryPolicyVersion: 'legacy-unknown', revision: 1, state: initial.state };
+    const downgradeResponse = await app.request('/api/saves/route-save', { method: 'PUT', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ expectedRevision: 0, save: downgrade }) });
+    expect(downgradeResponse.status).toBe(409);
+    expect(await downgradeResponse.json()).toMatchObject({ code: 'SAVE_SCHEMA_VERSION_IMMUTABLE' });
   });
 });

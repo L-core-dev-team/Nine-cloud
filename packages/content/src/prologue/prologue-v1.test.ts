@@ -14,8 +14,11 @@ import {
 } from './prologue-v1.js';
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
+const repoRoot = resolve(packageRoot, '../..');
 const sourceHash = (path: string): string => createHash('sha256')
   .update(readFileSync(resolve(packageRoot, path))).digest('hex');
+const repoSourceHash = (path: string): string => createHash('sha256')
+  .update(readFileSync(resolve(repoRoot, path))).digest('hex');
 
 describe('P1 prologue candidate pack', () => {
   it('binds candidate content and signoff history to the exact current source files', () => {
@@ -34,6 +37,16 @@ describe('P1 prologue candidate pack', () => {
       activeEntriesChanged: false,
       runtimeProjectionChanged: false,
     });
+  });
+
+  it('binds every author-original intake digest to its exact repository source', () => {
+    for (const intake of canonRegistry.authorOriginalIntakes) {
+      expect(repoSourceHash(intake.sourceArtifact.path)).toBe(intake.sourceArtifact.sha256);
+      if ('approvalRecord' in intake && intake.approvalRecord) {
+        expect(repoSourceHash(intake.approvalRecord.path)).toBe(intake.approvalRecord.sha256);
+      }
+      expect(repoSourceHash(intake.candidateDocument)).toBe(intake.candidateDocumentSha256);
+    }
   });
 
   it('keeps all authored content candidate-only and outside active Canon and package exports', () => {

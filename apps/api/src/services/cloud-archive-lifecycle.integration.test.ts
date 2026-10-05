@@ -9,6 +9,14 @@ suite('PostgreSQL archive deletion and verified backup restoration', () => {
   const pool = new Pool({ connectionString: process.env.TEST_DATABASE_URL, max: 4, connectionTimeoutMillis: 3000 });
   const service = new CloudSaveService(new PostgresCloudSaveRepository(pool), true); const lifecycle = new CloudArchiveLifecycle(pool);
   const owner = randomUUID(), other = randomUUID(); const id = `trash-${randomUUID()}`, authoritativeId = `authority-${randomUUID()}`;
+  const pinnedMemoryPolicy = {
+    mode: 'continue' as const, policyVersion: 'continue-v1', schemaVersion: 1,
+    clockBasis: 'game-minute+npc-grant-sequence-v1' as const,
+    policyArtifactHash: `sha256:${'a'.repeat(64)}`, cueDictionaryHash: `sha256:${'b'.repeat(64)}`,
+    normalizerVersion: 'unicode-nfc-v1', retrievalVersion: 'exact-recall-v1',
+    visibilityPolicyVersion: 'npc-visibility-v1', visibilityPolicyHash: `sha256:${'c'.repeat(64)}`,
+    createdAtRevision: 0,
+  };
   const initial = { schemaVersion: 1 as const, saveId: id, canonVersion: 'test', ruleVersion: 'test', memoryPolicyVersion: 'test', revision: 0,
     state: { playerId: 'test-player', locationId: 'gate', elapsedMinutes: 0, facts: { archiveKind: 'local-untrusted-v1', localArchive: { name: '完整原档', messages: ['完整剧情'], core: '不简化' } } } };
   beforeAll(async()=>{for(const id of [owner,other])await pool.query('INSERT INTO auth_accounts(id,email) VALUES($1,$2) ON CONFLICT DO NOTHING',[id,id+'@fixture.invalid']);});
@@ -41,7 +49,11 @@ suite('PostgreSQL archive deletion and verified backup restoration', () => {
     await pool.query("UPDATE cloud_archive_trash SET backup = jsonb_set(backup, '{state,facts,localArchive,core}', '\"tampered\"'::jsonb) WHERE save_id = $1", [id]);
     await expect(lifecycle.change(owner, id, 3, 'restore')).rejects.toThrow('BACKUP_INTEGRITY_FAILED');
     expect(await service.get(owner, id)).toBeNull(); expect((await lifecycle.list(owner)).saves).toHaveLength(1);
-    await new CloudSaveService(new PostgresCloudSaveRepository(pool)).create(owner, { ...initial, saveId: authoritativeId, state: { ...initial.state, facts: {} } });
+    await new CloudSaveService(new PostgresCloudSaveRepository(pool)).create(owner, {
+      schemaVersion: 2, saveId: authoritativeId, canonVersion: 'test', ruleVersion: 'test',
+      memoryPolicyVersion: pinnedMemoryPolicy.policyVersion, memoryMode: pinnedMemoryPolicy.mode, memoryPolicy: pinnedMemoryPolicy,
+      revision: 0, state: { playerId: 'test-player', locationId: 'gate', elapsedMinutes: 0, facts: {} },
+    });
     expect(await lifecycle.change(owner, authoritativeId, 0, 'delete')).toEqual({ kind: 'not_found' });
   });
 });

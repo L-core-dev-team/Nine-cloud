@@ -66,11 +66,13 @@ describe('shared wire contracts', () => {
     expect(ActionIntentSchema.safeParse({ ...base, kind: 'observe', payload: { targetId: 'clue-1', method: 'guess' } }).success).toBe(false);
   });
 
-  it('limits P1 cultivation actions to eight Kec', () => {
+  it('leaves the cultivation business limit to rules for its named rejection', () => {
     const base = { saveId: 'save-1', actorId: 'player', expectedRevision: 0, idempotencyKey,
       kind: 'cultivate', payload: { techniqueId: 'technique-1', minutes: 8 } };
     expect(ActionIntentSchema.safeParse(base).success).toBe(true);
-    expect(ActionIntentSchema.safeParse({ ...base, payload: { ...base.payload, minutes: 9 } }).success).toBe(false);
+    expect(ActionIntentSchema.safeParse({ ...base, payload: { ...base.payload, minutes: 9 } }).success).toBe(true);
+    expect(ActionIntentSchema.safeParse({ ...base, payload: { ...base.payload, minutes: 0 } }).success).toBe(false);
+    expect(ActionIntentSchema.safeParse({ ...base, payload: { ...base.payload, minutes: 1.5 } }).success).toBe(false);
   });
 
   it('keeps v1 saves readable and requires a consistent pinned policy for v2', () => {
@@ -128,9 +130,27 @@ describe('shared wire contracts', () => {
       revision: 0,
     };
     expect(DecisionSchema.safeParse(clarify).success).toBe(true);
+    expect(DecisionSchema.safeParse({ ...clarify, clarificationOf: 'prior-interaction' }).success).toBe(true);
+    expect(DecisionSchema.safeParse({ ...clarify, clarificationOf: clarify.interactionId }).success).toBe(false);
     expect(DecisionSchema.safeParse({ ...clarify, candidates: [...clarify.candidates].reverse() }).success).toBe(false);
     expect(DecisionSchema.safeParse({ ...clarify, candidates: Array.from({ length: 5 }, () => clarify.candidates[0]) }).success).toBe(false);
     expect(DecisionSchema.safeParse({ status: 'clarify', question: '旧问题', revision: 0 }).success).toBe(true); // Historical v1 receipt only.
+  });
+
+  it('accepts an optional clarification link without changing legacy action parsing', () => {
+    const action = {
+      kind: 'move' as const,
+      saveId: 'save-1',
+      actorId: 'player-1',
+      branchId: 'root' as const,
+      expectedRevision: 0,
+      idempotencyKey,
+      payload: { destinationId: 'loc-a' },
+    };
+    expect(ActionIntentSchema.parse(action).clarificationOf).toBeUndefined();
+    expect(ActionIntentSchema.parse({ ...action, clarificationOf: 'clarify-previous-1' }).clarificationOf)
+      .toBe('clarify-previous-1');
+    expect(ActionIntentSchema.safeParse({ ...action, clarificationOf: 'x'.repeat(129) }).success).toBe(false);
   });
 
   it('validates current turn receipts and still reads legacy receipts', () => {
@@ -146,6 +166,8 @@ describe('shared wire contracts', () => {
       resultingRevision: 1,
     };
     expect(TurnReceiptV2Schema.safeParse(currentReceipt).success).toBe(true);
+    expect(TurnReceiptV2Schema.safeParse({ ...currentReceipt, clarificationOf: 'previous-interaction' }).success).toBe(true);
+    expect(TurnReceiptV2Schema.safeParse({ ...currentReceipt, clarificationOf: idempotencyKey }).success).toBe(false);
     expect(TurnReceiptV2Schema.safeParse({ ...currentReceipt, rng: { seed: null, draws: 1 } }).success).toBe(false);
     expect(TurnReceiptV2Schema.safeParse({ ...currentReceipt, branchId: 'branch-2' }).success).toBe(false);
 

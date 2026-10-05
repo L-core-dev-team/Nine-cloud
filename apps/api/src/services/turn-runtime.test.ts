@@ -30,7 +30,11 @@ describe('host plugin and complete synthetic turn path',()=>{
  it('runs 150 turns with tenfold retries, service restarts and narrative retries without item resurrection or replay drift',async()=>{
   let save:SaveEnvelope={schemaVersion:1,saveId:'synthetic-long',revision:0,ruleVersion:'synthetic',canonVersion:'synthetic',memoryPolicyVersion:'synthetic',state:plugin.initialState({ownerId:'a',saveId:'synthetic-long',choices:{}})};
   const initial=structuredClone(save);let journal=createNpcMemoryJournal(save.saveId,0);const receipts=new Map<string,TurnReceipt>();const events:DomainEvent[]=[];
-  const repository:ServerTurnRepository={loadSave:async owner=>owner==='a'?structuredClone(save):null,getReceiptForOwner:async(owner,_id,key)=>owner==='a'?receipts.get(key)||null:null,getForOwner:async owner=>owner==='a'?structuredClone(journal):null,commitAcceptedTurn:async input=>{
+  const repository:ServerTurnRepository={loadSave:async owner=>owner==='a'?structuredClone(save):null,getReceiptForOwner:async(owner,_id,key)=>owner==='a'?receipts.get(key)||null:null,getForOwner:async owner=>owner==='a'?structuredClone(journal):null,recordNonAcceptedDecision:async input=>{
+   const prior=receipts.get(input.receipt.idempotencyKey);if(prior)return prior.requestFingerprint===input.receipt.requestFingerprint?{kind:'duplicate',receipt:prior}:{kind:'idempotency_conflict'};
+   if(input.expectedRevision!==save.revision)return {kind:'conflict',currentRevision:save.revision};
+   receipts.set(input.receipt.idempotencyKey,input.receipt);return {kind:'recorded',receipt:input.receipt};
+  },commitAcceptedTurn:async input=>{
    const prior=receipts.get(input.receipt.idempotencyKey);if(prior)return {kind:'duplicate',receipt:prior};
    save=structuredClone(input.save);journal=structuredClone(input.nextJournal);events.push(...input.events);receipts.set(input.receipt.idempotencyKey,input.receipt);
    return {kind:'committed',receipt:input.receipt,save,journal};

@@ -19,8 +19,8 @@ suite('ServerTurnService on isolated PostgreSQL (synthetic rules only)', () => {
     idempotencyKey: randomUUID(), payload: { destinationId: 'fixture-gate' } };
   const rules: ServerTurnRules = {
     ruleVersion: 'fixture-only', canonVersion: 'fixture-only', memoryPolicyVersion: 'fixture-only',
-    decide: (_, save) => ({ status: 'accepted', nextRevision: save.revision + 1,
-      events: [{ id: randomUUID(), saveId, type: 'fixture.travel', beforeRevision: save.revision, afterRevision: save.revision + 1,
+    decide: (action, save) => ({ status: 'accepted', nextRevision: save.revision + 1,
+      events: [{ id: randomUUID(), saveId: action.saveId, type: 'fixture.travel', beforeRevision: save.revision, afterRevision: save.revision + 1,
         source: 'RULES', ruleVersion: save.ruleVersion, occurredAt: new Date().toISOString(), payload: { destinationId: 'fixture-gate' } }] }),
     reduce: state => ({ ...state, locationId: 'fixture-gate', elapsedMinutes: state.elapsedMinutes + 1,
       facts: { ...state.facts, gameMinute: Number(state.facts.gameMinute) + 1 } }),
@@ -69,6 +69,41 @@ suite('ServerTurnService on isolated PostgreSQL (synthetic rules only)', () => {
     expect(await repository.loadSave(owner, saveId)).toMatchObject({ revision: 1 });
     expect(await new ServerTurnService(repository).execute(owner, { ...intent, expectedRevision: 1, idempotencyKey: randomUUID() })).toEqual({ status: 'rules_not_ready' });
     expect(await repository.loadSave(owner, saveId)).toMatchObject({ revision: 1 });
+  });
+  it('persists clarifications as receipt-only transactions and validates the linked follow-up', async () => {
+    const id = 'turn-clarify-save-' + randomUUID(); templateIds.push(id);
+    await pool.query('INSERT INTO game_saves (id, owner_id, revision, schema_version, canon_version, rule_version, memory_policy_version, snapshot) VALUES ($1, $2, 0, 1, $3, $3, $3, $4::jsonb)',
+      [id, owner, 'fixture-only', JSON.stringify({ playerId: 'fixture-player', locationId: 'origin', elapsedMinutes: 0, facts: { gameMinute: 0 } })]);
+    const clarificationRules: ServerTurnRules = { ...rules, decide: (input, save) => ({
+      status: 'clarify', question: '你要去哪里？', missingSlots: ['destinationId'], candidates: [],
+      interactionId: input.idempotencyKey, revision: save.revision,
+    }) };
+    const first: ActionIntent = { ...intent, saveId: id, expectedRevision: 0, idempotencyKey: randomUUID() };
+    const clarificationService = new ServerTurnService(repository, clarificationRules);
+    const [clarification, concurrentRetry] = await Promise.all([
+      clarificationService.execute(owner, first), clarificationService.execute(owner, first),
+    ]);
+    expect(clarification).toMatchObject({ status: 'decision', receipt: { decision: { status: 'clarify', revision: 0 } } });
+    expect(concurrentRetry).toEqual(clarification);
+    if (clarification.status !== 'decision' || clarification.receipt.decision.status !== 'clarify') throw new Error('Clarification fixture did not persist.');
+    expect(clarification.receipt.decision.interactionId).toBe(first.idempotencyKey);
+
+    const unchanged = await repository.loadSave(owner, id);
+    expect(unchanged).toMatchObject({ revision: 0, state: { locationId: 'origin', elapsedMinutes: 0 } });
+    expect(await repository.getForOwner(owner, id)).toMatchObject({ revision: 0, memories: [] });
+    const counts = await pool.query('SELECT (SELECT count(*)::int FROM turn_requests WHERE save_id=$1) AS requests, (SELECT count(*)::int FROM turn_events WHERE save_id=$1) AS events, (SELECT count(*)::int FROM npc_memory_journals WHERE save_id=$1) AS journals', [id]);
+    expect(counts.rows[0]).toEqual({ requests: 1, events: 0, journals: 0 });
+
+    expect(await new ServerTurnService(repository, clarificationRules).execute(owner, first)).toEqual(clarification);
+    expect(await new ServerTurnService(repository, clarificationRules).execute(owner, { ...first, payload: { destinationId: 'changed' } }))
+      .toEqual({ status: 'idempotency_conflict' });
+
+    const followUp: ActionIntent = { ...first, idempotencyKey: randomUUID(), clarificationOf: clarification.receipt.idempotencyKey };
+    expect(await new ServerTurnService(repository, rules).execute(owner, followUp)).toMatchObject({
+      status: 'accepted', receipt: { clarificationOf: clarification.receipt.idempotencyKey, resultingRevision: 1 },
+    });
+    const after = await pool.query('SELECT (SELECT count(*)::int FROM turn_requests WHERE save_id=$1) AS requests, (SELECT count(*)::int FROM turn_events WHERE save_id=$1) AS events, (SELECT count(*)::int FROM npc_memory_journals WHERE save_id=$1) AS journals', [id]);
+    expect(after.rows[0]).toEqual({ requests: 2, events: 1, journals: 1 });
   });
   it('the same NPC identity in a second save cannot contaminate the first save memory', async () => {
     const before = await repository.getForOwner(owner, saveId);

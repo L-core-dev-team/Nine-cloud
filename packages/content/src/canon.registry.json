@@ -1796,7 +1796,7 @@
         "sha256": "6f75e27850ba7aa574441f5f8f17a0cc96197be4b341d52375af6c7c83804db3"
       },
       "candidateDocument": "docs/九霄P1序章作者原创输入登记-2026-10-03.md",
-      "candidateDocumentSha256": "ddab728f02777cdcddeed46e6b37fc691586c346ae04d182398821b51cffc3ef",
+      "candidateDocumentSha256": "6c390226f731f71c19c7c29d246ffff59d1a971c28c8da807bace6e613bcc052",
       "candidateIds": [
         "npc_waimen_shixiong_a",
         "task_morning_lesson",
@@ -1834,7 +1834,7 @@
       "recordedAt": "2026-10-04",
       "sourceArtifact": {
         "path": "docs/九霄1.0-P1-执行规格-GPT交付版-2026-10-03.md",
-        "sha256": "ad5187b038a3e6375864a582351949d9bb6621cc0a048252621bfa5383c52c33"
+        "sha256": "3edba2136ef1a783a701327c16208bab289908f83db0084dc748bdc612fa526f"
       },
       "approvalRecord": {
         "path": "docs/acceptance/2026-10-03/九霄1.0-P1-玩法规则与序章-签署表-2026-10-03.xlsx",
@@ -1843,7 +1843,7 @@
         "precedence": "The current execution specification is normative. Author-confirmed 2026-10-04 facts supersede conflicting values in this earlier workbook."
       },
       "candidateDocument": "packages/content/src/prologue/prologue-v1.ts",
-      "candidateDocumentSha256": "9200dc2f03bb7ffbaade0b5f40b596f17f91f6f38d7998e54f6924b82ed8b95e",
+      "candidateDocumentSha256": "66c7557c74263813d7a7ea832de4961c612a12fa48a6f15ecdf6c53a7a1a571f",
       "candidateIds": [
         "loc_luhuadu",
         "loc_wangqitai",

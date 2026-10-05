@@ -33,6 +33,7 @@ export function mountServerTurnRoutes(app: Hono, { service, auth }: ServerTurnRo
         case 'rules_not_ready': return c.json({ code: 'RULES_NOT_READY' }, 503);
         case 'version_mismatch': return c.json({ code: 'VERSION_MISMATCH' }, 409);
         case 'idempotency_conflict': return c.json({ code: 'IDEMPOTENCY_CONFLICT' }, 409);
+        case 'clarification_conflict': return c.json({ code: 'CLARIFICATION_CONFLICT' }, 409);
         case 'revision_conflict': return c.json({ code: 'REVISION_CONFLICT', currentRevision: result.currentRevision }, 409);
         default: return c.json(result);
       }

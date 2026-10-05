@@ -15,13 +15,17 @@ import {
   type NpcMemoryJournal,
 } from '@jiuxiao/domain';
 import type { Pool, PoolClient, QueryResult, QueryResultRow } from 'pg';
-import { requireV1PersistableSave } from './save-storage-contract.js';
+import { requirePersistableSave } from './save-storage-contract.js';
 
 type Database = Pick<Pool, 'connect' | 'query'>;
 
 interface SaveRow extends QueryResultRow {
   id: string;
   revision: number;
+  schema_version: number;
+  memory_mode: string | null;
+  memory_policy_version: string;
+  memory_policy: unknown | null;
 }
 
 interface ReceiptRow extends QueryResultRow {
@@ -74,6 +78,19 @@ export type AcceptedTurnCommitResult =
   | { kind: 'duplicate'; receipt: TurnReceipt }
   | { kind: 'conflict'; currentRevision: number }
   | { kind: 'memory_conflict'; currentRevision: number }
+  | { kind: 'idempotency_conflict' }
+  | { kind: 'not_found' };
+
+export type NonAcceptedTurnRecordInput = {
+  ownerId: string;
+  expectedRevision: number;
+  receipt: TurnReceipt;
+};
+
+export type NonAcceptedTurnRecordResult =
+  | { kind: 'recorded'; receipt: TurnReceipt }
+  | { kind: 'duplicate'; receipt: TurnReceipt }
+  | { kind: 'conflict'; currentRevision: number }
   | { kind: 'idempotency_conflict' }
   | { kind: 'not_found' };
 
@@ -135,6 +152,72 @@ export class PostgresNpcMemoryTurnRepository {
     return journal;
   }
 
+  /** Records a rejection or clarification as an idempotent receipt only; no event, save or memory projection changes. */
+  async recordNonAcceptedDecision(input: NonAcceptedTurnRecordInput): Promise<NonAcceptedTurnRecordResult> {
+    if (!input || typeof input !== 'object') throw new TypeError('Turn decision input is required.');
+    const ownerId = normalizeOwnerId(input.ownerId);
+    const receipt = TurnReceiptSchema.parse(input.receipt);
+    if (!Number.isSafeInteger(input.expectedRevision) || input.expectedRevision < 0 ||
+        receipt.decision.status === 'accepted' || receipt.resultingRevision !== input.expectedRevision ||
+        receipt.decision.revision !== input.expectedRevision) {
+      throw new TypeError('Non-accepted decision must retain the current save revision.');
+    }
+
+    const client = await this.database.connect();
+    let inTransaction = false;
+    try {
+      await client.query('BEGIN');
+      inTransaction = true;
+      if (this.requiresLiveAccount && !(await client.query(
+        'SELECT id FROM auth_accounts WHERE id=$1 AND closed_at IS NULL ' + (this.guard ? 'FOR UPDATE' : 'FOR KEY SHARE'),
+        [ownerId],
+      )).rowCount) {
+        return await rollbackWith(client, () => { inTransaction = false; return { kind: 'not_found' }; });
+      }
+
+      const locked = await client.query<SaveRow>(
+        'SELECT id, revision, schema_version, memory_mode, memory_policy_version, memory_policy FROM game_saves WHERE id = $1 AND owner_id = $2 FOR UPDATE',
+        [receipt.saveId, ownerId],
+      );
+      const current = locked.rows[0];
+      if (!current) return await rollbackWith(client, () => { inTransaction = false; return { kind: 'not_found' }; });
+
+      const priorResult = await client.query<ReceiptRow>(
+        'SELECT result FROM turn_requests WHERE save_id = $1 AND idempotency_key = $2 LIMIT 1',
+        [receipt.saveId, receipt.idempotencyKey],
+      );
+      const prior = priorResult.rows[0];
+      if (prior) {
+        const parsedPrior = TurnReceiptSchema.safeParse(prior.result);
+        if (!parsedPrior.success) throw new Error('Stored turn receipt is invalid.');
+        if (parsedPrior.data.saveId !== receipt.saveId || parsedPrior.data.requestFingerprint !== receipt.requestFingerprint) {
+          return await rollbackWith(client, () => { inTransaction = false; return { kind: 'idempotency_conflict' }; });
+        }
+        return await rollbackWith(client, () => { inTransaction = false; return { kind: 'duplicate', receipt: parsedPrior.data }; });
+      }
+
+      const currentRevision = Number(current.revision);
+      if (currentRevision !== input.expectedRevision) {
+        return await rollbackWith(client, () => { inTransaction = false; return { kind: 'conflict', currentRevision }; });
+      }
+
+      await client.query(
+        'INSERT INTO turn_requests (save_id, idempotency_key, expected_revision, result) VALUES ($1, $2, $3, $4::jsonb)',
+        [receipt.saveId, receipt.idempotencyKey, input.expectedRevision, JSON.stringify(receipt)],
+      );
+      await client.query('COMMIT');
+      inTransaction = false;
+      return { kind: 'recorded', receipt };
+    } catch (error) {
+      if (inTransaction) {
+        try { await client.query('ROLLBACK'); } catch { /* Preserve the original error. */ }
+      }
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
   /** Reads frozen authorized facts only; caller must use these rows instead of reauthorizing source events. */
   async getAuthorizedObservationPage(ownerId: string, saveId: string, npcId: string, cursor?: {
     eventRevision: number; grantId: string;
@@ -175,7 +258,7 @@ export class PostgresNpcMemoryTurnRepository {
       }
 
       const locked = await client.query<SaveRow>(
-        'SELECT id, revision FROM game_saves WHERE id = $1 AND owner_id = $2 FOR UPDATE',
+        'SELECT id, revision, schema_version, memory_mode, memory_policy_version, memory_policy FROM game_saves WHERE id = $1 AND owner_id = $2 FOR UPDATE',
         [commit.save.saveId, commit.ownerId],
       );
       const current = locked.rows[0];
@@ -207,6 +290,13 @@ export class PostgresNpcMemoryTurnRepository {
           return { kind: 'conflict', currentRevision };
         });
       }
+
+      if (current.schema_version !== commit.save.schemaVersion) throw new Error('SAVE_SCHEMA_VERSION_IMMUTABLE');
+      if (commit.save.schemaVersion === 2 && (
+        current.memory_mode !== commit.save.memoryMode ||
+        current.memory_policy_version !== commit.save.memoryPolicyVersion ||
+        canonicalJson(current.memory_policy) !== canonicalJson(commit.save.memoryPolicy)
+      )) throw new Error('SAVE_MEMORY_POLICY_PINNED');
 
       await this.guard?.(client,commit);
       const journalResult = await client.query<JournalRow>(
@@ -248,10 +338,10 @@ export class PostgresNpcMemoryTurnRepository {
       for (const event of commit.events) {
         await client.query(
           'INSERT INTO turn_events ' +
-          '(id, save_id, idempotency_key, sequence, event_type, source, rule_version, before_revision, after_revision, payload, occurred_at) ' +
-          'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11)',
+          '(id, save_id, idempotency_key, sequence, event_type, source, rule_version, before_revision, after_revision, payload, occurred_at, branch_id) ' +
+          'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11, $12)',
           [event.id, event.saveId, commit.receipt.idempotencyKey, nextSequence, event.type, event.source,
-            event.ruleVersion, event.beforeRevision, event.afterRevision, JSON.stringify(event.payload), event.occurredAt],
+            event.ruleVersion, event.beforeRevision, event.afterRevision, JSON.stringify(event.payload), event.occurredAt, event.branchId],
         );
         nextSequence += 1;
       }
@@ -271,11 +361,12 @@ export class PostgresNpcMemoryTurnRepository {
 
       const updated = await client.query(
         'UPDATE game_saves SET revision = $4, schema_version = $5, canon_version = $6, rule_version = $7, ' +
-        'memory_policy_version = $8, snapshot = $9::jsonb, updated_at = now() ' +
+        'memory_policy_version = $8, memory_mode = $9, memory_policy = $10::jsonb, snapshot = $11::jsonb, updated_at = now() ' +
         'WHERE id = $1 AND owner_id = $2 AND revision = $3',
         [commit.save.saveId, commit.ownerId, commit.expectedRevision, commit.save.revision,
           commit.save.schemaVersion, commit.save.canonVersion, commit.save.ruleVersion,
-          commit.save.memoryPolicyVersion, JSON.stringify(commit.save.state)],
+          commit.save.memoryPolicyVersion, commit.save.schemaVersion === 2 ? commit.save.memoryMode : null,
+          commit.save.schemaVersion === 2 ? JSON.stringify(commit.save.memoryPolicy) : null, JSON.stringify(commit.save.state)],
       );
       if (updated.rowCount !== 1) throw new Error('Save changed while its accepted turn was being committed.');
 
@@ -309,7 +400,7 @@ function normalizeCommit(input: AcceptedTurnCommitInput): NormalizedCommit {
   if (!input || typeof input !== 'object') throw new TypeError('Turn commit input is required.');
   const ownerId = normalizeOwnerId(input.ownerId);
   const save = SaveEnvelopeSchema.parse(input.save);
-  requireV1PersistableSave(save);
+  requirePersistableSave(save);
   const receipt = TurnReceiptSchema.parse(input.receipt);
   const events = input.events.map(event => DomainEventSchema.parse(event));
   const previousJournal = parseJournal(input.previousJournal);

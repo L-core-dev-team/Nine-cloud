@@ -4,6 +4,7 @@ import { PROLOGUE_V1, PROLOGUE_V1_ERROR_MESSAGES, PROLOGUE_V1_RULE_VERSION } fro
 import { evaluate } from './rules.js';
 import { createPrologueV1EventReducer, createPrologueV1RuleModule, type PrologueV1Rulebook } from './prologue-v1-rules.js';
 import { replayEvents } from './event-log.js';
+import { parseActionText } from './nlu/action-parser.js';
 
 const baseFacts: PrologueV1Facts = {
   gameMinute: 300,
@@ -73,6 +74,40 @@ const module = createPrologueV1RuleModule({
   rulebook: book,
   mechanics: PROLOGUE_V1,
   messages: PROLOGUE_V1_ERROR_MESSAGES,
+});
+
+it('routes parser observation targets to the rulebook targetId, not the locationId', () => {
+  const current = save();
+  const target = book.observations.find(candidate => candidate.locationId === current.state.locationId)!;
+  const parsed = parseActionText({
+    text: '观察石堆',
+    identity: {
+      saveId: current.saveId,
+      actorId: current.state.playerId,
+      branchId: 'root',
+      expectedRevision: current.revision,
+      idempotencyKey: '00000000-0000-4000-9000-000000000099',
+    },
+    visible: {
+      knownLocations: [],
+      npcPresence: [],
+      observationTargets: [{ id: target.targetId, label: '石堆' }],
+      clues: [],
+      inventory: [],
+    },
+    visibilityRevision: current.revision,
+    templates: [{ id: 'observe-scene-target', kind: 'observe', prefix: '观察', entitySource: 'observationTargets', fixedPayload: { method: 'scan' } }],
+  });
+  expect(parsed.status).toBe('ready');
+  if (parsed.status !== 'ready') throw new Error('EXPECTED_OBSERVE_INTENT');
+  expect(parsed.intent.payload).toEqual({ targetId: target.targetId, method: 'scan' });
+  const decision = evaluate(parsed.intent, current, {
+    occurredAt: '2026-10-03T10:00:00.000Z',
+    eventIds: allocatedIds,
+    module,
+  });
+  expect(decision.status).toBe('accepted');
+  if (decision.status === 'accepted') expect(decision.events[0]?.type).toBe('observe.result');
 });
 
 let requestCounter = 0;
@@ -270,17 +305,17 @@ describe('versioned P1 prologue rule reducers', () => {
   it('hard rejects cultivation above eight Kec before creating an event', () => {
     const current = save({ stamina: 100 });
     const stateBefore = structuredClone(current.state);
-    const intent = {
+    const intent: ActionIntent = {
       saveId: current.saveId, actorId: current.state.playerId, expectedRevision: current.revision,
       idempotencyKey: '00000000-0000-4000-9000-000000000099', branchId: 'root',
       kind: 'cultivate', payload: { techniqueId: 'tech_fixture', minutes: 9 },
-    } as unknown as ActionIntent;
+    };
     const decision = module.decide(intent, current, { occurredAt: '2026-10-03T10:00:00.000Z', eventIds: allocatedIds, module });
     expect(decision).toMatchObject({ status: 'rejected', code: 'INPUT_CULTIVATION_LIMIT', revision: 0 });
     expect(decision.status === 'rejected' && 'events' in decision).toBe(false);
     expect(current.state).toEqual(stateBefore);
 
-    const evaluated = evaluate(intent as ActionIntent, current, {
+    const evaluated = evaluate(intent, current, {
       occurredAt: '2026-10-03T10:00:00.000Z', eventIds: allocatedIds, module,
     });
     expect(evaluated).toMatchObject({ status: 'rejected', code: 'INPUT_CULTIVATION_LIMIT', revision: 0 });
@@ -387,6 +422,24 @@ describe('versioned P1 prologue rule reducers', () => {
       .toMatchObject({ status: 'rejected', code: 'INPUT_NO_SUCH_TARGET' });
     expect(act('combat', { targetId: 'target_crow' }, save({}, 'loc_town')).decision)
       .toMatchObject({ status: 'rejected', code: 'AUTH_UNAUTHORIZED_TARGET' });
+  });
+
+  it('rejects rule-layer intents forged from NLU-10/13 hidden targets without committing events', () => {
+    const hiddenLocation = act('move', { destinationId: 'loc_honghuang_yaolin_core' });
+    expect(hiddenLocation.decision).toMatchObject({
+      status: 'rejected', code: 'INPUT_NO_SUCH_TARGET', revision: 0,
+    });
+    expect(hiddenLocation.decision.status === 'rejected' && 'events' in hiddenLocation.decision).toBe(false);
+    expect(hiddenLocation.current.state).toEqual(save().state);
+
+    // The parser must never bind this item because it is absent from inventory.
+    // This direct-intent probe independently verifies the reducer's no-side-effect guard.
+    const unownedItem = act('use_item', { itemId: 'item_jiuyifu' });
+    expect(unownedItem.decision).toMatchObject({
+      status: 'rejected', code: 'ENV_ITEM_NOT_OWNED', revision: 0,
+    });
+    expect(unownedItem.decision.status === 'rejected' && 'events' in unownedItem.decision).toBe(false);
+    expect(unownedItem.current.state).toEqual(save().state);
   });
 
   it('supports scan, first study, repeated study, and dark-obstructed observations', () => {

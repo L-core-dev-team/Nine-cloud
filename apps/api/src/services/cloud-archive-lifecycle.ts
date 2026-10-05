@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import type { Pool } from 'pg';
 import { SaveEnvelopeSchema } from '@jiuxiao/contracts';
-import { requireV1PersistableSave } from './save-storage-contract.js';
+import { requireLegacyArchiveSave } from './save-storage-contract.js';
 
 export function archiveDigest(value: unknown): string {
   const canonical = (entry: unknown): string => {
@@ -29,7 +29,8 @@ export class CloudArchiveLifecycle {
       }
       const result = await client.query('SELECT * FROM game_saves WHERE id = $1 AND owner_id = $2 FOR UPDATE', [saveId, owner]);
       const row = result.rows[0];
-      if (!row || row.snapshot?.facts?.archiveKind !== 'local-untrusted-v1') { await client.query('ROLLBACK'); return { kind: 'not_found' as const }; }
+      if (!row || row.schema_version !== 1 || row.memory_mode !== null || row.memory_policy !== null ||
+        row.snapshot?.facts?.archiveKind !== 'local-untrusted-v1') { await client.query('ROLLBACK'); return { kind: 'not_found' as const }; }
       const archived = (await client.query('SELECT * FROM cloud_archive_trash WHERE save_id = $1 AND owner_id = $2', [saveId, owner])).rows[0];
       if (operation === 'delete' && archived && expectedRevision === archived.deleted_revision - 1) {
         await client.query('ROLLBACK'); return { kind: 'deleted' as const, revision: archived.deleted_revision as number };
@@ -40,15 +41,15 @@ export class CloudArchiveLifecycle {
       if (operation === 'delete') {
         const backup = SaveEnvelopeSchema.parse({ schemaVersion: row.schema_version, saveId, canonVersion: row.canon_version,
           ruleVersion: row.rule_version, memoryPolicyVersion: row.memory_policy_version, revision: row.revision, state: row.snapshot });
-        requireV1PersistableSave(backup);
+        requireLegacyArchiveSave(backup);
         await client.query('INSERT INTO cloud_archive_trash (save_id, owner_id, deleted_revision, backup, digest) VALUES ($1, $2, $3, $4::jsonb, $5)', [saveId, owner, nextRevision, JSON.stringify(backup), archiveDigest(backup)]);
         await client.query('UPDATE game_saves SET revision = $3, updated_at = now() WHERE id = $1 AND owner_id = $2', [saveId, owner, nextRevision]);
       } else {
         const backup = SaveEnvelopeSchema.parse(archived.backup);
-        requireV1PersistableSave(backup);
+        requireLegacyArchiveSave(backup);
         if (backup.saveId !== saveId || backup.state.facts.archiveKind !== 'local-untrusted-v1' || archiveDigest(backup) !== archived.digest) throw new Error('BACKUP_INTEGRITY_FAILED');
         await client.query(`UPDATE game_saves SET revision = $3, schema_version = $4, canon_version = $5, rule_version = $6,
-          memory_policy_version = $7, snapshot = $8::jsonb, updated_at = now() WHERE id = $1 AND owner_id = $2`,
+          memory_policy_version = $7, memory_mode = NULL, memory_policy = NULL, snapshot = $8::jsonb, updated_at = now() WHERE id = $1 AND owner_id = $2`,
           [saveId, owner, nextRevision, backup.schemaVersion, backup.canonVersion, backup.ruleVersion, backup.memoryPolicyVersion, JSON.stringify(backup.state)]);
         await client.query('DELETE FROM cloud_archive_trash WHERE save_id = $1 AND owner_id = $2', [saveId, owner]);
       }

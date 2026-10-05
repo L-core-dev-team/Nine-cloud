@@ -60,6 +60,10 @@ function fixture() {
 class FakeTransactionClient {
   readonly statements: { sql: string; values: unknown[] }[] = [];
   revision = 0;
+  schemaVersion = 1;
+  memoryMode: string | null = null;
+  memoryPolicyVersion = 'memory-v1';
+  memoryPolicy: unknown | null = null;
   priorReceipt: unknown | null = null;
   storedJournal: unknown | null = null;
   failJournalWrite = false;
@@ -71,8 +75,9 @@ class FakeTransactionClient {
     let rows: unknown[] = [];
     let rowCount: number | null = 0;
 
-    if (normalized.startsWith('SELECT id, revision FROM game_saves')) {
-      rows = [{ id: 'save-1', revision: this.revision }];
+    if (normalized.startsWith('SELECT id, revision, schema_version')) {
+      rows = [{ id: 'save-1', revision: this.revision, schema_version: this.schemaVersion,
+        memory_mode: this.memoryMode, memory_policy_version: this.memoryPolicyVersion, memory_policy: this.memoryPolicy }];
     } else if (normalized.startsWith('SELECT result FROM turn_requests')) {
       rows = this.priorReceipt === null ? [] : [{ result: this.priorReceipt }];
     } else if (normalized.startsWith('SELECT revision, payload FROM npc_memory_journals')) {
@@ -129,6 +134,7 @@ describe('PostgresNpcMemoryTurnRepository', () => {
     expect(eventInsert?.sql).toContain('source, rule_version');
     expect(eventInsert?.values[5]).toBe('RULES');
     expect(eventInsert?.values[6]).toBe('rules-v1');
+    expect(eventInsert?.values[11]).toBe('root');
   });
 
   it('returns an idempotent duplicate before comparing the now-advanced save revision', async () => {
@@ -215,7 +221,7 @@ describe('PostgresNpcMemoryTurnRepository', () => {
     expect(client.statements).toEqual([]);
   });
 
-  it('refuses v2 envelope persistence before opening a transaction', async () => {
+  it('persists a v2 envelope and its pinned policy in the same accepted-turn transaction', async () => {
     const client = new FakeTransactionClient();
     const input = fixture();
     const memoryPolicy = {
@@ -228,10 +234,43 @@ describe('PostgresNpcMemoryTurnRepository', () => {
     } as const;
     const v2Save = { ...input.save, schemaVersion: 2 as const, memoryPolicyVersion: memoryPolicy.policyVersion,
       memoryMode: memoryPolicy.mode, memoryPolicy };
+    client.schemaVersion = 2;
+    client.memoryMode = memoryPolicy.mode;
+    client.memoryPolicyVersion = memoryPolicy.policyVersion;
+    client.memoryPolicy = memoryPolicy;
+
+    const result = await repository(client).commitAcceptedTurn({
+      ownerId: 'owner-1', expectedRevision: 0, ...input, save: v2Save, events: [input.event],
+    });
+    expect(result).toMatchObject({ kind: 'committed', save: { schemaVersion: 2, memoryMode: 'continue' } });
+    const saveUpdate = client.statements.find(statement => statement.sql.startsWith('UPDATE game_saves'));
+    expect(saveUpdate?.values[8]).toBe('continue');
+    expect(saveUpdate?.values[9]).toBe(JSON.stringify(memoryPolicy));
+  });
+
+  it('fails closed before writes if a transaction tries to change a pinned policy', async () => {
+    const client = new FakeTransactionClient();
+    const input = fixture();
+    const memoryPolicy = {
+      mode: 'continue', policyVersion: 'continue-v1', schemaVersion: 1,
+      clockBasis: 'game-minute+npc-grant-sequence-v1',
+      policyArtifactHash: `sha256:${'a'.repeat(64)}`, cueDictionaryHash: `sha256:${'b'.repeat(64)}`,
+      normalizerVersion: 'unicode-nfc-v1', retrievalVersion: 'exact-recall-v1',
+      visibilityPolicyVersion: 'npc-visibility-v1', visibilityPolicyHash: `sha256:${'c'.repeat(64)}`,
+      createdAtRevision: 0,
+    } as const;
+    client.schemaVersion = 2;
+    client.memoryMode = memoryPolicy.mode;
+    client.memoryPolicyVersion = memoryPolicy.policyVersion;
+    client.memoryPolicy = memoryPolicy;
+    const changedPolicy = { ...memoryPolicy, retrievalVersion: 'changed-retrieval-v2' };
+    const v2Save = { ...input.save, schemaVersion: 2 as const, memoryPolicyVersion: memoryPolicy.policyVersion,
+      memoryMode: memoryPolicy.mode, memoryPolicy: changedPolicy };
 
     await expect(repository(client).commitAcceptedTurn({
       ownerId: 'owner-1', expectedRevision: 0, ...input, save: v2Save, events: [input.event],
-    })).rejects.toThrow('SAVE_SCHEMA_NOT_READY');
-    expect(client.statements).toEqual([]);
+    })).rejects.toThrow('SAVE_MEMORY_POLICY_PINNED');
+    expect(client.statements.some(statement => statement.sql.startsWith('INSERT INTO turn_events'))).toBe(false);
+    expect(client.statements.at(-1)?.sql).toBe('ROLLBACK');
   });
 });

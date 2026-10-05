@@ -77,7 +77,12 @@ const ClarifyDecisionV2Schema = z.strictObject({
   missingSlots: z.array(z.string().min(1).max(80)).max(8),
   candidates: ClarificationCandidatesSchema,
   interactionId: z.string().min(1).max(128),
+  clarificationOf: z.string().min(1).max(128).optional(),
   revision: z.int().nonnegative(),
+}).superRefine((decision, context) => {
+  if (decision.clarificationOf !== undefined && decision.clarificationOf === decision.interactionId) {
+    context.addIssue({ code: 'custom', path: ['clarificationOf'], message: 'A clarification cannot point to itself' });
+  }
 });
 
 /** New decisions use v2 shapes; v1 shapes remain readable for stored receipts. */
