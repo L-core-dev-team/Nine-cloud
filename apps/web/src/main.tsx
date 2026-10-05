@@ -155,34 +155,42 @@ function SaveManager({ saves, onRename, onDelete, onExport }: {
   const [name, setName] = useState('');
   const [confirmation, setConfirmation] = useState('');
   const [feedback, setFeedback] = useState('');
+  const [busy, setBusy] = useState(false);
+  const busyRef = useRef(false);
   const reviewedSaveRef = useRef<LocalSave | null>(null);
+  async function removeReviewedSave(save: LocalSave) {
+    if (busyRef.current) return;
+    busyRef.current = true; setBusy(true);
+    try {
+      const ok = await onDelete(reviewedSaveRef.current || save);
+      if (ok) { setDeletingId(null); setFeedback('本地存档已删除。'); }
+      else setFeedback('删除未完成。请检查另一标签页的改动后重试。');
+    } catch { setFeedback('删除未完成。存档状态未确认，请重新载入列表后核对。'); }
+    finally { busyRef.current = false; setBusy(false); }
+  }
   return <section className="page save-manager"><span className="eyebrow">本地档案</span><h2>存档管理</h2>
     <p>改名只调整列表称呼。删除前请导出副本；其他标签页若改过同一存档，删除会被拒绝。</p>
     {!saves.length && <p>目前没有本地存档。</p>}
     <div className="save-manager-list">{saves.map(save => <article className="card" key={save.saveId}>
       <div><h3>{save.name}</h3><p>{save.location} · 存档版本 {save.revision}</p></div>
-      <div className="actions"><button className="secondary" onClick={() => go(`/game/${save.saveId}`)}>打开</button>
-        <button className="secondary" onClick={() => onExport(save)}>导出</button>
-        <button className="secondary" onClick={() => { reviewedSaveRef.current = save; setEditingId(save.saveId); setDeletingId(null); setName(save.name); setFeedback(''); }}>改名</button>
-        <button className="quiet-action" onClick={() => { reviewedSaveRef.current = save; setDeletingId(save.saveId); setEditingId(null); setConfirmation(''); setFeedback(''); }}>删除</button></div>
+      <div className="actions"><button className="secondary" disabled={busy} onClick={() => go(`/game/${save.saveId}`)}>打开</button>
+        <button className="secondary" disabled={busy} onClick={() => onExport(save)}>导出</button>
+        <button className="secondary" disabled={busy} onClick={() => { reviewedSaveRef.current = save; setEditingId(save.saveId); setDeletingId(null); setName(save.name); setFeedback(''); }}>改名</button>
+        <button className="quiet-action" disabled={busy} onClick={() => { reviewedSaveRef.current = save; setDeletingId(save.saveId); setEditingId(null); setConfirmation(''); setFeedback(''); }}>删除</button></div>
       {editingId === save.saveId && <form className="save-manager-form" onSubmit={event => {
-        event.preventDefault(); void onRename(reviewedSaveRef.current || save, name).then(ok => {
+        event.preventDefault(); if (busyRef.current) return; busyRef.current = true; setBusy(true);
+        void onRename(reviewedSaveRef.current || save, name).then(ok => {
           if (ok) { setEditingId(null); setFeedback('存档名称已更新。'); }
           else setFeedback('改名未写入。请检查存储状态或重新载入列表。');
-        });
-      }}><label>新名称<input value={name} maxLength={40} onChange={event => setName(event.target.value)} /></label>
-        <button className="primary" type="submit" disabled={!name.trim() || name.trim() === save.name}>保存名称</button>
-        <button className="secondary" type="button" onClick={() => setEditingId(null)}>取消</button></form>}
+        }).catch(() => setFeedback('改名未完成。存档状态未确认，请重新载入列表后核对。')).finally(() => { busyRef.current = false; setBusy(false); });
+      }}><label>新名称<input value={name} maxLength={40} onChange={event => setName(event.target.value)} disabled={busy} /></label>
+        <button className="primary" type="submit" disabled={busy || !name.trim() || name.trim() === save.name}>{busy ? '正在保存…' : '保存名称'}</button>
+        <button className="secondary" type="button" disabled={busy} onClick={() => setEditingId(null)}>取消</button></form>}
       {deletingId === save.saveId && <div className="save-manager-form" role="group" aria-label={`确认删除${save.name}`}>
         <p>此操作会移除本机这份存档。请先导出，并输入完整名称确认。</p>
-        <label>确认名称<input value={confirmation} onChange={event => setConfirmation(event.target.value)} /></label>
-        <button className="primary" disabled={confirmation !== save.name} onClick={() => {
-          void onDelete(reviewedSaveRef.current || save).then(ok => {
-            if (ok) { setDeletingId(null); setFeedback('本地存档已删除。'); }
-            else setFeedback('删除未完成。请检查另一标签页的改动后重试。');
-          });
-        }}>确认删除</button>
-        <button className="secondary" onClick={() => setDeletingId(null)}>取消</button></div>}
+        <label>确认名称<input value={confirmation} onChange={event => setConfirmation(event.target.value)} disabled={busy} /></label>
+        <button className="primary" disabled={busy || confirmation !== save.name} onClick={() => void removeReviewedSave(save)}>{busy ? '正在删除…' : '确认删除'}</button>
+        <button className="secondary" disabled={busy} onClick={() => setDeletingId(null)}>取消</button></div>}
     </article>)}</div>
     {feedback && <p role="status">{feedback}</p>}
     <button className="secondary" onClick={() => go('/lobby')}>返回山门</button>
@@ -274,17 +282,19 @@ function SearchHighlight({ text, query }: { text: string; query: string }) {
   return <>{parts}</>;
 }
 
-function World({ onClose, save, onImportSupplement }: { onClose: () => void; save: LocalSave | undefined; onImportSupplement: (file: File, save: LocalSave) => void }) {
+function World({ onClose, save, onImportSupplement, isReturningToJourney }: { onClose: () => void; save: LocalSave | undefined; onImportSupplement: (file: File, save: LocalSave) => void; isReturningToJourney: boolean }) {
   const [worldQuery, setWorldQuery] = useState('');
   const [atlasQuery, setAtlasQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [view, setView] = useState<'text' | 'atlas'>('text');
   const [collection, setCollection] = useState<CandidateIllustrationCollection>('world');
   const [selectedIllustration, setSelectedIllustration] = useState<CandidateIllustration | null>(null);
   const [canonSearch, setCanonSearch] = useState<((query: string) => CanonRuntimeEntry[]) | null>(null);
   const [canonEntryCount, setCanonEntryCount] = useState<number | null>(null);
   const [canonLoadFailed, setCanonLoadFailed] = useState(false);
-  const firstResultRef = useRef<HTMLElement>(null);
+  const firstResultRef = useRef<HTMLDetailsElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
+  useLayoutEffect(() => { window.scrollTo(0, 0); }, []);
   useEffect(() => {
     let active = true;
     import('@jiuxiao/content/worldbook').then(module => {
@@ -302,10 +312,13 @@ function World({ onClose, save, onImportSupplement }: { onClose: () => void; sav
     if (selectedIllustration && !dialog.open) dialog.showModal();
     else if (!selectedIllustration && dialog.open) dialog.close();
   }, [selectedIllustration]);
-  const entries = useMemo(() => canonSearch?.(worldQuery) ?? [], [canonSearch, worldQuery]);
+  const allEntries = useMemo(() => canonSearch?.('') ?? [], [canonSearch]);
+  const queryMatches = useMemo(() => canonSearch?.(worldQuery) ?? [], [canonSearch, worldQuery]);
+  const categories = useMemo(() => [...new Set(allEntries.map(entry => entry.category))].sort((a, b) => canonCategoryLabel(a).localeCompare(canonCategoryLabel(b), 'zh-CN')), [allEntries]);
+  const entries = useMemo(() => queryMatches.filter(entry => selectedCategory === 'all' || entry.category === selectedCategory), [queryMatches, selectedCategory]);
   const illustrations = CANDIDATE_ILLUSTRATIONS.filter(item => item.collection === collection
     && (!atlasQuery.trim() || `${item.title} ${item.topicTag ?? ''}`.toLocaleLowerCase().includes(atlasQuery.trim().toLocaleLowerCase())));
-  return <section className="page world-page"><span className="eyebrow">山河地理 · 设定与图鉴</span><h2>世界设定</h2>
+  return <section className="page world-page"><div className="world-return-bar"><div><span className="eyebrow">{isReturningToJourney ? '行旅仍在原处' : '阅读位置会保留'}</span>{isReturningToJourney && save && <strong>{save.name} · {save.location}</strong>}</div><button className="secondary" onClick={onClose}>{isReturningToJourney ? '返回当前行旅' : '返回上一页'}</button></div><span className="eyebrow">山河地理 · 设定与图鉴</span><h2>世界设定</h2>
     <p>正文收录已审核设定；画卷另列视觉素材，二者各守其界。</p>
     <div className="world-view-switch" role="group" aria-label="世界资料类型">
       <button aria-pressed={view === 'text'} onClick={() => setView('text')}>设定正文</button>
@@ -314,10 +327,11 @@ function World({ onClose, save, onImportSupplement }: { onClose: () => void; sav
     {view === 'text' && <div id="world-text-panel" aria-label="设定正文">
        <label className="world-search">搜索已审核设定<input type="search" value={worldQuery} onChange={event => setWorldQuery(event.target.value)} onKeyDown={event => { if (event.key === 'Enter' && entries.length) { event.preventDefault(); firstResultRef.current?.focus(); firstResultRef.current?.scrollIntoView({ block: 'start', behavior: 'auto' }); } }} placeholder="试试：中州、海上贸易、妖林外围" aria-label="搜索已审核世界设定" /></label>
       {canonSearch && <div className="world-search-feedback"><p role="status">{worldQuery.trim() ? `“${worldQuery.trim()}”找到 ${entries.length} 条设定` : `共 ${entries.length} 条已审核设定`}</p>{worldQuery.trim() && entries.length > 0 && <button className="secondary" onClick={() => { firstResultRef.current?.focus(); firstResultRef.current?.scrollIntoView({ block: 'start', behavior: 'auto' }); }}>查看首条结果</button>}{worldQuery && <button className="quiet-action" onClick={() => setWorldQuery('')}>清空搜索</button>}</div>}
-      <div className="worldbook-results" aria-live="polite">{canonLoadFailed ? <p className="worldbook-empty" role="status">设定正文暂时无法载入。请稍后重试；画卷图鉴仍可查看。</p> : !canonSearch ? <p className="worldbook-empty" role="status">正在载入已审核设定……</p> : entries.length ? entries.map((entry, index) => <article className="worldbook-entry" key={entry.id} ref={index === 0 ? firstResultRef : undefined} tabIndex={-1}>
-      <span className="eyebrow">{canonCategoryLabel(entry.category)} · Canon {entry.canonVersion}</span><h3><SearchHighlight text={entry.title} query={worldQuery} /></h3><div className="worldbook-body"><SearchHighlight text={entry.content} query={worldQuery} /></div>
-      {entry.publicSourceNote && <details><summary>来源与整理说明</summary><p>{entry.publicSourceNote}</p></details>}
-      </article>) : <p className="worldbook-empty">没有找到这组字词。试试地点名、地貌或文化关键词。</p>}</div>
+      {canonSearch && <div className="worldbook-categories" role="group" aria-label="按设定分类筛选"><button aria-pressed={selectedCategory === 'all'} onClick={() => setSelectedCategory('all')}>全部 <small>{queryMatches.length}</small></button>{categories.map(category => <button key={category} aria-pressed={selectedCategory === category} onClick={() => setSelectedCategory(category)}>{canonCategoryLabel(category)} <small>{queryMatches.filter(entry => entry.category === category).length}</small></button>)}</div>}
+      <div className="worldbook-results" aria-live="polite">{canonLoadFailed ? <p className="worldbook-empty" role="status">设定正文暂时无法载入。请稍后重试；画卷图鉴仍可查看。</p> : !canonSearch ? <p className="worldbook-empty" role="status">正在载入已审核设定……</p> : entries.length ? entries.map((entry, index) => <details className="worldbook-entry" key={entry.id} ref={index === 0 ? firstResultRef : undefined} tabIndex={-1} open={Boolean(worldQuery.trim())}>
+      <summary className="worldbook-entry-summary"><span className="eyebrow">{canonCategoryLabel(entry.category)} · Canon {entry.canonVersion}</span><span className="worldbook-entry-title" role="heading" aria-level={3}><SearchHighlight text={entry.title} query={worldQuery} /></span><small>{worldQuery.trim() ? '展开查看匹配内容' : '展开阅读'}</small></summary><div className="worldbook-body"><SearchHighlight text={entry.content} query={worldQuery} /></div>
+      {entry.publicSourceNote && <details className="worldbook-source"><summary>来源与整理说明</summary><p>{entry.publicSourceNote}</p></details>}
+      </details>) : <p className="worldbook-empty">没有找到这组字词。试试地点名、地貌或文化关键词。</p>}</div>
     </div>}
     {view === 'atlas' && <div id="world-atlas-panel" aria-label="画卷图鉴">
       <div className="atlas-intro"><img src="/scenes/candidate/atlas/brand_calligraphy.webp" alt="九霄书法题字与云山图" loading="lazy" decoding="async" /><div><span className="eyebrow">案头画卷</span><h3>九霄山河图鉴</h3><p>按素材原名与目录归卷。点开可细看。</p></div></div>
@@ -334,7 +348,7 @@ function World({ onClose, save, onImportSupplement }: { onClose: () => void; sav
     </div>}
     <div className="card worldbook-scope"><strong>资料范围</strong><p>正文只收录已审核并发布的世界设定{canonEntryCount === null ? '' : `，当前 ${canonEntryCount} 条`}。尚待核验的 OCR 与补充材料不会混入正文；完成审核后再逐条纳入。画卷图鉴中的图片仅作视觉参考，不构成设定依据。</p>
       {save && <label className="secondary file-action world-import">为当前存档附加补充 TXT<input type="file" accept=".txt,.md" onChange={event => { const file = event.currentTarget.files?.[0]; if (file) onImportSupplement(file, save); event.currentTarget.value = ''; }} /></label>}
-      <button className="secondary" onClick={onClose}>回到刚才的位置</button>
+      <button className="secondary" onClick={onClose}>{isReturningToJourney ? '回到当前行旅与刚才的位置' : '回到刚才的位置'}</button>
     </div>
   </section>;
 }
@@ -371,17 +385,24 @@ function visibleLegacyText(value: unknown): string | null {
 }
 
 function Game({ save, onExport, onImportSupplement, onUpdate, onBranch, onReload }: { save: LocalSave | undefined; onExport: (save?: LocalSave) => void; onImportSupplement: (file: File, save: LocalSave) => void; onUpdate: (save: LocalSave) => Promise<SaveCommitResult>; onBranch: (save: LocalSave) => Promise<boolean>; onReload: () => Promise<void> }) {
-  const storyRef = useRef<HTMLDivElement>(null);
   const [activePanel, setActivePanel] = useState<'character' | 'intel' | 'memory' | null>(null);
   const [intent, setIntent] = useState(() => save ? readActionDraft(save.saveId) : '');
   const [feedback, setFeedback] = useState('');
   const [conflictDraft, setConflictDraft] = useState<LocalSave | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const submittingRef = useRef(false);
   useLayoutEffect(() => {
-    const story = storyRef.current;
-    if (!story || !save) return;
-    const key = `jiuxiao_1_story_scroll_${save.saveId}`;
-    try { story.scrollTop = Number(sessionStorage.getItem(key) || 0); } catch { /* Position is optional. */ }
-    return () => { try { sessionStorage.setItem(key, String(story.scrollTop)); } catch { /* Keep the save untouched. */ } };
+    if (!save) return;
+    const key = `jiuxiao_1_game_scroll_${save.saveId}`;
+    let top = 0;
+    try { top = Math.max(0, Number(sessionStorage.getItem(key) || 0)); } catch { /* Position is optional. */ }
+    const restore = () => window.scrollTo(0, Math.min(top, Math.max(0, document.documentElement.scrollHeight - window.innerHeight)));
+    restore();
+    const frame = requestAnimationFrame(restore);
+    return () => {
+      cancelAnimationFrame(frame);
+      try { sessionStorage.setItem(key, String(window.scrollY)); } catch { /* Keep the save untouched. */ }
+    };
   }, [save?.saveId]);
   if (!save) return <section className="page"><h2>找不到这份存档</h2><p>它可能已被删除，或链接来自另一个浏览器。</p><button className="primary" onClick={() => go('/')}>回到首页</button></section>;
   const pending = save.pending ?? save.legacyArchive?.payload.pending;
@@ -412,6 +433,7 @@ function Game({ save, onExport, onImportSupplement, onUpdate, onBranch, onReload
   const messageOffset = Math.max(0, save.messages.length - 100);
   const readableMessages = save.messages.slice(-100).map((message, index) => ({ message, index: messageOffset + index, content: visibleLegacyText(message) })).filter(item => item.content !== null).slice(-80);
   async function saveIntent() {
+    if (submittingRef.current) return;
     const currentSave = save;
     if (!currentSave) return;
     if (!intent.trim()) { setFeedback('写下此刻要做的事，再收入待处理行动。'); return; }
@@ -419,21 +441,30 @@ function Game({ save, onExport, onImportSupplement, onUpdate, onBranch, onReload
     if (pendingQueue.length >= 50) { setFeedback('待处理行动已达 50 项上限。当前版本尚不能结算或清空，请先导出存档。'); return; }
     const action = { idempotencyKey: createIdempotencyKey(), text: intent.trim(), source: 'PLAYER_ACTION', gm: false, status: 'pending_rules', createdAt: new Date().toISOString() };
     const nextSave = { ...currentSave, updatedAt: new Date().toISOString(), pendingQueue: [...pendingQueue, action] };
-    const result = await onUpdate(nextSave);
-    if (!result.ok) {
-      if (result.reason === 'conflict') { setConflictDraft(nextSave); setFeedback('这份存档已在另一标签页更新。较新的内容没有被覆盖；可重新载入，或把本次行动另存为分支。'); }
-      else setFeedback('本地数据库暂不可写。存档未更新；请导出当前资料，确认浏览器存储可用后重试。');
-      return;
+    submittingRef.current = true;
+    setSubmitting(true);
+    try {
+      const result = await onUpdate(nextSave);
+      if (!result.ok) {
+        if (result.reason === 'conflict') { setConflictDraft(nextSave); setFeedback('这份存档已在另一标签页更新。较新的内容没有被覆盖；可重新载入，或把本次行动另存为分支。'); }
+        else setFeedback('本地数据库暂不可写。存档未更新；请导出当前资料，确认浏览器存储可用后重试。');
+        return;
+      }
+      setConflictDraft(null);
+      setIntent(''); writeActionDraft(currentSave.saveId, '');
+      setFeedback(commitSuccessMessage(result, '行动已加入本地待处理队列。规则结算接入前，它不会推进时间或改变角色状态。'));
+    } catch {
+      setFeedback('本次行动没有保存。请检查本地存储状态后重试；在收到保存反馈前，不要假定它已写入。');
+    } finally {
+      submittingRef.current = false;
+      setSubmitting(false);
     }
-    setConflictDraft(null);
-    setIntent(''); writeActionDraft(currentSave.saveId, '');
-    setFeedback(commitSuccessMessage(result, '行动已加入本地待处理队列。规则结算接入前，它不会推进时间或改变角色状态。'));
   }
   return <section className="game-page">
     <header className="game-topline"><div><span className="eyebrow">{save.location} · 本地存档</span><h1>{save.name}</h1></div><button className="quiet-action" onClick={() => go('/lobby')}>离开此局<span>回到山门</span></button></header>
     <div className="game-workspace">
       <aside className="game-rail" aria-label="游戏资料"><button aria-pressed={activePanel === 'character'} onClick={() => setActivePanel(activePanel === 'character' ? null : 'character')}>角色状态</button><button aria-pressed={activePanel === 'intel'} onClick={() => setActivePanel(activePanel === 'intel' ? null : 'intel')}>综合情报</button><button aria-pressed={activePanel === 'memory'} onClick={() => setActivePanel(activePanel === 'memory' ? null : 'memory')}>星记忆</button></aside>
-      <div className="story-column"><div className="story-scroll" ref={storyRef} aria-label="剧情记录">
+      <div className="story-column"><div className="story-reading" aria-label="剧情记录">
         <div className="chapter-mark"><span>九霄 · {save.location}</span><i aria-hidden="true" /></div>
         {save.messages.length > 80 && <small className="history-limit-note">此处显示最近 80 条可读文字；完整旧档仍保存在下方历史资料中。</small>}
         {readableMessages.map(({ message, index, content }) => {
@@ -445,8 +476,8 @@ function Game({ save, onExport, onImportSupplement, onUpdate, onBranch, onReload
         {pendingText && <article className="pending-intent"><span>{pendingFromLegacy ? '旧档待处理意图 · 尚未恢复' : '开局意图 · 尚未结算'}</span><p>{pendingText}</p></article>}
         {pendingQueue.map((item, index) => <article className="pending-intent" key={String(item.idempotencyKey || index)}><span>待处理行动 {index + 1} · 尚未结算</span><p>{String(item.text)}</p></article>)}
       </div>
-      <nav className="game-tools" aria-label="行囊工具"><button onClick={() => go('/world')}>世界设定</button><button onClick={() => onExport(save)}>导出存档</button><label>补充资料<input type="file" accept=".txt,.md" onChange={event => { const file = event.currentTarget.files?.[0]; if (file) onImportSupplement(file, save); event.currentTarget.value = ''; }} /></label></nav>
-      <form className="intent-composer" onSubmit={event => { event.preventDefault(); void saveIntent(); }}><label htmlFor="player-intent">此刻欲行何事</label><textarea id="player-intent" value={intent} onChange={event => { setIntent(event.target.value); writeActionDraft(save.saveId, event.target.value); }} placeholder="写下行动意图……" maxLength={4000} /><div><small>本地草稿 · 规则结算尚未接入 · {pendingCount} 项待处理</small><button className="primary" type="submit">收入待处理</button></div>{feedback && <p role="status">{feedback}</p>}{conflictDraft && <div className="save-conflict-actions" role="group" aria-label="存档冲突处理"><button className="secondary" type="button" onClick={() => { void onReload().then(() => { setConflictDraft(null); setFeedback('已载入最新存档。检查当前行动后，可再次提交。'); }); }}>载入最新存档</button><button className="secondary" type="button" onClick={() => { void onBranch(conflictDraft).then(saved => { if (saved) { setConflictDraft(null); setIntent(''); writeActionDraft(save.saveId, ''); setFeedback('冲突内容已另存为独立分支；原存档保持不变。'); } else setFeedback('分支未写入。请先导出冲突副本，并检查本地存储空间。'); }); }}>另存为分支</button><button className="quiet-action" type="button" onClick={() => onExport(conflictDraft)}>下载冲突副本</button></div>}</form>
+      <div className="game-tools" role="group" aria-label="行囊工具"><button onClick={() => go('/world')}>世界设定</button><button onClick={() => onExport(save)}>导出存档</button><label>补充资料<input type="file" accept=".txt,.md" onChange={event => { const file = event.currentTarget.files?.[0]; if (file) onImportSupplement(file, save); event.currentTarget.value = ''; }} /></label></div>
+      <form className="intent-composer" aria-busy={submitting} onSubmit={event => { event.preventDefault(); void saveIntent(); }}><label htmlFor="player-intent">此刻欲行何事</label><textarea id="player-intent" value={intent} onChange={event => { setIntent(event.target.value); writeActionDraft(save.saveId, event.target.value); }} placeholder="写下行动意图……" maxLength={4000} disabled={submitting} /><div><small>本地草稿 · 规则结算尚未接入 · {pendingCount} 项待处理</small><button className="primary" type="submit" disabled={submitting}>{submitting ? '正在保存…' : '收入待处理'}</button></div>{feedback && <p role="status">{feedback}</p>}{conflictDraft && <div className="save-conflict-actions" role="group" aria-label="存档冲突处理"><button className="secondary" type="button" disabled={submitting} onClick={() => { void onReload().then(() => { setConflictDraft(null); setFeedback('已载入最新存档。检查当前行动后，可再次提交。'); }); }}>载入最新存档</button><button className="secondary" type="button" disabled={submitting} onClick={() => { void onBranch(conflictDraft).then(saved => { if (saved) { setConflictDraft(null); setIntent(''); writeActionDraft(save.saveId, ''); setFeedback('冲突内容已另存为独立分支；原存档保持不变。'); } else setFeedback('分支未写入。请先导出冲突副本，并检查本地存储空间。'); }); }}>另存为分支</button><button className="quiet-action" type="button" disabled={submitting} onClick={() => onExport(conflictDraft)}>下载冲突副本</button></div>}</form>
       </div>
       {activePanel && <aside className="game-info-panel" aria-label={`${activePanel === 'character' ? '角色状态' : activePanel === 'intel' ? '综合情报' : '星记忆'}详情`}><div><span className="eyebrow">行囊所载</span><button aria-label="关闭资料面板" onClick={() => setActivePanel(null)}>×</button></div><div className="game-readable-panel" aria-label="资料内容"><ReadableData value={panelContent} /></div></aside>}
     </div>
@@ -496,6 +527,10 @@ function App() {
   const [legacyText, setLegacyText] = useState<string | null>(null);
   const [indexedDbReady, setIndexedDbReady] = useState(true);
   const [importPreview, setImportPreview] = useState<{ save: LocalSave; sourceName: string; expectedSaves: LocalSave[] } | null>(null);
+  const [replaceConfirmation, setReplaceConfirmation] = useState('');
+  const [importBusy, setImportBusy] = useState(false);
+  const importBusyRef = useRef(false);
+  const supplementBusySaveIdsRef = useRef(new Set<string>());
   const importReadRef = useRef(0);
   useLayoutEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -556,6 +591,7 @@ function App() {
   function importFile(file: File) {
     const request = ++importReadRef.current;
     setImportPreview(null);
+    setReplaceConfirmation('');
     if (file.size > MAX_IMPORT_BYTES) { setNotice('导入失败：文件超过 20 MiB 上限，原存档未修改。'); return; }
     file.text().then(text => {
       if (request !== importReadRef.current) return;
@@ -567,18 +603,29 @@ function App() {
     }).catch(() => { if (request === importReadRef.current) setNotice('导入失败：无法读取文件。原存档未修改。'); });
   }
   async function commitImport(strategy: 'keep' | 'replace' | 'copy') {
-    if (!importPreview) return;
+    if (!importPreview || importBusyRef.current) return;
     const current = saves;
-    const collision = current.some(item => item.saveId === importPreview.save.saveId);
+    const existing = current.find(item => item.saveId === importPreview.save.saveId);
+    const collision = Boolean(existing);
     if (collision && strategy === 'keep') { setNotice('此档 ID 已存在。请选择“替换现有存档”或“另存副本”。'); return; }
+    if (collision && strategy === 'replace' && replaceConfirmation !== existing!.name) {
+      setNotice('替换尚未执行。请先输入现有存档的完整名称，再确认覆盖。'); return;
+    }
     const candidate = strategy === 'copy' ? { ...importPreview.save, saveId: createSaveId(), name: `${importPreview.save.name}（副本）`, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() } : importPreview.save;
     const next = collision && strategy === 'replace' ? current.map(item => item.saveId === candidate.saveId ? candidate : item) : [candidate, ...current];
     // Replacing requires the version reviewed by the user, even after another
     // tab's storage event has refreshed the visible save list.
     const expected = strategy === 'replace' ? importPreview.expectedSaves : current;
-    const result = await commitSaves(expected, next);
-    if (!result.ok) { setSaves(result.saves); setNotice(result.reason === 'conflict' ? '存档列表刚有变化，导入未覆盖任何内容。请核对最新列表后再选“另存副本”或重试。' : '浏览器数据库不可写，存档尚未导入。已下载的原始备份仍可使用。'); return; }
-    setSaves(result.saves); setImportPreview(null); setNotice(commitSuccessMessage(result, `已导入「${candidate.name}」。原始旧档字段保存在历史资料区。`)); go(`/game/${candidate.saveId}`);
+    importBusyRef.current = true; setImportBusy(true);
+    try {
+      const result = await commitSaves(expected, next);
+      if (!result.ok) { setSaves(result.saves); setNotice(result.reason === 'conflict' ? '存档列表刚有变化，导入未覆盖任何内容。请核对最新列表后再选“另存副本”或重试。' : '浏览器数据库不可写，存档尚未导入。已下载的原始备份仍可使用。'); return; }
+      setSaves(result.saves); setImportPreview(null); setReplaceConfirmation(''); setNotice(commitSuccessMessage(result, `已导入「${candidate.name}」。原始旧档字段保存在历史资料区。`)); go(`/game/${candidate.saveId}`);
+    } catch {
+      setNotice('导入没有完成，现有存档未确认变更。请重新载入列表并检查原始备份。');
+    } finally {
+      importBusyRef.current = false; setImportBusy(false);
+    }
   }
   function exportFile(save?: LocalSave) {
     let selectedId = '';
@@ -591,6 +638,8 @@ function App() {
   }
   function importSupplement(file: File, save: LocalSave) {
     if (file.size > 100_000) { setNotice('补充资料不可超过 100 KB（100,000 字节），当前存档未修改。'); return; }
+    if (supplementBusySaveIdsRef.current.has(save.saveId)) { setNotice('这份存档正在读取补充资料，请等待当前操作完成。'); return; }
+    supplementBusySaveIdsRef.current.add(save.saveId);
     void file.text().then(text => {
       const current = saves;
       const target = current.find(item => item.saveId === save.saveId);
@@ -602,22 +651,25 @@ function App() {
         setNotice('补充资料已达 20 份或合计 256 KB 上限；本次未写入，原档保持不变。'); return;
       }
       const next: LocalSave = { ...target, updatedAt: new Date().toISOString(), legacyArchive: { sourceFormat: target.legacyArchive?.sourceFormat || 'JIUXIAO_LOCAL', sourceVersion: target.legacyArchive?.sourceVersion ?? null, payload: { ...payload, supplements: additions } } };
-      void commitSaves(current, current.map(item => item.saveId === save.saveId ? next : item)).then(result => {
+      return commitSaves(current, current.map(item => item.saveId === save.saveId ? next : item)).then(result => {
         if (!result.ok) { setSaves(result.saves); setNotice(result.reason === 'conflict' ? '存档在读取补充资料期间发生变化，未覆盖较新版本；请重新附加。' : '浏览器数据库不可写，补充资料没有写入。'); return; }
         setSaves(result.saves); setNotice(commitSuccessMessage(result, `「${file.name}」已附加到「${save.name}」，不会覆盖旧内容。`));
       });
-    }).catch(() => setNotice('无法读取该补充资料，存档未修改。'));
+    }).catch(() => setNotice('无法读取该补充资料，存档未修改。')).finally(() => supplementBusySaveIdsRef.current.delete(save.saveId));
   }
   const currentRoute = route();
   const game = currentRoute.startsWith('/game/') ? saves.find(save => save.saveId === currentRoute.split('/')[2]) : undefined;
   let activeSaveId = '';
   try { activeSaveId = sessionStorage.getItem('jiuxiao_active_save_id') || ''; } catch { /* Use the first available save. */ }
   const activeSave = saves.find(item => item.saveId === activeSaveId) || saves[0];
+  const worldReturnTarget = history.state?.returnTo;
+  const returningToJourney = typeof worldReturnTarget === 'string' && /^\/game\/[^/]+$/.test(worldReturnTarget)
+    && worldReturnTarget === `/game/${activeSave?.saveId}`;
   const page = currentRoute === '/new' ? <NewCharacter onSaved={async save => {
     const result = await commitSaves(saves, [save, ...saves]);
     if (!result.ok) { setSaves(result.saves); setNotice(result.reason === 'conflict' ? '存档列表刚有变化，角色尚未创建。请确认后重试。' : '浏览器数据库不可写，角色尚未创建。草稿仍保留。'); return false; }
     setSaves(result.saves); if (result.warning) setNotice(commitSuccessMessage(result, '角色与新存档已创建。')); go(`/game/${save.saveId}`); return true;
-  }} /> : currentRoute === '/intro' ? <Introduction onStart={() => go('/new')} onWorld={() => go('/world')} /> : currentRoute === '/world' ? <World onClose={returnFromReading} save={activeSave} onImportSupplement={importSupplement} /> : currentRoute === '/settings/ai' ? <AiSettings onClose={returnFromReading} /> : currentRoute === '/settings/cloud' ? <CloudSettings saves={saves} onRestore={async archive => {
+  }} /> : currentRoute === '/intro' ? <Introduction onStart={() => go('/new')} onWorld={() => go('/world')} /> : currentRoute === '/world' ? <World onClose={returnFromReading} save={activeSave} onImportSupplement={importSupplement} isReturningToJourney={returningToJourney} /> : currentRoute === '/settings/ai' ? <AiSettings onClose={returnFromReading} /> : currentRoute === '/settings/cloud' ? <CloudSettings saves={saves} onRestore={async archive => {
     const copied = { ...archive, saveId: createSaveId(), name: `${archive.name}（云端副本）`, updatedAt: new Date().toISOString() };
     const expected = readSaves(); const result = await commitSaves(expected, [copied, ...expected]);
     setSaves(result.saves); if (result.ok) setNotice(commitSuccessMessage(result, '云端档已恢复为新副本。')); return result.ok ? copied : null;
@@ -660,7 +712,8 @@ function App() {
   const migrationAction = legacyText ? <button className="notice-action" onClick={migrateLegacyLibrary}>下载原文备份并迁移</button> : undefined;
   const storageNotice = indexedDbReady ? notice : `${notice} IndexedDB 回退模式。`;
   const activeScene = scenePreview ?? (game ? sceneForLocation(game.location) : 'mountain-gate');
-  return <Shell saves={saves} theme={theme} onThemeChange={() => setTheme(current => current === 'night' ? 'day' : 'night')} graphicsSettings={graphicsSettings} ambientAudioActive={ambientAudioActive} onToggleAmbientAudio={() => { void toggleAmbientAudio(); }} sceneId={activeScene} notice={legacyText ? '检测到旧版 localStorage 存档。请先备份原文，再开始迁移。' : storageNotice} noticeAction={migrationAction} onImport={importFile} onExport={() => exportFile()}>{importPreview && <section className="import-preview card" role="dialog" aria-labelledby="import-preview-title"><span className="eyebrow">旧档导入 / 提交前核对</span><h2 id="import-preview-title">{importPreview.save.name}</h2><p>来源：{importPreview.sourceName}。原始文件已先下载为备份。核对数量与回合，再选择导入方式；所有顶层字段均会原样保存在该存档的历史资料区。</p><div className="stats"><div><small>回合</small><strong>{importPreview.save.revision}</strong></div><div><small>消息</small><strong>{importPreview.save.messages.length}</strong></div><div><small>人物 / 物品</small><strong>{Array.isArray(importPreview.save.legacyArchive?.payload.npcs) ? importPreview.save.legacyArchive.payload.npcs.length : 0} / {Array.isArray(importPreview.save.legacyArchive?.payload.items) ? importPreview.save.legacyArchive.payload.items.length : 0}</strong></div></div><div className="legacy-groups">{Object.entries(importPreview.save.legacyArchive?.payload || {}).map(([key, value]) => <div className="import-field" key={key}><strong>{key}</strong><span>{Array.isArray(value) ? `${value.length} 项` : value !== null && typeof value === 'object' ? `${Object.keys(value).length} 个字段` : typeof value === 'string' ? `${value.length} 字符` : '已保留'}</span></div>)}</div><div className="actions"><button className="primary" onClick={() => commitImport('keep')}>导入此档</button>{saves.some(item => item.saveId === importPreview.save.saveId) && <><button className="secondary" onClick={() => commitImport('copy')}>另存为副本</button><button className="secondary" onClick={() => commitImport('replace')}>替换现有存档</button></>}<button className="secondary" onClick={() => { setImportPreview(null); setNotice('已取消导入。原存档未修改，原始备份仍保留。'); }}>取消</button></div></section>}{page}</Shell>;
+  const importCollision = saves.find(item => item.saveId === importPreview?.save.saveId);
+  return <Shell saves={saves} theme={theme} onThemeChange={() => setTheme(current => current === 'night' ? 'day' : 'night')} graphicsSettings={graphicsSettings} ambientAudioActive={ambientAudioActive} onToggleAmbientAudio={() => { void toggleAmbientAudio(); }} sceneId={activeScene} notice={legacyText ? '检测到旧版 localStorage 存档。请先备份原文，再开始迁移。' : storageNotice} noticeAction={migrationAction} onImport={importFile} onExport={() => exportFile()}>{importPreview && <section className="import-preview card" role="dialog" aria-labelledby="import-preview-title" aria-modal="false" aria-busy={importBusy}><span className="eyebrow">旧档导入 / 提交前核对</span><h2 id="import-preview-title">{importPreview.save.name}</h2><p>来源：{importPreview.sourceName}。原始文件已先下载为备份。核对数量与回合，再选择导入方式；所有顶层字段均会原样保存在该存档的历史资料区。</p><div className="stats"><div><small>回合</small><strong>{importPreview.save.revision}</strong></div><div><small>消息</small><strong>{importPreview.save.messages.length}</strong></div><div><small>人物 / 物品</small><strong>{Array.isArray(importPreview.save.legacyArchive?.payload.npcs) ? importPreview.save.legacyArchive.payload.npcs.length : 0} / {Array.isArray(importPreview.save.legacyArchive?.payload.items) ? importPreview.save.legacyArchive.payload.items.length : 0}</strong></div></div><div className="legacy-groups">{Object.entries(importPreview.save.legacyArchive?.payload || {}).map(([key, value]) => <div className="import-field" key={key}><strong>{key}</strong><span>{Array.isArray(value) ? `${value.length} 项` : value !== null && typeof value === 'object' ? `${Object.keys(value).length} 个字段` : typeof value === 'string' ? `${value.length} 字符` : '已保留'}</span></div>)}</div>{importCollision && <label className="replace-save-confirm">覆盖前核对：输入现有存档名称「{importCollision.name}」<input value={replaceConfirmation} onChange={event => setReplaceConfirmation(event.target.value)} disabled={importBusy} autoComplete="off" /></label>}<div className="actions">{!importCollision && <button className="primary" disabled={importBusy} onClick={() => void commitImport('keep')}>{importBusy ? '正在导入…' : '导入此档'}</button>}{importCollision && <><button className="secondary" disabled={importBusy} onClick={() => void commitImport('copy')}>另存为副本</button><button className="primary" disabled={importBusy || replaceConfirmation !== importCollision.name} onClick={() => void commitImport('replace')}>{importBusy ? '正在替换…' : '确认替换现有存档'}</button></>}<button className="secondary" disabled={importBusy} onClick={() => { setImportPreview(null); setReplaceConfirmation(''); setNotice('已取消导入。原存档未修改，原始备份仍保留。'); }}>取消</button></div></section>}{page}</Shell>;
 }
 
 const root = document.getElementById('root');
