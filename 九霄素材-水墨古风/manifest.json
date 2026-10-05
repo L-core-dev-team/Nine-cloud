@@ -1,0 +1,1630 @@
+{
+    "schemaVersion":  1,
+    "status":  "candidate",
+    "sourceAndLicense":  "unverified",
+    "authorApproval":  "pending",
+    "runtimeIntegrated":  false,
+    "note":  "Candidate art only. Metadata values are intentionally omitted; image bytes and embedded metadata are preserved. Regenerated to cover all images (batch1 + world/faction/system + verticals + realms + artifacts).",
+    "files":  [
+                  {
+                      "path":  "01-场景海报\\城镇-万宝浮空城-移动.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  533002,
+                      "sha256":  "ed5639016fc62971db27b904ba566cc4791bef07d57d9e5dfe957f16fb4da3d6",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "01-场景海报\\城镇-万宝浮空城-桌面.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  547901,
+                      "sha256":  "f96a54e0e0036e9cfbeb670a03acb62a619f62a265518ced51e5e71165df607d",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "01-场景海报\\山门-月下入界-移动.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  518219,
+                      "sha256":  "54bade4ece2a5e0b6c4e3e4371e4c67b884e0351df43ff36d48913a8fc4c88f7",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "01-场景海报\\山门-月下入界-桌面.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  547953,
+                      "sha256":  "f992debc24311c787b0fe6ab99f6d10f31d40989d938151c9f454491a5c652b1",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "01-场景海报\\野外-洪荒妖林外围-移动.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  521596,
+                      "sha256":  "33b78a1faf8dbfe2732d94ad8650f29c0fd1792333f746bc1dc75b6987255b3e",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "01-场景海报\\野外-洪荒妖林外围-桌面.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  474647,
+                      "sha256":  "2c70fc57076d1fcdae905166afeb699664e70216c5a9cf7bf619a0f0b82e5d86",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "01-场景海报\\战斗-北境雪原对峙-移动.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  627816,
+                      "sha256":  "c3eb8a3b6a71f5d1be1a8d26b49028379e585b95cfbf80231c05afb83e921de8",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "01-场景海报\\战斗-北境雪原对峙-桌面.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  674796,
+                      "sha256":  "e44323f2b25349f7a9a0b6f9bdf1c54a227ac684ba074f98d221d5e57fb335fc",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "02-品牌装饰\\九霄-书法题字.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  3547,
+                      "height":  1182,
+                      "bytes":  489161,
+                      "sha256":  "347a6839c192ee769bed81a5b50e019e8991ee93e7bda8fcac486ab19eb66383",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "02-品牌装饰\\梅枝-角饰.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  798133,
+                      "sha256":  "aab38f827a2717112567492c3e0f16be4e9542f260f3068ff65528e0f513f863",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "02-品牌装饰\\山水-横卷.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  3128,
+                      "height":  1340,
+                      "bytes":  627419,
+                      "sha256":  "f8729b2de06e76a81809241c9e8b4b68c73d656cb9a0b82af8f1626e5685e8c3",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "02-品牌装饰\\朱红-九霄印章.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1332154,
+                      "sha256":  "b72ebb52cbdd25a7d3ae38c06e0851846e66868aac73a16a168cc6cda35edd01",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "03-纹理背景\\纹理-浅色宣纸.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  417114,
+                      "sha256":  "a60adf5d4dd67e070a0707808df4dd86a96d26fc7304a3c106a8c207d941d79f",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "03-纹理背景\\纹理-深色夜墨.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  333349,
+                      "sha256":  "0690f93a81a5f460c8f63ff291eddcf1a6ceb047e316cf8d7318734f357801ed",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "03-纹理背景\\云雾-远山氛围.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  400118,
+                      "sha256":  "f9d830eb2ff7c8e6121a6c4b84abdd66ed133cd527a8b746f11e2cd1b4e1b11f",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "05-世界与地域\\地域-北境霜寒域.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  632504,
+                      "sha256":  "52340573db4702dc4e9676f245d6c86bfd7bc93d5fa32eb4fcc4ac6f9c920043",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "05-世界与地域\\地域-北境霜寒域-竖版.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  637774,
+                      "sha256":  "e3d0480306c84f9381cf17cf265f02cb43332da31ba1f2b25d37352d584b7607",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "05-世界与地域\\地域-东瀚龙吟域.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  833269,
+                      "sha256":  "79969d53d0801d1e3024aa243a4dbe9da4f453c1bffb5b2c4bb149a8be497fa1",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "05-世界与地域\\地域-东瀚龙吟域-竖版.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  717021,
+                      "sha256":  "2aa88b3e40d62f96c8d233d9ec1c2140ee64a5ce7debe0f0218d8cc77696ae0c",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "05-世界与地域\\地域-洪荒妖林.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  759058,
+                      "sha256":  "3859c1d252cbe93d6dd5194ffb15a151695bc7eacbb185f861fa09f2f0716153",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "05-世界与地域\\地域-洪荒妖林-竖版.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  770152,
+                      "sha256":  "46fbf6bbb98def5be0d0c216774440f5eac0d35f85361f870deef3275a49ee1d",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "05-世界与地域\\地域-南疆万蛊域.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  767740,
+                      "sha256":  "e557bfd6f52e9e15648a98e98af43e8fcc4a8ce9178d637e41fc90eb692034e5",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "05-世界与地域\\地域-南疆万蛊域-竖版.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  659713,
+                      "sha256":  "f6056edda25fdd2ea79ae0bd69fcec8d341bb5c43761458b39c5d249a2e8d1db",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "05-世界与地域\\地域-西荒焚天域.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  656120,
+                      "sha256":  "aacaa0b673d902e56c4290d65a7874bd6caa55a39a587b30bd4472e8e96fc580",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "05-世界与地域\\地域-西荒焚天域-竖版.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  674033,
+                      "sha256":  "07012fe045d7ce020c53c12fd20f8a15578269907115166752f49a029abdb409",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "05-世界与地域\\地域-中州天枢域.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  689463,
+                      "sha256":  "06883cadd7b5159b691422880589bf330cdbc2b51565cf716cb03fca63b45941",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "05-世界与地域\\地域-中州天枢域-竖版.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  623319,
+                      "sha256":  "86d871d4d8a47bb4e99856f29e4e10d7c644dc0c775941d8c226429c996628ab",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "05-世界与地域\\九霄大陆-全图.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  875374,
+                      "sha256":  "9c2100a6db3b15be0b5378eddfd68bbeee6fe37c1303efd0d531908d30df059f",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\北境联盟-狼神山.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  638515,
+                      "sha256":  "c134170d2689abadda2647c93d558bf227ecb459aeb05d88c8c08e38938ee5f2",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\北境联盟-狼神山-竖版.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  648354,
+                      "sha256":  "0ba4defd7796345ff7d081909c1c775156e1f17736b35a2f019d6a0788746c59",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\冰神宫-无垢冰城.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  583567,
+                      "sha256":  "3bde803ccc93ab1c0da46b1b5ee2fcfdcd99a06c01c75d4a0020606feea896b9",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\冰神宫-无垢冰城-竖版.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  672380,
+                      "sha256":  "0e036a540ccd3a5da39d19a370bdffc6133245cfbefeff48521d7700eb795b40",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\大光明寺-菩提山.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  651730,
+                      "sha256":  "0d98d0eeb5af22763c4e021684496467ffa43079f34a565f1e49fb8b2c067725",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\大光明寺-菩提山-竖版.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  740756,
+                      "sha256":  "c286d52b10801dd816b61667dd20ae67c78559e266da8561b5d301390ff24c29",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\覆海宗-镇海城.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  794739,
+                      "sha256":  "48057dd5a7bd6e7dcffb565d2ed49faf29b2c843af1d307e6fb914325657899c",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\覆海宗-镇海城-竖版.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  752520,
+                      "sha256":  "e9b60cf525d41a95a5f6fb9e72747520a15a3fa3e9dc6118dea99b35bc6c60ac",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\昊天剑宗-天枢剑山.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  863162,
+                      "sha256":  "a708b383c1b1d0b82406c2168561b7a6db0925bffd15794175917f20b30e3f91",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\昊天剑宗-天枢剑山-竖版.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  621650,
+                      "sha256":  "45f34ad772fa5b24fc8a9cacb7713c5fd243267e88ddae5a7d5e57f4bfa8c4db",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\稷下学宫-问圣山.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  792009,
+                      "sha256":  "07c8f5c3ffe5eb3f3cd7bade8711aebac8bcdecad75bf7635fe10028989dc2d9",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\稷下学宫-问圣山-竖版.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  841245,
+                      "sha256":  "b1df07e3583030761cd9bec52590faaf311c51a63f9c8896c21e400596684950",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\金刚不坏谷-万丈渊.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  700354,
+                      "sha256":  "1de312a4620f7956c1fd660a594ab6f1436aa823b7659c50ef3ac226c423bc6e",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\金刚不坏谷-万丈渊-竖版.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  827502,
+                      "sha256":  "df9ba55f10f2e55147ff5152fa489d44380ac150b182ab9805e2cc230731a397",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\圣火教-圣焰山火城.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  711512,
+                      "sha256":  "4a19ad99217babc6ced1629b5e7c211a6bd7bff4256fc5b776a8f8156fa2ab18",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\圣火教-圣焰山火城-竖版.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  655165,
+                      "sha256":  "468619c4a0d50fffeb9c095287654019203cf6be65ad8ee3935d622a267e1d3c",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\四海商会-万宝阁内景.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  852342,
+                      "sha256":  "06f73ea2c3dd47cc179a6ae377273df5f796b1dfd6bea4df9c4b19574da02ebc",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\四海商会-万宝阁内景-竖版.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  868682,
+                      "sha256":  "a5f8f3d6a89a124a215be67fd1f4eba9d26496b5a912c4d34168b10d36c43216",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\天工阁-熔炉巨构.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  776086,
+                      "sha256":  "e1344532c29a3097162940eaf1427f77e3208752e8f6358f2246996136b22b1b",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\天工阁-熔炉巨构-竖版.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  728286,
+                      "sha256":  "b51bb14ecdca62994883bf8dcf0e844d855cfee732c4475ebb8e3de7023968ff",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\听潮阁-静音岛.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  551150,
+                      "sha256":  "689f1461c5d96a52f4001eb44b0bb5101a9986a8b91357b4c77f593589d5ad27",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\听潮阁-静音岛-竖版.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  616550,
+                      "sha256":  "37b98738aa44b7c8285e7986f29ff3edcd67f1529a0728593454339fe15fbcf0",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\万兽山庄-兽神殿.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  798416,
+                      "sha256":  "4522ff4663aa8f43910957abff645706074ac3220fd5c2b7089da66b21d892af",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\万兽山庄-兽神殿-竖版.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  754314,
+                      "sha256":  "5ded9ec4faee289b928a4f3b98ead259cf13c59690f940432b683f92d747d592",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\五毒神教-万毒沼泽.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  800852,
+                      "sha256":  "9ef3b9d3b79debc85f04897dfa648770932176bdfb1602b8939999586c7d2d32",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\五毒神教-万毒沼泽-竖版.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  702654,
+                      "sha256":  "f908593461bcb09c23c73a36bad7191ebee0ffc6459af1f2c2335bc8d83e69c9",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\衍天宗-天衍城.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  740993,
+                      "sha256":  "7540ae8a9d6b3d7c75b6eeb21f87bdd0e8018fd4878ad064b2e0866c0c89e7e5",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\衍天宗-天衍城-竖版.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  761426,
+                      "sha256":  "dfe115605c566871894e96a97379beabbb641aee8771345e6016085c0ca0f188",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\偃师府-千机城.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  848094,
+                      "sha256":  "ec7cf8e1c5c4c5b0ffb994024a415e2c042d0ed59b064a211a5153009691cdf6",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\偃师府-千机城-竖版.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  943769,
+                      "sha256":  "a19b761c2d4d480aabea229c5ee3de72fd82af18efa9b5f182eedf14b4e0bc21",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\玉清阁-百草谷.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  779590,
+                      "sha256":  "053c2c637a4cd0afe2a536f598b66e07abadc94171796ad44981e8c7f14b6d2e",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "06-势力宗门\\玉清阁-百草谷-竖版.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  817465,
+                      "sha256":  "fbb8bf86ed1e8d2d2bf81b3948bf27fadaf4067ce78fdecbfb2e22aac5965370",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "07-体系图鉴\\功法品阶-玉牒玉简.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1413119,
+                      "sha256":  "9cca4634c389b1c22aed78398fd96a5a0f65f89b77a8f2cf98f2d2f7b04bd240",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "07-体系图鉴\\经济体系-灵石货币.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1294209,
+                      "sha256":  "14ac8965d275e3d7bbdd5917d64b84833d42ba0030cf85f4ee9dce7f98c47279",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "07-体系图鉴\\境界金字塔-登天天梯.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1773,
+                      "height":  2364,
+                      "bytes":  703485,
+                      "sha256":  "2a1db065023b68f1a8a9e74e4536f6ffccb941b9c919711f15b57ec4173677a4",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "07-体系图鉴\\灵根资质-五行灵根.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1332364,
+                      "sha256":  "ea738508d7ddc2bee0f04d85c1e21cd0ab2d69266f1abf92f862381038dff3ec",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "07-体系图鉴\\物价参考-坊市交易.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1389275,
+                      "sha256":  "3ff02eaff7c5d4aee6a6c1c650c49817e0a1ebe7ab2efcdd78d307b290f9d102",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "07-体系图鉴\\邪修体系-禁忌器物.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1234556,
+                      "sha256":  "248fd7aee2c93670259dcd642041327962979462f10e8984c0020004163940bd",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "07-体系图鉴\\修炼境界-大乘期.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1773,
+                      "height":  2364,
+                      "bytes":  529862,
+                      "sha256":  "0f50f77a6f34acb047eb59d6748ff7ba5d2aece10471d0c41fd023cdfa4d8ded",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "07-体系图鉴\\修炼境界-渡劫天雷.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  588919,
+                      "sha256":  "1619b7d97f926f0d8316c2758c24364896df96e2216259370f240db20d2da7ac",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "07-体系图鉴\\修炼境界-合体期.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1773,
+                      "height":  2364,
+                      "bytes":  552420,
+                      "sha256":  "19282e2638fdd8f796eba95470a6ffee1035fbda2ef4b21029a7b51e2de8220e",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "07-体系图鉴\\修炼境界-化神期.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1773,
+                      "height":  2364,
+                      "bytes":  570245,
+                      "sha256":  "9d8411d1f102cce5014b1365049ca6ad2d3c7f828e6802fc29987058f2eef1f1",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "07-体系图鉴\\修炼境界-结丹金丹.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1331015,
+                      "sha256":  "0b30cfda29a683d27d5c8daec5095e1ab47ae891f0ed54c3bb526fcd95fdf346",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "07-体系图鉴\\修炼境界-炼气期.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1773,
+                      "height":  2364,
+                      "bytes":  576133,
+                      "sha256":  "89a22323ee9d2ab93ac3ac6008026e7adddc1c0be075d48913771861c69a7474",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "07-体系图鉴\\修炼境界-炼体期.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1773,
+                      "height":  2364,
+                      "bytes":  634742,
+                      "sha256":  "33dbecf08bc05b21c5792559cfb2e9de2376269559d087e588e10c2b700e15a4",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "07-体系图鉴\\修炼境界-元婴.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1489779,
+                      "sha256":  "85afb1c32bdae22654c9deefec9cb54c779c8ae27a5a63748958cd7d85d02ee5",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "07-体系图鉴\\修炼境界-筑基期.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1773,
+                      "height":  2364,
+                      "bytes":  480666,
+                      "sha256":  "8ca009cbc64baa5d27d9b53f5dd69d67097cf0bc040963d5c9a9a2f242b862fb",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "07-体系图鉴\\修炼流派-九修器物.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1562199,
+                      "sha256":  "f0464c9c0642eead1ba65764f4c007ad4051076bb9b4fac83a4707e51f29cc95",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "07-体系图鉴\\修仙基础-吐纳灵气.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1773,
+                      "height":  2364,
+                      "bytes":  570398,
+                      "sha256":  "a03068c8a2f7e54040e99d732e9cbfb5e78be201ef6f841466981c1a52991199",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "07-体系图鉴\\妖兽体系-上古神兽群像.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  869759,
+                      "sha256":  "026f743f4d9fdb98e9e77b9715b4c4f4e165a050f6b116d63df89b5203c30712",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "07-体系图鉴\\妖兽体系-上古凶兽.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1603833,
+                      "sha256":  "d6c4851c272fd11de20615ca12990780d16d7085394d65a24451dec29cf3ed3c",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "07-体系图鉴\\资源品级-天材地宝.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1334811,
+                      "sha256":  "501b3360d957f4660b99ba12f6c7630a3600fb8a1707f7438f264677e8c88131",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "08-法宝器物\\法宝-布阵阵盘.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1536267,
+                      "sha256":  "83cb731bd44fc805d3cf844ada60ae1145f5a31214ea680f5fb8845a99f6568d",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "08-法宝器物\\法宝-储物乾坤袋.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1474186,
+                      "sha256":  "d6f80dadeb8832bf447d5300317146cc4aebebc22ffc0eac5617f7f0c54e84ec",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "08-法宝器物\\法宝-传声玉符.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1246000,
+                      "sha256":  "bf2cad6bb36e19282b3023c1c637617cc81b7d62a3c26a721eee218fbc88ac46",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "08-法宝器物\\法宝-古剑匣.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1441223,
+                      "sha256":  "7da8a735365c063d2cbb7b4078677fc23803fb9d46cc2211a1b0000dd2fb2f99",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "08-法宝器物\\法宝-护身玉佩.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1200611,
+                      "sha256":  "b3bbec843410d7d66442610af681cab99b33323b4d74fdb47c9329c3b3a0bfbc",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "08-法宝器物\\法宝-炼丹古鼎.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1360428,
+                      "sha256":  "d4dcd894917e5bd27a0391c626b5306a1c6c16ba35d90c1022b7493403dc9ad9",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "08-法宝器物\\法宝-灵泉玉碗.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1154098,
+                      "sha256":  "4f3cc34661fcbdc2b4e553af569563ae3947f8124def23f45d6fc04e9d8bb7f3",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "08-法宝器物\\法宝-灵兽灵卵.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1325712,
+                      "sha256":  "eaba8a6760732d34ecd2711e287f68ed7520b8f6f682133e1dfea6f66e05f36a",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "08-法宝器物\\法宝-上品灵剑.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1396170,
+                      "sha256":  "7c88d69b39d42904accb62e2d52a10438b3d01008fb0ea3dfd51afbc48b566a3",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "08-法宝器物\\法宝-寻龙罗盘.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1713241,
+                      "sha256":  "d67f66dd0f76883f0e699c537ab68868cad4471bae4aa63242103af0ea80f748",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  }
+              ]
+}
