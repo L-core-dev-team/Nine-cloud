@@ -15,6 +15,7 @@
     "test:integration": "pnpm --filter @jiuxiao/api test:integration",
     "test:e2e": "node tests/e2e/foundation.cjs",
     "license:check": "node scripts/audit/license-check.mjs",
+    "test:e2e:design": "node tests/e2e/design-acceptance-runner.cjs",
     "worldbook:index:write": "node scripts/audit/build-worldbook-draft-index.mjs --write",
     "worldbook:index:check": "node scripts/audit/build-worldbook-draft-index.mjs --check",
     "worldbook:runtime:write": "node scripts/build-canon-runtime.mjs --write --allow-pending-receipts",

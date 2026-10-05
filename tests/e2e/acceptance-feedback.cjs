@@ -6,6 +6,7 @@ const { join } = require('node:path');
 async function checkFeedback(page) {
   const origin = new URL(page.url()).origin;
   await page.goto(`${origin}/settings/ai`);
+  await page.getByRole('button', { name: '进入专业模式', exact: true }).click();
   const story = page.locator('.role-panel').first();
   await story.locator('summary').first().click();
   await story.getByLabel(/^接口协议/).selectOption('openai-chat');

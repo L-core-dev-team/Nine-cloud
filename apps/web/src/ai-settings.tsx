@@ -642,7 +642,9 @@ function BeginnerAiSetup({ onBack, onProfessional, onClose }: { onBack: () => vo
       setModelStatus(result.length ? `读取到 ${result.length} 个型号。型号可见不代表账号一定能调用；最终以连接测试和服务商权限为准。` : '服务商没有返回型号列表。你可以展开“手动填写”，或改用专业模式。');
     } catch (reason) {
       if (modelRequest.current !== controller) return;
-      setLoadingError(controller.signal.aborted ? '读取已取消或超过 15 秒。可以重试，或使用专业模式手动配置。' : reason instanceof Error && reason.message.startsWith('型号列表返回 HTTP') ? reason.message : '暂时无法读取型号列表。请核对 Key 和网络，或使用专业模式手动配置。');
+      setLoadingError(controller.signal.aborted
+        ? controller.signal.reason === 'cancel' ? '已取消读取。你可以重新读取，或在下方手动填写型号。' : '读取超过 15 秒，已自动停止。请检查网络后重试，或在下方手动填写型号。'
+        : reason instanceof Error && reason.message.startsWith('型号列表返回 HTTP') ? reason.message : '暂时无法读取型号列表。请核对 Key 和网络，或使用专业模式手动配置。');
       setModelStatus('型号列表未读取成功；不会猜测一个型号替你配置。');
     } finally {
       window.clearTimeout(timer);
@@ -682,7 +684,7 @@ function BeginnerAiSetup({ onBack, onProfessional, onClose }: { onBack: () => vo
   }
 
   async function testMainRole() {
-    if (!savedConfig || connectionState === 'testing') return;
+    if (!savedConfig || connectionState === 'testing' || testRequest.current) return;
     const active = savedConfig.roles.story;
     if (!apiKey.trim() || !active.model || !active.baseUrl) { setConnectionState('failed'); setConnectionMessage('缺少连接信息，请返回上一步补全。'); return; }
     const controller = new AbortController(); testRequest.current = controller;
@@ -711,7 +713,9 @@ function BeginnerAiSetup({ onBack, onProfessional, onClose }: { onBack: () => vo
     } finally { window.clearTimeout(timer); if (testRequest.current === controller) testRequest.current = null; }
   }
 
-  if (step === 'provider') return <section className="page ai-mode-page ai-beginner-page">
+  if (step === 'provider') return <>
+    <a className="skip-to-content" href="#ai-beginner-main" onClick={event => { event.preventDefault(); document.getElementById('ai-beginner-main')?.focus(); }}>跳到当前步骤</a>
+    <section className="page ai-mode-page ai-beginner-page" id="ai-beginner-main" tabIndex={-1}>
     <div className="ai-beginner-topline"><button className="back-link" type="button" onClick={onBack}>‹　返回模式选择</button><span className="ai-beginner-step">新手设置 · 第 1 步</span></div>
     <h1 className="ai-mode-title">先选你熟悉的 AI 服务商</h1>
     <p className="ai-mode-lead">推荐先选你已有账号、熟悉的服务商。必填项是服务商、API Key 和一个账号可用型号；连接测试可跳过，高级剧情是可选项，默认停用。</p>
@@ -731,16 +735,19 @@ function BeginnerAiSetup({ onBack, onProfessional, onClose }: { onBack: () => vo
       </article>
     </div>
     <div className="ai-beginner-actions"><button className="secondary" type="button" onClick={onProfessional}>进入专业模式</button><button className="quiet-action" type="button" onClick={onClose}>先返回，不改设置</button></div>
-  </section>;
+    </section>
+  </>;
 
-  if (step === 'configure') return <section className="page ai-mode-page ai-beginner-page">
+  if (step === 'configure') return <>
+    <a className="skip-to-content" href="#ai-beginner-main" onClick={event => { event.preventDefault(); document.getElementById('ai-beginner-main')?.focus(); }}>跳到当前步骤</a>
+    <section className="page ai-mode-page ai-beginner-page" id="ai-beginner-main" tabIndex={-1}>
     <div className="ai-beginner-topline"><button className="back-link" type="button" onClick={() => { modelRequest.current?.abort(); setStep('provider'); }}>‹　更换服务商</button><span className="ai-beginner-step">新手设置 · 第 2 步</span></div>
     <h1 className="ai-mode-title">让五个岗位共用一个型号</h1>
     <p className="ai-mode-lead">已选：{provider?.name}。先粘贴该服务商发给你的 API Key，再读取账号当前可用的型号。读取列表不会生成剧情；请求会把 Key 发给你选择的服务商。</p>
     {provider?.keyUrl && <p className="ai-beginner-links"><a href={provider.keyUrl} target="_blank" rel="noreferrer">去服务商获取 API Key ↗</a>{provider.docsUrl && <a href={provider.docsUrl} target="_blank" rel="noreferrer">查看官方说明 ↗</a>}</p>}
     <div className="ai-beginner-card">
       <label className="ai-beginner-field"><span>API Key <b className="ai-beginner-tag is-required">必填</b></span><input type="password" autoComplete="new-password" value={apiKey} onChange={event => { modelRequest.current?.abort('key-changed'); modelRequest.current = null; setLoadingModels(false); setApiKey(event.target.value); setModels([]); setSelectedModel(''); setManualModel(''); setModelStatus(''); setLoadingError(''); }} placeholder="粘贴服务商提供的 Key" /><small>只保存在当前页面内存，刷新或关闭页面后需要重新输入。不会写入设置、存档或调用记录。</small></label>
-      <div className="ai-beginner-model-row"><button className="secondary" type="button" disabled={!apiKey.trim() || loadingModels} onClick={() => void loadModels()}>{loadingModels ? '正在读取…' : '读取账号可用型号'}</button>{loadingModels && <button className="quiet-action" type="button" onClick={() => modelRequest.current?.abort()}>取消</button>}</div>
+      <div className="ai-beginner-model-row"><button className="secondary" type="button" disabled={!apiKey.trim() || loadingModels} onClick={() => void loadModels()}>{loadingModels ? '正在读取…' : '读取账号可用型号'}</button>{loadingModels && <button className="quiet-action" type="button" onClick={() => modelRequest.current?.abort('cancel')}>取消</button>}</div>
       {modelStatus && <p className="ai-beginner-status" role="status">{modelStatus}</p>}
       {loadingError && <p className="ai-beginner-error" role="alert">{loadingError}</p>}
       {models.length > 0 && <label className="ai-beginner-field"><span>用于五个岗位的型号 <b className="ai-beginner-tag is-required">必选</b></span><select value={selectedModel} onChange={event => { setSelectedModel(event.target.value); setManualModel(''); }}><option value="">请选择账号返回的型号</option>{models.map(item => <option key={item.id} value={item.id}>{item.id}{item.name !== item.id ? ` · ${item.name}` : ''}</option>)}</select><small>列表来自所选服务商账号；能看到型号不保证账号一定有生成权限。五岗共用是便于起步，不代表该型号对五种工作都最佳。</small></label>}
@@ -751,9 +758,12 @@ function BeginnerAiSetup({ onBack, onProfessional, onClose }: { onBack: () => vo
     <div className="ai-beginner-callout"><strong>费用与岗位说明</strong><p>保存时会启用四个基础岗位。高级剧情（可选）用于重要转折和较长场面；默认关闭不影响基础流程。保存后可在专业模式打开第五个岗位；启用并被调用时可能产生额外费用。</p><p>高级剧情已预填配置，但仍保持停用。费用以服务商当前账单为准。</p><p>{rateStatus === 'current' ? `项目价格快照核验日期：${MODEL_RATE_SNAPSHOT_DATE}；它不是你的账户报价。` : '项目价格快照已过期或无法核实，金额按未知处理。'}</p></div>
     {saveError && <p className="ai-beginner-error" role="alert">{saveError}</p>}
     <div className="ai-beginner-actions"><button className="secondary" type="button" onClick={onProfessional}>转到专业模式</button><button className="primary" type="button" disabled={!apiKey.trim() || !effectiveModel} onClick={saveConfiguration}>保存并启用基础四岗</button></div>
-  </section>;
+    </section>
+  </>;
 
-  return <section className="page ai-mode-page ai-beginner-page">
+  return <>
+    <a className="skip-to-content" href="#ai-beginner-main" onClick={event => { event.preventDefault(); document.getElementById('ai-beginner-main')?.focus(); }}>跳到当前步骤</a>
+    <section className="page ai-mode-page ai-beginner-page" id="ai-beginner-main" tabIndex={-1}>
     <div className="ai-beginner-topline"><span className="ai-beginner-step">新手设置 · 已完成</span></div>
     <h1 className="ai-mode-title">配置已保存</h1>
     <div className="ai-beginner-callout" role="status"><strong>五个岗位已填写</strong><p>主剧情、剧情导演、状态与记忆、世界档案已启用；高级剧情已配置但保持停用。</p><p>连接状态：{connectionState === 'success' ? '主剧情岗位测试成功；其他岗位未分别测试。' : connectionState === 'failed' ? connectionMessage : '尚未测试。'}</p><p>真实回合使用情况仍需在实际游玩中确认；设置保存不代表真实回合已经完成。</p></div>
@@ -761,7 +771,8 @@ function BeginnerAiSetup({ onBack, onProfessional, onClose }: { onBack: () => vo
     <p className="ai-beginner-note">模型调用会把必要的剧情内容发送给所选服务商。密钥留在当前页面运行内存；刷新后需要重新输入。</p>
     <div className="ai-beginner-actions">{connectionState === 'testing' ? <button className="secondary" type="button" onClick={() => testRequest.current?.abort('cancel')}>取消测试</button> : <button className="secondary" type="button" onClick={() => void testMainRole()}>可选：测试主剧情连接</button>}<button className="primary" type="button" disabled={connectionState === 'testing'} onClick={onClose}>返回并继续</button><button className="quiet-action" type="button" disabled={connectionState === 'testing'} onClick={onProfessional}>进入专业模式</button></div>
     <p className="ai-beginner-footnote">连接测试会发送一次短请求，可能产生服务商费用；不会自动重试。只有主剧情岗位被测试。</p>
-  </section>;
+    </section>
+  </>;
 }
 
 export function AiSettings({ onClose }: { onClose: () => void }) {
@@ -777,7 +788,9 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
   if (mode === 'professional') return <ProfessionalAiSettings onClose={onClose} />;
   if (mode === 'beginner') return <BeginnerAiSetup onBack={() => setMode(null)} onProfessional={() => chooseMode('professional')} onClose={onClose} />;
 
-  return <section className="page ai-mode-page">
+  return <>
+    <a className="skip-to-content" href="#ai-mode-main" onClick={event => { event.preventDefault(); document.getElementById('ai-mode-main')?.focus(); }}>跳到当前步骤</a>
+    <section className="page ai-mode-page" id="ai-mode-main" tabIndex={-1}>
     <div className="ai-beginner-topline"><span className="ai-beginner-step">AI 设置</span><button className="quiet-action" type="button" onClick={onClose}>返回</button></div>
     <h1 className="ai-mode-title">选择设置方式</h1>
     <p className="ai-mode-lead">你可以按熟悉程度选择。两种模式使用同一份 AI 配置；新手模式会把现有选项重新排成较短的步骤。</p>
@@ -786,5 +799,6 @@ export function AiSettings({ onClose }: { onClose: () => void }) {
       <article className="ai-mode-card"><span className="ai-mode-eyebrow">完整控制</span><h2>专业模式</h2><p>进入现有 AI 设置页，继续使用全部五岗位、预设、目录、批量配置、调用记录和高级参数。</p><button className="secondary" type="button" onClick={() => chooseMode('professional')}>进入专业模式</button></article>
       <article className="ai-mode-card ai-mode-card-featured"><span className="ai-mode-eyebrow">少填字段，快速开始</span><h2>新手模式</h2><p>选择熟悉的服务商，用一个 API Key 和一个型号填好五个岗位。高级功能仍保留，可随时转到专业模式。</p><button className="primary" type="button" onClick={() => chooseMode('beginner')}>开始新手设置</button></article>
     </div>
-  </section>;
+    </section>
+  </>;
 }
