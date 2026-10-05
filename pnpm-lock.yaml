@@ -92,8 +92,6 @@ importers:
         specifier: 26.6.3
         version: 26.6.3
 
-  packages/content: {}
-
   packages/contracts:
     dependencies:
       zod:

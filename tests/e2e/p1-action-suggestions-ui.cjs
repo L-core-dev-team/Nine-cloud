@@ -70,8 +70,9 @@ function mockSave() {
   let childStderr = '';
   let browser;
   try {
-    child = spawn(process.execPath, [viteFile, 'preview', '--host', '127.0.0.1', '--port', String(port), '--strictPort'], {
-      cwd: webRoot, stdio: ['ignore', 'ignore', 'pipe'], windowsHide: true,
+    child = spawn(process.execPath, [viteFile, '--host', '127.0.0.1', '--port', String(port), '--strictPort'], {
+      cwd: webRoot, env: { ...process.env, VITE_ENABLE_INTERNAL_TURN_WORKSPACE: 'true' },
+      stdio: ['ignore', 'ignore', 'pipe'], windowsHide: true,
     });
     child.stderr.on('data', chunk => { childStderr += chunk.toString(); });
     await waitFor(`${origin}/`, child, () => childStderr);

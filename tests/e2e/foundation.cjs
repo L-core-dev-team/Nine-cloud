@@ -559,6 +559,7 @@ async function ready(url) {
       assert.equal(await page.locator('h2').innerText(), `测试修士-${width}`);
       await page.getByRole('button', { name: '菜单' }).click();
       await page.locator('aside').getByRole('button', { name: 'AI 设置' }).click();
+      await page.getByRole('button', { name: '进入专业模式' }).click();
       assert.equal(await page.locator('.ai-title').innerText(), 'AI 设定');
       assert.equal(await page.locator('.jx-shell').evaluate(element => getComputedStyle(element, '::before').backgroundImage.includes('/scenes/candidate/mountain-gate.')), true, 'all pages should retain the selected scene poster behind overlays');
       await page.getByRole('button', { name: '关闭', exact: true }).click();
@@ -574,7 +575,7 @@ async function ready(url) {
       assert.ok((await page.locator('.worldbook-scope').innerText()).includes('当前 34 条'), 'the reader should report the published entry count instead of a stale hardcoded number');
       const worldSearch = page.getByRole('searchbox', { name: '搜索已审核世界设定' });
       await worldSearch.fill('天工阁');
-      const worldTitles = await page.locator('.worldbook-entry h3').allTextContents();
+      const worldTitles = await page.locator('.worldbook-entry-title').allTextContents();
       assert.ok(worldTitles.includes('天工阁'), 'search should find a published faction beyond the old geography sample');
       const factionEntry = page.locator('.worldbook-entry').filter({ has: page.getByRole('heading', { name: '天工阁', exact: true }) });
       await factionEntry.locator('details summary').click();
@@ -602,24 +603,25 @@ async function ready(url) {
          assert.equal(await page.locator('.atlas-card').count(), count, `${label} must include every supplied illustration in that collection`);
        }
        assert.equal(await page.locator('.atlas-grid').innerText().then(text => /(?:world|region|faction|system)_/.test(text)), false, 'asset index tags must not leak into player-facing copy');
-       await page.getByRole('button', { name: '回到刚才的位置' }).click();
+       await page.getByRole('button', { name: /回到.*刚才的位置/ }).click();
       assert.equal(await page.locator('h2').innerText(), `测试修士-${width}`, 'world close from game should preserve the save route');
       await page.goto(`http://127.0.0.1:${webPort}/lobby`);
       await page.getByRole('button', { name: '阅读世界设定' }).click();
       assert.equal(await page.locator('h2').innerText(), '世界设定');
-      await page.getByRole('button', { name: '回到刚才的位置' }).click();
+      await page.getByRole('button', { name: /回到.*刚才的位置/ }).click();
       assert.ok((await page.locator('body').innerText()).includes('选择去处'));
       await page.getByRole('button', { name: '阅读世界设定' }).click();
       await page.getByRole('button', { name: '菜单' }).click();
       await page.locator('aside').getByRole('button', { name: 'AI 设置' }).click();
+      await page.getByRole('button', { name: '进入专业模式' }).click();
       assert.equal(await page.locator('.ai-title').innerText(), 'AI 设定');
       await page.getByRole('button', { name: '关闭', exact: true }).click();
       assert.equal(await page.locator('h2').innerText(), '世界设定', 'closing AI settings opened from the world reader should return to that reader');
-      await page.getByRole('button', { name: '回到刚才的位置' }).click();
+      await page.getByRole('button', { name: /回到.*刚才的位置/ }).click();
       assert.ok((await page.locator('body').innerText()).includes('选择去处'), 'closing the world reader should preserve the lobby as the original return destination');
       await page.getByRole('button', { name: '作品简介' }).click();
       await page.getByRole('button', { name: '查看世界资料' }).click();
-      await page.getByRole('button', { name: '回到刚才的位置' }).click();
+      await page.getByRole('button', { name: /回到.*刚才的位置/ }).click();
       assert.equal(await page.locator('h2').innerText(), '作品简介', 'the world reader should preserve the introduction route');
       await page.getByRole('button', { name: '菜单' }).click();
       await page.locator('aside').getByRole('button', { name: '回到山门' }).click();
@@ -628,6 +630,7 @@ async function ready(url) {
       assert.equal(await page.locator('h2').innerText(), '山河光景');
       await page.getByRole('button', { name: '菜单' }).click();
       await page.locator('aside').getByRole('button', { name: 'AI 设置' }).click();
+      await page.getByRole('button', { name: '进入专业模式' }).click();
       await page.getByRole('button', { name: '关闭', exact: true }).click();
       assert.equal(await page.locator('h2').innerText(), '山河光景', 'AI settings should preserve the graphics settings route');
       await page.getByRole('button', { name: '菜单' }).click();
@@ -635,11 +638,12 @@ async function ready(url) {
       await page.getByRole('button', { name: '管理存档' }).click();
       await page.getByRole('button', { name: '菜单' }).click();
       await page.locator('aside').getByRole('button', { name: '阅读世界设定' }).click();
-      await page.getByRole('button', { name: '回到刚才的位置' }).click();
+      await page.getByRole('button', { name: /回到.*刚才的位置/ }).click();
       assert.equal(await page.locator('h2').innerText(), '存档管理', 'the world reader should preserve the save manager route');
       await page.getByRole('button', { name: '返回山门' }).click();
       await page.getByRole('button', { name: '菜单' }).click();
       await page.locator('aside').getByRole('button', { name: 'AI 设置' }).click();
+      await page.getByRole('button', { name: '进入专业模式' }).click();
       assert.equal(await page.locator('.ai-title').innerText(), 'AI 设定');
       assert.equal(await page.locator('.role-panel').count(), 5);
       const privacySettingsText = await page.locator('.settings-card').filter({ hasText: '全局调度与隐私' }).innerText();
@@ -666,6 +670,7 @@ async function ready(url) {
         ]));
       });
       await page.reload();
+      await page.getByRole('button', { name: '进入专业模式' }).click();
       const retainedLogs = await page.evaluate(() => JSON.parse(sessionStorage.getItem('jx10_ai_call_log_v1')));
       assert.deepEqual(retainedLogs.map(log => log.model), ['retained-model']);
       assert.deepEqual(Object.keys(retainedLogs[0]).sort(), ['at', 'elapsedMs', 'model', 'outcome', 'role']);
@@ -1271,8 +1276,10 @@ async function ready(url) {
         page.waitForEvent('download'),
         importInput.setInputFiles({ name: 'same-id-import.json', mimeType: 'application/json', buffer: Buffer.from(collisionJson) }),
       ]);
-      await page.locator('.import-preview').getByRole('button', { name: '导入此档', exact: true }).click();
-      await page.getByText('此档 ID 已存在。请选择“替换现有存档”或“另存副本”。').waitFor();
+      assert.equal(await page.locator('.import-preview').getByRole('button', { name: '导入此档', exact: true }).count(), 0,
+        'an ID collision must not expose an unconfirmed keep/overwrite action');
+      assert.equal(await page.getByRole('button', { name: '确认替换现有存档' }).isDisabled(), true,
+        'an ID collision must require the exact existing save name before replacement');
       assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), collisionSnapshotBefore, 'same-ID keep import must not silently replace');
       const importConcurrentPage = await context.newPage();
       await importConcurrentPage.goto(page.url());
@@ -1282,7 +1289,8 @@ async function ready(url) {
       await page.getByText('检测到另一个标签页修改了存档。已从本地数据库重新读取；同一存档再次提交前仍会核对版本。').waitFor();
       const collisionSnapshotNewer = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
       assert.notEqual(collisionSnapshotNewer, collisionSnapshotBefore);
-      await page.locator('.import-preview').getByRole('button', { name: '替换现有存档' }).click();
+      await page.locator('.replace-save-confirm input').fill(sanitizedExport.save.name);
+      await page.locator('.import-preview').getByRole('button', { name: '确认替换现有存档' }).click();
       await page.getByText('存档列表刚有变化，导入未覆盖任何内容。请核对最新列表后再选“另存副本”或重试。').waitFor();
       assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), collisionSnapshotNewer, 'stale reviewed replacement must not overwrite new progress after a storage refresh');
       await page.locator('.import-preview').getByRole('button', { name: '另存为副本' }).click();
@@ -1298,7 +1306,8 @@ async function ready(url) {
         page.waitForEvent('download'),
         importInput.setInputFiles({ name: 'freshly-reviewed-replacement.json', mimeType: 'application/json', buffer: Buffer.from(collisionJson) }),
       ]);
-      await page.locator('.import-preview').getByRole('button', { name: '替换现有存档' }).click();
+      await page.locator('.replace-save-confirm input').fill(sanitizedExport.save.name);
+      await page.locator('.import-preview').getByRole('button', { name: '确认替换现有存档' }).click();
       await page.waitForFunction(id => location.pathname === `/game/${id}` && !document.querySelector('.import-preview'), sanitizedExport.save.saveId);
       const deliberatelyReplaced = await page.evaluate(id => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves.find(save => save.saveId === id), sanitizedExport.save.saveId);
       assert.deepEqual(deliberatelyReplaced.pendingQueue, sanitizedExport.save.pendingQueue, 'a newly reviewed explicit replacement must still be allowed');
@@ -1332,7 +1341,9 @@ async function ready(url) {
       assert.equal((await page.locator('.import-preview .stats').innerText()).includes('消息\n1'), true, 'HTML import preview should report its one recovered message');
       await page.getByRole('button', { name: '导入此档' }).click();
       await page.locator('.game-topline h1').waitFor();
-      assert.ok((await page.locator('.story-scroll').innerText()).includes('应保留的正文'));
+      assert.ok((await page.locator('.story-reading').innerText()).includes('应保留的正文'));
+      assert.equal(await page.locator('.story-reading').evaluate(element => ['auto', 'scroll'].includes(getComputedStyle(element).overflowY)), false,
+        'the story stays in the document flow instead of becoming a nested scroll region');
       assert.equal(await page.evaluate(() => window.__legacyInjected), undefined, 'HTML import must never execute script elements');
       const txtBytes = Buffer.from('[USER]:山门之外有何去处？\n[AI]:沿石阶向东，可见一条溪谷。\n#-----#\n');
       await page.goto(`http://127.0.0.1:${webPort}/lobby`);
@@ -1344,7 +1355,7 @@ async function ready(url) {
       assert.deepEqual(readFileSync(await txtBackup.path()), txtBytes, 'TXT import must back up exact source bytes before parsing');
       await page.getByRole('button', { name: '导入此档' }).click();
       await page.locator('.game-topline h1').waitFor();
-      const txtStory = await page.locator('.story-scroll').innerText();
+      const txtStory = await page.locator('.story-reading').innerText();
       assert.ok(txtStory.includes('山门之外有何去处？'));
       assert.ok(txtStory.includes('沿石阶向东，可见一条溪谷。'));
       await page.evaluate(() => new Promise(resolve => {
@@ -1387,17 +1398,17 @@ async function ready(url) {
       await page.getByRole('button', { name: '继续游玩' }).click();
       await page.locator('.game-topline h1').waitFor();
       assert.equal(await page.locator('.game-topline h1').innerText(), '旧库修士');
-      const storyScroll = page.locator('.story-scroll');
-      const beforeWorld = await storyScroll.evaluate(element => {
-        element.scrollTop = 280;
-        return element.scrollTop;
+      const beforeWorld = await page.evaluate(() => {
+        window.scrollTo(0, 280);
+        return window.scrollY;
       });
-      assert.ok(beforeWorld > 0, 'legacy history should be scrollable in this fixture');
-      await page.locator('.game-tools').getByRole('button', { name: '世界设定' }).click();
-      await page.getByRole('button', { name: '回到刚才的位置' }).click();
-      await storyScroll.waitFor();
-      assert.ok(Math.abs((await storyScroll.evaluate(element => element.scrollTop)) - beforeWorld) <= 2,
-        'worldbook reading should restore the story scroll position');
+      assert.ok(beforeWorld > 0, 'the document should scroll through the full story history');
+      await page.locator('.game-tools').getByRole('button', { name: '世界设定' }).evaluate(button => button.click());
+      await page.getByRole('button', { name: '返回当前行旅' }).click();
+      await page.locator('.story-reading').waitFor();
+      await page.waitForFunction(expected => Math.abs(window.scrollY - expected) <= 2, beforeWorld);
+      assert.ok(Math.abs((await page.evaluate(() => window.scrollY)) - beforeWorld) <= 2,
+        'worldbook reading should restore the document scroll position');
       await page.evaluate(() => {
         localStorage.removeItem('jiuxiao_1_local_saves');
         localStorage.removeItem('jiuxiao_1_local_saves_v2');

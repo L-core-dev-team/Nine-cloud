@@ -87,9 +87,13 @@ export function verifyPagesPreview({ includeApprovedMedia = false } = {}) {
   for (const name of expected) {
     if (!found.has(name)) throw new Error(`Pages preview asset missing: ${name}`);
   }
-  if (bundles.size !== 2 || ![...bundles].some((name) => name.endsWith('.js'))
-    || ![...bundles].some((name) => name.endsWith('.css'))) {
-    throw new Error('Pages preview must contain exactly one JS bundle and one CSS bundle');
+  const jsBundles = [...bundles].filter((name) => name.endsWith('.js'));
+  const cssBundles = [...bundles].filter((name) => name.endsWith('.css'));
+  const indexHtml = readFileSync(join(root, 'index.html'), 'utf8');
+  if (jsBundles.length < 1 || cssBundles.length !== 1
+    || !jsBundles.some((name) => indexHtml.includes(name))
+    || !cssBundles.some((name) => indexHtml.includes(name))) {
+    throw new Error('Pages preview must contain JS and CSS entry bundles referenced by index.html');
   }
   for (const [name, expectedDigest] of mediaDigests) {
     const actualDigest = createHash('sha256').update(readFileSync(join(root, name))).digest('hex');
