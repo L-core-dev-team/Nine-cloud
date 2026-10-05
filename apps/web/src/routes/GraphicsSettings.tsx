@@ -46,10 +46,10 @@ export function GraphicsSettingsPage({ settings, onChange, renderer, ambientAudi
       <div className="scene-choice-list" role="group" aria-label="预览场景">
         {SCENE_MANIFEST.map(scene => <button key={scene.id} className="scene-choice" aria-pressed={preview === scene.id} onClick={() => { setPreview(scene.id); onPreviewScene(scene.id); }}>
           <strong>{scene.name}</strong>
-          <small>{scene.assetStatus === 'candidate-internal' ? '项目候选画面 · 来源与发布授权待核' : '程序化预览 · 正式画面待审核'}</small>
+          <small>{preview === scene.id && <b className="scene-choice-current">当前预览 · </b>}{scene.assetStatus === 'candidate-internal' ? '项目候选画面 · 来源与发布授权待核' : '程序化预览 · 正式画面待审核'}</small>
         </button>)}
       </div>
-      <p className="quiet-note">候选画面已按四类固定场景接入预览。游戏内只按已结算地点切换；玩家输入和模型不能指定图片网址。来源、授权和双作者发布审核完成前，这些文件只作内部预览。</p>
+      <p className="quiet-note">候选画面已按四类固定场景接入预览。游戏内只按已结算地点切换；你的行动和模型都不能指定图片网址。来源、授权和双作者发布审核完成前，这些文件只作内部预览。</p>
     </section>
 
     <section className="graphics-section" aria-labelledby="quality-title">

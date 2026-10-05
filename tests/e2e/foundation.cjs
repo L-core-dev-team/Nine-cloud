@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const assert = require('node:assert/strict');
-const { spawn } = require('node:child_process');
+const { spawn, execFileSync } = require('node:child_process');
 const { createHash } = require('node:crypto');
 const { existsSync, mkdirSync, readFileSync } = require('node:fs');
 const net = require('node:net');
@@ -11,6 +11,7 @@ const { chromium } = require('playwright');
 const root = resolve(__dirname, '../..');
 const webRoot = join(root, 'apps/web');
 const screenshotDir = join(root, 'test-results/e2e');
+const professionalBaselineCss = execFileSync('git', ['show', '69471c749a1624ba13109352abaf8b76577e6d3d:apps/web/src/style.css'], { cwd: root, encoding: 'utf8' });
 const children = [];
 
 async function availablePorts(count) {
@@ -206,6 +207,7 @@ async function ready(url) {
       assert.ok((await page.locator('body').innerText()).includes('阅读世界设定'));
       assert.ok((await page.locator('body').innerText()).includes('AI 设置'));
       assert.ok((await page.locator('body').innerText()).includes('跳过设置'));
+      await page.screenshot({ path: join(screenshotDir, `${width === 390 ? '13-lobby-mobile-night.png' : '14-lobby-desktop-night.png'}`), fullPage: true });
       await page.getByRole('button', { name: '作品简介' }).click();
       assert.equal(await page.locator('h2').innerText(), '作品简介');
       assert.ok((await page.locator('.intro-prose').innerText()).includes('东方修仙世界为核心'));
@@ -559,7 +561,36 @@ async function ready(url) {
       assert.equal(await page.locator('h2').innerText(), `测试修士-${width}`);
       await page.getByRole('button', { name: '菜单' }).click();
       await page.locator('aside').getByRole('button', { name: 'AI 设置' }).click();
-      await page.getByRole('button', { name: '进入专业模式' }).click();
+      assert.equal(await page.getByRole('heading', { name: '选择设置方式' }).count(), 1);
+      assert.equal(await page.locator('.skip-to-content').count(), 1, 'the mode chooser has a keyboard skip link without changing the professional editor');
+      const readingReturnTarget = await page.evaluate(() => history.state?.returnTo);
+      await page.screenshot({ path: join(screenshotDir, `${width === 390 ? '15-ai-mode-mobile-night.png' : '16-ai-mode-desktop-night.png'}`), fullPage: true });
+      const modeSkip = page.locator('.skip-to-content');
+      await modeSkip.focus();
+      await page.keyboard.press('Enter');
+      assert.equal(await page.evaluate(() => document.activeElement?.id), 'ai-mode-main', 'the mode skip link moves focus to the current content');
+      assert.equal(await page.evaluate(() => history.state?.returnTo), readingReturnTarget, 'keyboard skip navigation must preserve the route return target');
+      const localKeysBeforeModeSwitch = await page.evaluate(() => Object.keys(localStorage).sort());
+      await page.getByRole('button', { name: '开始新手设置' }).click();
+      assert.equal(await page.getByRole('heading', { name: '先选你熟悉的 AI 服务商' }).count(), 1);
+      await page.screenshot({ path: join(screenshotDir, `${width === 390 ? '17-ai-beginner-provider-mobile-night.png' : '18-ai-beginner-provider-desktop-night.png'}`), fullPage: true });
+      const beginnerSkip = page.locator('.skip-to-content');
+      assert.equal(await beginnerSkip.count(), 1, 'beginner setup has its own skip link');
+      await beginnerSkip.focus();
+      await page.keyboard.press('Enter');
+      assert.equal(await page.evaluate(() => document.activeElement?.id), 'ai-beginner-main', 'the beginner skip link moves focus to the current step');
+      assert.equal(await page.evaluate(() => history.state?.returnTo), readingReturnTarget, 'beginner skip navigation must preserve the route return target');
+      assert.equal(await page.locator('.ai-mode-card-featured').getByRole('button', { name: '用 DeepSeek 配置五岗' }).count(), 1);
+      assert.equal(await page.evaluate(() => JSON.parse(sessionStorage.getItem('jx10_ai_config_v2')).uiMode), 'beginner');
+      await page.getByRole('button', { name: '用 DeepSeek 配置五岗' }).click();
+      assert.equal(await page.getByRole('heading', { name: '让五个岗位共用一个型号' }).count(), 1);
+      await page.screenshot({ path: join(screenshotDir, `${width === 390 ? '19-ai-beginner-config-mobile-night.png' : '20-ai-beginner-config-desktop-night.png'}`), fullPage: true });
+      assert.equal(await page.getByLabel('API Key').getAttribute('type'), 'password');
+      assert.ok((await page.locator('.ai-beginner-callout').innerText()).includes('高级剧情已预填配置，但仍保持停用。'));
+      await page.getByRole('button', { name: '转到专业模式' }).click();
+      assert.equal(await page.evaluate(() => JSON.parse(sessionStorage.getItem('jx10_ai_config_v2')).uiMode), 'professional');
+      assert.equal(await page.locator('.skip-to-content').count(), 0, 'the professional editor keeps its existing keyboard entry points unchanged');
+      assert.deepEqual(await page.evaluate(() => Object.keys(localStorage).sort()), localKeysBeforeModeSwitch, 'AI mode state must remain in the existing session configuration without a new localStorage key');
       assert.equal(await page.locator('.ai-title').innerText(), 'AI 设定');
       assert.equal(await page.locator('.jx-shell').evaluate(element => getComputedStyle(element, '::before').backgroundImage.includes('/scenes/candidate/mountain-gate.')), true, 'all pages should retain the selected scene poster behind overlays');
       await page.getByRole('button', { name: '关闭', exact: true }).click();
@@ -573,6 +604,7 @@ async function ready(url) {
       await page.locator('.worldbook-entry').first().waitFor();
       assert.equal(await page.locator('.worldbook-entry').count(), 34, 'player search should use the complete current public Canon runtime');
       assert.ok((await page.locator('.worldbook-scope').innerText()).includes('当前 34 条'), 'the reader should report the published entry count instead of a stale hardcoded number');
+      await page.screenshot({ path: join(screenshotDir, `${width === 390 ? '21-worldbook-mobile-night.png' : '22-worldbook-desktop-night.png'}`), fullPage: true });
       const worldSearch = page.getByRole('searchbox', { name: '搜索已审核世界设定' });
       await worldSearch.fill('天工阁');
       const worldTitles = await page.locator('.worldbook-entry-title').allTextContents();
@@ -602,6 +634,10 @@ async function ready(url) {
          await page.locator('.atlas-collections').getByRole('button', { name: new RegExp(label) }).click();
          assert.equal(await page.locator('.atlas-card').count(), count, `${label} must include every supplied illustration in that collection`);
        }
+       assert.ok((await page.getByRole('button', { name: /画卷图鉴/ }).innerText()).includes('44 幅视觉稿'), 'the gallery total should be presented from the current illustration catalogue');
+       await page.getByRole('searchbox', { name: '搜索画卷图鉴' }).fill('不存在的画面名称');
+       await page.getByRole('button', { name: '查看全部画卷' }).click();
+       assert.equal(await page.locator('.atlas-card').count(), 7, 'the empty gallery state should offer a direct recovery action');
        assert.equal(await page.locator('.atlas-grid').innerText().then(text => /(?:world|region|faction|system)_/.test(text)), false, 'asset index tags must not leak into player-facing copy');
        await page.getByRole('button', { name: /回到.*刚才的位置/ }).click();
       assert.equal(await page.locator('h2').innerText(), `测试修士-${width}`, 'world close from game should preserve the save route');
@@ -613,7 +649,7 @@ async function ready(url) {
       await page.getByRole('button', { name: '阅读世界设定' }).click();
       await page.getByRole('button', { name: '菜单' }).click();
       await page.locator('aside').getByRole('button', { name: 'AI 设置' }).click();
-      await page.getByRole('button', { name: '进入专业模式' }).click();
+      await page.getByRole('button', { name: '进入专业模式', exact: true }).click();
       assert.equal(await page.locator('.ai-title').innerText(), 'AI 设定');
       await page.getByRole('button', { name: '关闭', exact: true }).click();
       assert.equal(await page.locator('h2').innerText(), '世界设定', 'closing AI settings opened from the world reader should return to that reader');
@@ -630,7 +666,7 @@ async function ready(url) {
       assert.equal(await page.locator('h2').innerText(), '山河光景');
       await page.getByRole('button', { name: '菜单' }).click();
       await page.locator('aside').getByRole('button', { name: 'AI 设置' }).click();
-      await page.getByRole('button', { name: '进入专业模式' }).click();
+      await page.getByRole('button', { name: '进入专业模式', exact: true }).click();
       await page.getByRole('button', { name: '关闭', exact: true }).click();
       assert.equal(await page.locator('h2').innerText(), '山河光景', 'AI settings should preserve the graphics settings route');
       await page.getByRole('button', { name: '菜单' }).click();
@@ -643,7 +679,7 @@ async function ready(url) {
       await page.getByRole('button', { name: '返回山门' }).click();
       await page.getByRole('button', { name: '菜单' }).click();
       await page.locator('aside').getByRole('button', { name: 'AI 设置' }).click();
-      await page.getByRole('button', { name: '进入专业模式' }).click();
+      await page.getByRole('button', { name: '进入专业模式', exact: true }).click();
       assert.equal(await page.locator('.ai-title').innerText(), 'AI 设定');
       assert.equal(await page.locator('.role-panel').count(), 5);
       const privacySettingsText = await page.locator('.settings-card').filter({ hasText: '全局调度与隐私' }).innerText();
@@ -652,6 +688,38 @@ async function ready(url) {
       assert.equal(await page.locator('.glass-dialog').isVisible(), false, 'closed settings dialog must not cover the page');
       await page.getByRole('button', { name: '切换到晴昼配色' }).click();
       assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('.role-summary strong')).color), 'rgb(41, 58, 70)');
+      const readVisualContract = () => page.evaluate(() => {
+        const roots = [...document.querySelectorAll('.ai-page, .ai-actionbar, .glass-dialog')];
+        if (!roots.some(root => root.matches('.ai-page'))) throw new Error('Professional AI editor root is missing.');
+        const elements = [...new Set(roots.flatMap(root => [root, ...root.querySelectorAll('*')]))];
+        return elements.map(element => {
+          const style = getComputedStyle(element);
+          const properties = [...style].filter(property => !property.startsWith('--'));
+          return [element.tagName, element.id, element.getAttribute('class') || '', properties.map(property => {
+            const value = style.getPropertyValue(property);
+            return [property, property === 'background-position' && value === '0px 0px' ? '0% 0%' : value];
+          })];
+        });
+      });
+      const assertFrozenProfessionalStyles = async () => {
+        await page.emulateMedia({ reducedMotion: 'reduce' });
+        await page.mouse.move(0, 0);
+        await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); return document.fonts.ready; });
+        const activeProVisualContract = await readVisualContract();
+        const activeStylesheetStates = await page.locator('link[rel="stylesheet"]').evaluateAll(links => {
+          const states = links.map(link => link.disabled);
+          links.forEach(link => { link.disabled = true; });
+          return states;
+        });
+        const baselineStyleTag = await page.addStyleTag({ content: professionalBaselineCss });
+        await page.evaluate(() => document.fonts.ready);
+        const baselineProVisualContract = await readVisualContract();
+        await baselineStyleTag.evaluate(style => style.remove());
+        await page.locator('link[rel="stylesheet"]').evaluateAll((links, states) => links.forEach((link, index) => { link.disabled = states[index] ?? false; }), activeStylesheetStates);
+        assert.deepEqual(activeProVisualContract, baselineProVisualContract, 'professional AI computed layout, type, color, and interaction styles must match the frozen baseline');
+        await page.emulateMedia({ reducedMotion: 'no-preference' });
+      };
+      await assertFrozenProfessionalStyles();
       if (width === 390) {
         await page.setViewportSize({ width: 360, height: 800 });
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), await page.evaluate(() => document.documentElement.clientWidth), 'the narrow phone AI settings must not overflow horizontally');
@@ -670,7 +738,9 @@ async function ready(url) {
         ]));
       });
       await page.reload();
-      await page.getByRole('button', { name: '进入专业模式' }).click();
+      await page.getByRole('button', { name: '进入专业模式', exact: true }).click();
+      await assertFrozenProfessionalStyles();
+      await page.screenshot({ path: join(screenshotDir, `${width === 390 ? '23-ai-professional-mobile-night.png' : '24-ai-professional-desktop-night.png'}`), fullPage: true });
       const retainedLogs = await page.evaluate(() => JSON.parse(sessionStorage.getItem('jx10_ai_call_log_v1')));
       assert.deepEqual(retainedLogs.map(log => log.model), ['retained-model']);
       assert.deepEqual(Object.keys(retainedLogs[0]).sort(), ['at', 'elapsedMs', 'model', 'outcome', 'role']);
@@ -869,11 +939,16 @@ async function ready(url) {
       assert.ok((await page.locator('body').innerText()).includes('选择去处'), 'AI settings should close back to its entry route');
 
       await page.goto(`http://127.0.0.1:${webPort}/settings/graphics`);
+      await page.keyboard.press('Tab');
+      assert.equal(await page.locator('.skip-to-content').evaluate(element => document.activeElement === element), true, 'the first keyboard stop should skip directly to page content');
+      await page.keyboard.press('Enter');
+      assert.equal(await page.locator('main').evaluate(element => document.activeElement === element), true, 'skip navigation should place focus on the main content');
       assert.equal(await page.locator('.graphics-page h2').innerText(), '山河光景');
       assert.equal(await page.locator('.scene-choice').count(), 4, 'the graphics page should expose the four fixed scene identities');
       assert.equal(await page.locator('.jx-shell').evaluate(element => getComputedStyle(element, '::before').backgroundImage.includes('/scenes/candidate/mountain-gate.')), true, 'graphics settings should retain the shared selected-scene background');
       await page.locator('.scene-choice').nth(1).click();
       assert.equal(await page.locator('.scene-choice').nth(1).getAttribute('aria-pressed'), 'true');
+      assert.ok((await page.locator('.scene-choice').nth(1).innerText()).includes('当前预览'), 'the selected scene should be identified by text as well as shape');
       await page.getByLabel('画质档位').selectOption('extreme');
       const fpsTarget = page.getByLabel('场景帧率目标');
       await fpsTarget.focus();
@@ -1448,6 +1523,7 @@ async function ready(url) {
       ]), ['{broken-mirror', '{broken-legacy'], 'invalid raw saves must survive a failed first migration');
       await damagedContext.close();
     }
+    await require('./design-acceptance.cjs').runDesignAcceptance(browser, `http://127.0.0.1:${webPort}`, screenshotDir);
   } finally { await browser.close(); }
   console.log(`Runtime renderer: ${runtimeBackends.join('; ')}`);
   console.log(`Fallbacks: ${fallbackChecks.join('; ')}`);
