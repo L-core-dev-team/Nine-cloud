@@ -53,9 +53,13 @@ const go = (path: string) => {
   if (destination.startsWith('/game/')) {
     try { sessionStorage.setItem('jiuxiao_active_save_id', decodeURIComponent(destination.slice('/game/'.length))); } catch { /* Route navigation does not depend on this preference. */ }
   }
-  const returnTo = route();
+  const sourceRoute = route();
+  const returnTo = sourceRoute;
   history.pushState(destination === '/world' || destination === '/settings/ai' ? { returnTo } : {}, '', destination);
   dispatchEvent(new PopStateEvent('popstate'));
+  if (sourceRoute !== '/settings/ai' && destination !== '/settings/ai' && !destination.startsWith('/game/')) {
+    requestAnimationFrame(() => { if (route() === destination) window.scrollTo(0, 0); });
+  }
 };
 const returnFromReading = () => {
   const candidate = history.state?.returnTo;
@@ -100,6 +104,7 @@ function Shell({ children, saves, notice, noticeAction, theme, onThemeChange, on
   const nextThemeLabel = theme === 'night' ? '晴昼' : '夜色';
   const themeAction = () => { onThemeChange(); setMenu(false); };
   const isLanding = route() === '/';
+  const showSkipLink = route() !== '/settings/ai';
   const showNavigation = !isLanding;
   const scene = SCENE_MANIFEST.find(candidate => candidate.id === sceneId);
   const desktopPoster = scene?.desktopPoster ?? '/scenes/gate-moonlight.webp';
@@ -112,7 +117,7 @@ function Shell({ children, saves, notice, noticeAction, theme, onThemeChange, on
     '--jx-gate-poster': `url("${mediaUrlForBrowser(gatePoster)}")`,
     '--jx-paper-texture': `url("${mediaUrlForBrowser(paperTexture)}")`,
   } as CSSProperties;
-  return <div className={isLanding ? 'jx-shell landing-shell' : 'jx-shell'} style={backgroundStyle}><SceneAtmosphere sceneId={sceneId} theme={theme} settings={graphicsSettings} /><header><button className="brand" onClick={() => go('/')}>踏月过山门，天地任君行。</button>{showNavigation && <nav><button onClick={() => go('/lobby')}>山门</button><button onClick={() => go('/world')}>世界设定</button><button onClick={() => go('/settings/ai')}>AI 设置</button><button onClick={() => go('/settings/graphics')}>画面与声音</button><button onClick={() => go('/settings/cloud')}>账号与云档</button></nav>}<button className={`ambient-toggle${ambientAudioActive ? ' is-active' : ''}`} aria-pressed={ambientAudioActive} onClick={onToggleAmbientAudio}>{ambientAudioActive ? '水声已启' : '启水声'}</button><button className="theme-toggle" aria-label={`切换到${nextThemeLabel}配色`} onClick={onThemeChange}>{themeLabel}</button><button className="menu" aria-expanded={menu} onClick={() => setMenu(open => !open)}>菜单</button></header>{menu && <aside><strong>{saves.length ? `${saves.length} 份本地存档` : '暂无存档'}</strong>{showNavigation && <><button onClick={() => { setMenu(false); go('/lobby'); }}>回到山门</button><button onClick={() => { setMenu(false); go('/new'); }}>新开一局</button><button onClick={() => { setMenu(false); go('/world'); }}>阅读世界设定</button><button onClick={() => { setMenu(false); go('/settings/ai'); }}>AI 设置</button><button onClick={() => { setMenu(false); go('/settings/graphics'); }}>画面与声音</button><button onClick={() => { setMenu(false); go('/settings/cloud'); }}>账号与云档</button></>}<button onClick={() => { setMenu(false); onExport(); }}>导出存档</button><button onClick={themeAction}>切换到{nextThemeLabel}配色</button><label>导入旧档 / JSON<input type="file" accept=".json,.txt,.html,.htm" onChange={event => { const file = event.target.files?.[0]; if (file) { setMenu(false); onImport(file); } event.currentTarget.value = ''; }} /></label></aside>}{notice && <p className="notice" role="status">{notice} {noticeAction}</p>}<main>{children}</main><footer><span>本地优先 · API 密钥不写入存档</span><span>契约 v{SAVE_SCHEMA_VERSION}</span></footer></div>;
+  return <div className={isLanding ? 'jx-shell landing-shell' : 'jx-shell'} style={backgroundStyle}>{showSkipLink && <a className="skip-to-content" href="#main-content" onClick={event => { event.preventDefault(); document.getElementById('main-content')?.focus(); }}>跳到主要内容</a>}<SceneAtmosphere sceneId={sceneId} theme={theme} settings={graphicsSettings} /><header><button className="brand" onClick={() => go('/')}>踏月过山门，天地任君行。</button>{showNavigation && <nav><button onClick={() => go('/lobby')}>山门</button><button onClick={() => go('/world')}>世界设定</button><button onClick={() => go('/settings/ai')}>AI 设置</button><button onClick={() => go('/settings/graphics')}>画面与声音</button><button onClick={() => go('/settings/cloud')}>账号与云档</button></nav>}<button className={`ambient-toggle${ambientAudioActive ? ' is-active' : ''}`} aria-pressed={ambientAudioActive} onClick={onToggleAmbientAudio}>{ambientAudioActive ? '水声已启' : '启水声'}</button><button className="theme-toggle" aria-label={`切换到${nextThemeLabel}配色`} onClick={onThemeChange}>{themeLabel}</button><button className="menu" aria-expanded={menu} onClick={() => setMenu(open => !open)}>菜单</button></header>{menu && <aside><strong>{saves.length ? `${saves.length} 份本地存档` : '暂无存档'}</strong>{showNavigation && <><button onClick={() => { setMenu(false); go('/lobby'); }}>回到山门</button><button onClick={() => { setMenu(false); go('/new'); }}>新开一局</button><button onClick={() => { setMenu(false); go('/world'); }}>阅读世界设定</button><button onClick={() => { setMenu(false); go('/settings/ai'); }}>AI 设置</button><button onClick={() => { setMenu(false); go('/settings/graphics'); }}>画面与声音</button><button onClick={() => { setMenu(false); go('/settings/cloud'); }}>账号与云档</button></>}<button onClick={() => { setMenu(false); onExport(); }}>导出存档</button><button onClick={themeAction}>切换到{nextThemeLabel}配色</button><label>导入旧档 / JSON<input type="file" accept=".json,.txt,.html,.htm" onChange={event => { const file = event.target.files?.[0]; if (file) { setMenu(false); onImport(file); } event.currentTarget.value = ''; }} /></label></aside>}{notice && <p className="notice" role="status">{notice} {noticeAction}</p>}<main id={showSkipLink ? "main-content" : undefined} tabIndex={showSkipLink ? -1 : undefined}>{children}</main><footer><span>本地优先 · API 密钥不写入存档</span><span>契约 v{SAVE_SCHEMA_VERSION}</span></footer></div>;
 }
 
 function Landing() {
@@ -263,7 +268,7 @@ function NewCharacter({ onSaved }: { onSaved: (save: LocalSave) => Promise<boole
   </section>;
 }
 
-function Introduction({ onStart, onWorld }: { onStart: () => void; onWorld: () => void }) { return <section className="page intro-page"><span className="eyebrow">九霄 · 行旅札记</span><h2>作品简介</h2><div className="intro-prose"><p>《九霄》是一款以东方修仙世界为核心的开放式文字角色扮演游戏。玩家并非沿着固定剧本前进，而是在九霄大陆中自行选择出身、修行道路与目标：入宗问道、独行江湖、炼丹炼器，或在诸域之间留下自己的名字。</p><p>世界设定以作者审核的资料为准。旅途中的人物状态和世界事实由规则记录；AI 可以理解玩家的文字并叙述结果，却不能凭一段故事改写既成之事。</p></div><div className="actions"><button className="primary" onClick={onStart}>创建角色</button><button className="secondary" onClick={onWorld}>查看世界资料</button></div></section>; }
+function Introduction({ onStart, onWorld }: { onStart: () => void; onWorld: () => void }) { return <section className="page intro-page"><span className="eyebrow">九霄 · 行旅札记</span><h2>作品简介</h2><div className="intro-prose"><p>《九霄》是一款以东方修仙世界为核心的开放式文字角色扮演游戏。你可以在九霄大陆自行选择出身、修行道路与目标：入宗问道、独行江湖、炼丹炼器，或在诸域之间留下自己的名字。</p><p>世界设定以作者审核的资料为准。旅途中的人物状态和世界事实由规则记录；AI 可以理解你写下的行动并叙述结果，却不能凭一段故事改写既成之事。</p></div><div className="actions"><button className="primary" onClick={onStart}>创建角色</button><button className="secondary" onClick={onWorld}>查看世界资料</button></div></section>; }
 const atlasCollections: readonly { id: CandidateIllustrationCollection; label: string }[] = [
   { id: 'world', label: '山河与地域' },
   { id: 'faction', label: '宗门与势力' },
@@ -328,7 +333,7 @@ function World({ onClose, save, onImportSupplement, isReturningToJourney }: { on
     <p>正文收录已审核设定；画卷另列视觉素材，二者各守其界。</p>
     <div className="world-view-switch" role="group" aria-label="世界资料类型">
       <button aria-pressed={view === 'text'} onClick={() => setView('text')}>设定正文</button>
-      <button aria-pressed={view === 'atlas'} onClick={() => setView('atlas')}>画卷图鉴 <small>44 幅视觉稿</small></button>
+      <button aria-pressed={view === 'atlas'} onClick={() => setView('atlas')}>画卷图鉴 <small>{CANDIDATE_ILLUSTRATIONS.length} 幅视觉稿</small></button>
     </div>
     {view === 'text' && <div id="world-text-panel" aria-label="设定正文">
        <label className="world-search">搜索已审核设定<input type="search" value={worldQuery} onChange={event => setWorldQuery(event.target.value)} onKeyDown={event => { if (event.key === 'Enter' && entries.length) { event.preventDefault(); firstResultRef.current?.focus(); firstResultRef.current?.scrollIntoView({ block: 'start', behavior: 'auto' }); } }} placeholder="试试：中州、海上贸易、妖林外围" aria-label="搜索已审核世界设定" /></label>
@@ -347,7 +352,7 @@ function World({ onClose, save, onImportSupplement, isReturningToJourney }: { on
       <div className="atlas-grid" aria-live="polite">{illustrations.length ? illustrations.map(illustration => <button className="atlas-card" key={illustration.id} onClick={() => setSelectedIllustration(illustration)} aria-label={`放大查看：${illustration.title}`}>
         <img src={mediaUrlForBrowser(illustration.src)} alt={illustration.title} loading="lazy" decoding="async" />
          <span>{illustration.title}</span>
-      </button>) : <p className="worldbook-empty">这一卷里没有找到对应画面。</p>}</div>
+      </button>) : <div className="worldbook-empty-state"><p className="worldbook-empty" role="status">当前分类或搜索条件下没有画面。</p><button className="secondary" onClick={() => { setAtlasQuery(""); setCollection("world"); }}>查看全部画卷</button></div>}</div>
       <dialog className="atlas-dialog" ref={dialogRef} aria-labelledby="atlas-dialog-title" onClose={() => setSelectedIllustration(null)}>
         {selectedIllustration && <><button className="atlas-dialog-close" aria-label="关闭画卷" onClick={() => dialogRef.current?.close()}>×</button><img src={mediaUrlForBrowser(selectedIllustration.src)} alt={selectedIllustration.title} /><div><h3 id="atlas-dialog-title">{selectedIllustration.title}</h3><p>项目视觉参考 · 设定以已审核正文为准</p></div></>}
       </dialog>
