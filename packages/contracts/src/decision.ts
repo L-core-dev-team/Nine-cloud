@@ -60,7 +60,9 @@ const RejectedDecisionV1Schema = z.strictObject({
 
 const RejectedDecisionV2Schema = z.strictObject({
   status: z.literal('rejected'),
-  code: z.string().regex(/^(INPUT|AUTH|ENV)_[A-Z0-9_]+$/),
+  // The signed P1 contract names this specific zero-side-effect mismatch as
+  // RULE_TARGET_MISMATCH. Other RULE_* results must be committed failures.
+  code: z.string().regex(/^(INPUT|AUTH|ENV)_[A-Z0-9_]+$|^RULE_TARGET_MISMATCH$/),
   message: z.string().min(1),
   revision: z.int().nonnegative(),
 });

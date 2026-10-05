@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const { spawn } = require('node:child_process');
 const { createHash } = require('node:crypto');
 const { existsSync, mkdirSync, readFileSync } = require('node:fs');
+const net = require('node:net');
 const { join, resolve } = require('node:path');
 const { isDeepStrictEqual } = require('node:util');
 const { chromium } = require('playwright');
@@ -10,9 +11,27 @@ const { chromium } = require('playwright');
 const root = resolve(__dirname, '../..');
 const webRoot = join(root, 'apps/web');
 const screenshotDir = join(root, 'test-results/e2e');
-const apiPort = 18787;
-const webPort = 15173;
 const children = [];
+
+async function availablePorts(count) {
+  const servers = Array.from({ length: count }, () => net.createServer());
+  try {
+    await Promise.all(servers.map(server => new Promise((resolve, reject) => {
+      server.once('error', reject);
+      server.listen(0, '127.0.0.1', resolve);
+    })));
+    return servers.map(server => {
+      const address = server.address();
+      assert.ok(address && typeof address === 'object');
+      return address.port;
+    });
+  } finally {
+    await Promise.all(servers.map(server => new Promise(resolve => {
+      if (!server.listening) return resolve();
+      server.close(resolve);
+    })));
+  }
+}
 
 function run(script, args, cwd, env = {}) {
   const child = spawn(process.execPath, [script, ...args], {
@@ -33,6 +52,7 @@ async function ready(url) {
 
 (async () => {
   mkdirSync(screenshotDir, { recursive: true });
+  const [apiPort, webPort] = await availablePorts(2);
   const apiFile = join(root, 'apps/api/dist/index.js');
   const viteFile = join(webRoot, 'node_modules/vite/bin/vite.js');
   assert.ok(existsSync(apiFile) && existsSync(viteFile), 'Run pnpm build before test:e2e');

@@ -1,20 +1,24 @@
 /**
- * Author-original P1 candidate content transcribed from the current, exact-hash
- * execution specification. This module is deliberately not exported by the
- * package entry point and is not part of canon-runtime.json.
- *
- * Rule-specific target/source/route bindings remain unresolved and must not be
- * inferred from this content-only package.
+ * Author-original P1 candidate content transcribed from the exact-hash current
+ * execution specification and jointly accepted MAP amendment. This module is
+ * deliberately not exported by the package entry point and is not part of
+ * canon-runtime.json. Candidate data does not activate runtime rules.
  */
 
-export const PROLOGUE_V1_CANDIDATE_INTAKE_ID = 'p1_luhuadu_prologue_author_original_20261004' as const;
+export const PROLOGUE_V1_CANDIDATE_INTAKE_ID = 'p1_luhuadu_prologue_author_original_20261005' as const;
 
 export const PROLOGUE_V1_SOURCE_ARTIFACTS = freezeDeep([
   {
-    id: 'p1_execution_spec_current_20261004',
+    id: 'p1_execution_spec_current_20261005',
     path: 'docs/九霄1.0-P1-执行规格-GPT交付版-2026-10-03.md',
-    sha256: '3edba2136ef1a783a701327c16208bab289908f83db0084dc748bdc612fa526f',
+    sha256: '7677776d40825889694abeff4cb51c33d4fcda91e70eafcf8fbaae491635259e',
     role: 'effective-authoritative-source',
+  },
+  {
+    id: 'p1_author_mapping_20261004_jointly_accepted_20261005',
+    path: 'docs/acceptance/2026-10-04/P1-author-inputs/P1-MAP-作者可执行映射.md',
+    sha256: '5869f3a3518156c2ac166388cc9f652aebc7bd5e36f071172030665f3d0a9e53',
+    role: 'jointly-accepted-mapping-amendment',
   },
   {
     id: 'p1_acceptance_workbook_20261003_historical',
@@ -50,6 +54,33 @@ export type PrologueContentByKind = {
     stateTransition: readonly string[];
     description: string;
   };
+  sublocation: {
+    name: string;
+    parentLocationId: string;
+    role: string;
+    routeId?: string;
+    routeFromLocationId?: string;
+    routeToLocationId?: string;
+  };
+  source: {
+    sourceType: 'pickup' | 'quest_reward';
+    locationId?: string;
+    itemId: string;
+    quantity: number;
+    oneTime: true;
+    availability: string;
+  };
+  technique: {
+    name: string;
+    initialOwnership: true;
+    acquisition: 'innate';
+  };
+  combatTarget: {
+    name: string;
+    presenceLocationId: string;
+    accessibleFromSublocationIds: readonly string[];
+    blockedWhen: string;
+  };
   item: {
     name: string;
     quality: '凡品';
@@ -57,7 +88,8 @@ export type PrologueContentByKind = {
     provenance?: string;
     statedEffect?: string;
     statedUseLimit?: string;
-    ruleTargetMapping?: 'unresolved';
+    ruleTargetIds?: readonly string[];
+    effectFlag?: string;
     acquisition?: string;
     statedUnlock?: string;
   };
@@ -90,7 +122,7 @@ type PrologueContentEntryFor<K extends PrologueContentKind> = Readonly<{
   id: string;
   kind: K;
   sourceType: 'author-original';
-  sourceArtifactId: 'p1_execution_spec_current_20261004';
+  sourceArtifactId: 'p1_execution_spec_current_20261005';
   sourceSection: string;
   publicationStatus: 'candidate-only';
   content: Readonly<PrologueContentByKind[K]>;
@@ -117,7 +149,7 @@ function entry<K extends PrologueContentKind>(
     id,
     kind,
     sourceType: 'author-original',
-    sourceArtifactId: 'p1_execution_spec_current_20261004',
+    sourceArtifactId: 'p1_execution_spec_current_20261005',
     sourceSection,
     publicationStatus: 'candidate-only',
     content,
@@ -133,15 +165,9 @@ export const PROLOGUE_V1_CONTENT_PACK = freezeDeep({
   intakeId: PROLOGUE_V1_CANDIDATE_INTAKE_ID,
   publicationStatus: 'candidate-only',
   runtimeEligible: false,
+  npcPresenceIds: ['npc_cenjiu', 'npc_shuiyuya'] as const,
   sourceArtifacts: PROLOGUE_V1_SOURCE_ARTIFACTS,
-  unresolvedRuleMappings: [
-    'P1-MAP-01: the blocked directed edge endpoints, initial path to the observation point, and the bypass route ID/from/to/via',
-    'P1-MAP-02: Cenjiu clearance topicTag, matching utterance, interaction outcome, and any resulting clue ID',
-    'P1-MAP-03: each collectible sourceId, location, item ID, fixed quantity, and one-time acquisition rule',
-    'P1-MAP-04: valid techniqueId values, new-save ownership, and acquisition method',
-    'P1-MAP-05: item_bishuifu targetId, effect flag, executable action, and consumption timing',
-    'P1-MAP-06: how the ferry worksite maps inside the three-location model, combat target position, and deterministic outcome preconditions',
-  ] as const,
+  unresolvedRuleMappings: [] as const,
   entries: [
     entry('loc_luhuadu', 'location', '§2.2', {
       name: '芦花渡',
@@ -159,6 +185,19 @@ export const PROLOGUE_V1_CONTENT_PACK = freezeDeep({
       listedAdjacentLocationIds: ['loc_wangqitai'],
       accessNote: '对应边由通渡任务奖励解锁；此候选内容不指定规则投影形式。',
     }),
+    entry('subloc_ferry_berm', 'sublocation', 'P1-MAP-06', {
+      name: '渡口作业位',
+      parentLocationId: 'loc_luhuadu',
+      role: 'combat preparation site',
+    }),
+    entry('subloc_reef_ledge', 'sublocation', 'P1-MAP-01', {
+      name: '礁石小径',
+      parentLocationId: 'loc_wangqitai',
+      role: 'bypass route via the rockslide',
+      routeId: 'route_reef_ledge',
+      routeFromLocationId: 'loc_wangqitai',
+      routeToLocationId: 'loc_luhuadu',
+    }),
     entry('npc_cenjiu', 'npc', '§2.3', {
       name: '岑九',
       identity: '芦花渡摆渡人，工钱按趟算，一天一趟。',
@@ -172,6 +211,32 @@ export const PROLOGUE_V1_CONTENT_PACK = freezeDeep({
       speakingStyle: ['短句', '不用敬语', '不主动催', '不解释自己没被问的事'],
       memoryBoundary: '记得所有来过渡口的人，但记不住名字。',
     }),
+    entry('npc_shuiyuya', 'combatTarget', 'P1-MAP-06', {
+      name: '灰羽鸦',
+      presenceLocationId: 'loc_luhuadu',
+      accessibleFromSublocationIds: ['subloc_ferry_berm', 'subloc_reef_ledge'],
+      blockedWhen: "obstacleState === 'cleared'",
+    }),
+    entry('src_ferry_shore', 'source', 'P1-MAP-03', {
+      sourceType: 'pickup',
+      locationId: 'loc_luhuadu',
+      itemId: 'item_bishuifu',
+      quantity: 1,
+      oneTime: true,
+      availability: '渡口滩涂、搁浅旧缆桩旁；新档为空包，可由规则允许的取得行动拾取。',
+    }),
+    entry('src_quest_clearance', 'source', 'P1-MAP-03', {
+      sourceType: 'quest_reward',
+      itemId: 'item_jiuyifu',
+      quantity: 1,
+      oneTime: true,
+      availability: "完成 quest_first_clearance 后，经 claim_reward 领取。",
+    }),
+    entry('tech_breath_basic', 'technique', 'P1-MAP-04', {
+      name: '呼吸法',
+      initialOwnership: true,
+      acquisition: 'innate',
+    }),
     entry('obj_ferry', 'object', '§2.4', {
       name: '渡船',
       stateTransition: ['aground', 'clear'],
@@ -180,31 +245,32 @@ export const PROLOGUE_V1_CONTENT_PACK = freezeDeep({
     entry('item_bishuifu', 'item', '§2.4', {
       name: '避水符',
       quality: '凡品',
-      initialQuantity: 1,
-      provenance: '岑九给的，原是渡船旧物，符纸已脆。',
-      statedEffect: '使一次落水或涉水行动不受影响。',
+      initialQuantity: 0,
+      provenance: '渡口滩涂上搁浅的旧缆桩旁，是岑九早前用过留下的；符纸已脆。',
+      statedEffect: '对渡口作业位驱鸦，或通过礁石小径涉水。',
       statedUseLimit: '用掉就没。',
-      ruleTargetMapping: 'unresolved',
+      acquisition: '从 src_ferry_shore 一次性拾取 ×1。',
+      ruleTargetIds: ['subloc_reef_ledge', 'subloc_ferry_berm'],
+      effectFlag: 'effect_ward_water',
     }),
     entry('item_jiuyifu', 'item', '§2.4', {
       name: '旧驿符',
       quality: '凡品',
-      acquisition: '通渡任务奖励。',
+      acquisition: '从 src_quest_clearance 经通渡任务领奖一次获得 ×1。',
       provenance: '折桂坪旧驿站的信物，早已无用。',
       statedUnlock: '解锁 loc_zheguiping 的边。',
     }),
     entry('obstacle_rockslide', 'obstacle', '§2.5', {
       name: '落石堵渡',
       solutions: [
-        { kind: 'talk', description: '与岑九交谈；他不白给，要玩家自己掂量。', ruleMapping: 'unresolved' },
-        { kind: 'bypass', description: '走礁石小径，多一刻，肩擦伤。', routeMapping: 'unresolved' },
-        { kind: 'combat', description: '驱退灰羽鸦。' },
+        { kind: 'bypass', description: '走礁石小径，耗时 2 刻、体力 15，并留下肩擦伤。' },
+        { kind: 'combat', description: '对灰羽鸦进行确定性三态裁决。' },
       ],
-      completionNote: '三条都不封死任务。落石清除后，受阻边自动由 blocked 转 open。',
+      completionNote: '落石求助交谈返回 refuse，不产线索、不清障。绕行或战斗清障后，受阻边转为 open。',
     }),
     entry('quest_first_clearance', 'quest', '§4.4', {
       name: '通渡',
-      completionCondition: "obstacleState === 'cleared'; any of the three signed solutions; order does not matter.",
+      completionCondition: "obstacleState === 'cleared' by bypass or combat; preparation order does not matter.",
       hardFailure: false,
       exhaustedSpiritStamina: '当日不推进，次日可再来。',
       rewardItemId: 'item_jiuyifu',
@@ -255,14 +321,17 @@ export const PROLOGUE_V1_CONTENT_PACK = freezeDeep({
     entry('text_dialogue_topics', 'text', '§3.3', {
       lines: [
         { topicLabel: '问船', utterance: '船没坏。水浅了。' },
-        { topicLabel: '问石头', utterance: '上游冲下来的。前夜响了一宿。' },
-        { topicLabel: '问鸦', utterance: '灰羽鸦。不咬人，抢食。石头缝里那窝，别掏。' },
+        { topicLabel: "求岑九处理落石（topicTag='obstacle_rockslide'）", utterance: '我这把骨头，搬不动那些石头。你自己掂量。', outcome: 'refuse', grantsClue: false },
+        { topicLabel: '问鸦', utterance: '灰羽鸦。不咬人，抢食。石上那群，别惹。' },
         { topicLabel: '问望气台', utterance: '旧台子。没人管了。你要去看，随你。' },
         { topicLabel: '问南边那片白', utterance: '我没上去过。' },
         { topicLabel: '拒绝帮忙', utterance: '我这把骨头，搬不动那些石头。你自己掂量。' },
         { topicLabel: '通渡之后', utterance: '通了。明早第一趟。' },
       ],
-      ruleTopicTags: 'unresolved; labels are source text, not executable topicTag values',
+      ruleTopicTags: [
+        { topicLabel: '求岑九处理落石', topicTag: 'obstacle_rockslide', outcome: 'refuse', grantsClue: false },
+      ],
+      otherLinesAreNarrativeOnly: true,
     }),
     entry('text_smalltalk_fallbacks', 'text', '§3.3', {
       replies: [
@@ -287,7 +356,7 @@ export const PROLOGUE_V1_CONTENT_PACK = freezeDeep({
       paragraphs: ['鸦群炸起来，绕着你转了两圈。', '你退到石堆背后。胸口发闷，站不住了。'],
     }),
     entry('text_bypass', 'text', '§3.4', {
-      paragraphs: ['礁石小径硌脚，绕远了一刻。', '落石从左边压过来，你侧身过去，肩上蹭掉一层皮。'],
+      paragraphs: ['礁石小径硌脚，绕远了两刻。', '落石从左边压过来，你侧身过去，肩上蹭掉一层皮。'],
     }),
     entry('text_stamina_exhausted', 'text', '§3.4', {
       utterance: '天色暗下来，你的手在抖。',
@@ -300,7 +369,7 @@ export const PROLOGUE_V1_CONTENT_PACK = freezeDeep({
       knowledgeConstraint: '仅在玩家确在望气台且没有依赖岑九告知时展示。',
     }),
     entry('text_wangqitai_night', 'text', '§3.6', {
-      interval: 'kecIndex >= 48, where kecIndex = floor((gameMinute - 300) / 15) mod 96',
+      interval: 'gameMinute day interval >= 1020; day index is derived only from gameMinute and 15-minute kec',
       paragraphs: ['天光收尽了。渡口只剩水声。石堆成了一片黑。'],
     }),
   ] satisfies readonly PrologueContentEntry[],

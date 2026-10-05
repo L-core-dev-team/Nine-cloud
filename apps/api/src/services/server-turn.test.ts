@@ -1,12 +1,15 @@
 import { randomUUID } from 'node:crypto';
 import { describe, expect, it, vi } from 'vitest';
-import type { SaveEnvelope, TurnReceipt } from '@jiuxiao/contracts';
+import type { DomainEvent, SaveEnvelope, SaveEnvelopeV2, TurnReceipt } from '@jiuxiao/contracts';
 import { createNpcMemoryJournal } from '@jiuxiao/domain';
 import { RuleResolver } from './rule-resolver.js';
 import { ServerTurnService, type ServerTurnRepository, type ServerTurnRules } from './server-turn.js';
+import type { NarrativeContext } from './narrative-scheduler.js';
+import { createP1SaveMemoryPolicy } from './p1-memory-policy.js';
+import type { AuthorizedObservationOutboxRecord } from '@jiuxiao/domain';
 
-function fixture() {
-  let save: SaveEnvelope = { schemaVersion: 1, saveId: 'test-turn', revision: 0,
+function fixture(initialSave?: SaveEnvelope) {
+  let save: SaveEnvelope = initialSave ?? { schemaVersion: 1, saveId: 'test-turn', revision: 0,
     ruleVersion: 'fixture-only', canonVersion: 'fixture-only', memoryPolicyVersion: 'fixture-only',
     state: { playerId: 'player', locationId: 'origin', elapsedMinutes: 900, facts: { gameMinute: 30 } } };
   let journal = createNpcMemoryJournal(save.saveId, 0);
@@ -119,6 +122,77 @@ describe('server turn orchestration (synthetic rules, never production gameplay)
     expect(JSON.stringify(failed)).not.toContain('private-provider'); succeed = true;
     expect(await service.execute('owner', f.intent, true)).toMatchObject({ status: 'accepted', duplicate: true, narrative: { status: 'received' } });
     expect(f.decide).toHaveBeenCalledTimes(1); expect(f.snapshot().save.revision).toBe(1);
+  });
+  it('uses deterministic presentation after a model failure without re-running rules', async () => {
+    const f = fixture();
+    const fallback = vi.fn(() => 'Committed event fallback.');
+    const service = new ServerTurnService(f.repository, f.rules, async () => { throw new Error('provider unavailable'); }, 20, fallback);
+    const result = await service.execute('owner', f.intent, true);
+    expect(result).toMatchObject({ status: 'accepted', duplicate: false, narrative: { status: 'received', source: 'deterministic', text: 'Committed event fallback.' } });
+    expect(fallback).toHaveBeenCalledOnce();
+    expect(f.decide).toHaveBeenCalledOnce();
+    expect(f.snapshot().save.revision).toBe(1);
+    expect(await service.execute('owner', f.intent, true)).toMatchObject({ status: 'accepted', duplicate: true, narrative: { source: 'deterministic' } });
+    expect(f.decide).toHaveBeenCalledOnce();
+    expect(f.snapshot().save.revision).toBe(1);
+  });
+  it('passes only authorized, policy-filtered NPC recall into narration after commit', async () => {
+    const base = fixture();
+    const v1 = base.snapshot().save;
+    const save: SaveEnvelopeV2 = {
+      ...v1,
+      schemaVersion: 2,
+      memoryMode: 'continue',
+      memoryPolicy: createP1SaveMemoryPolicy('continue', 0, 'fixture-only'),
+    };
+    const f = fixture(save);
+    const eventId = randomUUID();
+    const event: DomainEvent = {
+      id: eventId, saveId: save.saveId, type: 'talk.occurred', branchId: 'root',
+      beforeRevision: 0, afterRevision: 1, occurredAt: '2026-10-05T00:00:00.000Z',
+      source: 'RULES', ruleVersion: save.ruleVersion,
+      payload: { npcId: 'visible-npc', topicTag: 'topic_route', outcome: 'on_topic' },
+    };
+    const rules: ServerTurnRules = {
+      ...f.rules,
+      decide: (_intent, current) => ({ status: 'accepted', outcome: 'success', nextRevision: current.revision + 1, events: [event] }),
+      grantsForEvent: current => current.type === 'talk.occurred' ? [{
+        npcId: 'visible-npc', eventId: current.id, channel: 'witnessed',
+        authorizationPolicyVersion: 'visibility-v1', authorizedFields: ['summary', 'topicTag', 'outcome'],
+        authorizedFacts: { summary: 'topicTag=topic_route;outcome=on_topic', topicTag: 'topic_route', outcome: 'on_topic' },
+        visibleSummary: 'topicTag=topic_route;outcome=on_topic',
+      }] : [],
+      policyForNpc: () => 'continue-v1',
+    };
+    const row = (npcId: string): AuthorizedObservationOutboxRecord => ({
+      grantId: `grant-${npcId}`, saveId: save.saveId, branchId: 'root', npcId, eventId,
+      eventRevision: 1, observedAtMinute: 45, channel: 'witnessed',
+      authorizationPolicyVersion: 'visibility-v1', authorizedFields: ['summary', 'topicTag', 'outcome'],
+      authorizedFacts: { summary: 'topicTag=topic_route;outcome=on_topic', topicTag: 'topic_route', outcome: 'on_topic' },
+      summary: 'topicTag=topic_route;outcome=on_topic',
+    });
+    const reader = vi.fn(async (_owner: string, _saveId: string, _npcId: string) => ({
+      items: [row('visible-npc'), row('other-npc')], nextCursor: null,
+    }));
+    f.repository.getAuthorizedObservationPage = reader;
+    const received: NarrativeContext[] = [];
+    const narrate = async (_receipt: TurnReceipt, _signal: AbortSignal, context?: NarrativeContext) => {
+      received.push(context ?? { npcMemories: [] });
+      return 'Narrative from committed facts.';
+    };
+
+    const result = await new ServerTurnService(f.repository, rules, narrate).execute('owner', f.intent, true);
+
+    expect(result).toMatchObject({ status: 'accepted', narrative: { status: 'received', source: 'model' } });
+    expect(reader).toHaveBeenCalledOnce();
+    expect(received).toEqual([{
+      playerConditionLines: [],
+      npcUtterances: [],
+      npcMemories: [{ npcId: 'visible-npc', observations: [{
+        summary: 'topicTag=topic_route;outcome=on_topic', accessibility: 1,
+      }] }],
+    }]);
+    expect(f.snapshot().save.revision).toBe(1);
   });
   it('times out even when the provider ignores cancellation, without rolling back state', async () => {
     const f = fixture(); let signal: AbortSignal | undefined;

@@ -1,5 +1,5 @@
 /** These policies affect recall only. Neither can amend rules events or state. */
-export type MemoryPolicyVersion = 'exact-recall-v1' | 'accessibility-v1';
+export type MemoryPolicyVersion = 'exact-recall-v1' | 'accessibility-v1' | 'continue-v1' | 'forgetting-v1';
 
 export type NpcObservation = {
   npcId: string;
@@ -28,7 +28,7 @@ export type ObservationGrant = {
   visibleSummary: string;
 };
 
-const POLICY_VERSIONS = new Set<MemoryPolicyVersion>(['exact-recall-v1', 'accessibility-v1']);
+const POLICY_VERSIONS = new Set<MemoryPolicyVersion>(['exact-recall-v1', 'accessibility-v1', 'continue-v1', 'forgetting-v1']);
 const OBSERVATION_CHANNELS = new Set<NpcObservation['channel']>(['witnessed', 'reported']);
 
 /** Validate memory data again at runtime because it may have come from persisted JSON. */

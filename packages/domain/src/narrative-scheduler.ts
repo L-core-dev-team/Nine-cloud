@@ -3,7 +3,16 @@ import { TurnReceiptSchema, type TurnReceipt } from '@jiuxiao/contracts';
 export const narrativeRoles = ['director', 'premiumDirector', 'story', 'stateManager', 'archive'] as const;
 export type NarrativeRole = typeof narrativeRoles[number];
 export type RoleOutput = { text: string; outputTokens: number|null };
-export type RoleAdapter = (input: { role: NarrativeRole; receipt: TurnReceipt; candidates: Partial<Record<NarrativeRole, string>>; maxOutputTokens: number }, signal: AbortSignal) => Promise<RoleOutput>;
+export type NarrativeContext = {
+  npcMemories: readonly {
+    npcId: string;
+    observations: readonly { summary: string; accessibility: number }[];
+  }[];
+  /** Deterministic, state-derived prose constraints for the current turn. */
+  playerConditionLines?: readonly string[];
+  npcUtterances?: readonly { npcId: string; line: string }[];
+};
+export type RoleAdapter = (input: { role: NarrativeRole; receipt: TurnReceipt; candidates: Partial<Record<NarrativeRole, string>>; context: NarrativeContext; maxOutputTokens: number }, signal: AbortSignal) => Promise<RoleOutput>;
 export type RoleSlot = { enabled: boolean; required?:boolean; dependencies?:readonly NarrativeRole[]; timeoutMs: number; maxOutputTokens: number; retries: number; primary: RoleAdapter; fallback?: RoleAdapter };
 export type RoleTrace = { role: NarrativeRole; status: 'received' | 'failed' | 'skipped'; attempts: number; reservedOutputTokens: number; reportedOutputTokens: number|null; code?: 'ROLE_UNAVAILABLE' | 'BUDGET_EXHAUSTED' };
 export type ScheduleResult = { text: string; trace: RoleTrace[]; reservedOutputTokens: number };
@@ -15,9 +24,10 @@ export class NarrativeScheduler {
     for (const slot of Object.values(slots)) if (slot && (!Number.isInteger(slot.timeoutMs) || slot.timeoutMs < 1 || slot.timeoutMs > 120_000 || !Number.isInteger(slot.maxOutputTokens) || slot.maxOutputTokens < 1 || slot.maxOutputTokens > 100_000 || !Number.isInteger(slot.retries) || slot.retries < 0 || slot.retries > 2)) throw new TypeError('Invalid role bounds');
     for(const role of narrativeRoles)for(const dependency of slots[role]?.dependencies||[])if(!narrativeRoles.includes(dependency)||narrativeRoles.indexOf(dependency)>=narrativeRoles.indexOf(role))throw new TypeError('Invalid role dependency');
   }
-  async run(rawReceipt: TurnReceipt, cancellation: AbortSignal): Promise<ScheduleResult> {
+  async run(rawReceipt: TurnReceipt, cancellation: AbortSignal, rawContext?: NarrativeContext): Promise<ScheduleResult> {
     const receipt = TurnReceiptSchema.parse(rawReceipt);
     if (receipt.decision.status !== 'accepted') throw new Error('TURN_NOT_COMMITTED');
+    const context = validateNarrativeContext(rawContext ?? { npcMemories: [] });
     const candidates: Partial<Record<NarrativeRole, string>> = {}; const trace: RoleTrace[] = []; let reserved = 0;
     for (const role of narrativeRoles) {
       if (cancellation.aborted) throw new Error('NARRATIVE_CANCELLED');
@@ -34,7 +44,7 @@ export class NarrativeScheduler {
         if (reserved + slot.maxOutputTokens > this.outputBudget) { row.code = 'BUDGET_EXHAUSTED'; break; }
         reserved += slot.maxOutputTokens; row.reservedOutputTokens += slot.maxOutputTokens; row.attempts++;
         try {
-          const result = await boundedCall(adapter, { role, receipt: structuredClone(receipt), candidates: structuredClone(candidates), maxOutputTokens: slot.maxOutputTokens }, slot.timeoutMs, cancellation);
+          const result = await boundedCall(adapter, { role, receipt: structuredClone(receipt), candidates: structuredClone(candidates), context: structuredClone(context), maxOutputTokens: slot.maxOutputTokens }, slot.timeoutMs, cancellation);
           if (typeof result.text !== 'string' || !result.text.trim() || result.text.length > 100_000 || (result.outputTokens!==null&&(!Number.isSafeInteger(result.outputTokens) || result.outputTokens < 0 || result.outputTokens > slot.maxOutputTokens))) throw new Error('INVALID_ROLE_OUTPUT');
           candidates[role] = result.text; row.status = 'received'; row.reportedOutputTokens = result.outputTokens; delete row.code; break;
         } catch { if (cancellation.aborted) throw new Error('NARRATIVE_CANCELLED'); }
@@ -47,7 +57,46 @@ export class NarrativeScheduler {
     if (!candidates.story) throw new Error('NARRATIVE_UNAVAILABLE');
     return { text: candidates.story, trace, reservedOutputTokens: reserved };
   }
-  narrator() { return async (receipt: TurnReceipt, signal: AbortSignal) => (await this.run(receipt, signal)).text; }
+  narrator() { return async (receipt: TurnReceipt, signal: AbortSignal, context?: NarrativeContext) => (await this.run(receipt, signal, context)).text; }
+}
+
+function validateNarrativeContext(value: NarrativeContext): NarrativeContext {
+  if (!value || typeof value !== 'object' ||
+      Object.keys(value).some(key => !['npcMemories', 'playerConditionLines', 'npcUtterances'].includes(key)) ||
+      !Array.isArray(value.npcMemories) || value.npcMemories.length > 16 ||
+      (value.playerConditionLines !== undefined && (!Array.isArray(value.playerConditionLines) || value.playerConditionLines.length > 4)) ||
+      (value.npcUtterances !== undefined && (!Array.isArray(value.npcUtterances) || value.npcUtterances.length > 8))) {
+    throw new Error('INVALID_NARRATIVE_CONTEXT');
+  }
+  const seenNpcIds = new Set<string>();
+  for (const memory of value.npcMemories) {
+    if (!memory || typeof memory !== 'object' || Object.keys(memory).length !== 2
+      || typeof memory.npcId !== 'string' || !memory.npcId.trim() || memory.npcId.length > 200
+      || seenNpcIds.has(memory.npcId) || !Array.isArray(memory.observations) || memory.observations.length > 12) {
+      throw new Error('INVALID_NARRATIVE_CONTEXT');
+    }
+    seenNpcIds.add(memory.npcId);
+    for (const observation of memory.observations) {
+      if (!observation || typeof observation !== 'object' || Object.keys(observation).length !== 2
+        || typeof observation.summary !== 'string' || !observation.summary.trim() || observation.summary.length > 4000
+        || typeof observation.accessibility !== 'number' || !Number.isFinite(observation.accessibility)
+        || observation.accessibility < 0 || observation.accessibility > 1) {
+        throw new Error('INVALID_NARRATIVE_CONTEXT');
+      }
+    }
+  }
+  for (const line of value.playerConditionLines ?? []) {
+    if (typeof line !== 'string' || !line.trim() || line.length > 240) throw new Error('INVALID_NARRATIVE_CONTEXT');
+  }
+  const seenUtterances = new Set<string>();
+  for (const utterance of value.npcUtterances ?? []) {
+    if (!utterance || typeof utterance !== 'object' || Object.keys(utterance).length !== 2 ||
+        typeof utterance.npcId !== 'string' || !utterance.npcId.trim() || utterance.npcId.length > 200 ||
+        typeof utterance.line !== 'string' || !utterance.line.trim() || utterance.line.length > 240 ||
+        seenUtterances.has(`${utterance.npcId}\0${utterance.line}`)) throw new Error('INVALID_NARRATIVE_CONTEXT');
+    seenUtterances.add(`${utterance.npcId}\0${utterance.line}`);
+  }
+  return structuredClone(value);
 }
 async function boundedCall(adapter: RoleAdapter, input: Parameters<RoleAdapter>[0], timeoutMs: number, cancellation: AbortSignal): Promise<RoleOutput> {
   const controller = new AbortController(); let timer: ReturnType<typeof setTimeout> | undefined; let abort!: () => void;
