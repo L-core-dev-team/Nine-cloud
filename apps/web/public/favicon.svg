@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect x="4" y="4" width="56" height="56" rx="14" fill="#a73846"/>
+  <rect x="8.8" y="8.8" width="46.4" height="46.4" rx="10.5" fill="none" stroke="#f1ece5" stroke-opacity=".5" stroke-width="1.6"/>
+  <text x="32" y="44.5" text-anchor="middle" font-family="'Ma Shan Zheng','KaiTi','STKaiti',serif" font-size="36" fill="#f1ece5">霄</text>
+</svg>

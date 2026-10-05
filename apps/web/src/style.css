@@ -73,6 +73,7 @@ body {
   background: radial-gradient(circle at 72% 16%, rgba(90, 113, 145, 0.3), transparent 30rem), linear-gradient(145deg, #08131f, #101e2b 56%, #050b12);
 }
 button, input, textarea, select { font: inherit; }
+input:not([type='range']):not([type='checkbox']), select, textarea { font-size: max(1em, 16px); }
 button { color: inherit; cursor: pointer; border: 0; }
 button:disabled { cursor: not-allowed; opacity: 0.5; }
 
@@ -83,7 +84,10 @@ nav { display: flex; gap: 22px; }
 nav button, .menu, .links button { color: var(--muted); background: none; font: 0.85rem system-ui; }
 nav button:hover, .links button:hover { color: #fff; }
 .menu { padding: 9px 14px; border: 1px solid var(--line); border-radius: 99px; }
-aside { position: absolute; z-index: 5; top: 64px; right: clamp(18px, 5vw, 72px); display: grid; gap: 11px; width: 230px; padding: 18px; background: #0a1b2a; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 24px 70px #0008; }
+.header-tools { display: flex; align-items: center; gap: 8px; }
+.menu-overlay { position: fixed; z-index: 3; inset: 0; background: rgba(2, 8, 14, 0.28); }
+:root[data-theme='day'] .menu-overlay { background: rgba(56, 65, 72, 0.16); }
+aside { position: absolute; z-index: 5; top: 76px; right: clamp(18px, 5vw, 72px); display: grid; gap: 11px; width: 230px; padding: 18px; background: #0a1b2a; border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 24px 70px #0008; }
 aside strong, aside button, aside label { font: var(--jx-type-small) system-ui; }
 aside button, aside label { padding: var(--jx-space-3); text-align: left; background: #ffffff0f; border-radius: var(--jx-radius-control); }
 aside input { display: none; }
@@ -294,7 +298,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--accent); box-sha
 .character-field, .character-field > label { display: grid; gap: 8px; }
 .character-suggestions { color: var(--muted); font-size: 0.78rem; }
 .world-search-feedback { margin: 12px 0 22px; }
-.worldbook-entry { scroll-margin-top: 22px; }
+.worldbook-entry { scroll-margin-top: 22px; content-visibility: auto; contain-intrinsic-size: auto 420px; }
 .worldbook-entry mark { color: #172a38; background: #e5cca0; border-radius: 3px; padding: 0 2px; }
 .game-readable-panel { max-height: 56svh; overflow: auto; overflow-wrap: anywhere; padding-right: 6px; }
 .readable-data { margin: 0; }
@@ -707,7 +711,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 .game-tools { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--jx-space-2); }
 .game-tools label { position: relative; cursor: pointer; }
 .game-tools input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-.intent-composer { display: grid; gap: var(--jx-space-3); padding: var(--jx-space-4); background: rgba(7, 19, 30, 0.77); border: 1px solid rgba(183, 203, 214, 0.25); border-radius: var(--jx-radius-panel); }
+.intent-composer { position: sticky; bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 3; display: grid; gap: var(--jx-space-3); padding: var(--jx-space-4); background: rgba(7, 19, 30, 0.96); border: 1px solid rgba(183, 203, 214, 0.25); border-radius: var(--jx-radius-panel); box-shadow: 0 -16px 40px rgba(2, 8, 14, 0.42); }
 .intent-composer > label { color: #e6e2d5; font: 400 var(--jx-type-body) 'Ma Shan Zheng Brand', 'Kaiti SC', serif; letter-spacing: 0.06em; }
 .intent-composer textarea { min-height: 92px; resize: vertical; padding: var(--jx-space-3) var(--jx-space-4); color: #eef1ef; background: #06121c88; border-color: #b4c8d033; font: var(--jx-type-small)/1.8 'Noto Serif SC', serif; }
 .intent-composer > div { display: flex; align-items: center; justify-content: space-between; gap: var(--jx-space-3); }
@@ -807,7 +811,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 :root[data-theme='day'] .game-rail button, :root[data-theme='day'] .game-tools button, :root[data-theme='day'] .game-tools label { color: #344550; background: rgba(248, 249, 246, 0.82); border-color: #62788836; }
 :root[data-theme='day'] .story-reading { color: #344550; background: linear-gradient(160deg, rgba(255, 254, 250, 0.88), rgba(231, 237, 237, 0.83)); }
 :root[data-theme='day'] .story-opening p, :root[data-theme='day'] .story-message, :root[data-theme='day'] .pending-intent p { color: #40535e; }
-:root[data-theme='day'] .intent-composer { background: rgba(250, 250, 246, 0.84); }
+:root[data-theme='day'] .intent-composer { background: rgba(250, 250, 246, 0.95); box-shadow: 0 -14px 34px rgba(90, 105, 115, 0.16); }
 :root[data-theme='day'] .intent-composer > label, :root[data-theme='day'] .game-info-panel h2 { color: #334857; }
 :root[data-theme='day'] .intent-composer textarea, :root[data-theme='day'] .game-info-panel pre { color: #344550; background: #fffdf8c9; border-color: #62788836; }
 :root[data-theme='day'] .game-statusline { color: #495e6a; }
@@ -823,6 +827,9 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
   .game-rail::-webkit-scrollbar { display: none; }
   .game-rail button { flex: 1 0 max-content; min-width: 88px; }
   .game-info-panel { position: static; }
+  .game-rail { backdrop-filter: none; }
+  .story-reading, .game-info-panel, .worldbook-entry, .intro-prose { backdrop-filter: none; }
+  aside { top: 70px; }
 }
 @media (max-width: 520px) {
   .game-page { width: 100%; }
