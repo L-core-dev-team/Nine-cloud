@@ -21,6 +21,7 @@ function canonical(v){if(Array.isArray(v))return `[${v.map(canonical).join(',')}
  if(url.pathname==='/api/auth/session')body={account:{id:'fixture-owner',email:'synthetic@example.invalid'}};
  else if(url.pathname==='/api/saves')body={saves:[save]};
  else if(url.pathname==='/api/saves/fixture')body={save:{...save,revision:committed?1:0}};
+ else if(url.pathname==='/api/games/fixture/action-suggestions')body={status:'ready',revision:committed?1:0,actions:[]};
  else if(url.pathname==='/api/turns'){
  const {intent,requestNarrative}=route.request().postDataJSON();
  if(!committed)committed={saveId:intent.saveId,idempotencyKey:intent.idempotencyKey,requestFingerprint:`sha256:v1:${createHash('sha256').update(canonical(intent)).digest('hex')}`,resultingRevision:1,decision:{status:'accepted',nextRevision:1,events:[{id:randomUUID(),saveId:'fixture',type:'fixture',beforeRevision:0,afterRevision:1,occurredAt:'2026-10-01T00:00:00.000Z',source:'RULES',ruleVersion:'fixture-only',payload:{}}]}};

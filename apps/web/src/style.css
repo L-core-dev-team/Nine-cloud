@@ -142,6 +142,7 @@ input:focus, textarea:focus, select:focus { border-color: var(--accent); box-sha
 .cloud-page input { font-size: 16px; min-height: 44px; }
 .cloud-page button { min-height: 44px; margin: 4px 6px 4px 0; }
 .cloud-page > label { display: block; margin: 14px 0; }
+.action-suggestions { display: flex; flex-wrap: wrap; gap: .5rem; margin-block: .75rem 1rem; }
 .card strong { display: block; margin-bottom: 9px; font-size: 1.1rem; }
 .wide { max-width: 720px; margin: 24px 0; }
 .roles { max-width: 720px; margin: 24px 0; border-top: 1px solid var(--line); }

@@ -28,7 +28,9 @@ describe('P1 prologue candidate pack', () => {
     if (!intake.approvalRecord) throw new Error('P1_CANDIDATE_APPROVAL_RECORD_NOT_REGISTERED');
 
     expect(intake.sourceArtifact.sha256).toBe(sourceHash('../../docs/九霄1.0-P1-执行规格-GPT交付版-2026-10-03.md'));
-    expect(intake.approvalRecord.sha256).toBe(sourceHash('../../docs/acceptance/2026-10-03/九霄1.0-P1-玩法规则与序章-签署表-2026-10-03.xlsx'));
+    expect(intake.approvalRecord.sha256).toBe(sourceHash('../../docs/acceptance/2026-10-04/P1-author-inputs/P1-MAP-作者可执行映射.md'));
+    if (!('priorSignoffEvidence' in intake) || !intake.priorSignoffEvidence) throw new Error('P1_PRIOR_SIGNOFF_NOT_REGISTERED');
+    expect(intake.priorSignoffEvidence.sha256).toBe(sourceHash('../../docs/acceptance/2026-10-03/九霄1.0-P1-玩法规则与序章-签署表-2026-10-03.xlsx'));
     expect(intake.candidateDocument).toBe('packages/content/src/prologue/prologue-v1.ts');
     expect(intake.candidateDocumentSha256).toBe(sourceHash('src/prologue/prologue-v1.ts'));
     expect(intake.candidateIds).toEqual(PROLOGUE_V1_CANDIDATE_IDS);
@@ -45,6 +47,9 @@ describe('P1 prologue candidate pack', () => {
       if ('approvalRecord' in intake && intake.approvalRecord) {
         expect(repoSourceHash(intake.approvalRecord.path)).toBe(intake.approvalRecord.sha256);
       }
+      if ('priorSignoffEvidence' in intake && intake.priorSignoffEvidence) {
+        expect(repoSourceHash(intake.priorSignoffEvidence.path)).toBe(intake.priorSignoffEvidence.sha256);
+      }
       expect(repoSourceHash(intake.candidateDocument)).toBe(intake.candidateDocumentSha256);
     }
   });
@@ -55,26 +60,52 @@ describe('P1 prologue candidate pack', () => {
     expect(new Set(PROLOGUE_V1_CANDIDATE_IDS).size).toBe(PROLOGUE_V1_CANDIDATE_IDS.length);
     expect(PROLOGUE_V1_CONTENT_PACK.entries.every(entry =>
       entry.sourceType === 'author-original'
-      && entry.sourceArtifactId === 'p1_execution_spec_current_20261004'
+      && entry.sourceArtifactId === 'p1_execution_spec_current_20261005'
       && entry.publicationStatus === 'candidate-only')).toBe(true);
     expect(canonRegistry.entries.some(({ id }) => PROLOGUE_V1_CANDIDATE_IDS.includes(id))).toBe(false);
     expect(canonRuntimeEntries.some(({ id }) => PROLOGUE_V1_CANDIDATE_IDS.includes(id))).toBe(false);
     expect(publicContent).not.toHaveProperty('PROLOGUE_V1_CONTENT_PACK');
   });
 
-  it('preserves the current Kec time boundary and exposes each unresolved author mapping', () => {
-    expect(PROLOGUE_V1_CONTENT_PACK.unresolvedRuleMappings.map(mapping => mapping.slice(0, 10))).toEqual([
-      'P1-MAP-01:',
-      'P1-MAP-02:',
-      'P1-MAP-03:',
-      'P1-MAP-04:',
-      'P1-MAP-05:',
-      'P1-MAP-06:',
-    ]);
-    expect(PROLOGUE_V1_CONTENT_PACK.unresolvedRuleMappings.join('\n')).not.toContain('DAY_MINUTES');
+  it('uses the jointly accepted mapping and keeps its 15-minute time boundary', () => {
+    expect(PROLOGUE_V1_CONTENT_PACK.unresolvedRuleMappings).toEqual([]);
     const nightText = PROLOGUE_V1_CONTENT_PACK.entries.find(({ id }) => id === 'text_wangqitai_night');
     expect(nightText?.content).toMatchObject({
-      interval: 'kecIndex >= 48, where kecIndex = floor((gameMinute - 300) / 15) mod 96',
+      interval: 'gameMinute day interval >= 1020; day index is derived only from gameMinute and 15-minute kec',
+    });
+  });
+
+  it('transcribes the accepted pickup, target, route, technique, and talk boundaries', () => {
+    const byId = (id: string) => PROLOGUE_V1_CONTENT_PACK.entries.find(entry => entry.id === id);
+    expect(PROLOGUE_V1_CONTENT_PACK.npcPresenceIds).toEqual(['npc_cenjiu', 'npc_shuiyuya']);
+    expect(byId('item_bishuifu')?.content).toMatchObject({
+      initialQuantity: 0,
+      acquisition: '从 src_ferry_shore 一次性拾取 ×1。',
+      ruleTargetIds: ['subloc_reef_ledge', 'subloc_ferry_berm'],
+      effectFlag: 'effect_ward_water',
+    });
+    expect(byId('src_ferry_shore')?.content).toMatchObject({
+      sourceType: 'pickup', locationId: 'loc_luhuadu', itemId: 'item_bishuifu', quantity: 1, oneTime: true,
+    });
+    expect(byId('subloc_reef_ledge')?.content).toMatchObject({
+      parentLocationId: 'loc_wangqitai', routeId: 'route_reef_ledge',
+      routeFromLocationId: 'loc_wangqitai', routeToLocationId: 'loc_luhuadu',
+    });
+    expect(byId('tech_breath_basic')?.content).toMatchObject({ name: '呼吸法', initialOwnership: true, acquisition: 'innate' });
+    expect(byId('npc_shuiyuya')?.content).toMatchObject({
+      presenceLocationId: 'loc_luhuadu',
+      accessibleFromSublocationIds: ['subloc_ferry_berm', 'subloc_reef_ledge'],
+    });
+    expect(byId('obstacle_rockslide')?.content).toMatchObject({
+      solutions: [{ kind: 'bypass' }, { kind: 'combat' }],
+    });
+    expect(byId('text_bypass')?.content).toMatchObject({
+      paragraphs: expect.arrayContaining([expect.stringContaining('绕远了两刻')]),
+    });
+    expect(byId('text_dialogue_topics')?.content).toMatchObject({
+      lines: expect.arrayContaining([
+        expect.objectContaining({ topicLabel: expect.stringContaining('obstacle_rockslide'), outcome: 'refuse', grantsClue: false }),
+      ]),
     });
   });
 

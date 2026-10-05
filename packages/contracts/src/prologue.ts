@@ -43,6 +43,10 @@ const travelEntrySchema = z.strictObject({
  */
 export const PrologueV1FactsSchema = z.strictObject({
   gameMinute: z.int().nonnegative(),
+  /** Active child location within locationId; it is not a world-map location. */
+  currentSublocationId: id.nullable().default(null),
+  /** Authoritative NPC presence facts, distinct from interaction/visibility catalogs. */
+  npcPresence: z.array(id).max(128).default([]).refine(values => new Set(values).size === values.length),
   stamina: z.int().min(0).max(100),
   staminaDayIndex: z.int().nonnegative(),
   spiritStamina: z.int().min(0).max(100),
@@ -67,6 +71,8 @@ export const PrologueV1FactsSchema = z.strictObject({
     rewardClaimed: z.boolean(),
   }),
   knownLocations: z.array(id).max(PROLOGUE_V1_LOCATION_LIMIT).refine(values => new Set(values).size === values.length),
+  /** Techniques the player knows; the rulebook supplies the allow-list. */
+  knownTechniques: z.array(id).max(128).default([]).refine(values => new Set(values).size === values.length),
   locationGraph: z.array(locationEdgeSchema).max(512).refine(
     edges => new Set(edges.map(edge => `${edge.from}\0${edge.to}`)).size === edges.length,
     'locationGraph must contain one directed edge per location pair',

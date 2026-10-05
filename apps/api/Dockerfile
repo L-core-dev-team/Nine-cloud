@@ -6,7 +6,7 @@ COPY packages ./packages
 COPY apps ./apps
 COPY scripts/api-account-expiry.mjs scripts/api-retention.mjs scripts/verify-auth-mail.mjs scripts/api-production-smoke.mjs ./scripts/
 RUN pnpm install --frozen-lockfile --registry https://registry.npmjs.org
-RUN pnpm --filter @jiuxiao/contracts build && pnpm --filter @jiuxiao/domain build && pnpm --filter @jiuxiao/db build && pnpm --filter @jiuxiao/api build
+RUN pnpm --filter @jiuxiao/contracts build && pnpm --filter @jiuxiao/content build && pnpm --filter @jiuxiao/domain build && pnpm --filter @jiuxiao/db build && pnpm --filter @jiuxiao/api build
 ENV NODE_ENV=production
 USER node
 EXPOSE 8787

@@ -17,6 +17,14 @@
     "./provider-narrative": {
       "types": "./dist/provider-narrative.d.ts",
       "default": "./dist/provider-narrative.js"
+    },
+    "./nlu": {
+      "types": "./dist/nlu/index.d.ts",
+      "default": "./dist/nlu/index.js"
+    },
+    "./nlu/prologue-v1-fixtures": {
+      "types": "./dist/nlu/prologue-v1-nlu-fixtures.d.ts",
+      "default": "./dist/nlu/prologue-v1-nlu-fixtures.js"
     }
   },
   "scripts": {
