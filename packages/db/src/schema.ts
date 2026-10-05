@@ -41,10 +41,47 @@ export const gameSaves = pgTable('game_saves', {
   canonVersion: text('canon_version').notNull(),
   ruleVersion: text('rule_version').notNull(),
   memoryPolicyVersion: text('memory_policy_version').notNull(),
+  memoryMode: text('memory_mode'),
+  memoryPolicy: jsonb('memory_policy'),
   snapshot: jsonb('snapshot').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
-}, table => [uniqueIndex('game_saves_owner_id_idx').on(table.ownerId, table.id),foreignKey({columns:[table.ownerId],foreignColumns:[authAccounts.id],name:'game_saves_account_fk'})]);
+}, table => [
+  uniqueIndex('game_saves_owner_id_idx').on(table.ownerId, table.id),
+  foreignKey({ columns: [table.ownerId], foreignColumns: [authAccounts.id], name: 'game_saves_account_fk' }),
+  check('game_saves_memory_policy_check', sql`(
+    (
+      (${table.schemaVersion} = 1 AND ${table.memoryMode} IS NULL AND ${table.memoryPolicy} IS NULL)
+      OR (
+        ${table.schemaVersion} = 2
+        AND ${table.memoryMode} IN ('continue', 'forgetting')
+        AND jsonb_typeof(${table.memoryPolicy}) = 'object'
+        AND (${table.memoryPolicy} - ARRAY['mode','policyVersion','schemaVersion','clockBasis','policyArtifactHash','cueDictionaryHash','normalizerVersion','retrievalVersion','visibilityPolicyVersion','visibilityPolicyHash','createdAtRevision']) = '{}'::jsonb
+        AND ${table.memoryPolicy} ?& ARRAY['mode','policyVersion','schemaVersion','clockBasis','policyArtifactHash','cueDictionaryHash','normalizerVersion','retrievalVersion','visibilityPolicyVersion','visibilityPolicyHash','createdAtRevision']
+        AND ${table.memoryPolicy}->>'mode' = ${table.memoryMode}
+        AND ${table.memoryPolicy}->>'policyVersion' = ${table.memoryPolicyVersion}
+        AND ${table.memoryPolicy}->>'clockBasis' = 'game-minute+npc-grant-sequence-v1'
+        AND ${table.memoryPolicy}->>'policyArtifactHash' ~ '^sha256:[0-9A-Fa-f]{64}$'
+        AND ${table.memoryPolicy}->>'cueDictionaryHash' ~ '^sha256:[0-9A-Fa-f]{64}$'
+        AND ${table.memoryPolicy}->>'visibilityPolicyHash' ~ '^sha256:[0-9A-Fa-f]{64}$'
+        AND jsonb_typeof(${table.memoryPolicy}->'schemaVersion') = 'number'
+        AND ${table.memoryPolicy}->>'schemaVersion' ~ '^[1-9][0-9]{0,15}$'
+        AND (${table.memoryPolicy}->>'schemaVersion')::numeric <= 9007199254740991
+        AND jsonb_typeof(${table.memoryPolicy}->'createdAtRevision') = 'number'
+        AND ${table.memoryPolicy}->>'createdAtRevision' ~ '^(0|[1-9][0-9]{0,15})$'
+        AND (${table.memoryPolicy}->>'createdAtRevision')::numeric <= 9007199254740991
+        AND jsonb_typeof(${table.memoryPolicy}->'policyVersion') = 'string'
+        AND length(${table.memoryPolicy}->>'policyVersion') BETWEEN 1 AND 200
+        AND jsonb_typeof(${table.memoryPolicy}->'normalizerVersion') = 'string'
+        AND length(${table.memoryPolicy}->>'normalizerVersion') BETWEEN 1 AND 200
+        AND jsonb_typeof(${table.memoryPolicy}->'retrievalVersion') = 'string'
+        AND length(${table.memoryPolicy}->>'retrievalVersion') BETWEEN 1 AND 200
+        AND jsonb_typeof(${table.memoryPolicy}->'visibilityPolicyVersion') = 'string'
+        AND length(${table.memoryPolicy}->>'visibilityPolicyVersion') BETWEEN 1 AND 200
+      )
+    ) IS TRUE
+  )`),
+]);
 
 export const cloudArchiveTrash = pgTable('cloud_archive_trash', {
   saveId: text('save_id').primaryKey().references(() => gameSaves.id), ownerId: text('owner_id').notNull(),
@@ -66,6 +103,7 @@ export const turnRequests = pgTable('turn_requests', {
 export const turnEvents = pgTable('turn_events', {
   id: text('id').primaryKey(),
   saveId: text('save_id').notNull().references(() => gameSaves.id),
+  branchId: text('branch_id').notNull().default('root'),
   idempotencyKey: text('idempotency_key').notNull(),
   sequence: integer('sequence').notNull(),
   eventType: text('event_type').notNull(),
@@ -79,6 +117,7 @@ export const turnEvents = pgTable('turn_events', {
   }, table => [
     uniqueIndex('turn_events_save_sequence_idx').on(table.saveId, table.sequence),
     uniqueIndex('turn_events_save_id_id_idx').on(table.saveId, table.id),
+    check('turn_events_branch_id_check', sql`${table.branchId} = 'root'`),
   ]);
 
 /** S7 usage entitlements only. Monetary value and payment-provider records stay separate. */

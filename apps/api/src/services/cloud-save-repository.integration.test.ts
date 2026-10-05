@@ -13,6 +13,7 @@ suite('PostgresCloudSaveRepository (TEST_DATABASE_URL)', () => {
   const ownerA = `s6-a-${randomUUID()}`;
   const ownerB = `s6-b-${randomUUID()}`;
   const saveId = `s6-${randomUUID()}`;
+  const v2SaveId = `s6-v2-${randomUUID()}`;
   const quotaOwner = `s6-quota-${randomUUID()}`;
 
   beforeAll(async()=>{for(const id of [ownerA,ownerB,quotaOwner])await pool.query('INSERT INTO auth_accounts(id,email) VALUES($1,$2) ON CONFLICT DO NOTHING',[id,id+'@fixture.invalid']);});
@@ -32,6 +33,8 @@ suite('PostgresCloudSaveRepository (TEST_DATABASE_URL)', () => {
       state: { playerId: 'player-test', locationId: 'gate', elapsedMinutes: 0, facts: {} },
     };
     expect(await service.create(ownerA, initial)).toMatchObject({ kind: 'created' });
+    expect((await pool.query('SELECT memory_mode,memory_policy FROM game_saves WHERE id=$1', [saveId])).rows)
+      .toEqual([{ memory_mode: null, memory_policy: null }]);
     expect(await service.get(ownerB, saveId)).toBeNull();
     expect(await service.list(ownerB)).toEqual([]);
 
@@ -54,5 +57,59 @@ suite('PostgresCloudSaveRepository (TEST_DATABASE_URL)', () => {
     expect(results.filter(result => result.status === 'fulfilled')).toHaveLength(20);
     expect(results.filter(result => result.status === 'rejected' && result.reason instanceof CloudCapacityError)).toHaveLength(1);
     expect(await service.list(quotaOwner)).toHaveLength(20);
+  });
+
+  it('round-trips a v2 memory policy and refuses schema downgrade or policy mutation', async () => {
+    const memoryPolicy = {
+      mode: 'forgetting' as const,
+      policyVersion: 'forgetting-v1',
+      schemaVersion: 1,
+      clockBasis: 'game-minute+npc-grant-sequence-v1' as const,
+      policyArtifactHash: `sha256:${'a'.repeat(64)}`,
+      cueDictionaryHash: `sha256:${'b'.repeat(64)}`,
+      normalizerVersion: 'unicode-nfc-v1',
+      retrievalVersion: 'recall-decay-v1',
+      visibilityPolicyVersion: 'npc-visibility-v1',
+      visibilityPolicyHash: `sha256:${'c'.repeat(64)}`,
+      createdAtRevision: 0,
+    };
+    const initial = {
+      schemaVersion: 2 as const, saveId: v2SaveId, canonVersion: 'canon-test', ruleVersion: 'rules-test',
+      memoryPolicyVersion: memoryPolicy.policyVersion, memoryMode: memoryPolicy.mode, memoryPolicy,
+      revision: 0, state: { playerId: 'player-test', locationId: 'gate', elapsedMinutes: 0, facts: {} },
+    };
+    expect(await service.create(ownerA, initial)).toMatchObject({ kind: 'created', save: initial });
+    expect(await service.get(ownerA, v2SaveId)).toEqual(initial);
+    const storedColumns = await pool.query('SELECT schema_version,memory_mode,memory_policy,memory_policy_version FROM game_saves WHERE id=$1', [v2SaveId]);
+    expect(storedColumns.rows[0]).toMatchObject({ schema_version: 2, memory_mode: 'forgetting', memory_policy: { policyVersion: 'forgetting-v1' }, memory_policy_version: 'forgetting-v1' });
+    const incompletePolicyId = `s6-v2-incomplete-${randomUUID()}`;
+    await expect(pool.query(
+      `INSERT INTO game_saves (id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,memory_mode,memory_policy,snapshot)
+       VALUES ($1,$2,0,2,'canon-test','rules-test','forgetting-v1','forgetting',NULL,'{}'::jsonb)`,
+      [incompletePolicyId, ownerA],
+    )).rejects.toThrow('game_saves_memory_policy_check');
+    const nullPolicyFieldId = `s6-v2-null-field-${randomUUID()}`;
+    await expect(pool.query(
+      `INSERT INTO game_saves (id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,memory_mode,memory_policy,snapshot)
+       VALUES ($1,$2,0,2,'canon-test','rules-test','forgetting-v1','forgetting',$3::jsonb,'{}'::jsonb)`,
+      [nullPolicyFieldId, ownerA, JSON.stringify({ ...memoryPolicy, retrievalVersion: null })],
+    )).rejects.toThrow('game_saves_memory_policy_check');
+    await expect(pool.query("UPDATE game_saves SET memory_mode='continue' WHERE id=$1", [v2SaveId]))
+      .rejects.toThrow('SAVE_MEMORY_POLICY_PINNED');
+    await expect(pool.query("UPDATE game_saves SET memory_policy = jsonb_set(memory_policy, '{retrievalVersion}', '\"recall-decay-v2\"') WHERE id=$1", [v2SaveId]))
+      .rejects.toThrow('SAVE_MEMORY_POLICY_PINNED');
+    await expect(pool.query("UPDATE game_saves SET schema_version=1 WHERE id=$1", [v2SaveId]))
+      .rejects.toThrow('SAVE_SCHEMA_VERSION_IMMUTABLE');
+
+    const downgrade = { schemaVersion: 1 as const, saveId: v2SaveId, canonVersion: 'canon-test', ruleVersion: 'rules-test',
+      memoryPolicyVersion: 'legacy-unknown', revision: 1, state: initial.state };
+    expect(await service.replace(ownerA, v2SaveId, 0, downgrade)).toEqual({ kind: 'schema_version_conflict' });
+    const altered = { ...initial, revision: 1,
+      memoryPolicy: { ...memoryPolicy, retrievalVersion: 'recall-decay-v2' } };
+    expect(await service.replace(ownerA, v2SaveId, 0, altered)).toEqual({ kind: 'memory_policy_pinned' });
+    const updated = await service.replace(ownerA, v2SaveId, 0, { ...initial, revision: 1,
+      state: { ...initial.state, elapsedMinutes: 15 } });
+    expect(updated.kind).toBe('updated');
+    expect(await service.get(ownerA, v2SaveId)).toMatchObject({ schemaVersion: 2, memoryMode: 'forgetting', memoryPolicy });
   });
 });

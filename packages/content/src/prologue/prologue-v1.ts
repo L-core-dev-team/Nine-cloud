@@ -13,7 +13,7 @@ export const PROLOGUE_V1_SOURCE_ARTIFACTS = freezeDeep([
   {
     id: 'p1_execution_spec_current_20261004',
     path: 'docs/九霄1.0-P1-执行规格-GPT交付版-2026-10-03.md',
-    sha256: '64d576e849f5a23facb62a64cda829c7038281b35dffe2f440bfede43bc066f7',
+    sha256: '3edba2136ef1a783a701327c16208bab289908f83db0084dc748bdc612fa526f',
     role: 'effective-authoritative-source',
   },
   {
