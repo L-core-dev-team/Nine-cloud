@@ -3,6 +3,8 @@ import { parsePrologueV1Facts, PrologueV1FactsSchema } from './prologue.js';
 
 const validFacts = {
   gameMinute: 300,
+  currentSublocationId: null,
+  npcPresence: [],
   stamina: 100,
   staminaDayIndex: 0,
   spiritStamina: 100,
@@ -18,6 +20,7 @@ const validFacts = {
   injuryFlags: [],
   questState: { status: 'unavailable', rewardClaimed: false },
   knownLocations: ['fixture_location'],
+  knownTechniques: [],
   locationGraph: [{ from: 'fixture_location', to: 'fixture_other', state: 'open' }],
   idleCount: 0,
   obstacleState: 'blocked',

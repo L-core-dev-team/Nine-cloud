@@ -8,6 +8,8 @@ import { parseActionText } from './nlu/action-parser.js';
 
 const baseFacts: PrologueV1Facts = {
   gameMinute: 300,
+  currentSublocationId: null,
+  npcPresence: ['npc_guide', 'target_crow'],
   stamina: 100,
   staminaDayIndex: 0,
   spiritStamina: 100,
@@ -23,6 +25,7 @@ const baseFacts: PrologueV1Facts = {
   injuryFlags: [],
   questState: { status: 'unavailable', rewardClaimed: false },
   knownLocations: ['loc_gate', 'loc_town'],
+  knownTechniques: ['tech_fixture'],
   locationGraph: [
     { from: 'loc_gate', to: 'loc_town', state: 'blocked' },
     { from: 'loc_town', to: 'loc_gate', state: 'open' },
@@ -38,6 +41,9 @@ const book: PrologueV1Rulebook = {
   canonVersion: 'synthetic-fixture-v1',
   locationIds: ['loc_gate', 'loc_town', 'loc_rock'],
   initialKnownLocationIds: ['loc_gate', 'loc_town'],
+  npcPresenceIds: ['npc_guide', 'target_crow'],
+  initialNpcPresenceIds: ['npc_guide', 'target_crow'],
+  sublocations: [],
   itemIds: ['item_ward', 'item_herb', 'item_reward'],
   clueIds: ['clue_surface', 'clue_detail', 'clue_route'],
   effectFlagIds: ['effect_warded', 'effect_herb_used'],
@@ -58,15 +64,19 @@ const book: PrologueV1Rulebook = {
     { itemId: 'item_ward', targetIds: ['target_crow'], effectFlags: ['effect_warded'] },
     { itemId: 'item_herb', targetIds: [], effectFlags: ['effect_herb_used'] },
   ],
-  npcs: [{ npcId: 'npc_guide', locationId: 'loc_gate', topics: [
-    { topicTag: 'topic_route', utterances: ['说渡口'], clueId: 'clue_route', clearsObstacle: true },
-  ] }],
+  npcs: [
+    { npcId: 'npc_guide', locationId: 'loc_gate', topics: [
+      { topicTag: 'topic_route', utterances: ['说渡口'], clueId: 'clue_route', clearsObstacle: true },
+    ] },
+    { npcId: 'target_crow', locationId: 'loc_gate', topics: [] },
+  ],
   observations: [{ targetId: 'target_stones', locationId: 'loc_gate', scanClueId: 'clue_surface',
     studyClueId: 'clue_detail', blocked: { when: 'dark', reason: 'too_dark' } }],
   combatTargets: [{ targetId: 'target_crow', locationId: 'loc_gate', clearsObstacle: true,
     protectionItemId: 'item_ward', retreatLocationId: 'loc_gate',
     daytimeInjuryFlag: 'injury_scratched', darkInjuryFlag: 'injury_crowded', retreatInjuryFlag: 'injury_retreat' }],
-  quest: { questId: 'quest_fixture', rewardItemId: 'item_reward', unlockEdge: { from: 'loc_town', to: 'loc_rock', state: 'open' } },
+  quest: { questId: 'quest_fixture', rewardItemId: 'item_reward', rewardSourceId: 'source_reward',
+    unlockEdge: { from: 'loc_town', to: 'loc_rock', state: 'open' } },
   injuryFlags: { shoulderScrape: 'injury_shoulder' },
 };
 
@@ -368,7 +378,7 @@ describe('versioned P1 prologue rule reducers', () => {
 
   it('rejects item target mismatch without consuming it and commits a valid use', () => {
     const invalid = act('use_item', { itemId: 'item_ward', targetId: 'loc_town' });
-    expect(invalid.decision).toMatchObject({ status: 'rejected', code: 'ENV_TARGET_MISMATCH', revision: 0 });
+    expect(invalid.decision).toMatchObject({ status: 'rejected', code: 'RULE_TARGET_MISMATCH', revision: 0 });
     expect(act('use_item', { itemId: 'item_herb' }).decision)
       .toMatchObject({ status: 'rejected', code: 'ENV_ITEM_NOT_OWNED' });
     const valid = act('use_item', { itemId: 'item_ward', targetId: 'target_crow' });
@@ -480,7 +490,7 @@ describe('versioned P1 prologue rule reducers', () => {
     const dark = act('combat', { targetId: 'target_crow' }, save({ gameMinute: 1020 }));
     expect(dark.decision).toMatchObject({ status: 'accepted', outcome: 'success' });
     expect(dark.decision.status === 'accepted' && dark.decision.events[0]?.payload)
-      .toMatchObject({ outcome: 'clear_wounded' });
+      .toMatchObject({ outcome: 'clear' });
     expect(replay(dark).state.facts).toMatchObject({ injuryFlags: ['injury_crowded'], obstacleState: 'cleared' });
 
     const unprepared = act('combat', { targetId: 'target_crow' }, save({ inventory: [] }));
@@ -499,8 +509,9 @@ describe('versioned P1 prologue rule reducers', () => {
     const nextDay = act('combat', { targetId: 'target_crow' }, save({ gameMinute: 1740,
       stamina: 20, staminaDayIndex: 0, spiritStamina: 5 }));
     expect(replay(nextDay).state.facts).toMatchObject({ stamina: 75, spiritStamina: 75, staminaDayIndex: 1 });
-    const empty = act('combat', { targetId: 'target_crow' }, save({ spiritStamina: 0 }));
-    expect(empty.decision).toMatchObject({ status: 'rejected', code: 'ENV_SPIRIT_STAMINA_EMPTY' });
+    const empty = act('combat', { targetId: 'target_crow' }, save({ spiritStamina: 0, inventory: [] }));
+    expect(empty.decision).toMatchObject({ status: 'accepted', outcome: 'legal_failure', code: 'RULE_COMBAT_RETREAT' });
+    expect(replay(empty).state.facts).toMatchObject({ spiritStamina: 5, injuryFlags: ['injury_retreat'] });
     const unknownTechnique = act('combat', { targetId: 'target_crow', techniqueId: 'unreviewed_technique' });
     expect(unknownTechnique.decision).toMatchObject({ status: 'rejected', code: 'ENV_TECHNIQUE_LOCKED' });
   });

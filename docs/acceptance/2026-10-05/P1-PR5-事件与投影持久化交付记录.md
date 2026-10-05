@@ -31,14 +31,15 @@
 | `pnpm build` | 0 | `Verified public Canon runtime 1.0: 34 confirmed entries; receiptsComplete=false`；API/web/schema build 完成。既有 Vite >500 kB chunk warning 仍在。 |
 | `pnpm install --frozen-lockfile` | 0 | `Scope: all 7 workspace projects`；`Already up to date`（依赖没有改动） |
 | `git diff --check` | 0 | 无输出；无 whitespace error |
+| GitHub Actions run `37259978644` | 0 | PR #56 精确 head `ff9d2d1311703183c41318420696ea18240c91ab`；`verify` job `✓`（14m2s），审阅制品 `jiuxiao-engineering-review-ff9d2d1311703183c41318420696ea18240c91ab`；run conclusion `success`。 |
 
-执行规格当前 SHA-256 已复核为 `3edba2136ef1a783a701327c16208bab289908f83db0084dc748bdc612fa526f`；作者原创候选文档 `packages/content/src/prologue/prologue-v1.ts` SHA-256 为 `66c7557c74263813d7a7ea832de4961c612a12fa48a6f15ecdf6c53a7a1a571f`，与 registry 一致。P 轨作者输入仍为 candidate-only；未发布到 Canon runtime。
+PR-5 提交时执行规格 SHA-256 为 `3edba2136ef1a783a701327c16208bab289908f83db0084dc748bdc612fa526f`；当时作者原创候选文档 `packages/content/src/prologue/prologue-v1.ts` SHA-256 为 `66c7557c74263813d7a7ea832de4961c612a12fa48a6f15ecdf6c53a7a1a571f`，与当时 registry 一致。该哈希是 PR-5 输入快照，不代表后续 P1-MAP 修订后的当前源哈希。P 轨作者输入仍为 candidate-only；未发布到 Canon runtime。
 
 ## 自主决策与人工交接
 
 - A 决策见 [`自主决策记录.md`](../../自主决策记录.md) 的“PR-5 · 事件与投影落库”：采用迁移 0015、保留 V1、不猜测记忆模式、固定 V2 policy、branch 限定 root、扩展 quota 统计、local archive 保持 V1，以及 `CHECK ... IS TRUE` 的数据库约束修正。
 - PR-5 无待 LYL/Bird 补交的规则、Canon 或盲标材料。用户确认的共同认可材料已经进入仓库记录。
-- PR-5 阶段退出仍要求将本变更推送到 GitHub 并确认该 PR 精确 head 的 CI。GitHub PR 检查不等同于作者验收，也不替代项目已认可的材料。
+- P1 PR-5 工程提交和精确 head CI 已完成；PR #56 随后合并进 `codex/p1-pr4-clarification`。GitHub PR 检查不等同于作者验收，也不替代项目已认可的材料。
 
 ## 尚未由 PR-5 验收的事项
 
@@ -47,3 +48,10 @@
 - 本次 V2 存储不实现两种 NPC 记忆检索算法，也不代表 Mem0/UwU 运行集成已完成；Continue/Forgetting 的运行隔离仍属后续 P1 阶段。
 - 构建保留 `receiptsComplete=false` 与大包警告。Canon/S 轨回执、规则签署门和 `RULES_NOT_READY` 均未放宽。
 - P1 整体仍未完成；PR-6 及后续 P1 退出条件必须分别验证，P 轨事项不写入 S/UI 缺口台账。
+
+## GitHub closeout（2026-10-05）
+
+- PR：[#56](https://github.com/L-core-dev-team/Nine-cloud/pull/56)，head branch `codex/p1-pr5-event-projections`，base branch `codex/p1-pr4-clarification`。
+- 合并前精确 head：`ff9d2d1311703183c41318420696ea18240c91ab`；Actions run [`37259978644`](https://github.com/L-core-dev-team/Nine-cloud/actions/runs/37259978644) 为 `completed/success`。
+- 合并 commit：`5ede4713a46a1c7df9c28dfd073bd69c1f2408d3`，时间 `2026-10-05T04:23:44Z`。PR #56 已合并，PR-5 工程阶段关闭。
+- 关闭范围仅为 PR-5 事件/存档持久化及对应 CI；`AUTHOR_RULES_GATE`、生产规则、P1 游客 E2E、P4/P5/P6 记忆实现、Canon 发布门和 P1 总退出仍未关闭。

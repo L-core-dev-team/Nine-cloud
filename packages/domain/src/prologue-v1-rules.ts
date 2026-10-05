@@ -46,6 +46,11 @@ export interface PrologueV1Rulebook {
   readonly canonVersion: string;
   readonly locationIds: readonly string[];
   readonly initialKnownLocationIds: readonly string[];
+  /** Runtime allow-list and initial facts for the authoritative NPC presence projection. */
+  readonly npcPresenceIds: readonly string[];
+  readonly initialNpcPresenceIds: readonly string[];
+  /** Child places are state fields, never members of locationIds/knownLocations. */
+  readonly sublocations: readonly { readonly id: string; readonly locationId: string }[];
   readonly itemIds: readonly string[];
   readonly clueIds: readonly string[];
   readonly effectFlagIds: readonly string[];
@@ -64,8 +69,10 @@ export interface PrologueV1Rulebook {
   readonly bypassRoutes: readonly {
     readonly from: string;
     readonly to: string;
+    readonly routeId?: string;
     readonly via: string;
     readonly requiredItemId?: string;
+    readonly requiredClueId?: string;
     readonly clearsObstacle?: boolean;
   }[];
   readonly cultivationTechniqueIds: readonly string[];
@@ -88,6 +95,7 @@ export interface PrologueV1Rulebook {
     readonly topics: readonly {
       readonly topicTag: string;
       readonly utterances: readonly string[];
+      readonly outcome?: 'on_topic' | 'refuse';
       readonly clueId?: string;
       readonly clearsObstacle?: boolean;
     }[];
@@ -95,6 +103,7 @@ export interface PrologueV1Rulebook {
   readonly observations: readonly {
     readonly targetId: string;
     readonly locationId: string;
+    readonly sublocationIds?: readonly string[];
     readonly scanClueId?: string;
     readonly studyClueId?: string;
     readonly blocked?: { readonly when: 'always' | 'dark'; readonly reason: string };
@@ -106,6 +115,9 @@ export interface PrologueV1Rulebook {
     readonly workSiteLocationId?: string;
     readonly protectionItemId?: string;
     readonly retreatLocationId: string;
+    /** When supplied, a combat target can be engaged only from one listed current sublocation. */
+    readonly accessibleFromSublocationIds?: readonly string[];
+    readonly workSiteSublocationId?: string;
     readonly daytimeInjuryFlag: string;
     readonly darkInjuryFlag: string;
     readonly retreatInjuryFlag: string;
@@ -113,12 +125,21 @@ export interface PrologueV1Rulebook {
   readonly quest: {
     readonly questId: string;
     readonly rewardItemId: string;
+    readonly rewardSourceId: string;
+    /** `unlockEdge` remains the canonical first edge for older rulebooks. */
     readonly unlockEdge: {
       readonly from: string;
       readonly to: string;
       readonly state: 'open';
       readonly via?: string;
     };
+    /** Additional directed edges opened in the same reward transaction. */
+    readonly unlockEdges?: readonly {
+      readonly from: string;
+      readonly to: string;
+      readonly state: 'open';
+      readonly via?: string;
+    }[];
   };
   readonly injuryFlags: {
     readonly shoulderScrape: string;
@@ -277,7 +298,35 @@ function resolveAction(
 function resolveMove(action: Extract<ActionIntent, { kind: 'move' }>, state: WorldState, facts: PrologueV1Facts,
   book: PrologueV1Rulebook, m: PrologueV1Mechanics): Resolution {
   const to = action.payload.destinationId;
+  const destinationSublocation = book.sublocations.find(candidate => candidate.id === to);
+  if (destinationSublocation) {
+    if (destinationSublocation.locationId !== state.locationId) return reject('AUTH_UNAUTHORIZED_TARGET');
+    if (facts.currentSublocationId === to) return reject('ENV_ROUTE_NOT_CONNECTED');
+    const dailyFacts = readDailyResources(facts, m);
+    const after = advance(state, {
+      ...dailyFacts,
+      stamina: debit(dailyFacts.stamina, m.MOVE_COST),
+      currentSublocationId: to,
+    }, 1, m, state.locationId);
+    return accepted('success', undefined, [transition('move.arrived', {
+      from: state.locationId, to: state.locationId, destinationId: to,
+      fromSublocationId: facts.currentSublocationId, toSublocationId: to, kecCount: 1,
+    }, state, after)]);
+  }
   if (!book.locationIds.includes(to)) return reject('INPUT_NO_SUCH_TARGET');
+  if (to === state.locationId) {
+    if (facts.currentSublocationId === null) return reject('ENV_ROUTE_NOT_CONNECTED');
+    const dailyFacts = readDailyResources(facts, m);
+    const after = advance(state, {
+      ...dailyFacts,
+      stamina: debit(dailyFacts.stamina, m.MOVE_COST),
+      currentSublocationId: null,
+    }, 1, m, state.locationId);
+    return accepted('success', undefined, [transition('move.arrived', {
+      from: state.locationId, to, fromSublocationId: facts.currentSublocationId,
+      toSublocationId: null, kecCount: 1,
+    }, state, after)]);
+  }
   const dailyFacts = readDailyResources(facts, m);
   const edge = facts.locationGraph.find(candidate => candidate.from === state.locationId && candidate.to === to);
   const unexplored = book.unexploredEdges.some(candidate => candidate.from === state.locationId && candidate.to === to);
@@ -297,7 +346,8 @@ function resolveMove(action: Extract<ActionIntent, { kind: 'move' }>, state: Wor
 
   if (edge.state === 'blocked') {
     const bypass = book.bypassRoutes.find(route => route.from === state.locationId && route.to === to &&
-      (!route.requiredItemId || owns(facts, route.requiredItemId)));
+      (!route.requiredItemId || owns(facts, route.requiredItemId)) &&
+      (!route.requiredClueId || facts.clues.includes(route.requiredClueId)));
     if (bypass) {
       const flags = appendUnique(facts.injuryFlags, book.injuryFlags.shoulderScrape);
     const graph = facts.locationGraph.map(candidate => candidate.from === edge.from && candidate.to === edge.to
@@ -305,12 +355,15 @@ function resolveMove(action: Extract<ActionIntent, { kind: 'move' }>, state: Wor
         : candidate);
       const after = advance(state, { ...dailyFacts,
         stamina: debit(dailyFacts.stamina, m.MOVE_BYPASS_COST),
+        currentSublocationId: null,
         obstacleState: bypass.clearsObstacle ? 'cleared' : facts.obstacleState,
         locationGraph: graph,
         injuryFlags: flags,
       }, 2, m, to);
       const transitions = [transition('move.bypassed', {
-        toward: to, via: bypass.via, kecCount: 2, extraKecCount: 1,
+        from: state.locationId, to, via: bypass.via,
+        ...(bypass.routeId ? { routeId: bypass.routeId } : {}),
+        kecCount: 2, extraKecCount: 1,
       }, state, after)];
       return includeQuestCompletion(transitions, after, facts, book);
     }
@@ -325,6 +378,7 @@ function resolveMove(action: Extract<ActionIntent, { kind: 'move' }>, state: Wor
 
   const after = advance(state, { ...dailyFacts,
     stamina: debit(dailyFacts.stamina, m.MOVE_COST),
+    currentSublocationId: null,
   }, 1, m, to);
   return accepted('success', undefined, [transition('move.arrived', {
     from: state.locationId, to, kecCount: 1,
@@ -333,7 +387,8 @@ function resolveMove(action: Extract<ActionIntent, { kind: 'move' }>, state: Wor
 
 function resolveCultivation(action: Extract<ActionIntent, { kind: 'cultivate' }>, state: WorldState,
   facts: PrologueV1Facts, book: PrologueV1Rulebook, m: PrologueV1Mechanics): Resolution {
-  if (!book.cultivationTechniqueIds.includes(action.payload.techniqueId)) return reject('ENV_TECHNIQUE_LOCKED');
+  if (!book.cultivationTechniqueIds.includes(action.payload.techniqueId) ||
+      !facts.knownTechniques.includes(action.payload.techniqueId)) return reject('ENV_TECHNIQUE_LOCKED');
   if (facts.cultivationProgress >= m.CULTIVATION_MAX) return reject('ENV_CULTIVATION_COMPLETE');
   const ready = readDailyResources(facts, m);
   if (ready.stamina === 0) return reject('ENV_STAMINA_EMPTY');
@@ -394,7 +449,12 @@ function resolveItemUse(action: Extract<ActionIntent, { kind: 'use_item' }>, sta
   const use = book.itemUses.find(candidate => candidate.itemId === item.itemId);
   if (!use || (use.targetIds.length === 0 ? action.payload.targetId !== undefined
       : action.payload.targetId === undefined || !use.targetIds.includes(action.payload.targetId))) {
-    return reject('ENV_TARGET_MISMATCH');
+    return reject('RULE_TARGET_MISMATCH');
+  }
+  if (action.payload.targetId) {
+    const targetSublocation = book.sublocations.find(candidate => candidate.id === action.payload.targetId);
+    if (targetSublocation && (targetSublocation.locationId !== state.locationId ||
+        facts.currentSublocationId !== targetSublocation.id)) return reject('AUTH_UNAUTHORIZED_TARGET');
   }
   const inventory = item.quantity === 1
     ? facts.inventory.filter(entry => entry.itemId !== item.itemId)
@@ -415,23 +475,24 @@ function resolveTalk(action: Extract<ActionIntent, { kind: 'talk' }>, state: Wor
   facts: PrologueV1Facts, book: PrologueV1Rulebook, m: PrologueV1Mechanics): Resolution {
   const npc = book.npcs.find(candidate => candidate.npcId === action.payload.npcId);
   if (!npc) return reject('INPUT_NO_SUCH_TARGET');
-  if (npc.locationId !== state.locationId) return reject('AUTH_NPC_ABSENT');
+  if (!facts.npcPresence.includes(npc.npcId) || npc.locationId !== state.locationId) return reject('AUTH_NPC_ABSENT');
   const normalized = normalizeUtterance(action.payload.utterance);
   const matches = npc.topics.filter(topic => topic.utterances.some(utterance => normalizeUtterance(utterance) === normalized));
   if (matches.length > 1) return reject('INPUT_AMBIGUOUS');
   const topic = matches[0];
   const tag = topic?.topicTag ?? 'unmatched';
+  const interactionOutcome = topic?.outcome ?? (topic ? 'on_topic' : 'idle');
   let after = advance(state, {
     ...facts,
     idleCount: facts.idleCount + (topic ? 0 : 1),
     npcInteractionLog: [...facts.npcInteractionLog, {
-      npcId: npc.npcId, topicTag: tag, outcome: topic ? 'on_topic' : 'idle',
+      npcId: npc.npcId, topicTag: tag, outcome: interactionOutcome,
     }],
     ...(topic?.clearsObstacle ? { obstacleState: 'cleared' as const } : {}),
     ...(topic?.clearsObstacle ? { locationGraph: openObstacleRoute(facts.locationGraph, book) } : {}),
   }, 1, m, state.locationId);
   const transitions: Transition[] = [transition('talk.occurred', {
-    npcId: npc.npcId, topicTag: tag, outcome: topic ? 'on_topic' : 'idle', kecCount: 1,
+    npcId: npc.npcId, topicTag: tag, outcome: interactionOutcome, kecCount: 1,
   }, state, after)];
 
   if (topic?.clueId && !facts.clues.includes(topic.clueId)) {
@@ -452,7 +513,8 @@ function resolveObservation(action: Extract<ActionIntent, { kind: 'observe' }>, 
   facts: PrologueV1Facts, book: PrologueV1Rulebook, m: PrologueV1Mechanics): Resolution {
   const target = book.observations.find(candidate => candidate.targetId === action.payload.targetId);
   if (!target) return reject('INPUT_NO_SUCH_TARGET');
-  if (target.locationId !== state.locationId) return reject('AUTH_UNAUTHORIZED_TARGET');
+  if (target.locationId !== state.locationId || (target.sublocationIds &&
+      !target.sublocationIds.includes(facts.currentSublocationId ?? ''))) return reject('AUTH_UNAUTHORIZED_TARGET');
   const ready = readDailyResources(facts, m);
   const kes = action.payload.method === 'scan' ? 1 : 2;
   const cost = action.payload.method === 'scan' ? m.OBSERVE_SCAN_COST : m.OBSERVE_STUDY_COST;
@@ -501,10 +563,14 @@ function resolveCombat(action: Extract<ActionIntent, { kind: 'combat' }>, state:
   }
   const target = book.combatTargets.find(candidate => candidate.targetId === action.payload.targetId);
   if (!target) return reject('INPUT_NO_SUCH_TARGET');
-  if (target.locationId !== state.locationId) return reject('AUTH_UNAUTHORIZED_TARGET');
+  const reachableFromSublocation = target.accessibleFromSublocationIds?.includes(facts.currentSublocationId ?? '') ?? false;
+  const currentSublocation = book.sublocations.find(candidate => candidate.id === facts.currentSublocationId);
+  if (!facts.npcPresence.includes(target.targetId)) return reject('AUTH_NPC_ABSENT');
+  if (!(reachableFromSublocation && currentSublocation?.locationId === state.locationId) &&
+      (target.locationId !== state.locationId || (target.accessibleFromSublocationIds !== undefined &&
+        !reachableFromSublocation))) return reject('AUTH_UNAUTHORIZED_TARGET');
   if (target.clearsObstacle && facts.obstacleState === 'cleared') return reject('ENV_TARGET_ALREADY_RESOLVED');
   const ready = readDailyResources(facts, m);
-  if (ready.spiritStamina === 0) return reject('ENV_SPIRIT_STAMINA_EMPTY');
 
   const retreat = ready.stamina < m.CLEAR_THRESHOLD || ready.spiritStamina < m.CLEAR_THRESHOLD;
   const dark = !isDaylight(facts.gameMinute, {
@@ -514,13 +580,17 @@ function resolveCombat(action: Extract<ActionIntent, { kind: 'combat' }>, state:
     duskStartKec: m.DUSK_START_KEC,
   });
   const prepared = ready.stamina >= m.CLEAR_THRESHOLD &&
-    ((target.workSiteLocationId !== undefined && state.locationId === target.workSiteLocationId) ||
+    ((target.workSiteSublocationId !== undefined && facts.currentSublocationId === target.workSiteSublocationId) ||
+      (target.workSiteLocationId !== undefined && state.locationId === target.workSiteLocationId) ||
       (target.protectionItemId !== undefined && owns(facts, target.protectionItemId)));
   const injury = retreat ? target.retreatInjuryFlag : dark ? target.darkInjuryFlag : prepared ? undefined : target.daytimeInjuryFlag;
-  const outcome = retreat ? 'retreat' : injury ? 'clear_wounded' : 'clear';
+  // Dusk combat is always a clear after the minimum-resource check. It can
+  // still write `crowding_bite`; an injury flag does not redefine that result.
+  const outcome = retreat ? 'retreat' : dark || prepared ? 'clear' : 'clear_wounded';
   const nextFacts: PrologueV1Facts = {
     ...ready,
     stamina: debit(ready.stamina, m.COMBAT_COST),
+    currentSublocationId: retreat ? null : ready.currentSublocationId,
     spiritStamina: retreat ? m.RETREAT_SPIRIT : Math.max(0, ready.spiritStamina - m.COMBAT_COST),
     injuryFlags: injury ? appendUnique(ready.injuryFlags, injury) : [...ready.injuryFlags],
     ...(retreat ? {} : target.clearsObstacle ? { obstacleState: 'cleared' as const } : {}),
@@ -551,11 +621,13 @@ function resolveQuest(action: Extract<ActionIntent, { kind: 'quest' }>, state: W
   if (facts.questState.rewardClaimed) return reject('ENV_QUEST_ALREADY_CLAIMED');
   if (!canAddInventory(facts, quest.rewardItemId, 1, m.SLOT_MAX)) return reject('INPUT_INVENTORY_FULL');
 
-  const edge = facts.locationGraph.find(candidate => candidate.from === quest.unlockEdge.from && candidate.to === quest.unlockEdge.to);
-  const graph = edge
-    ? facts.locationGraph.map(candidate => candidate === edge ? { ...candidate, state: 'open' as const,
-      ...(quest.unlockEdge.via ? { via: quest.unlockEdge.via } : {}) } : candidate)
-    : [...facts.locationGraph, quest.unlockEdge];
+  const questEdges = questUnlockEdges(quest);
+  const graph = [...facts.locationGraph];
+  for (const unlockEdge of questEdges) {
+    const edgeIndex = graph.findIndex(candidate => candidate.from === unlockEdge.from && candidate.to === unlockEdge.to);
+    if (edgeIndex < 0) graph.push(unlockEdge);
+    else graph[edgeIndex] = { ...graph[edgeIndex]!, state: 'open', ...(unlockEdge.via ? { via: unlockEdge.via } : {}) };
+  }
   const after = advance(state, {
     ...facts,
     inventory: addInventory(facts.inventory, quest.rewardItemId, 1),
@@ -564,7 +636,7 @@ function resolveQuest(action: Extract<ActionIntent, { kind: 'quest' }>, state: W
     locationGraph: graph,
   }, 1, m, state.locationId);
   return accepted('success', undefined, [transition('quest.reward_claimed', {
-    questId: quest.questId, rewardItemId: quest.rewardItemId, kecCount: 1,
+    questId: quest.questId, rewardItemId: quest.rewardItemId, sourceId: quest.rewardSourceId, quantity: 1, kecCount: 1,
   }, state, after)]);
 }
 
@@ -693,6 +765,9 @@ function validateDependencies({ rulebook, mechanics, messages }: PrologueV1RuleD
   assertId(rulebook.canonVersion, 'CANON_VERSION_REQUIRED');
   assertUnique(rulebook.locationIds, 'LOCATION_IDS');
   assertUnique(rulebook.initialKnownLocationIds, 'INITIAL_KNOWN_LOCATION_IDS');
+  assertUnique(rulebook.npcPresenceIds, 'NPC_PRESENCE_IDS');
+  assertUnique(rulebook.initialNpcPresenceIds, 'INITIAL_NPC_PRESENCE_IDS');
+  assertUnique(rulebook.sublocations.map(item => item.id), 'SUBLOCATION_IDS');
   if (rulebook.locationIds.length !== PROLOGUE_V1_LOCATION_LIMIT ||
       rulebook.initialKnownLocationIds.length !== PROLOGUE_V1_LOCATION_LIMIT - 1 ||
       rulebook.initialKnownLocationIds.some(id => !rulebook.locationIds.includes(id))) {
@@ -715,7 +790,19 @@ function validateDependencies({ rulebook, mechanics, messages }: PrologueV1RuleD
   assertUnique(rulebook.combatTargets.map(target => target.targetId), 'COMBAT_TARGET_IDS');
   assertUnique(rulebook.unexploredEdges.map(edge => `${edge.from}\0${edge.to}`), 'UNEXPLORED_EDGES');
   assertUnique(rulebook.bypassRoutes.map(route => `${route.from}\0${route.to}`), 'BYPASS_ROUTES');
+  assertUnique(rulebook.bypassRoutes.flatMap(route => route.routeId ? [route.routeId] : []), 'BYPASS_ROUTE_IDS');
   for (const id of rulebook.locationIds) assertId(id, 'INVALID_LOCATION_ID');
+  for (const sublocation of rulebook.sublocations) {
+    assertId(sublocation.id, 'INVALID_SUBLOCATION_ID');
+    assertId(sublocation.locationId, 'INVALID_SUBLOCATION_PARENT');
+    if (rulebook.locationIds.includes(sublocation.id) || !rulebook.locationIds.includes(sublocation.locationId)) {
+      throw new TypeError('SUBLOCATION_REFERENCE_NOT_FOUND');
+    }
+    if (!rulebook.targetIds.includes(sublocation.id)) throw new TypeError('SUBLOCATION_TARGET_REFERENCE_NOT_FOUND');
+  }
+  if (rulebook.initialNpcPresenceIds.some(id => !rulebook.npcPresenceIds.includes(id))) {
+    throw new TypeError('INITIAL_NPC_PRESENCE_NOT_ALLOWED');
+  }
   for (const id of rulebook.itemIds) assertId(id, 'INVALID_ITEM_ID');
   for (const id of rulebook.clueIds) assertId(id, 'INVALID_CLUE_ID');
   for (const id of rulebook.effectFlagIds) assertId(id, 'INVALID_EFFECT_FLAG');
@@ -766,6 +853,9 @@ function validateDependencies({ rulebook, mechanics, messages }: PrologueV1RuleD
     assertUnique(npc.topics.map(topic => topic.topicTag), `TOPIC_TAGS_${npc.npcId}`);
     for (const topic of npc.topics) {
       assertId(topic.topicTag, 'INVALID_TOPIC_TAG');
+      if (topic.outcome === 'refuse' && (topic.clueId !== undefined || topic.clearsObstacle === true)) {
+        throw new TypeError('REFUSED_TALK_SIDE_EFFECTS_NOT_ALLOWED');
+      }
       if (topic.clueId && !rulebook.clueIds.includes(topic.clueId)) throw new TypeError('NPC_CLUE_REFERENCE_NOT_FOUND');
       if (topic.utterances.length === 0) throw new TypeError('TOPIC_UTTERANCE_REQUIRED');
       for (const phrase of topic.utterances) if (!normalizeUtterance(phrase)) throw new TypeError('EMPTY_TOPIC_UTTERANCE');
@@ -778,6 +868,8 @@ function validateDependencies({ rulebook, mechanics, messages }: PrologueV1RuleD
         (target.studyClueId && !rulebook.clueIds.includes(target.studyClueId))) {
       throw new TypeError('OBSERVATION_REFERENCE_NOT_FOUND');
     }
+    if ((target.sublocationIds ?? []).some(id => !rulebook.sublocations.some(item =>
+      item.id === id && item.locationId === target.locationId))) throw new TypeError('OBSERVATION_SUBLOCATION_REFERENCE_NOT_FOUND');
     if (target.blocked && (!['always', 'dark'].includes(target.blocked.when) || !target.blocked.reason.trim())) {
       throw new TypeError('INVALID_OBSERVATION_BLOCK_RULE');
     }
@@ -789,11 +881,16 @@ function validateDependencies({ rulebook, mechanics, messages }: PrologueV1RuleD
     if (!rulebook.locationIds.includes(target.locationId) || !rulebook.locationIds.includes(target.retreatLocationId) ||
         !rulebook.targetIds.includes(target.targetId) ||
         (target.workSiteLocationId && !rulebook.locationIds.includes(target.workSiteLocationId)) ||
+        (target.workSiteSublocationId && !rulebook.sublocations.some(item => item.id === target.workSiteSublocationId)) ||
+        (target.accessibleFromSublocationIds && target.accessibleFromSublocationIds.some(id =>
+          !rulebook.sublocations.some(item => item.id === id))) ||
         (target.protectionItemId && !rulebook.itemIds.includes(target.protectionItemId)) ||
         ![target.daytimeInjuryFlag, target.darkInjuryFlag, target.retreatInjuryFlag].every(flag => rulebook.injuryFlagIds.includes(flag))) {
       throw new TypeError('COMBAT_REFERENCE_NOT_FOUND');
     }
   }
+  const npcIds = new Set(rulebook.npcs.map(npc => npc.npcId));
+  if (rulebook.npcPresenceIds.some(id => !npcIds.has(id))) throw new TypeError('NPC_PRESENCE_REFERENCE_NOT_FOUND');
   for (const edge of [...rulebook.unexploredEdges, ...rulebook.bypassRoutes]) {
     assertId(edge.from, 'INVALID_ROUTE_FROM'); assertId(edge.to, 'INVALID_ROUTE_TO');
     if (!rulebook.locationIds.includes(edge.from) || !rulebook.locationIds.includes(edge.to)) {
@@ -808,8 +905,16 @@ function validateDependencies({ rulebook, mechanics, messages }: PrologueV1RuleD
   }
   for (const route of rulebook.bypassRoutes) {
     assertId(route.via, 'INVALID_ROUTE_VIA');
+    if (route.routeId) assertId(route.routeId, 'INVALID_ROUTE_ID');
     if (route.requiredItemId && !rulebook.itemIds.includes(route.requiredItemId)) {
       throw new TypeError('BYPASS_REFERENCE_NOT_FOUND');
+    }
+    if (route.requiredClueId && !rulebook.clueIds.includes(route.requiredClueId)) {
+      throw new TypeError('BYPASS_CLUE_REFERENCE_NOT_FOUND');
+    }
+    const viaSublocation = rulebook.sublocations.find(item => item.id === route.via);
+    if (viaSublocation && viaSublocation.locationId !== route.from) {
+      throw new TypeError('BYPASS_ROUTE_VIA_PARENT_MISMATCH');
     }
     const blockedEdge = rulebook.initialLocationGraph.find(edge => edge.from === route.from && edge.to === route.to);
     if (!blockedEdge || blockedEdge.state !== 'blocked') throw new TypeError('BYPASS_ROUTE_MUST_START_BLOCKED');
@@ -819,7 +924,7 @@ function validateDependencies({ rulebook, mechanics, messages }: PrologueV1RuleD
     'RULE_COMBAT_RETREAT', 'RULE_NO_NEW_DISCOVERY', 'RULE_OBSERVE_BLOCKED', 'INPUT_UNKNOWN_ACTION',
     'INPUT_AMBIGUOUS', 'INPUT_NO_SUCH_TARGET', 'AUTH_NPC_ABSENT', 'AUTH_ACTOR_MISMATCH',
     'AUTH_UNAUTHORIZED_TARGET', 'ENV_RULES_NOT_READY', 'ENV_REVISION_STALE', 'ENV_PAYLOAD_INVALID',
-    'ENV_ITEM_NOT_OWNED', 'ENV_TARGET_MISMATCH', 'ENV_ROUTE_NOT_CONNECTED', 'ENV_ROUTE_LOCKED',
+    'ENV_ITEM_NOT_OWNED', 'ENV_TARGET_MISMATCH', 'RULE_TARGET_MISMATCH', 'ENV_ROUTE_NOT_CONNECTED', 'ENV_ROUTE_LOCKED',
     'ENV_SOURCE_ALREADY_CLAIMED', 'ENV_SOURCE_QUANTITY_INVALID', 'ENV_TECHNIQUE_LOCKED',
     'ENV_CULTIVATION_COMPLETE', 'INPUT_CULTIVATION_LIMIT',
     'ENV_STAMINA_EMPTY', 'INPUT_INVENTORY_FULL', 'ENV_SPIRIT_STAMINA_EMPTY',
@@ -833,18 +938,32 @@ function validateDependencies({ rulebook, mechanics, messages }: PrologueV1RuleD
   if (!rulebook.quest) throw new TypeError('QUEST_REQUIRED_FOR_THIRD_LOCATION');
   {
     assertId(rulebook.quest.questId, 'INVALID_QUEST_ID'); assertId(rulebook.quest.rewardItemId, 'INVALID_REWARD_ITEM_ID');
+    assertId(rulebook.quest.rewardSourceId, 'INVALID_QUEST_REWARD_SOURCE_ID');
+    if (rulebook.acquisitionSources.some(source => source.sourceId === rulebook.quest.rewardSourceId)) {
+      throw new TypeError('DUPLICATE_QUEST_REWARD_SOURCE_ID');
+    }
     assertId(rulebook.quest.unlockEdge.from, 'INVALID_QUEST_EDGE'); assertId(rulebook.quest.unlockEdge.to, 'INVALID_QUEST_EDGE');
+    const questEdges = questUnlockEdges(rulebook.quest);
+    assertUnique(questEdges.map(edge => `${edge.from}\0${edge.to}`), 'QUEST_UNLOCK_EDGES');
+    const locationsKnownAfterReward = new Set([
+      ...rulebook.initialKnownLocationIds,
+      rulebook.quest.unlockEdge.to,
+    ]);
     if (!rulebook.itemIds.includes(rulebook.quest.rewardItemId) ||
         !rulebook.locationIds.includes(rulebook.quest.unlockEdge.from) || !rulebook.locationIds.includes(rulebook.quest.unlockEdge.to) ||
         rulebook.initialKnownLocationIds.includes(rulebook.quest.unlockEdge.to) ||
         !rulebook.initialKnownLocationIds.includes(rulebook.quest.unlockEdge.from) ||
-        rulebook.quest.unlockEdge.state !== 'open') {
+        rulebook.quest.unlockEdge.state !== 'open' || questEdges.some(edge =>
+          !rulebook.locationIds.includes(edge.from) || !rulebook.locationIds.includes(edge.to) ||
+          !locationsKnownAfterReward.has(edge.from) || !locationsKnownAfterReward.has(edge.to) || edge.state !== 'open')) {
       throw new TypeError('QUEST_REFERENCE_NOT_FOUND');
     }
-    const initialQuestEdge = rulebook.initialLocationGraph.find(edge =>
-      edge.from === rulebook.quest!.unlockEdge.from && edge.to === rulebook.quest!.unlockEdge.to);
-    if (!initialQuestEdge || initialQuestEdge.state !== 'locked') throw new TypeError('QUEST_EDGE_MUST_START_LOCKED');
-    if (rulebook.quest.unlockEdge.via !== undefined) assertId(rulebook.quest.unlockEdge.via, 'INVALID_QUEST_ROUTE_ID');
+    for (const edge of questEdges) {
+      const initialQuestEdge = rulebook.initialLocationGraph.find(candidate =>
+        candidate.from === edge.from && candidate.to === edge.to);
+      if (!initialQuestEdge || initialQuestEdge.state !== 'locked') throw new TypeError('QUEST_EDGE_MUST_START_LOCKED');
+      if (edge.via !== undefined) assertId(edge.via, 'INVALID_QUEST_ROUTE_ID');
+    }
   }
   if (!rulebook.injuryFlagIds.includes(rulebook.injuryFlags.shoulderScrape)) throw new TypeError('BYPASS_INJURY_REFERENCE_NOT_FOUND');
   assertId(rulebook.injuryFlags.shoulderScrape, 'INVALID_BYPASS_INJURY_FLAG');
@@ -872,6 +991,7 @@ function validateFactsAgainstRulebook(
   mechanics: PrologueV1Mechanics,
 ): void {
   const locations = new Set(book.locationIds);
+  const sublocations = new Map(book.sublocations.map(item => [item.id, item.locationId]));
   const items = new Set(book.itemIds);
   const clues = new Set(book.clueIds);
   const effects = new Set(book.effectFlagIds);
@@ -884,6 +1004,9 @@ function validateFactsAgainstRulebook(
       (facts.gameMinute - mechanics.SAVE_START_GAME_MINUTE) % mechanics.GAME_MINUTES_PER_KEC !== 0 ||
       facts.staminaDayIndex > currentGameDay || facts.knownLocations.length !== unlockedLocations.length ||
       unlockedLocations.some(id => !facts.knownLocations.includes(id)) ||
+      (facts.currentSublocationId !== null && sublocations.get(facts.currentSublocationId) !== state.locationId) ||
+      facts.npcPresence.some(id => !book.npcPresenceIds.includes(id)) ||
+      facts.knownTechniques.some(id => !book.cultivationTechniqueIds.includes(id)) ||
       !locations.has(state.locationId) || !facts.knownLocations.includes(state.locationId) ||
       facts.knownLocations.some(id => !locations.has(id)) ||
       !validLocationGraph(facts, book) ||
@@ -910,8 +1033,8 @@ function validateFactsAgainstRulebook(
 function validLocationGraph(facts: PrologueV1Facts, book: PrologueV1Rulebook): boolean {
   const pair = (from: string, to: string) => `${from}\0${to}`;
   const expected = new Map(book.initialLocationGraph.map(edge => [pair(edge.from, edge.to), edge]));
-  const questEdge = book.quest?.unlockEdge;
-  const questPair = questEdge ? pair(questEdge.from, questEdge.to) : undefined;
+  const questEdges = book.quest ? questUnlockEdges(book.quest) : [];
+  const questPairs = new Map(questEdges.map(edge => [pair(edge.from, edge.to), edge]));
   const actual = new Map(facts.locationGraph.map(edge => [pair(edge.from, edge.to), edge]));
   const obstacleEdge = actual.get(pair(book.obstacleRoute.from, book.obstacleRoute.to));
   if (facts.obstacleState === 'cleared' && obstacleEdge?.state !== 'open') return false;
@@ -925,27 +1048,34 @@ function validLocationGraph(facts: PrologueV1Facts, book: PrologueV1Rulebook): b
     if (!current) return false;
     const canOpenBypass = edge.state === 'blocked' && book.bypassRoutes.some(route =>
       route.from === edge.from && route.to === edge.to);
-    const canOpenQuest = key === questPair && facts.questState.rewardClaimed;
+    const questEdge = questPairs.get(key);
+    const canOpenQuest = questEdge !== undefined && facts.questState.rewardClaimed;
     if (current.state !== edge.state && !(current.state === 'open' && (canOpenBypass || canOpenQuest))) return false;
     const allowedVia = [edge.via,
       ...book.bypassRoutes.filter(route => route.from === edge.from && route.to === edge.to).map(route => route.via),
-      ...(key === questPair && questEdge?.via ? [questEdge.via] : []),
+      ...(questEdge?.via ? [questEdge.via] : []),
     ].filter((value): value is string => value !== undefined);
     if ((current.via === undefined && edge.via !== undefined) ||
         (current.via !== undefined && !allowedVia.includes(current.via))) return false;
   }
 
-  if (questEdge && !expected.has(questPair!)) {
-    const currentQuestEdge = actual.get(questPair!);
-    if (facts.questState.rewardClaimed) {
-      if (!currentQuestEdge || currentQuestEdge.state !== 'open' || currentQuestEdge.via !== questEdge.via) return false;
-    } else if (currentQuestEdge) {
-      return false;
+  for (const [questPair, questEdge] of questPairs) {
+    if (!expected.has(questPair)) {
+      const currentQuestEdge = actual.get(questPair);
+      if (facts.questState.rewardClaimed) {
+        if (!currentQuestEdge || currentQuestEdge.state !== 'open' || currentQuestEdge.via !== questEdge.via) return false;
+      } else if (currentQuestEdge) {
+        return false;
+      }
     }
   }
 
   return facts.locationGraph.length === expected.size +
-    (questEdge && !expected.has(questPair!) && facts.questState.rewardClaimed ? 1 : 0);
+    (facts.questState.rewardClaimed ? [...questPairs.keys()].filter(key => !expected.has(key)).length : 0);
+}
+
+function questUnlockEdges(quest: PrologueV1Rulebook['quest']): readonly PrologueV1Rulebook['quest']['unlockEdge'][] {
+  return [quest.unlockEdge, ...(quest.unlockEdges ?? [])];
 }
 
 function openObstacleRoute(graph: PrologueV1Facts['locationGraph'], book: PrologueV1Rulebook): PrologueV1Facts['locationGraph'] {

@@ -1833,7 +1833,7 @@
       "status": "approved_for_p1_candidate_input",
       "recordedAt": "2026-10-04",
       "sourceArtifact": {
-        "path": "docs/九霄1.0-P1-执行规格-GPT交付版-2026-10-03.md",
+        "path": "docs/acceptance/2026-10-04/P1-author-inputs/archived-candidates/P1-EXEC-SPEC-v3.1.0-20261004.md",
         "sha256": "3edba2136ef1a783a701327c16208bab289908f83db0084dc748bdc612fa526f"
       },
       "approvalRecord": {
@@ -1842,7 +1842,7 @@
         "role": "historical-signoff-evidence",
         "precedence": "The current execution specification is normative. Author-confirmed 2026-10-04 facts supersede conflicting values in this earlier workbook."
       },
-      "candidateDocument": "packages/content/src/prologue/prologue-v1.ts",
+      "candidateDocument": "docs/acceptance/2026-10-04/P1-author-inputs/archived-candidates/prologue-v1-20261004.ts",
       "candidateDocumentSha256": "66c7557c74263813d7a7ea832de4961c612a12fa48a6f15ecdf6c53a7a1a571f",
       "candidateIds": [
         "loc_luhuadu",
@@ -1888,6 +1888,86 @@
             "role": "B technology and rules",
             "decision": "approved_for_p1_candidate_input",
             "record": "2026-10-04 author facts and current execution-spec digest"
+          }
+        ]
+      },
+      "canonPublication": {
+        "status": "pending_separate_s_track_review",
+        "activeEntriesChanged": false,
+        "runtimeProjectionChanged": false
+      }
+    },
+    {
+      "id": "p1_luhuadu_prologue_author_original_20261005",
+      "status": "approved_for_p1_candidate_input",
+      "recordedAt": "2026-10-05",
+      "sourceArtifact": {
+        "path": "docs/九霄1.0-P1-执行规格-GPT交付版-2026-10-03.md",
+        "sha256": "7677776d40825889694abeff4cb51c33d4fcd4a91e70eafcf8baae491635259e"
+      },
+      "approvalRecord": {
+        "path": "docs/acceptance/2026-10-04/P1-author-inputs/P1-MAP-作者可执行映射.md",
+        "sha256": "5869f3a3518156c2ac166388cc9f652aebc7bd5e36f071172030665f3d0a9e53",
+        "role": "jointly_accepted_mapping_amendment",
+        "precedence": "User-confirmed joint LYL/Bird input; supersedes only the explicitly mapped fields in the earlier execution specification."
+      },
+      "priorSignoffEvidence": {
+        "path": "docs/acceptance/2026-10-03/九霄1.0-P1-玩法规则与序章-签署表-2026-10-03.xlsx",
+        "sha256": "33b6c8f6708d76f3420df12eb29f1439c5059f67f4cb7320ffe7810ed071c1bd",
+        "role": "historical_signoff_evidence"
+      },
+      "candidateDocument": "packages/content/src/prologue/prologue-v1.ts",
+      "candidateDocumentSha256": "5a73149978919112d2ec2e29064a0c82e5c487c68b46444d9b5699b00fb49d7a",
+      "candidateIds": [
+        "loc_luhuadu",
+        "loc_wangqitai",
+        "loc_zheguiping",
+        "subloc_ferry_berm",
+        "subloc_reef_ledge",
+        "npc_cenjiu",
+        "npc_shuiyuya",
+        "src_ferry_shore",
+        "src_quest_clearance",
+        "tech_breath_basic",
+        "obj_ferry",
+        "item_bishuifu",
+        "item_jiuyifu",
+        "obstacle_rockslide",
+        "quest_first_clearance",
+        "clue_ferry_stuck",
+        "clue_ferry_scrubbed",
+        "clue_wrong_way",
+        "clue_rockslide",
+        "clue_crow_nest",
+        "text_prologue_opening",
+        "text_observation_none",
+        "text_dialogue_topics",
+        "text_smalltalk_fallbacks",
+        "text_idle_three_hook",
+        "text_combat_clear",
+        "text_combat_clear_wounded",
+        "text_combat_retreat",
+        "text_bypass",
+        "text_stamina_exhausted",
+        "text_crossing_complete",
+        "text_south_white_hook",
+        "text_wangqitai_night"
+      ],
+      "authorAcceptance": {
+        "scope": "P1 author-original inputs and MAP correction for candidate content only; not per-entry Canon publication or exact production rule digest approval.",
+        "evidence": "User confirmation on 2026-10-05 that the supplied P1 files, tables, and screenshots are jointly acknowledged by LYL and Bird; recorded in the P1 autonomous decision log.",
+        "authors": [
+          {
+            "id": "LYL",
+            "role": "A product and Canon",
+            "decision": "approved_for_p1_candidate_input",
+            "record": "User-confirmed joint acceptance, 2026-10-05"
+          },
+          {
+            "id": "Bird",
+            "role": "B technology and rules",
+            "decision": "approved_for_p1_candidate_input",
+            "record": "User-confirmed joint acceptance, 2026-10-05"
           }
         ]
       },

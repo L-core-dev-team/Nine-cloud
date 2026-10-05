@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   ActionIntentSchema,
   DecisionSchema,
+  DecisionV2Schema,
   DomainEventSchema,
   LegacySaveFileSchema,
   SAVE_SCHEMA_VERSION,
@@ -115,6 +116,12 @@ describe('shared wire contracts', () => {
     expect(DecisionSchema.safeParse({
       status: 'rejected', code: 'RULE_ROAD_BLOCKED', message: '道路中断。', revision: 0,
     }).success).toBe(true); // Historical v1 receipt only.
+    expect(DecisionV2Schema.safeParse({
+      status: 'rejected', code: 'RULE_TARGET_MISMATCH', message: '目标不匹配。', revision: 0,
+    }).success).toBe(true);
+    expect(DecisionV2Schema.safeParse({
+      status: 'rejected', code: 'RULE_ROAD_BLOCKED', message: '道路中断。', revision: 0,
+    }).success).toBe(false);
   });
 
   it('validates bounded clarification candidates in their canonical action order', () => {
