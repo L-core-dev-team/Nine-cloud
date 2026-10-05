@@ -4,7 +4,7 @@
     "sourceAndLicense":  "unverified",
     "authorApproval":  "pending",
     "runtimeIntegrated":  false,
-    "note":  "Candidate art only. Metadata values are intentionally omitted; image bytes and embedded metadata are preserved. Regenerated to cover all images (batch1 + world/faction/system + verticals + realms + artifacts).",
+    "note":  "Candidate art only. Regenerated 2026-10-05 covering all images (scenes/brand/textures/world/factions/systems/verticals/realms/artifacts/characters/weather/battles).",
     "files":  [
                   {
                       "path":  "01-场景海报\\城镇-万宝浮空城-移动.jpg",
@@ -1447,6 +1447,24 @@
                                          ]
                   },
                   {
+                      "path":  "08-法宝器物\\法宝-冰髓玉瓶.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1270353,
+                      "sha256":  "8341b0d9c27eabe6f028bd701d9d3d71d9793a1c0f9be8185990126ffe532439",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
                       "path":  "08-法宝器物\\法宝-布阵阵盘.jpg",
                       "mimeType":  "image/jpeg",
                       "width":  2048,
@@ -1501,6 +1519,24 @@
                                          ]
                   },
                   {
+                      "path":  "08-法宝器物\\法宝-传讯铜镜.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1231773,
+                      "sha256":  "31c048c1571ca85cc9f3dfd864a8e1e18806805745c074d0ace3fe89457688d8",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
                       "path":  "08-法宝器物\\法宝-古剑匣.jpg",
                       "mimeType":  "image/jpeg",
                       "width":  2048,
@@ -1519,12 +1555,66 @@
                                          ]
                   },
                   {
+                      "path":  "08-法宝器物\\法宝-昊天剑令.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1223315,
+                      "sha256":  "a8d61acbfa2802966b38f3fb09927280db014f6dd7fa6edce561c95f3d496cfd",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "08-法宝器物\\法宝-护身灵镜.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1381725,
+                      "sha256":  "42e33cc35cdb3e61478d0424ca51376ca61a4eba7d57aa9136d24b67a50116ed",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
                       "path":  "08-法宝器物\\法宝-护身玉佩.jpg",
                       "mimeType":  "image/jpeg",
                       "width":  2048,
                       "height":  2048,
                       "bytes":  1200611,
                       "sha256":  "b3bbec843410d7d66442610af681cab99b33323b4d74fdb47c9329c3b3a0bfbc",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "08-法宝器物\\法宝-捆仙索.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1400727,
+                      "sha256":  "d32a9c02ad92ef8c81308b45362b5d5f03a883789932a7c86e61eaa246e00bb5",
                       "hasAigcMetadata":  true,
                       "aigcFieldNames":  [
                                              "ContentProducer",
@@ -1591,6 +1681,24 @@
                                          ]
                   },
                   {
+                      "path":  "08-法宝器物\\法宝-山河扇.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1290416,
+                      "sha256":  "6af9e1de7f84ac63b99e44d4c88b1d81e8a2845dd6836fc41fbf3e1031b57c5f",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
                       "path":  "08-法宝器物\\法宝-上品灵剑.jpg",
                       "mimeType":  "image/jpeg",
                       "width":  2048,
@@ -1609,12 +1717,444 @@
                                          ]
                   },
                   {
+                      "path":  "08-法宝器物\\法宝-圣火令.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1251563,
+                      "sha256":  "ce745fe21215192ae7b9934284738285a42d225e762e701edb5cd6bbf19f2a2f",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "08-法宝器物\\法宝-五毒蛊盅.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1364413,
+                      "sha256":  "67b6f84b1f1a8b492ddd5741973e64548ed90960fe7e749cd477ad0bfbb5f55a",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
                       "path":  "08-法宝器物\\法宝-寻龙罗盘.jpg",
                       "mimeType":  "image/jpeg",
                       "width":  2048,
                       "height":  2048,
                       "bytes":  1713241,
                       "sha256":  "d67f66dd0f76883f0e699c537ab68868cad4471bae4aa63242103af0ea80f748",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "08-法宝器物\\法宝-御风灵舟.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1463985,
+                      "sha256":  "ee6ad00a5b6b42da961602c65bbd7aa07582f1d5233587a2eb6bc8531f647d6a",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "08-法宝器物\\法宝-紫金葫芦.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2048,
+                      "height":  2048,
+                      "bytes":  1427367,
+                      "sha256":  "b4ed55ec7b13cfbecece7dac89e4ba7de7802cd21823c635c071c42838418cc3",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "09-人物志\\人物-白衣剑修.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  388848,
+                      "sha256":  "55651a4b2f68330d13b64e4779d57df131bfb5bee6299fb285579bd4b371f796",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "09-人物志\\人物-冰原使者.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  578926,
+                      "sha256":  "178237307e19886688a2b17f5d0ef4009c7ea4655b65dd9fbd14c1854907b85b",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "09-人物志\\人物-苍老散修.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  774474,
+                      "sha256":  "d427b300f9c480974793c35dfcbdbfca147280bb5779961de79872e01d0cd847",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "09-人物志\\人物-丹房女修.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  626166,
+                      "sha256":  "a27874e649381debf38469615bd7c523d48880af5d4b5dde7beab548570dfb9c",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "09-人物志\\人物-黑袍邪修.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  687927,
+                      "sha256":  "a3ffa3bc28c0d6081f63f66e27ed0c86c5f9a2f9eeb772df830ec8309c8a830f",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "09-人物志\\人物-锦袍商贾.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  756203,
+                      "sha256":  "51a045f955ad1bafee274d008f4b2786646040e593f00508249e17f99f56d96d",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "09-人物志\\人物-蛮荒猎手.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  696656,
+                      "sha256":  "b7f81c7bc71ca06b8c53859e3f237d5e097672a21dab05632818cd0bd7213637",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "09-人物志\\人物-苗疆蛊师.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  637597,
+                      "sha256":  "37049b4f2dba93e65785a603a10575cf89c3f0ddf47f09e0525aa584f537f81a",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "09-人物志\\人物-偃师匠人.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  770473,
+                      "sha256":  "304a6efc4edcf8cfbba49ff0acc443056221375e0f81b1e75ba8c4e50a564ba4",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "09-人物志\\人物-游方僧人.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  1536,
+                      "height":  2730,
+                      "bytes":  425000,
+                      "sha256":  "b8de8cd4e25099ea3a2816a4807617e96bbc961418dfe20af90f4b0d83bcd524",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "10-氛围天气\\氛围-朝霞云海.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  481478,
+                      "sha256":  "20cad586e6f2a2bfd49e30c6b6d094806bcd4c6e52e10e40385af254ec189bde",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "10-氛围天气\\氛围-春雨江南渡口.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  532940,
+                      "sha256":  "35b591aa494ed0fadadb3380f169ccee628e111a978b3e0f8b41f875b0d72c67",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "10-氛围天气\\氛围-雷雨夜荒庙.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  594594,
+                      "sha256":  "7ee382c278f909726afc6157dcd0e4e17e9d6d84c07ea97236e70701fc07276e",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "10-氛围天气\\氛围-浓雾深林.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  521506,
+                      "sha256":  "fe21744db508719a3048475a7116a95612317ce17728c33d367abf13f36bd629",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "10-氛围天气\\氛围-秋山红叶古道.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  870278,
+                      "sha256":  "e42a849c61da18f0a9df72db2a09a55caf1b3aa0a62dba20dd075564b5ed207e",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "10-氛围天气\\氛围-月夜雪景山门.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  544860,
+                      "sha256":  "07802ca2026ae698b90b7310e65e0b928588bd2749ab392ede92f0022b32fc3c",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "11-战斗场景\\战斗-剑修斗法.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  599322,
+                      "sha256":  "d86091f94e178c3bf9aaee56ca9bae60f139d7c18a8c6266e7cd4de0c5c91cc8",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "11-战斗场景\\战斗-灵兽相搏.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  889997,
+                      "sha256":  "26b603bd8d097b7f320cc8738e205ffb4960924eba9af5192636fb8fc77111bb",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "11-战斗场景\\战斗-修士斗法.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  603648,
+                      "sha256":  "8e34d0f04a4e50236ba6668e6c907ce807a5061bb5e484f544262b14e672d9fb",
+                      "hasAigcMetadata":  true,
+                      "aigcFieldNames":  [
+                                             "ContentProducer",
+                                             "ContentPropagator",
+                                             "Label",
+                                             "ProduceID",
+                                             "PropagateID",
+                                             "ReservedCode1",
+                                             "ReservedCode2"
+                                         ]
+                  },
+                  {
+                      "path":  "11-战斗场景\\战斗-御剑飞行.jpg",
+                      "mimeType":  "image/jpeg",
+                      "width":  2730,
+                      "height":  1536,
+                      "bytes":  630951,
+                      "sha256":  "59fe5d42510736aac85b4e52603aee2028463f2ffa63289883ba11c048245743",
                       "hasAigcMetadata":  true,
                       "aigcFieldNames":  [
                                              "ContentProducer",

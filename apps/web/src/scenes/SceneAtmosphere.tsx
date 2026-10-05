@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import type { SceneId } from '@jiuxiao/content/scenes';
 import { getCanvasBufferSize, getSceneNumber, resolveGraphicsProfile, type GraphicsSettings } from '../graphics-settings';
 import { selectSceneVideo } from '../scene-media';
+import { mediaUrlForBrowser } from '../media-compat';
 
 export type SceneRenderStatus = {
   backend: 'WebGL 2' | 'WebGL' | 'Canvas 2D' | '静态回退';
@@ -201,7 +202,7 @@ export function SceneAtmosphere({ sceneId, theme, settings }: Props) {
       if (selection.src !== selectedSource) {
         video.pause();
         video.classList.remove('is-playing');
-        video.poster = selection.poster;
+        video.poster = mediaUrlForBrowser(selection.poster);
         video.src = selection.src;
         video.dataset.sceneSource = selection.src;
         selectedSource = selection.src;

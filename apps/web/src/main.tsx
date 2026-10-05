@@ -271,6 +271,10 @@ const atlasCollections: readonly { id: CandidateIllustrationCollection; label: s
   { id: 'system', label: '修行图鉴' },
   { id: 'brand', label: '题字与纹章' },
   { id: 'texture', label: '纸墨氛围' },
+  { id: 'character', label: '人物志' },
+  { id: 'artifact', label: '法宝器物' },
+  { id: 'atmosphere', label: '天气时序' },
+  { id: 'battle', label: '战斗与行动' },
 ];
 
 function SearchHighlight({ text, query }: { text: string; query: string }) {
@@ -324,7 +328,7 @@ function World({ onClose, save, onImportSupplement }: { onClose: () => void; sav
     <p>正文收录已审核设定；画卷另列视觉素材，二者各守其界。</p>
     <div className="world-view-switch" role="group" aria-label="世界资料类型">
       <button aria-pressed={view === 'text'} onClick={() => setView('text')}>设定正文</button>
-      <button aria-pressed={view === 'atlas'} onClick={() => setView('atlas')}>画卷图鉴 <small>44 幅视觉稿</small></button>
+      <button aria-pressed={view === 'atlas'} onClick={() => setView('atlas')}>画卷图鉴 <small>{CANDIDATE_ILLUSTRATIONS.length} 幅视觉稿</small></button>
     </div>
     {view === 'text' && <div id="world-text-panel" aria-label="设定正文">
        <label className="world-search">搜索已审核设定<input type="search" value={worldQuery} onChange={event => setWorldQuery(event.target.value)} onKeyDown={event => { if (event.key === 'Enter' && entries.length) { event.preventDefault(); firstResultRef.current?.focus(); firstResultRef.current?.scrollIntoView({ block: 'start', behavior: 'auto' }); } }} placeholder="试试：中州、海上贸易、妖林外围" aria-label="搜索已审核世界设定" /></label>
@@ -335,16 +339,16 @@ function World({ onClose, save, onImportSupplement }: { onClose: () => void; sav
       </article>) : <p className="worldbook-empty">没有找到这组字词。试试地点名、地貌或文化关键词。</p>}</div>
     </div>}
     {view === 'atlas' && <div id="world-atlas-panel" aria-label="画卷图鉴">
-      <div className="atlas-intro"><img src={mediaUrlForBrowser('/scenes/candidate/atlas/brand_calligraphy.webp')} alt="九霄书法题字与云山图" loading="lazy" decoding="async" /><div><span className="eyebrow">案头画卷</span><h3>九霄山河图鉴</h3><p>按素材原名与目录归卷。点开可细看。</p></div></div>
-       <label className="world-search">查找画卷<input type="search" value={atlasQuery} onChange={event => setAtlasQuery(event.target.value)} placeholder="地域、宗门、功法或图鉴名称" aria-label="搜索画卷图鉴" /></label>
+      <div className="atlas-intro"><img src={mediaUrlForBrowser('/scenes/candidate/atlas/brand_calligraphy.webp')} alt="九霄书法题字与云山图" loading="lazy" decoding="async" /><div><span className="eyebrow">案头画卷</span><h3>九霄画卷图鉴</h3><p>按素材原名与题材归卷。点开可细看。</p></div></div>
+       <label className="world-search">查找画卷<input type="search" value={atlasQuery} onChange={event => setAtlasQuery(event.target.value)} placeholder="地域、宗门、人物、法宝或氛围" aria-label="搜索画卷图鉴" /></label>
       <div className="atlas-collections" role="group" aria-label="画卷分类">{atlasCollections.map(item => <button key={item.id} aria-pressed={collection === item.id} onClick={() => setCollection(item.id)}>{item.label}<small>{CANDIDATE_ILLUSTRATIONS.filter(art => art.collection === item.id).length} 幅</small></button>)}</div>
-      <p className="atlas-boundary">这些画面是视觉参考，不构成设定正文或审核证据。具体地域、势力关系与修炼规则，以已审核文字和游戏规则为准。</p>
-      <div className="atlas-grid" aria-live="polite">{illustrations.length ? illustrations.map(illustration => <button className="atlas-card" key={illustration.id} onClick={() => setSelectedIllustration(illustration)} aria-label={`放大查看：${illustration.title}`}>
+      <p className="atlas-boundary">这些画面是候选视觉参考，不构成设定正文或审核证据。人物不绑定具体 NPC，法宝不表示存档已获得；天气与战斗画面也不代表当前游戏状态。设定和状态以已审核文字、规则与存档为准。</p>
+      <div className="atlas-grid" aria-live="polite">{illustrations.length ? illustrations.map(illustration => <button className={`atlas-card atlas-card--${illustration.collection}`} key={illustration.id} onClick={() => setSelectedIllustration(illustration)} aria-label={`放大查看：${illustration.title}`}>
         <img src={mediaUrlForBrowser(illustration.src)} alt={illustration.title} loading="lazy" decoding="async" />
          <span>{illustration.title}</span>
       </button>) : <p className="worldbook-empty">这一卷里没有找到对应画面。</p>}</div>
       <dialog className="atlas-dialog" ref={dialogRef} aria-labelledby="atlas-dialog-title" onClose={() => setSelectedIllustration(null)}>
-        {selectedIllustration && <><button className="atlas-dialog-close" aria-label="关闭画卷" onClick={() => dialogRef.current?.close()}>×</button><img src={mediaUrlForBrowser(selectedIllustration.src)} alt={selectedIllustration.title} /><div><h3 id="atlas-dialog-title">{selectedIllustration.title}</h3><p>项目视觉参考 · 设定以已审核正文为准</p></div></>}
+        {selectedIllustration && <><button className="atlas-dialog-close" aria-label="关闭画卷" onClick={() => dialogRef.current?.close()}>×</button><img src={mediaUrlForBrowser(selectedIllustration.src)} alt={selectedIllustration.title} /><div><h3 id="atlas-dialog-title">{selectedIllustration.title}</h3><p>候选画影 · 不代表当前存档事实</p></div></>}
       </dialog>
     </div>}
     <div className="card worldbook-scope"><strong>资料范围</strong><p>正文只收录已审核并发布的世界设定{canonEntryCount === null ? '' : `，当前 ${canonEntryCount} 条`}。尚待核验的 OCR 与补充材料不会混入正文；完成审核后再逐条纳入。画卷图鉴中的图片仅作视觉参考，不构成设定依据。</p>
