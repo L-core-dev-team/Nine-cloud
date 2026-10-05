@@ -1,7 +1,7 @@
 # P1 / PR-6 规则候选审阅包
 
 日期：2026-10-05
-状态：**candidate-only；未接入生产 API；未解除作者规则门禁**
+状态：**candidate-only；精确摘要已获共同批准并绑定非生产 review runtime；PR-6 验收仍未完成**
 工作分支：`codex/p1-pr6-prologue-e2e`
 基线提交：`ff9d2d1311703183c41318420696ea18240c91ab`（PR-5 合并点）
 
@@ -61,14 +61,34 @@ a4b8fbf7e612084007112ed3fac52d711deb461f652788a71fd791ce05ebc0e2
 | `git diff --check` | 退出 0；无输出 |
 | `node scripts/p1-rule-candidate-digest.mjs` | 退出 0；输出上述完整候选包摘要及 39 项 manifest；候选专项文件 10 项测试通过 |
 
-`pnpm test` 中 `CANON_RECEIPTS_PENDING` 子进程诊断是预期的 S/Canon fail-closed 检查；测试套件仍通过。该命令未设置 `TEST_DATABASE_URL`，所以 API 的 31 个 PostgreSQL 集成断言按常规测试配置跳过；随后在新建的 `jiuxiao_test_pr6` 专用测试库中单独运行完整 PostgreSQL 集成套件，10 个文件 / 36 项通过。测试库位于本机回环端口映射的 `jx-p1-pr5-pg` 专用 PostgreSQL 17 容器，未使用 `jiuxiao_test` 空库或任何开发/生产库。`pnpm test:e2e` 不设置该变量时会在数据库安全断言处退出，未启动测试旅程；带隔离库重跑才通过。其新增部分只验证真实 HTTP/API fail-closed：它配置 candidate 模块路径但不注入规则，在无规则签署时确认建档/回合均返回 503 且无世界写入。该结果不是完整游客玩法验收；完整 E2E 仍须等待精确规则摘要获准并绑定版本。
+`pnpm test` 中 `CANON_RECEIPTS_PENDING` 子进程诊断是预期的 S/Canon fail-closed 检查；测试套件仍通过。该基线命令未设置 `TEST_DATABASE_URL`，所以 API 的 31 个 PostgreSQL 集成断言按常规配置跳过；随后在专用 `jiuxiao_test_pr6` 库运行集成套件。初始版本的 E2E 只覆盖负向门禁预检；下面的 2026-10-05 更新增加了邮箱会话下的非生产候选规则旅程。所有 E2E 数据均写入隔离测试库，并按测试账户范围核验后清理。
 
 许可证检查初次失败的 stdout 原文为 `ERR_PNPM_MISSING_PACKAGE_INDEX_FILE: Failed to find package index file for vitest@5.0.1 ... please consider running 'pnpm install'`。重建忽略的 `node_modules` 后，冻结安装与许可证扫描均成功；未改 lockfile、pnpm 版本或许可证白名单。
 
 ## 门禁与退出边界
 
 - `AUTHOR_RULES_GATE` 仍为 `BLOCKED_BY_OWNER`，`ActionRulesVersion` 与 `CombatRulesVersion` 均为 `null`。普通 `/api/turns` 仍按既有契约返回 503 `RULES_NOT_READY`。
-- Candidate rulebook 未从 `packages/content/src/index.ts` 导出，且没有 API 导入；活动 Canon/runtime 与 `receiptsComplete=false` 均未改变。
+- Candidate rulebook 未从 `packages/content/src/index.ts` 导出；只由精确 review plugin 在非 production 环境加载。活动 Canon/runtime 与 `receiptsComplete=false` 均未改变。
 - 本摘要是供作者审阅的精确候选，不是作者批准记录、生产版本号、Canon 发布回执或 P1/PR-6 完成声明。
-- PR-6 仍缺：对上方完整摘要的作者批准；随后按已批准摘要绑定规则版本、完成普通游客 API 的无绕门 E2E（五类行动、两条清障路径、失败恢复与幂等），并达到首个可点行动 ≤3 秒、首个任务 ≤3 分钟。此处不要求重复 NLU 盲标或单独 GitHub review。
-- 本次未改 deployment、未改既有迁移、未解除任何 fail-closed 门禁、未接入生产规则。当前修改仍是隔离 worktree 中的未提交候选。
+- LYL 在 Codex 对话中明确代表两位作者批准上述完整摘要；记录见 [`P1-PR6 规则摘要双作者批准记录`](P1-PR6-规则摘要双作者批准记录.md)。批准仅支持该精确包进入非生产运行时核验，不等于生产授权、活动 Canon 或 GitHub review event。
+- PR-6 仍缺：普通游客 API 零配置验收（用户决定保留邮箱登录，因此该门保持未完成）、首个可点行动 ≤3 秒与首个任务 ≤3 分钟证据、自然语言到生产规则 API 接线、将 NPC 授权记忆召回注入叙事层。邮箱会话非生产旅程通过，不可替代这些门。
+- 本次未改 deployment、未改既有迁移、未解除任何 production fail-closed 门禁、未启用活动 Canon。当前改动位于隔离 worktree；需按仓库提交授权交给 PR #61 审阅，并等待新 head CI。
+
+## 2026-10-05 非生产运行时与认证旅程更新
+
+工作区基线仍为 `a909e74185023497134f5126262ca4d3f2c8c645`；本节结果来自其后的未提交工作区改动，不能当作该旧 head 的 CI 结果。
+
+| 命令 / 检查 | 结果 |
+| --- | --- |
+| `pnpm typecheck` | 退出 0；contracts、content、domain、db、api、web 均通过 |
+| `pnpm test` | 退出 0；core 28/28，contracts 17，content 43，domain 116，API 110 passed / 31 PostgreSQL tests skipped，web 157 |
+| `pnpm build` | 退出 0；API 与 web 构建成功；Canon runtime 34 confirmed entries，`receiptsComplete=false`；保留既有 >500 kB chunk warning |
+| `TEST_DATABASE_URL=<jiuxiao_test_pr6> pnpm test:integration` | 退出 0；10 文件 / 36 项通过 |
+| `TEST_DATABASE_URL=<jiuxiao_test_pr6> pnpm test:e2e` | 退出 0；手机/桌面 UI、渲染回退和音频同意回归通过；负向预检确认未识别规则文件不能绕过 production gate；测试邮箱 session 下非 production 精确 review plugin 完成 12 个回合请求、14 个事件、2 条 NPC 直接授权。Continue/Forgetting 分别经不同确定性路线完成首个清障；硬拒绝未改 revision，重复叙事重用同一 receipt 与相同回退文本。 |
+| `pnpm install --frozen-lockfile` / `pnpm license:check` | 均退出 0；冻结依赖已满足，83 个依赖条目通过许可证检查。 |
+| `node scripts/p1-rule-candidate-digest.mjs` | 退出 0；39 文件包仍为已批准 SHA `a4b8fbf7e612084007112ed3fac52d711deb461f652788a71fd791ce05ebc0e2`；新增 API 测试会在 CI 复算该摘要 |
+| `git diff --check` | 需在本节文档改动完成后重跑 |
+
+叙事边界：NPC 回忆从追加写入的授权观察 outbox 重建，并按 V2 存档中的策略版本检索；只有当前直接交谈的 NPC 会被注入上下文。服务层测试证明上下文被过滤并传给 narrator，provider 测试证明 prompt 显式约束其用途；E2E 没有启用模型，故未证明模型确实按回忆作出合格回应，也未验证真人长局中的遗忘体验。模型不可用时，服务从同一已提交 receipt 生成确定性文本，不重跑规则。review plugin 源码 SHA-256 为 `94c57793bfde874469b81c1d97c914ab5591d628631564679f07d7e3aef83735`，运行时非生产加载前校验。
+
+总体验收边界：此旅程使用测试夹具预置邮箱 session，只在 `NODE_ENV=test` 加载精确 review plugin。它不是游客旅程，也不把候选规则发布为 Canon。生产 API 仍由 `AUTHOR_RULES_GATE` fail-closed，Canon `receiptsComplete=false` 未变。用户要求保留邮箱登录并维持游客门未完成；因此 PR-6/P1 不得宣称完成。自然语言到生产规则 API 接线、活动 Canon 的独立门禁、PR-7/8、15 分钟真人设备记录等仍开放。

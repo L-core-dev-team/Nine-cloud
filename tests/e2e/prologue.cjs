@@ -1,7 +1,6 @@
 #!/usr/bin/env node
-// P1 preflight only: exercise the ordinary HTTP routes and prove the unsigned
-// rule candidate cannot create a save or settle a turn. Full gameplay journeys
-// stay unavailable until AUTHOR_RULES_GATE is bound to the approved digest.
+// P1 fail-closed preflight only: an unrecognized rule module must not bypass
+// AUTHOR_RULES_GATE. The approved non-production candidate journey is separate.
 const assert = require('node:assert/strict');
 const { spawn, spawnSync } = require('node:child_process');
 const { createHash, randomBytes, randomUUID } = require('node:crypto');
@@ -99,7 +98,7 @@ async function stop(child) {
         AUTH_MAIL_FROM: 'p1-test@example.invalid',
         SMTP_URL: 'smtp://127.0.0.1:1',
         DATABASE_URL: testDatabaseUrl,
-        // A configured candidate path must not bypass the exact-digest gate.
+        // A raw content rulebook path is not the approved review plugin path.
         TURN_RULES_MODULE: candidateModule,
       },
       stdio: ['ignore', 'pipe', 'pipe'],
@@ -166,8 +165,8 @@ async function stop(child) {
       (SELECT count(*)::int FROM turn_events WHERE save_id = $1) AS events,
       (SELECT count(*)::int FROM npc_memory_journals WHERE save_id = $1) AS memories`, [saveId, ownerId]);
     assert.deepEqual(persisted.rows[0], { revision: 0, requests: 0, events: 0, memories: 0 });
-    console.log('PR-6 gate preflight: ordinary session-backed API rejected game creation and turns with 503 RULES_NOT_READY; no save, receipt, event, or NPC-memory write occurred.');
-    console.log('Gameplay E2E remains pending exact author approval; no test hook enabled the candidate rule module.');
+    console.log('PR-6 fail-closed preflight passed: the unrecognized rulebook module did not bypass AUTHOR_RULES_GATE; no save, receipt, event, or NPC-memory write occurred.');
+    console.log('This is only a negative gate check; authenticated non-production gameplay is covered by p1-authenticated-candidate.cjs.');
   } finally {
     if (child) await stop(child);
     try {

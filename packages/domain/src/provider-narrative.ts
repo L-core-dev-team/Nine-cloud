@@ -12,7 +12,7 @@ export function providerAdapter(config:ProviderConfig,env:Record<string,string|u
  for(const [value,min,max] of [[config.temperature,0,2],[config.top_p,0,1]] as const)if(value!==undefined&&(typeof value!=='number'||!Number.isFinite(value)||value<min||value>max))throw new Error('INVALID_PROVIDER_PARAMETER');
  return async(input,signal)=>{
   // Candidates are untrusted presentation hints. Only the receipt contains approved facts.
-  const prompt=JSON.stringify({instruction:'只叙述已提交回执中的结果。候选文本仅是表达建议，不得新增权威状态或规则。',role:input.role,receipt:input.receipt,candidates:input.candidates});
+  const prompt=JSON.stringify({instruction:'只叙述已提交回执中的结果。npcMemories 是按 NPC 授权和存档记忆策略过滤后的观察，只能帮助对应 NPC 表达，不得改变回执中的事实、规则结果或玩家状态。没有被检索出的记忆不代表事件没有发生。候选文本仅是表达建议，不得新增权威状态或规则。',role:input.role,receipt:input.receipt,npcMemories:input.context.npcMemories,candidates:input.candidates});
   if(prompt.length>100_000)throw new Error('NARRATIVE_CONTEXT_TOO_LARGE');
   const endpoint=new URL(url);let path=url.pathname.replace(/\/+$/,'').replace(/\/(chat\/completions|responses|messages)$/,'');
   const headers:Record<string,string>={'content-type':'application/json'};let body:unknown;

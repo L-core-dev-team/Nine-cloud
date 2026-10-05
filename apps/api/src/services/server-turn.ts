@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import {
   ActionIntentSchema, DomainEventSchema, SaveEnvelopeSchema, TurnReceiptSchema,
-  type ActionIntent, type Decision, type SaveEnvelope, type TurnReceipt,
+  type ActionIntent, type Decision, type SaveEnvelope, type SaveEnvelopeV2, type TurnReceipt,
 } from '@jiuxiao/contracts';
 import {
   prepareTurn, prepareNpcMemoryTurn,
@@ -12,6 +12,8 @@ import type {
   AcceptedTurnCommitInput, AcceptedTurnCommitResult,
   NonAcceptedTurnRecordInput, NonAcceptedTurnRecordResult,
 } from './npc-memory-turn-transaction.js';
+import type { NarrativeContext } from './narrative-scheduler.js';
+import { buildNarrativeMemoryContext, type AuthorizedObservationPageReader } from './narrative-memory-context.js';
 
 /** Supplied only by the host's versioned rules and visibility implementation. */
 export interface ServerTurnRules {
@@ -21,7 +23,7 @@ export interface ServerTurnRules {
   decide(intent: ActionIntent, save: SaveEnvelope): Decision;
   reduce: EventReducer;
   grantsForEvent: PrepareNpcMemoryTurnOptions['grantsForEvent'];
-  policyForNpc: PrepareNpcMemoryTurnOptions['policyForNpc'];
+  policyForNpc(npcId: string, save?: SaveEnvelope): ReturnType<PrepareNpcMemoryTurnOptions['policyForNpc']>;
 }
 export interface ServerTurnRepository {
   loadSave(ownerId: string, saveId: string): Promise<SaveEnvelope | null>;
@@ -29,18 +31,20 @@ export interface ServerTurnRepository {
   getForOwner(ownerId: string, saveId: string): Promise<NpcMemoryJournal | null>;
   recordNonAcceptedDecision(input: NonAcceptedTurnRecordInput): Promise<NonAcceptedTurnRecordResult>;
   commitAcceptedTurn(input: AcceptedTurnCommitInput): Promise<AcceptedTurnCommitResult>;
+  getAuthorizedObservationPage?: AuthorizedObservationPageReader;
   recordNarrativeStatus?(ownerId:string,saveId:string,requestId:string,attemptId:string,status:'generating'|'received'|'unavailable'|'timeout'|'cancelled'):Promise<void>;
 }
 export type NarrativeResult =
   | { status: 'not_requested' }
-  | { status: 'received'; text: string }
+  | { status: 'received'; text: string; source: 'model' | 'deterministic' }
   | { status: 'failed'; code: 'NARRATIVE_UNAVAILABLE' | 'NARRATIVE_TIMEOUT' | 'NARRATIVE_CANCELLED' };
 export type ServerTurnResult =
   | { status: 'not_found' | 'client_archive' | 'rules_not_ready' | 'version_mismatch' | 'idempotency_conflict' | 'clarification_conflict' }
   | { status: 'revision_conflict'; currentRevision: number }
   | { status: 'decision'; receipt: TurnReceipt }
   | { status: 'accepted'; duplicate: boolean; receipt: TurnReceipt; narrative: NarrativeResult };
-type Narrator = (receipt: TurnReceipt, signal: AbortSignal) => Promise<string>;
+type Narrator = (receipt: TurnReceipt, signal: AbortSignal, context?: NarrativeContext) => Promise<string>;
+type DeterministicNarrative = (receipt: TurnReceipt, context: NarrativeContext) => string | Promise<string>;
 
 /** No rules are bundled or inferred. State and visible memory commit before optional narration. */
 export class ServerTurnService {
@@ -49,6 +53,7 @@ export class ServerTurnService {
     private readonly rules?: ServerTurnRules,
     private readonly narrator?: Narrator,
     private readonly narrativeTimeoutMs = 20_000,
+    private readonly deterministicNarrative?: DeterministicNarrative,
   ) {
     if (!Number.isInteger(narrativeTimeoutMs) || narrativeTimeoutMs < 1 || narrativeTimeoutMs > 120_000) {
       throw new TypeError('Invalid narrative timeout');
@@ -89,11 +94,11 @@ export class ServerTurnService {
       if (stored.kind === 'conflict') return { status: 'revision_conflict', currentRevision: stored.currentRevision };
       if (stored.kind === 'idempotency_conflict') return { status: 'idempotency_conflict' };
       if (stored.receipt.decision.status === 'accepted') {
-        return this.completed(ownerId, stored.receipt, true, requestNarrative, cancellation);
+        return this.completed(ownerId, stored.receipt, true, requestNarrative, cancellation, save);
       }
       return { status: 'decision', receipt: stored.receipt };
     }
-    if (prepared.status === 'duplicate') return this.completed(ownerId, prepared.receipt, true, requestNarrative, cancellation);
+    if (prepared.status === 'duplicate') return this.completed(ownerId, prepared.receipt, true, requestNarrative, cancellation, save);
 
     const journal = await this.repository.getForOwner(ownerId, save.saveId);
     if (!journal) return { status: 'not_found' };
@@ -104,7 +109,7 @@ export class ServerTurnService {
       if (winner) {
         const retry = await prepareTurn({ intent, save, priorReceipt: winner,
           decide: rules.decide.bind(rules), reduce: rules.reduce.bind(rules) });
-        if (retry.status === 'duplicate') return this.completed(ownerId, retry.receipt, true, requestNarrative, cancellation);
+        if (retry.status === 'duplicate') return this.completed(ownerId, retry.receipt, true, requestNarrative, cancellation, save);
         if (retry.status === 'idempotency-conflict') return { status: 'idempotency_conflict' };
       }
       return { status: 'revision_conflict', currentRevision: journal.revision };
@@ -116,7 +121,7 @@ export class ServerTurnService {
       beforeRevision: save.revision, afterRevision: prepared.save.revision,
       events: committedEvents,
       observedAtMinute: readGameMinute(prepared.save.state),
-      grantsForEvent: rules.grantsForEvent.bind(rules), policyForNpc: rules.policyForNpc.bind(rules) });
+      grantsForEvent: rules.grantsForEvent.bind(rules), policyForNpc: npcId => rules.policyForNpc(npcId, save) });
     const committed = await this.repository.commitAcceptedTurn({ ownerId, expectedRevision: save.revision,
       receipt: prepared.receipt, save: prepared.save,
       events: committedEvents,
@@ -126,10 +131,10 @@ export class ServerTurnService {
     if (committed.kind === 'conflict' || committed.kind === 'memory_conflict') {
       return { status: 'revision_conflict', currentRevision: committed.currentRevision };
     }
-    return this.completed(ownerId, committed.receipt, committed.kind === 'duplicate', requestNarrative, cancellation);
+    return this.completed(ownerId, committed.receipt, committed.kind === 'duplicate', requestNarrative, cancellation, save);
   }
 
-  private async completed(ownerId:string, raw: TurnReceipt, duplicate: boolean, requestNarrative: boolean, cancellation?: AbortSignal): Promise<ServerTurnResult> {
+  private async completed(ownerId:string, raw: TurnReceipt, duplicate: boolean, requestNarrative: boolean, cancellation?: AbortSignal, save?: SaveEnvelope): Promise<ServerTurnResult> {
     const receipt = TurnReceiptSchema.parse(raw);
     if (receipt.decision.status !== 'accepted') return { status: 'decision', receipt };
     let narrative: NarrativeResult = { status: 'not_requested' };
@@ -141,25 +146,55 @@ export class ServerTurnService {
       const log=async(status:Parameters<NonNullable<typeof record>>[4])=>{try{await record?.(ownerId,receipt.saveId,receipt.idempotencyKey,attemptId,status);}catch{/* State remains committed; no raw provider details are logged. */}};
       await log('generating');
       if (cancellation?.aborted) narrative = { status: 'failed', code: 'NARRATIVE_CANCELLED' };
-      else if (!this.narrator) narrative = { status: 'failed', code: 'NARRATIVE_UNAVAILABLE' };
       else {
-        const abort = new AbortController(); let userCancelled = false; let cancelListener: (() => void) | undefined; let timer: ReturnType<typeof setTimeout> | undefined;
+        let context: NarrativeContext = { npcMemories: [] };
+        let memoryContextReady = true;
         try {
-          const deadline = new Promise<never>((_, reject) => {
-            timer = setTimeout(() => { abort.abort(); reject(new Error('timeout')); }, this.narrativeTimeoutMs);
-          });
-          const cancelled = new Promise<never>((_, reject) => {
-            cancelListener = () => { userCancelled = true; abort.abort(); reject(new Error('cancelled')); };
-            cancellation?.addEventListener('abort', cancelListener, { once: true });
-            if (cancellation?.aborted) cancelListener();
-          });
-          // Never hand mutable state, memory or the persisted receipt to a model adapter.
-          const text = await Promise.race([Promise.resolve().then(() => { if (abort.signal.aborted) throw new Error('cancelled'); return this.narrator!(structuredClone(receipt), abort.signal); }), deadline, cancelled]);
-          if (typeof text !== 'string' || !text.trim() || text.length > 100_000) throw new Error('Invalid narrative');
-          narrative = { status: 'received', text };
+          if (save?.schemaVersion === 2) {
+            const readAuthorizedPage = this.repository.getAuthorizedObservationPage?.bind(this.repository);
+            context = await buildNarrativeMemoryContext({ ownerId, receipt, save: save as SaveEnvelopeV2,
+              ...(readAuthorizedPage ? { readAuthorizedPage } : {}) });
+          }
         } catch {
-          narrative = { status: 'failed', code: userCancelled ? 'NARRATIVE_CANCELLED' : abort.signal.aborted ? 'NARRATIVE_TIMEOUT' : 'NARRATIVE_UNAVAILABLE' };
-        } finally { if (timer) clearTimeout(timer); if (cancelListener) cancellation?.removeEventListener('abort', cancelListener); }
+          // If authorized recall cannot be read, do not send an incomplete or
+          // unverified memory context to a model. The committed turn remains valid.
+          memoryContextReady = false;
+        }
+        if (this.narrator && memoryContextReady) {
+          const abort = new AbortController(); let userCancelled = false; let cancelListener: (() => void) | undefined; let timer: ReturnType<typeof setTimeout> | undefined;
+          try {
+            const deadline = new Promise<never>((_, reject) => {
+              timer = setTimeout(() => { abort.abort(); reject(new Error('timeout')); }, this.narrativeTimeoutMs);
+            });
+            const cancelled = new Promise<never>((_, reject) => {
+              cancelListener = () => { userCancelled = true; abort.abort(); reject(new Error('cancelled')); };
+              cancellation?.addEventListener('abort', cancelListener, { once: true });
+              if (cancellation?.aborted) cancelListener();
+            });
+            // Only immutable receipt data and filtered, read-only NPC recall cross this boundary.
+            const text = await Promise.race([Promise.resolve().then(() => {
+              if (abort.signal.aborted) throw new Error('cancelled');
+              return this.narrator!(structuredClone(receipt), abort.signal, structuredClone(context));
+            }), deadline, cancelled]);
+            if (typeof text !== 'string' || !text.trim() || text.length > 100_000) throw new Error('Invalid narrative');
+            narrative = { status: 'received', text, source: 'model' };
+          } catch {
+            narrative = { status: 'failed', code: userCancelled ? 'NARRATIVE_CANCELLED' : abort.signal.aborted ? 'NARRATIVE_TIMEOUT' : 'NARRATIVE_UNAVAILABLE' };
+          } finally { if (timer) clearTimeout(timer); if (cancelListener) cancellation?.removeEventListener('abort', cancelListener); }
+        } else {
+          narrative = { status: 'failed', code: 'NARRATIVE_UNAVAILABLE' };
+        }
+
+        if (narrative.status === 'failed' && narrative.code !== 'NARRATIVE_CANCELLED' && this.deterministicNarrative) {
+          try {
+            const text = await this.deterministicNarrative(structuredClone(receipt), structuredClone(context));
+            if (typeof text === 'string' && text.trim() && text.length <= 100_000) {
+              narrative = { status: 'received', text, source: 'deterministic' };
+            }
+          } catch {
+            // Deterministic presentation failure cannot undo the committed rules turn.
+          }
+        }
       }
       await log(narrative.status==='received'?'received':narrative.status==='failed'?narrative.code==='NARRATIVE_CANCELLED'?'cancelled':narrative.code==='NARRATIVE_TIMEOUT'?'timeout':'unavailable':'unavailable');
     }
