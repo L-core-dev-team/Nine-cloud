@@ -87,13 +87,25 @@ export function verifyPagesPreview({ includeApprovedMedia = false } = {}) {
   for (const name of expected) {
     if (!found.has(name)) throw new Error(`Pages preview asset missing: ${name}`);
   }
-  const jsBundles = [...bundles].filter((name) => name.endsWith('.js'));
-  const cssBundles = [...bundles].filter((name) => name.endsWith('.css'));
+  const jsBundles = new Set([...bundles].filter((name) => name.endsWith('.js')));
+  const cssBundles = new Set([...bundles].filter((name) => name.endsWith('.css')));
   const indexHtml = readFileSync(join(root, 'index.html'), 'utf8');
-  if (jsBundles.length < 1 || cssBundles.length !== 1
-    || !jsBundles.some((name) => indexHtml.includes(name))
-    || !cssBundles.some((name) => indexHtml.includes(name))) {
-    throw new Error('Pages preview must contain JS and CSS entry bundles referenced by index.html');
+  const htmlBundleReferences = new Set(
+    [...indexHtml.matchAll(/(?:src|href)="\/?([^"]+\.(?:js|css))"/g)].map((match) => match[1]),
+  );
+  const htmlJsReferences = [...htmlBundleReferences].filter((name) => name.endsWith('.js'));
+  const htmlCssReferences = [...htmlBundleReferences].filter((name) => name.endsWith('.css'));
+  if (jsBundles.size < 1 || cssBundles.size !== 1 || htmlJsReferences.length !== 1
+    || htmlCssReferences.length !== 1
+    || htmlJsReferences.some((name) => !jsBundles.has(name))
+    || htmlCssReferences.some((name) => !cssBundles.has(name))) {
+    throw new Error('Pages preview must contain referenced JS entry bundles and exactly one CSS bundle');
+  }
+  for (const name of jsBundles) {
+    if (htmlBundleReferences.has(name)) continue;
+    const referencedByAnotherBundle = [...jsBundles].some((importer) => importer !== name
+      && readFileSync(join(root, importer), 'utf8').includes(name.slice('assets/'.length)));
+    if (!referencedByAnotherBundle) throw new Error(`Pages preview JS chunk is not referenced: ${name}`);
   }
   for (const [name, expectedDigest] of mediaDigests) {
     const actualDigest = createHash('sha256').update(readFileSync(join(root, name))).digest('hex');
