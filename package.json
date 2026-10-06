@@ -14,7 +14,7 @@
     "build": "pnpm worldbook:runtime:check && pnpm -r build && node scripts/build/write-manifest.mjs --stage S6",
     "build:pages-preview": "node scripts/build/pages-preview.mjs",
     "test:integration": "pnpm --filter @jiuxiao/api test:integration",
-    "test:e2e": "node tests/e2e/foundation.cjs && node tests/e2e/prologue.cjs && node tests/e2e/p1-authenticated-candidate.cjs && node tests/e2e/p1-action-suggestions-ui.cjs",
+    "test:e2e": "node tests/e2e/foundation.cjs && node tests/e2e/prologue.cjs && node tests/e2e/p1-authenticated-candidate.cjs && node tests/e2e/p1-action-suggestions-ui.cjs && node tests/e2e/p2-authoritative-idb.cjs && node tests/e2e/p2-gameplay.cjs",
     "license:check": "node scripts/audit/license-check.mjs",
     "test:e2e:design": "node tests/e2e/design-acceptance-runner.cjs",
     "worldbook:index:write": "node scripts/audit/build-worldbook-draft-index.mjs --write",
@@ -26,6 +26,7 @@
     "@types/node": "26.6.3",
     "playwright": "1.63.0",
     "typescript": "7.0.2",
+    "typescript-compiler-api": "npm:typescript@6.0.2",
     "vitest": "5.0.3"
   }
 }

@@ -14,6 +14,7 @@ suite('PostgresCloudSaveRepository (TEST_DATABASE_URL)', () => {
   const ownerB = `s6-b-${randomUUID()}`;
   const saveId = `s6-${randomUUID()}`;
   const v2SaveId = `s6-v2-${randomUUID()}`;
+  const v3SaveId = `s6-v3-${randomUUID()}`;
   const quotaOwner = `s6-quota-${randomUUID()}`;
 
   beforeAll(async()=>{for(const id of [ownerA,ownerB,quotaOwner])await pool.query('INSERT INTO auth_accounts(id,email) VALUES($1,$2) ON CONFLICT DO NOTHING',[id,id+'@fixture.invalid']);});
@@ -80,8 +81,8 @@ suite('PostgresCloudSaveRepository (TEST_DATABASE_URL)', () => {
     };
     expect(await service.create(ownerA, initial)).toMatchObject({ kind: 'created', save: initial });
     expect(await service.get(ownerA, v2SaveId)).toEqual(initial);
-    const storedColumns = await pool.query('SELECT schema_version,memory_mode,memory_policy,memory_policy_version FROM game_saves WHERE id=$1', [v2SaveId]);
-    expect(storedColumns.rows[0]).toMatchObject({ schema_version: 2, memory_mode: 'forgetting', memory_policy: { policyVersion: 'forgetting-v1' }, memory_policy_version: 'forgetting-v1' });
+    const storedColumns = await pool.query('SELECT schema_version,memory_mode,memory_policy,memory_policy_version,branch_id,parent_branch_id,fork_revision,created_policy_version,source_migration_id FROM game_saves WHERE id=$1', [v2SaveId]);
+    expect(storedColumns.rows[0]).toMatchObject({ schema_version: 2, memory_mode: 'forgetting', memory_policy: { policyVersion: 'forgetting-v1' }, memory_policy_version: 'forgetting-v1', branch_id: null, parent_branch_id: null, fork_revision: null, created_policy_version: null, source_migration_id: null });
     const incompletePolicyId = `s6-v2-incomplete-${randomUUID()}`;
     await expect(pool.query(
       `INSERT INTO game_saves (id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,memory_mode,memory_policy,snapshot)
@@ -111,5 +112,34 @@ suite('PostgresCloudSaveRepository (TEST_DATABASE_URL)', () => {
       state: { ...initial.state, elapsedMinutes: 15 } });
     expect(updated.kind).toBe('updated');
     expect(await service.get(ownerA, v2SaveId)).toMatchObject({ schemaVersion: 2, memoryMode: 'forgetting', memoryPolicy });
+  });
+
+  it('round-trips v3 root lineage and pins it without inferring lineage onto v2 saves', async () => {
+    const memoryPolicy = {
+      mode: 'continue' as const, policyVersion: 'continue-v1', schemaVersion: 1,
+      clockBasis: 'game-minute+npc-grant-sequence-v1' as const,
+      policyArtifactHash: `sha256:${'a'.repeat(64)}`, cueDictionaryHash: `sha256:${'b'.repeat(64)}`,
+      normalizerVersion: 'unicode-nfc-v1', retrievalVersion: 'exact-recall-v1',
+      visibilityPolicyVersion: 'npc-visibility-v1', visibilityPolicyHash: `sha256:${'c'.repeat(64)}`,
+      createdAtRevision: 0,
+    };
+    const initial = {
+      schemaVersion: 3 as const, saveId: v3SaveId, canonVersion: 'canon-test', ruleVersion: 'rules-test',
+      canonArtifactHash: `sha256:${'d'.repeat(64)}`,
+      memoryPolicyVersion: memoryPolicy.policyVersion, memoryMode: memoryPolicy.mode, memoryPolicy,
+      branchId: 'root', parentBranchId: null, forkRevision: 0,
+      createdPolicyVersion: memoryPolicy.policyVersion, sourceMigrationId: null,
+      revision: 0, state: { playerId: 'player-test', locationId: 'gate', elapsedMinutes: 0, facts: {} },
+    };
+    expect(await service.create(ownerA, initial)).toMatchObject({ kind: 'created', save: initial });
+    expect(await service.get(ownerA, v3SaveId)).toEqual(initial);
+    expect((await pool.query('SELECT schema_version,canon_artifact_hash,branch_id,parent_branch_id,fork_revision,created_policy_version,source_migration_id FROM game_saves WHERE id=$1', [v3SaveId])).rows[0])
+      .toEqual({ schema_version: 3, canon_artifact_hash: `sha256:${'d'.repeat(64)}`, branch_id: 'root', parent_branch_id: null, fork_revision: 0, created_policy_version: 'continue-v1', source_migration_id: null });
+    await expect(pool.query("UPDATE game_saves SET created_policy_version='changed' WHERE id=$1", [v3SaveId]))
+      .rejects.toThrow('SAVE_LINEAGE_IMMUTABLE');
+    await expect(pool.query("UPDATE game_saves SET canon_artifact_hash=$2 WHERE id=$1", [v3SaveId, `sha256:${'e'.repeat(64)}`]))
+      .rejects.toThrow('SAVE_CANON_ARTIFACT_PINNED');
+    expect(await service.replace(ownerA, v3SaveId, 0, { ...initial, revision: 1,
+      branchId: 'branch-child', parentBranchId: 'root' })).toEqual({ kind: 'lineage_pinned' });
   });
 });

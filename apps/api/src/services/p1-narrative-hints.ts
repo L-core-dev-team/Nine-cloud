@@ -25,7 +25,7 @@ export function buildP1NarrativeHints(receipt: TurnReceipt, save?: SaveEnvelope)
   // A duplicate request can arrive after later turns; the current save must not
   // make a past interaction appear to have contained a later injury or fatigue.
   let playerConditionLines: string[] = [];
-  if (save?.schemaVersion === 2 && save.revision === receipt.resultingRevision) {
+  if (save && (save.schemaVersion === 2 || save.schemaVersion === 3) && save.revision === receipt.resultingRevision) {
     const { creationRequestHash: _creationRequestHash, ...gameplayFacts } = save.state.facts;
     const parsed = PrologueV1FactsSchema.safeParse(gameplayFacts);
     if (parsed.success) {

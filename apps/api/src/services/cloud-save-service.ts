@@ -8,6 +8,8 @@ export type CloudSaveWriteResult =
   | { kind: 'conflict'; currentRevision?: number }
   | { kind: 'schema_version_conflict' }
   | { kind: 'memory_policy_pinned' }
+  | { kind: 'lineage_pinned' }
+  | { kind: 'canon_artifact_pinned' }
   | { kind: 'not_found' };
 
 export class CloudCapacityError extends Error {
@@ -25,7 +27,8 @@ export interface CloudSaveRepository {
     expectedRevision: number;
     next: SaveEnvelope;
   }): Promise<{ kind: 'updated' } | { kind: 'conflict'; currentRevision: number } |
-    { kind: 'schema_version_conflict' } | { kind: 'memory_policy_pinned' } | { kind: 'not_found' }>;
+    { kind: 'schema_version_conflict' } | { kind: 'memory_policy_pinned' } | { kind: 'lineage_pinned' }
+    | { kind: 'canon_artifact_pinned' } | { kind: 'not_found' }>;
 }
 
 const MAX_POSTGRES_INTEGER = 2_147_483_647;

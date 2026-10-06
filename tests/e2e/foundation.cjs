@@ -67,7 +67,7 @@ async function ready(url) {
   });
   run(viteFile, ['preview', '--host', '127.0.0.1', '--port', String(webPort), '--strictPort'], webRoot);
   const response = await ready(`http://127.0.0.1:${apiPort}/health`);
-  assert.equal((await response.json()).saveSchemaVersion, 2);
+  assert.equal((await response.json()).saveSchemaVersion, 3);
   await ready(`http://127.0.0.1:${webPort}/`);
   const edge = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
   const executablePath = process.env.PLAYWRIGHT_BROWSER_EXECUTABLE ||
@@ -898,7 +898,7 @@ async function ready(url) {
       assert.ok(connectionLogText.includes('HTTP 401'));
       assert.equal(connectionLogText.includes('test-secret-not-persisted'), false);
       await page.getByRole('button', { name: '关闭窗口' }).click();
-      assert.ok((await page.locator('body').innerText()).includes('契约 v2'));
+      assert.ok((await page.locator('body').innerText()).includes('契约 v3'));
       await page.getByRole('button', { name: '查看配置与成本' }).nth(2).click();
       assert.equal(await page.locator('.glass-dialog h2').innerText(), '长歌 · 旗舰');
       assert.ok((await page.locator('.preset-role-map').innerText()).includes('claude-opus-5-5'));
@@ -1212,7 +1212,7 @@ async function ready(url) {
         assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves.some(save=>JSON.stringify(save).includes('boundary story'))),'the accepted 20 MiB source must persist its parsed archive after reload; original byte backup was separately verified');
         // Remove only this isolated boundary fixture from the authoritative test DB.
         await page.evaluate(()=>new Promise((resolve,reject)=>{
-          const opened=indexedDB.open('jiuxiao-1',2);
+          const opened=indexedDB.open('jiuxiao-1',3);
           opened.onsuccess=()=>{const db=opened.result,tx=db.transaction(['saves','meta'],'readwrite'),store=tx.objectStore('saves'),meta=tx.objectStore('meta');
             const rows=store.getAll();rows.onsuccess=()=>{for(const save of rows.result)if(JSON.stringify(save).includes('boundary story'))store.delete(save.saveId);};
             const revision=meta.get('revision');revision.onsuccess=()=>meta.put({key:'revision',value:revision.result.value+1});

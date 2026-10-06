@@ -1,11 +1,28 @@
 import { describe, expect, it } from 'vitest';
+import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import canonRuntime from './canon-runtime.json' with { type: 'json' };
 import { canonRuntimeEntries, getCanonRuntimeEntry, searchCanonRuntime } from './worldbook.js';
+import { formatCanonArtifactHash } from './canon-artifact.js';
 
 describe('public Canon runtime', () => {
+  it('computes an identity from the exact current source bytes without implying approval', () => {
+    // Resolve the source artifact from both src/ and emitted dist/ tests.
+    const sourcePath = fileURLToPath(new URL('../src/canon-runtime.json', import.meta.url));
+    const bytes = readFileSync(sourcePath);
+    const sourceRuntime = JSON.parse(bytes.toString('utf8')) as unknown;
+    // TypeScript may reformat JSON when it emits the package dist file. The
+    // runtime object must still be semantically identical to the signed source.
+    expect(canonRuntime).toEqual(sourceRuntime);
+    const hash = formatCanonArtifactHash(new Uint8Array(createHash('sha256').update(bytes).digest()));
+    expect(hash).toBe(`sha256:${createHash('sha256').update(bytes).digest('hex')}`);
+    expect(formatCanonArtifactHash(new Uint8Array(createHash('sha256').update(Buffer.concat([bytes, Buffer.from('\n')])).digest())))
+      .not.toBe(hash);
+    expect((sourceRuntime as { receiptsComplete?: boolean }).receiptsComplete).toBe(false);
+  });
+
   it('exposes every active public entry and excludes author-only source fields', () => {
     expect(canonRuntimeEntries).toHaveLength(34);
     expect(canonRuntimeEntries.map(entry => entry.id)).toEqual(canonRuntime.entries.map(entry => entry.id));

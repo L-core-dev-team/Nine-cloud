@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import { isAbsolute, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -9,6 +10,9 @@ import type { ServerTurnRules } from './server-turn.js';
 import { NarrativeScheduler, type NarrativeContext, type RoleSlot, type NarrativeRole } from './narrative-scheduler.js';
 import { P1_REVIEW_RULE_APPROVAL, type P1ReviewRuleApproval } from './p1-review-rule-approval.js';
 import { loadP1NluRuntime, type P1NluRuntime } from './p1-nlu-runtime.js';
+import { computeRuleSemanticDigest } from './rule-semantic-fingerprint.js';
+import { evaluateP1ReviewSemanticGate } from './p1-review-semantic-gate.js';
+import { createP1RuleSemanticDependencies, type P1RuleSemanticInputSources } from './p1-rule-semantic-functions.js';
 
 /** A review-only candidate must match the pinned author-approved digest. */
 export type TurnPlugin = {
@@ -51,10 +55,25 @@ export async function loadTurnPlugin(path:string|undefined,load:(url:string)=>Pr
   // This exact candidate can only be loaded outside production. Production
   // continues to use the independent Canon/deployment gate below.
   if(process.env.NODE_ENV==='production')return undefined;
-  await assertApprovedReviewPluginSource();
+  const implementationFingerprint=readApprovedRuleImplementationFingerprint();
   const module=await load(pathToFileURL(path).href);
   if(!module||typeof module!=='object'||!('default' in module))throw new Error('INVALID_TURN_PLUGIN');
-  const plugin=(module as {default:TurnPlugin}).default;
+  const candidate=module as {
+   default:TurnPlugin;
+   P1_RULE_SEMANTIC_INPUTS?:P1RuleSemanticInputSources;
+  };
+  const plugin=candidate.default;
+  if(!candidate.P1_RULE_SEMANTIC_INPUTS)throw new Error('P1_REVIEW_RULE_SEMANTIC_INPUTS_MISSING');
+  const semanticDependencies=createP1RuleSemanticDependencies({...candidate.P1_RULE_SEMANTIC_INPUTS,implementationFingerprint});
+  const actualSemanticDigest=computeRuleSemanticDigest(semanticDependencies);
+  const byteDiagnostics=await readReviewBytePinDiagnostics();
+  const gate=evaluateP1ReviewSemanticGate(P1_REVIEW_RULE_APPROVAL.semanticSha256,actualSemanticDigest,byteDiagnostics);
+  if(gate.status==='semantic_mismatch')throw new Error(gate.error);
+  if(gate.status==='approved_with_byte_drift')console.info(JSON.stringify({
+   event:'p1_review_rule_semantics_approved_byte_drift',diagnostic:gate.diagnostic,
+   semanticSha256:actualSemanticDigest,bundlePinMatches:byteDiagnostics.bundleMatches,
+   pluginSourcePinMatches:byteDiagnostics.pluginSourceMatches,
+  }));
   if(!matchesApprovedReviewPlugin(plugin))throw new Error('P1_REVIEW_RULE_APPROVAL_MISMATCH');
   const reviewedPlugin:TurnPlugin={...plugin,...await loadP1NluRuntime()};
   prepareTurnRuntime(reviewedPlugin);
@@ -72,11 +91,41 @@ export async function loadTurnPlugin(path:string|undefined,load:(url:string)=>Pr
  return plugin;
 }
 
+function readApprovedRuleImplementationFingerprint():string{
+ const digestScript=resolve(fileURLToPath(new URL('../../../../scripts/p1-rule-semantic-source-digest.mjs',import.meta.url)));
+ const result=spawnSync(process.execPath,[digestScript],{encoding:'utf8',windowsHide:true});
+ if(result.status!==0)throw new Error('P1_REVIEW_RULE_SEMANTIC_SOURCE_UNAVAILABLE');
+ try{
+  const actual=(JSON.parse(result.stdout) as {sha256?:unknown}).sha256;
+  if(typeof actual==='string'&&/^sha256:[0-9a-f]{64}$/.test(actual))return actual;
+ }catch{}
+ throw new Error('P1_REVIEW_RULE_SEMANTIC_SOURCE_INVALID');
+}
+
+async function readReviewBytePinDiagnostics():Promise<{bundleMatches:boolean|null;pluginSourceMatches:boolean|null}>{
+ let bundleMatches:boolean|null=null;
+ const digestScript=resolve(fileURLToPath(new URL('../../../../scripts/p1-rule-candidate-digest.mjs',import.meta.url)));
+ const result=spawnSync(process.execPath,[digestScript],{encoding:'utf8',windowsHide:true});
+ if(result.status===0){
+  try{
+   const actual=(JSON.parse(result.stdout) as {sha256?:unknown}).sha256;
+   if(typeof actual==='string')bundleMatches=`sha256:${actual}`===P1_REVIEW_RULE_APPROVAL.bundleSha256;
+  }catch{}
+ }
+ let pluginSourceMatches:boolean|null=null;
+ try{
+  const source=await readFile(new URL('../../src/services/p1-prologue-plugin.ts',import.meta.url),'utf8');
+  const normalized=source.replace(/\r\n/g,'\n');
+  const actual=`sha256:${createHash('sha256').update(normalized,'utf8').digest('hex')}`;
+  pluginSourceMatches=actual===P1_REVIEW_RULE_APPROVAL.pluginSourceSha256;
+ }catch{}
+ return {bundleMatches,pluginSourceMatches};
+}
+
 function matchesApprovedReviewPlugin(plugin:TurnPlugin):boolean{
  const approval=plugin?.reviewApproval;
  return !!plugin?.rules&&approval?.scope===P1_REVIEW_RULE_APPROVAL.scope
-  &&approval.bundleSha256===P1_REVIEW_RULE_APPROVAL.bundleSha256
-  &&approval.pluginSourceSha256===P1_REVIEW_RULE_APPROVAL.pluginSourceSha256
+  &&approval.semanticSha256===P1_REVIEW_RULE_APPROVAL.semanticSha256
   &&approval.ruleVersion===P1_REVIEW_RULE_APPROVAL.ruleVersion
   &&approval.canonVersion===P1_REVIEW_RULE_APPROVAL.canonVersion
   &&approval.actionRulesVersion===P1_REVIEW_RULE_APPROVAL.actionRulesVersion
@@ -85,11 +134,4 @@ function matchesApprovedReviewPlugin(plugin:TurnPlugin):boolean{
   &&plugin.rules.ruleVersion===P1_REVIEW_RULE_APPROVAL.ruleVersion
   &&plugin.rules.canonVersion===P1_REVIEW_RULE_APPROVAL.canonVersion
   &&plugin.rules.memoryPolicyVersion===P1_REVIEW_RULE_APPROVAL.memoryPolicyVersion;
-}
-
-async function assertApprovedReviewPluginSource():Promise<void>{
- const source=await readFile(new URL('../../src/services/p1-prologue-plugin.ts',import.meta.url),'utf8');
- const normalized=source.replace(/\r\n/g,'\n');
- const actual=`sha256:${createHash('sha256').update(normalized,'utf8').digest('hex')}`;
- if(actual!==P1_REVIEW_RULE_APPROVAL.pluginSourceSha256)throw new Error('P1_REVIEW_PLUGIN_SOURCE_MISMATCH');
 }

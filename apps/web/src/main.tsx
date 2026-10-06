@@ -1,7 +1,7 @@
 import {claimCharacterDraftId} from './idb';
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { SAVE_SCHEMA_VERSION } from '@jiuxiao/contracts';
+import { SAVE_SCHEMA_VERSION, type MemoryMode } from '@jiuxiao/contracts';
 import { SCENE_MANIFEST, sceneForLocation, type SceneId } from '@jiuxiao/content/scenes';
 import type { CanonRuntimeEntry } from '@jiuxiao/content/worldbook';
 import { AiSettings } from './ai-settings';
@@ -216,9 +216,13 @@ function SaveManager({ saves, onRename, onDelete, onExport }: {
   </section>;
 }
 
-function NewCharacter({ onSaved }: { onSaved: (save: LocalSave) => Promise<boolean> }) {
+function NewCharacter({ onSaved, onBack }: {
+  onSaved: (save: LocalSave, memoryMode: MemoryMode) => Promise<boolean>;
+  onBack?: () => void;
+}) {
   const [form, setForm] = useState<Record<string, string>>(readDraft);
   const [step, setStep] = useState(0);
+  const [memoryMode, setMemoryMode] = useState<MemoryMode>('continue');
   const [error, setError] = useState('');
   const draftIdentity=useRef<Promise<string>|null>(null);
   function acquireDraft(){return draftIdentity.current??=claimCharacterDraftId().catch(error=>{draftIdentity.current=null;throw error;});}
@@ -246,7 +250,7 @@ function NewCharacter({ onSaved }: { onSaved: (save: LocalSave) => Promise<boole
     const now = new Date().toISOString();
     const name = form.name?.trim() || '无名修士';
     const save: LocalSave = { schemaVersion: 1, saveId: draftId, name, createdAt: now, updatedAt: now, revision: 0, canonVersion: 'pending-author-review', ruleVersion: 'rules-not-signed', memoryPolicyVersion: 'none', character: { ...form, name, talents }, location: form.region || '中州天枢域', status: 'pending_rules', messages: [], pending: { id: createSaveId(), text: mode === 'random' ? '按已录入资料生成随机角色并开始第一幕。当前尚无规则结算，因此此意图不会自行改变人物资料。' : '按已填写的角色设定，开始第一幕。', gm: false, source: mode === 'random' ? 'RANDOM_START' : 'CHARACTER_START' } };
-    if (!await onSaved(save)) { setError('存档列表刚有变化，或浏览器存储不可用。角色草稿仍在；请刷新存档列表后再提交。'); return; }
+    if (!await onSaved(save, memoryMode)) { setError('存档列表刚有变化，或浏览器存储不可用。角色草稿仍在；请刷新存档列表后再提交。'); return; }
     clearDraft();
     } catch { setError('建角提交未完成。角色草稿仍在，请确认本地存储可用后重试。'); }
     finally { submittingRef.current = false; setSubmitting(false); }
@@ -267,8 +271,9 @@ function NewCharacter({ onSaved }: { onSaved: (save: LocalSave) => Promise<boole
     }}><option value="">选择后仍可自由修改</option>{CHARACTER_OPTIONS[key]!.map(option => <option key={option} value={option}>{option}</option>)}</select></label>}</div>)}</div>
     <p className="quiet-note">备选文字只填写角色草稿；修为、灵根与天赋仍须经过开局规则确认，不直接授予能力。</p>
     {step === 2 && <section className="character-summary" aria-label="角色提交前摘要"><h3>回看行传</h3><dl>{fields.map(([key, label]) => <div key={key}><dt>{label}</dt><dd>{form[key]?.trim() || (key === 'region' ? '中州天枢域' : key === 'name' ? '无名修士' : '未填写')}</dd></div>)}</dl></section>}
+    {import.meta.env.DEV && step === 2 && <fieldset className="character-summary" aria-label="NPC 记忆模式"><legend>本机 P2 审阅候选 · NPC 记忆模式</legend><label><input type="radio" name="p2-memory-mode" value="continue" checked={memoryMode === 'continue'} onChange={() => setMemoryMode('continue')} />存档与继续：授权可见事件永久可回忆</label><label><input type="radio" name="p2-memory-mode" value="forgetting" checked={memoryMode === 'forgetting'} onChange={() => setMemoryMode('forgetting')} />真实遗忘：同一批事件按游戏时间与 NPC 亲历事件衰减</label><small>仅开发构建加载候选规则；不代表签署完成或生产启用。</small></fieldset>}
     {error && <p className="error" role="alert">{error}</p>}
-    <div className="actions"><button className="secondary" onClick={() => step ? setStep(step - 1) : go('/lobby')}>{step ? '上一步' : '返回山门'}</button>
+    <div className="actions"><button className="secondary" onClick={() => step ? setStep(step - 1) : (onBack ?? (() => go('/lobby')))()}>{step ? '上一步' : '返回山门'}</button>
       {step < 2 ? <button className="primary" onClick={() => { setError(''); setStep(step + 1); }}>下一步</button> : <>
         <button className="secondary" disabled={submitting} onClick={() => submit('random')}>按资料随机开局<span>保留随机开局意图</span></button>
         <button className="primary" disabled={submitting} onClick={() => submit('manual')}>保存角色并进入<span>本地存档 · 待剧情规则接入</span></button>
@@ -407,7 +412,32 @@ function visibleLegacyText(value: unknown): string | null {
   return null;
 }
 
-function Game({ save, onExport, onImportSupplement, onUpdate, onBranch, onReload }: { save: LocalSave | undefined; onExport: (save?: LocalSave) => void; onImportSupplement: (file: File, save: LocalSave) => void; onUpdate: (save: LocalSave) => Promise<SaveCommitResult>; onBranch: (save: LocalSave) => Promise<boolean>; onReload: () => Promise<void> }) {
+type GameProps = { save: LocalSave | undefined; onExport: (save?: LocalSave) => void; onImportSupplement: (file: File, save: LocalSave) => void; onUpdate: (save: LocalSave) => Promise<SaveCommitResult>; onBranch: (save: LocalSave) => Promise<boolean>; onReload: () => Promise<void>; onBack?: () => void };
+
+const P2ReviewGame = import.meta.env.DEV ? lazy(() => import('./routes/P2ReviewGame')) : null;
+
+function Game(props: GameProps) {
+  if (import.meta.env.DEV && props.save?.p2ReviewCandidate && P2ReviewGame) {
+    return <Suspense fallback={<section className="page" role="status">正在恢复本地审阅候选存档……</section>}><P2ReviewGame save={props.save} onBack={props.onBack ?? (() => go('/lobby'))} /></Suspense>;
+  }
+  return <LegacyGame {...props} />;
+}
+
+function LegacyGame({ save, onExport, onImportSupplement, onUpdate, onBranch, onReload }: GameProps) {
+  const storyRef = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    if (!save) return;
+    const key = `jiuxiao_1_game_scroll_${save.saveId}`;
+    let top = 0;
+    try { top = Math.max(0, Number(sessionStorage.getItem(key) || 0)); } catch { /* Position is optional. */ }
+    const restore = () => window.scrollTo(0, Math.min(top, Math.max(0, document.documentElement.scrollHeight - window.innerHeight)));
+    restore();
+    const frame = requestAnimationFrame(restore);
+    return () => {
+      cancelAnimationFrame(frame);
+      try { sessionStorage.setItem(key, String(window.scrollY)); } catch { /* Keep the save untouched. */ }
+    };
+  }, [save?.saveId]);
   const [activePanel, setActivePanel] = useState<'character' | 'intel' | 'memory' | null>(null);
   const [intent, setIntent] = useState(() => save ? readActionDraft(save.saveId) : '');
   const [feedback, setFeedback] = useState('');
@@ -687,11 +717,39 @@ function App() {
   const worldReturnTarget = history.state?.returnTo;
   const returningToJourney = typeof worldReturnTarget === 'string' && /^\/game\/[^/]+$/.test(worldReturnTarget)
     && worldReturnTarget === `/game/${activeSave?.saveId}`;
-  const page = currentRoute === '/new' ? <NewCharacter onSaved={async save => {
-    const result = await commitSaves(saves, [save, ...saves]);
+  const page = currentRoute === '/new' ? <NewCharacter onSaved={async (save, memoryMode) => {
+    let persisted = save;
+    if (import.meta.env.DEV) {
+      try {
+        const [{ loadP2ReviewGameplayRuntime }, { createLocalAuthoritativeSave, readLocalAuthoritativeSave }] = await Promise.all([
+          import('./p2-review-gameplay-runtime'),
+          import('./authoritative-turn-store'),
+        ]);
+        const runtime = await loadP2ReviewGameplayRuntime();
+        const authority = await runtime.createSave(save.saveId, memoryMode);
+        const created = await createLocalAuthoritativeSave(authority);
+        if (created.status !== 'created' && created.status !== 'already_exists') {
+          setNotice('本地规则候选存档未建立；旧存档保持不变。'); return false;
+        }
+        const existing = created.status === 'already_exists' ? await readLocalAuthoritativeSave(save.saveId) : authority;
+        if (!existing || existing.memoryMode !== memoryMode || existing.ruleVersion !== runtime.ruleVersion || existing.canonVersion !== runtime.canonVersion) {
+          setNotice('同一建档编号已绑定不同的候选规则或记忆模式；未覆盖原始存档。'); return false;
+        }
+        persisted = {
+          ...save,
+          p2ReviewCandidate: true,
+          canonVersion: runtime.canonVersion,
+          ruleVersion: runtime.ruleVersion,
+          memoryPolicyVersion: existing.memoryPolicyVersion,
+        };
+      } catch {
+        setNotice('本机候选规则、Canon 字节或安全上下文不可用；未建立可玩存档。'); return false;
+      }
+    }
+    const result = await commitSaves(saves, [persisted, ...saves]);
     if (!result.ok) { setSaves(result.saves); setNotice(result.reason === 'conflict' ? '存档列表刚有变化，角色尚未创建。请确认后重试。' : '浏览器数据库不可写，角色尚未创建。草稿仍保留。'); return false; }
     setSaves(result.saves); if (result.warning) setNotice(commitSuccessMessage(result, '角色与新存档已创建。')); go(`/game/${save.saveId}`); return true;
-  }} /> : currentRoute === '/intro' ? <Introduction onStart={() => go('/new')} onWorld={() => go('/world')} /> : currentRoute === '/world' ? <World onClose={returnFromReading} save={activeSave} onImportSupplement={importSupplement} isReturningToJourney={returningToJourney} /> : currentRoute === '/settings/ai' ? <AiSettings onClose={returnFromReading} /> : currentRoute === '/settings/cloud' ? <CloudSettings saves={saves} onRestore={async archive => {
+    }} onBack={() => go('/lobby')} /> : currentRoute === '/intro' ? <Introduction onStart={() => go('/new')} onWorld={() => go('/world')} /> : currentRoute === '/world' ? <World onClose={returnFromReading} save={activeSave} onImportSupplement={importSupplement} isReturningToJourney={returningToJourney} /> : currentRoute === '/settings/ai' ? <AiSettings onClose={returnFromReading} /> : currentRoute === '/settings/cloud' ? <CloudSettings saves={saves} onRestore={async archive => {
     const copied = { ...archive, saveId: createSaveId(), name: `${archive.name}（云端副本）`, updatedAt: new Date().toISOString() };
     const expected = readSaves(); const result = await commitSaves(expected, [copied, ...expected]);
     setSaves(result.saves); if (result.ok) setNotice(commitSuccessMessage(result, '云端档已恢复为新副本。')); return result.ok ? copied : null;

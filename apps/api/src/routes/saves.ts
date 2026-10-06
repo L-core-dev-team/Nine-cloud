@@ -170,6 +170,8 @@ export function mountCloudSaveRoutes(app: Hono, { service, auth, archive }: Rout
       if (result.kind === 'conflict') return c.json({ code: 'REVISION_CONFLICT', currentRevision: result.currentRevision }, 409);
       if (result.kind === 'schema_version_conflict') return c.json({ code: 'SAVE_SCHEMA_VERSION_IMMUTABLE' }, 409);
       if (result.kind === 'memory_policy_pinned') return c.json({ code: 'SAVE_MEMORY_POLICY_PINNED' }, 409);
+      if (result.kind === 'lineage_pinned') return c.json({ code: 'SAVE_LINEAGE_IMMUTABLE' }, 409);
+      if (result.kind === 'canon_artifact_pinned') return c.json({ code: 'SAVE_CANON_ARTIFACT_PINNED' }, 409);
       return c.json({ code: 'NOT_FOUND' }, 404);
     } catch (error) { return publicError(error); }
   });

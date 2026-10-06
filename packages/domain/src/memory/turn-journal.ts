@@ -23,6 +23,7 @@ export type NpcMemoryTurnPreparation =
 /** Frozen, mode-neutral authorization record written atomically with a RULES turn. */
 export type AuthorizedObservationOutboxRecord = {
   grantId: string;
+  grantIdVersion: 1 | 2;
   saveId: string;
   branchId: 'root';
   npcId: string;
@@ -148,7 +149,7 @@ export function serializeNpcMemoryJournal(journal: NpcMemoryJournal): string {
 /** Validate the durable grant independently from the bounded, legacy-compatible recall journal. */
 export function assertAuthorizedObservationOutboxRecord(value: unknown): asserts value is AuthorizedObservationOutboxRecord {
   assertRecord(value, 'Invalid authorized observation outbox record');
-  assertExactKeys(value, ['grantId', 'saveId', 'branchId', 'npcId', 'eventId', 'eventRevision', 'observedAtMinute',
+  assertExactKeys(value, ['grantId', 'grantIdVersion', 'saveId', 'branchId', 'npcId', 'eventId', 'eventRevision', 'observedAtMinute',
     'channel', 'authorizationPolicyVersion', 'authorizedFields', 'authorizedFacts', 'summary'],
   'Invalid authorized observation outbox record');
   if (typeof value.saveId !== 'string' || !value.saveId.trim() || value.saveId.length > 200
@@ -161,7 +162,10 @@ export function assertAuthorizedObservationOutboxRecord(value: unknown): asserts
     || value.authorizationPolicyVersion.length > 200
     || typeof value.summary !== 'string' || !value.summary.trim() || value.summary.length > MAX_VISIBLE_SUMMARY_LENGTH
     || !validAuthorizedFacts(value.authorizedFields as readonly string[], value.authorizedFacts as Readonly<Record<string, unknown>>, value.summary)
-    || typeof value.grantId !== 'string' || value.grantId !== stableGrantId(value.saveId, value.branchId, value.eventId, value.npcId)
+    || (value.grantIdVersion !== 1 && value.grantIdVersion !== 2)
+    || typeof value.grantId !== 'string' || value.grantId !== (value.grantIdVersion === 1
+      ? stableGrantIdV1(value.saveId, value.branchId, value.eventId, value.npcId)
+      : stableGrantIdV2(value.saveId, value.branchId, value.npcId, value.eventId, value.authorizationPolicyVersion))
     || value.grantId.length > 2000) {
     throw new Error('Invalid authorized observation outbox record');
   }
@@ -234,7 +238,8 @@ export function prepareNpcMemoryTurn(input: PrepareNpcMemoryTurnOptions): NpcMem
       const nextMemory = rememberObservedEvent(memory, event, grant, input.observedAtMinute);
       assertNpcMemory(nextMemory);
       const observation: AuthorizedObservationOutboxRecord = {
-        grantId: stableGrantId(input.saveId, event.branchId ?? 'root', event.id, grant.npcId),
+        grantId: stableGrantIdV2(input.saveId, event.branchId ?? 'root', grant.npcId, event.id, grant.authorizationPolicyVersion),
+        grantIdVersion: 2,
         saveId: input.saveId,
         branchId: event.branchId ?? 'root',
         npcId: grant.npcId,
@@ -306,8 +311,21 @@ function assertObservationGrantShape(value: unknown): asserts value is Observati
   }
 }
 
-function stableGrantId(saveId: string, branchId: string, eventId: string, npcId: string): string {
+function stableGrantIdV1(saveId: string, branchId: string, eventId: string, npcId: string): string {
   return [saveId, branchId, eventId, npcId].map(part => `${part.length}:${part}`).join('');
+}
+
+/** Portable v2 identity: versioned, UTF-8 byte-length-prefixed, and bound to authorization policy. */
+export function stableGrantIdV2(
+  saveId: string,
+  branchId: string,
+  npcId: string,
+  eventId: string,
+  authorizationPolicyVersion: string,
+): string {
+  const encoder = new TextEncoder();
+  const parts = [saveId, branchId, npcId, eventId, authorizationPolicyVersion];
+  return `grant:v2:${parts.map(part => `${encoder.encode(part).byteLength}:${part}`).join('')}`;
 }
 
 function assertRecord(value: unknown, message: string): asserts value is Record<string, unknown> {

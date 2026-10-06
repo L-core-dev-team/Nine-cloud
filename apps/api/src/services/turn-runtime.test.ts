@@ -1,11 +1,13 @@
 import {describe,it,expect,vi} from 'vitest';
-import {randomUUID} from 'node:crypto';
+import {createHash,randomUUID} from 'node:crypto';
+import {readFileSync} from 'node:fs';
 import {dirname,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import type {SaveEnvelope,TurnReceipt,DomainEvent} from '@jiuxiao/contracts';
 import {createNpcMemoryJournal,replayEvents,prepareNpcMemoryTurn} from '@jiuxiao/domain';
 import {prepareTurnRuntime,loadTurnPlugin,type TurnPlugin} from './turn-runtime.js';
 import {AuthoritativeGameService} from './authoritative-game.js';
+import { computeCanonRuntimeArtifactHash } from './authoritative-game.js';
 import {ServerTurnService,type ServerTurnRepository} from './server-turn.js';
 const plugin:TurnPlugin={
  provider:{version:{ruleVersion:'synthetic',ActionRulesVersion:'synthetic-action',CombatRulesVersion:'synthetic-combat',canonVersion:'synthetic',memoryPolicyVersion:'synthetic'},resolve:(_intent,save)=>({status:'accepted',outcome:'success',delta:{timeChange:15,locationChange:null,factChanges:[{key:'items',before:{present:true,value:save.state.facts.items},after:{present:true,value:Number(save.state.facts.items)-1}},{key:'gameMinute',before:{present:true,value:save.state.facts.gameMinute},after:{present:true,value:Number(save.state.facts.gameMinute)+15}}]}})},
@@ -30,6 +32,11 @@ describe('host plugin and complete synthetic turn path',()=>{
   expect(await new AuthoritativeGameService(repo).create('a','request-1',{})).toEqual({status:'rules_not_ready'});
   const service=new AuthoritativeGameService(repo,prepareTurnRuntime(plugin));
   const results=await Promise.all(Array.from({length:10},()=>service.create('a','request-1',{name:'test'})));
+  const created=[...saves.values()][0];
+  const canonBytes=readFileSync(new URL('../../../../packages/content/src/canon-runtime.json',import.meta.url));
+  const independentlyComputedHash=`sha256:${createHash('sha256').update(canonBytes).digest('hex')}`;
+  expect(await computeCanonRuntimeArtifactHash()).toBe(independentlyComputedHash);
+  expect(created?.schemaVersion===3?created.canonArtifactHash:undefined).toBe(independentlyComputedHash);
   expect(saves.size).toBe(1);expect(results.filter(r=>r.status==='created'&&!r.duplicate)).toHaveLength(1);
   expect(await service.create('a','request-1',{name:'changed'})).toEqual({status:'conflict'});
   await service.create('b','request-1',{name:'test'});expect(saves.size).toBe(2);

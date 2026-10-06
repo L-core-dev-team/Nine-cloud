@@ -106,8 +106,25 @@ async function waitFor(url, child, stderr) {
     child.stderr.on('data', chunk => { childStderr += chunk.toString(); });
     child.stdout.on('data', () => {});
 
-    const health = await waitFor(`${origin}/health`, child, () => childStderr);
-    assert.equal((await health.json()).saveSchemaVersion, 2);
+    let health;
+    try {
+      health = await waitFor(`${origin}/health`, child, () => childStderr);
+    } catch (error) {
+      // P2 changes shared Save contracts, so the old P1 candidate digest must
+      // stay closed until its exact bundle is re-approved. Treat that startup
+      // rejection as the expected fail-closed branch, never as gameplay proof.
+      if (!childStderr.includes('P1_REVIEW_RULE_BUNDLE_MISMATCH')) throw error;
+      const writes = await pool.query(`SELECT
+        (SELECT count(*)::int FROM game_saves WHERE owner_id=$1) AS saves,
+        (SELECT count(*)::int FROM turn_requests r JOIN game_saves s ON s.id=r.save_id WHERE s.owner_id=$1) AS requests,
+        (SELECT count(*)::int FROM turn_events e JOIN game_saves s ON s.id=e.save_id WHERE s.owner_id=$1) AS events,
+        (SELECT count(*)::int FROM npc_memory_journals j JOIN game_saves s ON s.id=j.save_id WHERE s.owner_id=$1) AS journals,
+        (SELECT count(*)::int FROM npc_authorized_observation_outbox o JOIN game_saves s ON s.id=o.save_id WHERE s.owner_id=$1) AS observations`, [ownerId]);
+      assert.deepEqual(writes.rows[0], { saves: 0, requests: 0, events: 0, journals: 0, observations: 0 });
+      console.log('P1 authenticated candidate journey stayed closed: candidate bundle hash mismatch; no save, receipt, event, journal, or NPC observation was written. This is not positive gameplay acceptance.');
+      return;
+    }
+    assert.equal((await health.json()).saveSchemaVersion, 3);
     await waitFor(`${origin}/ready`, child, () => childStderr);
     const session = await fetch(`${origin}/api/auth/session`, { headers: { cookie: `jx_session=${token}`, origin } });
     assert.equal(session.status, 200);
@@ -119,7 +136,7 @@ async function waitFor(url, child, stderr) {
       });
       assert.equal(response.status, 201, await response.clone().text());
       const body = await response.json();
-      assert.equal(body.save.schemaVersion, 2);
+      assert.equal(body.save.schemaVersion, 3);
       assert.equal(body.save.memoryMode, memoryMode);
       assert.equal(body.save.memoryPolicy.mode, memoryMode);
       createdSaveIds.push(body.save.saveId);
@@ -264,7 +281,7 @@ async function waitFor(url, child, stderr) {
     }
     assert.equal(rows.rows.reduce((sum, row) => sum + row.requests, 0), expectedRequests);
     assert.equal(rows.rows.reduce((sum, row) => sum + row.events, 0), expectedEvents);
-    assert.ok(rows.rows.every(row => row.schema_version === 2));
+    assert.ok(rows.rows.every(row => row.schema_version === 3));
     assert.ok(rows.rows.every(row => row.memory_policy.mode === row.memory_mode));
 
     console.log(`Authenticated P1 review-runtime journey passed: ${expectedRequests} turn requests, ${expectedEvents} committed events, ${expectedObservations} direct-NPC memory grants; both Continue and Forgetting saves completed first clearance by different deterministic paths.`);

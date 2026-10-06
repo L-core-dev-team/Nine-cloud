@@ -2,10 +2,12 @@ import { describe, expect, it } from 'vitest';
 import type { DomainEvent } from '@jiuxiao/contracts';
 import {
   assertNpcMemoryJournal,
+  assertAuthorizedObservationOutboxRecord,
   createNpcMemoryJournal,
   parseNpcMemoryJournalJson,
   prepareNpcMemoryTurn,
   serializeNpcMemoryJournal,
+  stableGrantIdV2,
 } from './turn-journal.js';
 
 const EVENT_1 = '11111111-1111-4111-8111-111111111111';
@@ -66,7 +68,7 @@ describe('NPC memory turn journal', () => {
     expect(result.journal.memories[0]?.observations[0]?.summary).toBe('只看到门外来客');
     expect(result.authorizedObservations).toHaveLength(1);
     expect(result.authorizedObservations[0]).toMatchObject({
-      grantId: ['save-1', 'root', EVENT_1, 'npc-1'].map(part => `${part.length}:${part}`).join(''), branchId: 'root',
+      grantId: stableGrantIdV2('save-1', 'root', 'npc-1', EVENT_1, 'visibility-v1'), grantIdVersion: 2, branchId: 'root',
       authorizedFields: ['summary'], authorizedFacts: { summary: '只看到门外来客' },
     });
     expect(JSON.stringify(result.journal)).not.toContain('secret must not enter NPC memory');
@@ -74,6 +76,25 @@ describe('NPC memory turn journal', () => {
 
     const restored = parseNpcMemoryJournalJson(serializeNpcMemoryJournal(result.journal));
     expect(restored).toEqual(result.journal);
+  });
+
+  it('uses portable UTF-8 byte lengths and binds grant identity to policy version', () => {
+    const first = stableGrantIdV2('存档', 'root', '岑九', EVENT_1, 'visibility-v1');
+    const policyChanged = stableGrantIdV2('存档', 'root', '岑九', EVENT_1, 'visibility-v2');
+    expect(first).toContain('6:存档');
+    expect(first).not.toBe(policyChanged);
+  });
+
+  it('keeps persisted v1 grant IDs readable during the append-only migration', () => {
+    const legacy = {
+      grantId: ['save-1', 'root', EVENT_1, 'npc-1'].map(part => `${part.length}:${part}`).join(''),
+      grantIdVersion: 1,
+      saveId: 'save-1', branchId: 'root', npcId: 'npc-1', eventId: EVENT_1,
+      eventRevision: 1, observedAtMinute: 10, channel: 'witnessed',
+      authorizationPolicyVersion: 'visibility-v1', authorizedFields: ['summary'],
+      authorizedFacts: { summary: '旧 grant 身份继续有效' }, summary: '旧 grant 身份继续有效',
+    };
+    expect(() => assertAuthorizedObservationOutboxRecord(legacy)).not.toThrow();
   });
 
   it('continues to parse and serialize the original schema-1 journal shape', () => {

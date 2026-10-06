@@ -22,6 +22,8 @@ export type LocalSave = {
   location: string;
   status: SaveStatus;
   messages: unknown[];
+  /** Marks a development-only local P2 candidate save; never enables production rules. */
+  p2ReviewCandidate?: true;
   pending?: unknown;
   pendingQueue?: unknown[];
   legacySupplement?: Record<string, unknown>;
@@ -44,6 +46,7 @@ export function isLocalSave(value: unknown): value is LocalSave {
     && typeof value.location === 'string' && value.status === 'pending_rules'
     && Array.isArray(value.messages);
   if (!valid) return false;
+  if (value.p2ReviewCandidate !== undefined && value.p2ReviewCandidate !== true) return false;
   if (value.legacySupplement !== undefined && !isRecord(value.legacySupplement)) return false;
   if (value.pendingQueue !== undefined && !Array.isArray(value.pendingQueue)) return false;
   if (value.legacyArchive !== undefined) {

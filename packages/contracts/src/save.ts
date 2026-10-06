@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { WorldStateSchema } from './world.js';
 
-export const SAVE_SCHEMA_VERSION = 2;
+export const SAVE_SCHEMA_VERSION = 3;
 
 export const MemoryModeSchema = z.enum(['continue', 'forgetting']);
 
@@ -34,7 +34,7 @@ export const SaveEnvelopeV1Schema = z.strictObject({
 });
 
 export const SaveEnvelopeV2Schema = z.strictObject({
-  schemaVersion: z.literal(SAVE_SCHEMA_VERSION),
+  schemaVersion: z.literal(2),
   saveId: z.string().min(1),
   canonVersion: z.string().min(1),
   ruleVersion: z.string().min(1),
@@ -52,11 +52,49 @@ export const SaveEnvelopeV2Schema = z.strictObject({
   }
 });
 
-/** New saves use v2; imported v1 saves remain distinguishable until explicit migration. */
-export const SaveEnvelopeSchema = z.union([SaveEnvelopeV2Schema, SaveEnvelopeV1Schema]);
+/** Branch lineage is explicit on v3 saves. Legacy envelopes are never backfilled. */
+export const SaveBranchLineageSchema = z.strictObject({
+  branchId: z.string().regex(/^[A-Za-z0-9][A-Za-z0-9._:-]{0,199}$/),
+  parentBranchId: z.string().regex(/^[A-Za-z0-9][A-Za-z0-9._:-]{0,199}$/).nullable(),
+  forkRevision: z.int().nonnegative(),
+  createdPolicyVersion: z.string().min(1).max(200),
+  sourceMigrationId: z.string().min(1).max(200).nullable(),
+});
+
+export const SaveEnvelopeV3Schema = z.strictObject({
+  schemaVersion: z.literal(SAVE_SCHEMA_VERSION),
+  saveId: z.string().min(1),
+  canonVersion: z.string().min(1),
+  /** Exact public Canon runtime artifact; distinct from a candidate ruleset's canonVersion label. */
+  canonArtifactHash: sha256ArtifactHash,
+  ruleVersion: z.string().min(1),
+  memoryPolicyVersion: z.string().min(1),
+  memoryMode: MemoryModeSchema,
+  memoryPolicy: SaveMemoryPolicySchema,
+  ...SaveBranchLineageSchema.shape,
+  revision: z.int().nonnegative(),
+  state: WorldStateSchema,
+}).superRefine((save, context) => {
+  if (save.memoryMode !== save.memoryPolicy.mode) {
+    context.addIssue({ code: 'custom', path: ['memoryMode'], message: 'Save memory mode must match its pinned memory policy' });
+  }
+  if (save.memoryPolicyVersion !== save.memoryPolicy.policyVersion
+    || save.createdPolicyVersion !== save.memoryPolicy.policyVersion) {
+    context.addIssue({ code: 'custom', path: ['memoryPolicyVersion'], message: 'Save policy lineage must match the pinned memory policy' });
+  }
+  if ((save.parentBranchId === null && (save.branchId !== 'root' || save.forkRevision !== 0))
+    || (save.parentBranchId !== null && (save.branchId === 'root' || save.parentBranchId === save.branchId))
+    || save.forkRevision > save.revision) {
+    context.addIssue({ code: 'custom', path: ['branchId'], message: 'Save branch lineage is inconsistent' });
+  }
+});
+
+/** V1/V2 exports remain readable without inventing mode or lineage metadata. */
+export const SaveEnvelopeSchema = z.union([SaveEnvelopeV3Schema, SaveEnvelopeV2Schema, SaveEnvelopeV1Schema]);
 
 export type MemoryMode = z.infer<typeof MemoryModeSchema>;
 export type SaveMemoryPolicy = z.infer<typeof SaveMemoryPolicySchema>;
 export type SaveEnvelopeV1 = z.infer<typeof SaveEnvelopeV1Schema>;
 export type SaveEnvelopeV2 = z.infer<typeof SaveEnvelopeV2Schema>;
+export type SaveEnvelopeV3 = z.infer<typeof SaveEnvelopeV3Schema>;
 export type SaveEnvelope = z.infer<typeof SaveEnvelopeSchema>;
