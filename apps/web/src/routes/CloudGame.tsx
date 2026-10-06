@@ -8,7 +8,7 @@ type ActionSuggestion = { id: string; kind: string; label: string; text: string 
 
 function messageFor(error: unknown): string {
   const code = error instanceof CloudHttpError ? error.code : undefined;
-  if (error instanceof CloudHttpError && error.status === 401) return '需要有效的邮箱会话。登录后可继续读取这份服务端存档。';
+  if (error instanceof CloudHttpError && error.status === 401) return '需要有效的游客或邮箱会话。请恢复对应账号后继续读取这份服务端存档。';
   if (code === 'RULES_NOT_READY') return '服务器规则运行时尚未就绪。存档仍保留，当前没有结算行动。';
   if (code === 'REVISION_CONFLICT') return '这份存档已在另一处推进。已重新读取最新状态，请核对后再行动。';
   if (code === 'VERSION_MISMATCH') return '存档绑定的规则或 Canon 版本与服务器不一致，已停止提交。';
@@ -94,7 +94,7 @@ export function CloudGame({ saveId, onBack, onHome, onLogin }: { saveId: string;
   return <section className="page cloud-game" data-testid="p2-cloud-game">
     <header className="cloud-game-heading"><div><span className="eyebrow">服务端规则存档</span><h2>行旅</h2></div><button className="secondary" onClick={onBack}>返回山门</button></header>
     <p role="status" data-testid="p2-status">{notice}</p>
-    {!save && !notFound && <div className="card"><p>存档尚未载入。需要已登录的邮箱会话。</p><button className="primary" onClick={onLogin}>账号与云档</button></div>}
+    {!save && !notFound && <div className="card"><p>存档尚未载入。请用创建时的游客或邮箱会话恢复。</p><button className="primary" onClick={onLogin}>账号与云档</button></div>}
     {notFound && <div className="card"><h2>找不到这份存档</h2><p>账号下没有这份服务端存档，或链接来自另一个账号。</p><button className="primary" onClick={onHome}>回到首页</button></div>}
     {save && <>
       <section className="card cloud-game-state" aria-label="服务端存档状态">

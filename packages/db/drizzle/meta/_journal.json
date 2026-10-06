@@ -127,6 +127,13 @@
       "when": 1791280000000,
       "tag": "0017_p2_canon_artifact_identity",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1791280001000,
+      "tag": "0018_p1_guest_accounts",
+      "breakpoints": true
     }
   ]
 }

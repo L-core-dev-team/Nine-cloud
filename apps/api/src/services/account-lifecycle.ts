@@ -78,7 +78,7 @@ export class AccountLifecycle {
  async expireClosed(apply=false){
   if(!this.policyVersion||!this.policyValid()||!this.deletionEnabled)throw new AccountLifecycleError('DATA_POLICY_NOT_READY');
   const c=await this.pool.connect();try{await c.query('BEGIN');
-   const rows=(await c.query("SELECT id,email FROM auth_accounts WHERE closed_at<=now()-interval '30 days' ORDER BY id LIMIT 100 FOR UPDATE SKIP LOCKED")).rows;
+   const rows=(await c.query("SELECT id,email,is_guest FROM auth_accounts WHERE closed_at<=now()-interval '30 days' OR (is_guest=true AND closed_at IS NULL AND last_seen_at<=now()-interval '90 days') ORDER BY id LIMIT 100 FOR UPDATE SKIP LOCKED")).rows;
    if(apply)for(const account of rows){
     const owner=account.id,id=randomUUID();
     await c.query("INSERT INTO account_operations(id,owner_id,session_hash,operation,old_email,phase,expires_at) VALUES($1,$2,'scheduled-expiry','delete',NULL,'ready',now()+interval '1 minute')",[id,owner]);
@@ -90,7 +90,7 @@ export class AccountLifecycle {
     await c.query('DELETE FROM auth_accounts WHERE id=$1',[owner]);
    }
    if(apply){await c.query("UPDATE account_operations SET old_email=NULL,new_email=NULL,digest=NULL WHERE phase IN ('completed','cancelled','failed') OR expires_at<=now()");await c.query('DELETE FROM account_rate_limits WHERE expires_at<=now()');}
-   await c.query(apply?'COMMIT':'ROLLBACK');return {mode:apply?'applied':'dry_run',eligible:rows.length,erased:apply?rows.length:0,backups:'HOST_POLICY_PENDING'};
+   await c.query(apply?'COMMIT':'ROLLBACK');return {mode:apply?'applied':'dry_run',eligible:rows.length,eligibleGuests:rows.filter(row=>row.is_guest===true).length,erased:apply?rows.length:0,backups:'HOST_POLICY_PENDING'};
   }catch(e){await c.query('ROLLBACK');throw e;}finally{c.release();}
  }
 

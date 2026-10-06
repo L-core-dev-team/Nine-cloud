@@ -7,7 +7,7 @@ import { consumeAccountQuota } from '../services/account-rate-limit.js';
 import { readJson } from './saves.js';
 import { sessionToken,authCookie } from './auth.js';
 export function mountAccount(app:Hono,auth:EmailAuthService,lifecycle:AccountLifecycle,exporter:AccountExport,origin:string,sameSite:'Strict'|'None'='Strict'){
- const ownerFor=async(req:Request)=>{const token=sessionToken(req);const session=await auth.resolve(token);const expected=req.headers.get('x-jiuxiao-account');return session&&token&&(!expected||session.ownerId===expected)?{owner:session.ownerId,hash:hashToken(token)}:null;};
+ const ownerFor=async(req:Request)=>{const token=sessionToken(req);const session=await auth.resolve(token);const expected=req.headers.get('x-jiuxiao-account');return session?.kind==='email'&&token&&(!expected||session.ownerId===expected)?{owner:session.ownerId,hash:hashToken(token)}:null;};
  app.get('/api/account/capabilities',async c=>await ownerFor(c.req.raw)?c.json(lifecycle.capabilities()):c.json({code:'UNAUTHENTICATED'},401));
  app.get('/api/account/export',async c=>{
   const account=await ownerFor(c.req.raw);if(!account)return c.json({code:'UNAUTHENTICATED'},401);

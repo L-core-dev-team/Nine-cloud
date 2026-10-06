@@ -40,7 +40,7 @@ export function createEmailAuthRuntime(pool: Pool, env: NodeJS.ProcessEnv) {
       console.info(JSON.stringify({event:'auth_mail',stage:'mail_send',code:'PROVIDER_ACCEPTED',requestId:randomUUID(),messageIdHash:createHash('sha256').update(String(result.messageId)).digest('hex')}));
     }catch(error){const failure=error instanceof AuthFailure?error:classifyMailFailure(error);console.warn(JSON.stringify({event:'auth_mail',code:failure.code,stage:failure.stage,requestId:failure.requestId}));throw failure;}
   };
-  const service = new EmailAuthService(new PostgresEmailAuthRepository(pool), async (email, code) => {
+  const service = new EmailAuthService(new PostgresEmailAuthRepository(pool, secret), async (email, code) => {
     await send(email,'九霄登录验证码',`登录验证码：${code}\n10 分钟内有效。若非本人操作，请忽略。`);
   }, secret);
   const productionPolicy=env.NODE_ENV==='production'?loadDataPolicy(env.ACCOUNT_DATA_POLICY_PATH):undefined;

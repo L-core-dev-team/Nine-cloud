@@ -3,7 +3,7 @@
 // turn transaction. The test-only review plugin supplies the approved rules.
 const assert = require('node:assert/strict');
 const { spawn, spawnSync } = require('node:child_process');
-const { createHash, randomBytes, randomUUID } = require('node:crypto');
+const { createHash, createHmac, randomBytes, randomUUID } = require('node:crypto');
 const { createRequire } = require('node:module');
 const { once } = require('node:events');
 const { existsSync, mkdirSync } = require('node:fs');
@@ -67,17 +67,16 @@ async function stop(child) {
   mkdirSync(evidenceDir, { recursive: true });
 
   const pool = new Pool({ connectionString: databaseUrl, max: 3, connectionTimeoutMillis: 3_000 });
-  const ownerId = `p2-gameplay-${randomUUID()}`;
-  const email = `${ownerId}@example.invalid`;
-  const token = randomBytes(32).toString('base64url');
-  const tokenHash = createHash('sha256').update(token).digest('hex');
-  const quotaKey = createHash('sha256').update(`turn\0${ownerId}`).digest('hex');
+  let ownerId = null;
+  const authSecret = randomBytes(32).toString('hex');
+  const guestRateLimitKey = createHmac('sha256', authSecret).update('guest-create\0' + '127.0.0.1').digest('hex');
   const apiPort = await availablePort();
   const webPort = await availablePort();
   const apiOrigin = `http://127.0.0.1:${apiPort}`;
   const webOrigin = `http://127.0.0.1:${webPort}`;
   const createdSaveIds = [];
   let accountSeeded = false;
+  let otpRequestCount = 0;
   let expectedRequests = 0;
   let expectedEvents = 0;
   let apiChild;
@@ -88,9 +87,6 @@ async function stop(child) {
 
   try {
     await pool.query('SELECT 1');
-    await pool.query('INSERT INTO auth_accounts (id, email) VALUES ($1, $2)', [ownerId, email]);
-    await pool.query('INSERT INTO auth_sessions (token_hash, owner_id, expires_at) VALUES ($1, $2, now() + interval \'1 hour\')', [tokenHash, ownerId]);
-    accountSeeded = true;
 
     apiChild = spawn(process.execPath, [apiFile], {
       cwd: root,
@@ -98,7 +94,7 @@ async function stop(child) {
         ...process.env,
         NODE_ENV: 'test', API_HOST: '127.0.0.1', API_PORT: String(apiPort),
         AUTH_ENABLED: 'true', AUTH_PUBLIC_ORIGIN: webOrigin,
-        AUTH_SECRET: randomBytes(32).toString('hex'),
+        AUTH_SECRET: authSecret,
         AUTH_MAIL_FROM: 'p2-test@example.invalid', SMTP_URL: 'smtp://127.0.0.1:1',
         DATABASE_URL: databaseUrl,
         TURN_RULES_MODULE: pluginFile,
@@ -120,18 +116,33 @@ async function stop(child) {
         ? 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe' : undefined);
     browser = await chromium.launch(executablePath ? { executablePath } : {});
     const context = await browser.newContext({ viewport: { width: 1366, height: 900 } });
-    await context.addCookies([{ name: 'jx_session', value: token, url: webOrigin, httpOnly: true, sameSite: 'Strict' }]);
     const page = await context.newPage();
     const pageErrors = [];
     page.on('pageerror', error => pageErrors.push(error.message));
     // Forward same-origin production-bundle API requests to the real local API.
     // No gameplay response is stubbed or synthesized by the browser harness.
-    await page.route('**/api/**', route => {
+    await page.route('**/api/**', async route => {
       const source = new URL(route.request().url());
-      return route.fetch({ url: `${apiOrigin}${source.pathname}${source.search}` }).then(response => route.fulfill({ response }));
+      if (source.pathname === '/api/auth/code' && route.request().method() === 'POST') otpRequestCount += 1;
+      const response = await route.fetch({ url: `${apiOrigin}${source.pathname}${source.search}` });
+      if (source.pathname === '/api/auth/guest' && route.request().method() === 'POST' && response.ok()) {
+        ownerId = (await response.json()).account.id;
+        accountSeeded = typeof ownerId === 'string';
+      }
+      await route.fulfill({ response });
     });
 
+    await page.goto(`${webOrigin}/settings/cloud`, { waitUntil: 'domcontentloaded' });
+    await page.getByLabel('邮箱').waitFor({ state: 'visible' });
+    await page.getByLabel('验证码').waitFor({ state: 'visible' });
+    await page.getByRole('button', { name: '发送验证码' }).waitFor({ state: 'visible' });
+    await page.getByRole('button', { name: '以游客身份继续' }).waitFor({ state: 'visible' });
     await page.goto(`${webOrigin}/new`, { waitUntil: 'domcontentloaded' });
+    const initialSession = await page.evaluate(async () => {
+      const response = await fetch('/api/auth/session');
+      return { status: response.status, body: await response.json() };
+    });
+    assert.equal(initialSession.status, 401, 'journey must begin without any seeded or existing session');
     await page.getByRole('textbox', { name: '姓名' }).fill('验收行者');
     await page.getByRole('button', { name: '下一步' }).click();
     await page.getByRole('button', { name: '下一步' }).click();
@@ -139,10 +150,21 @@ async function stop(child) {
     await page.getByTestId('create-server-game').click();
     await page.getByTestId('p2-cloud-game').waitFor({ state: 'visible', timeout: 20_000 });
     await page.getByText('真实遗忘', { exact: true }).waitFor();
+    const guestSession = await page.evaluate(async () => {
+      const response = await fetch('/api/auth/session');
+      return { status: response.status, body: await response.json() };
+    });
+    assert.equal(guestSession.status, 200);
+    assert.equal(guestSession.body.account.kind, 'guest');
+    assert.equal(Object.hasOwn(guestSession.body.account, 'email'), false);
+    assert.equal(otpRequestCount, 0, 'guest creation must not request or verify an email code');
+    assert.ok(ownerId, 'guest creation response must identify the generated owner for scoped cleanup');
     const saveId = new URL(page.url()).pathname.split('/').at(-1);
     assert.match(saveId, /^game-[0-9a-f]{64}$/);
     createdSaveIds.push(saveId);
 
+    const accountRow = await pool.query('SELECT email,is_guest FROM auth_accounts WHERE id=$1', [ownerId]);
+    assert.deepEqual(accountRow.rows[0], { email: null, is_guest: true });
     const createRow = await pool.query('SELECT schema_version,memory_mode,revision,snapshot FROM game_saves WHERE id=$1 AND owner_id=$2', [saveId, ownerId]);
     assert.equal(createRow.rows.length, 1);
     assert.equal(createRow.rows[0].schema_version, 3);
@@ -169,7 +191,7 @@ async function stop(child) {
     assert.equal(committed.rows[0].events, expectedEvents);
     assert.equal(committed.rows[0].last_event, 'observe.result');
 
-    const screenshotPath = join(evidenceDir, 'p2-production-gameplay-turn.png');
+    const screenshotPath = join(evidenceDir, 'p1-guest-gameplay-turn.png');
     await page.screenshot({ path: screenshotPath, fullPage: true });
     await page.reload({ waitUntil: 'domcontentloaded' });
     await page.getByTestId('p2-cloud-game').waitFor({ state: 'visible', timeout: 20_000 });
@@ -179,7 +201,7 @@ async function stop(child) {
     assert.deepEqual(pageErrors, []);
 
     console.log(JSON.stringify({
-      journey: 'built web -> email session -> server game create -> parseActionText -> PostgreSQL turn -> narrative and receipt -> refresh restore',
+      journey: 'built web -> unseeded zero-identity guest -> server game create -> parseActionText -> PostgreSQL turn -> narrative and receipt -> refresh restore',
       saveId,
       memoryMode: 'forgetting',
       revision: committed.rows[0].revision,
@@ -190,7 +212,10 @@ async function stop(child) {
       refreshedRevision: await page.getByTestId('p2-revision').textContent(),
       pageErrors: pageErrors.length,
       screenshot: screenshotPath,
-      server: 'real PostgreSQL transaction; test database and seeded email session; non-production approved review plugin',
+      accountKind: guestSession.body.account.kind,
+      otpRequests: otpRequestCount,
+      guestEntryAndOriginalEmailControlsVisible: true,
+      server: 'real PostgreSQL transaction; isolated test database; no seeded session or email OTP; non-production approved review plugin',
     }, null, 2));
     await context.close();
   } finally {
@@ -223,7 +248,9 @@ async function stop(child) {
             }
             await client.query('DELETE FROM auth_sessions WHERE owner_id=$1', [ownerId]);
             await client.query('DELETE FROM auth_accounts WHERE id=$1', [ownerId]);
-            await client.query('DELETE FROM account_rate_limits WHERE key=$1', [quotaKey]);
+            await client.query('DELETE FROM account_rate_limits WHERE key=ANY($1::text[])', [
+              [createHash('sha256').update(`turn\0${ownerId}`).digest('hex'), guestRateLimitKey],
+            ]);
             await client.query('COMMIT');
           } catch (error) {
             await client.query('ROLLBACK');

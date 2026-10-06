@@ -266,7 +266,8 @@ function NewCharacter({ onSaved, onCreateServerGame, onBack }: {
       clearDraft();
     } catch (cause) {
       const code = cause instanceof CloudHttpError ? cause.code : undefined;
-      setError(code === 'UNAUTHENTICATED' ? '请先到“账号与云档”使用邮箱验证码登录，再创建服务端规则存档。'
+      setError(code === 'UNAUTHENTICATED' ? '游客会话未能建立。请重试；邮箱登录仍可从“账号与云档”使用。'
+        : code === 'RATE_LIMITED' ? '游客创建过于频繁，请稍后重试。'
         : code === 'RULES_NOT_READY' ? '服务器尚未装载已批准的规则运行时。存档没有创建，规则门禁保持关闭。'
           : code === 'INVALID_MEMORY_MODE' ? '服务器拒绝了当前记忆模式。存档没有创建。'
             : '服务端规则存档未创建。草稿仍保留，已有本地存档不受影响。');
@@ -288,12 +289,12 @@ function NewCharacter({ onSaved, onCreateServerGame, onBack }: {
     }}><option value="">选择后仍可自由修改</option>{CHARACTER_OPTIONS[key]!.map(option => <option key={option} value={option}>{option}</option>)}</select></label>}</div>)}</div>
     <p className="quiet-note">备选文字只填写角色草稿；修为、灵根与天赋仍须经过开局规则确认，不直接授予能力。</p>
     {step === 2 && <section className="character-summary" aria-label="角色提交前摘要"><h3>回看行传</h3><dl>{fields.map(([key, label]) => <div key={key}><dt>{label}</dt><dd>{form[key]?.trim() || (key === 'region' ? '中州天枢域' : key === 'name' ? '无名修士' : '未填写')}</dd></div>)}</dl></section>}
-  {step === 2 && <fieldset className="character-summary" aria-label="NPC 记忆模式"><legend>NPC 记忆模式</legend><label><input type="radio" name="p2-memory-mode" value="continue" checked={memoryMode === 'continue'} onChange={() => setMemoryMode('continue')} />存档与继续：授权可见事件永久可回忆</label><label><input type="radio" name="p2-memory-mode" value="forgetting" checked={memoryMode === 'forgetting'} onChange={() => setMemoryMode('forgetting')} />真实遗忘：同一批事件按游戏时间与 NPC 亲历事件衰减</label><small>服务端规则存档需邮箱会话。角色表单中的出身、修为与外貌尚未映射进规则状态；本按钮只创建所选记忆模式的规则存档。本地存档入口仍保留。</small></fieldset>}
+  {step === 2 && <fieldset className="character-summary" aria-label="NPC 记忆模式"><legend>NPC 记忆模式</legend><label><input type="radio" name="p2-memory-mode" value="continue" checked={memoryMode === 'continue'} onChange={() => setMemoryMode('continue')} />存档与继续：授权可见事件永久可回忆</label><label><input type="radio" name="p2-memory-mode" value="forgetting" checked={memoryMode === 'forgetting'} onChange={() => setMemoryMode('forgetting')} />真实遗忘：同一批事件按游戏时间与 NPC 亲历事件衰减</label><small>未登录时，创建服务端存档会自动建立游客会话，不需身份输入；会话有效 7 天。请在到期前刷新或升级邮箱。丢失或清除站点数据后，无法凭存档编号找回云档；连续 90 天无活动后，在线云档进入服务器获批的清理范围。角色表单中的出身、修为与外貌尚未映射进规则状态；本按钮只创建所选记忆模式的规则存档。本地存档入口仍保留。</small></fieldset>}
     {error && <p className="error" role="alert">{error}</p>}
     <div className="actions"><button className="secondary" onClick={() => step ? setStep(step - 1) : (onBack ?? (() => go('/lobby')))()}>{step ? '上一步' : '返回山门'}</button>
       {step < 2 ? <button className="primary" onClick={() => { setError(''); setStep(step + 1); }}>下一步</button> : <>
         <button className="secondary" disabled={submitting} onClick={() => submit('random')}>按资料随机开局<span>保留随机开局意图</span></button>
-        <button className="secondary" data-testid="create-server-game" disabled={submitting} onClick={() => void createServerGame()}>创建服务端规则存档<span>邮箱登录 · 单一服务端事实源</span></button>
+        <button className="secondary" data-testid="create-server-game" disabled={submitting} onClick={() => void createServerGame()}>创建服务端规则存档<span>游客或邮箱会话 · 单一服务端事实源</span></button>
         <button className="primary" disabled={submitting} onClick={() => submit('manual')}>保存角色并进入<span>本地存档 · 待剧情规则接入</span></button>
       </>}</div>
   </section>;
@@ -768,7 +769,15 @@ function App() {
     if (!result.ok) { setSaves(result.saves); setNotice(result.reason === 'conflict' ? '存档列表刚有变化，角色尚未创建。请确认后重试。' : '浏览器数据库不可写，角色尚未创建。草稿仍保留。'); return false; }
     setSaves(result.saves); if (result.warning) setNotice(commitSuccessMessage(result, '角色与新存档已创建。')); go(`/game/${save.saveId}`); return true;
     }} onCreateServerGame={async memoryMode => {
-      const session = await cloudRequest('/api/auth/session');
+      let session: Record<string, unknown>;
+      let createdGuest = false;
+      try {
+        session = await cloudRequest('/api/auth/session');
+      } catch (error) {
+        if (!(error instanceof CloudHttpError) || error.status !== 401) throw error;
+        session = await cloudRequest('/api/auth/guest', 'POST', {});
+        createdGuest = true;
+      }
       const account = session.account;
       if (!account || typeof account !== 'object' || !('id' in account) || typeof account.id !== 'string') {
         throw new CloudHttpError(401, 'UNAUTHENTICATED');
@@ -779,7 +788,8 @@ function App() {
       }, account.id);
       const save = SaveEnvelopeSchema.parse(result.save);
       if (save.schemaVersion !== 3 || save.memoryMode !== memoryMode || save.revision !== 0) throw new Error('INVALID_GAME_RESPONSE');
-      setNotice('服务端规则存档已建立。事实状态保存在服务端数据库。');
+      setNotice(createdGuest ? '本局游客会话已建立，有效期 7 天。请在到期前刷新或升级邮箱；丢失会话后无法凭存档编号找回云档。'
+        : '服务端规则存档已建立。事实状态保存在服务端数据库。');
       go(`/game/${encodeURIComponent(save.saveId)}`);
     }} onBack={() => go('/lobby')} /> : currentRoute === '/intro' ? <Introduction onStart={() => go('/new')} onWorld={() => go('/world')} /> : currentRoute === '/world' ? <World onClose={returnFromReading} save={activeSave} onImportSupplement={importSupplement} isReturningToJourney={returningToJourney} /> : currentRoute === '/settings/ai' ? <AiSettings onClose={returnFromReading} /> : currentRoute === '/settings/cloud' ? <CloudSettings saves={saves} onRestore={async archive => {
     const copied = { ...archive, saveId: createSaveId(), name: `${archive.name}（云端副本）`, updatedAt: new Date().toISOString() };

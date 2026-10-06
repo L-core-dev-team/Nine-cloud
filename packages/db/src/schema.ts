@@ -1,11 +1,16 @@
 import { sql } from 'drizzle-orm';
-import { bigint, check, foreignKey, index, integer, jsonb, pgTable, primaryKey, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
+import { bigint, boolean, check, foreignKey, index, integer, jsonb, pgTable, primaryKey, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
 
 export const authAccounts = pgTable('auth_accounts', {
-  id: text('id').primaryKey(), email: text('email').notNull(),
+  id: text('id').primaryKey(), email: text('email'), isGuest: boolean('is_guest').notNull().default(false),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  lastSeenAt: timestamp('last_seen_at', { withTimezone: true }).notNull().defaultNow(),
   closedAt: timestamp('closed_at', { withTimezone: true }),
-}, table => [uniqueIndex('auth_accounts_email_idx').on(table.email)]);
+}, table => [
+  uniqueIndex('auth_accounts_email_idx').on(table.email),
+  check('auth_accounts_identity_check', sql`(${table.isGuest} = (${table.email} IS NULL)) IS TRUE`),
+  index('auth_accounts_guest_retention_idx').on(table.lastSeenAt, table.id).where(sql`${table.isGuest} AND ${table.closedAt} IS NULL`),
+]);
 export const accountOperations = pgTable('account_operations', {
   id: text('id').primaryKey(), ownerId: text('owner_id').notNull().references(() => authAccounts.id, { onDelete:'cascade' }),
   sessionHash: text('session_hash').notNull(), operation: text('operation').notNull(), oldEmail: text('old_email'), newEmail: text('new_email'),

@@ -41,6 +41,22 @@ export function mountAuth(app: Hono, service: EmailAuthService, origin: string, 
     await next();
   });
   app.onError(() => Response.json({ code: 'INTERNAL_ERROR', message: '服务暂不可用。' }, { status: 503 }));
+  app.post('/api/auth/guest', async c => {
+    const body = await authBody(c.req.raw);
+    if (!body || Object.keys(body).length) return c.json({ code: 'INVALID_REQUEST' }, 400);
+    const current = await service.resolve(sessionToken(c.req.raw));
+    if (current?.kind === 'guest') return c.json({ account: accountFor(current), expiresAt: current.expiresAt.toISOString() });
+    if (current) return c.json({ code: 'ACCOUNT_SESSION_ACTIVE' }, 409);
+    try {
+      const result = await service.createGuest(clientIp(c, trustedProxyAddresses));
+      if (!result) { c.header('Retry-After', '3600'); return c.json({ code: 'RATE_LIMITED' }, 429); }
+      c.header('Set-Cookie', cookie(result.token, SESSION_SECONDS));
+      return c.json({ account: accountFor(result.session), expiresAt: result.session.expiresAt.toISOString() }, 201);
+    } catch (error) {
+      if (error instanceof AuthFailure) return c.json({ code: error.code, stage: error.stage, requestId: error.requestId }, 503);
+      return c.json({ code: 'GUEST_UNAVAILABLE' }, 503);
+    }
+  });
   app.post('/api/auth/code', async c => {
     const body = await authBody(c.req.raw);
     if (!body) return c.json({ code: 'INVALID_REQUEST' }, 400);
@@ -57,12 +73,30 @@ export function mountAuth(app: Hono, service: EmailAuthService, origin: string, 
       const result = await service.verify(body.email, body.code,path.endsWith('/restore'));
       if (!result) return c.json({ code: 'INVALID_OR_EXPIRED_CODE' }, 401);
       c.header('Set-Cookie', cookie(result.token, SESSION_SECONDS));
-      return c.json({ account: { id: result.session.ownerId, email: result.session.email }, expiresAt: result.session.expiresAt.toISOString() });
+      return c.json({ account: accountFor(result.session), expiresAt: result.session.expiresAt.toISOString() });
     } catch (error) { if (error instanceof AuthFailure) return c.json({code:error.code,stage:error.stage,requestId:error.requestId},503); if (error instanceof TypeError) return c.json({ code: 'INVALID_EMAIL' }, 400); throw error; }
+  });
+  app.post('/api/auth/guest/upgrade', async c => {
+    const body = await authBody(c.req.raw);
+    if (!body || Object.keys(body).some(key => !['email', 'code', 'confirmation'].includes(key))
+      || !('email' in body) || !('code' in body) || !('confirmation' in body)) return c.json({ code: 'INVALID_REQUEST' }, 400);
+    const token = sessionToken(c.req.raw);
+    const current = await service.resolve(token);
+    if (current?.kind !== 'guest') return c.json({ code: 'UPGRADE_UNAVAILABLE' }, 409);
+    try {
+      const result = await service.upgradeGuest(current.ownerId, token, body.email, body.code, body.confirmation);
+      if (result.status === 'invalid_code') return c.json({ code: 'INVALID_OR_EXPIRED_CODE' }, 401);
+      if (result.status !== 'upgraded') return c.json({ code: 'UPGRADE_UNAVAILABLE' }, 409);
+      return c.json({ account: accountFor(result.session), expiresAt: result.session.expiresAt.toISOString() });
+    } catch (error) {
+      if (error instanceof AuthFailure) return c.json({ code: error.code, stage: error.stage, requestId: error.requestId }, 503);
+      if (error instanceof TypeError) return c.json({ code: 'INVALID_EMAIL' }, 400);
+      return c.json({ code: 'UPGRADE_UNAVAILABLE' }, 503);
+    }
   });
   app.get('/api/auth/session', async c => {
     const session = await service.resolve(sessionToken(c.req.raw));
-    return session ? c.json({ account: { id: session.ownerId, email: session.email }, expiresAt: session.expiresAt.toISOString() }) : c.json({ code: 'UNAUTHENTICATED' }, 401);
+    return session ? c.json({ account: accountFor(session), expiresAt: session.expiresAt.toISOString() }) : c.json({ code: 'UNAUTHENTICATED' }, 401);
   });
   app.post('/api/auth/refresh', async c => {
     const expected = c.req.header('x-jiuxiao-account');
@@ -70,7 +104,7 @@ export function mountAuth(app: Hono, service: EmailAuthService, origin: string, 
     const result = await service.refresh(sessionToken(c.req.raw));
     if (!result) return c.json({ code: 'UNAUTHENTICATED' }, 401);
     c.header('Set-Cookie', cookie(result.token, SESSION_SECONDS));
-    return c.json({ account: { id: result.session.ownerId, email: result.session.email }, expiresAt: result.session.expiresAt.toISOString() });
+    return c.json({ account: accountFor(result.session), expiresAt: result.session.expiresAt.toISOString() });
   });
   app.post('/api/auth/logout', async c => {
     const expected = c.req.header('x-jiuxiao-account');
@@ -78,6 +112,9 @@ export function mountAuth(app: Hono, service: EmailAuthService, origin: string, 
     await service.logout(sessionToken(c.req.raw)); c.header('Set-Cookie', cookie('', 0));
     return c.json({ status: 'signed_out' });
   });
+}
+function accountFor(session: import('../services/email-auth.js').AuthSession): { id: string; email?: string; kind?: 'guest' } {
+  return session.kind === 'guest' ? { id: session.ownerId, kind: 'guest' } : { id: session.ownerId, email: session.email };
 }
 async function authBody(request: Request): Promise<Record<string, unknown> | null> {
   if (!request.headers.get('content-type')?.startsWith('application/json') || !request.body) return null;
