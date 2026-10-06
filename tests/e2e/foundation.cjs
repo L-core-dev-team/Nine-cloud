@@ -634,7 +634,9 @@ async function ready(url) {
          await page.locator('.atlas-collections').getByRole('button', { name: new RegExp(label) }).click();
          assert.equal(await page.locator('.atlas-card').count(), count, `${label} must include every supplied illustration in that collection`);
        }
-       assert.ok((await page.getByRole('button', { name: /画卷图鉴/ }).innerText()).includes('44 幅视觉稿'), 'the gallery total should be presented from the current illustration catalogue');
+       const catalogueTotal = await page.locator('.atlas-collections button small').evaluateAll(nodes => nodes.reduce((total, node) => total + Number.parseInt(node.textContent || '', 10), 0));
+       assert.ok(Number.isSafeInteger(catalogueTotal) && catalogueTotal > 0, 'the illustration collections should expose a valid catalogue total');
+       assert.ok((await page.getByRole('button', { name: /画卷图鉴/ }).innerText()).includes(`${catalogueTotal} 幅视觉稿`), 'the gallery total should match the current illustration catalogue');
        await page.getByRole('searchbox', { name: '搜索画卷图鉴' }).fill('不存在的画面名称');
        await page.getByRole('button', { name: '查看全部画卷' }).click();
        assert.equal(await page.locator('.atlas-card').count(), 7, 'the empty gallery state should offer a direct recovery action');
