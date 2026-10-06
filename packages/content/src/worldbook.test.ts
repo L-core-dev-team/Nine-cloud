@@ -8,7 +8,7 @@ import { canonRuntimeEntries, getCanonRuntimeEntry, searchCanonRuntime } from '.
 import { formatCanonArtifactHash } from './canon-artifact.js';
 
 describe('public Canon runtime', () => {
-  it('computes an identity from the exact current source bytes without implying approval', () => {
+  it('computes an identity from exact source bytes and reports signed receipts separately', () => {
     // Resolve the source artifact from both src/ and emitted dist/ tests.
     const sourcePath = fileURLToPath(new URL('../src/canon-runtime.json', import.meta.url));
     const bytes = readFileSync(sourcePath);
@@ -20,7 +20,7 @@ describe('public Canon runtime', () => {
     expect(hash).toBe(`sha256:${createHash('sha256').update(bytes).digest('hex')}`);
     expect(formatCanonArtifactHash(new Uint8Array(createHash('sha256').update(Buffer.concat([bytes, Buffer.from('\n')])).digest())))
       .not.toBe(hash);
-    expect((sourceRuntime as { receiptsComplete?: boolean }).receiptsComplete).toBe(false);
+    expect((sourceRuntime as { receiptsComplete?: boolean }).receiptsComplete).toBe(true);
   });
 
   it('exposes every active public entry and excludes author-only source fields', () => {
@@ -33,13 +33,9 @@ describe('public Canon runtime', () => {
     expect(canonRuntimeEntries.flatMap(entry => entry.sections ?? [])
       .every(section => Object.keys(section).every(key => key === 'title' || key === 'content'))).toBe(true);
     const scriptPath = fileURLToPath(new URL('../../../scripts/build-canon-runtime.mjs', import.meta.url));
-    // SEC-03: without a receipts manifest the unflagged invocation must fail closed…
-    expect(() => execFileSync(process.execPath, [scriptPath, '--check'], { encoding: 'utf8' }))
-      .toThrow(/CANON_RECEIPTS_PENDING/);
-    // …and the pending state stays explicit (receiptsComplete=false in the runtime).
-    expect((canonRuntime as { receiptsComplete?: boolean }).receiptsComplete).toBe(false);
-    expect(execFileSync(process.execPath, [scriptPath, '--check', '--allow-pending-receipts'], { encoding: 'utf8' }))
-      .toContain('Verified public Canon runtime 1.0: 34 confirmed entries');
+    expect((canonRuntime as { receiptsComplete?: boolean }).receiptsComplete).toBe(true);
+    expect(execFileSync(process.execPath, [scriptPath, '--check'], { encoding: 'utf8' }))
+      .toContain('Verified public Canon runtime 1.0: 34 confirmed entries; receiptsComplete=true');
   });
 
   it('searches published factions and systems, including section text', () => {

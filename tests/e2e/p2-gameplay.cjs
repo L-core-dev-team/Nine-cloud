@@ -1,19 +1,32 @@
 #!/usr/bin/env node
-// Real Chromium journey through the dev-only P2 review route. This never opens
-// the production API gate and uses the candidate-authored prologue package.
+// Built-web gameplay journey through the authenticated API and real PostgreSQL
+// turn transaction. The test-only review plugin supplies the approved rules.
 const assert = require('node:assert/strict');
-const { spawn } = require('node:child_process');
+const { spawn, spawnSync } = require('node:child_process');
+const { createHash, randomBytes, randomUUID } = require('node:crypto');
+const { createRequire } = require('node:module');
 const { once } = require('node:events');
-const { createHash } = require('node:crypto');
-const { existsSync, mkdirSync, readFileSync } = require('node:fs');
+const { existsSync, mkdirSync } = require('node:fs');
 const { join, resolve } = require('node:path');
 const net = require('node:net');
 const { chromium } = require('playwright');
 
 const root = resolve(__dirname, '../..');
 const webRoot = join(root, 'apps/web');
-const screenshotPath = join(root, 'docs/acceptance/2026-10-06/P2-gameplay-e2e.png');
+const apiFile = join(root, 'apps/api/dist/index.js');
+const pluginFile = join(root, 'apps/api/dist/services/p1-prologue-plugin.js');
 const viteFile = join(webRoot, 'node_modules/vite/bin/vite.js');
+const apiRequire = createRequire(join(root, 'apps/api/package.json'));
+const { Pool } = apiRequire('pg');
+const databaseUrl = process.env.TEST_DATABASE_URL;
+const evidenceDir = join(root, 'test-results/e2e');
+
+function assertTestDatabase() {
+  const result = spawnSync(process.execPath, [join(root, 'scripts/assert-test-database.mjs')], {
+    cwd: root, env: process.env, encoding: 'utf8', windowsHide: true,
+  });
+  assert.equal(result.status, 0, result.stderr || 'TEST_DATABASE_URL must name an isolated jiuxiao_test database');
+}
 
 async function availablePort() {
   const server = net.createServer();
@@ -27,13 +40,13 @@ async function availablePort() {
   return port;
 }
 
-async function waitFor(url, child, stderr) {
+async function waitFor(url, child, stderr, description) {
   for (let attempt = 0; attempt < 120; attempt += 1) {
-    if (child.exitCode !== null) throw new Error(`Vite server exited early: ${stderr()}`);
-    try { const response = await fetch(url); if (response.ok) return; } catch {}
+    if (child.exitCode !== null) throw new Error(`${description} exited early: ${stderr()}`);
+    try { const response = await fetch(url); if (response.ok) return response; } catch {}
     await new Promise(resolve => setTimeout(resolve, 100));
   }
-  throw new Error(`Timed out waiting for ${url}: ${stderr()}`);
+  throw new Error(`Timed out waiting for ${description} at ${url}: ${stderr()}`);
 }
 
 async function stop(child) {
@@ -47,142 +60,180 @@ async function stop(child) {
 }
 
 (async () => {
-  assert.ok(existsSync(viteFile), 'Install workspace dependencies before the P2 gameplay E2E');
-  mkdirSync(join(root, 'docs/acceptance/2026-10-06'), { recursive: true });
-  const port = await availablePort();
-  const origin = `http://127.0.0.1:${port}`;
-  let stderr = '';
-  const child = spawn(process.execPath, [viteFile, '--host', '127.0.0.1', '--port', String(port), '--strictPort'], {
-    cwd: webRoot,
-    env: { ...process.env, JIUXIAO_API_TARGET: 'http://127.0.0.1:1' },
-    stdio: ['ignore', 'ignore', 'pipe'],
-    windowsHide: true,
-  });
-  child.stderr.on('data', chunk => { stderr += chunk.toString(); });
+  assert.ok(databaseUrl, 'Set TEST_DATABASE_URL to an isolated jiuxiao_test database');
+  assertTestDatabase();
+  assert.ok(existsSync(apiFile) && existsSync(pluginFile) && existsSync(viteFile), 'Run pnpm build before pnpm test:e2e');
+  assert.ok(existsSync(join(webRoot, 'dist/index.html')), 'Build the production web bundle before the P2 browser journey');
+  mkdirSync(evidenceDir, { recursive: true });
 
-  const edge = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
-  const executablePath = process.env.PLAYWRIGHT_BROWSER_EXECUTABLE
-    || (process.platform === 'win32' && existsSync(edge) ? edge : undefined);
+  const pool = new Pool({ connectionString: databaseUrl, max: 3, connectionTimeoutMillis: 3_000 });
+  const ownerId = `p2-gameplay-${randomUUID()}`;
+  const email = `${ownerId}@example.invalid`;
+  const token = randomBytes(32).toString('base64url');
+  const tokenHash = createHash('sha256').update(token).digest('hex');
+  const quotaKey = createHash('sha256').update(`turn\0${ownerId}`).digest('hex');
+  const apiPort = await availablePort();
+  const webPort = await availablePort();
+  const apiOrigin = `http://127.0.0.1:${apiPort}`;
+  const webOrigin = `http://127.0.0.1:${webPort}`;
+  const createdSaveIds = [];
+  let accountSeeded = false;
+  let expectedRequests = 0;
+  let expectedEvents = 0;
+  let apiChild;
+  let webChild;
+  let apiStderr = '';
+  let webStderr = '';
   let browser;
+
   try {
-    await waitFor(origin, child, () => stderr);
+    await pool.query('SELECT 1');
+    await pool.query('INSERT INTO auth_accounts (id, email) VALUES ($1, $2)', [ownerId, email]);
+    await pool.query('INSERT INTO auth_sessions (token_hash, owner_id, expires_at) VALUES ($1, $2, now() + interval \'1 hour\')', [tokenHash, ownerId]);
+    accountSeeded = true;
+
+    apiChild = spawn(process.execPath, [apiFile], {
+      cwd: root,
+      env: {
+        ...process.env,
+        NODE_ENV: 'test', API_HOST: '127.0.0.1', API_PORT: String(apiPort),
+        AUTH_ENABLED: 'true', AUTH_PUBLIC_ORIGIN: webOrigin,
+        AUTH_SECRET: randomBytes(32).toString('hex'),
+        AUTH_MAIL_FROM: 'p2-test@example.invalid', SMTP_URL: 'smtp://127.0.0.1:1',
+        DATABASE_URL: databaseUrl,
+        TURN_RULES_MODULE: pluginFile,
+      },
+      stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true,
+    });
+    apiChild.stderr.on('data', chunk => { apiStderr += chunk.toString(); });
+    apiChild.stdout.on('data', () => {});
+    await waitFor(`${apiOrigin}/ready`, apiChild, () => apiStderr, 'PostgreSQL-backed API');
+
+    webChild = spawn(process.execPath, [viteFile, 'preview', '--host', '127.0.0.1', '--port', String(webPort), '--strictPort'], {
+      cwd: webRoot, env: process.env, stdio: ['ignore', 'ignore', 'pipe'], windowsHide: true,
+    });
+    webChild.stderr.on('data', chunk => { webStderr += chunk.toString(); });
+    await waitFor(webOrigin, webChild, () => webStderr, 'built web application');
+
+    const executablePath = process.env.PLAYWRIGHT_BROWSER_EXECUTABLE
+      || (process.platform === 'win32' && existsSync('C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe')
+        ? 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe' : undefined);
     browser = await chromium.launch(executablePath ? { executablePath } : {});
-    const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+    const context = await browser.newContext({ viewport: { width: 1366, height: 900 } });
+    await context.addCookies([{ name: 'jx_session', value: token, url: webOrigin, httpOnly: true, sameSite: 'Strict' }]);
     const page = await context.newPage();
     const pageErrors = [];
     page.on('pageerror', error => pageErrors.push(error.message));
+    // Forward same-origin production-bundle API requests to the real local API.
+    // No gameplay response is stubbed or synthesized by the browser harness.
+    await page.route('**/api/**', route => {
+      const source = new URL(route.request().url());
+      return route.fetch({ url: `${apiOrigin}${source.pathname}${source.search}` }).then(response => route.fulfill({ response }));
+    });
 
-    await page.goto(`${origin}/new`, { waitUntil: 'domcontentloaded' });
+    await page.goto(`${webOrigin}/new`, { waitUntil: 'domcontentloaded' });
     await page.getByRole('textbox', { name: '姓名' }).fill('验收行者');
     await page.getByRole('button', { name: '下一步' }).click();
     await page.getByRole('button', { name: '下一步' }).click();
     await page.locator('input[name="p2-memory-mode"][value="forgetting"]').check();
-    await page.getByRole('button', { name: /保存角色并进入/ }).click();
-    await page.getByTestId('p2-review-gameplay').waitFor({ state: 'visible', timeout: 15_000 });
-    await page.getByRole('button', { name: '观察渡船' }).click();
-    assert.equal(await page.getByTestId('p2-action-input').inputValue(), '观察渡船');
-    await page.getByRole('button', { name: '提交行动' }).click();
-    await page.waitForFunction(() => document.querySelector('[data-testid="p2-revision"]')?.textContent === '1', null, { timeout: 15_000 });
-    await page.waitForFunction(() => document.querySelector('[data-testid="p2-narrative"]')?.textContent.includes('渡槽淤了半尺'), null, { timeout: 15_000 });
-
+    await page.getByTestId('create-server-game').click();
+    await page.getByTestId('p2-cloud-game').waitFor({ state: 'visible', timeout: 20_000 });
+    await page.getByText('真实遗忘', { exact: true }).waitFor();
     const saveId = new URL(page.url()).pathname.split('/').at(-1);
-    assert.ok(saveId);
-    const firstCommit = await page.evaluate(async id => {
-      const store = await import('/src/authoritative-turn-store.ts');
-      const runtimeModule = await import('/src/p2-review-gameplay-runtime.ts');
-      const runtime = await runtimeModule.loadP2ReviewGameplayRuntime();
-      const [save, chain, replay, archive] = await Promise.all([
-        store.readLocalAuthoritativeSave(id),
-        store.verifyLocalEventChain(id),
-        store.verifyLocalReplay(id, runtime.reduce),
-        store.exportLocalAuthorityArchive(id, runtime.reduce),
-      ]);
-      return {
-        save,
-        chain,
-        replay,
-        receipt: archive?.receipts.find(row => row.receipt.decision.status === 'accepted')?.receipt ?? null,
-      };
-    }, saveId);
-    assert.equal(firstCommit.save?.revision, 1);
-    assert.equal(firstCommit.save?.memoryMode, 'forgetting');
-    assert.equal(firstCommit.save?.memoryPolicy?.retrievalVersion, 'forgetting-v1');
-    assert.equal(firstCommit.chain.valid, true);
-    assert.equal(firstCommit.chain.eventCount, 1);
-    assert.equal(firstCommit.replay.valid, true);
-    assert.equal(firstCommit.receipt?.decision.status, 'accepted');
-    assert.equal(firstCommit.receipt?.decision.events[0]?.type, 'observe.result');
-    const canonBytes = readFileSync(join(root, 'packages/content/src/canon-runtime.json'));
-    const actualCanonHash = `sha256:${createHash('sha256').update(canonBytes).digest('hex')}`;
-    assert.equal(firstCommit.save.canonArtifactHash, actualCanonHash, 'Save hash must match exact canon-runtime.json bytes');
+    assert.match(saveId, /^game-[0-9a-f]{64}$/);
+    createdSaveIds.push(saveId);
 
-    await page.reload({ waitUntil: 'domcontentloaded' });
-    await page.getByTestId('p2-review-gameplay').waitFor({ state: 'visible', timeout: 15_000 });
-    await page.waitForFunction(() => document.querySelector('[data-testid="p2-revision"]')?.textContent === '1', null, { timeout: 15_000 });
-    await page.waitForFunction(() => document.querySelector('[data-testid="p2-narrative"]')?.textContent.includes('渡槽淤了半尺'), null, { timeout: 15_000 });
-    assert.match(await page.getByTestId('p2-status').textContent(), /存档、事件链与规则回放均已核对/);
+    const createRow = await pool.query('SELECT schema_version,memory_mode,revision,snapshot FROM game_saves WHERE id=$1 AND owner_id=$2', [saveId, ownerId]);
+    assert.equal(createRow.rows.length, 1);
+    assert.equal(createRow.rows[0].schema_version, 3);
+    assert.equal(createRow.rows[0].memory_mode, 'forgetting');
+    assert.equal(createRow.rows[0].revision, 0);
+
+    await page.getByTestId('p2-action-input').fill('观察渡船');
+    await page.getByTestId('p2-submit-action').click();
+    await page.waitForFunction(() => document.querySelector('[data-testid="p2-revision"]')?.textContent === '1', null, { timeout: 20_000 });
+    await page.waitForFunction(() => document.querySelector('[data-testid="p2-narrative"]')?.textContent.includes('渡槽淤了半尺'), null, { timeout: 20_000 });
+    expectedRequests = 1;
+    expectedEvents = 1;
+    assert.match(await page.getByTestId('p2-receipt').textContent(), /observe\.result/);
+
+    const committed = await pool.query(`SELECT s.revision,s.snapshot,s.memory_mode,
+      (SELECT count(*)::int FROM turn_requests r WHERE r.save_id=s.id) AS requests,
+      (SELECT count(*)::int FROM turn_events e WHERE e.save_id=s.id) AS events,
+      (SELECT e.event_type FROM turn_events e WHERE e.save_id=s.id ORDER BY e.sequence DESC LIMIT 1) AS last_event
+      FROM game_saves s WHERE s.id=$1 AND s.owner_id=$2`, [saveId, ownerId]);
+    assert.equal(committed.rows[0].revision, 1);
+    assert.equal(committed.rows[0].memory_mode, 'forgetting');
+    assert.equal(committed.rows[0].snapshot.facts.gameMinute, 315);
+    assert.equal(committed.rows[0].requests, expectedRequests);
+    assert.equal(committed.rows[0].events, expectedEvents);
+    assert.equal(committed.rows[0].last_event, 'observe.result');
+
+    const screenshotPath = join(evidenceDir, 'p2-production-gameplay-turn.png');
     await page.screenshot({ path: screenshotPath, fullPage: true });
-
-    await page.getByTestId('p2-action-input').fill('去那边');
-    await page.getByRole('button', { name: '提交行动' }).click();
-    await page.waitForFunction(() => document.querySelector('[data-testid="p2-status"]')?.textContent.includes('澄清回执已保存'), null, { timeout: 15_000 });
-    assert.equal(await page.getByTestId('p2-revision').textContent(), '1');
-    assert.equal(await page.getByTestId('p2-event-count').textContent(), '1');
-
-    await page.getByTestId('p2-action-input').fill('去芦花渡');
-    await page.getByRole('button', { name: '提交行动' }).click();
-    await page.waitForFunction(() => document.querySelector('[data-testid="p2-status"]')?.textContent.includes('行动被规则拒绝'), null, { timeout: 15_000 });
-    assert.equal(await page.getByTestId('p2-revision').textContent(), '1');
-    assert.equal(await page.getByTestId('p2-event-count').textContent(), '1');
-    assert.match(await page.getByTestId('p2-receipt').textContent(), /ENV_ROUTE_NOT_CONNECTED/);
-
-    const finalLedger = await page.evaluate(async id => {
-      const store = await import('/src/authoritative-turn-store.ts');
-      const runtimeModule = await import('/src/p2-review-gameplay-runtime.ts');
-      const runtime = await runtimeModule.loadP2ReviewGameplayRuntime();
-      const [save, chain, replay, archive] = await Promise.all([
-        store.readLocalAuthoritativeSave(id), store.verifyLocalEventChain(id),
-        store.verifyLocalReplay(id, runtime.reduce), store.exportLocalAuthorityArchive(id, runtime.reduce),
-      ]);
-      const records = archive?.receipts.map(row => row.receipt) ?? [];
-      return {
-        revision: save?.revision,
-        gameMinute: save?.state.facts.gameMinute,
-        chain,
-        replay,
-        receiptStatuses: records.map(receipt => receipt.decision.status),
-        eventCounts: records.map(receipt => receipt.decision.status === 'accepted' ? receipt.decision.events.length : 0),
-        rawTextStored: JSON.stringify(records).includes('去那边'),
-      };
-    }, saveId);
-    assert.equal(finalLedger.revision, 1);
-    assert.equal(finalLedger.chain.valid, true);
-    assert.equal(finalLedger.chain.eventCount, 1);
-    assert.equal(finalLedger.replay.valid, true);
-    assert.ok(finalLedger.receiptStatuses.includes('accepted'));
-    assert.ok(finalLedger.receiptStatuses.includes('clarify'));
-    assert.ok(finalLedger.receiptStatuses.includes('rejected'));
-    assert.equal(finalLedger.rawTextStored, false, 'Clarification receipt must not store the raw utterance');
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.getByTestId('p2-cloud-game').waitFor({ state: 'visible', timeout: 20_000 });
+    await page.waitForFunction(() => document.querySelector('[data-testid="p2-revision"]')?.textContent === '1', null, { timeout: 20_000 });
+    await page.waitForFunction(() => document.body.innerText.includes('游戏分钟') && document.body.innerText.includes('315'), null, { timeout: 20_000 });
+    await page.getByTestId('p2-status').getByText('服务端存档已恢复').waitFor({ timeout: 20_000 });
     assert.deepEqual(pageErrors, []);
 
-    process.stdout.write(`${JSON.stringify({
-      journey: 'create -> parsed observe -> committed narration -> refresh restore -> clarify -> reject',
-      revision: finalLedger.revision,
-      gameMinute: finalLedger.gameMinute,
-      eventCount: finalLedger.chain.eventCount,
-      chainValid: finalLedger.chain.valid,
-      replayValid: finalLedger.replay.valid,
-      receiptStatuses: finalLedger.receiptStatuses,
-      canonArtifactHash: actualCanonHash,
-      screenshot: screenshotPath,
+    console.log(JSON.stringify({
+      journey: 'built web -> email session -> server game create -> parseActionText -> PostgreSQL turn -> narrative and receipt -> refresh restore',
+      saveId,
+      memoryMode: 'forgetting',
+      revision: committed.rows[0].revision,
+      gameMinute: committed.rows[0].snapshot.facts.gameMinute,
+      turnRequests: expectedRequests,
+      committedEvents: expectedEvents,
+      eventType: committed.rows[0].last_event,
+      refreshedRevision: await page.getByTestId('p2-revision').textContent(),
       pageErrors: pageErrors.length,
-    }, null, 2)}\n`);
+      screenshot: screenshotPath,
+      server: 'real PostgreSQL transaction; test database and seeded email session; non-production approved review plugin',
+    }, null, 2));
     await context.close();
   } finally {
     await browser?.close();
-    await stop(child);
+    await stop(webChild);
+    await stop(apiChild);
+    try {
+      if (accountSeeded) {
+        const counts = await pool.query(`SELECT
+          (SELECT count(*)::int FROM game_saves WHERE owner_id=$1) AS saves,
+          (SELECT count(*)::int FROM turn_requests r JOIN game_saves s ON s.id=r.save_id WHERE s.owner_id=$1) AS requests,
+          (SELECT count(*)::int FROM turn_events e JOIN game_saves s ON s.id=e.save_id WHERE s.owner_id=$1) AS events`, [ownerId]);
+        const observed = counts.rows[0];
+        const expected = { saves: createdSaveIds.length, requests: expectedRequests, events: expectedEvents };
+        const safeToClean = Object.keys(expected).every(key => observed[key] === expected[key]);
+        if (!safeToClean) {
+          console.error(`Preserving P2 gameplay evidence for owner ${ownerId}; expected ${JSON.stringify(expected)}, observed ${JSON.stringify(observed)}.`);
+        } else {
+          const client = await pool.connect();
+          try {
+            await client.query('BEGIN');
+            await client.query("SELECT set_config('jiuxiao.account_erasure_operation', 'test-cleanup', true)");
+            if (createdSaveIds.length) {
+              await client.query('DELETE FROM cloud_archive_trash WHERE save_id = ANY($1::text[])', [createdSaveIds]);
+              await client.query('DELETE FROM npc_authorized_observation_outbox WHERE save_id = ANY($1::text[])', [createdSaveIds]);
+              await client.query('DELETE FROM npc_memory_journals WHERE save_id = ANY($1::text[])', [createdSaveIds]);
+              await client.query('DELETE FROM turn_events WHERE save_id = ANY($1::text[])', [createdSaveIds]);
+              await client.query('DELETE FROM turn_requests WHERE save_id = ANY($1::text[])', [createdSaveIds]);
+              await client.query('DELETE FROM game_saves WHERE id = ANY($1::text[]) AND owner_id=$2', [createdSaveIds, ownerId]);
+            }
+            await client.query('DELETE FROM auth_sessions WHERE owner_id=$1', [ownerId]);
+            await client.query('DELETE FROM auth_accounts WHERE id=$1', [ownerId]);
+            await client.query('DELETE FROM account_rate_limits WHERE key=$1', [quotaKey]);
+            await client.query('COMMIT');
+          } catch (error) {
+            await client.query('ROLLBACK');
+            throw error;
+          } finally { client.release(); }
+        }
+      }
+    } finally { await pool.end(); }
   }
 })().catch(error => {
-  process.stderr.write(`${error.stack || error}\n`);
+  console.error(error.stack || error);
   process.exitCode = 1;
 });

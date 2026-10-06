@@ -14,6 +14,11 @@ export async function computeCanonRuntimeArtifactHash(): Promise<`sha256:${strin
 
 export class AuthoritativeGameService {
  constructor(private readonly repository:GameRepository,private readonly runtime?:ReturnType<typeof prepareTurnRuntime>){}
+ async read(ownerId:string,saveId:string){
+  const stored=await this.repository.getForOwner(ownerId,saveId);
+  if(!stored||stored.state.facts.archiveKind==='local-untrusted-v1')return {status:'not_found'} as const;
+  return {status:'ready',save:SaveEnvelopeSchema.parse(stored)} as const;
+ }
  async actionSuggestions(ownerId:string,saveId:string){
   if(!this.runtime?.actionSuggestions)return {status:'rules_not_ready'} as const;
   const stored=await this.repository.getForOwner(ownerId,saveId);

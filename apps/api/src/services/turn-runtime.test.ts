@@ -15,11 +15,12 @@ const plugin:TurnPlugin={
  grantsForEvent:event=>[{npcId:'witness',eventId:event.id,channel:'witnessed',authorizationPolicyVersion:'visibility-v1',authorizedFields:['summary'],authorizedFacts:{summary:'Synthetic visible outcome.'},visibleSummary:'Synthetic visible outcome.'}],policyForNpc:()=> 'exact-recall-v1',
 };
 describe('host plugin and complete synthetic turn path',()=>{
- it('never loads remote rules or derives rules when configuration is absent',async()=>{
- expect(await loadTurnPlugin(undefined)).toBeUndefined();const load=vi.fn();
+ it('keeps missing configuration closed and only attempts configured local rule plugins',async()=>{
+  expect(await loadTurnPlugin(undefined)).toBeUndefined();const load=vi.fn();
   await expect(loadTurnPlugin('https://evil.invalid/rules.js',load)).rejects.toThrow('LOCAL_PATH');expect(load).not.toHaveBeenCalled();
   await expect(loadTurnPlugin('relative.js',load)).rejects.toThrow('LOCAL_PATH');
-  expect(await loadTurnPlugin(resolve('fixture.mjs'),load)).toBeUndefined();expect(load).not.toHaveBeenCalled();
+  await expect(loadTurnPlugin(resolve('fixture.mjs'),load)).rejects.toThrow('INVALID_TURN_PLUGIN');
+  expect(load).toHaveBeenCalledTimes(1);
  });
  it('never loads the review-only P1 candidate while NODE_ENV is production',async()=>{
   const path=resolve(dirname(fileURLToPath(import.meta.url)),'p1-prologue-plugin.js');const load=vi.fn();

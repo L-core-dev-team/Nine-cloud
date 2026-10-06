@@ -1,6 +1,5 @@
 #!/usr/bin/env node
-// P1 fail-closed preflight only: an unrecognized rule module must not bypass
-// AUTHOR_RULES_GATE. The approved non-production candidate journey is separate.
+// Production must never load the review-only P1 candidate plugin.
 const assert = require('node:assert/strict');
 const { spawn, spawnSync } = require('node:child_process');
 const { createHash, randomBytes, randomUUID } = require('node:crypto');
@@ -12,7 +11,7 @@ const net = require('node:net');
 
 const root = resolve(__dirname, '../..');
 const apiFile = join(root, 'apps/api/dist/index.js');
-const candidateModule = join(root, 'packages/content/dist/prologue/prologue-v1.rulebook-candidate.js');
+const pluginFile = join(root, 'apps/api/dist/services/p1-prologue-plugin.js');
 const apiRequire = createRequire(join(root, 'apps/api/package.json'));
 const { Pool } = apiRequire('pg');
 const testDatabaseUrl = process.env.TEST_DATABASE_URL;
@@ -64,7 +63,7 @@ async function stop(child) {
   assert.ok(testDatabaseUrl, 'Set TEST_DATABASE_URL to a disposable jiuxiao_test database');
   assertTestDatabase();
   assert.ok(existsSync(apiFile), 'Run pnpm build before pnpm test:e2e');
-  assert.ok(existsSync(candidateModule), 'Build the candidate rule module before the gate preflight');
+  assert.ok(existsSync(pluginFile), 'Build the review-only P1 plugin before the production gate preflight');
 
   const pool = new Pool({ connectionString: testDatabaseUrl, max: 2, connectionTimeoutMillis: 3_000 });
   const ownerId = `p1-pr6-${randomUUID()}`;
@@ -77,6 +76,7 @@ async function stop(child) {
   const quotaKey = createHash('sha256').update(`turn\0${ownerId}`).digest('hex');
   const port = await availablePort();
   const origin = `http://127.0.0.1:${port}`;
+  const publicOrigin = 'https://jiuxiao-e2e.invalid';
   let child;
   let childStderr = '';
   let seededSave = false;
@@ -90,16 +90,17 @@ async function stop(child) {
       cwd: root,
       env: {
         ...process.env,
+        NODE_ENV: 'production',
         API_HOST: '127.0.0.1',
         API_PORT: String(port),
         AUTH_ENABLED: 'true',
-        AUTH_PUBLIC_ORIGIN: origin,
+        AUTH_PUBLIC_ORIGIN: publicOrigin,
         AUTH_SECRET: randomBytes(32).toString('hex'),
         AUTH_MAIL_FROM: 'p1-test@example.invalid',
         SMTP_URL: 'smtp://127.0.0.1:1',
         DATABASE_URL: testDatabaseUrl,
-        // A raw content rulebook path is not the approved review plugin path.
-        TURN_RULES_MODULE: candidateModule,
+        // The approved candidate path remains unavailable in production.
+        TURN_RULES_MODULE: pluginFile,
       },
       stdio: ['ignore', 'pipe', 'pipe'],
       windowsHide: true,
@@ -113,12 +114,12 @@ async function stop(child) {
     assert.equal((await ready.json()).status, 'ready');
 
     const session = await fetch(`${origin}/api/auth/session`, {
-      headers: { cookie: `jx_session=${token}`, origin },
+      headers: { cookie: `jx_session=${token}`, origin: publicOrigin },
     });
     assert.equal(session.status, 200);
     assert.equal((await session.json()).account.id, ownerId);
 
-    const headers = { 'content-type': 'application/json', cookie: `jx_session=${token}`, origin };
+    const headers = { 'content-type': 'application/json', cookie: `jx_session=${token}`, origin: publicOrigin };
     const create = await fetch(`${origin}/api/games`, {
       method: 'POST', headers,
       body: JSON.stringify({ idempotencyKey: `create-${randomUUID()}`, choices: { name: 'P1 门禁探针' } }),
@@ -165,8 +166,8 @@ async function stop(child) {
       (SELECT count(*)::int FROM turn_events WHERE save_id = $1) AS events,
       (SELECT count(*)::int FROM npc_memory_journals WHERE save_id = $1) AS memories`, [saveId, ownerId]);
     assert.deepEqual(persisted.rows[0], { revision: 0, requests: 0, events: 0, memories: 0 });
-    console.log('PR-6 fail-closed preflight passed: the unrecognized rulebook module did not bypass AUTHOR_RULES_GATE; no save, receipt, event, or NPC-memory write occurred.');
-    console.log('This is only a negative gate check; authenticated non-production gameplay is covered by p1-authenticated-candidate.cjs.');
+    console.log('Production fail-closed preflight passed: the review-only candidate plugin was not loaded; no save, receipt, event, or NPC-memory write occurred.');
+    console.log('This is only a negative production-environment gate check; non-production candidate gameplay is covered separately.');
   } finally {
     if (child) await stop(child);
     try {
