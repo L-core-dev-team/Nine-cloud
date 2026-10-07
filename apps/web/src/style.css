@@ -89,6 +89,9 @@ aside button, aside label { padding: var(--jx-space-3); text-align: left; backgr
 aside input { display: none; }
 main { flex: 1; width: min(1180px, calc(100% - 36px)); margin: 0 auto; }
 footer { display: flex; justify-content: space-between; padding: 18px clamp(18px, 5vw, 72px); color: #82909d; border-top: 1px solid var(--line); font: 0.7rem system-ui; }
+footer .footer-legal { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; }
+footer .footer-legal a { color: inherit; text-decoration: none; border-bottom: 1px solid transparent; transition: color .18s ease, border-color .18s ease; }
+footer .footer-legal a:hover, footer .footer-legal a:focus-visible { color: #bdcad7; border-bottom-color: currentColor; }
 .notice { max-width: 1180px; margin: 12px auto 0; padding: 10px 14px; color: #dce8ef; background: #ffffff10; border: 1px solid var(--line); border-radius: 10px; font: 0.78rem system-ui; }
 .notice-action { margin-left: 8px; padding: 6px 10px; color: #142431; background: var(--accent); border-radius: 7px; font: 0.76rem system-ui; }
 
@@ -193,6 +196,10 @@ input:not([type='range']):not([type='checkbox']), select, textarea { font-size: 
 .cloud-page input { font-size: 16px; min-height: 44px; }
 .cloud-page button { min-height: 44px; margin: var(--jx-space-1) var(--jx-space-2) var(--jx-space-1) 0; }
 .cloud-page > label { display: block; margin: var(--jx-space-4) 0; }
+.auth-method-switch { display: flex; flex-wrap: wrap; gap: var(--jx-space-2); margin-block: var(--jx-space-4); }
+.auth-method-switch button[aria-pressed='true'] { border-color: var(--accent); box-shadow: inset 0 -2px var(--accent); }
+.auth-provider-note { color: var(--muted); font-size: var(--jx-type-small); }
+.cloud-page [aria-label='人机验证'] { margin-block: var(--jx-space-3); min-height: 65px; }
 .action-suggestions { display: flex; flex-wrap: wrap; gap: .5rem; margin-block: .75rem 1rem; }
 .card strong { display: block; margin-bottom: var(--jx-space-3); font-size: var(--jx-type-lead); }
 .ai-page .migration-status strong, .ai-page .migration-consent strong { margin-bottom: 9px; font-size: 1.1rem; }
