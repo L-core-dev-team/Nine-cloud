@@ -233,6 +233,22 @@ async function maskText(page) {
   return page.addStyleTag({ content: '*, *::before, *::after { color: transparent !important; -webkit-text-fill-color: transparent !important; text-shadow: none !important; }' });
 }
 
+// A full-page screenshot is only comparable while the document height holds still.
+// Lazy images, deferred fonts and collapsing panels can each change it between two
+// captures, which is invisible in a single shot but breaks `textAudit`'s
+// equal-dimensions guard with an opaque `[width, heightA]` vs `[width, heightB]`
+// diff. Wait until the height stops changing between consecutive frames; Playwright
+// re-runs the predicate every animation frame by default, so comparing against the
+// previous sample settles the layout before any pixels are read.
+async function settleHeight(page, timeout = 10000) {
+  await page.waitForFunction(() => {
+    const height = document.documentElement.scrollHeight;
+    const previous = window.__jxAcceptanceHeight;
+    window.__jxAcceptanceHeight = height;
+    return previous === height && height > 0;
+  }, null, { timeout });
+}
+
 async function prepareGame(page) {
   await page.goto(new URL('/new', page.url()).toString());
   await page.getByRole('button', { name: '下一步', exact: true }).click();
@@ -265,25 +281,49 @@ async function runDesignAcceptance(browser, origin, outputDir) {
       if (target.prepare) await target.prepare(page);
       else if (target.key === 'ai-mode') await page.getByRole('button', { name: '开始新手设置', exact: true }).waitFor();
       else if (target.professional) await page.getByRole('button', { name: '进入专业模式', exact: true }).click();
-      else if (target.key === 'world') await page.locator('.worldbook-entry').first().waitFor({ timeout: 10000 });
+      else if (target.key === 'world') {
+        // The world reader loads its Canon through a dynamic import, so waiting for
+        // the first entry only proves the list has started rendering. Screenshotting
+        // then races the remaining rows: the static pass measured 11298px while the
+        // masked background pass measured 10960px for the same page, which is what
+        // tripped `textAudit`'s equal-dimensions guard. Wait until the rendered entry
+        // count catches up with the count the page itself reports in `.worldbook-scope`
+        // ("当前 N 条"), so the layout is settled before any screenshot is taken.
+        await page.locator('.worldbook-entry').first().waitFor({ timeout: 10000 });
+        await page.waitForFunction(() => {
+          const scope = document.querySelector('.worldbook-scope');
+          const reported = Number(scope?.textContent?.match(/当前\s*(\d+)\s*条/)?.[1]);
+          return Number.isInteger(reported) && document.querySelectorAll('.worldbook-entry').length >= reported;
+        }, null, { timeout: 10000 });
+      }
       await page.evaluate(() => { document.documentElement.dataset.jxAtmosphere = 'off'; return document.fonts.ready; });
+      await settleHeight(page);
       const staticRuns = await getTextRuns(page);
       const controls = await getInteractiveControls(page);
       const name = `${target.key}-${theme}-${width}.png`;
       const screenshotPath = join(outputDir, name);
       const staticOriginal = await page.screenshot({ path: screenshotPath, fullPage: true, animations: 'disabled' });
       const textMask = await maskText(page);
+      // The mask style tag is injected after the source shot, so give the layout a
+      // chance to settle before taking its background twin.
+      await settleHeight(page);
       const staticBackground = await page.screenshot({ fullPage: true, animations: 'disabled' });
       await textMask.evaluate(style => style.remove());
       await page.emulateMedia({ reducedMotion: 'no-preference' });
       await page.evaluate(() => { document.documentElement.dataset.jxAtmosphere = 'on'; return document.fonts.ready; });
       await page.waitForTimeout(900);
+      await settleHeight(page);
       const dynamicRuns = await getTextRuns(page);
       const dynamicOriginal = await page.screenshot({ fullPage: true, animations: 'disabled' });
       await maskText(page);
+      await settleHeight(page);
       const dynamicBackgrounds = [];
       for (let frame = 0; frame < 3; frame++) {
         await page.waitForTimeout(320);
+        // The atmosphere keeps animating between frames, but its canvas must not
+        // change the page height partway through the run — otherwise the three
+        // background frames would disagree with the source frame.
+        await settleHeight(page);
         dynamicBackgrounds.push(await page.screenshot({ fullPage: true, animations: 'disabled' }));
       }
       const staticAudit = textAudit(staticOriginal, [staticBackground], staticRuns);
