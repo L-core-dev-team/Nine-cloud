@@ -14,10 +14,18 @@ const plugin:TurnPlugin={
 };
 describe('host plugin and complete synthetic turn path',()=>{
  it('never loads remote rules or derives rules when configuration is absent',async()=>{
- expect(await loadTurnPlugin(undefined)).toBeUndefined();const load=vi.fn();
-  await expect(loadTurnPlugin('https://evil.invalid/rules.js',load)).rejects.toThrow('LOCAL_PATH');expect(load).not.toHaveBeenCalled();
+ expect(await loadTurnPlugin(undefined)).toBeUndefined();
+  // Remote URLs and bare relative paths are rejected before any loader runs.
+  const load=vi.fn();
+  await expect(loadTurnPlugin('https://evil.invalid/rules.js',load)).rejects.toThrow('LOCAL_PATH');
   await expect(loadTurnPlugin('relative.js',load)).rejects.toThrow('LOCAL_PATH');
-  expect(await loadTurnPlugin(resolve('fixture.mjs'),load)).toBeUndefined();expect(load).not.toHaveBeenCalled();
+  expect(load).not.toHaveBeenCalled();
+  // A local absolute path is permitted to be loaded, but a file that does not
+  // export a default plugin must fail closed rather than yield rules. The
+  // injected loader proves the runtime does not synthesise rules from the path.
+  const absent=vi.fn(async()=>({notAPlugin:true}));
+  await expect(loadTurnPlugin(resolve('fixture.mjs'),absent)).rejects.toThrow('INVALID_TURN_PLUGIN');
+  expect(absent).toHaveBeenCalledTimes(1);
  });
  it('never loads the review-only P1 candidate while NODE_ENV is production',async()=>{
   const path=resolve(dirname(fileURLToPath(import.meta.url)),'p1-prologue-plugin.js');const load=vi.fn();

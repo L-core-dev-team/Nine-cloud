@@ -9,7 +9,10 @@ vi.mock('./postgres-email-auth.js',()=>({PostgresEmailAuthRepository:class {
  invalidate=mocks.invalidate;
 }}));
 import {createEmailAuthRuntime} from './auth-runtime.js';
-const env={AUTH_ENABLED:'true',AUTH_PUBLIC_ORIGIN:'https://app.example.invalid',AUTH_SECRET:'x'.repeat(32),AUTH_MAIL_FROM:'login@example.invalid',SMTP_URL:'smtps://user:secret@mail.example.invalid:465'};
+// AUTH_MAILER=smtp is explicit: the runtime defaults to the Tencent SES API
+// channel (个人认证不支持 SMTP，生产走 ses-api). These cases cover the SMTP
+// transport, so they must opt into it rather than rely on the default.
+const env={AUTH_ENABLED:'true',AUTH_PUBLIC_ORIGIN:'https://app.example.invalid',AUTH_SECRET:'x'.repeat(32),AUTH_MAIL_FROM:'login@example.invalid',AUTH_MAILER:'smtp',SMTP_URL:'smtps://user:secret@mail.example.invalid:465'};
 beforeEach(()=>{vi.resetAllMocks();vi.spyOn(console,'info').mockImplementation(()=>{});vi.spyOn(console,'warn').mockImplementation(()=>{});});
 afterEach(()=>vi.restoreAllMocks());
 describe('SMTP provider acceptance and preflight',()=>{
