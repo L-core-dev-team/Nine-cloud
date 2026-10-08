@@ -117,22 +117,29 @@
     {
       "idx": 16,
       "version": "7",
-      "when": 1791207000000,
-      "tag": "0016_p2_authority_lineage",
+      "when": 1791302400000,
+      "tag": "0016_supabase_external_identity",
       "breakpoints": true
     },
     {
       "idx": 17,
       "version": "7",
-      "when": 1791280000000,
-      "tag": "0017_p2_canon_artifact_identity",
+      "when": 1791285000000,
+      "tag": "0017_p2_authority_lineage",
       "breakpoints": true
     },
     {
       "idx": 18,
       "version": "7",
-      "when": 1791280001000,
-      "tag": "0018_p1_guest_accounts",
+      "when": 1791285000001,
+      "tag": "0018_p2_canon_artifact_identity",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1791285000002,
+      "tag": "0019_p1_guest_accounts",
       "breakpoints": true
     }
   ]

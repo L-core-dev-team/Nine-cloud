@@ -2,16 +2,16 @@ import type { Hono } from 'hono';
 import { hashToken } from '../services/email-auth.js';
 import { AccountLifecycleError,type AccountLifecycle,type AccountOperation } from '../services/account-lifecycle.js';
 import type { AccountExport } from '../services/account-export.js';
-import type { EmailAuthService } from '../services/email-auth.js';
-import { consumeAccountQuota } from '../services/account-rate-limit.js';
+import type { AuthSessionService } from './auth.js';
+import { consumeAccountQuota, type AccountQuotaLimiter } from '../services/account-rate-limit.js';
 import { readJson } from './saves.js';
 import { sessionToken,authCookie } from './auth.js';
-export function mountAccount(app:Hono,auth:EmailAuthService,lifecycle:AccountLifecycle,exporter:AccountExport,origin:string,sameSite:'Strict'|'None'='Strict'){
- const ownerFor=async(req:Request)=>{const token=sessionToken(req);const session=await auth.resolve(token);const expected=req.headers.get('x-jiuxiao-account');return session?.kind==='email'&&token&&(!expected||session.ownerId===expected)?{owner:session.ownerId,hash:hashToken(token)}:null;};
+export function mountAccount(app:Hono,auth:Pick<AuthSessionService,'resolve'>,lifecycle:AccountLifecycle,exporter:AccountExport,origin:string,sameSite:'Strict'|'None'='Strict',quota:AccountQuotaLimiter=consumeAccountQuota){
+ const ownerFor=async(req:Request)=>{const token=sessionToken(req);const session=await auth.resolve(token);const expected=req.headers.get('x-jiuxiao-account');return session&&token&&(!expected||session.ownerId===expected)?{owner:session.ownerId,hash:hashToken(token)}:null;};
  app.get('/api/account/capabilities',async c=>await ownerFor(c.req.raw)?c.json(lifecycle.capabilities()):c.json({code:'UNAUTHENTICATED'},401));
  app.get('/api/account/export',async c=>{
   const account=await ownerFor(c.req.raw);if(!account)return c.json({code:'UNAUTHENTICATED'},401);
-  if(!await consumeAccountQuota(account.owner,'export',6,3_600_000))return c.json({code:'RATE_LIMITED'},429);
+  if(!await quota(account.owner,'export',6,3_600_000))return c.json({code:'RATE_LIMITED'},429);
   try{const data=await exporter.read(account.owner);return data?c.json(data):c.json({code:'NOT_FOUND'},404);}catch(error){return c.json({code:error instanceof Error&&['EXPORT_REQUIRES_OFFLINE_TRANSFER','EXPORT_BUSY'].includes(error.message)?error.message:'EXPORT_UNAVAILABLE'},503);}
  });
  for(const step of ['begin','verify','complete','cancel'] as const)app.post(`/api/account/operation/${step}`,async c=>{

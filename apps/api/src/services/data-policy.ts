@@ -1,4 +1,3 @@
-import {readFileSync} from 'node:fs';
 export type DataPolicy={version:string;expiresAt:string;approvedBy:string[];maxSaves:number;perSaveBytes:number;totalBytes:number;trashRetentionDays:number;backupPolicy:string};
 export function parseDataPolicy(raw:unknown):DataPolicy {
  if(!raw||typeof raw!=='object'||Array.isArray(raw))throw new Error('INVALID_DATA_POLICY');
@@ -10,11 +9,6 @@ export function parseDataPolicy(raw:unknown):DataPolicy {
 }
 export function assertDataPolicy(p:DataPolicy|undefined,now=Date.now()):asserts p is DataPolicy {
  if(!p||Date.parse(p.expiresAt)<=now)throw new Error('DATA_POLICY_NOT_READY');
-}
-export function loadDataPolicy(path:string|undefined):DataPolicy|undefined {
- if(!path)return undefined;
- const bytes=readFileSync(path);if(bytes.length>16384)throw new Error('INVALID_DATA_POLICY');
- const p=parseDataPolicy(JSON.parse(bytes.toString('utf8')));assertDataPolicy(p);return p;
 }
 export function checkQuota(policy:DataPolicy,current:{count:number;bytes:number},newBytes:number,replacedBytes:number|null){
  assertDataPolicy(policy);

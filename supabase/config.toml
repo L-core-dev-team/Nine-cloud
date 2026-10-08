@@ -1,0 +1,11 @@
+project_id = "deyzirwnzjxsmyvfrsdb"
+
+[functions.send-sms-hook]
+# Supabase Auth signs hook requests with Standard Webhooks. A Supabase user JWT
+# is not used for this endpoint; signature verification happens in the function.
+verify_jwt = false
+
+[functions.ses-callback-ingest]
+# Tencent SES uses the shared callback key, which the function passes to the
+# service-role-only database RPC for verification before inserting an event.
+verify_jwt = false

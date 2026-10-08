@@ -4,7 +4,9 @@ import { SAVE_SCHEMA_VERSION } from '@jiuxiao/contracts';
 import type { CloudSaveService } from './services/cloud-save-service.js';
 import { mountCloudSaveRoutes, type CloudSaveRouteAuth } from './routes/saves.js';
 import { mountAuth } from './routes/auth.js';
-import type { EmailAuthService } from './services/email-auth.js';
+import type { AuthSessionService } from './routes/auth.js';
+import { mountSupabasePhoneAuth } from './routes/supabase-auth.js';
+import type { SupabaseAuthService } from './services/supabase-auth.js';
 import type { CloudArchiveLifecycle } from './services/cloud-archive-lifecycle.js';
 import { mountAccount } from './routes/account.js';
 import type { AccountLifecycle } from './services/account-lifecycle.js';
@@ -12,6 +14,7 @@ import type { AccountExport } from './services/account-export.js';
 import {mountGames} from './routes/games.js';
 import type {AuthoritativeGameService} from './services/authoritative-game.js';
 import type {GameplayTurnPresentationService} from './services/gameplay-turn-presentation.js';
+import type { AccountQuotaLimiter } from './services/account-rate-limit.js';
 
 export type ReadinessDatabase = {
   query: (sql: string) => Promise<unknown>;
@@ -21,10 +24,13 @@ export function createApp(database?: ReadinessDatabase, cloudSaves?: {
   service: CloudSaveService;
   auth: CloudSaveRouteAuth;
   archive?: CloudArchiveLifecycle;
-}, emailAuth?: { service: EmailAuthService; origin: string; cookieSameSite?: 'Strict' | 'None'; trustedProxyAddresses?: readonly string[]; lifecycle?: AccountLifecycle; exporter?: AccountExport }, turns?: ServerTurnRouteDependencies & {games?:AuthoritativeGameService; presentation?:GameplayTurnPresentationService}) {
+}, emailAuth?: { service: AuthSessionService; routesService?: AuthSessionService; supabaseAuth?: SupabaseAuthService | undefined; origin: string; cookieSameSite?: 'Strict' | 'None'; trustedProxyAddresses?: readonly string[]; privacyPolicyUrl?: string | null; privacyPolicyVersion?: string | null; lifecycle?: AccountLifecycle; exporter?: AccountExport; accountQuota?: AccountQuotaLimiter }, turns?: ServerTurnRouteDependencies & {games?:AuthoritativeGameService; presentation?:GameplayTurnPresentationService}) {
   const app = new Hono();
-  if (emailAuth) mountAuth(app, emailAuth.service, emailAuth.origin, emailAuth.cookieSameSite, emailAuth.trustedProxyAddresses);
-  if (emailAuth?.lifecycle && emailAuth.exporter) mountAccount(app, emailAuth.service, emailAuth.lifecycle, emailAuth.exporter, emailAuth.origin, emailAuth.cookieSameSite);
+  if (emailAuth) mountAuth(app, emailAuth.routesService ?? emailAuth.service, emailAuth.origin, emailAuth.cookieSameSite, emailAuth.trustedProxyAddresses,
+    () => ({ ...(emailAuth.supabaseAuth?.providers() ?? { email: true, phone: false }),
+      privacyPolicyUrl: emailAuth.privacyPolicyUrl ?? null, privacyPolicyVersion: emailAuth.privacyPolicyVersion ?? null }));
+  if (emailAuth?.supabaseAuth) mountSupabasePhoneAuth(app, emailAuth.supabaseAuth, emailAuth.service, emailAuth.origin, emailAuth.cookieSameSite, emailAuth.trustedProxyAddresses);
+  if (emailAuth?.lifecycle && emailAuth.exporter) mountAccount(app, emailAuth.service, emailAuth.lifecycle, emailAuth.exporter, emailAuth.origin, emailAuth.cookieSameSite, emailAuth.accountQuota);
 
   app.get('/health', c => c.json({ status: 'ok', service: 'jiuxiao-api',
     saveSchemaVersion: SAVE_SCHEMA_VERSION }));

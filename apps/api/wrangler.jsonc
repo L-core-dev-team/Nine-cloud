@@ -1,0 +1,31 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "jiuxiao-api",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-10-07",
+  "workers_dev": false,
+  "routes": [
+    { "pattern": "play.jiuxiaogame.cn/api/*", "zone_name": "jiuxiaogame.cn" },
+    { "pattern": "play.jiuxiaogame.cn/health", "zone_name": "jiuxiaogame.cn" },
+    { "pattern": "play.jiuxiaogame.cn/ready", "zone_name": "jiuxiaogame.cn" }
+  ],
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE",
+      // Replace with the real Hyperdrive ID before any remote deployment.
+      "id": "00000000000000000000000000000000"
+    }
+  ],
+  "vars": {
+    "APP_ENV": "production",
+    "API_RUNTIME_KIND": "cloudflare",
+    "AUTH_MAIL_FROM": "noreply@jiuxiaogame.cn",
+    "AUTH_MAIL_PROVIDER": "resend",
+    "AUTH_COOKIE_SAME_SITE": "Strict"
+  },
+  "observability": {
+    "enabled": true,
+    "logs": { "enabled": true, "head_sampling_rate": 1 },
+    "traces": { "enabled": true, "head_sampling_rate": 0.01 }
+  }
+}

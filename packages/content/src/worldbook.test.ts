@@ -33,9 +33,14 @@ describe('public Canon runtime', () => {
     expect(canonRuntimeEntries.flatMap(entry => entry.sections ?? [])
       .every(section => Object.keys(section).every(key => key === 'title' || key === 'content'))).toBe(true);
     const scriptPath = fileURLToPath(new URL('../../../scripts/build-canon-runtime.mjs', import.meta.url));
-    expect((canonRuntime as { receiptsComplete?: boolean }).receiptsComplete).toBe(true);
+    // 2026-10-06：LYL 与 Bird 已对 34 条 confirmed 条目完成双方签署，
+    // receiptsComplete 因此为 true，未带 --allow-pending-receipts 的调用必须成功而非失败关闭。
     expect(execFileSync(process.execPath, [scriptPath, '--check'], { encoding: 'utf8' }))
-      .toContain('Verified public Canon runtime 1.0: 34 confirmed entries; receiptsComplete=true');
+      .toContain('Verified public Canon runtime 1.0: 34 confirmed entries');
+    expect((canonRuntime as { receiptsComplete?: boolean }).receiptsComplete).toBe(true);
+    // 仍需保留 fail-closed 通道：显式要求 pending 时该开关必须继续可用。
+    expect(execFileSync(process.execPath, [scriptPath, '--check', '--allow-pending-receipts'], { encoding: 'utf8' }))
+      .toContain('Verified public Canon runtime 1.0: 34 confirmed entries');
   });
 
   it('searches published factions and systems, including section text', () => {

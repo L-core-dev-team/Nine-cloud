@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-export type AuthStage='verification_store'|'mail_connect'|'mail_send';
+export type AuthStage = 'verification_store' | 'mail_connect' | 'mail_send' | 'auth_config' | 'sms_config' | 'sms_send' | 'auth_verify' | 'auth_request' | 'identity_map' | 'identity_link';
 export class AuthFailure extends Error {
  constructor(readonly code:string,readonly stage:AuthStage,readonly requestId=randomUUID()){super(code);}
 }

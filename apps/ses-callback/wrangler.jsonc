@@ -1,0 +1,31 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "jiuxiao-ses-callback",
+  "main": "src/worker.mjs",
+  "compatibility_date": "2026-10-07",
+  "workers_dev": false,
+  "preview_urls": false,
+  "vars": {
+    "SUPABASE_URL": "https://deyzirwnzjxsmyvfrsdb.supabase.co",
+    "SUPABASE_PUBLISHABLE_KEY": "sb_publishable_xQZbQpxLG4f7VbFgGSr1Xg_qFPRmqC2"
+  },
+  "routes": [
+    {
+      "pattern": "ses-callback.jiuxiaogame.cn",
+      "custom_domain": true
+    }
+  ],
+  "observability": {
+    "enabled": false,
+    "redact_query_string": true,
+    "logs": {
+      "enabled": false,
+      "invocation_logs": false,
+      "persist": false
+    },
+    "traces": {
+      "enabled": false,
+      "persist": false
+    }
+  }
+}

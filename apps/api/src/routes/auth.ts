@@ -1,6 +1,6 @@
 import type { Hono } from 'hono';
 import { isIP } from 'node:net';
-import { EmailAuthService, SESSION_SECONDS } from '../services/email-auth.js';
+import { EmailAuthService, SESSION_SECONDS, type AuthSession, type GuestUpgradeResult } from '../services/email-auth.js';
 import { AuthFailure } from '../services/auth-failure.js';
 
 export const AUTH_COOKIE = 'jx_session';
@@ -12,7 +12,17 @@ export function sessionToken(request: Request): string | null {
   const values = (request.headers.get('cookie') || '').split(';').map(value => value.trim()).filter(value => value.startsWith(`${AUTH_COOKIE}=`));
   return values.length === 1 ? values[0]!.slice(AUTH_COOKIE.length + 1) : null;
 }
-export function mountAuth(app: Hono, service: EmailAuthService, origin: string, sameSite: 'Strict' | 'None' = 'Strict', trustedProxyAddresses: readonly string[] = []): void {
+export type AuthSessionService = {
+  requestCode: EmailAuthService['requestCode'];
+  verify: (emailValue: unknown, code: unknown, restore?: boolean) => Promise<{ session: AuthSession; token: string } | null>;
+  resolve: (token: string | null) => Promise<AuthSession | null>;
+  refresh: (token: string | null) => Promise<{ session: AuthSession; token: string } | null>;
+  logout: (token: string | null) => Promise<void>;
+  // Guest mode is email-auth specific: a Supabase-backed routes service may omit it.
+  createGuest?: EmailAuthService['createGuest'];
+  upgradeGuest?: (ownerId: string, tokenValue: string | null, emailValue: unknown, code: unknown, confirmation: unknown) => Promise<GuestUpgradeResult>;
+};
+export function mountAuth(app: Hono, service: AuthSessionService, origin: string, sameSite: 'Strict' | 'None' = 'Strict', trustedProxyAddresses: readonly string[] = [], providerStatus: () => { email: boolean; phone: boolean; privacyPolicyUrl?: string | null; privacyPolicyVersion?: string | null } = () => ({ email: true, phone: false })): void {
   const url = new URL(origin);
   const local = url.protocol === 'http:' && ['127.0.0.1', 'localhost'].includes(url.hostname);
   if (origin !== url.origin || (url.protocol !== 'https:' && !local)) throw new Error('AUTH_PUBLIC_ORIGIN must be an exact HTTPS origin');
@@ -41,12 +51,14 @@ export function mountAuth(app: Hono, service: EmailAuthService, origin: string, 
     await next();
   });
   app.onError(() => Response.json({ code: 'INTERNAL_ERROR', message: '服务暂不可用。' }, { status: 503 }));
+  app.get('/api/auth/providers', c => c.json(providerStatus()));
   app.post('/api/auth/guest', async c => {
     const body = await authBody(c.req.raw);
     if (!body || Object.keys(body).length) return c.json({ code: 'INVALID_REQUEST' }, 400);
     const current = await service.resolve(sessionToken(c.req.raw));
     if (current?.kind === 'guest') return c.json({ account: accountFor(current), expiresAt: current.expiresAt.toISOString() });
     if (current) return c.json({ code: 'ACCOUNT_SESSION_ACTIVE' }, 409);
+    if (!service.createGuest) return c.json({ code: 'GUEST_UNAVAILABLE' }, 503);
     try {
       const result = await service.createGuest(clientIp(c, trustedProxyAddresses));
       if (!result) { c.header('Retry-After', '3600'); return c.json({ code: 'RATE_LIMITED' }, 429); }
@@ -63,7 +75,7 @@ export function mountAuth(app: Hono, service: EmailAuthService, origin: string, 
     try {
       const result = await service.requestCode(body.email, clientIp(c, trustedProxyAddresses));
       if(result==='limited')c.header('Retry-After','60');
-      return result === 'sent' ? c.json({ status: 'sent', resendAfterSeconds:60, expiresInSeconds:600 }, 202) : c.json({ code: 'RATE_LIMITED',retryAfterSeconds:60 }, 429);
+      return result === 'sent' ? c.json({ status: 'sent', resendAfterSeconds:60 }, 202) : c.json({ code: 'RATE_LIMITED',retryAfterSeconds:60 }, 429);
     } catch (error) { if(error instanceof AuthFailure)return c.json({code:error.code,stage:error.stage,requestId:error.requestId},503);return c.json({ code: error instanceof TypeError ? 'INVALID_EMAIL' : 'MAIL_UNAVAILABLE' }, error instanceof TypeError ? 400 : 503); }
   });
   for(const path of ['/api/auth/verify','/api/auth/restore'])app.post(path, async c => {
@@ -83,6 +95,7 @@ export function mountAuth(app: Hono, service: EmailAuthService, origin: string, 
     const token = sessionToken(c.req.raw);
     const current = await service.resolve(token);
     if (current?.kind !== 'guest') return c.json({ code: 'UPGRADE_UNAVAILABLE' }, 409);
+    if (!service.upgradeGuest) return c.json({ code: 'UPGRADE_UNAVAILABLE' }, 409);
     try {
       const result = await service.upgradeGuest(current.ownerId, token, body.email, body.code, body.confirmation);
       if (result.status === 'invalid_code') return c.json({ code: 'INVALID_OR_EXPIRED_CODE' }, 401);
@@ -116,7 +129,7 @@ export function mountAuth(app: Hono, service: EmailAuthService, origin: string, 
 function accountFor(session: import('../services/email-auth.js').AuthSession): { id: string; email?: string; kind?: 'guest' } {
   return session.kind === 'guest' ? { id: session.ownerId, kind: 'guest' } : { id: session.ownerId, email: session.email };
 }
-async function authBody(request: Request): Promise<Record<string, unknown> | null> {
+export async function authBody(request: Request): Promise<Record<string, unknown> | null> {
   if (!request.headers.get('content-type')?.startsWith('application/json') || !request.body) return null;
   const reader = request.body.getReader(); const chunks: Uint8Array[] = []; let length = 0;
   try {
@@ -132,7 +145,12 @@ async function authBody(request: Request): Promise<Record<string, unknown> | nul
  * cannot choose their rate-limit identity by adding a request header. */
 export function clientIp(c: { req: { header(name: string): string | undefined }; env?: unknown }, trustedProxyAddresses: readonly string[]): string {
   type Incoming = { socket?: { remoteAddress?: string } };
-  const bindings = c.env as { server?: { incoming?: Incoming }; incoming?: Incoming } | undefined;
+  const bindings = c.env as { server?: { incoming?: Incoming }; incoming?: Incoming; API_RUNTIME_KIND?: string } | undefined;
+  if (bindings?.API_RUNTIME_KIND === 'cloudflare') {
+    const edgeAddress = c.req.header('cf-connecting-ip')?.trim();
+    if (edgeAddress && edgeAddress.length <= 45 && isIP(edgeAddress) !== 0) return edgeAddress;
+    return 'unidentified';
+  }
   const incoming = bindings?.server?.incoming ?? bindings?.incoming;
   const remote = incoming?.socket?.remoteAddress?.replace(/^::ffff:/, '') || 'unidentified';
   if (trustedProxyAddresses.includes(remote)) {
