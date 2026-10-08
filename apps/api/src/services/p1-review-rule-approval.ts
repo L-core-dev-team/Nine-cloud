@@ -11,10 +11,16 @@
  *
  * When only the lockfile moved, `pluginSourceSha256` below stays identical,
  * which is the signal that the reviewed rule text itself is untouched.
+ *
+ * This branch additionally exports `./memory/recall-authorized.js` from
+ * `packages/domain/src/index.ts` (the P4 authorised-recall surface), so its
+ * bundle digest differs from main's even though the reviewed P1 rule sources
+ * are byte-identical. The plugin-source pin below is therefore the
+ * cross-branch invariant to compare; the bundle digest is branch-local.
  */
 export const P1_REVIEW_RULE_APPROVAL = Object.freeze({
   scope: 'p1-review-candidate-v1',
-  bundleSha256: 'sha256:8490fde4efb019e1cc70352046cee51690ce2d836ebef34d886e50bcb3f4a62c',
+  bundleSha256: 'sha256:dbde08ec5dbabfa1b740cd121995be0c6376276a783a054e00908951376ad6b3',
   pluginSourceSha256: 'sha256:94c57793bfde874469b81c1d97c914ab5591d628631564679f07d7e3aef83735',
   ruleVersion: 'prologue-v1-candidate-20261005',
   canonVersion: 'prologue-canon-candidate-20261005',
