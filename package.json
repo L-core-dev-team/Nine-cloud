@@ -18,6 +18,7 @@
     "test:e2e:auth": "node tests/e2e/auth-login-ui.cjs",
     "license:check": "node scripts/audit/license-check.mjs",
     "test:e2e:design": "node tests/e2e/design-acceptance-runner.cjs",
+    "test:e2e:ui": "node tests/e2e/game-shell.cjs",
     "worldbook:index:write": "node scripts/audit/build-worldbook-draft-index.mjs --write",
     "worldbook:index:check": "node scripts/audit/build-worldbook-draft-index.mjs --check",
     "worldbook:runtime:write": "node scripts/build-canon-runtime.mjs --write --allow-pending-receipts",

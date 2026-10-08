@@ -87,15 +87,16 @@ async function checkFeedback(page) {
   await page.getByRole('button', { name: /^保存角色并进入/ }).click();
   await page.locator('.game-topline h1').waitFor();
   await page.getByRole('button', { name: '角色状态', exact: true }).click();
-  assert.equal(await page.locator('.game-info-panel pre').count(), 0);
+  assert.equal(await page.locator('.game-info-dialog pre').count(), 0);
   assert.ok((await page.locator('.game-readable-panel').innerText()).includes('自由编写的姓名'));
   await page.getByRole('button', { name: '关闭资料面板' }).click();
   await page.getByRole('button', { name: '综合情报', exact: true }).click();
-  assert.equal(await page.locator('.game-info-panel pre').count(), 0);
+  assert.equal(await page.locator('.game-info-dialog pre').count(), 0);
   assert.ok((await page.locator('.game-readable-panel').innerText()).trim().length > 0);
   await page.getByRole('button', { name: '关闭资料面板' }).click();
   await page.getByRole('button', { name: '星记忆', exact: true }).click();
   assert.ok((await page.locator('.game-readable-panel').innerText()).includes('尚无已归档记忆'));
+  await page.getByRole('button', { name: '关闭资料面板' }).click();
   await page.locator('.game-tools').getByRole('button', { name: '世界设定', exact: true }).click();
   await page.getByLabel('搜索已审核世界设定', { exact: true }).fill('中州');
   await page.locator('.world-search-feedback [role=status]').filter({ hasText: /找到 \d+ 条设定/ }).waitFor();

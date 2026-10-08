@@ -6,6 +6,7 @@ import { SCENE_MANIFEST, sceneForLocation, type SceneId } from '@jiuxiao/content
 import type { CanonRuntimeEntry } from '@jiuxiao/content/worldbook';
 import { AiSettings } from './ai-settings';
 import { ReadableData } from './components/ReadableData';
+import { GameShell, GameInfoDialog } from './components/GameShell';
 import { CHARACTER_OPTIONS } from './character-options';
 import { CloudSettings } from './routes/CloudSettings';
 import { TurnWorkspace } from './routes/TurnWorkspace';
@@ -414,35 +415,8 @@ function Game({ save, onExport, onImportSupplement, onUpdate, onBranch, onReload
   const [conflictDraft, setConflictDraft] = useState<LocalSave | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const submittingRef = useRef(false);
-  useLayoutEffect(() => {
-    if (!save) return;
-    const key = `jiuxiao_1_game_scroll_${save.saveId}`;
-    let top = 0;
-    try { top = Math.max(0, Number(sessionStorage.getItem(key) || 0)); } catch { /* Position is optional. */ }
-    const restore = () => window.scrollTo(0, Math.min(top, Math.max(0, document.documentElement.scrollHeight - window.innerHeight)));
-    restore();
-    // Record the position as the player scrolls rather than in the unmount
-    // cleanup: when this route swaps to the world reader, that reader mounts its
-    // own layout effect that resets the document to the top, so a cleanup-time
-    // read of window.scrollY would persist 0 and lose the reader's return
-    // position. Writing on scroll keeps the saved value independent of whatever
-    // the next route does during its own layout pass.
-    const remember = () => {
-      try { sessionStorage.setItem(key, String(window.scrollY)); } catch { /* Keep the save untouched. */ }
-    };
-    // Do not write on mount: `restore` may be clamped while the story is still
-    // being laid out. Only real scroll deltas are meaningful.
-    const frame = requestAnimationFrame(restore);
-    window.addEventListener('scroll', remember, { passive: true });
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener('scroll', remember);
-      // No write here: the unmount cleanup runs after the next route's layout
-      // effect has already reset the document to the top, so reading
-      // window.scrollY now would persist 0 and lose the reader's return point.
-      // The last scroll event already captured the true position.
-    };
-  }, [save?.saveId]);
+  // GameShell records the scroll container position on scroll, preserving
+  // main's navigation-race fix without competing window-scroll handlers.
   if (!save) return <section className="page"><h2>找不到这份存档</h2><p>它可能已被删除，或链接来自另一个浏览器。</p><button className="primary" onClick={() => go('/')}>回到首页</button></section>;
   const pending = save.pending ?? save.legacyArchive?.payload.pending;
   const pendingFromLegacy = save.pending === undefined && pending !== undefined && pending !== null;
@@ -499,13 +473,13 @@ function Game({ save, onExport, onImportSupplement, onUpdate, onBranch, onReload
       setSubmitting(false);
     }
   }
-  return <section className="game-page">
+  return <GameShell saveId={save.saveId} archive={save.legacyArchive ? <LegacyArchive save={save} /> : undefined}>
     <header className="game-topline"><div><span className="eyebrow">{save.location} · 本地存档</span><h1>{save.name}</h1></div><button className="quiet-action" onClick={() => go('/lobby')}>离开此局<span>回到山门</span></button></header>
     <div className="game-workspace">
       <aside className="game-rail" aria-label="游戏资料"><button aria-pressed={activePanel === 'character'} onClick={() => setActivePanel(activePanel === 'character' ? null : 'character')}>角色状态</button><button aria-pressed={activePanel === 'intel'} onClick={() => setActivePanel(activePanel === 'intel' ? null : 'intel')}>综合情报</button><button aria-pressed={activePanel === 'memory'} onClick={() => setActivePanel(activePanel === 'memory' ? null : 'memory')}>星记忆</button></aside>
       <div className="story-column"><div className="story-reading" aria-label="剧情记录">
         <div className="chapter-mark"><span>九霄 · {save.location}</span><i aria-hidden="true" /></div>
-        {save.messages.length > 80 && <small className="history-limit-note">此处显示最近 80 条可读文字；完整旧档仍保存在下方历史资料中。</small>}
+        {save.messages.length > 80 && <small className="history-limit-note">此处显示最近 80 条可读文字；完整旧档仍保存在「旧档资料与迁移核对」中。</small>}
         {readableMessages.map(({ message, index, content }) => {
           const row = message && typeof message === 'object' ? message as Record<string, unknown> : {};
           const role = row.gm === true || row.role === 'assistant' ? '剧情' : row.role === 'user' ? '行者' : '旧档';
@@ -517,11 +491,10 @@ function Game({ save, onExport, onImportSupplement, onUpdate, onBranch, onReload
       </div>
       <div className="game-tools" role="group" aria-label="行囊工具"><button onClick={() => go('/world')}>世界设定</button><button onClick={() => onExport(save)}>导出存档</button><label>补充资料<input type="file" accept=".txt,.md" onChange={event => { const file = event.currentTarget.files?.[0]; if (file) onImportSupplement(file, save); event.currentTarget.value = ''; }} /></label></div>
       <form className="intent-composer" aria-busy={submitting} onSubmit={event => { event.preventDefault(); void saveIntent(); }}><label htmlFor="player-intent">此刻欲行何事</label><textarea id="player-intent" value={intent} onChange={event => { setIntent(event.target.value); writeActionDraft(save.saveId, event.target.value); }} placeholder="写下行动意图……" maxLength={4000} disabled={submitting} /><div><small>本地草稿 · 规则结算尚未接入 · {pendingCount} 项待处理</small><button className="primary" type="submit" disabled={submitting}>{submitting ? '正在保存…' : '收入待处理'}</button></div>{feedback && <p role="status">{feedback}</p>}{conflictDraft && <div className="save-conflict-actions" role="group" aria-label="存档冲突处理"><button className="secondary" type="button" disabled={submitting} onClick={() => { void onReload().then(() => { setConflictDraft(null); setFeedback('已载入最新存档。检查当前行动后，可再次提交。'); }); }}>载入最新存档</button><button className="secondary" type="button" disabled={submitting} onClick={() => { void onBranch(conflictDraft).then(saved => { if (saved) { setConflictDraft(null); setIntent(''); writeActionDraft(save.saveId, ''); setFeedback('冲突内容已另存为独立分支；原存档保持不变。'); } else setFeedback('分支未写入。请先导出冲突副本，并检查本地存储空间。'); }); }}>另存为分支</button><button className="quiet-action" type="button" disabled={submitting} onClick={() => onExport(conflictDraft)}>下载冲突副本</button></div>}</form>      </div>
-      {activePanel && <aside className="game-info-panel" aria-label={`${activePanel === 'character' ? '角色状态' : activePanel === 'intel' ? '综合情报' : '星记忆'}详情`}><div><span className="eyebrow">行囊所载</span><button aria-label="关闭资料面板" onClick={() => setActivePanel(null)}>×</button></div><div className="game-readable-panel" aria-label="资料内容"><ReadableData value={panelContent} /></div></aside>}
+      {activePanel && <GameInfoDialog label={activePanel === 'character' ? '角色状态' : activePanel === 'intel' ? '综合情报' : '星记忆'} onClose={() => setActivePanel(null)}><div className="game-readable-panel" aria-label="资料内容"><ReadableData value={panelContent} /></div></GameInfoDialog>}
     </div>
     <div className="game-statusline"><span>存档版本 {save.revision}</span><span>{pendingFromLegacy ? '旧档待恢复' : pendingCount ? `${pendingCount} 项待处理` : '等待规则结算'}</span><span>地点：{save.location}</span></div>
-    <LegacyArchive save={save} />
-  </section>;
+  </GameShell>;
 }
 
 function App() {
