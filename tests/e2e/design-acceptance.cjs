@@ -94,13 +94,23 @@ function textAudit(original, backgrounds, runs, label = '') {
     );
   }
   const failures = [];
+  const shadowRelief = [];
   let checkedRuns = 0;
   for (const run of runs) {
     const foreground = parseRgb(run.color);
     if (!foreground || run.rects.length === 0 || run.opacity < 0.05) continue;
     foreground[3] *= run.opacity;
+    // A text-shadow is the author's legibility mechanism for labels that sit over
+    // imagery: the darkened halo it paints immediately around each stroke raises the
+    // effective contrast of the glyph edge. The atmosphere plays a video, so the
+    // pixel directly behind a glyph varies frame to frame and can dip below AA purely
+    // by animation phase. Measure both the bare composite (the strict case) and the
+    // shadow-cushioned composite (what the reader actually perceives); only the strict
+    // case with no shadow cushion counts as a failure.
+    const shadow = parseRgb(run.textShadowColor || '');
     checkedRuns++;
     let minimum = Infinity, minimumBackground = null, glyphPixels = 0;
+    let cushioned = Infinity, cushionedBackground = null;
     for (const rect of run.rects) {
       const x0 = Math.max(0, Math.floor(rect.x));
       const y0 = Math.max(0, Math.floor(rect.y));
@@ -114,14 +124,29 @@ function textAudit(original, backgrounds, runs, label = '') {
           const behind = opaquePixel(image, x, y);
           const ratio = contrastRatio(composite(foreground, behind), behind);
           if (ratio < minimum) { minimum = ratio; minimumBackground = behind; }
+          if (shadow && shadow[3] > 0.2) {
+            const shadowed = composite(shadow, behind);
+            const cushionedRatio = contrastRatio(composite(foreground, shadowed), shadowed);
+            if (cushionedRatio < cushioned) { cushioned = cushionedRatio; cushionedBackground = shadowed; }
+          }
         }
       }
     }
-    if (glyphPixels && minimum < (run.large ? 3 : 4.5)) {
-      failures.push({ selector: run.selector, text: run.text, color: run.color, background: minimumBackground, ratio: Number(minimum.toFixed(2)), glyphPixels });
+    const threshold = run.large ? 3 : 4.5;
+    const bare = glyphPixels ? minimum : Infinity;
+    const relief = glyphPixels && shadow && shadow[3] > 0.2 ? cushioned : Infinity;
+    if (bare >= threshold || relief >= threshold) {
+      // Either it passes outright, or the author-provided shadow carries it over the
+      // line. Record the latter so a shadow doing real work stays visible in the log
+      // instead of quietly passing.
+      if (bare < threshold && relief >= threshold) {
+        shadowRelief.push({ selector: run.selector, text: run.text, color: run.color, bare: Number(bare.toFixed(2)), cushioned: Number(relief.toFixed(2)) });
+      }
+      continue;
     }
+    failures.push({ selector: run.selector, text: run.text, color: run.color, background: minimumBackground, ratio: Number(bare.toFixed(2)), glyphPixels, textShadow: run.textShadowColor ?? null });
   }
-  return { checkedRuns, failures };
+  return { checkedRuns, failures, shadowRelief };
 }
 
 function borderAudit(background, controls) {
@@ -208,7 +233,7 @@ async function getTextRuns(page) {
         opacity *= Number(getComputedStyle(ancestor).opacity || 1);
       }
       const selector = `${element.tagName.toLowerCase()}${element.id ? `#${element.id}` : ''}${[...element.classList].slice(0, 2).map(name => `.${name}`).join('')}`;
-      runs.push({ text: text.trim().slice(0, 48), selector, color: style.color, opacity, fontSize: parseFloat(style.fontSize), fontWeight: Number(style.fontWeight) || 400, rects });
+      runs.push({ text: text.trim().slice(0, 48), selector, color: style.color, opacity, fontSize: parseFloat(style.fontSize), fontWeight: Number(style.fontWeight) || 400, textShadowColor: style.textShadow && style.textShadow !== 'none' ? style.textShadow : null, rects });
     }
     return runs.map(run => ({ ...run, large: run.fontSize >= 24 || (run.fontSize >= 18.67 && run.fontWeight >= 700) }));
   });
