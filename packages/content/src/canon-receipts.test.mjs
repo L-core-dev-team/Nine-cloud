@@ -25,7 +25,31 @@ describe('current Canon digest manifest', () => {
     expect(digestManifest.count).toBe(actual.length);
     expect(sortEntries(digestManifest.entries)).toEqual(actual);
     expect(receipts.canonVersion).toBe(registry.activeVersion);
-    expect(sortEntries(receipts.entries)).toEqual(actual.map(item => ({ ...item, reviews: [] })));
+    // 2026-10-06：34 条已由 LYL 与 Bird 双方签署。每条回执必须同时满足：
+    // 摘要与登记册一致，且 reviews 含两位作者的 approved 记录。
+    expect(sortEntries(receipts.entries)).toEqual(actual.map(item => ({
+      ...item,
+      reviews: [
+        {
+          reviewer: 'LYL',
+          decision: 'approved',
+          contentSha256: item.contentSha256,
+          reviewedAt: expect.any(String),
+        },
+        {
+          reviewer: 'Bird',
+          decision: 'approved',
+          contentSha256: item.contentSha256,
+          reviewedAt: expect.any(String),
+        },
+      ],
+    })));
+    // 签署记录的时间必须是可解析的 ISO 串，供审计追溯。
+    for (const entry of receipts.entries) {
+      for (const review of entry.reviews) {
+        expect(Number.isFinite(Date.parse(review.reviewedAt))).toBe(true);
+      }
+    }
   });
 });
 
