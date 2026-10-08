@@ -174,9 +174,17 @@ async function stop(child) {
     await page.getByTestId('p2-action-input').fill('观察渡船');
     await page.getByTestId('p2-submit-action').click();
     await page.waitForFunction(() => document.querySelector('[data-testid="p2-revision"]')?.textContent === '1', null, { timeout: 20_000 });
-    await page.waitForFunction(() => document.querySelector('[data-testid="p2-narrative"]')?.textContent.includes('渡槽淤了半尺'), null, { timeout: 20_000 });
     expectedRequests = 1;
     expectedEvents = 1;
+    try {
+      await page.waitForFunction(() => document.querySelector('[data-testid="p2-narrative"]')?.textContent.includes('渡槽淤了半尺'), null, { timeout: 20_000 });
+    } catch (error) {
+      const visibleNarrative = await page.getByTestId('p2-narrative').textContent().catch(() => '');
+      const visibleStatus = await page.getByTestId('p2-status').textContent().catch(() => '');
+      console.error(JSON.stringify({ narrativeRetryDebug: { visibleNarrative, visibleStatus } }));
+      await page.screenshot({ path: join(evidenceDir, 'p3-narrative-retry-debug.png'), fullPage: true }).catch(() => undefined);
+      throw error;
+    }
     assert.match(await page.getByTestId('p2-receipt').textContent(), /observe\.result/);
 
     const committed = await pool.query(`SELECT s.revision,s.snapshot,s.memory_mode,
@@ -198,6 +206,103 @@ async function stop(child) {
     await page.waitForFunction(() => document.querySelector('[data-testid="p2-revision"]')?.textContent === '1', null, { timeout: 20_000 });
     await page.waitForFunction(() => document.body.innerText.includes('游戏分钟') && document.body.innerText.includes('315'), null, { timeout: 20_000 });
     await page.getByTestId('p2-status').getByText('服务端存档已恢复').waitFor({ timeout: 20_000 });
+
+    // P3: from the signed-in guest browser, start a second Continue-mode game
+    // without opening the character form, complete the first task using only
+    // editable suggestions, the same server parser, and deterministic narration.
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(`${webOrigin}/lobby`, { waitUntil: 'domcontentloaded' });
+    const p3StartedAt = performance.now();
+    await page.getByTestId('p3-quick-start').click();
+    await page.getByTestId('p2-cloud-game').waitFor({ state: 'visible', timeout: 20_000 });
+    await page.getByText('存档与继续', { exact: true }).waitFor();
+    const quickSaveId = new URL(page.url()).pathname.split('/').at(-1);
+    assert.match(quickSaveId, /^game-[0-9a-f]{64}$/);
+    createdSaveIds.push(quickSaveId);
+    const quickSave = await pool.query('SELECT memory_mode,revision FROM game_saves WHERE id=$1 AND owner_id=$2', [quickSaveId, ownerId]);
+    assert.deepEqual(quickSave.rows[0], { memory_mode: 'continue', revision: 0 });
+    const firstAction = page.getByTestId('p3-suggestions').getByRole('button', { name: '前往望气台', exact: true });
+    await firstAction.waitFor({ state: 'visible', timeout: 20_000 });
+    const firstActionReadyMs = Math.round(performance.now() - p3StartedAt);
+    assert.ok(firstActionReadyMs <= 3_000, `first editable action must be available within 3 seconds; got ${firstActionReadyMs}ms`);
+    await page.getByTestId('p3-world-brief').getByText('本段没有离线模拟事件', { exact: false }).waitFor();
+    await page.getByTestId('p2-action-input').fill('去');
+    await page.getByTestId('p2-submit-action').click();
+    await page.getByTestId('p3-clarification').getByText('还需要：想去哪里。', { exact: true }).waitFor({ timeout: 20_000 });
+    const afterClarification = await pool.query(`SELECT s.revision,s.snapshot,
+      (SELECT count(*)::int FROM turn_requests r WHERE r.save_id=s.id) AS requests,
+      (SELECT count(*)::int FROM turn_events e WHERE e.save_id=s.id) AS events
+      FROM game_saves s WHERE s.id=$1 AND s.owner_id=$2`, [quickSaveId, ownerId]);
+    assert.equal(afterClarification.rows[0].revision, 0);
+    assert.equal(afterClarification.rows[0].snapshot.facts.gameMinute, 300);
+    assert.equal(afterClarification.rows[0].requests, 1);
+    assert.equal(afterClarification.rows[0].events, 0, 'clarification must not create a world event');
+    assert.equal(await page.getByTestId('p2-action-input').inputValue(), '去', 'clarification must preserve editable player text');
+    expectedRequests += 1;
+    await page.getByTestId('p3-suggestions').getByRole('button', { name: '前往望气台', exact: true }).click();
+    assert.equal(await page.getByTestId('p2-action-input').inputValue(), '去望气台');
+    await page.getByTestId('p2-action-input').press('Control+Enter');
+    await page.waitForFunction(() => document.querySelector('[data-testid="p2-revision"]')?.textContent === '1', null, { timeout: 20_000 });
+    expectedRequests += 1;
+    expectedEvents += 1;
+    await page.getByTestId('p3-world-brief').getByText('当前地点：望气台', { exact: false }).waitFor();
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.getByTestId('p2-cloud-game').waitFor({ state: 'visible', timeout: 20_000 });
+    await page.getByTestId('p3-world-brief').getByText('修订 1 已提交：到达望气台', { exact: false }).waitFor({ timeout: 20_000 });
+    await page.getByTestId('p2-receipt').getByText('move.arrived', { exact: false }).waitFor();
+    await page.getByTestId('p3-retry-narrative').click();
+    await page.waitForFunction(() => document.querySelector('[data-testid="p2-narrative"]')?.textContent.includes('望气台'), null, { timeout: 20_000 });
+    const afterNarrativeRetry = await pool.query(`SELECT s.revision,s.snapshot,
+      (SELECT count(*)::int FROM turn_requests r WHERE r.save_id=s.id) AS requests,
+      (SELECT count(*)::int FROM turn_events e WHERE e.save_id=s.id) AS events
+      FROM game_saves s WHERE s.id=$1 AND s.owner_id=$2`, [quickSaveId, ownerId]);
+    assert.equal(afterNarrativeRetry.rows[0].revision, 1);
+    assert.equal(afterNarrativeRetry.rows[0].snapshot.facts.gameMinute, 315);
+    assert.equal(afterNarrativeRetry.rows[0].requests, 2);
+    assert.equal(afterNarrativeRetry.rows[0].events, 1, 'narrative retry must not settle a second rule turn');
+
+    const scanSuggestion = page.getByRole('button', { name: '观察落石堵渡', exact: true });
+    await scanSuggestion.waitFor({ state: 'visible', timeout: 20_000 });
+    await scanSuggestion.click();
+    assert.equal(await page.getByTestId('p2-action-input').inputValue(), '观察落石堵渡');
+    await page.getByTestId('p2-submit-action').click();
+    await page.waitForFunction(() => document.querySelector('[data-testid="p2-revision"]')?.textContent === '2', null, { timeout: 20_000 });
+    expectedRequests += 1;
+    expectedEvents += 1;
+    await page.getByTestId('p3-world-brief').getByText('发现落石线索', { exact: false }).waitFor();
+
+    const studySuggestion = page.getByRole('button', { name: '细察落石堵渡', exact: true });
+    await studySuggestion.waitFor({ state: 'visible', timeout: 20_000 });
+    await studySuggestion.click();
+    assert.equal(await page.getByTestId('p2-action-input').inputValue(), '细察落石堵渡');
+    await page.getByTestId('p2-submit-action').click();
+    await page.waitForFunction(() => document.querySelector('[data-testid="p2-revision"]')?.textContent === '3', null, { timeout: 20_000 });
+    expectedRequests += 1;
+    expectedEvents += 1;
+
+    const returnSuggestion = page.getByTestId('p3-suggestions').getByRole('button', { name: '前往芦花渡', exact: true });
+    await returnSuggestion.waitFor({ state: 'visible', timeout: 20_000 });
+    await returnSuggestion.click();
+    assert.equal(await page.getByTestId('p2-action-input').inputValue(), '去芦花渡');
+    await page.getByTestId('p2-submit-action').click();
+    await page.waitForFunction(() => document.querySelector('[data-testid="p2-revision"]')?.textContent === '4', null, { timeout: 20_000 });
+    expectedRequests += 1;
+    expectedEvents += 2; // The committed bypass also emits quest.completed.
+    await page.getByTestId('p3-quest-status').getByText('首段任务已完成', { exact: false }).waitFor({ timeout: 20_000 });
+    await page.getByTestId('p3-world-brief').getByText('绕过阻碍，到达芦花渡', { exact: false }).waitFor();
+    const taskCompletionMs = Math.round(performance.now() - p3StartedAt);
+    assert.ok(taskCompletionMs <= 180_000, `first task must complete within 3 minutes; got ${taskCompletionMs}ms`);
+    const quickCommitted = await pool.query(`SELECT s.revision,s.snapshot,
+      (SELECT count(*)::int FROM turn_requests r WHERE r.save_id=s.id) AS requests,
+      (SELECT count(*)::int FROM turn_events e WHERE e.save_id=s.id) AS events
+      FROM game_saves s WHERE s.id=$1 AND s.owner_id=$2`, [quickSaveId, ownerId]);
+    assert.equal(quickCommitted.rows[0].revision, 4);
+    assert.equal(quickCommitted.rows[0].requests, 5);
+    assert.equal(quickCommitted.rows[0].events, 5);
+    assert.equal(quickCommitted.rows[0].snapshot.facts.gameMinute, 390);
+    assert.deepEqual(quickCommitted.rows[0].snapshot.facts.questState, { status: 'completed', rewardClaimed: false });
+    const p3Screenshot = join(evidenceDir, 'p3-zero-config-gameplay.png');
+    await page.screenshot({ path: p3Screenshot, fullPage: true });
     assert.deepEqual(pageErrors, []);
 
     console.log(JSON.stringify({
@@ -216,6 +321,19 @@ async function stop(child) {
       otpRequests: otpRequestCount,
       guestEntryAndOriginalEmailControlsVisible: true,
       server: 'real PostgreSQL transaction; isolated test database; no seeded session or email OTP; non-production approved review plugin',
+      p3Journey: {
+        start: 'Continue-mode game created directly from lobby without the character form',
+        simulatedViewport: '390x844',
+        firstEditableActionReadyMs,
+        taskCompletionMs,
+        editedSuggestion: 'move suggestion edited after a clarification and submitted with Ctrl+Enter',
+        clarification: 'missing destination persisted without revision, game-time or event changes; suggestion completed through the same parser',
+        refreshedReceipt: true,
+        firstTask: 'scan clue, study the obstruction, bypass it, and observe quest.completed in the authoritative snapshot',
+        taskState: quickCommitted.rows[0].snapshot.facts.questState,
+        narrative: 'deterministic no-model fallback from committed receipt',
+        screenshot: p3Screenshot,
+      },
     }, null, 2));
     await context.close();
   } finally {

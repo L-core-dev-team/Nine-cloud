@@ -39,3 +39,18 @@ it('loads owner-scoped server saves and sends natural language through the share
  const forged=await app.request('/api/games/game-owned/turns',{method:'POST',headers,body:JSON.stringify({text:'观察渡船',expectedRevision:4,idempotencyKey:randomUUID(),actorId:'client-player'})});
  expect(forged.status).toBe(400);expect(execute).toHaveBeenCalledTimes(1);
 });
+it('restores an owner-scoped receipt and retries only its narrative by request identity',async()=>{
+ const id=randomUUID();
+ const presentation={
+  latestReceipt:vi.fn(async()=>({status:'ready' as const,receipt:{idempotencyKey:id},narrativeStatus:'unavailable'})),
+  retryNarrative:vi.fn(async(owner:string,saveId:string,turnId:string)=>({status:'accepted' as const,duplicate:true,receipt:{saveId,idempotencyKey:turnId},narrative:{status:'received' as const,text:'仅叙述已提交结果。',source:'deterministic' as const}})),
+ };
+ const app=new Hono();mountGames(app,{read:vi.fn(async()=>({status:'ready' as const,save:{}}))} as unknown as AuthoritativeGameService,
+  {resolveOwnerId:async()=> 'owner'},undefined,presentation as unknown as import('../services/gameplay-turn-presentation.js').GameplayTurnPresentationService);
+ const latest=await app.request('/api/games/save-one/latest-turn');
+ expect(latest.status).toBe(200);expect(await latest.json()).toMatchObject({narrativeStatus:'unavailable'});
+ expect(presentation.latestReceipt).toHaveBeenCalledWith('owner','save-one');
+ const retried=await app.request(`/api/games/save-one/turns/${id}/narrative`,{method:'POST'});
+ expect(retried.status).toBe(200);expect(await retried.json()).toMatchObject({status:'accepted',narrative:{source:'deterministic'}});
+ expect(presentation.retryNarrative).toHaveBeenCalledWith('owner','save-one',id);
+});

@@ -11,7 +11,9 @@ const { chromium } = require('playwright');
 const root = resolve(__dirname, '../..');
 const webRoot = join(root, 'apps/web');
 const screenshotDir = join(root, 'test-results/e2e');
-const professionalBaselineCss = execFileSync('git', ['show', '69471c749a1624ba13109352abaf8b76577e6d3d:apps/web/src/style.css'], { cwd: root, encoding: 'utf8' });
+// Pin the merged UI polish baseline. The former 69471c7 reference predates
+// the already-integrated settings typography and mobile input sizing changes.
+const professionalBaselineCss = execFileSync('git', ['show', 'c776de91fef24d608547bac1442f9905bffe3933:apps/web/src/style.css'], { cwd: root, encoding: 'utf8' });
 const children = [];
 
 async function availablePorts(count) {

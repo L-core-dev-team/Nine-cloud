@@ -15,6 +15,7 @@ import { loadTurnPlugin, prepareTurnRuntime } from './services/turn-runtime.js';
 import {loadNarrativeSlots} from './services/provider-narrative.js';
 import {AuthoritativeGameService} from './services/authoritative-game.js';
 import { connectActionTextRuntime } from './services/gameplay-runtime.js';
+import { GameplayTurnPresentationService } from './services/gameplay-turn-presentation.js';
 
 const port = Number(process.env.API_PORT ?? 8787);
 const hostname = process.env.API_HOST || '127.0.0.1';
@@ -34,6 +35,16 @@ const preparedRuntime=plugin?prepareTurnRuntime(plugin,await loadNarrativeSlots(
 const runtime=preparedRuntime&&plugin?await connectActionTextRuntime(preparedRuntime,plugin):undefined;
 const dataPolicy=process.env.NODE_ENV==='production'?loadDataPolicy(process.env.ACCOUNT_DATA_POLICY_PATH):undefined;
 const cloudRepository=process.env.NODE_ENV==='production'?new PolicyCloudSaveRepository(pool,dataPolicy):new PostgresCloudSaveRepository(pool,true);
+const presentation=new GameplayTurnPresentationService(
+  pool,
+  (ownerId,saveId)=>cloudRepository.getForOwner(ownerId,saveId),
+  runtime?.rules ? {
+    ruleVersion: runtime.rules.ruleVersion,
+    canonVersion: runtime.rules.canonVersion,
+    memoryPolicyVersion: runtime.rules.memoryPolicyVersion,
+  } : undefined,
+  runtime?.narrativeFallback,
+);
 const app = createApp({ query: sql => pool.query(sql) }, emailAuth ? {
   service: new CloudSaveService(cloudRepository, true, true),
   archive: new CloudArchiveLifecycle(pool, true),
@@ -42,6 +53,7 @@ const app = createApp({ query: sql => pool.query(sql) }, emailAuth ? {
   // No author rules are bundled: absent host plugin remains fail closed.
   service: new ServerTurnService(createPostgresServerTurnRepository(pool, true,process.env.NODE_ENV==='production'?()=>dataPolicy:undefined),runtime?.rules,runtime?.narrator,120_000,runtime?.narrativeFallback),
   games: new AuthoritativeGameService(cloudRepository,runtime),
+  presentation,
   auth: { resolveOwnerId: async request => (await emailAuth.service.resolve(sessionToken(request)))?.ownerId || null },
 } : undefined);
 
