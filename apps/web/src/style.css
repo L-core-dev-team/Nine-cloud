@@ -896,6 +896,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 .graphics-page { width: min(1080px, calc(100vw - 36px)); padding-bottom: var(--jx-space-page-tail); }
 .graphics-page > h2 { margin: var(--jx-space-2) 0 var(--jx-space-3); color: #eee8df; font: 400 var(--jx-type-display-compact)/1.25 'Ma Shan Zheng Brand', 'Kaiti SC', 'STKaiti', 'KaiTi', serif; letter-spacing: 0.1em; }
 .graphics-lede { margin: 0 0 var(--jx-space-5); color: #fafbfc; font: var(--jx-type-body)/1.85 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
+:root:not([data-theme='day']) .graphics-lede { padding: var(--jx-space-2); background: #07121ef5; border-radius: var(--jx-radius-control); }
 .graphics-section { display: grid; gap: var(--jx-space-5); margin: var(--jx-space-4) 0; padding: clamp(18px, 3.4vw, 30px); color: #e0e7e8; background: linear-gradient(148deg, rgba(14, 30, 44, 0.88), rgba(7, 17, 27, 0.83)); border: 1px solid rgba(186, 205, 216, 0.24); border-radius: var(--jx-radius-panel); box-shadow: inset 0 1px 0 rgba(255,255,255,0.04); backdrop-filter: blur(16px) saturate(1.05); }
 .graphics-section-heading { display: flex; align-items: end; justify-content: space-between; gap: var(--jx-space-5); padding-bottom: var(--jx-space-4); border-bottom: 1px solid rgba(190, 208, 218, 0.17); }
 .graphics-section-heading h3 { margin: var(--jx-space-1) 0 0; color: #eee8df; font: 400 var(--jx-type-section-fluid)/1.25 'Ma Shan Zheng Brand', 'Kaiti SC', serif; letter-spacing: 0.08em; }
