@@ -11,3 +11,9 @@ minimumReleaseAgeExclude:
 
 overrides:
   esbuild: 0.28.2
+  # GHSA-wq5f-xc86-pv6w / CVE-2026-96889: sharp < 0.35.5 bundles a vulnerable
+  # librsvg. The package arrives only through the devDependency chain
+  # wrangler -> miniflare, which pins `sharp: 0.35.4` exactly and has not been
+  # updated upstream, so an override is the only way to clear the alert. This is
+  # a same-minor patch bump; the image build never ships sharp.
+  sharp: 0.35.5
