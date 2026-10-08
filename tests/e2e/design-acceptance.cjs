@@ -79,10 +79,20 @@ function opaquePixel(png, x, y) {
   return [png.pixels[offset], png.pixels[offset + 1], png.pixels[offset + 2]];
 }
 
-function textAudit(original, backgrounds, runs) {
+function textAudit(original, backgrounds, runs, label = '') {
   const images = backgrounds.map(decodePng);
   const source = decodePng(original);
-  for (const image of images) assert.deepEqual([image.width, image.height], [source.width, source.height]);
+  for (const [index, image] of images.entries()) {
+    assert.deepEqual(
+      [image.width, image.height],
+      [source.width, source.height],
+      `${label}frame ${index} of ${images.length} disagrees with the source frame: ` +
+        `source ${source.width}x${source.height}, frame ${image.width}x${image.height}. ` +
+        'Every frame in a capture group must share the same document size; a mismatch ' +
+        'means the page changed height between screenshots (async content, lazy media, ' +
+        'or a collapsing panel) rather than a stale baseline.',
+    );
+  }
   const failures = [];
   let checkedRuns = 0;
   for (const run of runs) {
@@ -234,19 +244,38 @@ async function maskText(page) {
 }
 
 // A full-page screenshot is only comparable while the document height holds still.
-// Lazy images, deferred fonts and collapsing panels can each change it between two
-// captures, which is invisible in a single shot but breaks `textAudit`'s
-// equal-dimensions guard with an opaque `[width, heightA]` vs `[width, heightB]`
-// diff. Wait until the height stops changing between consecutive frames; Playwright
-// re-runs the predicate every animation frame by default, so comparing against the
-// previous sample settles the layout before any pixels are read.
-async function settleHeight(page, timeout = 10000) {
-  await page.waitForFunction(() => {
-    const height = document.documentElement.scrollHeight;
-    const previous = window.__jxAcceptanceHeight;
-    window.__jxAcceptanceHeight = height;
-    return previous === height && height > 0;
-  }, null, { timeout });
+// The world reader exposes a subtle trap: its Canon entries are laid out with the
+// fallback font for the first ~100ms, then reflow tighter once the web font metrics
+// apply — the document measured 14437px before that and 12828px after. A settle that
+// only requires a couple of matching animation frames passes *inside* that window and
+// then the page shrinks before the next capture, which is exactly how the source and
+// background frames ended up 1609px apart.
+//
+// So settle on wall-clock time, not frame count: require the height to be unchanged
+// for `holdMs` of real time, re-awaiting `document.fonts.ready` on every sample so the
+// font-metric reflow is observed rather than raced. Call this immediately before every
+// screenshot — any work in between can reflow again.
+const SETTLE_HOLD_MS = 600;
+const SETTLE_POLL_MS = 50;
+async function settleHeight(page, holdMs = SETTLE_HOLD_MS, timeout = 20000) {
+  const started = Date.now();
+  let last = -1;
+  let lastChange = Date.now();
+  for (;;) {
+    const height = await page.evaluate(async () => {
+      await document.fonts.ready;
+      return document.documentElement.scrollHeight;
+    });
+    if (height !== last) {
+      last = height;
+      lastChange = Date.now();
+    }
+    if (height > 0 && Date.now() - lastChange >= holdMs) return height;
+    if (Date.now() - started > timeout) {
+      throw new Error(`Document height did not settle for ${holdMs}ms within ${timeout}ms (last ${height}px)`);
+    }
+    await page.waitForTimeout(SETTLE_POLL_MS);
+  }
 }
 
 async function prepareGame(page) {
@@ -297,11 +326,11 @@ async function runDesignAcceptance(browser, origin, outputDir) {
         }, null, { timeout: 10000 });
       }
       await page.evaluate(() => { document.documentElement.dataset.jxAtmosphere = 'off'; return document.fonts.ready; });
-      await settleHeight(page);
       const staticRuns = await getTextRuns(page);
       const controls = await getInteractiveControls(page);
       const name = `${target.key}-${theme}-${width}.png`;
       const screenshotPath = join(outputDir, name);
+      await settleHeight(page);
       const staticOriginal = await page.screenshot({ path: screenshotPath, fullPage: true, animations: 'disabled' });
       const textMask = await maskText(page);
       // The mask style tag is injected after the source shot, so give the layout a
@@ -312,8 +341,8 @@ async function runDesignAcceptance(browser, origin, outputDir) {
       await page.emulateMedia({ reducedMotion: 'no-preference' });
       await page.evaluate(() => { document.documentElement.dataset.jxAtmosphere = 'on'; return document.fonts.ready; });
       await page.waitForTimeout(900);
-      await settleHeight(page);
       const dynamicRuns = await getTextRuns(page);
+      await settleHeight(page);
       const dynamicOriginal = await page.screenshot({ fullPage: true, animations: 'disabled' });
       await maskText(page);
       await settleHeight(page);
@@ -326,8 +355,9 @@ async function runDesignAcceptance(browser, origin, outputDir) {
         await settleHeight(page);
         dynamicBackgrounds.push(await page.screenshot({ fullPage: true, animations: 'disabled' }));
       }
-      const staticAudit = textAudit(staticOriginal, [staticBackground], staticRuns);
-      const dynamicAudit = textAudit(dynamicOriginal, dynamicBackgrounds, dynamicRuns);
+      const frameLabel = `${target.key}/${theme}/${width}px `;
+      const staticAudit = textAudit(staticOriginal, [staticBackground], staticRuns, `${frameLabel}static `);
+      const dynamicAudit = textAudit(dynamicOriginal, dynamicBackgrounds, dynamicRuns, `${frameLabel}dynamic `);
       const controlAudit = borderAudit(staticBackground, controls);
       contrastResults.push({ page: target.key, theme, width, text: { static: staticAudit, dynamic: dynamicAudit }, controls: controlAudit, dynamicFrames: dynamicBackgrounds.length });
       if (baselinePages.has(target.key)) {
