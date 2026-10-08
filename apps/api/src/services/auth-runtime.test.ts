@@ -3,7 +3,11 @@ import { Pool } from 'pg';
 import { createEmailAuthRuntime } from './auth-runtime.js';
 describe('auth deployment configuration', () => {
   const pool = new Pool();
-  const base = { AUTH_ENABLED: 'true', AUTH_PUBLIC_ORIGIN: 'https://game.example.invalid', AUTH_SECRET: 'x'.repeat(32), AUTH_MAIL_FROM: 'login@example.invalid', SMTP_URL: 'smtps://user:secret@example.invalid' };
+  // AUTH_MAILER=smtp is explicit: the runtime defaults to the Tencent SES API
+  // channel, and these cases exercise the SMTP transport specifically. Without
+  // it the default SES path would demand TENCENT_SES_SECRET_ID before reaching
+  // the SMTP validation these tests assert on.
+  const base = { AUTH_ENABLED: 'true', AUTH_PUBLIC_ORIGIN: 'https://game.example.invalid', AUTH_SECRET: 'x'.repeat(32), AUTH_MAIL_FROM: 'login@example.invalid', AUTH_MAILER: 'smtp', SMTP_URL: 'smtps://user:secret@example.invalid' };
   it('disabled configuration does not construct an auth runtime', () => { expect(createEmailAuthRuntime(pool, {})).toBeUndefined(); });
   it('invalid transport input never exposes the credentials in its exception', () => {
     let error: unknown;
