@@ -298,6 +298,7 @@ input:not([type='range']):not([type='checkbox']), select, textarea { font-size: 
 .character-field, .character-field > label { display: grid; gap: 8px; }
 .character-suggestions { color: var(--muted); font-size: 0.78rem; }
 .world-search-feedback { margin: 12px 0 22px; }
+.world-search-feedback > p[role='status'] { color: #f1f4f6; }
 .worldbook-entry { scroll-margin-top: 22px; content-visibility: auto; contain-intrinsic-size: auto 420px; }
 .worldbook-entry mark { color: #172a38; background: #e5cca0; border-radius: 3px; padding: 0 2px; }
 .game-readable-panel { max-height: 56svh; overflow: auto; overflow-wrap: anywhere; padding-right: 6px; }

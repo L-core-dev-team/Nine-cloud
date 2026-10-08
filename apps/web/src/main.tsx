@@ -51,11 +51,15 @@ function canonCategoryLabel(category: string): string {
 
 const route = () => window.location.pathname.replace(/\/+$/, '') || '/';
 const go = (path: string) => {
+  const sourceRoute = route();
+  if (sourceRoute.startsWith('/game/')) {
+    const sourceSaveId = sourceRoute.slice('/game/'.length);
+    try { sessionStorage.setItem(`jiuxiao_1_game_scroll_${sourceSaveId}`, String(window.scrollY)); } catch { /* Scroll position is optional. */ }
+  }
   const destination = path === '/turns' && !INTERNAL_TURN_WORKSPACE_ENABLED ? '/lobby' : path;
   if (destination.startsWith('/game/')) {
     try { sessionStorage.setItem('jiuxiao_active_save_id', decodeURIComponent(destination.slice('/game/'.length))); } catch { /* Route navigation does not depend on this preference. */ }
   }
-  const sourceRoute = route();
   const returnTo = sourceRoute;
   history.pushState(destination === '/world' || destination === '/settings/ai' ? { returnTo } : {}, '', destination);
   // Forward navigation starts at the top; returning via history.back() keeps
@@ -454,6 +458,7 @@ function LegacyGame({ save, onExport, onImportSupplement, onUpdate, onBranch, on
     const frame = requestAnimationFrame(restore);
     return () => {
       cancelAnimationFrame(frame);
+      if (route() !== `/game/${save.saveId}`) return;
       try { sessionStorage.setItem(key, String(window.scrollY)); } catch { /* Keep the save untouched. */ }
     };
   }, [save?.saveId]);
@@ -463,19 +468,6 @@ function LegacyGame({ save, onExport, onImportSupplement, onUpdate, onBranch, on
   const [conflictDraft, setConflictDraft] = useState<LocalSave | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const submittingRef = useRef(false);
-  useLayoutEffect(() => {
-    if (!save) return;
-    const key = `jiuxiao_1_game_scroll_${save.saveId}`;
-    let top = 0;
-    try { top = Math.max(0, Number(sessionStorage.getItem(key) || 0)); } catch { /* Position is optional. */ }
-    const restore = () => window.scrollTo(0, Math.min(top, Math.max(0, document.documentElement.scrollHeight - window.innerHeight)));
-    restore();
-    const frame = requestAnimationFrame(restore);
-    return () => {
-      cancelAnimationFrame(frame);
-      try { sessionStorage.setItem(key, String(window.scrollY)); } catch { /* Keep the save untouched. */ }
-    };
-  }, [save?.saveId]);
   if (!save) return <section className="page"><h2>找不到这份存档</h2><p>它可能已被删除，或链接来自另一个浏览器。</p><button className="primary" onClick={() => go('/')}>回到首页</button></section>;
   const pending = save.pending ?? save.legacyArchive?.payload.pending;
   const pendingFromLegacy = save.pending === undefined && pending !== undefined && pending !== null;
