@@ -421,10 +421,26 @@ function Game({ save, onExport, onImportSupplement, onUpdate, onBranch, onReload
     try { top = Math.max(0, Number(sessionStorage.getItem(key) || 0)); } catch { /* Position is optional. */ }
     const restore = () => window.scrollTo(0, Math.min(top, Math.max(0, document.documentElement.scrollHeight - window.innerHeight)));
     restore();
+    // Record the position as the player scrolls rather than in the unmount
+    // cleanup: when this route swaps to the world reader, that reader mounts its
+    // own layout effect that resets the document to the top, so a cleanup-time
+    // read of window.scrollY would persist 0 and lose the reader's return
+    // position. Writing on scroll keeps the saved value independent of whatever
+    // the next route does during its own layout pass.
+    const remember = () => {
+      try { sessionStorage.setItem(key, String(window.scrollY)); } catch { /* Keep the save untouched. */ }
+    };
+    // Do not write on mount: `restore` may be clamped while the story is still
+    // being laid out. Only real scroll deltas are meaningful.
     const frame = requestAnimationFrame(restore);
+    window.addEventListener('scroll', remember, { passive: true });
     return () => {
       cancelAnimationFrame(frame);
-      try { sessionStorage.setItem(key, String(window.scrollY)); } catch { /* Keep the save untouched. */ }
+      window.removeEventListener('scroll', remember);
+      // No write here: the unmount cleanup runs after the next route's layout
+      // effect has already reset the document to the top, so reading
+      // window.scrollY now would persist 0 and lose the reader's return point.
+      // The last scroll event already captured the true position.
     };
   }, [save?.saveId]);
   if (!save) return <section className="page"><h2>找不到这份存档</h2><p>它可能已被删除，或链接来自另一个浏览器。</p><button className="primary" onClick={() => go('/')}>回到首页</button></section>;
