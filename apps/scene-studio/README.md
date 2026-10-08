@@ -2,6 +2,20 @@
 
 这个工作区只验证一个问题：受限相机带来的空间观察，是否足以改善《九霄》的月下山门。它不读取存档，不接收玩家或模型脚本，不结算规则，也不产生剧情事实。
 
+## 与正式站的隔离边界
+
+本试点**不参与正式网站的任何环节**。隔离按下表逐层落实，改动前请先核对这些不变量：
+
+| 层面 | 隔离方式 | 核验命令 |
+| --- | --- | --- |
+| 运行时 | 正式站 `apps/web` 不引用任何 `three` / `@jiuxiao/scene-*` | `git grep -iE "\bthree\b\|scene-gate\|scene-studio" -- apps/web/`（应无命中） |
+| 构建时 | 根 `build` / `typecheck` / `test` 均带 `--filter=!@jiuxiao/scene-studio --filter=!@jiuxiao/scene-gate`，递归命令不会构建本试点 | `pnpm -r --filter=!@jiuxiao/scene-studio --filter=!@jiuxiao/scene-gate list --depth -1`（不含 scene 包） |
+| 发布产物 | 正式发布清单只含 `apps/web` / `apps/api` / `packages/db`；CI 上传 artifact 亦同 | `scripts/build/write-manifest.mjs` |
+| 部署配置 | `wrangler.jsonc` 路由只挂 `play.jiuxiaogame.cn`；无任何 Pages/Workers 目标指向本试点 | `git grep -n scene-studio -- '*.jsonc' '*.yml' '*.yaml'` |
+| 依赖清单 | 试点包仍在 workspace 内（可单独构建），但**不被递归流程拉入** | `pnpm-workspace.yaml` |
+
+因此：**改动本试点不得修改 `apps/web`、`apps/api` 或根脚本的排除过滤器**；确实需要时必须在 PR 中说明理由并让 Bird 与 LYL 复核。
+
 ## 运行与产物
 
 从仓库根目录执行：
@@ -10,6 +24,13 @@
 pnpm install --frozen-lockfile
 pnpm --filter @jiuxiao/scene-gate build
 pnpm --filter @jiuxiao/scene-studio dev
+```
+
+本试点只按需构建，不进入递归流程。仓库根提供两个显式入口：
+
+```sh
+pnpm typecheck:scene-pilot   # 仅类型检查本试点
+pnpm test:scene-pilot        # 构建 scene-gate 并跑预览验证
 ```
 
 访问 `http://127.0.0.1:5185/`。鼠标或触控拖动只在限定角度内移动相机；聚焦画面后可用方向键观察、Home 重置。场景核心位于 `packages/scene-gate/src/index.ts`；预览和逐帧导出调用同一个 `renderAt(t)`。正常预览不保留 WebGL 绘制缓冲；截图和视频导出才启用该选项。回退到静态海报时会停止动画并释放场景资源。
