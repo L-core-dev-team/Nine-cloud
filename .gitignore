@@ -34,3 +34,11 @@ packages/content/src/*.bak
 
 # 本地临时工具脚本（一次性运维，不属于工程代码）
 work/*.py
+
+# AI 编码工具的本地产物（技能缓存、lock、编辑器状态）。
+# 这些由各自工具自动下载生成，不属于工程代码；与 .codex/ 的既有惯例一致。
+# 手工维护的项目记忆（.workbuddy/memory/）与设计稿（.impeccable/design.json）仍入库存档。
+.agents/
+.claude/skills/
+.trae/skills/
+skills-lock.json
