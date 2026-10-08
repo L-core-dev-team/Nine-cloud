@@ -24,6 +24,7 @@ const ALL_OMITTED = {
 const OMIT_SAMPLING_MODELS = new Set([
   'claude-opus-5-5',
   'claude-sonnet-5',
+  'claude-sonnet-5-5',
   'gemini-3.8-flash',
 ]);
 
