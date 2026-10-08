@@ -1,6 +1,6 @@
 import type { Hono } from 'hono';
 import { isIP } from 'node:net';
-import { EmailAuthService, SESSION_SECONDS } from '../services/email-auth.js';
+import { EmailAuthService, SESSION_SECONDS, type AuthSession, type GuestUpgradeResult } from '../services/email-auth.js';
 import { AuthFailure } from '../services/auth-failure.js';
 
 export const AUTH_COOKIE = 'jx_session';
@@ -12,7 +12,16 @@ export function sessionToken(request: Request): string | null {
   const values = (request.headers.get('cookie') || '').split(';').map(value => value.trim()).filter(value => value.startsWith(`${AUTH_COOKIE}=`));
   return values.length === 1 ? values[0]!.slice(AUTH_COOKIE.length + 1) : null;
 }
-export type AuthSessionService = Pick<EmailAuthService, 'requestCode' | 'verify' | 'resolve' | 'refresh' | 'logout'>;
+export type AuthSessionService = {
+  requestCode: EmailAuthService['requestCode'];
+  verify: (emailValue: unknown, code: unknown, restore?: boolean) => Promise<{ session: AuthSession; token: string } | null>;
+  resolve: (token: string | null) => Promise<AuthSession | null>;
+  refresh: (token: string | null) => Promise<{ session: AuthSession; token: string } | null>;
+  logout: (token: string | null) => Promise<void>;
+  // Guest mode is email-auth specific: a Supabase-backed routes service may omit it.
+  createGuest?: EmailAuthService['createGuest'];
+  upgradeGuest?: (ownerId: string, tokenValue: string | null, emailValue: unknown, code: unknown, confirmation: unknown) => Promise<GuestUpgradeResult>;
+};
 export function mountAuth(app: Hono, service: AuthSessionService, origin: string, sameSite: 'Strict' | 'None' = 'Strict', trustedProxyAddresses: readonly string[] = [], providerStatus: () => { email: boolean; phone: boolean; privacyPolicyUrl?: string | null; privacyPolicyVersion?: string | null } = () => ({ email: true, phone: false })): void {
   const url = new URL(origin);
   const local = url.protocol === 'http:' && ['127.0.0.1', 'localhost'].includes(url.hostname);
@@ -49,6 +58,7 @@ export function mountAuth(app: Hono, service: AuthSessionService, origin: string
     const current = await service.resolve(sessionToken(c.req.raw));
     if (current?.kind === 'guest') return c.json({ account: accountFor(current), expiresAt: current.expiresAt.toISOString() });
     if (current) return c.json({ code: 'ACCOUNT_SESSION_ACTIVE' }, 409);
+    if (!service.createGuest) return c.json({ code: 'GUEST_UNAVAILABLE' }, 503);
     try {
       const result = await service.createGuest(clientIp(c, trustedProxyAddresses));
       if (!result) { c.header('Retry-After', '3600'); return c.json({ code: 'RATE_LIMITED' }, 429); }
@@ -85,6 +95,7 @@ export function mountAuth(app: Hono, service: AuthSessionService, origin: string
     const token = sessionToken(c.req.raw);
     const current = await service.resolve(token);
     if (current?.kind !== 'guest') return c.json({ code: 'UPGRADE_UNAVAILABLE' }, 409);
+    if (!service.upgradeGuest) return c.json({ code: 'UPGRADE_UNAVAILABLE' }, 409);
     try {
       const result = await service.upgradeGuest(current.ownerId, token, body.email, body.code, body.confirmation);
       if (result.status === 'invalid_code') return c.json({ code: 'INVALID_OR_EXPIRED_CODE' }, 401);
