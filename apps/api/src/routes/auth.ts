@@ -12,7 +12,8 @@ export function sessionToken(request: Request): string | null {
   const values = (request.headers.get('cookie') || '').split(';').map(value => value.trim()).filter(value => value.startsWith(`${AUTH_COOKIE}=`));
   return values.length === 1 ? values[0]!.slice(AUTH_COOKIE.length + 1) : null;
 }
-export function mountAuth(app: Hono, service: EmailAuthService, origin: string, sameSite: 'Strict' | 'None' = 'Strict', trustedProxyAddresses: readonly string[] = []): void {
+export type AuthSessionService = Pick<EmailAuthService, 'requestCode' | 'verify' | 'resolve' | 'refresh' | 'logout'>;
+export function mountAuth(app: Hono, service: AuthSessionService, origin: string, sameSite: 'Strict' | 'None' = 'Strict', trustedProxyAddresses: readonly string[] = [], providerStatus: () => { email: boolean; phone: boolean; privacyPolicyUrl?: string | null; privacyPolicyVersion?: string | null } = () => ({ email: true, phone: false })): void {
   const url = new URL(origin);
   const local = url.protocol === 'http:' && ['127.0.0.1', 'localhost'].includes(url.hostname);
   if (origin !== url.origin || (url.protocol !== 'https:' && !local)) throw new Error('AUTH_PUBLIC_ORIGIN must be an exact HTTPS origin');
@@ -41,13 +42,14 @@ export function mountAuth(app: Hono, service: EmailAuthService, origin: string, 
     await next();
   });
   app.onError(() => Response.json({ code: 'INTERNAL_ERROR', message: '服务暂不可用。' }, { status: 503 }));
+  app.get('/api/auth/providers', c => c.json(providerStatus()));
   app.post('/api/auth/code', async c => {
     const body = await authBody(c.req.raw);
     if (!body) return c.json({ code: 'INVALID_REQUEST' }, 400);
     try {
       const result = await service.requestCode(body.email, clientIp(c, trustedProxyAddresses));
       if(result==='limited')c.header('Retry-After','60');
-      return result === 'sent' ? c.json({ status: 'sent', resendAfterSeconds:60, expiresInSeconds:600 }, 202) : c.json({ code: 'RATE_LIMITED',retryAfterSeconds:60 }, 429);
+      return result === 'sent' ? c.json({ status: 'sent', resendAfterSeconds:60 }, 202) : c.json({ code: 'RATE_LIMITED',retryAfterSeconds:60 }, 429);
     } catch (error) { if(error instanceof AuthFailure)return c.json({code:error.code,stage:error.stage,requestId:error.requestId},503);return c.json({ code: error instanceof TypeError ? 'INVALID_EMAIL' : 'MAIL_UNAVAILABLE' }, error instanceof TypeError ? 400 : 503); }
   });
   for(const path of ['/api/auth/verify','/api/auth/restore'])app.post(path, async c => {
@@ -79,7 +81,7 @@ export function mountAuth(app: Hono, service: EmailAuthService, origin: string, 
     return c.json({ status: 'signed_out' });
   });
 }
-async function authBody(request: Request): Promise<Record<string, unknown> | null> {
+export async function authBody(request: Request): Promise<Record<string, unknown> | null> {
   if (!request.headers.get('content-type')?.startsWith('application/json') || !request.body) return null;
   const reader = request.body.getReader(); const chunks: Uint8Array[] = []; let length = 0;
   try {
@@ -95,7 +97,12 @@ async function authBody(request: Request): Promise<Record<string, unknown> | nul
  * cannot choose their rate-limit identity by adding a request header. */
 export function clientIp(c: { req: { header(name: string): string | undefined }; env?: unknown }, trustedProxyAddresses: readonly string[]): string {
   type Incoming = { socket?: { remoteAddress?: string } };
-  const bindings = c.env as { server?: { incoming?: Incoming }; incoming?: Incoming } | undefined;
+  const bindings = c.env as { server?: { incoming?: Incoming }; incoming?: Incoming; API_RUNTIME_KIND?: string } | undefined;
+  if (bindings?.API_RUNTIME_KIND === 'cloudflare') {
+    const edgeAddress = c.req.header('cf-connecting-ip')?.trim();
+    if (edgeAddress && edgeAddress.length <= 45 && isIP(edgeAddress) !== 0) return edgeAddress;
+    return 'unidentified';
+  }
   const incoming = bindings?.server?.incoming ?? bindings?.incoming;
   const remote = incoming?.socket?.remoteAddress?.replace(/^::ffff:/, '') || 'unidentified';
   if (trustedProxyAddresses.includes(remote)) {

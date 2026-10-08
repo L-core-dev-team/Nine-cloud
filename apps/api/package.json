@@ -6,10 +6,13 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
+    "worker:dev": "wrangler dev --config wrangler.jsonc",
+    "worker:types": "wrangler types src/worker-configuration.d.ts --config wrangler.jsonc --strict-vars false",
+    "worker:dry-run": "wrangler deploy --dry-run --config wrangler.jsonc",
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "node --test ../../scripts/assert-test-database.test.mjs && vitest run",
-    "test:integration": "node ../../scripts/assert-test-database.mjs && vitest run src/app.integration.test.ts src/services/cloud-save-repository.integration.test.ts src/services/entitlement-ledger.integration.test.ts src/services/npc-memory-turn-transaction.integration.test.ts src/services/server-turn.integration.test.ts src/services/email-auth.integration.test.ts src/services/cloud-archive-lifecycle.integration.test.ts src/services/account-lifecycle.integration.test.ts src/services/data-policy.integration.test.ts src/services/runtime-controls.integration.test.ts",
+    "test:integration": "node ../../scripts/assert-test-database.mjs && vitest run src/app.integration.test.ts src/services/cloud-save-repository.integration.test.ts src/services/entitlement-ledger.integration.test.ts src/services/npc-memory-turn-transaction.integration.test.ts src/services/server-turn.integration.test.ts src/services/email-auth.integration.test.ts src/services/supabase-auth.integration.test.ts src/services/cloud-archive-lifecycle.integration.test.ts src/services/account-lifecycle.integration.test.ts src/services/data-policy.integration.test.ts src/services/runtime-controls.integration.test.ts",
     "test:s6:integration": "node ../../scripts/assert-test-database.mjs && vitest run src/services/cloud-save-repository.integration.test.ts src/services/email-auth.integration.test.ts src/services/cloud-archive-lifecycle.integration.test.ts src/services/account-lifecycle.integration.test.ts src/services/data-policy.integration.test.ts src/services/runtime-controls.integration.test.ts"
   },
   "dependencies": {
@@ -23,6 +26,7 @@
   "devDependencies": {
     "@types/nodemailer": "8.0.2",
     "@types/pg": "8.23.1",
-    "tsx": "4.23.15"
+    "tsx": "4.23.15",
+    "wrangler": "4.147.0"
   }
 }
