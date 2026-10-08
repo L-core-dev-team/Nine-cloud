@@ -9,8 +9,8 @@
   "scripts": {
     "dev:web": "pnpm --filter @jiuxiao/contracts build && pnpm --filter @jiuxiao/web dev",
     "dev:api": "pnpm --filter @jiuxiao/contracts build && pnpm --filter @jiuxiao/domain build && pnpm --filter @jiuxiao/api dev",
-    "typecheck": "pnpm --filter @jiuxiao/contracts build && pnpm --filter @jiuxiao/content build && pnpm --filter @jiuxiao/domain build && pnpm -r typecheck",
-    "test": "pnpm --filter @jiuxiao/domain build && node work/core-regression.cjs && pnpm -r test",
+    "typecheck": "pnpm --filter @jiuxiao/contracts build && pnpm --filter @jiuxiao/content build && pnpm --filter @jiuxiao/domain build && pnpm --filter @jiuxiao/scene-gate build && pnpm -r typecheck",
+    "test": "pnpm --filter @jiuxiao/domain build && pnpm --filter @jiuxiao/scene-gate build && node work/core-regression.cjs && pnpm -r test",
     "build": "pnpm worldbook:runtime:check && pnpm -r build && node scripts/build/write-manifest.mjs --stage S6",
     "build:pages-preview": "node scripts/build/pages-preview.mjs",
     "test:integration": "pnpm --filter @jiuxiao/api test:integration",
