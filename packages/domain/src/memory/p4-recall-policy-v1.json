@@ -1,0 +1,15 @@
+{
+  "version": "authorized-cue-recall-v1",
+  "mode": "continue",
+  "clockBasis": "gameMinute",
+  "normalizer": "NFKC-lowercase-space-v1",
+  "classes": ["current-state", "historical-event", "subjective-belief", "unclassified"],
+  "currentState": "Only current-state observations can answer; any rules-authored supersession makes the older observation ineligible.",
+  "historicalEvents": "Only historical-event observations can answer; later state changes never erase historical observations.",
+  "subjectiveBeliefs": "Only subjective-belief observations can answer; they are not world-state facts.",
+  "unclassified": "Never infer a class for legacy rows; do not use them as evidence.",
+  "matching": {"exact": "normalized field substring", "fallback": "CJK bigram or separated word overlap", "minimumOverlap": 0.5},
+  "ambiguity": "Return a bounded candidate list; do not claim one candidate is certain.",
+  "incompleteArchive": "Never convert an incomplete scan into abstention or a complete result.",
+  "forgettingMode": "Unavailable until a separately reviewed decay policy is pinned."
+}

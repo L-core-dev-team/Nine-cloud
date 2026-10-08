@@ -127,8 +127,9 @@ describe('PostgresNpcMemoryTurnRepository', () => {
     expect(client.statements.some(statement => statement.sql.startsWith('UPDATE game_saves'))).toBe(true);
     expect(client.statements.some(statement => statement.sql.startsWith('INSERT INTO npc_memory_journals'))).toBe(true);
     const outboxInsert = client.statements.find(statement => statement.sql.startsWith('INSERT INTO npc_authorized_observation_outbox'));
-    expect(outboxInsert?.values[9]).toBe('["summary"]');
-    expect(outboxInsert?.values[10]).toBe('{"summary":"旅人已抵达山门。"}');
+    expect(outboxInsert?.values[8]).toBe('unclassified');
+    expect(outboxInsert?.values[10]).toBe('["summary"]');
+    expect(outboxInsert?.values[11]).toBe('{"summary":"旅人已抵达山门。"}');
     expect(JSON.stringify(outboxInsert?.values)).not.toContain('destinationId');
     const eventInsert = client.statements.find(statement => statement.sql.startsWith('INSERT INTO turn_events'));
     expect(eventInsert?.sql).toContain('source, rule_version');

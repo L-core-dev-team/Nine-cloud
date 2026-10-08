@@ -200,6 +200,7 @@ export const npcAuthorizedObservationOutbox = pgTable('npc_authorized_observatio
   eventRevision: integer('event_revision').notNull(),
   observedAtMinute: bigint('observed_at_minute', { mode: 'number' }).notNull(),
   channel: text('channel').notNull(),
+  memoryClass: text('memory_class').notNull().default('unclassified'),
   authorizationPolicyVersion: text('authorization_policy_version').notNull(),
   authorizedFields: jsonb('authorized_fields').notNull(),
   authorizedFacts: jsonb('authorized_facts').notNull(),
@@ -213,9 +214,33 @@ export const npcAuthorizedObservationOutbox = pgTable('npc_authorized_observatio
   check('npc_authorized_observation_minute_check', sql`${table.observedAtMinute} >= 0`),
   check('npc_authorized_observation_branch_check', sql`${table.branchId} = 'root'`),
   check('npc_authorized_observation_channel_check', sql`${table.channel} IN ('witnessed', 'reported')`),
+  check('npc_authorized_observation_memory_class_check', sql`${table.memoryClass} IN ('current-state', 'historical-event', 'subjective-belief', 'unclassified')`),
   check('npc_authorized_observation_fields_check', sql`jsonb_typeof(${table.authorizedFields}) = 'array'`),
   check('npc_authorized_observation_facts_check', sql`jsonb_typeof(${table.authorizedFacts}) = 'object'`),
   check('npc_authorized_observation_text_check', sql`length(${table.grantId}) BETWEEN 1 AND 2000 AND length(${table.npcId}) BETWEEN 1 AND 200 AND length(${table.authorizationPolicyVersion}) BETWEEN 1 AND 200 AND length(${table.summary}) BETWEEN 1 AND 4000`),
+  index('npc_authorized_observation_recall_idx').on(table.saveId, table.branchId, table.npcId, table.memoryClass, table.eventRevision, table.grantId),
+]);
+
+/** Append-only references from a superseding rules event to one current-state observation. */
+export const npcMemoryObservationSupersessions = pgTable('npc_memory_observation_supersessions', {
+  saveId: text('save_id').notNull().references(() => gameSaves.id, { onDelete: 'cascade' }),
+  branchId: text('branch_id').notNull(),
+  npcId: text('npc_id').notNull(),
+  observationGrantId: text('observation_grant_id').notNull().references(() => npcAuthorizedObservationOutbox.grantId, { onDelete: 'cascade' }),
+  supersededByEventId: text('superseded_by_event_id').notNull(),
+  supersededAtRevision: integer('superseded_at_revision').notNull(),
+  kind: text('kind').notNull(),
+  reason: text('reason').notNull(),
+  policyVersion: text('policy_version').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+}, table => [
+  primaryKey({ columns: [table.observationGrantId], name: 'npc_memory_supersession_pk' }),
+  foreignKey({ columns: [table.saveId, table.supersededByEventId], foreignColumns: [turnEvents.saveId, turnEvents.id], name: 'npc_memory_supersession_event_fk' }).onDelete('cascade'),
+  index('npc_memory_supersession_save_npc_idx').on(table.saveId, table.branchId, table.npcId, table.supersededByEventId),
+  check('npc_memory_supersession_branch_check', sql`${table.branchId} = 'root'`),
+  check('npc_memory_supersession_revision_check', sql`${table.supersededAtRevision} > 1`),
+  check('npc_memory_supersession_kind_check', sql`${table.kind} IN ('premise-revised', 'relation-changed', 'entity-dead', 'item-moved', 'clue-invalid')`),
+  check('npc_memory_supersession_text_check', sql`length(${table.npcId}) BETWEEN 1 AND 200 AND length(${table.reason}) BETWEEN 1 AND 500 AND length(${table.policyVersion}) BETWEEN 1 AND 200`),
 ]);
 
 export const accountRateLimits=pgTable('account_rate_limits',{key:text('key').primaryKey(),expiresAt:timestamp('expires_at',{withTimezone:true}).notNull(),hits:integer('hits').notNull()});

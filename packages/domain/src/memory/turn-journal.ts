@@ -1,6 +1,6 @@
 import { DomainEventSchema, type DomainEvent } from '@jiuxiao/contracts';
 import { rememberObservedEvent } from './belief.js';
-import { assertNpcMemory, createNpcMemory, validAuthorizedFacts, type MemoryPolicyVersion, type NpcMemory, type ObservationGrant } from './policy.js';
+import { assertNpcMemory, createNpcMemory, isMemoryClass, validAuthorizedFacts, type MemoryClass, type MemoryPolicyVersion, type NpcMemory, type ObservationGrant } from './policy.js';
 
 export type NpcMemoryTurnMarker = {
   fromRevision: number;
@@ -17,8 +17,8 @@ export type NpcMemoryJournal = {
 };
 
 export type NpcMemoryTurnPreparation =
-  | { status: 'prepared'; journal: NpcMemoryJournal; recordedObservations: number; authorizedObservations: readonly AuthorizedObservationOutboxRecord[] }
-  | { status: 'duplicate'; journal: NpcMemoryJournal; recordedObservations: 0; authorizedObservations: readonly [] };
+  | { status: 'prepared'; journal: NpcMemoryJournal; recordedObservations: number; authorizedObservations: readonly AuthorizedObservationOutboxRecord[]; authorizedSupersessions: readonly AuthorizedObservationSupersessionRecord[] }
+  | { status: 'duplicate'; journal: NpcMemoryJournal; recordedObservations: 0; authorizedObservations: readonly []; authorizedSupersessions: readonly [] };
 
 /** Frozen, mode-neutral authorization record written atomically with a RULES turn. */
 export type AuthorizedObservationOutboxRecord = {
@@ -30,10 +30,30 @@ export type AuthorizedObservationOutboxRecord = {
   eventRevision: number;
   observedAtMinute: number;
   channel: 'witnessed' | 'reported';
+  memoryClass: MemoryClass;
   authorizationPolicyVersion: string;
   authorizedFields: readonly string[];
   authorizedFacts: Readonly<Record<string, unknown>>;
   summary: string;
+};
+
+export type ObservationSupersessionKind = 'premise-revised' | 'relation-changed' | 'entity-dead' | 'item-moved' | 'clue-invalid';
+
+/** Rules-authored invalidation metadata. It never deletes or edits the old observation. */
+export type AuthorizedObservationSupersessionRecord = {
+  saveId: string;
+  branchId: 'root';
+  npcId: string;
+  observationGrantId: string;
+  supersededByEventId: string;
+  supersededAtRevision: number;
+  kind: ObservationSupersessionKind;
+  reason: string;
+  policyVersion: string;
+};
+
+export type AuthorizedRecallObservation = AuthorizedObservationOutboxRecord & {
+  supersessions: readonly AuthorizedObservationSupersessionRecord[];
 };
 
 export type PrepareNpcMemoryTurnOptions = {
@@ -48,6 +68,8 @@ export type PrepareNpcMemoryTurnOptions = {
    * rules. Never copy an event payload into visibleSummary without filtering it.
    */
   grantsForEvent: (event: DomainEvent) => readonly ObservationGrant[];
+  /** Optional, rules-authored invalidations; only current-state grants may be superseded. */
+  supersessionsForEvent?: (event: DomainEvent) => readonly Omit<AuthorizedObservationSupersessionRecord, 'saveId' | 'branchId' | 'supersededByEventId' | 'supersededAtRevision'>[];
   policyForNpc: (npcId: string) => MemoryPolicyVersion;
 };
 
@@ -149,7 +171,7 @@ export function serializeNpcMemoryJournal(journal: NpcMemoryJournal): string {
 export function assertAuthorizedObservationOutboxRecord(value: unknown): asserts value is AuthorizedObservationOutboxRecord {
   assertRecord(value, 'Invalid authorized observation outbox record');
   assertExactKeys(value, ['grantId', 'saveId', 'branchId', 'npcId', 'eventId', 'eventRevision', 'observedAtMinute',
-    'channel', 'authorizationPolicyVersion', 'authorizedFields', 'authorizedFacts', 'summary'],
+    'channel', 'memoryClass', 'authorizationPolicyVersion', 'authorizedFields', 'authorizedFacts', 'summary'],
   'Invalid authorized observation outbox record');
   if (typeof value.saveId !== 'string' || !value.saveId.trim() || value.saveId.length > 200
     || value.branchId !== 'root' || typeof value.npcId !== 'string' || !value.npcId.trim() || value.npcId.length > 200
@@ -157,6 +179,7 @@ export function assertAuthorizedObservationOutboxRecord(value: unknown): asserts
     || !Number.isSafeInteger(value.eventRevision) || (value.eventRevision as number) < 1
     || !Number.isSafeInteger(value.observedAtMinute) || (value.observedAtMinute as number) < 0
     || (value.channel !== 'witnessed' && value.channel !== 'reported')
+    || !isMemoryClass(value.memoryClass)
     || typeof value.authorizationPolicyVersion !== 'string' || !value.authorizationPolicyVersion.trim()
     || value.authorizationPolicyVersion.length > 200
     || typeof value.summary !== 'string' || !value.summary.trim() || value.summary.length > MAX_VISIBLE_SUMMARY_LENGTH
@@ -164,6 +187,22 @@ export function assertAuthorizedObservationOutboxRecord(value: unknown): asserts
     || typeof value.grantId !== 'string' || value.grantId !== stableGrantId(value.saveId, value.branchId, value.eventId, value.npcId)
     || value.grantId.length > 2000) {
     throw new Error('Invalid authorized observation outbox record');
+  }
+}
+
+export function assertAuthorizedObservationSupersessionRecord(value: unknown): asserts value is AuthorizedObservationSupersessionRecord {
+  assertRecord(value, 'Invalid authorized observation supersession');
+  assertExactKeys(value, ['saveId', 'branchId', 'npcId', 'observationGrantId', 'supersededByEventId', 'supersededAtRevision', 'kind', 'reason', 'policyVersion'],
+    'Invalid authorized observation supersession');
+  if (typeof value.saveId !== 'string' || !value.saveId.trim() || value.saveId.length > 200
+    || value.branchId !== 'root' || typeof value.npcId !== 'string' || !value.npcId.trim() || value.npcId.length > 200
+    || typeof value.observationGrantId !== 'string' || !value.observationGrantId.trim() || value.observationGrantId.length > 2000
+    || typeof value.supersededByEventId !== 'string' || !UUID_PATTERN.test(value.supersededByEventId)
+    || !Number.isSafeInteger(value.supersededAtRevision) || (value.supersededAtRevision as number) < 2
+    || !isSupersessionKind(value.kind)
+    || typeof value.reason !== 'string' || !value.reason.trim() || value.reason.length > 500
+    || typeof value.policyVersion !== 'string' || !value.policyVersion.trim() || value.policyVersion.length > 200) {
+    throw new Error('Invalid authorized observation supersession');
   }
 }
 
@@ -206,7 +245,7 @@ export function prepareNpcMemoryTurn(input: PrepareNpcMemoryTurnOptions): NpcMem
     eventIds: events.map(event => event.id),
   };
   if (input.journal.revision === input.afterRevision && sameTurn(input.journal.lastTurn, marker)) {
-    return { status: 'duplicate', journal: input.journal, recordedObservations: 0, authorizedObservations: [] };
+    return { status: 'duplicate', journal: input.journal, recordedObservations: 0, authorizedObservations: [], authorizedSupersessions: [] };
   }
   if (input.journal.revision !== input.beforeRevision) {
     throw new Error('NPC memory journal revision mismatch');
@@ -216,6 +255,8 @@ export function prepareNpcMemoryTurn(input: PrepareNpcMemoryTurnOptions): NpcMem
   for (const memory of input.journal.memories) memories.set(memory.npcId, memory);
   let recordedObservations = 0;
   const authorizedObservations: AuthorizedObservationOutboxRecord[] = [];
+  const authorizedSupersessions: AuthorizedObservationSupersessionRecord[] = [];
+  const supersessionKeys = new Set<string>();
   for (const event of events) {
     const grants = input.grantsForEvent(event);
     if (!Array.isArray(grants)) throw new Error('NPC visibility grants must be an array');
@@ -242,6 +283,7 @@ export function prepareNpcMemoryTurn(input: PrepareNpcMemoryTurnOptions): NpcMem
         eventRevision: event.afterRevision,
         observedAtMinute: input.observedAtMinute,
         channel: grant.channel,
+        memoryClass: grant.memoryClass ?? 'unclassified',
         authorizationPolicyVersion: grant.authorizationPolicyVersion,
         authorizedFields: [...grant.authorizedFields],
         authorizedFacts: structuredClone(grant.authorizedFacts),
@@ -251,6 +293,27 @@ export function prepareNpcMemoryTurn(input: PrepareNpcMemoryTurnOptions): NpcMem
       authorizedObservations.push(observation);
       if (!alreadyObserved) recordedObservations += 1;
       memories.set(grant.npcId, nextMemory);
+    }
+
+    const invalidations = input.supersessionsForEvent?.(event) ?? [];
+    if (!Array.isArray(invalidations)) throw new Error('NPC memory supersessions must be an array');
+    for (const invalidation of invalidations) {
+      assertSupersessionInput(invalidation);
+      if (!seenNpcIds.has(invalidation.npcId)) {
+        throw new Error('A superseding event must also be authorized for the observing NPC');
+      }
+      const record: AuthorizedObservationSupersessionRecord = {
+        ...structuredClone(invalidation),
+        saveId: input.saveId,
+        branchId: event.branchId ?? 'root',
+        supersededByEventId: event.id,
+        supersededAtRevision: event.afterRevision,
+      };
+      assertAuthorizedObservationSupersessionRecord(record);
+      const key = `${record.observationGrantId}\0${record.supersededByEventId}`;
+      if (supersessionKeys.has(key)) throw new Error('Duplicate authorized observation supersession');
+      supersessionKeys.add(key);
+      authorizedSupersessions.push(record);
     }
   }
 
@@ -263,7 +326,7 @@ export function prepareNpcMemoryTurn(input: PrepareNpcMemoryTurnOptions): NpcMem
   };
   const bounded = trimJournal(journal);
   assertNpcMemoryJournal(bounded);
-  return { status: 'prepared', journal: bounded, recordedObservations, authorizedObservations };
+  return { status: 'prepared', journal: bounded, recordedObservations, authorizedObservations, authorizedSupersessions };
 }
 
 function trimJournal(journal: NpcMemoryJournal): NpcMemoryJournal {
@@ -292,7 +355,7 @@ function sameTurn(left: NpcMemoryTurnMarker | null, right: NpcMemoryTurnMarker):
 
 function assertObservationGrantShape(value: unknown): asserts value is ObservationGrant {
   assertRecord(value, 'Invalid NPC visibility grant');
-  assertExactKeys(value, ['npcId', 'eventId', 'channel', 'authorizationPolicyVersion', 'authorizedFields', 'authorizedFacts', 'visibleSummary'], 'Invalid NPC visibility grant');
+  assertAllowedKeys(value, ['npcId', 'eventId', 'channel', 'authorizationPolicyVersion', 'authorizedFields', 'authorizedFacts', 'visibleSummary'], ['memoryClass'], 'Invalid NPC visibility grant');
   if (typeof value.npcId !== 'string' || !value.npcId.trim()
     || value.npcId.length > 200
     || typeof value.eventId !== 'string' || !UUID_PATTERN.test(value.eventId)
@@ -301,9 +364,26 @@ function assertObservationGrantShape(value: unknown): asserts value is Observati
     || value.visibleSummary.length > MAX_VISIBLE_SUMMARY_LENGTH
     || typeof value.authorizationPolicyVersion !== 'string' || !value.authorizationPolicyVersion.trim()
     || value.authorizationPolicyVersion.length > 200
+    || (value.memoryClass !== undefined && !isMemoryClass(value.memoryClass))
     || !validAuthorizedFacts(value.authorizedFields as readonly string[], value.authorizedFacts as Readonly<Record<string, unknown>>, value.visibleSummary)) {
     throw new Error('Invalid NPC visibility grant');
   }
+}
+
+function assertSupersessionInput(value: unknown): asserts value is Omit<AuthorizedObservationSupersessionRecord, 'saveId' | 'branchId' | 'supersededByEventId' | 'supersededAtRevision'> {
+  assertRecord(value, 'Invalid authorized observation supersession');
+  assertExactKeys(value, ['npcId', 'observationGrantId', 'kind', 'reason', 'policyVersion'], 'Invalid authorized observation supersession');
+  if (typeof value.npcId !== 'string' || !value.npcId.trim() || value.npcId.length > 200
+    || typeof value.observationGrantId !== 'string' || !value.observationGrantId.trim() || value.observationGrantId.length > 2000
+    || !isSupersessionKind(value.kind)
+    || typeof value.reason !== 'string' || !value.reason.trim() || value.reason.length > 500
+    || typeof value.policyVersion !== 'string' || !value.policyVersion.trim() || value.policyVersion.length > 200) {
+    throw new Error('Invalid authorized observation supersession');
+  }
+}
+
+function isSupersessionKind(value: unknown): value is ObservationSupersessionKind {
+  return typeof value === 'string' && ['premise-revised', 'relation-changed', 'entity-dead', 'item-moved', 'clue-invalid'].includes(value);
 }
 
 function stableGrantId(saveId: string, branchId: string, eventId: string, npcId: string): string {
@@ -319,4 +399,10 @@ function assertExactKeys(value: Record<string, unknown>, expected: readonly stri
   if (keys.length !== expected.length || expected.some(key => !Object.hasOwn(value, key))) {
     throw new Error(message);
   }
+}
+
+function assertAllowedKeys(value: Record<string, unknown>, required: readonly string[], optional: readonly string[], message: string): void {
+  const actual = Object.keys(value);
+  const allowed = new Set([...required, ...optional]);
+  if (required.some(key => !Object.hasOwn(value, key)) || actual.some(key => !allowed.has(key))) throw new Error(message);
 }

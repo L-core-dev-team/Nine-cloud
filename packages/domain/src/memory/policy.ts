@@ -1,6 +1,14 @@
 /** These policies affect recall only. Neither can amend rules events or state. */
 export type MemoryPolicyVersion = 'exact-recall-v1' | 'accessibility-v1' | 'continue-v1' | 'forgetting-v1';
 
+/**
+ * P4 signed semantic class. Legacy rows stay 'unclassified' and are never
+ * guessed into a category; only an authoritative rules/visibility adapter may
+ * classify a grant.
+ */
+export const memoryClasses = ['current-state', 'historical-event', 'subjective-belief', 'unclassified'] as const;
+export type MemoryClass = typeof memoryClasses[number];
+
 export type NpcObservation = {
   npcId: string;
   eventId: string;
@@ -26,6 +34,8 @@ export type ObservationGrant = {
   authorizedFacts: Readonly<Record<string, unknown>>;
   /** Text already filtered by the caller's event visibility policy. */
   visibleSummary: string;
+  /** P4 semantic class; omitted grants stay unclassified and are not evidence. */
+  memoryClass?: MemoryClass;
 };
 
 const POLICY_VERSIONS = new Set<MemoryPolicyVersion>(['exact-recall-v1', 'accessibility-v1', 'continue-v1', 'forgetting-v1']);
@@ -93,4 +103,8 @@ export function createNpcMemory(npcId: string, policyVersion: MemoryPolicyVersio
   if (typeof npcId !== 'string' || !npcId.trim()) throw new Error('NPC ID is required');
   if (!POLICY_VERSIONS.has(policyVersion)) throw new Error('Invalid memory policy version');
   return { npcId, policyVersion, observations: [] };
+}
+
+export function isMemoryClass(value: unknown): value is MemoryClass {
+  return typeof value === 'string' && (memoryClasses as readonly string[]).includes(value);
 }
