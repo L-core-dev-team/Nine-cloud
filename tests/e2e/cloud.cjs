@@ -5,17 +5,49 @@ const { randomUUID } = require('node:crypto');
 const { spawn, execFileSync } = require('node:child_process');
 const { existsSync, mkdirSync, writeFileSync, readFileSync } = require('node:fs');
 const { resolve, join } = require('node:path');
+const { connect, createServer } = require('node:net');
 const { chromium } = require('playwright');
 const root = resolve(__dirname, '../..'); const children = [];
-const apiPort = 18788, webPort = 15174, origin = `http://127.0.0.1:${webPort}`;
+let apiPort, webPort, origin;
 const mailApi = process.env.MAILPIT_API_URL || 'http://127.0.0.1:18025';
 assert.ok(['127.0.0.1', 'localhost'].includes(new URL(mailApi).hostname), 'Use a local isolated Mailpit only');
 execFileSync(process.execPath, [join(root, 'scripts/assert-test-database.mjs')], { stdio: 'inherit' });
+async function availablePort() {
+  return await new Promise((resolve, reject) => {
+    const server = createServer();
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', () => {
+      const address = server.address();
+      if (!address || typeof address === 'string') { server.close(); reject(new Error('Could not reserve a local test port')); return; }
+      server.close(error => error ? reject(error) : resolve(address.port));
+    });
+  });
+}
 function run(file, args, cwd, env) {
   const child = spawn(process.execPath, [file, ...args], { cwd, env: { ...process.env, ...env }, stdio: 'pipe', windowsHide: true });
   child.stdout.on('data', () => {}); child.stderr.on('data', data => process.stderr.write(data)); children.push(child);
 }
 async function ready(url) { for (let i = 0; i < 100; i++) { try { if ((await fetch(url)).ok) return; } catch {} await new Promise(r => setTimeout(r, 100)); } throw new Error('Local service readiness failed'); }
+async function readySmtp(host, port) {
+  assert.ok(['127.0.0.1', 'localhost'].includes(host), 'Use a loopback SMTP service only');
+  for (let i = 0; i < 100; i++) {
+    const connected = await new Promise(resolve => {
+      const socket = connect({ host, port });
+      let settled = false; let greeting = '';
+      const finish = value => { if (settled) return; settled = true; socket.destroy(); resolve(value); };
+      socket.setTimeout(250);
+      socket.on('data', chunk => {
+        greeting += chunk.toString('ascii');
+        if (greeting.includes('\n')) finish(/^220[ -]/.test(greeting));
+      });
+      socket.once('error', () => finish(false));
+      socket.once('timeout', () => finish(false));
+    });
+    if (connected) return;
+    await new Promise(r => setTimeout(r, 100));
+  }
+  throw new Error('Local SMTP readiness failed');
+}
 async function login(page, email) {
   await page.goto(`${origin}/settings/cloud`); await page.getByLabel('邮箱', { exact: true }).fill(email);
   await page.getByRole('button', { name: '发送验证码', exact: true }).click();
@@ -37,7 +69,10 @@ async function latestCode(email) {
   throw new Error('Isolated account-operation SMTP delivery failed');
 }
 (async () => {
+  apiPort = await availablePort(); webPort = await availablePort(); origin = `http://127.0.0.1:${webPort}`;
   await ready(`${mailApi}/api/v1/info`);
+  const smtp = new URL(process.env.TEST_SMTP_URL || 'smtp://127.0.0.1:11025');
+  await readySmtp(smtp.hostname, Number(smtp.port || 587));
   run(join(root, 'apps/api/dist/index.js'), [], root, { API_PORT: String(apiPort), DATABASE_URL: process.env.TEST_DATABASE_URL,
     AUTH_ENABLED: 'true', AUTH_PUBLIC_ORIGIN: origin, AUTH_SECRET: randomUUID() + randomUUID(), AUTH_MAIL_FROM: 'test@example.invalid', SMTP_URL: process.env.TEST_SMTP_URL || 'smtp://127.0.0.1:11025' });
   run(join(root, 'apps/web/node_modules/vite/bin/vite.js'), ['preview', '--host', '127.0.0.1', '--port', String(webPort), '--strictPort'], join(root, 'apps/web'), { JIUXIAO_API_TARGET: `http://127.0.0.1:${apiPort}` });
@@ -88,7 +123,9 @@ async function latestCode(email) {
     const accountDownload=await accountDownloadPromise;const accountText=readFileSync(await accountDownload.path(),'utf8');const accountBundle=JSON.parse(accountText);
     assert.equal(accountBundle.account.id,accountBefore.id);assert.equal(accountBundle.client.independentLocalSaves.length,2);assert.ok(accountBundle.data.saves.some(row=>row.id===remote.saveId));assert.ok(!accountText.includes('never-upload-this-key'));assert.ok(!accountText.includes('session_hash'));
     const newEmail=`changed-${randomUUID()}@example.invalid`;await page.getByLabel('新邮箱',{exact:true}).fill(newEmail);await page.getByRole('button',{name:'验证旧邮箱',exact:true}).click();
+    await page.getByText('验证码已发送到旧邮箱。',{exact:true}).waitFor();
     await page.getByLabel('旧邮箱操作验证码',{exact:true}).fill(await latestCode(accountBefore.email));await page.getByRole('button',{name:'核验操作验证码',exact:true}).click();
+    await page.getByText('旧邮箱验证通过，验证码已发送到新邮箱。',{exact:true}).waitFor();
     await page.getByLabel('新邮箱操作验证码',{exact:true}).fill(await latestCode(newEmail));await page.getByRole('button',{name:'核验操作验证码',exact:true}).click();
     await page.getByLabel('输入 CHANGE_EMAIL',{exact:true}).fill('CHANGE_EMAIL');page.once('dialog',dialog=>dialog.accept());await page.getByRole('button',{name:'最终确认账户操作',exact:true}).click();
     await page.getByText('账户操作完成，所有会话已退出。本机独立存档保留。',{exact:true}).waitFor();
