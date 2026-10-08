@@ -633,14 +633,18 @@ async function ready(url) {
        assert.equal(/(?:canonId|world_jiuxiao)/i.test(await page.locator('.atlas-dialog').innerText()), false, 'gallery copy must not expose internal asset tags');
        await page.keyboard.press('Escape');
        await page.locator('.atlas-dialog').waitFor({ state: 'hidden' });
+       // Every collection the atlas exposes is checked against the catalogue, so
+       // the gallery cannot silently drop a group. Counts mirror
+       // CANDIDATE_ILLUSTRATIONS, the same source the unit test pins.
        const galleryCollections = [
-         ['宗门与势力', 16], ['修行图鉴', 14], ['题字与纹章', 4], ['纸墨氛围', 3],
+         ['山河与地域', 7], ['宗门与势力', 16], ['修行图鉴', 14], ['题字与纹章', 4], ['纸墨氛围', 3],
+         ['人物志', 10], ['法宝器物', 10], ['天气时序', 6], ['战斗与行动', 4],
        ];
        for (const [label, count] of galleryCollections) {
          await page.locator('.atlas-collections').getByRole('button', { name: new RegExp(label) }).click();
          assert.equal(await page.locator('.atlas-card').count(), count, `${label} must include every supplied illustration in that collection`);
        }
-       assert.ok((await page.getByRole('button', { name: /画卷图鉴/ }).innerText()).includes('44 幅视觉稿'), 'the gallery total should be presented from the current illustration catalogue');
+       assert.ok((await page.getByRole('button', { name: /画卷图鉴/ }).innerText()).includes('74 幅视觉稿'), 'the gallery total should be presented from the current illustration catalogue');
        await page.getByRole('searchbox', { name: '搜索画卷图鉴' }).fill('不存在的画面名称');
        await page.getByRole('button', { name: '查看全部画卷' }).click();
        assert.equal(await page.locator('.atlas-card').count(), 7, 'the empty gallery state should offer a direct recovery action');
