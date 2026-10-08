@@ -1,4 +1,12 @@
-# Node API 生产部署交接
+# API 部署交接
+
+## 当前目标：Cloudflare Workers + Supabase
+
+项目负责人已选择由 Cloudflare Worker 运行 Hono API、由 Supabase 提供 Auth 与 PostgreSQL。实现状态、阻塞项和未执行的远端操作见 [Worker 生产部署准备](worker-production.md)。当前 Worker 尚未覆盖完整玩法 API，不得把它部署为全量 `/api/*` 的生产处理器。
+
+下文 Node API 部署材料保留作历史/回滚参考。只有实际 Node 源站仍在运行且完成单独验收时才适用；不要将其描述为已存在的当前生产后端。
+
+## 旧 Node API 生产部署回滚材料
 
 仅后端，不修改 Cloudflare Pages。正式公开 API Base URL 尚无实际资源，状态 `PUBLIC_API_BASE_URL_PENDING`；配置必须是实际 `https://<后端域名>`，不能填 localhost 或把示例域名冒充已部署。
 
@@ -7,13 +15,32 @@
 1. 下载与目标 `$RC_SHA` 完全相同的 CI 工程评审包；在干净检出中固定该 SHA 后构建 API 镜像。记录源码 SHA、Dockerfile、镜像 registry digest 与推送回执，再将 `API_IMAGE` 固定为 digest。当前 CI 包不含生产镜像，且 `releaseApproved:false` 不代表发布批准。
 2. 私有环境填写 api.private.env.example 所列字段，保存成 api.private.env，权限限制为部署账号可读。此文件与 runtime/、backups/ 已忽略；密钥不放 Pages、不上传。
 3. 准备 PostgreSQL，并在启用前备份已有数据库。数据库保持仅监听宿主 `127.0.0.1`。先运行 Compose `create` 建立 bridge 网络；检查实际 gateway/subnet，再准备只绑定该 gateway 的宿主 TCP 转发到 PostgreSQL 回环端口。防火墙仅允许该 Compose 子网访问转发端口。`DATABASE_URL` 不得填写容器内 `127.0.0.1`；公网不得开放 5432 或转发端口。核实连接路径后再启动迁移。
-4. 核对路线 A/B 与 `deployment/api-production.compose.yml`：当前 Compose 固定启用邮箱认证及 SMTP 启动预检。路线 A 若要保持“不开放账号”，必须先完成经批准的入口封锁和预检方案；否则不得声称该路线已落地。路线 B 必须先有有效双作者数据政策和真实邮件资源。
+4. Compose 的认证默认关闭。按 ADR 0007 使用 Supabase Auth 验证 OTP，由 Hono 签发业务会话并保留稳定 owner ID。生产启用认证必须有正式 HTTPS origin、Supabase publishable key 与仅服务端使用的 secret key、Hono SMTP、公开隐私政策 URL/版号和适用的数据处理政策。
 5. 配置同源 `/api/*`、`/health`、`/ready` 路径转发，再将 `PUBLIC_API_BASE_URL` 设为用户访问的同源 HTTPS 根地址。普通构建须让 `VITE_API_BASE_URL` 保持未设置，客户端才默认请求同源 `/api`；Pages 预览构建可设置该变量指向独立 staging API。边缘层与 API 反代须保留 `Origin`、`Cookie`，不可缓存认证路径，并支持至少 180 秒的回合请求超时。VPS 证书覆盖边缘入口连接的源站主机名；前端 origin 的 HTTPS 由边缘/前端托管方提供。
-6. 执行 `docker compose --env-file deployment/api.private.env -f deployment/api-production.compose.yml up -d`。迁移完成后 API 才启动；SMTP 连接预检失败会阻止启动。
+6. 执行 `docker compose --env-file deployment/api.private.env -f deployment/api-production.compose.yml up -d`。认证关闭时可先启动健康检查 API；认证开启且 SMTP 预检失败时 API 不应被认为可用。
 7. 设置 `PUBLIC_API_BASE_URL` 后运行 `node --env-file=deployment/api.private.env scripts/api-production-smoke.mjs`。它检查 health/ready 与未登录 session 401，不发邮件。
 8. 实际邮箱、两账号和手机验收按唯一缺口清单进行；Mailpit 结果不能替代生产投递。数据政策生效前禁止云档写入。
 
 前端 `cloud-sync.ts` 通过 `apiRequestUrl('/api/…')` 构造地址；普通构建未设置 `VITE_API_BASE_URL` 时默认同源 `/api/*` 并发送 `credentials: 'include'`。生产方案保持该变量未设置，并由 Pages Functions/Worker 等边缘入口转发 `/api/*`、`/health` 与 `/ready` 到 VPS API。Pages 预览可以使用独立 HTTPS staging API，但那条跨域路径须另验 CORS 和 Cookie。`AUTH_PUBLIC_ORIGIN` 是前端 origin，不是 VPS API 的 origin。
+
+## 认证模式与 Supabase 凭据
+
+`deployment/api.private.env.example` 默认将 `AUTH_ENABLED`、`SUPABASE_AUTH_ENABLED`、邮箱和手机号能力都设为关闭。每次只启用一个 Hono 认证模式。
+
+- 选择 Supabase Auth 时，设置 `AUTH_ENABLED=false`、`SUPABASE_AUTH_ENABLED=true`、`SUPABASE_AUTH_EMAIL_ENABLED=true`，并提供项目 URL、publishable key、至少 32 字节独立 `AUTH_SECRET` 与 `AUTH_IDENTITY_HMAC_SECRET`。浏览器只收到公开的政策链接；Supabase secret/service-role key、SMTP 密码和 Tencent 凭据不得放入 Hono Web 变量、Pages 或客户端。
+- `SUPABASE_SECRET_KEY` 供 Hono 服务端调用 Supabase Auth Admin API，同步已验证邮箱变更，以及在手机号解绑/账号删除时清理 Supabase Auth 用户。可使用 Supabase secret key（`sb_secret_...`）或兼容的旧 `service_role` key。它必须只存在于 API 私有环境；不可放入 Vite、Pages、客户端或日志。缺少该密钥时 Supabase Auth 模式启动失败。
+- Hono 自己的 SMTP 用于账号邮箱变更、关闭等生命周期验证。Supabase Auth 的 SMTP 用于登录 OTP；两者可以由同一家供应商承载，但需分别配置并实收验收。服务器 SMTP 连接预检不证明 Supabase 投递成功。
+- 启用生产认证要求配置 `AUTH_PRIVACY_POLICY_URL` 和 `AUTH_PRIVACY_POLICY_VERSION`。该运行时校验只检查 HTTPS URL 与版号，不证明政策内容已审查，也不代替运营主体、数据保留期限、处理方协议及客户端展示验收。
+- `packages/db/drizzle/0016_supabase_external_identity.sql` 属于 Hono 业务数据库迁移；迁移前运行只读 `node scripts/audit/auth-identities-preflight.mjs`，核对大小写不敏感的邮箱冲突和 owner 计数。若存在冲突，迁移会在任何 DDL 前停止。此迁移不得套用到错误的数据库。
+- `supabase/migrations/202610060001_auth_sms_budget.sql` 属于 Supabase 项目 PostgreSQL，不会由 Hono 的 Drizzle migrator 自动执行。先备份并确认 Supabase 项目 ref，再按批准的维护窗口通过 Supabase CLI 应用。随后部署 `supabase/functions/send-sms-hook`，在 Auth Hook 设置中填写 HTTPS 函数地址及 Standard Webhooks 签名密钥，并关闭该函数的 JWT 验证（仓库 `supabase/config.toml` 已声明；Hook 自行验签）。Hook 内部供应商请求限时 4 秒，低于 Supabase HTTP Auth Hook 的 5 秒执行上限；真实运营商链路仍须实测。
+- 该 Supabase 迁移也新增 `purge_auth_sms_ephemeral_data()`。短信入口仍关闭时先由运营方批准摘要/重放记录的保存期；部署后在 Supabase 数据库计划任务中每天调用该函数，确认回执。函数清理超过 2 日的号码 HMAC 限流摘要和超过 7 日的 Hook ID；它不清理活动账号的身份映射或 Supabase Auth 用户。
+- Hono 的来源 IP 与账号 HMAC 限流表建议每日预览：`node --env-file=deployment/api.private.env scripts/api-auth-rate-limit-retention.mjs`。运营方批准 2 日保留期且先核对预览后，再加 `--apply`；任务计划需在主机侧安装并记录运行结果。脚本不删除账号、身份映射或登录会话。
+- 手机号始终保持关闭，直到 Supabase Auth 的手机号提供方、Turnstile CAPTCHA、Auth Send SMS Hook、短信签名/模板、真实成本、地区 allowlist、月/日/单号/IP/已登录账号限额和供应商密钥全部核验。Hono 同时要求设置 `AUTH_TRUSTED_PROXY_ADDRESSES`：填写 API TCP 对端的精确反向代理 IP；反向代理必须覆盖 `X-Forwarded-For`，仅转发其验证过的客户端 IP。不得信任客户端可控的原始转发链。Hook 的 Tencent 凭据只作为 Supabase Edge Function secrets 配置；RPC 访问优先使用平台提供的 `SUPABASE_SECRET_KEYS`，兼容部署才设置 server-side Supabase secret/service-role key。Hono 的所有 `SMS_*` 开关仍需与 Hook 的非秘密预算/地区配置一致。样例值全为零，不代表免费额度，也不能发送短信。
+- 账号关闭后，邮箱和手机号 OTP 都可在 30 日窗口内恢复。手机号解绑前 Hono 会检查 Supabase Auth 用户确为仅有手机号身份的用户，再调用 Admin API 删除远端 Auth 用户并撤销本地映射；无法安全确认身份形态或远端请求失败时，解绑失败且保留本地映射。邮箱变更先通过本地邮件 OTP 验证新地址，再用 Admin API 更新并确认 Supabase 邮箱。
+- `ACCOUNT_DELETE_ENABLED` 仍默认关闭。只有数据政策文件通过运行时校验并由运营方确认后才能开启。用户发起立即删除或计划到期删除时，Hono 先逐个删除该 owner 映射的 Supabase Auth 用户，再清理本地数据；远端失败会阻止本地删除。外部 Supabase API 与本地 PostgreSQL 事务无法形成分布式原子事务，若中途失败，重试会将已删除的远端用户视为已完成并继续。冷备份和外部日志的保留/擦除仍由主机和供应商政策负责。
+- `scripts/api-auth-rate-limit-retention.mjs` 的预览与清理依赖 Hono 业务库已应用迁移 `0016_supabase_external_identity.sql`；只在正确数据库运行，并先审阅预览。手机号用户摘要与 Hook ID 的 Supabase 定时清理则依赖 Supabase 项目迁移 `202610060001_auth_sms_budget.sql` 已应用。
+
+应用 Supabase 迁移、部署函数、填写 Auth Dashboard、配置生产 SMTP、设置任何非零短信额度、绑定生产域名或启用真实账号，都不由仓库变更自动完成。本次本地工程提交之前不对在线 Supabase 项目、Cloudflare DNS 或生产主机执行写操作。
 
 ## 正式规则与叙事接入
 

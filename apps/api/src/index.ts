@@ -1,5 +1,5 @@
 import {configureAccountQuota} from './services/account-rate-limit.js';
-import {loadDataPolicy} from './services/data-policy.js';
+import {loadDataPolicy} from './services/data-policy-node.js';
 import {PolicyCloudSaveRepository} from './services/policy-cloud-save-repository.js';
 import { serve } from '@hono/node-server';
 import { Pool } from 'pg';

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>隐私政策 · 九霄</title>
+<meta name="description" content="《九霄》隐私政策：说明我们收集哪些信息、用途、存储方式与你的权利。">
+<link rel="icon" href="/favicon.svg">
+<style>
+:root { color-scheme: dark; }
+body {
+  margin: 0; padding: 0;
+  background: #07121e; color: #eee8df;
+  font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'Microsoft YaHei', serif;
+  line-height: 2; font-size: 16px;
+}
+main { max-width: 46em; margin: 0 auto; padding: 48px 24px 96px; }
+header { border-bottom: 1px solid rgba(224,213,204,.2); padding-bottom: 24px; margin-bottom: 36px; }
+h1 { font-size: 28px; letter-spacing: .3em; font-weight: 400; margin: 0 0 12px; }
+.meta { font-size: 13px; color: #a4afba; letter-spacing: .1em; }
+h2 { font-size: 18px; letter-spacing: .18em; font-weight: 400; color: #f2ece1; margin: 44px 0 14px; }
+h3 { font-size: 15px; letter-spacing: .1em; font-weight: 400; color: #bdcad7; margin: 26px 0 10px; }
+p, li { font-size: 15px; color: #d8d2c6; }
+ul { padding-left: 1.4em; }
+li { margin: 6px 0; }
+strong { color: #eee8df; font-weight: 500; }
+table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 14px; }
+th, td { text-align: left; padding: 11px 12px; border: 1px solid rgba(224,213,204,.2); vertical-align: top; }
+th { background: rgba(9,24,38,.9); color: #f2ece1; font-weight: 500; letter-spacing: .1em; }
+td { color: #cfc8bc; }
+.note {
+  margin: 20px 0; padding: 16px 18px;
+  background: rgba(9,24,38,.86);
+  border-left: 3px solid #b8a06a;
+  font-size: 14px; color: #c8c1b4;
+}
+.ok { color: #9dbf8f; }
+.off { color: #c99a8a; }
+footer { margin-top: 56px; padding-top: 22px; border-top: 1px solid rgba(224,213,204,.2); font-size: 13px; color: #8b98a6; }
+a { color: #bdcad7; }
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <h1>九霄</h1>
+  <p class="meta">隐私政策 · 版本 1.0 · 生效日期 2026 年 10 月 7 日</p>
+</header>
+
+<h2>一、我们是谁</h2>
+<p>《九霄》是一款修仙世界文字冒险游戏。本政策说明我们在你使用游戏时收集哪些信息、如何使用，以及你如何行使权利。</p>
+<p>我们遵循<strong>最小必要</strong>原则：只收集提供服务所必需的信息，不收集与你使用游戏无关的内容。</p>
+
+<h2>二、我们收集哪些信息</h2>
+
+<table>
+  <thead>
+    <tr><th>信息类型</th><th>收集内容</th><th>用途</th><th>是否必需</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>邮箱地址</td>
+      <td>你主动填写的邮箱地址</td>
+      <td>用于邮箱验证码登录、账号找回，以及接收邮件事件通知（如投递失败）</td>
+      <td><span class="off">登录时必需</span></td>
+    </tr>
+    <tr>
+      <td>游戏存档</td>
+      <td>角色设定、剧情进度、事件链、记忆策略版本</td>
+      <td>提供云端存档与多设备同步</td>
+      <td><span class="ok">否，可只存本机</span></td>
+    </tr>
+    <tr>
+      <td>会话凭据</td>
+      <td>不透明随机会话标识（服务端仅存哈希）</td>
+      <td>维持登录状态与退出撤销</td>
+      <td><span class="off">登录时必需</span></td>
+    </tr>
+    <tr>
+      <td>邮件事件记录</td>
+      <td>事件类型、腾讯云消息 ID 的哈希、收件地址的 HMAC 摘要</td>
+      <td>识别退信、排查验证码未送达问题</td>
+      <td><span class="ok">否</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>我们<strong>不</strong>收集的信息</h3>
+<p>我们<strong>没有</strong>申请或收集以下信息：</p>
+<ul>
+  <li><strong>设备标识</strong>（IMEI、OAID、IDFA 等）</li>
+  <li><strong>精确或粗略地理位置</strong></li>
+  <li><strong>通讯录</strong>、<strong>短信内容</strong>、<strong>通话记录</strong></li>
+  <li><strong>相册</strong>、<strong>相机</strong>、<strong>麦克风</strong>、<strong>剪贴板</strong></li>
+  <li>你的<strong>行为分析画像</strong>与广告标识</li>
+</ul>
+
+<h3>我们<strong>不</strong>集成的第三方 SDK</h3>
+<p>本应用<strong>未集成任何</strong>第三方统计、广告或行为追踪 SDK。</p>
+
+<h3>模型服务</h3>
+<p>如果你在设置中使用 AI 功能，<strong>需要你自己提供模型服务的 API 密钥</strong>。我们<strong>不内置、不代理、不转发</strong>任何模型服务调用。该密钥保存在你设备的本机安全存储中，<strong>不写入游戏存档</strong>，<strong>不会传输到除你指定模型服务商之外的任何服务器</strong>。</p>
+
+<h2>三、我们如何使用信息</h2>
+<ul>
+  <li><strong>提供登录与账号功能</strong>——验证邮箱归属、维持会话、防止未授权访问</li>
+  <li><strong>提供云端存档</strong>——同步你的游戏进度</li>
+  <li><strong>排查故障</strong>——当验证码未送达时，通过邮件投递记录定位原因</li>
+  <li><strong>履行法定义务</strong>——配合依法提出的合法请求</li>
+</ul>
+<p>我们<strong>不出售</strong>你的个人信息，<strong>不用于</strong>广告投放，<strong>不用于</strong>自动化决策。</p>
+
+<h2>四、存储方式与期限</h2>
+
+<table>
+  <thead>
+    <tr><th>数据</th><th>存储位置</th><th>保留期限</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>邮箱、会话、存档</td><td>自有服务器数据库</td><td>账号存续期间；删除后按下方规则清理</td></tr>
+    <tr><td>邮件事件记录</td><td>自有服务器数据库（仅哈希，无原文）</td><td>用于排查投递问题，随账号数据清理</td></tr>
+    <tr><td>本机草稿存档</td><td>你设备的浏览器存储</td><td>由你控制，清理浏览器数据即删除</td></tr>
+    <tr><td>本机 API 密钥</td><td>你设备的系统安全存储</td><td>由你控制，不随账号删除</td></tr>
+  </tbody>
+</table>
+
+<h3>关于手机号</h3>
+<p>当前版本<strong>未启用</strong>手机号登录。你主动绑定手机号之前，我们不会收集手机号。</p>
+
+<h2>五、数据出境情况</h2>
+
+<div class="note">
+  <p style="margin:0 0 10px">我们使用的部分第三方服务位于中国境外，<strong>以下数据会因此传输至境外</strong>：</p>
+  <table style="margin:10px 0 0">
+    <thead><tr><th>接收方</th><th>传输内容</th><th>目的</th><th>所在地</th></tr></thead>
+    <tbody>
+      <tr><td>Supabase</td><td>邮箱地址、身份映射关系</td><td>邮箱验证码的身份校验</td><td>境外</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<p>我们选择境外服务的原因是：其邮箱身份校验能力可直接对接我们已有的服务端逻辑，避免你为同一个账号维护两套密码。我们已通过合同与安全配置限制该环节的数据用途，并<strong>关闭了第三方分析、日志与非必要的数据留存</strong>。</p>
+<p>如你希望行使删除权并停止后续传输，请通过下方方式联系我们。</p>
+
+<h2>六、你的权利</h2>
+<p>依据《中华人民共和国个人信息保护法》，你享有以下权利。完整的操作路径见 <a href="/privacy-rights">隐私权利</a> 页。</p>
+<ul>
+  <li><strong>知情权</strong>——本政策即为告知</li>
+  <li><strong>访问权</strong>——查看你的账号信息与存档</li>
+  <li><strong>更正权</strong>——修改你的邮箱地址</li>
+  <li><strong>删除权</strong>——删除账号与关联数据</li>
+  <li><strong>可携带权（导出）</strong>——导出你的存档数据</li>
+  <li><strong>撤回同意权</strong>——停止某项数据处理</li>
+  <li><strong>投诉举报权</strong>——向我们或监管部门反映问题</li>
+</ul>
+
+<h2>七、账号的关闭与删除</h2>
+<p>你可以随时申请<strong>关闭账号</strong>。关闭后有 <strong>30 天恢复窗口</strong>，期间登录即可恢复，数据保持不变。</p>
+<p>恢复窗口结束后，数据进入<strong>受控清理队列</strong>。我们不会立即执行不可逆删除，以便在技术故障或误操作时仍可挽回。</p>
+<div class="note">
+  <p style="margin:0"><strong>永久删除当前可能处于关闭状态。</strong>受数据政策与合规要求约束，我们保留这道闸门。它需要在获得合法审批后才能开启。因此<strong>「立即永久删除」暂不可用</strong>，这是事实而非疏漏。</p>
+</div>
+<p>永久删除在法律上属于<strong>不可撤销</strong>操作。请在确认前导出你的存档（见<a href="/privacy-rights">隐私权利</a>）。</p>
+
+<h2>八、我们如何保护信息</h2>
+<ul>
+  <li>会话凭据使用 <code>HttpOnly; Secure; SameSite=Strict</code> Cookie，<strong>不写入浏览器本地存储</strong></li>
+  <li>验证码摘要使用 HMAC-SHA256，<strong>不保存明文</strong></li>
+  <li>API 密钥保存在设备安全存储，<strong>不写入存档、不传输到我们的服务器</strong></li>
+  <li>服务端日志<strong>不记录</strong>验证码、完整邮箱、完整手机号、Cookie 与密钥</li>
+  <li>写请求校验来源，<strong>不接受客户端自行提交的账号标识作为授权依据</strong></li>
+</ul>
+
+<h2>九、本政策的更新</h2>
+<p>本政策版本随页面顶部标注。发生<strong>处理目的、类型或境外流向变化</strong>时，我们会更新版本号与生效日期，并重新取得你的同意（如需）。</p>
+
+<h2>十、联系我们</h2>
+<ul>
+  <li>邮箱：<strong style="color:#cfc08f">3507103376@qq.com</strong></li>
+  <li>我们将在 <strong>15 个工作日</strong>内回应你的请求</li>
+</ul>
+<p>若对我们的处理不满，你也有权向网信部门或人民法院寻求救济。</p>
+
+<footer>
+  <p>本政策依据《个人信息保护法》《网络安全法》《儿童个人信息网络保护规定》制定，内容与实际处理行为一致。</p>
+  <p><a href="/privacy">隐私政策</a> · <a href="/privacy-rights">隐私权利</a> · <a href="/terms">用户协议</a> · <a href="/feedback">问题反馈</a></p>
+</footer>
+
+</main>
+</body>
+</html>
