@@ -11,7 +11,13 @@ const { chromium } = require('playwright');
 const root = resolve(__dirname, '../..');
 const webRoot = join(root, 'apps/web');
 const screenshotDir = join(root, 'test-results/e2e');
-const professionalBaselineCss = execFileSync('git', ['show', '69471c749a1624ba13109352abaf8b76577e6d3d:apps/web/src/style.css'], { cwd: root, encoding: 'utf8' });
+// 视觉冻结基线：由作者于 2026-10-08 批准后重置。
+// 旧基线 69471c7（2026-10-05）之后 style.css 经历 9 次经批准的视觉改动
+// （d8e8e02 player shell、17c63fe candidate atlas、c776de9 合并、d73e0b7 页脚等），
+// 继续以旧基线比对会使该门禁恒为红，等同失效。
+// 新基线取 d73e0b7 —— 作者已确认其为当前期望的视觉状态。
+const PROFESSIONAL_BASELINE_COMMIT = 'd73e0b7';
+const professionalBaselineCss = execFileSync('git', ['show', `${PROFESSIONAL_BASELINE_COMMIT}:apps/web/src/style.css`], { cwd: root, encoding: 'utf8' });
 const children = [];
 
 async function availablePorts(count) {
