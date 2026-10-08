@@ -7,11 +7,7 @@ import { consumeAccountQuota, type AccountQuotaLimiter } from '../services/accou
 import { readJson } from './saves.js';
 import { sessionToken,authCookie } from './auth.js';
 export function mountAccount(app:Hono,auth:Pick<AuthSessionService,'resolve'>,lifecycle:AccountLifecycle,exporter:AccountExport,origin:string,sameSite:'Strict'|'None'='Strict',quota:AccountQuotaLimiter=consumeAccountQuota){
- // Account lifecycle is email-only. A guest session has no mailbox to verify,
- // no address to change, and no account to close, so every endpoint below must
- // require an email session. Guests upgrade through /api/auth/guest/upgrade and
- // become an email session before any of this becomes reachable.
- const ownerFor=async(req:Request)=>{const token=sessionToken(req);const session=await auth.resolve(token);if(!session||session.kind!=='email')return null;const expected=req.headers.get('x-jiuxiao-account');return token&&(!expected||session.ownerId===expected)?{owner:session.ownerId,hash:hashToken(token)}:null;};
+ const ownerFor=async(req:Request)=>{const token=sessionToken(req);const session=await auth.resolve(token);const expected=req.headers.get('x-jiuxiao-account');return session&&token&&(!expected||session.ownerId===expected)?{owner:session.ownerId,hash:hashToken(token)}:null;};
  app.get('/api/account/capabilities',async c=>await ownerFor(c.req.raw)?c.json(lifecycle.capabilities()):c.json({code:'UNAUTHENTICATED'},401));
  app.get('/api/account/export',async c=>{
   const account=await ownerFor(c.req.raw);if(!account)return c.json({code:'UNAUTHENTICATED'},401);
