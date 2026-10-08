@@ -26,3 +26,11 @@ test-results/
 deployment/api.private.env
 deployment/runtime/
 deployment/backups/
+**/.dev.vars*
+
+# 备份文件（禁止入库：Canon 签署前快照等）
+*.before-signing.bak
+packages/content/src/*.bak
+
+# 本地临时工具脚本（一次性运维，不属于工程代码）
+work/*.py

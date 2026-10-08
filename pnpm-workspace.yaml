@@ -4,6 +4,7 @@ packages:
 
 allowBuilds:
   esbuild: true
+  workerd: false
 
 minimumReleaseAgeExclude:
   - nodemailer@10.0.13
