@@ -113,6 +113,13 @@
       "when": 1791134101001,
       "tag": "0015_p1_gameplay_persistence",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1791302400000,
+      "tag": "0016_supabase_external_identity",
+      "breakpoints": true
     }
   ]
 }

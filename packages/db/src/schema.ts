@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { bigint, check, foreignKey, index, integer, jsonb, pgTable, primaryKey, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
+import { bigint, check, date, foreignKey, index, integer, jsonb, pgTable, primaryKey, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
 
 export const authAccounts = pgTable('auth_accounts', {
   id: text('id').primaryKey(), email: text('email').notNull(),
@@ -23,6 +23,31 @@ export const authSessions = pgTable('auth_sessions', {
   tokenHash: text('token_hash').primaryKey(), ownerId: text('owner_id').notNull().references(() => authAccounts.id, { onDelete: 'cascade' }),
   expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
 });
+/** Maps Supabase Auth subjects to the existing immutable game-data owner. Phone values are stored only as HMAC digests. */
+export const authExternalIdentities = pgTable('auth_external_identities', {
+  providerSubject: text('provider_subject').notNull(), identityKind: text('identity_kind').notNull(),
+  identifierDigest: text('identifier_digest').notNull(), ownerId: text('owner_id').notNull().references(() => authAccounts.id, { onDelete: 'cascade' }),
+  verifiedAt: timestamp('verified_at', { withTimezone: true }).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  lastUsedAt: timestamp('last_used_at', { withTimezone: true }).notNull().defaultNow(),
+  revokedAt: timestamp('revoked_at', { withTimezone: true }),
+}, table => [
+  primaryKey({ columns: [table.providerSubject, table.identityKind] }),
+  uniqueIndex('auth_external_identity_digest_idx').on(table.identityKind, table.identifierDigest).where(sql`${table.revokedAt} IS NULL`),
+  uniqueIndex('auth_external_identity_owner_kind_idx').on(table.ownerId, table.identityKind).where(sql`${table.revokedAt} IS NULL`),
+  check('auth_external_identity_kind_check', sql`${table.identityKind} IN ('email', 'phone')`),
+  check('auth_external_identity_digest_check', sql`${table.identifierDigest} ~ '^[a-f0-9]{64}$'`),
+]);
+export const authProviderIpLimits = pgTable('auth_provider_ip_limits', {
+  ipDigest: text('ip_digest').primaryKey(), windowStartedAt: timestamp('window_started_at', { withTimezone: true }).notNull(),
+  hourCount: integer('hour_count').notNull().default(0), dayStartedAt: date('day_started_at', { mode: 'string' }).notNull(),
+  dayCount: integer('day_count').notNull().default(0),
+}, table => [index('auth_provider_ip_limits_day_started_at_idx').on(table.dayStartedAt)]);
+export const authProviderAccountLimits = pgTable('auth_provider_account_limits', {
+  ownerDigest: text('owner_digest').primaryKey(), windowStartedAt: timestamp('window_started_at', { withTimezone: true }).notNull(),
+  hourCount: integer('hour_count').notNull().default(0), dayStartedAt: date('day_started_at', { mode: 'string' }).notNull(),
+  dayCount: integer('day_count').notNull().default(0),
+}, table => [index('auth_provider_account_limits_day_started_at_idx').on(table.dayStartedAt)]);
 export const authMailLimits = pgTable('auth_mail_limits', {
   bucket: bigint('bucket', { mode: 'number' }).primaryKey(), sent: integer('sent').notNull(),
 });
