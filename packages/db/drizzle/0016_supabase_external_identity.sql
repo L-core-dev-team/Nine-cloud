@@ -26,7 +26,18 @@ CREATE TABLE "auth_external_identities" (
 CREATE UNIQUE INDEX "auth_external_identity_digest_idx" ON "auth_external_identities" USING btree ("identity_kind", "identifier_digest") WHERE "revoked_at" IS NULL;
 CREATE UNIQUE INDEX "auth_external_identity_owner_kind_idx" ON "auth_external_identities" USING btree ("owner_id", "identity_kind") WHERE "revoked_at" IS NULL;
 ALTER TABLE "auth_external_identities" ENABLE ROW LEVEL SECURITY;
-REVOKE ALL ON "auth_external_identities" FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON "auth_external_identities" FROM PUBLIC;
+DO $$
+DECLARE
+  role_name text;
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anon') THEN
+    EXECUTE 'REVOKE ALL ON "auth_external_identities" FROM anon';
+  END IF;
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticated') THEN
+    EXECUTE 'REVOKE ALL ON "auth_external_identities" FROM authenticated';
+  END IF;
+END $$;
 
 CREATE TABLE "auth_provider_ip_limits" (
   "ip_digest" text PRIMARY KEY,
@@ -37,7 +48,18 @@ CREATE TABLE "auth_provider_ip_limits" (
 );
 CREATE INDEX "auth_provider_ip_limits_day_started_at_idx" ON "auth_provider_ip_limits" ("day_started_at");
 ALTER TABLE "auth_provider_ip_limits" ENABLE ROW LEVEL SECURITY;
-REVOKE ALL ON "auth_provider_ip_limits" FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON "auth_provider_ip_limits" FROM PUBLIC;
+DO $$
+DECLARE
+  role_name text;
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anon') THEN
+    EXECUTE 'REVOKE ALL ON "auth_provider_ip_limits" FROM anon';
+  END IF;
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticated') THEN
+    EXECUTE 'REVOKE ALL ON "auth_provider_ip_limits" FROM authenticated';
+  END IF;
+END $$;
 
 CREATE TABLE "auth_provider_account_limits" (
   "owner_digest" text PRIMARY KEY CHECK ("owner_digest" ~ '^[a-f0-9]{64}$'),
@@ -48,4 +70,15 @@ CREATE TABLE "auth_provider_account_limits" (
 );
 CREATE INDEX "auth_provider_account_limits_day_started_at_idx" ON "auth_provider_account_limits" ("day_started_at");
 ALTER TABLE "auth_provider_account_limits" ENABLE ROW LEVEL SECURITY;
-REVOKE ALL ON "auth_provider_account_limits" FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON "auth_provider_account_limits" FROM PUBLIC;
+DO $$
+DECLARE
+  role_name text;
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'anon') THEN
+    EXECUTE 'REVOKE ALL ON "auth_provider_account_limits" FROM anon';
+  END IF;
+  IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticated') THEN
+    EXECUTE 'REVOKE ALL ON "auth_provider_account_limits" FROM authenticated';
+  END IF;
+END $$;
