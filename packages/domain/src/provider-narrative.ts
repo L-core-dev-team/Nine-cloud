@@ -16,7 +16,7 @@ export function providerAdapter(config:ProviderConfig,env:Record<string,string|u
   if(prompt.length>100_000)throw new Error('NARRATIVE_CONTEXT_TOO_LARGE');
   const endpoint=new URL(url);let path=url.pathname.replace(/\/+$/,'').replace(/\/(chat\/completions|responses|messages)$/,'');
   const headers:Record<string,string>={'content-type':'application/json'};let body:unknown;
-  const omitSampling=['claude-opus-5-5','claude-sonnet-5','gemini-3.8-flash'].includes(config.model.trim().toLowerCase());
+  const omitSampling=['claude-opus-5-5','claude-sonnet-5','claude-sonnet-5-5','gemini-3.8-flash'].includes(config.model.trim().toLowerCase());
   const sample={...(omitSampling||config.temperature===undefined?{}:{temperature:config.temperature}),...(omitSampling||config.top_p===undefined?{}:{top_p:config.top_p})};
   if(config.protocol==='gemini-content'){
    endpoint.pathname=path.replace(/\/v1(beta)?$/,'')+`/v1beta/models/${encodeURIComponent(config.model)}:generateContent`;headers['x-goog-api-key']=key;
