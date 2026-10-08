@@ -949,6 +949,13 @@ async function ready(url) {
       assert.ok((await page.locator('body').innerText()).includes('选择去处'), 'AI settings should close back to its entry route');
 
       await page.goto(`http://127.0.0.1:${webPort}/settings/graphics`);
+      // Clear any focus anchor left behind by the previous route before testing
+      // the skip link. When a single browser session has already visited other
+      // views, the engine can resume Tab from the detached element's old position
+      // instead of the document start, so the assertion would otherwise measure
+      // leftover state rather than the skip link itself. The same reset idiom is
+      // used above when verifying the font-dependent layout.
+      await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); });
       await page.keyboard.press('Tab');
       assert.equal(await page.locator('.skip-to-content').evaluate(element => document.activeElement === element), true, 'the first keyboard stop should skip directly to page content');
       await page.keyboard.press('Enter');
