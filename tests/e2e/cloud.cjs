@@ -39,7 +39,11 @@ async function latestCode(email) {
 (async () => {
   await ready(`${mailApi}/api/v1/info`);
   run(join(root, 'apps/api/dist/index.js'), [], root, { API_PORT: String(apiPort), DATABASE_URL: process.env.TEST_DATABASE_URL,
-    AUTH_ENABLED: 'true', AUTH_PUBLIC_ORIGIN: origin, AUTH_SECRET: randomUUID() + randomUUID(), AUTH_MAIL_FROM: 'test@example.invalid', SMTP_URL: process.env.TEST_SMTP_URL || 'smtp://127.0.0.1:11025' });
+    // This path really does deliver: the login flow reads the six-digit code back
+    // out of the isolated Mailpit inbox. The runtime defaults to the Tencent SES
+    // API, so SMTP has to be requested explicitly or the API refuses to start
+    // and none of the mail assertions below would ever be exercised.
+    AUTH_ENABLED: 'true', AUTH_MAILER: 'smtp', AUTH_PUBLIC_ORIGIN: origin, AUTH_SECRET: randomUUID() + randomUUID(), AUTH_MAIL_FROM: 'test@example.invalid', SMTP_URL: process.env.TEST_SMTP_URL || 'smtp://127.0.0.1:11025' });
   run(join(root, 'apps/web/node_modules/vite/bin/vite.js'), ['preview', '--host', '127.0.0.1', '--port', String(webPort), '--strictPort'], join(root, 'apps/web'), { JIUXIAO_API_TARGET: `http://127.0.0.1:${apiPort}` });
   await ready(`http://127.0.0.1:${apiPort}/ready`); await ready(origin);
   const edge = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
