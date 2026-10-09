@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-// P1 fail-closed preflight only: an unrecognized rule module must not bypass
-// AUTHOR_RULES_GATE. The approved non-production candidate journey is separate.
+// P1 fail-closed preflight only: gameplay must never settle without an approved
+// rule module — whether the configured one is unrecognized (phase 1) or simply
+// absent (phase 2). The approved non-production candidate journey is separate.
 const assert = require('node:assert/strict');
 const { spawn, spawnSync } = require('node:child_process');
 const { createHash, randomBytes, randomUUID } = require('node:crypto');
@@ -86,6 +87,54 @@ async function stop(child) {
     await pool.query('INSERT INTO auth_accounts (id, email) VALUES ($1, $2)', [ownerId, email]);
     await pool.query('INSERT INTO auth_sessions (token_hash, owner_id, expires_at) VALUES ($1, $2, now() + interval \'1 hour\')', [tokenHash, ownerId]);
 
+    // Phase 1 — point TURN_RULES_MODULE at a raw content rulebook. The runtime is
+    // contract-bound to reject a module that exports no default plugin rather
+    // than quietly run rule-free (apps/api/src/services/turn-runtime.test.ts
+    // asserts INVALID_TURN_PLUGIN), so the expected outcome is a process that
+    // refuses to start, not one that serves. The gate check below can no longer
+    // short-circuit this path either: AUTHOR_RULES_GATE has been APPROVED_BY_OWNER
+    // since 2026-10-06, which is why this no longer reaches the old
+    // "return undefined, then answer 503" branch the previous revision assumed.
+    {
+      const guardPort = await availablePort();
+      const guardOrigin = `http://127.0.0.1:${guardPort}`;
+      const guard = spawn(process.execPath, [apiFile], {
+        cwd: root,
+        env: {
+          ...process.env,
+          API_HOST: '127.0.0.1',
+          API_PORT: String(guardPort),
+          AUTH_ENABLED: 'true',
+          AUTH_PUBLIC_ORIGIN: guardOrigin,
+          AUTH_SECRET: randomBytes(32).toString('hex'),
+          AUTH_MAIL_FROM: 'p1-test@example.invalid',
+          AUTH_MAILER: 'smtp',
+          SMTP_URL: 'smtp://127.0.0.1:1',
+          DATABASE_URL: testDatabaseUrl,
+          TURN_RULES_MODULE: candidateModule,
+        },
+        stdio: ['ignore', 'pipe', 'pipe'],
+        windowsHide: true,
+      });
+      let guardStderr = '';
+      guard.stderr.on('data', chunk => { guardStderr += chunk.toString(); });
+      guard.stdout.on('data', () => {});
+      const [guardCode] = await once(guard, 'exit');
+      await stop(guard);
+      assert.notEqual(guardCode, 0, 'an unrecognized rule module must not leave a listening API');
+      assert.match(guardStderr, /INVALID_TURN_PLUGIN/, `the runtime must reject the module; stderr tail: ${guardStderr.slice(-500)}`);
+      const guardWrites = await pool.query(`SELECT
+        (SELECT count(*)::int FROM game_saves WHERE owner_id = $1) AS saves,
+        (SELECT count(*)::int FROM turn_requests r JOIN game_saves s ON s.id = r.save_id WHERE s.owner_id = $1) AS requests,
+        (SELECT count(*)::int FROM turn_events e JOIN game_saves s ON s.id = e.save_id WHERE s.owner_id = $1) AS events,
+        (SELECT count(*)::int FROM npc_memory_journals n JOIN game_saves s ON s.id = n.save_id WHERE s.owner_id = $1) AS memories`, [ownerId]);
+      assert.deepEqual(guardWrites.rows[0], { saves: 0, requests: 0, events: 0, memories: 0 },
+        'a process that refused to start must not have written a save, receipt, event, or NPC memory');
+      console.log('PR-6 phase 1 passed: the unrecognized rulebook module was rejected before the API could listen; nothing was written.');
+    }
+
+    // Phase 2 — no rule module configured at all. The API must come up and refuse
+    // every gameplay request with RULES_NOT_READY rather than settle anything.
     child = spawn(process.execPath, [apiFile], {
       cwd: root,
       env: {
@@ -104,8 +153,9 @@ async function stop(child) {
         AUTH_MAILER: 'smtp',
         SMTP_URL: 'smtp://127.0.0.1:1',
         DATABASE_URL: testDatabaseUrl,
-        // A raw content rulebook path is not the approved review plugin path.
-        TURN_RULES_MODULE: candidateModule,
+        // Phase 2 runs with no TURN_RULES_MODULE at all: rules are simply not
+        // configured, so the API must serve and refuse gameplay rather than
+        // invent any. Phase 1 above is where the unrecognized path is checked.
       },
       stdio: ['ignore', 'pipe', 'pipe'],
       windowsHide: true,
@@ -171,7 +221,7 @@ async function stop(child) {
       (SELECT count(*)::int FROM turn_events WHERE save_id = $1) AS events,
       (SELECT count(*)::int FROM npc_memory_journals WHERE save_id = $1) AS memories`, [saveId, ownerId]);
     assert.deepEqual(persisted.rows[0], { revision: 0, requests: 0, events: 0, memories: 0 });
-    console.log('PR-6 fail-closed preflight passed: the unrecognized rulebook module did not bypass AUTHOR_RULES_GATE; no save, receipt, event, or NPC-memory write occurred.');
+    console.log('PR-6 fail-closed preflight passed: with no approved rules the API served but refused every gameplay request; no save, receipt, event, or NPC-memory write occurred.');
     console.log('This is only a negative gate check; authenticated non-production gameplay is covered by p1-authenticated-candidate.cjs.');
   } finally {
     if (child) await stop(child);
