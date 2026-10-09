@@ -137,7 +137,7 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
     expect(await repository.getForOwner(ownerId, saveId)).toEqual(firstResult.journal);
     expect(await repository.getForOwner('another-owner', saveId)).toBeNull();
     const observations = await repository.getAuthorizedObservationPage(ownerId, saveId, 'npc-s4-test', undefined, 1);
-    expect(observations.items).toMatchObject([{ eventId: firstInput.event.id, authorizedFacts: { summary: '旅人抵达山门。' } }]);
+    expect(observations.items).toMatchObject([{ grantIdVersion: 2, eventId: firstInput.event.id, authorizedFacts: { summary: '旅人抵达山门。' } }]);
     expect(observations.nextCursor).toBeNull();
     expect(await repository.getAuthorizedObservationPage('another-owner', saveId, 'npc-s4-test')).toMatchObject({ items: [], nextCursor: null });
 

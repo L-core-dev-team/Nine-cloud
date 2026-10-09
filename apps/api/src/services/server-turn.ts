@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import {
   ActionIntentSchema, DomainEventSchema, SaveEnvelopeSchema, TurnReceiptSchema,
-  type ActionIntent, type Decision, type SaveEnvelope, type SaveEnvelopeV2, type TurnReceipt,
+  type ActionIntent, type Decision, type SaveEnvelope, type SaveEnvelopeV2, type SaveEnvelopeV3, type TurnReceipt,
 } from '@jiuxiao/contracts';
 import {
   prepareTurn, prepareNpcMemoryTurn,
@@ -151,9 +151,9 @@ export class ServerTurnService {
         let context: NarrativeContext = { npcMemories: [], ...buildP1NarrativeHints(receipt, save) };
         let memoryContextReady = true;
         try {
-          if (save?.schemaVersion === 2) {
+          if (save && (save.schemaVersion === 2 || save.schemaVersion === 3)) {
             const readAuthorizedPage = this.repository.getAuthorizedObservationPage?.bind(this.repository);
-            context = { ...(await buildNarrativeMemoryContext({ ownerId, receipt, save: save as SaveEnvelopeV2,
+            context = { ...(await buildNarrativeMemoryContext({ ownerId, receipt, save: save as SaveEnvelopeV2 | SaveEnvelopeV3,
               ...(readAuthorizedPage ? { readAuthorizedPage } : {}) })), ...buildP1NarrativeHints(receipt, save) };
           }
         } catch {

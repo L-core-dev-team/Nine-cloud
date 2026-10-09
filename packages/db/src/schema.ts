@@ -1,11 +1,16 @@
 import { sql } from 'drizzle-orm';
-import { bigint, check, date, foreignKey, index, integer, jsonb, pgTable, primaryKey, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
+import { bigint, boolean, check, date, foreignKey, index, integer, jsonb, pgTable, primaryKey, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
 
 export const authAccounts = pgTable('auth_accounts', {
-  id: text('id').primaryKey(), email: text('email').notNull(),
+  id: text('id').primaryKey(), email: text('email'), isGuest: boolean('is_guest').notNull().default(false),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  lastSeenAt: timestamp('last_seen_at', { withTimezone: true }).notNull().defaultNow(),
   closedAt: timestamp('closed_at', { withTimezone: true }),
-}, table => [uniqueIndex('auth_accounts_email_idx').on(table.email)]);
+}, table => [
+  uniqueIndex('auth_accounts_email_idx').on(table.email),
+  check('auth_accounts_identity_check', sql`(${table.isGuest} = (${table.email} IS NULL)) IS TRUE`),
+  index('auth_accounts_guest_retention_idx').on(table.lastSeenAt, table.id).where(sql`${table.isGuest} AND ${table.closedAt} IS NULL`),
+]);
 export const accountOperations = pgTable('account_operations', {
   id: text('id').primaryKey(), ownerId: text('owner_id').notNull().references(() => authAccounts.id, { onDelete:'cascade' }),
   sessionHash: text('session_hash').notNull(), operation: text('operation').notNull(), oldEmail: text('old_email'), newEmail: text('new_email'),
@@ -64,21 +69,33 @@ export const gameSaves = pgTable('game_saves', {
   revision: integer('revision').notNull().default(0),
   schemaVersion: integer('schema_version').notNull(),
   canonVersion: text('canon_version').notNull(),
+  canonArtifactHash: text('canon_artifact_hash'),
   ruleVersion: text('rule_version').notNull(),
   memoryPolicyVersion: text('memory_policy_version').notNull(),
   memoryMode: text('memory_mode'),
   memoryPolicy: jsonb('memory_policy'),
+  branchId: text('branch_id'),
+  parentBranchId: text('parent_branch_id'),
+  forkRevision: integer('fork_revision'),
+  createdPolicyVersion: text('created_policy_version'),
+  sourceMigrationId: text('source_migration_id'),
   snapshot: jsonb('snapshot').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 }, table => [
   uniqueIndex('game_saves_owner_id_idx').on(table.ownerId, table.id),
   foreignKey({ columns: [table.ownerId], foreignColumns: [authAccounts.id], name: 'game_saves_account_fk' }),
+  check('game_saves_canon_artifact_hash_check', sql`(
+    (${table.schemaVersion} IN (1, 2) AND ${table.canonArtifactHash} IS NULL)
+    OR (${table.schemaVersion} = 3 AND ${table.canonArtifactHash} ~ '^sha256:[0-9A-Fa-f]{64}$')
+  ) IS TRUE`),
   check('game_saves_memory_policy_check', sql`(
     (
-      (${table.schemaVersion} = 1 AND ${table.memoryMode} IS NULL AND ${table.memoryPolicy} IS NULL)
+      (${table.schemaVersion} = 1 AND ${table.memoryMode} IS NULL AND ${table.memoryPolicy} IS NULL
+        AND ${table.branchId} IS NULL AND ${table.parentBranchId} IS NULL AND ${table.forkRevision} IS NULL
+        AND ${table.createdPolicyVersion} IS NULL AND ${table.sourceMigrationId} IS NULL)
       OR (
-        ${table.schemaVersion} = 2
+        ${table.schemaVersion} IN (2, 3)
         AND ${table.memoryMode} IN ('continue', 'forgetting')
         AND jsonb_typeof(${table.memoryPolicy}) = 'object'
         AND (${table.memoryPolicy} - ARRAY['mode','policyVersion','schemaVersion','clockBasis','policyArtifactHash','cueDictionaryHash','normalizerVersion','retrievalVersion','visibilityPolicyVersion','visibilityPolicyHash','createdAtRevision']) = '{}'::jsonb
@@ -103,6 +120,21 @@ export const gameSaves = pgTable('game_saves', {
         AND length(${table.memoryPolicy}->>'retrievalVersion') BETWEEN 1 AND 200
         AND jsonb_typeof(${table.memoryPolicy}->'visibilityPolicyVersion') = 'string'
         AND length(${table.memoryPolicy}->>'visibilityPolicyVersion') BETWEEN 1 AND 200
+        AND (
+          (${table.schemaVersion} = 2 AND ${table.branchId} IS NULL AND ${table.parentBranchId} IS NULL
+            AND ${table.forkRevision} IS NULL AND ${table.createdPolicyVersion} IS NULL AND ${table.sourceMigrationId} IS NULL)
+          OR
+          (${table.schemaVersion} = 3
+            AND ${table.branchId} ~ '^[A-Za-z0-9][A-Za-z0-9._:-]{0,199}$'
+            AND ${table.forkRevision} BETWEEN 0 AND ${table.revision}
+            AND ${table.createdPolicyVersion} = ${table.memoryPolicy}->>'policyVersion'
+            AND (${table.sourceMigrationId} IS NULL OR length(${table.sourceMigrationId}) BETWEEN 1 AND 200)
+            AND (
+              (${table.parentBranchId} IS NULL AND ${table.branchId} = 'root' AND ${table.forkRevision} = 0)
+              OR (${table.parentBranchId} ~ '^[A-Za-z0-9][A-Za-z0-9._:-]{0,199}$'
+                AND ${table.parentBranchId} <> ${table.branchId} AND ${table.branchId} <> 'root')
+            ))
+        )
       )
     ) IS TRUE
   )`),
@@ -193,6 +225,7 @@ export const npcMemoryJournals = pgTable('npc_memory_journals', {
 /** Mode-neutral, frozen authorization facts. Never contains raw event payloads or narrative output. */
 export const npcAuthorizedObservationOutbox = pgTable('npc_authorized_observation_outbox', {
   grantId: text('grant_id').primaryKey(),
+  grantIdVersion: integer('grant_id_version').notNull().default(1),
   saveId: text('save_id').notNull().references(() => gameSaves.id, { onDelete: 'cascade' }),
   branchId: text('branch_id').notNull(),
   npcId: text('npc_id').notNull(),
@@ -210,6 +243,7 @@ export const npcAuthorizedObservationOutbox = pgTable('npc_authorized_observatio
   foreignKey({ columns: [table.saveId, table.eventId], foreignColumns: [turnEvents.saveId, turnEvents.id], name: 'npc_authorized_observation_event_fk' }).onDelete('cascade'),
   index('npc_authorized_observation_page_idx').on(table.saveId, table.npcId, table.eventRevision, table.grantId),
   check('npc_authorized_observation_revision_check', sql`${table.eventRevision} > 0`),
+  check('npc_authorized_observation_grant_id_version_check', sql`${table.grantIdVersion} IN (1, 2)`),
   check('npc_authorized_observation_minute_check', sql`${table.observedAtMinute} >= 0`),
   check('npc_authorized_observation_branch_check', sql`${table.branchId} = 'root'`),
   check('npc_authorized_observation_channel_check', sql`${table.channel} IN ('witnessed', 'reported')`),

@@ -11,9 +11,10 @@ import { sessionToken } from './routes/auth.js';
 import { CloudArchiveLifecycle } from './services/cloud-archive-lifecycle.js';
 import { ServerTurnService } from './services/server-turn.js';
 import { createPostgresServerTurnRepository } from './services/postgres-server-turn.js';
-import {loadTurnPlugin,prepareTurnRuntime} from './services/turn-runtime.js';
+import { loadTurnPlugin, prepareTurnRuntime } from './services/turn-runtime.js';
 import {loadNarrativeSlots} from './services/provider-narrative.js';
 import {AuthoritativeGameService} from './services/authoritative-game.js';
+import { connectActionTextRuntime } from './services/gameplay-runtime.js';
 
 const port = Number(process.env.API_PORT ?? 8787);
 const hostname = process.env.API_HOST || '127.0.0.1';
@@ -29,7 +30,8 @@ pool.on('error', () => { console.error('Database connection unavailable.'); });
 const emailAuth = createEmailAuthRuntime(pool, process.env);
 if(process.env.AUTH_MAIL_PREFLIGHT==='true')await emailAuth?.verifyMail();
 const plugin=emailAuth?await loadTurnPlugin(process.env.TURN_RULES_MODULE):undefined;
-const runtime=plugin?prepareTurnRuntime(plugin,await loadNarrativeSlots(process.env.NARRATIVE_CONFIG_PATH,process.env),Number(process.env.NARRATIVE_OUTPUT_BUDGET||32768)):undefined;
+const preparedRuntime=plugin?prepareTurnRuntime(plugin,await loadNarrativeSlots(process.env.NARRATIVE_CONFIG_PATH,process.env),Number(process.env.NARRATIVE_OUTPUT_BUDGET||32768)):undefined;
+const runtime=preparedRuntime&&plugin?await connectActionTextRuntime(preparedRuntime,plugin):undefined;
 const dataPolicy=process.env.NODE_ENV==='production'?loadDataPolicy(process.env.ACCOUNT_DATA_POLICY_PATH):undefined;
 const cloudRepository=process.env.NODE_ENV==='production'?new PolicyCloudSaveRepository(pool,dataPolicy):new PostgresCloudSaveRepository(pool,true);
 const app = createApp({ query: sql => pool.query(sql) }, emailAuth ? {

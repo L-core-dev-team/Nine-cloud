@@ -6,7 +6,7 @@ import { assertCanonReceiptsComplete } from '../../../scripts/build/canon-receip
 const parseJson = async url => JSON.parse(await readFile(url, 'utf8'));
 
 describe('current Canon digest manifest', () => {
-  it('matches every confirmed registry entry and the pending receipt skeleton', async () => {
+  it('matches every confirmed registry entry and its dual-author receipts', async () => {
     const [registry, digestManifest, receipts] = await Promise.all([
       parseJson(new URL('./canon.registry.json', import.meta.url)),
       parseJson(new URL('../../../canon-content-digests.json', import.meta.url)),

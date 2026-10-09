@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import type { MemoryMode, SaveEnvelopeV2, SaveMemoryPolicy } from '@jiuxiao/contracts';
+import type { MemoryMode, SaveEnvelopeV2, SaveEnvelopeV3, SaveMemoryPolicy } from '@jiuxiao/contracts';
 import { canonicalJson } from '@jiuxiao/domain';
 
 export const P1_MEMORY_POLICY_VERSION = 'p1-memory-policy-v1';
@@ -55,10 +55,17 @@ export function createP1SaveMemoryPolicy(mode: MemoryMode, createdAtRevision = 0
 }
 
 /** Fail closed if a stored save's mode or policy artifact no longer matches its pinned identity. */
-export function assertP1SaveMemoryPolicy(save: SaveEnvelopeV2): MemoryMode {
-  if (!save || save.schemaVersion !== 2 || save.memoryPolicyVersion !== save.memoryPolicy.policyVersion) {
+export function assertP1SaveMemoryPolicy(save: SaveEnvelopeV2 | SaveEnvelopeV3): MemoryMode {
+  if (!save || (save.schemaVersion !== 2 && save.schemaVersion !== 3) || save.memoryPolicyVersion !== save.memoryPolicy.policyVersion) {
     throw new Error('P1_MEMORY_POLICY_MISMATCH');
   }
+  return assertP1MemoryPolicyFields(save);
+}
+
+/** Validate the memory policy independent of the save-envelope compatibility version. */
+export function assertP1MemoryPolicyFields(save: Pick<SaveEnvelopeV2 | SaveEnvelopeV3,
+  'memoryMode' | 'memoryPolicyVersion' | 'memoryPolicy'>): MemoryMode {
+  if (save.memoryPolicyVersion !== save.memoryPolicy.policyVersion) throw new Error('P1_MEMORY_POLICY_MISMATCH');
   const expected = createP1SaveMemoryPolicy(save.memoryMode, 0, save.memoryPolicyVersion);
   if (canonicalJson(save.memoryPolicy) !== canonicalJson(expected)) throw new Error('P1_MEMORY_POLICY_MISMATCH');
   return save.memoryMode;

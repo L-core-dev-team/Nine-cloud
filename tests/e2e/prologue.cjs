@@ -164,7 +164,7 @@ async function stop(child) {
     child.stdout.on('data', () => {});
 
     const health = await waitFor(`${origin}/health`, child, () => childStderr);
-    assert.equal((await health.json()).saveSchemaVersion, 2);
+    assert.equal((await health.json()).saveSchemaVersion, 3);
     const ready = await waitFor(`${origin}/ready`, child, () => childStderr);
     assert.equal((await ready.json()).status, 'ready');
 

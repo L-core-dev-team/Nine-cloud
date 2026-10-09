@@ -14,7 +14,7 @@ const suite=process.env.TEST_DATABASE_URL?describe:describe.skip;
 suite('account lifecycle, isolated PostgreSQL only',()=>{
  const pool=new Pool({connectionString:process.env.TEST_DATABASE_URL,max:5});const owners:string[]=[];const emails:string[]=[];const ids:string[]=[];const sent=new Map<string,string>();
  const secret='synthetic-account-secret'.repeat(3);const mail=async(email:string,code:string)=>{sent.set(email,code);};
- const lifecycle=new AccountLifecycle(pool,mail,secret,'synthetic-test-policy',true),exporter=new AccountExport(pool),auth=new EmailAuthService(new PostgresEmailAuthRepository(pool),mail,secret);
+ const lifecycle=new AccountLifecycle(pool,mail,secret,'synthetic-test-policy',true),exporter=new AccountExport(pool),auth=new EmailAuthService(new PostgresEmailAuthRepository(pool,secret),mail,secret);
  const app=createApp(undefined,undefined,{service:auth,origin:'https://fixture.invalid',lifecycle,exporter});
  async function fixture(){const owner=randomUUID(),email=`${owner}@example.invalid`,token=randomBytes(32).toString('base64url');owners.push(owner);emails.push(email);await pool.query('INSERT INTO auth_accounts(id,email) VALUES($1,$2)',[owner,email]);await pool.query("INSERT INTO auth_sessions(token_hash,owner_id,expires_at) VALUES($1,$2,now()+interval '1 day')",[hashToken(token),owner]);return {owner,email,token,hash:hashToken(token)};}
  async function ready(f:Awaited<ReturnType<typeof fixture>>,operation:'close'|'delete'){const begun=await lifecycle.begin(f.owner,f.hash,operation);await lifecycle.verify(f.owner,f.hash,begun.operationId,sent.get(f.email));return begun.operationId;}
@@ -98,6 +98,14 @@ suite('account lifecycle, isolated PostgreSQL only',()=>{
   expect(await lifecycle.expireClosed(true)).toMatchObject({erased:1});
   expect((await pool.query('SELECT id FROM auth_accounts WHERE id=$1',[expired.owner])).rowCount).toBe(0);
   expect(JSON.stringify((await pool.query("SELECT * FROM account_lifecycle_audit WHERE operation='expired_erasure'")).rows)).not.toContain(expired.email);
+ });
+ it('dry-run selects inactive guests at 90 days but retains guests seen within the window',async()=>{
+  const stale=randomUUID(),recent=randomUUID();owners.push(stale,recent);
+  const baseline=await lifecycle.expireClosed();
+  await pool.query("INSERT INTO auth_accounts(id,email,is_guest,last_seen_at) VALUES($1,NULL,true,now()-interval '91 days'),($2,NULL,true,now()-interval '89 days')",[stale,recent]);
+  const preview=await lifecycle.expireClosed();
+  expect(preview).toMatchObject({mode:'dry_run',eligibleGuests:baseline.eligibleGuests+1,erased:0});
+  expect((await pool.query('SELECT count(*)::int AS count FROM auth_accounts WHERE id=ANY($1::text[])',[ [stale,recent] ])).rows[0].count).toBe(2);
  });
 
 });

@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { PrologueV1FactsSchema, type DomainEvent, type TurnReceipt, type WorldState } from '@jiuxiao/contracts';
+import { MAX_CULTIVATION_KES_PER_ACTION, PROLOGUE_V1_LOCATION_LIMIT, type TurnReceipt, type WorldState } from '@jiuxiao/contracts';
 import {
   createPrologueV1EventReducer,
   createPrologueV1RuleModule,
@@ -8,10 +8,17 @@ import {
   type PrologueV1Rulebook,
   type VersionedRuleModule,
 } from '@jiuxiao/domain';
+import { PROLOGUE_V1_ACTION_TEMPLATES } from '@jiuxiao/domain/nlu/prologue-v1-fixtures';
 import type { ServerTurnRules } from './server-turn.js';
 import type { TurnPlugin } from './turn-runtime.js';
 import { P1_REVIEW_RULE_APPROVAL } from './p1-review-rule-approval.js';
-import { assertP1SaveMemoryPolicy, P1_MEMORY_POLICY_VERSION } from './p1-memory-policy.js';
+import { assertP1SaveMemoryPolicy, createP1SaveMemoryPolicy, P1_MEMORY_POLICY_VERSION } from './p1-memory-policy.js';
+import {
+  createP1InitialState,
+  grantP1DirectNpcInteraction,
+  p1MemoryPolicyVersionForMode,
+  type P1RuleSemanticInputSources,
+} from './p1-rule-semantic-functions.js';
 
 const contentRoot = new URL('../../../../packages/content/dist/', import.meta.url);
 const [bookExports, mechanicsExports, contentExports] = await Promise.all([
@@ -39,12 +46,26 @@ const module = createPrologueV1RuleModule(dependencies);
 const reduceCandidate = createPrologueV1EventReducer(dependencies);
 const allowedNpcIds = new Set(rulebook.npcPresenceIds);
 
+export const P1_RULE_SEMANTIC_INPUTS: P1RuleSemanticInputSources = {
+  rulebook,
+  mechanics,
+  maxCultivationKesPerAction: MAX_CULTIVATION_KES_PER_ACTION,
+  locationLimit: PROLOGUE_V1_LOCATION_LIMIT,
+  actionTemplates: PROLOGUE_V1_ACTION_TEMPLATES,
+  contentEntries: contentPack.entries,
+  memoryPolicyArtifacts: {
+    version: P1_MEMORY_POLICY_VERSION,
+    continue: createP1SaveMemoryPolicy('continue'),
+    forgetting: createP1SaveMemoryPolicy('forgetting'),
+  },
+};
+
 const rules: ServerTurnRules = {
   ruleVersion: module.ruleVersion,
   canonVersion: module.canonVersion,
   memoryPolicyVersion: P1_MEMORY_POLICY_VERSION,
   decide(intent, save) {
-    if (save.schemaVersion !== 2) throw new Error('P1_MEMORY_POLICY_MISMATCH');
+    if (save.schemaVersion !== 2 && save.schemaVersion !== 3) throw new Error('P1_MEMORY_POLICY_MISMATCH');
     assertP1SaveMemoryPolicy(save);
     const safeSave = withoutCreationRequestHash(save);
     const context = {
@@ -60,13 +81,11 @@ const rules: ServerTurnRules = {
       ? { ...projected, facts: { ...projected.facts, creationRequestHash } }
       : projected;
   },
-  grantsForEvent: grantDirectNpcInteraction,
+  grantsForEvent: event => grantP1DirectNpcInteraction(event, allowedNpcIds),
   policyForNpc(_npcId, save) {
-    if (!save || save.schemaVersion !== 2) throw new Error('P1_MEMORY_POLICY_MISMATCH');
+    if (!save || (save.schemaVersion !== 2 && save.schemaVersion !== 3)) throw new Error('P1_MEMORY_POLICY_MISMATCH');
     const memoryMode = assertP1SaveMemoryPolicy(save);
-    return memoryMode === 'forgetting'
-      ? 'forgetting-v1'
-      : 'continue-v1';
+    return p1MemoryPolicyVersionForMode(memoryMode);
   },
 };
 
@@ -76,36 +95,7 @@ const plugin: TurnPlugin = {
   grantsForEvent: rules.grantsForEvent,
   policyForNpc: rules.policyForNpc,
   narrativeFallback: receipt => renderDeterministicNarrative(receipt, contentPack),
-  initialState: ({ ownerId, saveId }): WorldState => {
-    if (!ownerId.trim() || !saveId.trim()) throw new Error('INVALID_GAME_OWNER');
-    const facts = PrologueV1FactsSchema.parse({
-      gameMinute: mechanics.SAVE_START_GAME_MINUTE,
-      currentSublocationId: null,
-      npcPresence: [...rulebook.initialNpcPresenceIds],
-      stamina: mechanics.STAMINA_MAX,
-      staminaDayIndex: 0,
-      spiritStamina: mechanics.SPIRIT_MAX,
-      cultivationProgress: 0,
-      fatigueCount: 0,
-      inventory: [],
-      collectedSources: [],
-      effectFlags: [],
-      clues: [],
-      observationLog: [],
-      npcInteractionLog: [],
-      travelLog: [],
-      injuryFlags: [],
-      questState: { status: 'unavailable', rewardClaimed: false },
-      knownLocations: [...rulebook.initialKnownLocationIds],
-      knownTechniques: [...rulebook.cultivationTechniqueIds],
-      locationGraph: structuredClone(rulebook.initialLocationGraph),
-      idleCount: 0,
-      obstacleState: 'blocked',
-      ferryState: 'aground',
-    });
-    const playerId = `player-${createHash('sha256').update(`${ownerId}\0${saveId}`).digest('hex').slice(0, 24)}`;
-    return { playerId, locationId: rulebook.initialKnownLocationIds[0]!, elapsedMinutes: 0, facts };
-  },
+  initialState: ({ ownerId, saveId }): WorldState => createP1InitialState({ ownerId, saveId }, rulebook, mechanics),
 };
 
 export default plugin;
@@ -224,28 +214,6 @@ function textParagraphs(pack: typeof contentPack, id: string): string[] {
 function textArray(pack: typeof contentPack, id: string, key: string): string[] {
   const value = pack.entries.find(entry => entry.id === id)?.content[key];
   return Array.isArray(value) && value.every(item => typeof item === 'string') ? [...value] : [];
-}
-
-function grantDirectNpcInteraction(event: DomainEvent) {
-  if (event.type !== 'talk.occurred') return [];
-  const npcId = event.payload.npcId;
-  const topicTag = event.payload.topicTag;
-  const outcome = event.payload.outcome;
-  if (typeof npcId !== 'string' || !allowedNpcIds.has(npcId)) return [];
-  if (typeof topicTag !== 'string' || !/^[a-z][a-z0-9_]{0,63}$/.test(topicTag)
-    || (outcome !== 'on_topic' && outcome !== 'idle' && outcome !== 'refuse')) return [];
-  // Persist only the rule-produced, NPC-visible topic and outcome. Never retain
-  // the raw player utterance, the entire event payload, or unrelated world facts.
-  const summary = `topicTag=${topicTag};outcome=${outcome}`;
-  return [{
-    npcId,
-    eventId: event.id,
-    channel: 'witnessed' as const,
-    authorizationPolicyVersion: 'p1-direct-npc-participant-v1',
-    authorizedFields: ['summary', 'topicTag', 'outcome'],
-    authorizedFacts: { summary, topicTag, outcome },
-    visibleSummary: summary,
-  }];
 }
 
 function stableEventId(saveId: string, idempotencyKey: string, index: number): string {

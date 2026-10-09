@@ -1,5 +1,10 @@
 /**
- * Exact author-approved candidate identity for non-production P1 verification only.
+ * Semantic author approval for non-production P1 review.
+ *
+ * `semanticSha256` is the enforced identity: it binds the AST-normalised
+ * runtime rule sources and is the only pin the loader fails closed on. The two
+ * byte digests below are historical diagnostics — `turn-runtime` compares them
+ * only to label drift, never to grant or deny a turn.
  *
  * `bundleSha256` binds the reviewed candidate bundle defined by
  * `scripts/p1-rule-candidate-bundle.files.json` and materialised by
@@ -13,13 +18,14 @@
  * gate, so binding it here only forced a manual re-pin without protecting any
  * reviewed rule text — a dependency bump must never be able to masquerade as an
  * author-approved rule change. `pluginSourceSha256` below independently pins the
- * normalised plugin bytes, so the two digests together still fail closed on any
- * real edit to the reviewed gameplay sources.
+ * normalised plugin bytes, so the digests together still surface any real edit
+ * to the reviewed gameplay sources.
  */
 export const P1_REVIEW_RULE_APPROVAL = Object.freeze({
   scope: 'p1-review-candidate-v1',
-  bundleSha256: 'sha256:a8867bd61cde945a57cdc73d74bc781e97bba4ecb69699b84eff75a7d97d0753',
+  bundleSha256: 'sha256:806bba97df8063d1f586053f5c9e238a0f5d0f7b30f81308c2b11dc4c893d0b8',
   pluginSourceSha256: 'sha256:94c57793bfde874469b81c1d97c914ab5591d628631564679f07d7e3aef83735',
+  semanticSha256: 'sha256:ce6453589d24027653d4f6673d608a74fa8b604486db0cf7a630e9f1be25304e',
   ruleVersion: 'prologue-v1-candidate-20261005',
   canonVersion: 'prologue-canon-candidate-20261005',
   actionRulesVersion: 'p1-actions-a4b8fbf7e6120840',

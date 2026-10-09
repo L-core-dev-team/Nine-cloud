@@ -1,10 +1,12 @@
-import { createHash, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
+import { createHash, createHmac, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
-import type { AuthSession, EmailAuthRepository } from './email-auth.js';
+import type { AuthSession, EmailAuthRepository, EmailAuthSession, GuestAuthSession, GuestUpgradeResult } from './email-auth.js';
 
 /** Codes are HMACs and sessions are random-token hashes; neither plaintext is persisted. */
 export class PostgresEmailAuthRepository implements EmailAuthRepository {
-  constructor(private readonly pool: Pool) {}
+  constructor(private readonly pool: Pool, private readonly secret: string) {
+    if (Buffer.byteLength(secret) < 32) throw new Error('AUTH_SECRET requires at least 32 bytes');
+  }
   async issue(email: string, digest: string, now: Date, expiresAt: Date): Promise<boolean> {
     const client = await this.pool.connect();
     try {
@@ -57,7 +59,7 @@ export class PostgresEmailAuthRepository implements EmailAuthRepository {
   async invalidate(email: string, digest: string): Promise<void> {
     await this.pool.query('UPDATE auth_challenges SET digest = NULL WHERE email = $1 AND digest = $2', [email, digest]);
   }
-  async consume(email: string, digest: string, tokenHash: string, now: Date, expiresAt: Date, restore=false): Promise<AuthSession | null> {
+  async consume(email: string, digest: string, tokenHash: string, now: Date, expiresAt: Date, restore=false): Promise<EmailAuthSession | null> {
     const client = await this.pool.connect();
     try {
       await client.query('BEGIN');
@@ -80,30 +82,107 @@ export class PostgresEmailAuthRepository implements EmailAuthRepository {
         if(!restored.rowCount){await client.query('UPDATE auth_challenges SET digest=NULL WHERE email=$1',[email]);await client.query('COMMIT');return null;}
         await client.query("INSERT INTO account_lifecycle_audit(id,owner_digest,operation,policy_version) VALUES($1,$2,'restored','recovery-30d')",[randomUUID(),createHash('sha256').update(restored.rows[0].id).digest('hex')]);
       }
-      const account = await client.query(`INSERT INTO auth_accounts (id, email) VALUES ($1, $2)
-        ON CONFLICT (email) DO UPDATE SET email = EXCLUDED.email WHERE auth_accounts.closed_at IS NULL RETURNING id`, [randomUUID(), email]);
+      const account = await client.query(`INSERT INTO auth_accounts (id, email, is_guest, last_seen_at) VALUES ($1, $2, false, $3)
+        ON CONFLICT (email) DO UPDATE SET email = EXCLUDED.email, last_seen_at = EXCLUDED.last_seen_at
+        WHERE auth_accounts.closed_at IS NULL AND auth_accounts.is_guest = false RETURNING id`, [randomUUID(), email, now]);
       if (!account.rows[0]) { await client.query('UPDATE auth_challenges SET digest = NULL WHERE email = $1', [email]); await client.query('COMMIT'); return null; }
       const ownerId = account.rows[0].id as string;
       await insertSession(client, tokenHash, ownerId, expiresAt);
       await client.query('UPDATE auth_challenges SET digest = NULL WHERE email = $1', [email]);
-      await client.query('COMMIT'); return { ownerId, email, expiresAt };
+      await client.query('COMMIT'); return { kind: 'email', ownerId, email, expiresAt };
     } catch (error) { await client.query('ROLLBACK'); throw error; } finally { client.release(); }
   }
+  async createGuest(tokenHash: string, now: Date, expiresAt: Date, clientIp: string): Promise<GuestAuthSession | null> {
+    const client = await this.pool.connect();
+    try {
+      await client.query('BEGIN');
+      const rateKey = createHmac('sha256', this.secret).update(`guest-create\0${clientIp}`).digest('hex');
+      const limit = await client.query(`INSERT INTO account_rate_limits(key, expires_at, hits)
+        VALUES ($1, $2::timestamptz + interval '1 hour', 1)
+        ON CONFLICT (key) DO UPDATE SET
+          hits = CASE WHEN account_rate_limits.expires_at <= $2 THEN 1 ELSE account_rate_limits.hits + 1 END,
+          expires_at = CASE WHEN account_rate_limits.expires_at <= $2 THEN $2::timestamptz + interval '1 hour' ELSE account_rate_limits.expires_at END
+        WHERE account_rate_limits.expires_at <= $2 OR account_rate_limits.hits < 3
+        RETURNING hits`, [rateKey, now]);
+      if (!limit.rowCount) { await client.query('ROLLBACK'); return null; }
+      const ownerId = randomUUID();
+      await client.query('INSERT INTO auth_accounts (id, email, is_guest, last_seen_at) VALUES ($1, NULL, true, $2)', [ownerId, now]);
+      await insertSession(client, tokenHash, ownerId, expiresAt);
+      await client.query('COMMIT');
+      return { kind: 'guest', ownerId, expiresAt };
+    } catch (error) { await client.query('ROLLBACK'); throw error; } finally { client.release(); }
+  }
+  async upgradeGuest(ownerId: string, tokenHash: string, email: string, digest: string, now: Date): Promise<GuestUpgradeResult> {
+    const client = await this.pool.connect();
+    let conflictingEmail = false;
+    try {
+      await client.query('BEGIN');
+      const challenge = (await client.query('SELECT digest, expires_at, attempts FROM auth_challenges WHERE email=$1 FOR UPDATE', [email])).rows[0];
+      if (!challenge?.digest || challenge.attempts >= 5 || new Date(challenge.expires_at).getTime() <= now.getTime()) {
+        const filler = randomBytes(32); timingSafeEqual(filler, filler);
+        await client.query('ROLLBACK'); return { status: 'invalid_code' };
+      }
+      await client.query('UPDATE auth_challenges SET attempts=attempts+1 WHERE email=$1', [email]);
+      if (!/^[a-f0-9]{64}$/.test(challenge.digest)
+        || !timingSafeEqual(Buffer.from(challenge.digest, 'hex'), Buffer.from(digest, 'hex'))) {
+        await client.query('COMMIT'); return { status: 'invalid_code' };
+      }
+      const guest = await client.query(`SELECT a.id, s.expires_at FROM auth_accounts a JOIN auth_sessions s ON s.owner_id=a.id
+        WHERE a.id=$1 AND a.is_guest=true AND a.email IS NULL AND a.closed_at IS NULL
+          AND s.token_hash=$2 AND s.expires_at>$3 FOR UPDATE OF a,s`, [ownerId, tokenHash, now]);
+      if (!guest.rowCount) {
+        await client.query('UPDATE auth_challenges SET digest=NULL WHERE email=$1', [email]);
+        await client.query('COMMIT'); return { status: 'unavailable' };
+      }
+      const existing = await client.query('SELECT id FROM auth_accounts WHERE email=$1 LIMIT 1 FOR UPDATE', [email]);
+      if (existing.rowCount) {
+        await client.query('UPDATE auth_challenges SET digest=NULL WHERE email=$1', [email]);
+        await client.query('COMMIT'); return { status: 'unavailable' };
+      }
+      const updated = await client.query(`UPDATE auth_accounts SET email=$2, is_guest=false, last_seen_at=$3
+        WHERE id=$1 AND is_guest=true AND email IS NULL RETURNING id`, [ownerId, email, now]);
+      if (!updated.rowCount) {
+        await client.query('UPDATE auth_challenges SET digest=NULL WHERE email=$1', [email]);
+        await client.query('COMMIT'); return { status: 'unavailable' };
+      }
+      await client.query('UPDATE auth_challenges SET digest=NULL WHERE email=$1', [email]);
+      await client.query('COMMIT');
+      return { status: 'upgraded', session: { kind: 'email', ownerId, email, expiresAt: new Date(guest.rows[0].expires_at) } };
+    } catch (error) {
+      conflictingEmail = (error as { code?: string }).code === '23505';
+      await client.query('ROLLBACK');
+      if (conflictingEmail) {
+        await this.pool.query('UPDATE auth_challenges SET digest=NULL WHERE email=$1 AND digest=$2', [email, digest]);
+        return { status: 'unavailable' };
+      }
+      throw error;
+    } finally { client.release(); }
+  }
   async resolve(tokenHash: string, now: Date): Promise<AuthSession | null> {
+    const guest = await this.pool.query(`UPDATE auth_accounts a SET last_seen_at=$2 FROM auth_sessions s
+      WHERE s.owner_id=a.id AND s.token_hash=$1 AND s.expires_at>$2 AND a.closed_at IS NULL
+        AND a.is_guest=true AND a.email IS NULL RETURNING a.id,s.expires_at`, [tokenHash, now]);
+    const guestRow = guest.rows[0];
+    if (guestRow) return { kind: 'guest', ownerId: guestRow.id, expiresAt: new Date(guestRow.expires_at) };
     const result = await this.pool.query(`SELECT a.id, a.email, s.expires_at FROM auth_sessions s
-      JOIN auth_accounts a ON a.id = s.owner_id WHERE s.token_hash = $1 AND s.expires_at > $2 AND a.closed_at IS NULL`, [tokenHash, now]);
-    const row = result.rows[0]; return row ? { ownerId: row.id, email: row.email, expiresAt: new Date(row.expires_at) } : null;
+      JOIN auth_accounts a ON a.id = s.owner_id WHERE s.token_hash = $1 AND s.expires_at > $2
+        AND a.closed_at IS NULL AND a.is_guest=false AND a.email IS NOT NULL`, [tokenHash, now]);
+    const row = result.rows[0]; return row ? { kind: 'email', ownerId: row.id, email: row.email, expiresAt: new Date(row.expires_at) } : null;
   }
   async rotate(tokenHash: string, nextHash: string, now: Date, expiresAt: Date): Promise<AuthSession | null> {
     const client = await this.pool.connect();
     try {
       await client.query('BEGIN');
       const result = await client.query(`DELETE FROM auth_sessions s USING auth_accounts a
-        WHERE s.token_hash = $1 AND s.expires_at > $2 AND a.id = s.owner_id AND a.closed_at IS NULL RETURNING a.id, a.email`, [tokenHash, now]);
+        WHERE s.token_hash = $1 AND s.expires_at > $2 AND a.id = s.owner_id AND a.closed_at IS NULL RETURNING a.id, a.email, a.is_guest`, [tokenHash, now]);
       const row = result.rows[0];
       if (!row) { await client.query('ROLLBACK'); return null; }
       await insertSession(client, nextHash, row.id, expiresAt);
-      await client.query('COMMIT'); return { ownerId: row.id, email: row.email, expiresAt };
+      if (row.is_guest) await client.query('UPDATE auth_accounts SET last_seen_at=$2 WHERE id=$1 AND is_guest=true', [row.id, now]);
+      await client.query('COMMIT');
+      return row.is_guest && row.email === null
+        ? { kind: 'guest', ownerId: row.id, expiresAt }
+        : typeof row.email === 'string' ? { kind: 'email', ownerId: row.id, email: row.email, expiresAt } : null;
     } catch (error) { await client.query('ROLLBACK'); throw error; } finally { client.release(); }
   }
   async revoke(tokenHash: string): Promise<void> { await this.pool.query('DELETE FROM auth_sessions WHERE token_hash = $1', [tokenHash]); }

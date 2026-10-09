@@ -76,8 +76,8 @@ describe('shared wire contracts', () => {
     expect(ActionIntentSchema.safeParse({ ...base, payload: { ...base.payload, minutes: 1.5 } }).success).toBe(false);
   });
 
-  it('keeps v1 saves readable and requires a consistent pinned policy for v2', () => {
-    expect(SAVE_SCHEMA_VERSION).toBe(2);
+  it('keeps v1/v2 saves readable and requires explicit lineage for v3', () => {
+    expect(SAVE_SCHEMA_VERSION).toBe(3);
     expect(SaveEnvelopeSchema.parse(v1Save)).toMatchObject({ schemaVersion: 1, memoryPolicyVersion: 'legacy-unknown' });
     const v2Save = {
       ...v1Save,
@@ -90,6 +90,21 @@ describe('shared wire contracts', () => {
     expect(SaveEnvelopeSchema.safeParse({ ...v2Save, memoryMode: 'forgetting' }).success).toBe(false);
     expect(SaveEnvelopeSchema.safeParse({ ...v2Save, memoryPolicyVersion: 'old-version' }).success).toBe(false);
     expect(SaveEnvelopeSchema.safeParse({ ...v1Save, schemaVersion: 3 }).success).toBe(false);
+    const v3Save = {
+      ...v2Save,
+      schemaVersion: 3,
+      canonArtifactHash: `sha256:${'d'.repeat(64)}`,
+      branchId: 'root',
+      parentBranchId: null,
+      forkRevision: 0,
+      createdPolicyVersion: 'continue-v1',
+      sourceMigrationId: null,
+    };
+    expect(SaveEnvelopeSchema.parse(v3Save)).toMatchObject({ schemaVersion: 3, branchId: 'root', createdPolicyVersion: 'continue-v1' });
+    expect(SaveEnvelopeSchema.safeParse({ ...v3Save, canonArtifactHash: 'not-a-sha256' }).success).toBe(false);
+    expect(SaveEnvelopeSchema.safeParse({ ...v3Save, createdPolicyVersion: 'different-policy' }).success).toBe(false);
+    expect(SaveEnvelopeSchema.safeParse({ ...v3Save, parentBranchId: 'root', branchId: 'root' }).success).toBe(false);
+    expect(SaveEnvelopeSchema.safeParse({ ...v3Save, branchId: 'branch-2', forkRevision: 0 }).success).toBe(false);
   });
 
   it('defaults legacy events to root and validates monotone revisions and bounded payloads', () => {

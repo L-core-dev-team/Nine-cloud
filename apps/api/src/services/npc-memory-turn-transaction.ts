@@ -23,9 +23,15 @@ interface SaveRow extends QueryResultRow {
   id: string;
   revision: number;
   schema_version: number;
+  canon_artifact_hash: string | null;
   memory_mode: string | null;
   memory_policy_version: string;
   memory_policy: unknown | null;
+  branch_id: string | null;
+  parent_branch_id: string | null;
+  fork_revision: number | null;
+  created_policy_version: string | null;
+  source_migration_id: string | null;
 }
 
 interface ReceiptRow extends QueryResultRow {
@@ -49,6 +55,7 @@ interface LoadedJournalRow extends QueryResultRow {
 
 interface AuthorizedObservationRow extends QueryResultRow {
   grant_id: string;
+  grant_id_version: number;
   save_id: string;
   branch_id: string;
   npc_id: string;
@@ -176,7 +183,7 @@ export class PostgresNpcMemoryTurnRepository {
       }
 
       const locked = await client.query<SaveRow>(
-        'SELECT id, revision, schema_version, memory_mode, memory_policy_version, memory_policy FROM game_saves WHERE id = $1 AND owner_id = $2 FOR UPDATE',
+        'SELECT id, revision, schema_version, canon_artifact_hash, memory_mode, memory_policy_version, memory_policy, branch_id, parent_branch_id, fork_revision, created_policy_version, source_migration_id FROM game_saves WHERE id = $1 AND owner_id = $2 FOR UPDATE',
         [receipt.saveId, ownerId],
       );
       const current = locked.rows[0];
@@ -230,7 +237,7 @@ export class PostgresNpcMemoryTurnRepository {
       throw new TypeError('Invalid authorized observation query.');
     }
     const result = await this.database.query<AuthorizedObservationRow>(
-      'SELECT o.grant_id,o.save_id,o.branch_id,o.npc_id,o.event_id,o.event_revision,o.observed_at_minute,' +
+      'SELECT o.grant_id,o.grant_id_version,o.save_id,o.branch_id,o.npc_id,o.event_id,o.event_revision,o.observed_at_minute,' +
       'o.channel,o.authorization_policy_version,o.authorized_fields,o.authorized_facts,o.summary ' +
       'FROM npc_authorized_observation_outbox o JOIN game_saves s ON s.id=o.save_id ' +
       'WHERE s.id=$1 AND s.owner_id=$2 AND o.npc_id=$3 ' +
@@ -258,7 +265,7 @@ export class PostgresNpcMemoryTurnRepository {
       }
 
       const locked = await client.query<SaveRow>(
-        'SELECT id, revision, schema_version, memory_mode, memory_policy_version, memory_policy FROM game_saves WHERE id = $1 AND owner_id = $2 FOR UPDATE',
+        'SELECT id, revision, schema_version, canon_artifact_hash, memory_mode, memory_policy_version, memory_policy, branch_id, parent_branch_id, fork_revision, created_policy_version, source_migration_id FROM game_saves WHERE id = $1 AND owner_id = $2 FOR UPDATE',
         [commit.save.saveId, commit.ownerId],
       );
       const current = locked.rows[0];
@@ -292,11 +299,22 @@ export class PostgresNpcMemoryTurnRepository {
       }
 
       if (current.schema_version !== commit.save.schemaVersion) throw new Error('SAVE_SCHEMA_VERSION_IMMUTABLE');
-      if (commit.save.schemaVersion === 2 && (
+      if (commit.save.schemaVersion !== 1 && (
         current.memory_mode !== commit.save.memoryMode ||
         current.memory_policy_version !== commit.save.memoryPolicyVersion ||
         canonicalJson(current.memory_policy) !== canonicalJson(commit.save.memoryPolicy)
       )) throw new Error('SAVE_MEMORY_POLICY_PINNED');
+      if (commit.save.schemaVersion === 3 && (
+        current.branch_id !== commit.save.branchId || current.parent_branch_id !== commit.save.parentBranchId ||
+        current.fork_revision !== commit.save.forkRevision || current.created_policy_version !== commit.save.createdPolicyVersion ||
+        current.source_migration_id !== commit.save.sourceMigrationId
+      )) throw new Error('SAVE_LINEAGE_IMMUTABLE');
+      if (commit.save.schemaVersion === 3 && current.canon_artifact_hash !== commit.save.canonArtifactHash) {
+        throw new Error('SAVE_CANON_ARTIFACT_PINNED');
+      }
+      if (commit.save.schemaVersion === 3 && commit.save.branchId !== 'root') {
+        throw new Error('SAVE_BRANCH_NOT_READY');
+      }
 
       await this.guard?.(client,commit);
       const journalResult = await client.query<JournalRow>(
@@ -349,10 +367,10 @@ export class PostgresNpcMemoryTurnRepository {
       for (const observation of commit.authorizedObservations) {
         await client.query(
           'INSERT INTO npc_authorized_observation_outbox ' +
-          '(grant_id,save_id,branch_id,npc_id,event_id,event_revision,observed_at_minute,channel,' +
+          '(grant_id,grant_id_version,save_id,branch_id,npc_id,event_id,event_revision,observed_at_minute,channel,' +
           'authorization_policy_version,authorized_fields,authorized_facts,summary) ' +
-          'VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb,$11::jsonb,$12)',
-          [observation.grantId, observation.saveId, observation.branchId, observation.npcId, observation.eventId,
+          'VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11::jsonb,$12::jsonb,$13)',
+          [observation.grantId, observation.grantIdVersion, observation.saveId, observation.branchId, observation.npcId, observation.eventId,
             observation.eventRevision, observation.observedAtMinute, observation.channel,
             observation.authorizationPolicyVersion, JSON.stringify(observation.authorizedFields),
             JSON.stringify(observation.authorizedFacts), observation.summary],
@@ -360,13 +378,20 @@ export class PostgresNpcMemoryTurnRepository {
       }
 
       const updated = await client.query(
-        'UPDATE game_saves SET revision = $4, schema_version = $5, canon_version = $6, rule_version = $7, ' +
-        'memory_policy_version = $8, memory_mode = $9, memory_policy = $10::jsonb, snapshot = $11::jsonb, updated_at = now() ' +
+        'UPDATE game_saves SET revision = $4, schema_version = $5, canon_version = $6, canon_artifact_hash = $7, rule_version = $8, ' +
+        'memory_policy_version = $9, memory_mode = $10, memory_policy = $11::jsonb, branch_id = $12, parent_branch_id = $13, ' +
+        'fork_revision = $14, created_policy_version = $15, source_migration_id = $16, snapshot = $17::jsonb, updated_at = now() ' +
         'WHERE id = $1 AND owner_id = $2 AND revision = $3',
         [commit.save.saveId, commit.ownerId, commit.expectedRevision, commit.save.revision,
-          commit.save.schemaVersion, commit.save.canonVersion, commit.save.ruleVersion,
-          commit.save.memoryPolicyVersion, commit.save.schemaVersion === 2 ? commit.save.memoryMode : null,
-          commit.save.schemaVersion === 2 ? JSON.stringify(commit.save.memoryPolicy) : null, JSON.stringify(commit.save.state)],
+          commit.save.schemaVersion, commit.save.canonVersion,
+          commit.save.schemaVersion === 3 ? commit.save.canonArtifactHash : null,
+          commit.save.ruleVersion, commit.save.memoryPolicyVersion, commit.save.schemaVersion !== 1 ? commit.save.memoryMode : null,
+          commit.save.schemaVersion !== 1 ? JSON.stringify(commit.save.memoryPolicy) : null,
+          commit.save.schemaVersion === 3 ? commit.save.branchId : null,
+          commit.save.schemaVersion === 3 ? commit.save.parentBranchId : null,
+          commit.save.schemaVersion === 3 ? commit.save.forkRevision : null,
+          commit.save.schemaVersion === 3 ? commit.save.createdPolicyVersion : null,
+          commit.save.schemaVersion === 3 ? commit.save.sourceMigrationId : null, JSON.stringify(commit.save.state)],
       );
       if (updated.rowCount !== 1) throw new Error('Save changed while its accepted turn was being committed.');
 
@@ -468,6 +493,7 @@ function parseAuthorizedObservationRow(row: AuthorizedObservationRow): Authorize
   const authorizedFacts = parseJsonObject(row.authorized_facts);
   const observation: AuthorizedObservationOutboxRecord = {
     grantId: row.grant_id,
+    grantIdVersion: row.grant_id_version as 1 | 2,
     saveId: row.save_id,
     branchId: row.branch_id as 'root',
     npcId: row.npc_id,

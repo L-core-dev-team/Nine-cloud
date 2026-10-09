@@ -1,7 +1,7 @@
 import {claimCharacterDraftId} from './idb';
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { SAVE_SCHEMA_VERSION } from '@jiuxiao/contracts';
+import { SAVE_SCHEMA_VERSION, SaveEnvelopeSchema, type MemoryMode } from '@jiuxiao/contracts';
 import { SCENE_MANIFEST, sceneForLocation, type SceneId } from '@jiuxiao/content/scenes';
 import type { CanonRuntimeEntry } from '@jiuxiao/content/worldbook';
 import { AiSettings } from './ai-settings';
@@ -21,6 +21,8 @@ import { serializeJsonWithCredentialRedaction, serializeSaveForExport } from './
 import { clearDraft, commitSaves, createIdempotencyKey, createSaveId, hydrateSaves, readActionDraft, readDraft, readLegacyLibraryText, readSaves, writeActionDraft, writeDraft, type LocalSave } from './storage';
 import type { SaveCommitResult } from './idb';
 import { mediaUrlForBrowser } from './media-compat';
+import { CloudHttpError, cloudRequest } from './cloud-sync';
+import { CloudGame } from './routes/CloudGame';
 import './style.css';
 
 const fields = [
@@ -49,11 +51,15 @@ function canonCategoryLabel(category: string): string {
 
 const route = () => window.location.pathname.replace(/\/+$/, '') || '/';
 const go = (path: string) => {
+  const sourceRoute = route();
+  if (sourceRoute.startsWith('/game/')) {
+    const sourceSaveId = sourceRoute.slice('/game/'.length);
+    try { sessionStorage.setItem(`jiuxiao_1_game_scroll_${sourceSaveId}`, String(window.scrollY)); } catch { /* Scroll position is optional. */ }
+  }
   const destination = path === '/turns' && !INTERNAL_TURN_WORKSPACE_ENABLED ? '/lobby' : path;
   if (destination.startsWith('/game/')) {
     try { sessionStorage.setItem('jiuxiao_active_save_id', decodeURIComponent(destination.slice('/game/'.length))); } catch { /* Route navigation does not depend on this preference. */ }
   }
-  const sourceRoute = route();
   const returnTo = sourceRoute;
   history.pushState(destination === '/world' || destination === '/settings/ai' ? { returnTo } : {}, '', destination);
   // Forward navigation starts at the top; returning via history.back() keeps
@@ -216,9 +222,14 @@ function SaveManager({ saves, onRename, onDelete, onExport }: {
   </section>;
 }
 
-function NewCharacter({ onSaved }: { onSaved: (save: LocalSave) => Promise<boolean> }) {
+function NewCharacter({ onSaved, onCreateServerGame, onBack }: {
+  onSaved: (save: LocalSave, memoryMode: MemoryMode) => Promise<boolean>;
+  onCreateServerGame: (memoryMode: MemoryMode) => Promise<void>;
+  onBack?: () => void;
+}) {
   const [form, setForm] = useState<Record<string, string>>(readDraft);
   const [step, setStep] = useState(0);
+  const [memoryMode, setMemoryMode] = useState<MemoryMode>('continue');
   const [error, setError] = useState('');
   const draftIdentity=useRef<Promise<string>|null>(null);
   function acquireDraft(){return draftIdentity.current??=claimCharacterDraftId().catch(error=>{draftIdentity.current=null;throw error;});}
@@ -246,10 +257,25 @@ function NewCharacter({ onSaved }: { onSaved: (save: LocalSave) => Promise<boole
     const now = new Date().toISOString();
     const name = form.name?.trim() || '无名修士';
     const save: LocalSave = { schemaVersion: 1, saveId: draftId, name, createdAt: now, updatedAt: now, revision: 0, canonVersion: 'pending-author-review', ruleVersion: 'rules-not-signed', memoryPolicyVersion: 'none', character: { ...form, name, talents }, location: form.region || '中州天枢域', status: 'pending_rules', messages: [], pending: { id: createSaveId(), text: mode === 'random' ? '按已录入资料生成随机角色并开始第一幕。当前尚无规则结算，因此此意图不会自行改变人物资料。' : '按已填写的角色设定，开始第一幕。', gm: false, source: mode === 'random' ? 'RANDOM_START' : 'CHARACTER_START' } };
-    if (!await onSaved(save)) { setError('存档列表刚有变化，或浏览器存储不可用。角色草稿仍在；请刷新存档列表后再提交。'); return; }
+    if (!await onSaved(save, memoryMode)) { setError('存档列表刚有变化，或浏览器存储不可用。角色草稿仍在；请刷新存档列表后再提交。'); return; }
     clearDraft();
     } catch { setError('建角提交未完成。角色草稿仍在，请确认本地存储可用后重试。'); }
     finally { submittingRef.current = false; setSubmitting(false); }
+  }
+  async function createServerGame() {
+    if (submittingRef.current) return;
+    submittingRef.current = true; setSubmitting(true); setError('');
+    try {
+      await onCreateServerGame(memoryMode);
+      clearDraft();
+    } catch (cause) {
+      const code = cause instanceof CloudHttpError ? cause.code : undefined;
+      setError(code === 'UNAUTHENTICATED' ? '游客会话未能建立。请重试；邮箱登录仍可从“账号与云档”使用。'
+        : code === 'RATE_LIMITED' ? '游客创建过于频繁，请稍后重试。'
+        : code === 'RULES_NOT_READY' ? '服务器尚未装载已批准的规则运行时。存档没有创建，规则门禁保持关闭。'
+          : code === 'INVALID_MEMORY_MODE' ? '服务器拒绝了当前记忆模式。存档没有创建。'
+            : '服务端规则存档未创建。草稿仍保留，已有本地存档不受影响。');
+    } finally { submittingRef.current = false; setSubmitting(false); }
   }
   return <section className="page character-creation"><span className="eyebrow">建角 · {stepNames[step]}</span><h2>把自己写进山门。</h2>
     <p>依次记下人物、修行与去处。提交前可以回看修改；开局意图在规则未就绪时留在存档中。</p>
@@ -267,10 +293,12 @@ function NewCharacter({ onSaved }: { onSaved: (save: LocalSave) => Promise<boole
     }}><option value="">选择后仍可自由修改</option>{CHARACTER_OPTIONS[key]!.map(option => <option key={option} value={option}>{option}</option>)}</select></label>}</div>)}</div>
     <p className="quiet-note">备选文字只填写角色草稿；修为、灵根与天赋仍须经过开局规则确认，不直接授予能力。</p>
     {step === 2 && <section className="character-summary" aria-label="角色提交前摘要"><h3>回看行传</h3><dl>{fields.map(([key, label]) => <div key={key}><dt>{label}</dt><dd>{form[key]?.trim() || (key === 'region' ? '中州天枢域' : key === 'name' ? '无名修士' : '未填写')}</dd></div>)}</dl></section>}
+  {step === 2 && <fieldset className="character-summary" aria-label="NPC 记忆模式"><legend>NPC 记忆模式</legend><label><input type="radio" name="p2-memory-mode" value="continue" checked={memoryMode === 'continue'} onChange={() => setMemoryMode('continue')} />存档与继续：授权可见事件永久可回忆</label><label><input type="radio" name="p2-memory-mode" value="forgetting" checked={memoryMode === 'forgetting'} onChange={() => setMemoryMode('forgetting')} />真实遗忘：同一批事件按游戏时间与 NPC 亲历事件衰减</label><small>未登录时，创建服务端存档会自动建立游客会话，不需身份输入；会话有效 7 天。请在到期前刷新或升级邮箱。丢失或清除站点数据后，无法凭存档编号找回云档；连续 90 天无活动后，在线云档进入服务器获批的清理范围。角色表单中的出身、修为与外貌尚未映射进规则状态；本按钮只创建所选记忆模式的规则存档。本地存档入口仍保留。</small></fieldset>}
     {error && <p className="error" role="alert">{error}</p>}
-    <div className="actions"><button className="secondary" onClick={() => step ? setStep(step - 1) : go('/lobby')}>{step ? '上一步' : '返回山门'}</button>
+    <div className="actions"><button className="secondary" onClick={() => step ? setStep(step - 1) : (onBack ?? (() => go('/lobby')))()}>{step ? '上一步' : '返回山门'}</button>
       {step < 2 ? <button className="primary" onClick={() => { setError(''); setStep(step + 1); }}>下一步</button> : <>
         <button className="secondary" disabled={submitting} onClick={() => submit('random')}>按资料随机开局<span>保留随机开局意图</span></button>
+        <button className="secondary" data-testid="create-server-game" disabled={submitting} onClick={() => void createServerGame()}>创建服务端规则存档<span>游客或邮箱会话 · 单一服务端事实源</span></button>
         <button className="primary" disabled={submitting} onClick={() => submit('manual')}>保存角色并进入<span>本地存档 · 待剧情规则接入</span></button>
       </>}</div>
   </section>;
@@ -407,13 +435,19 @@ function visibleLegacyText(value: unknown): string | null {
   return null;
 }
 
-function Game({ save, onExport, onImportSupplement, onUpdate, onBranch, onReload }: { save: LocalSave | undefined; onExport: (save?: LocalSave) => void; onImportSupplement: (file: File, save: LocalSave) => void; onUpdate: (save: LocalSave) => Promise<SaveCommitResult>; onBranch: (save: LocalSave) => Promise<boolean>; onReload: () => Promise<void> }) {
-  const [activePanel, setActivePanel] = useState<'character' | 'intel' | 'memory' | null>(null);
-  const [intent, setIntent] = useState(() => save ? readActionDraft(save.saveId) : '');
-  const [feedback, setFeedback] = useState('');
-  const [conflictDraft, setConflictDraft] = useState<LocalSave | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const submittingRef = useRef(false);
+type GameProps = { save: LocalSave | undefined; onExport: (save?: LocalSave) => void; onImportSupplement: (file: File, save: LocalSave) => void; onUpdate: (save: LocalSave) => Promise<SaveCommitResult>; onBranch: (save: LocalSave) => Promise<boolean>; onReload: () => Promise<void>; onBack?: () => void };
+
+const P2ReviewGame = import.meta.env.DEV ? lazy(() => import('./routes/P2ReviewGame')) : null;
+
+function Game(props: GameProps) {
+  if (import.meta.env.DEV && props.save?.p2ReviewCandidate && P2ReviewGame) {
+    return <Suspense fallback={<section className="page" role="status">正在恢复本地审阅候选存档……</section>}><P2ReviewGame save={props.save} onBack={props.onBack ?? (() => go('/lobby'))} /></Suspense>;
+  }
+  return <LegacyGame {...props} />;
+}
+
+function LegacyGame({ save, onExport, onImportSupplement, onUpdate, onBranch, onReload }: GameProps) {
+  const storyRef = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     if (!save) return;
     const key = `jiuxiao_1_game_scroll_${save.saveId}`;
@@ -443,6 +477,12 @@ function Game({ save, onExport, onImportSupplement, onUpdate, onBranch, onReload
       // The last scroll event already captured the true position.
     };
   }, [save?.saveId]);
+  const [activePanel, setActivePanel] = useState<'character' | 'intel' | 'memory' | null>(null);
+  const [intent, setIntent] = useState(() => save ? readActionDraft(save.saveId) : '');
+  const [feedback, setFeedback] = useState('');
+  const [conflictDraft, setConflictDraft] = useState<LocalSave | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const submittingRef = useRef(false);
   if (!save) return <section className="page"><h2>找不到这份存档</h2><p>它可能已被删除，或链接来自另一个浏览器。</p><button className="primary" onClick={() => go('/')}>回到首页</button></section>;
   const pending = save.pending ?? save.legacyArchive?.payload.pending;
   const pendingFromLegacy = save.pending === undefined && pending !== undefined && pending !== null;
@@ -703,11 +743,62 @@ function App() {
   const worldReturnTarget = history.state?.returnTo;
   const returningToJourney = typeof worldReturnTarget === 'string' && /^\/game\/[^/]+$/.test(worldReturnTarget)
     && worldReturnTarget === `/game/${activeSave?.saveId}`;
-  const page = currentRoute === '/new' ? <NewCharacter onSaved={async save => {
-    const result = await commitSaves(saves, [save, ...saves]);
+  const page = currentRoute === '/new' ? <NewCharacter onSaved={async (save, memoryMode) => {
+    let persisted = save;
+    if (import.meta.env.DEV) {
+      try {
+        const [{ loadP2ReviewGameplayRuntime }, { createLocalAuthoritativeSave, readLocalAuthoritativeSave }] = await Promise.all([
+          import('./p2-review-gameplay-runtime'),
+          import('./authoritative-turn-store'),
+        ]);
+        const runtime = await loadP2ReviewGameplayRuntime();
+        const authority = await runtime.createSave(save.saveId, memoryMode);
+        const created = await createLocalAuthoritativeSave(authority);
+        if (created.status !== 'created' && created.status !== 'already_exists') {
+          setNotice('本地规则候选存档未建立；旧存档保持不变。'); return false;
+        }
+        const existing = created.status === 'already_exists' ? await readLocalAuthoritativeSave(save.saveId) : authority;
+        if (!existing || existing.memoryMode !== memoryMode || existing.ruleVersion !== runtime.ruleVersion || existing.canonVersion !== runtime.canonVersion) {
+          setNotice('同一建档编号已绑定不同的候选规则或记忆模式；未覆盖原始存档。'); return false;
+        }
+        persisted = {
+          ...save,
+          p2ReviewCandidate: true,
+          canonVersion: runtime.canonVersion,
+          ruleVersion: runtime.ruleVersion,
+          memoryPolicyVersion: existing.memoryPolicyVersion,
+        };
+      } catch {
+        setNotice('本机候选规则、Canon 字节或安全上下文不可用；未建立可玩存档。'); return false;
+      }
+    }
+    const result = await commitSaves(saves, [persisted, ...saves]);
     if (!result.ok) { setSaves(result.saves); setNotice(result.reason === 'conflict' ? '存档列表刚有变化，角色尚未创建。请确认后重试。' : '浏览器数据库不可写，角色尚未创建。草稿仍保留。'); return false; }
     setSaves(result.saves); if (result.warning) setNotice(commitSuccessMessage(result, '角色与新存档已创建。')); go(`/game/${save.saveId}`); return true;
-  }} /> : currentRoute === '/intro' ? <Introduction onStart={() => go('/new')} onWorld={() => go('/world')} /> : currentRoute === '/world' ? <World onClose={returnFromReading} save={activeSave} onImportSupplement={importSupplement} isReturningToJourney={returningToJourney} /> : currentRoute === '/settings/ai' ? <AiSettings onClose={returnFromReading} /> : currentRoute === '/settings/cloud' ? <CloudSettings saves={saves} onRestore={async archive => {
+    }} onCreateServerGame={async memoryMode => {
+      let session: Record<string, unknown>;
+      let createdGuest = false;
+      try {
+        session = await cloudRequest('/api/auth/session');
+      } catch (error) {
+        if (!(error instanceof CloudHttpError) || error.status !== 401) throw error;
+        session = await cloudRequest('/api/auth/guest', 'POST', {});
+        createdGuest = true;
+      }
+      const account = session.account;
+      if (!account || typeof account !== 'object' || !('id' in account) || typeof account.id !== 'string') {
+        throw new CloudHttpError(401, 'UNAUTHENTICATED');
+      }
+      const result = await cloudRequest('/api/games', 'POST', {
+        idempotencyKey: createIdempotencyKey(),
+        choices: { memoryMode },
+      }, account.id);
+      const save = SaveEnvelopeSchema.parse(result.save);
+      if (save.schemaVersion !== 3 || save.memoryMode !== memoryMode || save.revision !== 0) throw new Error('INVALID_GAME_RESPONSE');
+      setNotice(createdGuest ? '本局游客会话已建立，有效期 7 天。请在到期前刷新或升级邮箱；丢失会话后无法凭存档编号找回云档。'
+        : '服务端规则存档已建立。事实状态保存在服务端数据库。');
+      go(`/game/${encodeURIComponent(save.saveId)}`);
+    }} onBack={() => go('/lobby')} /> : currentRoute === '/intro' ? <Introduction onStart={() => go('/new')} onWorld={() => go('/world')} /> : currentRoute === '/world' ? <World onClose={returnFromReading} save={activeSave} onImportSupplement={importSupplement} isReturningToJourney={returningToJourney} /> : currentRoute === '/settings/ai' ? <AiSettings onClose={returnFromReading} /> : currentRoute === '/settings/cloud' ? <CloudSettings saves={saves} onRestore={async archive => {
     const copied = { ...archive, saveId: createSaveId(), name: `${archive.name}（云端副本）`, updatedAt: new Date().toISOString() };
     const expected = readSaves(); const result = await commitSaves(expected, [copied, ...expected]);
     setSaves(result.saves); if (result.ok) setNotice(commitSuccessMessage(result, '云端档已恢复为新副本。')); return result.ok ? copied : null;
@@ -732,7 +823,7 @@ function App() {
         catch { /* Navigation remains available. */ }
       }
       return result.ok;
-    }} /> : currentRoute === '/turns' ? INTERNAL_TURN_WORKSPACE_ENABLED ? <TurnWorkspace onBack={() => go('/lobby')} onLogin={() => go('/settings/cloud')} /> : <WorldHub saves={saves} /> : currentRoute.startsWith('/game/') ? <Game save={game} onExport={exportFile} onImportSupplement={importSupplement}
+    }} /> : currentRoute === '/turns' ? INTERNAL_TURN_WORKSPACE_ENABLED ? <TurnWorkspace onBack={() => go('/lobby')} onLogin={() => go('/settings/cloud')} /> : <WorldHub saves={saves} /> : currentRoute.startsWith('/game/') ? game ? <Game save={game} onExport={exportFile} onImportSupplement={importSupplement}
     onUpdate={async next => {
       if (!saves.some(item => item.saveId === next.saveId)) {
         return { ok: false, reason: 'conflict', saves, conflictIds: [next.saveId], revision: 0 };
@@ -746,7 +837,7 @@ function App() {
       const branch = { ...stale, saveId: createSaveId(), name: `${stale.name}（冲突分支）`, createdAt: now, updatedAt: now };
       const result = await commitSaves(saves, [branch, ...saves]);
       setSaves(result.saves); if (result.ok && result.warning) setNotice(commitSuccessMessage(result, '冲突内容已另存为独立分支；原存档保持不变。')); return result.ok;
-    }} /> : <Landing />;
+    }} /> : <CloudGame saveId={decodeURIComponent(currentRoute.slice('/game/'.length))} onBack={() => go('/lobby')} onHome={() => go('/')} onLogin={() => go('/settings/cloud')} /> : <Landing />;
   const migrationAction = legacyText ? <button className="notice-action" onClick={migrateLegacyLibrary}>下载原文备份并迁移</button> : undefined;
   const storageNotice = indexedDbReady ? notice : `${notice} IndexedDB 回退模式。`;
   const activeScene = scenePreview ?? (game ? sceneForLocation(game.location) : 'mountain-gate');

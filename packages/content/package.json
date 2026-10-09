@@ -14,6 +14,14 @@
       "types": "./dist/realm-order.d.ts",
       "default": "./dist/realm-order.js"
     },
+    "./canon-artifact": {
+      "types": "./dist/canon-artifact.d.ts",
+      "default": "./dist/canon-artifact.js"
+    },
+    "./p1-review-candidate": {
+      "types": "./dist/p1-review-candidate.d.ts",
+      "default": "./dist/p1-review-candidate.js"
+    },
     "./scenes": {
       "types": "./dist/scenes/manifest.d.ts",
       "default": "./dist/scenes/manifest.js"
@@ -30,7 +38,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run"
+    "test": "vitest run src"
   },
   "devDependencies": {
     "@types/node": "26.6.3"

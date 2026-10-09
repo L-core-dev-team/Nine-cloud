@@ -73,7 +73,7 @@ async function ready(url) {
   });
   run(viteFile, ['preview', '--host', '127.0.0.1', '--port', String(webPort), '--strictPort'], webRoot);
   const response = await ready(`http://127.0.0.1:${apiPort}/health`);
-  assert.equal((await response.json()).saveSchemaVersion, 2);
+  assert.equal((await response.json()).saveSchemaVersion, 3);
   await ready(`http://127.0.0.1:${webPort}/`);
   const edge = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
   const executablePath = process.env.PLAYWRIGHT_BROWSER_EXECUTABLE ||
@@ -86,6 +86,11 @@ async function ready(url) {
     for (const [width, height] of [[390, 844], [1366, 768]]) {
       const context = await browser.newContext({ viewport: { width, height } });
       const page = await context.newPage();
+      await page.route('**/api/games/missing-save-*', route => route.fulfill({
+        status: 404,
+        contentType: 'application/json',
+        body: JSON.stringify({ code: 'NOT_FOUND' }),
+      }));
       await page.addInitScript(() => {
         window.__jxDrawModes = [];
         window.__jxTrianglePositionPasses = [];
@@ -275,8 +280,9 @@ async function ready(url) {
        assert.match(await regionPreview.getAttribute('src'), /world_jiuxiao\.webp$/);
        await assertRegionImage('world_jiuxiao.webp');
        await regionSelect.selectOption({ label: '中州天枢域' });
-       assert.ok((await page.locator('.character-summary').innerText()).includes(`测试修士-${width}`));
-      assert.ok((await page.locator('.character-summary').innerText()).includes('炼气期'));
+      const characterSummary = page.getByRole('region', { name: '角色提交前摘要' });
+      assert.ok((await characterSummary.innerText()).includes(`测试修士-${width}`));
+      assert.ok((await characterSummary.innerText()).includes('炼气期'));
       await page.getByRole('button', { name: '上一步' }).click();
       assert.equal(await page.locator('.form input').first().inputValue(), '炼气期');
       await page.getByRole('button', { name: '下一步' }).click();
@@ -293,7 +299,7 @@ async function ready(url) {
       await page.getByText(/角色草稿仍在/).waitFor();
       assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), beforeCreationFailure);
       assert.equal(await page.getByRole('button', { name: '保存角色并进入' }).isEnabled(), true, 'failed creation must release its submit lock');
-      assert.ok((await page.locator('.character-summary').innerText()).includes(`测试修士-${width}`), 'failed creation must preserve edited character data');
+      assert.ok((await page.getByRole('region', { name: '角色提交前摘要' }).innerText()).includes(`测试修士-${width}`), 'failed creation must preserve edited character data');
       await page.evaluate(() => {
         window.restoreCreationDatabaseForTest(); delete window.restoreCreationDatabaseForTest;
         const buttons = [...document.querySelectorAll('button')];
@@ -644,7 +650,14 @@ async function ready(url) {
          await page.locator('.atlas-collections').getByRole('button', { name: new RegExp(label) }).click();
          assert.equal(await page.locator('.atlas-card').count(), count, `${label} must include every supplied illustration in that collection`);
        }
-       assert.ok((await page.getByRole('button', { name: /画卷图鉴/ }).innerText()).includes('74 幅视觉稿'), 'the gallery total should be presented from the current illustration catalogue');
+       // Derive the header total from the rendered collection badges instead of
+       // pinning a literal: every collection above is already asserted against
+       // CANDIDATE_ILLUSTRATIONS, so summing them keeps this check correct when
+       // the catalogue grows without re-introducing a hardcoded count.
+       const catalogueTotal = await page.locator('.atlas-collections button small').evaluateAll(nodes => nodes.reduce((total, node) => total + Number.parseInt(node.textContent || '', 10), 0));
+       assert.ok(Number.isSafeInteger(catalogueTotal) && catalogueTotal > 0, 'the illustration collections should expose a valid catalogue total');
+       assert.equal(catalogueTotal, galleryCollections.reduce((total, [, count]) => total + count, 0), 'the exposed collection badges must agree with the asserted catalogue counts');
+       assert.ok((await page.getByRole('button', { name: /画卷图鉴/ }).innerText()).includes(`${catalogueTotal} 幅视觉稿`), 'the gallery total should be presented from the current illustration catalogue');
        await page.getByRole('searchbox', { name: '搜索画卷图鉴' }).fill('不存在的画面名称');
        await page.getByRole('button', { name: '查看全部画卷' }).click();
        assert.equal(await page.locator('.atlas-card').count(), 7, 'the empty gallery state should offer a direct recovery action');
@@ -698,19 +711,45 @@ async function ready(url) {
       assert.equal(await page.locator('.glass-dialog').isVisible(), false, 'closed settings dialog must not cover the page');
       await page.getByRole('button', { name: '切换到晴昼配色' }).click();
       assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('.role-summary strong')).color), 'rgb(41, 58, 70)');
-      const readVisualContract = () => page.evaluate(() => {
-        const roots = [...document.querySelectorAll('.ai-page, .ai-actionbar, .glass-dialog')];
-        if (!roots.some(root => root.matches('.ai-page'))) throw new Error('Professional AI editor root is missing.');
-        const elements = [...new Set(roots.flatMap(root => [root, ...root.querySelectorAll('*')]))];
-        return elements.map(element => {
-          const style = getComputedStyle(element);
-          const properties = [...style].filter(property => !property.startsWith('--'));
-          return [element.tagName, element.id, element.getAttribute('class') || '', properties.map(property => {
-            const value = style.getPropertyValue(property);
-            return [property, property === 'background-position' && value === '0px 0px' ? '0% 0%' : value];
-          })];
-        });
-      });
+       const readVisualContract = () => page.evaluate(() => {
+         const roots = [...document.querySelectorAll('.ai-page, .ai-actionbar, .glass-dialog')];
+         if (!roots.some(root => root.matches('.ai-page'))) throw new Error('Professional AI editor root is missing.');
+         const elements = [...new Set(roots.flatMap(root => [root, ...root.querySelectorAll('*')]))];
+         let firstHash = 2166136261;
+         let secondHash = 0x9e3779b9;
+         let thirdHash = 0x85ebca6b;
+         let fourthHash = 0xc2b2ae35;
+         let propertyCount = 0;
+         const feed = value => {
+           const text = String(value);
+           for (let index = 0; index < text.length; index += 1) {
+             const code = text.charCodeAt(index);
+             firstHash = Math.imul(firstHash ^ code, 16777619) >>> 0;
+             secondHash = Math.imul(secondHash ^ code, 2246822519) >>> 0;
+             thirdHash = Math.imul(thirdHash ^ code, 3266489917) >>> 0;
+             fourthHash = Math.imul(fourthHash ^ code, 668265263) >>> 0;
+           }
+           firstHash = Math.imul(firstHash ^ 0, 16777619) >>> 0;
+           secondHash = Math.imul(secondHash ^ 0, 2246822519) >>> 0;
+           thirdHash = Math.imul(thirdHash ^ 0, 3266489917) >>> 0;
+           fourthHash = Math.imul(fourthHash ^ 0, 668265263) >>> 0;
+         };
+         for (const element of elements) {
+           feed(element.tagName);
+           feed(element.id);
+           feed(element.getAttribute('class') || '');
+           const style = getComputedStyle(element);
+           const properties = [...style].filter(property => !property.startsWith('--'));
+           for (const property of properties) {
+             const value = style.getPropertyValue(property);
+             feed(property);
+             feed(property === 'background-position' && value === '0px 0px' ? '0% 0%' : value);
+             propertyCount += 1;
+           }
+         }
+         const fingerprint = [firstHash, secondHash, thirdHash, fourthHash].map(hash => hash.toString(16).padStart(8, '0')).join(':');
+         return { elementCount: elements.length, propertyCount, fingerprint };
+       });
       const assertFrozenProfessionalStyles = async () => {
         await page.emulateMedia({ reducedMotion: 'reduce' });
         await page.mouse.move(0, 0);
@@ -908,7 +947,7 @@ async function ready(url) {
       assert.ok(connectionLogText.includes('HTTP 401'));
       assert.equal(connectionLogText.includes('test-secret-not-persisted'), false);
       await page.getByRole('button', { name: '关闭窗口' }).click();
-      assert.ok((await page.locator('body').innerText()).includes('契约 v2'));
+      assert.ok((await page.locator('body').innerText()).includes('契约 v3'));
       await page.getByRole('button', { name: '查看配置与成本' }).nth(2).click();
       assert.equal(await page.locator('.glass-dialog h2').innerText(), '长歌 · 旗舰');
       assert.ok((await page.locator('.preset-role-map').innerText()).includes('claude-opus-5-5'));
@@ -1229,7 +1268,7 @@ async function ready(url) {
         assert.ok(await page.evaluate(()=>JSON.parse(localStorage.getItem('jiuxiao_1_local_saves_v2')).saves.some(save=>JSON.stringify(save).includes('boundary story'))),'the accepted 20 MiB source must persist its parsed archive after reload; original byte backup was separately verified');
         // Remove only this isolated boundary fixture from the authoritative test DB.
         await page.evaluate(()=>new Promise((resolve,reject)=>{
-          const opened=indexedDB.open('jiuxiao-1',2);
+          const opened=indexedDB.open('jiuxiao-1',3);
           opened.onsuccess=()=>{const db=opened.result,tx=db.transaction(['saves','meta'],'readwrite'),store=tx.objectStore('saves'),meta=tx.objectStore('meta');
             const rows=store.getAll();rows.onsuccess=()=>{for(const save of rows.result)if(JSON.stringify(save).includes('boundary story'))store.delete(save.saveId);};
             const revision=meta.get('revision');revision.onsuccess=()=>meta.put({key:'revision',value:revision.result.value+1});

@@ -4,6 +4,7 @@ import { readJson, type CloudSaveRouteAuth } from './saves.js';
 import type { ServerTurnService } from '../services/server-turn.js';
 import { consumeAccountQuota } from '../services/account-rate-limit.js';
 import { SaveSchemaNotReadyError } from '../services/save-storage-contract.js';
+import { serverTurnHttpResponse } from './turn-http.js';
 
 export type ServerTurnRouteDependencies = { service: ServerTurnService; auth: CloudSaveRouteAuth };
 /** Client submits only an intent. Decisions, events, state and visibility stay server-owned. */
@@ -27,16 +28,8 @@ export function mountServerTurnRoutes(app: Hono, { service, auth }: ServerTurnRo
     if (!intent.success) return c.json({ code: 'INVALID_TURN' }, 400);
     try {
       const result = await service.execute(owner, intent.data, value.requestNarrative === true, c.req.raw.signal);
-      switch (result.status) {
-        case 'not_found': return c.json({ code: 'NOT_FOUND' }, 404);
-        case 'client_archive': return c.json({ code: 'CLIENT_ARCHIVE_NOT_AUTHORITATIVE' }, 400);
-        case 'rules_not_ready': return c.json({ code: 'RULES_NOT_READY' }, 503);
-        case 'version_mismatch': return c.json({ code: 'VERSION_MISMATCH' }, 409);
-        case 'idempotency_conflict': return c.json({ code: 'IDEMPOTENCY_CONFLICT' }, 409);
-        case 'clarification_conflict': return c.json({ code: 'CLARIFICATION_CONFLICT' }, 409);
-        case 'revision_conflict': return c.json({ code: 'REVISION_CONFLICT', currentRevision: result.currentRevision }, 409);
-        default: return c.json(result);
-      }
+      const response = serverTurnHttpResponse(result);
+      return c.json(response.body, response.status);
     } catch (error) {
       if (error instanceof SaveSchemaNotReadyError) return c.json({ code: 'SAVE_SCHEMA_NOT_READY' }, 503);
       return c.json({ code: 'TURN_UNAVAILABLE' }, 503);

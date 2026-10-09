@@ -77,6 +77,7 @@ class FakeTransactionClient {
 
     if (normalized.startsWith('SELECT id, revision, schema_version')) {
       rows = [{ id: 'save-1', revision: this.revision, schema_version: this.schemaVersion,
+        canon_artifact_hash: null,
         memory_mode: this.memoryMode, memory_policy_version: this.memoryPolicyVersion, memory_policy: this.memoryPolicy }];
     } else if (normalized.startsWith('SELECT result FROM turn_requests')) {
       rows = this.priorReceipt === null ? [] : [{ result: this.priorReceipt }];
@@ -127,8 +128,8 @@ describe('PostgresNpcMemoryTurnRepository', () => {
     expect(client.statements.some(statement => statement.sql.startsWith('UPDATE game_saves'))).toBe(true);
     expect(client.statements.some(statement => statement.sql.startsWith('INSERT INTO npc_memory_journals'))).toBe(true);
     const outboxInsert = client.statements.find(statement => statement.sql.startsWith('INSERT INTO npc_authorized_observation_outbox'));
-    expect(outboxInsert?.values[9]).toBe('["summary"]');
-    expect(outboxInsert?.values[10]).toBe('{"summary":"旅人已抵达山门。"}');
+    expect(outboxInsert?.values[10]).toBe('["summary"]');
+    expect(outboxInsert?.values[11]).toBe('{"summary":"旅人已抵达山门。"}');
     expect(JSON.stringify(outboxInsert?.values)).not.toContain('destinationId');
     const eventInsert = client.statements.find(statement => statement.sql.startsWith('INSERT INTO turn_events'));
     expect(eventInsert?.sql).toContain('source, rule_version');
@@ -244,8 +245,8 @@ describe('PostgresNpcMemoryTurnRepository', () => {
     });
     expect(result).toMatchObject({ kind: 'committed', save: { schemaVersion: 2, memoryMode: 'continue' } });
     const saveUpdate = client.statements.find(statement => statement.sql.startsWith('UPDATE game_saves'));
-    expect(saveUpdate?.values[8]).toBe('continue');
-    expect(saveUpdate?.values[9]).toBe(JSON.stringify(memoryPolicy));
+    expect(saveUpdate?.values[9]).toBe('continue');
+    expect(saveUpdate?.values[10]).toBe(JSON.stringify(memoryPolicy));
   });
 
   it('fails closed before writes if a transaction tries to change a pinned policy', async () => {
