@@ -30,12 +30,18 @@
  * The semantic-source gate from the server-authoritative branch (PR #64) has
  * landed: `semanticSha256` below is the enforced identity and this digest
  * degrades to a byte diagnostic.
+ *
+ * Option a (co-approved by the authors, 2026-10-09) folds the P4
+ * authorized-cue-recall artifacts into `createP1SaveMemoryPolicy`, so
+ * `memoryPolicyArtifacts` in the semantic inputs moved and `semanticSha256`
+ * was re-signed for that real semantic change. `bundleSha256` still matches:
+ * the reviewed rule sources themselves are byte-identical.
  */
 export const P1_REVIEW_RULE_APPROVAL = Object.freeze({
   scope: 'p1-review-candidate-v1',
   bundleSha256: 'sha256:468a26ad109c64c6cf2a7224b0e895fd7614241e15c5b468842295d91dcddbce',
   pluginSourceSha256: 'sha256:94c57793bfde874469b81c1d97c914ab5591d628631564679f07d7e3aef83735',
-  semanticSha256: 'sha256:bde3e25b591380614aabea49b9e6273a0cac3c39aa20994c3cf5e80baca21193',
+  semanticSha256: 'sha256:5354754c7ff701514e3077173796cc08ef96086b6eb418a482804b041737d1af',
   ruleVersion: 'prologue-v1-candidate-20261005',
   canonVersion: 'prologue-canon-candidate-20261005',
   actionRulesVersion: 'p1-actions-a4b8fbf7e6120840',

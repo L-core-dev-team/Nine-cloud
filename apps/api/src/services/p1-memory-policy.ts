@@ -20,7 +20,41 @@ const visibilityArtifact = Object.freeze({
   forbidden: ['copy-raw-event-payload', 'infer-global-event-visibility', 'model-authored-grant'],
 });
 
+/**
+ * Option a (co-approved by the authors, 2026-10-09): newly created saves pin
+ * the reviewed P4 authorized-cue-recall artifacts so real saves pass the recall
+ * endpoint's fail-closed identity check (NPC_MEMORY_RECALL_POLICY in
+ * npc-memory-recall.ts). The hashes are the SHA-256 of the file bytes of the
+ * reviewed documents packages/domain/src/memory/p4-recall-policy-v1.json and
+ * p4-recall-cues-v1.json. Saves created before this change keep their legacy
+ * identity below; the recall endpoint abstains for them deterministically
+ * instead of backfilling the historical envelope.
+ */
+export const P1_SAVE_RECALL_ARTIFACT_IDENTITY = Object.freeze({
+  retrievalVersion: 'authorized-cue-recall-v1',
+  normalizerVersion: 'NFKC-lowercase-space-v1',
+  policyArtifactHash: 'sha256:a7e096c182da6e5e77f2f5d8ae6fafe84786e8c481ea2b033125aecb8529a70c',
+  cueDictionaryHash: 'sha256:d3dcd20c850741d5095b960488310007a163b03b53cb40aaa60b57dae9031e31',
+} as const);
+
 export function createP1SaveMemoryPolicy(mode: MemoryMode, createdAtRevision = 0, policyVersion = P1_MEMORY_POLICY_VERSION): SaveMemoryPolicy {
+  return {
+    mode,
+    policyVersion,
+    schemaVersion: 1,
+    clockBasis: 'game-minute+npc-grant-sequence-v1',
+    policyArtifactHash: P1_SAVE_RECALL_ARTIFACT_IDENTITY.policyArtifactHash,
+    cueDictionaryHash: P1_SAVE_RECALL_ARTIFACT_IDENTITY.cueDictionaryHash,
+    normalizerVersion: P1_SAVE_RECALL_ARTIFACT_IDENTITY.normalizerVersion,
+    retrievalVersion: P1_SAVE_RECALL_ARTIFACT_IDENTITY.retrievalVersion,
+    visibilityPolicyVersion: P1_MEMORY_VISIBILITY_POLICY_VERSION,
+    visibilityPolicyHash: digest(visibilityArtifact),
+    createdAtRevision,
+  };
+}
+
+/** Exact identity of saves created before the authorized-cue-recall artifacts; never issued again. */
+function legacyP1SaveMemoryPolicy(mode: MemoryMode, policyVersion: string): SaveMemoryPolicy {
   const retrieval = mode === 'continue'
     ? { version: 'continue-v1', algorithm: 'no-retrieval-decay' }
     : {
@@ -50,7 +84,7 @@ export function createP1SaveMemoryPolicy(mode: MemoryMode, createdAtRevision = 0
     retrievalVersion: retrieval.version,
     visibilityPolicyVersion: P1_MEMORY_VISIBILITY_POLICY_VERSION,
     visibilityPolicyHash: digest(visibilityArtifact),
-    createdAtRevision,
+    createdAtRevision: 0,
   };
 }
 
@@ -67,8 +101,13 @@ export function assertP1MemoryPolicyFields(save: Pick<SaveEnvelopeV2 | SaveEnvel
   'memoryMode' | 'memoryPolicyVersion' | 'memoryPolicy'>): MemoryMode {
   if (save.memoryPolicyVersion !== save.memoryPolicy.policyVersion) throw new Error('P1_MEMORY_POLICY_MISMATCH');
   const expected = createP1SaveMemoryPolicy(save.memoryMode, 0, save.memoryPolicyVersion);
-  if (canonicalJson(save.memoryPolicy) !== canonicalJson(expected)) throw new Error('P1_MEMORY_POLICY_MISMATCH');
-  return save.memoryMode;
+  if (canonicalJson(save.memoryPolicy) === canonicalJson(expected)) return save.memoryMode;
+  // Saves created before the authorized-cue-recall artifacts keep their legacy
+  // pinned identity: they still load and play, and the recall endpoint abstains
+  // for them instead of this assertion rewriting the historical envelope.
+  const legacy = legacyP1SaveMemoryPolicy(save.memoryMode, save.memoryPolicyVersion);
+  if (canonicalJson(save.memoryPolicy) === canonicalJson(legacy)) return save.memoryMode;
+  throw new Error('P1_MEMORY_POLICY_MISMATCH');
 }
 
 function digest(value: unknown): `sha256:${string}` {
