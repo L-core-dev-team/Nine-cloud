@@ -1,3 +1,9 @@
+# The Three.js mountain-gate pilot (`apps/scene-studio` + `packages/scene-gate`)
+# stays in the workspace so it can still be built and verified on demand with its
+# explicit `--filter @jiuxiao/scene-*` commands, but it is excluded from every
+# recursive production command (`pnpm -r build` / `-r typecheck` / `-r test`) via
+# the `!@jiuxiao/scene-*` filter in the root scripts. See package.json and
+# `apps/scene-studio/README.md`.
 packages:
   - apps/*
   - packages/*

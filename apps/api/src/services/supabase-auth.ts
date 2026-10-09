@@ -1,6 +1,6 @@
 import { createHmac, randomBytes, randomUUID } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
-import type { AuthSession, EmailAuthService } from './email-auth.js';
+import type { AuthSession, EmailAuthSession, EmailAuthService } from './email-auth.js';
 import { normalizeEmail, hashToken, SESSION_SECONDS } from './email-auth.js';
 import { AuthFailure } from './auth-failure.js';
 
@@ -49,7 +49,7 @@ export class SupabaseAuthService {
     return this.requestOtp('email', email);
   }
 
-  async verify(emailValue: unknown, code: unknown, restore = false): Promise<{ session: AuthSession; token: string } | null> {
+  async verify(emailValue: unknown, code: unknown, restore = false): Promise<{ session: EmailAuthSession; token: string } | null> {
     if (!this.config.enabledEmail) throw new AuthFailure('AUTH_PROVIDER_DISABLED', 'auth_config');
     const email = normalizeEmail(emailValue);
     if (typeof code !== 'string' || !/^\d{6}$/.test(code)) return null;
@@ -70,7 +70,7 @@ export class SupabaseAuthService {
     return this.requestOtp('phone', phone, captchaToken, createUser);
   }
 
-  async verifyPhone(phoneValue: unknown, code: unknown, restore = false): Promise<{ session: AuthSession; token: string } | null> {
+  async verifyPhone(phoneValue: unknown, code: unknown, restore = false): Promise<{ session: EmailAuthSession; token: string } | null> {
     if (!this.phoneEnabled()) throw new AuthFailure('SMS_NOT_ENABLED', 'sms_config');
     const phone = normalizePhone(phoneValue);
     if (typeof code !== 'string' || !/^\d{6}$/.test(code)) return null;
@@ -371,10 +371,10 @@ export class SupabaseAuthService {
     return createHmac('sha256', this.config.identitySecret).update(`${kind}\0${value}`).digest('hex');
   }
 
-  private async openSession(ownerId: string, email: string): Promise<{ session: AuthSession; token: string }> {
+  private async openSession(ownerId: string, email: string): Promise<{ session: EmailAuthSession; token: string }> {
     const token = randomBytes(32).toString('base64url'); const expiresAt = new Date(this.now().getTime() + SESSION_SECONDS * 1000);
     await this.pool.query('INSERT INTO auth_sessions(token_hash,owner_id,expires_at) VALUES($1,$2,$3)', [hashToken(token), ownerId, expiresAt]);
-    return { session: { ownerId, email, expiresAt }, token };
+    return { session: { kind: 'email', ownerId, email, expiresAt }, token };
   }
 }
 

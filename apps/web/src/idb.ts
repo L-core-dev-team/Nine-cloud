@@ -1,10 +1,16 @@
 import type { LocalSave } from './storage';
 
 const DATABASE = 'jiuxiao-1';
-const VERSION = 2;
+const VERSION = 3;
 const STORE = 'saves';
 const META = 'meta';
 const MIRROR_KEY = 'jiuxiao_1_local_saves_v2';
+export const AUTHORITATIVE_SAVE_STORE = 'authoritativeSaves';
+export const TURN_EVENT_STORE = 'turnEvents';
+export const TURN_RECEIPT_STORE = 'turnReceipts';
+export const AUTHORIZED_OBSERVATION_OUTBOX_STORE = 'authorizedObservationOutbox';
+export const TURN_INTEGRITY_STORE = 'turnIntegrity';
+export const TURN_CHECKPOINT_STORE = 'turnCheckpoints';
 
 export type IndexedSaveSnapshot = { saves: LocalSave[]; revision: number; initialized: boolean };
 export type SaveCommitResult =
@@ -12,21 +18,49 @@ export type SaveCommitResult =
   | { ok: false; reason: 'conflict'; saves: LocalSave[]; conflictIds: string[]; revision: number }
   | { ok: false; reason: 'unavailable'; saves: LocalSave[]; conflictIds: []; revision: number };
 
-function openDatabase(): Promise<IDBDatabase> {
+export function openJiuxiaoDatabase(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     if (!('indexedDB' in globalThis)) { reject(new Error('IndexedDB unavailable')); return; }
     const request = indexedDB.open(DATABASE, VERSION);
+    let blocked = false;
     request.onupgradeneeded = () => {
       if (!request.result.objectStoreNames.contains(STORE)) request.result.createObjectStore(STORE, { keyPath: 'saveId' });
       if (!request.result.objectStoreNames.contains(META)) request.result.createObjectStore(META, { keyPath: 'key' });
+      if (!request.result.objectStoreNames.contains(AUTHORITATIVE_SAVE_STORE)) {
+        request.result.createObjectStore(AUTHORITATIVE_SAVE_STORE, { keyPath: 'saveId' });
+      }
+      if (!request.result.objectStoreNames.contains(TURN_EVENT_STORE)) {
+        request.result.createObjectStore(TURN_EVENT_STORE, { keyPath: 'recordKey' })
+          .createIndex('saveId', 'saveId', { unique: false });
+      }
+      if (!request.result.objectStoreNames.contains(TURN_RECEIPT_STORE)) {
+        request.result.createObjectStore(TURN_RECEIPT_STORE, { keyPath: 'recordKey' })
+          .createIndex('saveId', 'saveId', { unique: false });
+      }
+      if (!request.result.objectStoreNames.contains(AUTHORIZED_OBSERVATION_OUTBOX_STORE)) {
+        request.result.createObjectStore(AUTHORIZED_OBSERVATION_OUTBOX_STORE, { keyPath: 'grantId' })
+          .createIndex('saveId', 'saveId', { unique: false });
+      }
+      if (!request.result.objectStoreNames.contains(TURN_INTEGRITY_STORE)) {
+        request.result.createObjectStore(TURN_INTEGRITY_STORE, { keyPath: 'saveId' });
+      }
+      if (!request.result.objectStoreNames.contains(TURN_CHECKPOINT_STORE)) {
+        request.result.createObjectStore(TURN_CHECKPOINT_STORE, { keyPath: 'recordKey' })
+          .createIndex('saveId', 'saveId', { unique: false });
+      }
     };
     request.onsuccess = () => {
       const database = request.result;
+      if (blocked) { database.close(); return; }
       // Let a newer tab upgrade the schema instead of leaving this stale connection blocking it.
       database.onversionchange = () => database.close();
       resolve(database);
     };
     request.onerror = () => reject(request.error ?? new Error('IndexedDB open failed'));
+    request.onblocked = () => {
+      blocked = true;
+      reject(new Error('IndexedDB upgrade is blocked by another open tab'));
+    };
   });
 }
 
@@ -36,7 +70,7 @@ export async function readIndexedSaves(): Promise<LocalSave[]> {
 
 /** Shared draft identity, without changing the merge policy for unrelated saves. */
 export async function claimCharacterDraftId():Promise<string>{
- const database=await openDatabase();
+ const database=await openJiuxiaoDatabase();
  try{return await new Promise<string>((resolve,reject)=>{
   const tx=database.transaction([STORE,META],'readwrite'),meta=tx.objectStore(META),saves=tx.objectStore(STORE);let id='';
   const fresh=()=>{id=crypto.randomUUID();meta.put({key:'characterDraftId',value:id});};
@@ -51,7 +85,7 @@ export async function claimCharacterDraftId():Promise<string>{
 }
 
 export async function readIndexedSnapshot(): Promise<IndexedSaveSnapshot> {
-  const database = await openDatabase();
+  const database = await openJiuxiaoDatabase();
   try {
     return await new Promise((resolve, reject) => {
       const transaction = database.transaction([STORE, META], 'readonly');
@@ -82,7 +116,7 @@ export async function readIndexedSnapshot(): Promise<IndexedSaveSnapshot> {
 }
 
 export async function replaceIndexedSaves(saves: LocalSave[]): Promise<void> {
-  const database = await openDatabase();
+  const database = await openJiuxiaoDatabase();
   try {
     await new Promise<void>((resolve, reject) => {
       const transaction = database.transaction(STORE, 'readwrite');
@@ -98,7 +132,7 @@ export async function replaceIndexedSaves(saves: LocalSave[]): Promise<void> {
 
 /** One-time compatibility import. Once the metadata row exists, IndexedDB is authoritative. */
 export async function initializeIndexedSaves(legacySaves: LocalSave[]): Promise<IndexedSaveSnapshot> {
-  const database = await openDatabase();
+  const database = await openJiuxiaoDatabase();
   try {
     return await new Promise((resolve, reject) => {
       const transaction = database.transaction([STORE, META], 'readwrite');
@@ -159,7 +193,7 @@ export async function commitIndexedSaves(expected: LocalSave[], proposed: LocalS
   const expectedMap = byId(expected);
   const proposedMap = byId(proposed);
   if (!expectedMap || !proposedMap) return { ok: false, reason: 'unavailable', saves: [], conflictIds: [], revision: 0 };
-  const database = await openDatabase();
+  const database = await openJiuxiaoDatabase();
   try {
     return await new Promise((resolve, reject) => {
       const transaction = database.transaction([STORE, META], 'readwrite');

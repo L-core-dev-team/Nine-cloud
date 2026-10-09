@@ -1,4 +1,4 @@
-import type { TurnReceipt, SaveEnvelopeV2 } from '@jiuxiao/contracts';
+import type { TurnReceipt, SaveEnvelopeV2, SaveEnvelopeV3 } from '@jiuxiao/contracts';
 import {
   createNpcMemory,
   retrieveNpcMemories,
@@ -26,7 +26,7 @@ const FORGETTING_MIN_ACCESSIBILITY = 0.35;
 export async function buildNarrativeMemoryContext(input: {
   ownerId: string;
   receipt: TurnReceipt;
-  save: SaveEnvelopeV2;
+  save: SaveEnvelopeV2 | SaveEnvelopeV3;
   readAuthorizedPage?: AuthorizedObservationPageReader;
 }): Promise<NarrativeContext> {
   const { receipt, save, readAuthorizedPage } = input;

@@ -69,7 +69,7 @@ export class AccountLifecycle {
     // Transaction-local proof ID: authorizes the erasure-only delete triggers below
     // (including authorized observations), game data, and ledger erasure; other mutations stay blocked.
     await c.query("SELECT set_config('jiuxiao.account_erasure_operation',$1,true)",[id]);
-    for(const table of ['npc_authorized_observation_outbox','turn_events','turn_requests','npc_memory_journals'])await c.query(`DELETE FROM ${table} t USING game_saves s WHERE t.save_id=s.id AND s.owner_id=$1`,[owner]);
+    for(const table of ['npc_memory_observation_supersessions','npc_authorized_observation_outbox','turn_events','turn_requests','npc_memory_journals'])await c.query(`DELETE FROM ${table} t USING game_saves s WHERE t.save_id=s.id AND s.owner_id=$1`,[owner]);
     await c.query('DELETE FROM cloud_archive_trash WHERE owner_id=$1',[owner]);await c.query('DELETE FROM game_saves WHERE owner_id=$1',[owner]);
     await c.query('DELETE FROM entitlement_ledger_entries WHERE owner_id=$1',[owner]);await c.query('DELETE FROM entitlement_balances WHERE owner_id=$1',[owner]);
    }
@@ -85,20 +85,20 @@ export class AccountLifecycle {
  async expireClosed(apply=false){
   if(!this.policyVersion||!this.policyValid()||!this.deletionEnabled)throw new AccountLifecycleError('DATA_POLICY_NOT_READY');
   const c=await this.pool.connect();try{await c.query('BEGIN');
-   const rows=(await c.query("SELECT id,email FROM auth_accounts WHERE closed_at<=now()-interval '30 days' ORDER BY id LIMIT $1 FOR UPDATE SKIP LOCKED",[this.beforeDelete?1:100])).rows;
+   const rows=(await c.query("SELECT id,email,is_guest FROM auth_accounts WHERE closed_at<=now()-interval '30 days' OR (is_guest=true AND closed_at IS NULL AND last_seen_at<=now()-interval '90 days') ORDER BY id LIMIT $1 FOR UPDATE SKIP LOCKED",[this.beforeDelete?1:100])).rows;
    if(apply)for(const account of rows){
     const owner=account.id,id=randomUUID();
     await this.beforeDelete?.(c,owner);
     await c.query("INSERT INTO account_operations(id,owner_id,session_hash,operation,old_email,phase,expires_at) VALUES($1,$2,'scheduled-expiry','delete',NULL,'ready',now()+interval '1 minute')",[id,owner]);
     await c.query("SELECT set_config('jiuxiao.account_erasure_operation',$1,true)",[id]);
-    for(const table of ['npc_authorized_observation_outbox','turn_events','turn_requests','npc_memory_journals'])await c.query(`DELETE FROM ${table} t USING game_saves s WHERE t.save_id=s.id AND s.owner_id=$1`,[owner]);
+    for(const table of ['npc_memory_observation_supersessions','npc_authorized_observation_outbox','turn_events','turn_requests','npc_memory_journals'])await c.query(`DELETE FROM ${table} t USING game_saves s WHERE t.save_id=s.id AND s.owner_id=$1`,[owner]);
     for(const table of ['cloud_archive_trash','game_saves','entitlement_ledger_entries','entitlement_balances'])await c.query(`DELETE FROM ${table} WHERE owner_id=$1`,[owner]);
     await c.query('DELETE FROM auth_challenges WHERE email=$1',[account.email]);
     await c.query("INSERT INTO account_lifecycle_audit(id,owner_digest,operation,policy_version) VALUES($1,$2,'expired_erasure',$3)",[randomUUID(),createHash('sha256').update(owner).digest('hex'),this.policyVersion]);
     await c.query('DELETE FROM auth_accounts WHERE id=$1',[owner]);
    }
    if(apply){await c.query("UPDATE account_operations SET old_email=NULL,new_email=NULL,digest=NULL WHERE phase IN ('completed','cancelled','failed') OR expires_at<=now()");await c.query('DELETE FROM account_rate_limits WHERE expires_at<=now()');}
-   await c.query(apply?'COMMIT':'ROLLBACK');return {mode:apply?'applied':'dry_run',eligible:rows.length,erased:apply?rows.length:0,backups:'HOST_POLICY_PENDING'};
+   await c.query(apply?'COMMIT':'ROLLBACK');return {mode:apply?'applied':'dry_run',eligible:rows.length,eligibleGuests:rows.filter(row=>row.is_guest===true).length,erased:apply?rows.length:0,backups:'HOST_POLICY_PENDING'};
   }catch(e){await c.query('ROLLBACK');throw e;}finally{c.release();}
  }
 

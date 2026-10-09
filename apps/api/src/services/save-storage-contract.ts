@@ -10,7 +10,7 @@ export class SaveSchemaNotReadyError extends Error {
 
 /** Fail closed for runtime values outside the versioned envelope union. */
 export function requirePersistableSave(save: SaveEnvelope): void {
-  if (save.schemaVersion !== 1 && save.schemaVersion !== 2) throw new SaveSchemaNotReadyError();
+  if (save.schemaVersion !== 1 && save.schemaVersion !== 2 && save.schemaVersion !== 3) throw new SaveSchemaNotReadyError();
 }
 
 /** Untrusted client archives intentionally remain the original v1-only format. */

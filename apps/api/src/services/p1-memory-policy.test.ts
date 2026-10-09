@@ -25,6 +25,9 @@ describe('P1 save memory policy pinning', () => {
   it('reconstructs the selected immutable mode from its complete policy artifact', () => {
     expect(assertP1SaveMemoryPolicy(save('continue'))).toBe('continue');
     expect(assertP1SaveMemoryPolicy(save('forgetting'))).toBe('forgetting');
+    const v2 = save('continue');
+    expect(assertP1SaveMemoryPolicy({ ...v2, schemaVersion: 3, canonArtifactHash: `sha256:${'d'.repeat(64)}`, branchId: 'root', parentBranchId: null,
+      forkRevision: 0, createdPolicyVersion: v2.memoryPolicy.policyVersion, sourceMigrationId: null })).toBe('continue');
   });
 
   it('rejects a mode, algorithm, or artifact hash that diverges from the pinned policy', () => {

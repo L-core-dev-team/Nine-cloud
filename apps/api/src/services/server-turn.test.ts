@@ -119,9 +119,17 @@ describe('server turn orchestration (synthetic rules, never production gameplay)
     });
     const failed = await service.execute('owner', f.intent, true);
     expect(failed).toMatchObject({ status: 'accepted', receipt: { resultingRevision: 1 }, narrative: { status: 'failed', code: 'NARRATIVE_UNAVAILABLE' } });
-    expect(JSON.stringify(failed)).not.toContain('private-provider'); succeed = true;
-    expect(await service.execute('owner', f.intent, true)).toMatchObject({ status: 'accepted', duplicate: true, narrative: { status: 'received' } });
-    expect(f.decide).toHaveBeenCalledTimes(1); expect(f.snapshot().save.revision).toBe(1);
+    expect(JSON.stringify(failed)).not.toContain('private-provider');
+    const committedState = structuredClone(f.snapshot());
+    succeed = true;
+    const retried = await service.execute('owner', f.intent, true);
+    expect(retried).toMatchObject({ status: 'accepted', duplicate: true, narrative: { status: 'received' } });
+    if (retried.status === 'accepted' && failed.status === 'accepted') expect(retried.receipt).toEqual(failed.receipt);
+    expect(f.snapshot()).toEqual(committedState);
+    expect(f.snapshot().save.state.facts.gameMinute).toBe(45);
+    expect(f.snapshot().journal.memories).toHaveLength(1);
+    expect(f.snapshot().journal.memories[0]?.observations).toHaveLength(1);
+    expect(f.decide).toHaveBeenCalledTimes(1);
   });
   it('uses deterministic presentation after a model failure without re-running rules', async () => {
     const f = fixture();
@@ -165,7 +173,7 @@ describe('server turn orchestration (synthetic rules, never production gameplay)
       policyForNpc: () => 'continue-v1',
     };
     const row = (npcId: string): AuthorizedObservationOutboxRecord => ({
-      grantId: `grant-${npcId}`, saveId: save.saveId, branchId: 'root', npcId, eventId,
+      grantId: `grant-${npcId}`, grantIdVersion: 1, saveId: save.saveId, branchId: 'root', npcId, eventId,
       eventRevision: 1, observedAtMinute: 45, channel: 'witnessed',
       authorizationPolicyVersion: 'visibility-v1', authorizedFields: ['summary', 'topicTag', 'outcome'],
       authorizedFacts: { summary: 'topicTag=topic_route;outcome=on_topic', topicTag: 'topic_route', outcome: 'on_topic' },

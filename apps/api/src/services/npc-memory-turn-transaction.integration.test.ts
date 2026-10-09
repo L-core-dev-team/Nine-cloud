@@ -27,13 +27,14 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
   const ownerId = 's4-owner-' + randomUUID();
   const saveId = 's4-save-' + randomUUID();
 
-  function makeTurn(previousJournal: NpcMemoryJournal, expectedRevision: number): {
+  function makeTurn(previousJournal: NpcMemoryJournal, expectedRevision: number, supersedeGrantId?: string): {
     event: DomainEvent;
     save: SaveEnvelope;
     receipt: TurnReceipt;
     previousJournal: NpcMemoryJournal;
     nextJournal: NpcMemoryJournal;
     authorizedObservations: import('@jiuxiao/domain').AuthorizedObservationOutboxRecord[];
+    authorizedSupersessions: import('@jiuxiao/domain').AuthorizedObservationSupersessionRecord[];
   } {
     const nextRevision = expectedRevision + 1;
     const event: DomainEvent = {
@@ -63,7 +64,10 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
         authorizedFields: ['summary'],
         authorizedFacts: { summary: '旅人抵达山门。' },
         visibleSummary: '旅人抵达山门。',
+        memoryClass: 'current-state',
       }],
+      ...(supersedeGrantId ? { supersessionsForEvent: () => [{ npcId: 'npc-s4-test', observationGrantId: supersedeGrantId,
+        kind: 'premise-revised' as const, reason: '规则事件确认当前状态已改变。', policyVersion: 'recall-v1' }] } : {}),
       policyForNpc: () => 'accessibility-v1',
     });
     if (prepared.status !== 'prepared') throw new Error('Expected a prepared NPC journal.');
@@ -95,7 +99,8 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
       decision: { status: 'accepted', outcome: 'success', events: [event], nextRevision },
       resultingRevision: nextRevision,
     };
-    return { event, save, receipt, previousJournal, nextJournal: prepared.journal, authorizedObservations: [...prepared.authorizedObservations] };
+    return { event, save, receipt, previousJournal, nextJournal: prepared.journal,
+      authorizedObservations: [...prepared.authorizedObservations], authorizedSupersessions: [...prepared.authorizedSupersessions] };
   }
 
   beforeAll(async()=>{for(const id of [ownerId])await pool.query('INSERT INTO auth_accounts(id,email) VALUES($1,$2) ON CONFLICT DO NOTHING',[id,id+'@fixture.invalid']);});
@@ -137,7 +142,7 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
     expect(await repository.getForOwner(ownerId, saveId)).toEqual(firstResult.journal);
     expect(await repository.getForOwner('another-owner', saveId)).toBeNull();
     const observations = await repository.getAuthorizedObservationPage(ownerId, saveId, 'npc-s4-test', undefined, 1);
-    expect(observations.items).toMatchObject([{ eventId: firstInput.event.id, authorizedFacts: { summary: '旅人抵达山门。' } }]);
+    expect(observations.items).toMatchObject([{ grantIdVersion: 2, eventId: firstInput.event.id, memoryClass: 'current-state', authorizedFacts: { summary: '旅人抵达山门。' } }]);
     expect(observations.nextCursor).toBeNull();
     expect(await repository.getAuthorizedObservationPage('another-owner', saveId, 'npc-s4-test')).toMatchObject({ items: [], nextCursor: null });
 
@@ -161,7 +166,7 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
 
     // Use the exact in-memory journal returned by the first commit. PostgreSQL jsonb
     // may reorder object keys when read back, so persisted equality must be structural.
-    const secondInput = makeTurn(firstResult.journal, 1);
+    const secondInput = makeTurn(firstResult.journal, 1, firstInput.authorizedObservations[0]!.grantId);
     await pool.query(
       'CREATE FUNCTION jiuxiao_test_reject_memory_write() RETURNS trigger LANGUAGE plpgsql ' +
       'AS $$ BEGIN IF NEW.save_id = TG_ARGV[0] THEN RAISE EXCEPTION \'forced journal failure\'; END IF; RETURN NEW; END; $$',
@@ -203,6 +208,14 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
       eventRevision: 1, grantId: firstInput.authorizedObservations[0]!.grantId,
     });
     expect(secondPage.items.map(item => item.eventId)).toEqual([secondInput.event.id]);
+
+    const firstRevisionPage = await repository.getAuthorizedObservationPage(ownerId, saveId, 'npc-s4-test', undefined, 10, 1);
+    expect(firstRevisionPage.items).toMatchObject([{ eventId: firstInput.event.id, supersessions: [] }]);
+    const secondRevisionPage = await repository.getAuthorizedObservationPage(ownerId, saveId, 'npc-s4-test', undefined, 10, 2);
+    expect(secondRevisionPage.items).toMatchObject([
+      { eventId: firstInput.event.id, supersessions: [{ supersededAtRevision: 2, supersededByEventId: secondInput.event.id }] },
+      { eventId: secondInput.event.id, supersessions: [] },
+    ]);
 
     const replay = await repository.commitAcceptedTurn({
       ownerId, expectedRevision: 1, ...secondInput, events: [secondInput.event],

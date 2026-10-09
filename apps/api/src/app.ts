@@ -50,7 +50,7 @@ export function createApp(database?: ReadinessDatabase, cloudSaves?: {
   // resolver. The production entry point supplies it only when auth is enabled.
   if (cloudSaves) mountCloudSaveRoutes(app, cloudSaves);
   if (turns) mountServerTurnRoutes(app, turns);
-  if (turns?.games) mountGames(app,turns.games,turns.auth);
+  if (turns?.games) mountGames(app,turns.games,turns.auth,turns.service);
 
   app.notFound(c => c.json({ code: 'NOT_FOUND', message: '接口不存在。' }, 404));
   return app;

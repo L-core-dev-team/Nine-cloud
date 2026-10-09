@@ -121,7 +121,7 @@ function createWorkerApp(pool: Pool, env: WorkerRuntimeEnv): Hono {
     }
   };
 
-  const sessions = new EmailAuthService(new PostgresEmailAuthRepository(pool), sendLifecycleMail, secret);
+  const sessions = new EmailAuthService(new PostgresEmailAuthRepository(pool, secret), sendLifecycleMail, secret);
   const dataPolicy = readWorkerPolicy(env.ACCOUNT_DATA_POLICY_JSON);
   const policyValid = () => {
     try { assertDataPolicy(dataPolicy); return true; }

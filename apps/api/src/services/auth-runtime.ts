@@ -86,7 +86,7 @@ export function createEmailAuthRuntime(pool: Pool, env: NodeJS.ProcessEnv) {
       throw failure;
     }
   };
-  const service = new EmailAuthService(new PostgresEmailAuthRepository(pool), async (email, code) => {
+  const service = new EmailAuthService(new PostgresEmailAuthRepository(pool, secret), async (email, code) => {
     await send(email,'九霄登录验证码',`登录验证码：${code}\n10 分钟内有效。若非本人操作，请忽略。`);
   }, secret);
   let supabaseAuth: SupabaseAuthService | undefined;

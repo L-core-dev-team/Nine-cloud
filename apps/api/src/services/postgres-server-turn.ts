@@ -11,7 +11,7 @@ export function createPostgresServerTurnRepository(pool: Pool, requiresLiveAccou
     const p=policy();assertDataPolicy(p);
     const current=(await c.query('SELECT count(*)::int AS count,coalesce(sum(octet_length(snapshot::text)+coalesce(octet_length(memory_policy::text),0)),0)::text AS bytes FROM game_saves WHERE owner_id=$1',[commit.ownerId])).rows[0];
     const before=(await c.query('SELECT octet_length(snapshot::text)+coalesce(octet_length(memory_policy::text),0) AS bytes FROM game_saves WHERE id=$1 AND owner_id=$2',[commit.save.saveId,commit.ownerId])).rows[0];
-    const memoryPolicyJson=commit.save.schemaVersion===2?JSON.stringify(commit.save.memoryPolicy):null;
+    const memoryPolicyJson=commit.save.schemaVersion===1?null:JSON.stringify(commit.save.memoryPolicy);
     const next=Number((await c.query('SELECT octet_length($1::jsonb::text)+coalesce(octet_length($2::jsonb::text),0) AS bytes',[JSON.stringify(commit.save.state),memoryPolicyJson])).rows[0].bytes);
     checkQuota(p,{count:current.count,bytes:Number(current.bytes)},next,Number(before.bytes));
   }:undefined);

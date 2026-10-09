@@ -23,6 +23,11 @@ function v2Envelope() {
     memoryMode: memoryPolicy.mode, memoryPolicy };
 }
 
+function v3Envelope() {
+  return { ...v2Envelope(), schemaVersion: 3 as const, canonArtifactHash: `sha256:${'d'.repeat(64)}`, branchId: 'root', parentBranchId: null,
+    forkRevision: 0, createdPolicyVersion: 'continue-v1', sourceMigrationId: null };
+}
+
 class MemoryRepository implements CloudSaveRepository {
   private records = new Map<string, { owner: string; save: SaveEnvelope }>();
   async listForOwner(owner: string) { return [...this.records.values()].filter(row => row.owner === owner).map(row => row.save); }
@@ -36,10 +41,17 @@ class MemoryRepository implements CloudSaveRepository {
     if (!row || row.owner !== input.ownerId) return { kind: 'not_found' as const };
     if (row.save.revision !== input.expectedRevision) return { kind: 'conflict' as const, currentRevision: row.save.revision };
     if (row.save.schemaVersion !== input.next.schemaVersion) return { kind: 'schema_version_conflict' as const };
-    if (row.save.schemaVersion === 2 && input.next.schemaVersion === 2 && (
+    if ((row.save.schemaVersion === 2 || row.save.schemaVersion === 3) && (input.next.schemaVersion === 2 || input.next.schemaVersion === 3) && (
       row.save.memoryMode !== input.next.memoryMode || row.save.memoryPolicyVersion !== input.next.memoryPolicyVersion ||
       !isDeepStrictEqual(row.save.memoryPolicy, input.next.memoryPolicy)
     )) return { kind: 'memory_policy_pinned' as const };
+    if (row.save.schemaVersion === 3 && input.next.schemaVersion === 3 && (
+      row.save.branchId !== input.next.branchId || row.save.parentBranchId !== input.next.parentBranchId ||
+      row.save.forkRevision !== input.next.forkRevision || row.save.createdPolicyVersion !== input.next.createdPolicyVersion ||
+      row.save.sourceMigrationId !== input.next.sourceMigrationId
+    )) return { kind: 'lineage_pinned' as const };
+    if (row.save.schemaVersion === 3 && input.next.schemaVersion === 3
+      && row.save.canonArtifactHash !== input.next.canonArtifactHash) return { kind: 'canon_artifact_pinned' as const };
     this.records.set(input.saveId, { owner: input.ownerId, save: input.next }); return { kind: 'updated' as const };
   }
 }
@@ -116,5 +128,26 @@ describe('authenticated cloud save routes', () => {
       body: JSON.stringify({ expectedRevision: 0, save: downgrade }) });
     expect(downgradeResponse.status).toBe(409);
     expect(await downgradeResponse.json()).toMatchObject({ code: 'SAVE_SCHEMA_VERSION_IMMUTABLE' });
+  });
+
+  it('persists explicit v3 lineage and rejects lineage mutation', async () => {
+    const { app } = setup();
+    const initial = v3Envelope();
+    const response = await app.request('/api/saves', { method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ save: initial }) });
+    expect(response.status).toBe(201);
+    expect(await (await app.request('/api/saves/route-save')).json()).toMatchObject({
+      save: { schemaVersion: 3, branchId: 'root', parentBranchId: null, forkRevision: 0, sourceMigrationId: null },
+    });
+    const changed = { ...initial, revision: 1, branchId: 'branch-2', parentBranchId: 'root' };
+    const update = await app.request('/api/saves/route-save', { method: 'PUT', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ expectedRevision: 0, save: changed }) });
+    expect(update.status).toBe(409);
+    expect(await update.json()).toMatchObject({ code: 'SAVE_LINEAGE_IMMUTABLE' });
+    const changedArtifact = { ...initial, revision: 1, canonArtifactHash: `sha256:${'e'.repeat(64)}` };
+    const artifactUpdate = await app.request('/api/saves/route-save', { method: 'PUT', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ expectedRevision: 0, save: changedArtifact }) });
+    expect(artifactUpdate.status).toBe(409);
+    expect(await artifactUpdate.json()).toMatchObject({ code: 'SAVE_CANON_ARTIFACT_PINNED' });
   });
 });

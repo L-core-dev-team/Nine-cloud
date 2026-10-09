@@ -7,7 +7,7 @@ describe('model-specific sampling compatibility', () => {
     expect(filterSamplingParameters('gpt-6.1-sol', { temperature: 0.7, topP: 0.9, topK: 32 })).toEqual({ temperature: 0.7, topP: 0.9, topK: 32 });
   });
 
-  it.each(['claude-opus-5-5', 'claude-sonnet-5', 'gemini-3.8-flash'])(
+  it.each(['claude-opus-5-5', 'claude-sonnet-5', 'claude-sonnet-5-5', 'gemini-3.8-flash'])(
     'omits non-default sampling fields for documented restricted model %s', model => {
       expect(modelSamplingPolicy(model).supported).toEqual({ temperature: false, topP: false, topK: false });
       expect(filterSamplingParameters(model, { temperature: 0.72, topP: 0.9, topK: 32 })).toEqual({});

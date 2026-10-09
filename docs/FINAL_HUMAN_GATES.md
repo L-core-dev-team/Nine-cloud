@@ -19,17 +19,17 @@ CI 产物中的本文件会自动填入以下信息；源码模板中的占位�
 
 作者对交付工作区中的规则与记忆语义决定已签署；不再把同一决定列为待签，也不要求重复签字。LYL 于 2026-10-03 更正九境顺序为“炼体→炼气→筑基→结丹→元婴→化神→合体→大乘→渡劫”。G-03 规则表和 G-04b 语义规范是已签材料的镜像，具体值与边界以签署版本为准。
 
-当前工程门禁仍未开放：`AUTHOR_RULES_GATE=BLOCKED_BY_OWNER`，规则版本为空；API 不导入规则模块，符合契约的 `POST /api/turns` 仍返回 `503 RULES_NOT_READY`。PR #45 已合并并通过其 head CI，但 reducer 使用合成规则夹具，尚未接入与签署规则/Canon 匹配的生产运行时。签署是已完成的决定证据，不等于规则已部署或回合已验收。
+当前工程门禁仍未开放：作者规则决定已签（`AUTHOR_RULES_GATE.status` 已为 `APPROVED_BY_OWNER`），但运行时尚未装载任何受信任的规则模块，`POST /api/turns` 仍返回 `503 RULES_NOT_READY`。PR #45 已合并并通过其 head CI，但 reducer 使用合成规则夹具，尚未接入与签署规则/活动 Canon 匹配的生产运行时。签署是已完成的决定证据，不等于规则已部署或回合已验收。
 
 部署负责人依 `deployment/README.md` 配置受信任的只读规则模块及版本绑定。不得仅靠环境变量启用；必须保持签署规则版本与运行模块一致，并由现有门禁 fail closed。
 
-本轮候选的新观察 outbox 已在一次性 PostgreSQL 隔离库完成迁移和 API 集成验证（10 文件/34 测试，覆盖原子提交、所有权隔离、分页、不可变和账号擦除）。这只证明当前代码路径的工程测试；P4 检索/唤回消费者与权威长局语义验收仍未完成。
+本地未提交候选的新观察 outbox 与 P4 cue 检索/唤回消费者已在一次性 PostgreSQL 隔离库完成迁移和 API 集成验证（10 文件/36 测试，覆盖原子提交、所有权隔离、分页、不可变、账号擦除与检索消费者）。这只证明本地候选代码路径的工程测试；没有同 SHA GitHub CI、权威生产规则运行或长局真人验收。G-03 未解锁前，生产玩家回合仍不可结算。
 
 操作：在批准的候选环境中创建权威新局，按 G-03 已签规则覆盖适用行动及拒绝/合法失败；核对回执、事件、投影、回放、幂等、崩溃恢复。再按 G-04b 用权威事件覆盖授权观察、跨角色/存档隔离、supersession、唤回与遗忘，并验证叙事不能改权威状态或记忆。验收结果绑定同一候选 SHA、规则版本及 Canon 摘要，写回唯一缺口清单。当前门禁关闭期间不得结算。
 
 ## G-04a：既有签署证据与当前发布器绑定
 
-作者已签的 39 条决定（34 `confirmed`、5 `deprecated`）和原摘要留在 `docs/acceptance/2026-10-04/P1-author-signed-evidence/`；不要求重签相同决定。当前工作树的 `packages/content/src/canon-receipts.json` 是 34 条 `confirmed` 内容的摘要骨架，`reviews` 故意为空。该格式尚未承接既有签署材料，因此当前发布器仍报告 `receiptsComplete=false` 并以 `CANON_RECEIPTS_PENDING` fail closed。内容相同的证据不能自动冒充新格式回执；不得伪造 reviewer 行或改 Canon 凑摘要。
+作者已签的 39 条决定（34 `confirmed`、5 `deprecated`）和原摘要留在 `docs/acceptance/2026-10-04/P1-author-signed-evidence/`；不要求重签相同决定。本地候选已新增机器绑定校验器，但它比对签署材料和当前 registry 的精确字节摘要时发现不一致并拒绝。`packages/content/src/canon-receipts.json` 的 34 条 confirmed 骨架 `reviews` 仍为空，发布器仍报告 `receiptsComplete=false` 并以 `CANON_RECEIPTS_PENDING` fail closed。不得伪造 reviewer 行或改 Canon 凑摘要。
 
 关闭步骤：为既有签署材料与当前发布器建立可复核的机器绑定；逐条核对当前 `sha256(entry.content)` 与签署对象中的 Canon 条目、ID 集合及活动范围，并保留两位作者各自的真实授权依据。只有原签署不能证明拟发布内容时，才需要针对发生变化的范围补签。测试必须证明 ID 缺失/重复、内容摘要不符、reviewer 缺失/重复或未经批准的 intake 都拒绝发布。保持 `receiptsComplete=false` 直到证明成立。
 

@@ -1,13 +1,18 @@
 import { createHash, createHmac, randomBytes, randomInt } from 'node:crypto';
 import { AuthFailure } from './auth-failure.js';
 
-export type AuthSession = { ownerId: string; email: string; expiresAt: Date };
+export type EmailAuthSession = { kind: 'email'; ownerId: string; email: string; expiresAt: Date };
+export type GuestAuthSession = { kind: 'guest'; ownerId: string; expiresAt: Date };
+export type AuthSession = EmailAuthSession | GuestAuthSession;
+export type GuestUpgradeResult = { status: 'upgraded'; session: EmailAuthSession } | { status: 'invalid_code' | 'unavailable' };
 export interface EmailAuthRepository {
   issue(email: string, digest: string, now: Date, expiresAt: Date): Promise<boolean>;
   issueIpLimit(ip: string, now: Date): Promise<boolean>;
   refundIssue(email: string, ip: string | null, now: Date): Promise<void>;
   invalidate(email: string, digest: string): Promise<void>;
-  consume(email: string, digest: string, tokenHash: string, now: Date, expiresAt: Date, restore?: boolean): Promise<AuthSession | null>;
+  consume(email: string, digest: string, tokenHash: string, now: Date, expiresAt: Date, restore?: boolean): Promise<EmailAuthSession | null>;
+  createGuest(tokenHash: string, now: Date, expiresAt: Date, clientIp: string): Promise<GuestAuthSession | null>;
+  upgradeGuest(ownerId: string, tokenHash: string, email: string, digest: string, now: Date): Promise<GuestUpgradeResult>;
   resolve(tokenHash: string, now: Date): Promise<AuthSession | null>;
   rotate(tokenHash: string, nextHash: string, now: Date, expiresAt: Date): Promise<AuthSession | null>;
   revoke(tokenHash: string): Promise<void>;
@@ -38,15 +43,35 @@ export class EmailAuthService {
     }
     return 'sent';
   }
-  async verify(emailValue: unknown, code: unknown, restore=false): Promise<{ session: AuthSession; token: string } | null> {
+  async verify(emailValue: unknown, code: unknown, restore=false): Promise<{ session: EmailAuthSession; token: string } | null> {
     const email = normalizeEmail(emailValue);
     if (typeof code !== 'string' || !/^\d{6}$/.test(code)) return null;
     const now = this.now(); const token = randomBytes(32).toString('base64url');
-    let session: AuthSession | null;
+    let session: EmailAuthSession | null;
     try { session = await this.repository.consume(email, this.codeDigest(email, code), hashToken(token), now,
       new Date(now.getTime() + SESSION_SECONDS * 1000),restore); }
     catch { throw new AuthFailure('VERIFICATION_STORE_FAILED','verification_store'); }
     return session ? { session, token } : null;
+  }
+  async createGuest(clientIp: string): Promise<{ session: GuestAuthSession; token: string } | null> {
+    const now = this.now(); const token = randomBytes(32).toString('base64url');
+    try {
+      const session = await this.repository.createGuest(hashToken(token), now,
+        new Date(now.getTime() + SESSION_SECONDS * 1000), clientIp);
+      return session ? { session, token } : null;
+    } catch { throw new AuthFailure('GUEST_STORE_FAILED', 'verification_store'); }
+  }
+  async upgradeGuest(ownerId: string, tokenValue: string | null, emailValue: unknown, code: unknown, confirmation: unknown): Promise<GuestUpgradeResult> {
+    if (!ownerId || !validToken(tokenValue) || confirmation !== 'UPGRADE_GUEST_TO_EMAIL' || typeof code !== 'string' || !/^\d{6}$/.test(code)) {
+      return { status: 'unavailable' };
+    }
+    const email = normalizeEmail(emailValue); const now = this.now();
+    try {
+      return await this.repository.upgradeGuest(ownerId, hashToken(tokenValue), email, this.codeDigest(email, code), now);
+    } catch (error) {
+      if (error instanceof AuthFailure) throw error;
+      throw new AuthFailure('UPGRADE_STORE_FAILED', 'verification_store');
+    }
   }
   async resolve(token: string | null): Promise<AuthSession | null> {
     return validToken(token) ? this.repository.resolve(hashToken(token), this.now()) : null;

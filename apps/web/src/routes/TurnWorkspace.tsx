@@ -1,10 +1,11 @@
 import { pageNarrator } from '../page-narrative';
 import { useEffect, useRef, useState } from 'react';
-import { SaveEnvelopeSchema, StateDeltaSchema, type SaveEnvelope,type ActionIntent } from '@jiuxiao/contracts';
+import { SaveEnvelopeSchema, type SaveEnvelope,type ActionIntent } from '@jiuxiao/contracts';
 import { cloudRequest, CloudHttpError } from '../cloud-sync';
 import { IndexedTurnStore, TurnClient, type PendingTurn } from '../turn-client';
 import {createAuthoritativeGame} from '../game-creation';
 import {buildActionDraft} from '../action-draft';
+import { projectReceiptEvents } from '../receipt-event-view';
 
 const client = new TurnClient(new IndexedTurnStore());
 type EditableActionSuggestion = { id: string; kind: 'move'|'observe'|'talk'|'use_item'|'combat'; label: string; text: string };
@@ -19,7 +20,7 @@ export function TurnWorkspace({ onBack, onLogin }: { onBack: () => void; onLogin
   const [newName,setNewName]=useState('');const [newGoal,setNewGoal]=useState('');
   const [kind,setKind]=useState<ActionIntent['kind']>('free_text');const [target,setTarget]=useState('');const [secondary,setSecondary]=useState('');const [amount,setAmount]=useState(1);
   const current = saves.find(save => save.saveId === selected);
-  const changes = pending?.receipt?.decision.status === 'accepted' ? pending.receipt.decision.events.map(event => StateDeltaSchema.safeParse(event.payload.stateDelta)).filter(result => result.success).map(result => result.data) : [];
+  const changes = projectReceiptEvents(pending?.receipt);
   useEffect(() => { let active = true; alive.current = true; void (async () => {
     try {
       const session = await cloudRequest('/api/auth/session'); const account = session.account as { id?: unknown };
@@ -100,7 +101,7 @@ export function TurnWorkspace({ onBack, onLogin }: { onBack: () => void; onLogin
     <p role="status" aria-live="polite">{message}</p>
     {pending?.receipt?.decision.status === 'rejected' && <p>行动未通过：{pending.receipt.decision.message}</p>}
     {pending?.receipt?.decision.status === 'clarify' && <p>需要补充：{pending.receipt.decision.question}</p>}
-    {changes.length > 0 && <section aria-label="结算变化"><h2>结算变化</h2>{changes.map((delta,index) => <div key={index}><p>时间推进：{delta.timeChange} 分钟</p>{delta.locationChange && <p>地点：{delta.locationChange.before} → {delta.locationChange.after}</p>}{delta.factChanges.map(change => <p key={change.key}>{change.key}：{change.before.present ? JSON.stringify(change.before.value) : '无'} → {change.after.present ? JSON.stringify(change.after.value) : '移除'}</p>)}</div>)}</section>}
+    {changes.length > 0 && <section aria-label="结算变化"><h2>结算变化</h2>{changes.map(change => <article key={change.eventId} data-event-id={change.eventId} data-state-revision={change.stateRevision}><p>事件 {change.eventId} · 状态修订 {change.stateRevision}</p>{change.delta ? <><p>时间推进：{change.delta.timeChange} 分钟</p>{change.delta.locationChange && <p>地点：{change.delta.locationChange.before} → {change.delta.locationChange.after}</p>}{change.delta.factChanges.map(fact => <p key={fact.key}>{fact.key}：{fact.before.present ? JSON.stringify(fact.before.value) : '无'} → {fact.after.present ? JSON.stringify(fact.after.value) : '移除'}</p>)}</> : <p>此事件没有可展示的结构化状态差异。</p>}</article>)}</section>}
     {pending && <p>请求：{pending.intent.idempotencyKey} · {pending.phase === 'confirmed' ? '回执已确认' : '待核对，尚不能判断是否结算'}</p>}
     {narrative && <article className="story-message narration"><p>{narrative}</p></article>}
   </section>;

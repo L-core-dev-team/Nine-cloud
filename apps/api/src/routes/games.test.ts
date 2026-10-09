@@ -1,4 +1,5 @@
 import {Hono} from 'hono';
+import {randomUUID} from 'node:crypto';
 import {it,expect,vi} from 'vitest';
 import {mountGames} from './games.js';
 import {AuthoritativeGameService} from '../services/authoritative-game.js';
@@ -23,4 +24,18 @@ it('reports the shared cloud quota error as a capacity response',async()=>{
  const response=await app.request('/api/games',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({idempotencyKey:'request-key',choices:{name:'test'}})});
  expect(response.status).toBe(413);
  expect(await response.json()).toEqual({code:'CAPACITY_EXCEEDED'});
+});
+it('loads owner-scoped server saves and sends natural language through the shared turn transaction',async()=>{
+ const save={schemaVersion:3 as const,saveId:'game-owned',ruleVersion:'approved-rules',canonVersion:'approved-canon',canonArtifactHash:`sha256:${'a'.repeat(64)}` as const,memoryPolicyVersion:'policy-v1',memoryMode:'forgetting' as const,memoryPolicy:{mode:'forgetting' as const,policyVersion:'policy-v1',visibilityPolicyVersion:'visibility-v1',memoryEventSchemaVersion:1 as const,retrieval:{version:'forgetting-v1',algorithm:'game-time-and-npc-observed-event-half-life',halfLifeGameMinutes:10080},memoryKinds:{currentState:{supersession:'latest-per-subject'},historicalEvent:{retention:'immutable'},subjectiveBelief:{retention:'immutable'}}},branchId:'root' as const,parentBranchId:null,forkRevision:0,createdPolicyVersion:'policy-v1',sourceMigrationId:null,revision:4,state:{playerId:'server-player',locationId:'loc_ferry',elapsedMinutes:0,facts:{gameMinute:300}}};
+ const games={read:vi.fn(async(owner:string,id:string)=>owner==='owner'&&id===save.saveId?{status:'ready' as const,save}:{status:'not_found' as const})} as unknown as AuthoritativeGameService;
+ const execute=vi.fn(async()=>({status:'rules_not_ready' as const}));
+ const app=new Hono();mountGames(app,games,{resolveOwnerId:async()=> 'owner'},{execute} as unknown as import('../services/server-turn.js').ServerTurnService);
+ const headers={'content-type':'application/json'};
+ const loaded=await app.request('/api/games/game-owned');expect(loaded.status).toBe(200);expect((await loaded.json()).save).toEqual(save);
+ const idempotencyKey=randomUUID();
+ const response=await app.request('/api/games/game-owned/turns',{method:'POST',headers,body:JSON.stringify({text:'观察渡船',expectedRevision:4,idempotencyKey})});
+ expect(response.status).toBe(503);expect(await response.json()).toEqual({code:'RULES_NOT_READY'});
+ expect(execute).toHaveBeenCalledWith('owner',expect.objectContaining({kind:'free_text',saveId:'game-owned',actorId:'server-player',branchId:'root',expectedRevision:4,idempotencyKey,payload:{text:'观察渡船'}}),true,expect.any(AbortSignal));
+ const forged=await app.request('/api/games/game-owned/turns',{method:'POST',headers,body:JSON.stringify({text:'观察渡船',expectedRevision:4,idempotencyKey:randomUUID(),actorId:'client-player'})});
+ expect(forged.status).toBe(400);expect(execute).toHaveBeenCalledTimes(1);
 });

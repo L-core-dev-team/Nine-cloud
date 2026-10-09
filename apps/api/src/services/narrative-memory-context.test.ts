@@ -48,6 +48,7 @@ function observation(index: number, topicTag: string, npcId = 'npc_cenjiu'): Aut
   const summary = `topicTag=${topicTag};outcome=${topicTag === 'obstacle_rockslide' ? 'refuse' : 'idle'}`;
   return {
     grantId: `grant-${String(index).padStart(3, '0')}`,
+    grantIdVersion: 1,
     saveId: 'p1-memory-context',
     branchId: 'root',
     npcId,

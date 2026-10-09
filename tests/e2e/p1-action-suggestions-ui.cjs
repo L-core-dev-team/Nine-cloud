@@ -2,6 +2,7 @@
 // Browser integration check for the authenticated gameplay affordance.
 // The viewport is emulated; this is not physical-device evidence.
 const assert = require('node:assert/strict');
+const { createHash } = require('node:crypto');
 const { spawn } = require('node:child_process');
 const { once } = require('node:events');
 const { existsSync } = require('node:fs');
@@ -91,6 +92,30 @@ function mockSave() {
       body: JSON.stringify({ revision: 0, actions: [
         { id: 'move:loc_wangqitai', kind: 'move', label: '前往望气台', text: '去望气台' },
       ] }) }));
+    let committed = false;
+    await page.route('**/api/saves/save-ui-p1', route => route.fulfill({ status: 200, contentType: 'application/json',
+      body: JSON.stringify({ save: committed ? { ...save, revision: 1, state: { ...save.state, elapsedMinutes: 15,
+        facts: { ...save.state.facts, gameMinute: 315 } } } : save }) }));
+    await page.route('**/api/turns', async route => {
+      const request = route.request().postDataJSON();
+      const intent = request.intent;
+      const eventId = '11111111-1111-4111-8111-111111111111';
+      const receipt = {
+        idempotencyKey: intent.idempotencyKey,
+        saveId: intent.saveId,
+        requestFingerprint: `sha256:v1:${createHash('sha256').update(canonical(intent)).digest('hex')}`,
+        branchId: 'root', rulesVersion: save.ruleVersion, clockMinute: 315,
+        rng: { seed: null, draws: 0 },
+        decision: { status: 'accepted', outcome: 'success', nextRevision: 1, events: [{
+          id: eventId, saveId: save.saveId, branchId: 'root', type: 'PLAYER_MOVED', beforeRevision: 0, afterRevision: 1,
+          occurredAt: '2026-10-05T12:00:00.000Z', source: 'RULES', ruleVersion: save.ruleVersion,
+          payload: { stateDelta: { timeChange: 15, locationChange: { before: 'loc_luhuadu', after: 'loc_wangqitai' }, factChanges: [] } },
+        }] },
+        resultingRevision: 1,
+      };
+      committed = true;
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ receipt }) });
+    });
 
     await page.goto(`${origin}/turns`, { waitUntil: 'domcontentloaded' });
     const savePicker = page.locator('select').first();
@@ -103,7 +128,12 @@ function mockSave() {
     await suggestion.click();
     assert.equal(await page.locator('select').nth(1).inputValue(), 'free_text');
     assert.equal(await page.getByRole('textbox', { name: '行动意图' }).inputValue(), '去望气台');
-    console.log(`P1 action suggestion UI passed at emulated 390x844: visible in ${visibleMs} ms; selected suggestion remained editable free text.`);
+    await page.getByRole('button', { name: '提交行动' }).click();
+    const eventView = page.locator('[data-event-id="11111111-1111-4111-8111-111111111111"][data-state-revision="1"]');
+    await eventView.waitFor({ state: 'visible', timeout: 3_000 });
+    assert.match(await eventView.innerText(), /状态修订 1/);
+    assert.match(await eventView.innerText(), /地点：loc_luhuadu → loc_wangqitai/);
+    console.log(`P1 action suggestion UI passed at emulated 390x844: visible in ${visibleMs} ms; suggestion stayed editable. Receipt change is bound to event 11111111 and state revision 1.`);
     console.log('This browser viewport test does not satisfy the separate 15-minute physical-device acceptance gate.');
   } finally {
     await browser?.close();
@@ -113,3 +143,14 @@ function mockSave() {
   console.error(error);
   process.exitCode = 1;
 });
+
+function canonical(value) {
+  if (Array.isArray(value)) return `[${value.map(canonical).join(',')}]`;
+  if (value !== null && typeof value === 'object') {
+    return `{${Object.entries(value).sort(([left], [right]) => left < right ? -1 : left > right ? 1 : 0)
+      .map(([key, item]) => `${JSON.stringify(key)}:${canonical(item)}`).join(',')}}`;
+  }
+  const result = JSON.stringify(value);
+  if (result === undefined) throw new Error('INVALID_JSON');
+  return result;
+}
