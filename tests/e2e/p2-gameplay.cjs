@@ -95,7 +95,12 @@ async function stop(child) {
         NODE_ENV: 'test', API_HOST: '127.0.0.1', API_PORT: String(apiPort),
         AUTH_ENABLED: 'true', AUTH_PUBLIC_ORIGIN: webOrigin,
         AUTH_SECRET: authSecret,
-        AUTH_MAIL_FROM: 'p2-test@example.invalid', SMTP_URL: 'smtp://127.0.0.1:1',
+        AUTH_MAIL_FROM: 'p2-test@example.invalid',
+        // The runtime defaults to the Tencent SES API, so the SMTP transport has
+        // to be named explicitly. This path only needs the API to boot — mail is
+        // never sent — so the unreachable port stays: startup must not depend on
+        // a reachable mail server.
+        AUTH_MAILER: 'smtp', SMTP_URL: 'smtp://127.0.0.1:1',
         DATABASE_URL: databaseUrl,
         TURN_RULES_MODULE: pluginFile,
       },
