@@ -134,16 +134,9 @@ function textAudit(original, backgrounds, runs, label = '') {
     }
     const threshold = run.large ? 3 : 4.5;
     const bare = glyphPixels ? minimum : Infinity;
-    const relief = glyphPixels && shadow && shadow[3] > 0.2 ? cushioned : -Infinity;
     // The analytic shadow estimate omits blur/offset geometry. Keep it as
     // diagnostic evidence, never use a hypothetical opaque halo to pass AA.
     if (bare >= threshold) {
-      // Either it passes outright, or the author-provided shadow carries it over the
-      // line. Record the latter so a shadow doing real work stays visible in the log
-      // instead of quietly passing.
-      if (bare < threshold && relief >= threshold) {
-        shadowRelief.push({ selector: run.selector, text: run.text, color: run.color, bare: Number(bare.toFixed(2)), cushioned: Number(relief.toFixed(2)) });
-      }
       continue;
     }
     failures.push({ selector: run.selector, text: run.text, color: run.color, background: minimumBackground, ratio: Number(bare.toFixed(2)), glyphPixels, textShadow: run.textShadowColor ?? null });
@@ -427,7 +420,7 @@ async function runDesignAcceptance(browser, origin, outputDir) {
     throw new Error(`Contrast audit found ${actionableFailures.length} failing samples outside the frozen professional AI scope (${failures.length - actionableFailures.length} protected-scope exceptions): ${JSON.stringify(actionableFailures.slice(0, 25))}`);
   }
   const checkedRuns = contrastResults.filter(item => item.page !== 'ai-professional').reduce((sum, item) => sum + item.text.static.checkedRuns + item.text.dynamic.checkedRuns, 0);
-  const checkedEdges = contrastResults.filter(item => item.page !== 'ai-professional' && item.page !== 'world').reduce((sum, item) => sum + item.controls.checkedEdges, 0);
+  const checkedEdges = contrastResults.filter(item => item.page !== 'ai-professional').reduce((sum, item) => sum + item.controls.checkedEdges, 0);
   const frozenProExceptions = failures.filter(failure => failure.page === 'ai-professional').length;
   const protectedWorldbookExceptions = failures.filter(failure => failure.page === 'world').length;
   console.log(`Design acceptance: ${manifest.length} five-page baselines; ${checkedRuns} non-professional text runs and ${checkedEdges} in-scope control-boundary samples passed across night/day and mobile/desktop. Protected-scope contrast exceptions: professional AI ${frozenProExceptions}; worldbook controls ${protectedWorldbookExceptions}.`);

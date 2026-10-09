@@ -3,6 +3,7 @@ import { SaveEnvelopeSchema, TurnReceiptSchema, type SaveEnvelope, type TurnRece
 import { CloudHttpError, cloudRequest } from '../cloud-sync';
 import { createIdempotencyKey } from '../storage';
 import { formatReceiptDelta, projectReceiptEvents } from '../receipt-event-view';
+import { GameShell, GameInfoDialog } from '../components/GameShell';
 
 type ActionSuggestion = { id: string; kind: string; label: string; text: string };
 
@@ -16,7 +17,8 @@ function messageFor(error: unknown): string {
   return '服务端请求未完成。请确认网络后重试；未确认的行动不会显示为已提交。';
 }
 
-export function CloudGame({ saveId, onBack, onHome, onLogin }: { saveId: string; onBack: () => void; onHome: () => void; onLogin: () => void }) {
+export function CloudGame({ saveId, onBack, onHome, onLogin, onWorld }: { saveId: string; onBack: () => void; onHome: () => void; onLogin: () => void; onWorld: () => void }) {
+  const [showState, setShowState] = useState(false);
   const [save, setSave] = useState<SaveEnvelope | null>(null);
   const [suggestions, setSuggestions] = useState<ActionSuggestion[]>([]);
   const [receipt, setReceipt] = useState<TurnReceipt | null>(null);
@@ -91,24 +93,22 @@ export function CloudGame({ saveId, onBack, onHome, onLogin }: { saveId: string;
   }
 
   const eventRows = projectReceiptEvents(receipt);
-  return <section className="page cloud-game" data-testid="p2-cloud-game">
-    <header className="cloud-game-heading"><div><span className="eyebrow">服务端规则存档</span><h2>行旅</h2></div><button className="secondary" onClick={onBack}>返回山门</button></header>
-    <p role="status" data-testid="p2-status">{notice}</p>
+  return <GameShell saveId={saveId} readingReady={!!save}>
+    <header className="game-topline"><div><span className="eyebrow">服务端规则存档</span><h1>行旅</h1></div><button className="secondary" onClick={onBack}>返回山门</button></header>
+    <div className="game-workspace cloud-game" data-testid="p2-cloud-game">
+      <aside className="game-rail" aria-label="游戏资料"><button aria-expanded={showState} disabled={!save} onClick={() => setShowState(true)}>存档状态</button><button onClick={onWorld}>世界设定</button></aside>
+      <div className="story-column">
+      <div className="story-reading" role="region" tabIndex={0} aria-label="剧情记录">
+    <p className="game-statusline" role="status" data-testid="p2-status">{notice}</p>
     {!save && !notFound && <div className="card"><p>存档尚未载入。请用创建时的游客或邮箱会话恢复。</p><button className="primary" onClick={onLogin}>账号与云档</button></div>}
     {notFound && <div className="card"><h2>找不到这份存档</h2><p>账号下没有这份服务端存档，或链接来自另一个账号。</p><button className="primary" onClick={onHome}>回到首页</button></div>}
     {save && <>
-      <section className="card cloud-game-state" aria-label="服务端存档状态">
+      <section className="cloud-game-state" aria-label="服务端存档状态">
         <p>修订 <strong data-testid="p2-revision">{save.revision}</strong></p>
         <p>游戏分钟 <strong data-testid="p2-game-minute">{typeof save.state.facts.gameMinute === 'number' ? save.state.facts.gameMinute : '未记录'}</strong></p>
         <p>记忆模式 <strong>{save.schemaVersion === 3 && save.memoryMode === 'forgetting' ? '真实遗忘' : save.schemaVersion === 3 && save.memoryMode === 'continue' ? '存档与继续' : '旧版存档'}</strong></p>
         <p>规则版本 <code>{save.ruleVersion}</code></p>
       </section>
-      {!!suggestions.length && <section className="card" aria-label="当前可尝试的行动"><h3>当前可尝试</h3><div className="actions">{suggestions.map(item => <button className="secondary" key={item.id} disabled={busy} onClick={() => setText(item.text)}>{item.label}</button>)}</div></section>}
-      <form className="card cloud-game-action" onSubmit={submit}>
-        <label htmlFor="p2-action-input">你要做什么？</label>
-        <textarea id="p2-action-input" data-testid="p2-action-input" value={text} maxLength={8_000} onChange={event => setText(event.target.value)} disabled={busy} />
-        <button className="primary" data-testid="p2-submit-action" disabled={busy || !text.trim()}>{busy ? '正在结算…' : '提交行动'}</button>
-      </form>
       {!!narrative && <section className="card" aria-label="行动叙述"><h3>发生了什么</h3><p data-testid="p2-narrative">{narrative}</p></section>}
       {!!receipt && <section className="card" data-testid="p2-receipt" aria-label="状态回执">
         <h3>状态回执</h3>
@@ -119,5 +119,18 @@ export function CloudGame({ saveId, onBack, onHome, onLogin }: { saveId: string;
         </li>)}</ul> : <p>无事件提交；世界修订未前进。</p>}
       </section>}
     </>}
-  </section>;
+      </div>
+      {!!suggestions.length && <details className="cloud-game-suggestions"><summary>当前可尝试的行动</summary><div className="actions">{suggestions.map(item => <button className="secondary" key={item.id} disabled={busy} onClick={() => setText(item.text)}>{item.label}</button>)}</div></details>}
+      {save && <form className="intent-composer cloud-game-action" onSubmit={submit}>
+        <label htmlFor="p2-action-input">你要做什么？</label>
+        <textarea id="p2-action-input" data-testid="p2-action-input" value={text} maxLength={8_000} onChange={event => setText(event.target.value)} disabled={busy} />
+        <button type="submit" className="primary" data-testid="p2-submit-action" disabled={busy || !text.trim()}>{busy ? '正在结算…' : '提交行动'}</button>
+      </form>}
+      </div>
+    </div>
+    {showState && save && <GameInfoDialog label="存档状态" onClose={() => setShowState(false)}>
+      <p>当前修订：{save.revision}</p><p>规则版本：<code>{save.ruleVersion}</code></p><p>世界设定版本：<code>{save.canonVersion}</code></p>
+      <p>资料仅来自这份服务端存档；本页未提供人物记忆检索。</p>
+    </GameInfoDialog>}
+  </GameShell>;
 }

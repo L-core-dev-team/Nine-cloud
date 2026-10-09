@@ -2,10 +2,11 @@ import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 're
 import './game-shell.css';
 
 /** Presentation only: callers retain their own save, draft and turn handlers. */
-export function GameShell({ saveId, children, archive }: { saveId: string; children: ReactNode; archive?: ReactNode }) {
+export function GameShell({ saveId, children, archive, readingReady = true }: { saveId: string; children: ReactNode; archive?: ReactNode; readingReady?: boolean }) {
   const frame = useRef<HTMLElement>(null);
   const [showArchive, setShowArchive] = useState(false);
   useLayoutEffect(() => {
+    if (!readingReady) return;
     const reading = frame.current?.querySelector<HTMLElement>('.story-reading');
     if (!reading) return;
     const key = `jiuxiao_1_game_scroll_${saveId}`;
@@ -17,7 +18,7 @@ export function GameShell({ saveId, children, archive }: { saveId: string; child
     const animation = requestAnimationFrame(restore);
     reading.addEventListener('scroll', remember, { passive: true });
     return () => { cancelAnimationFrame(animation); reading.removeEventListener('scroll', remember); };
-  }, [saveId]);
+  }, [saveId, readingReady]);
   useLayoutEffect(() => {
     const shell = frame.current?.closest<HTMLElement>('.jx-shell');
     const viewport = window.visualViewport;

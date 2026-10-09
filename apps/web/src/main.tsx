@@ -714,7 +714,7 @@ function App() {
   const activeSave = saves.find(item => item.saveId === activeSaveId) || saves[0];
   const worldReturnTarget = history.state?.returnTo;
   const returningToJourney = typeof worldReturnTarget === 'string' && /^\/game\/[^/]+$/.test(worldReturnTarget)
-    && worldReturnTarget === `/game/${activeSave?.saveId}`;
+    && (worldReturnTarget === `/game/${activeSave?.saveId}` || !saves.some(item => worldReturnTarget === `/game/${item.saveId}`));
   const page = currentRoute === '/new' ? <NewCharacter onSaved={async (save, memoryMode) => {
     let persisted = save;
     if (import.meta.env.DEV) {
@@ -770,7 +770,7 @@ function App() {
       setNotice(createdGuest ? '本局游客会话已建立，有效期 7 天。请在到期前刷新或升级邮箱；丢失会话后无法凭存档编号找回云档。'
         : '服务端规则存档已建立。事实状态保存在服务端数据库。');
       go(`/game/${encodeURIComponent(save.saveId)}`);
-    }} onBack={() => go('/lobby')} /> : currentRoute === '/intro' ? <Introduction onStart={() => go('/new')} onWorld={() => go('/world')} /> : currentRoute === '/world' ? <World onClose={returnFromReading} save={activeSave} onImportSupplement={importSupplement} isReturningToJourney={returningToJourney} /> : currentRoute === '/settings/ai' ? <AiSettings onClose={returnFromReading} /> : currentRoute === '/settings/cloud' ? <CloudSettings saves={saves} onRestore={async archive => {
+    }} onBack={() => go('/lobby')} /> : currentRoute === '/intro' ? <Introduction onStart={() => go('/new')} onWorld={() => go('/world')} /> : currentRoute === '/world' ? <World onClose={returnFromReading} save={returningToJourney ? saves.find(item => worldReturnTarget === `/game/${item.saveId}`) : activeSave} onImportSupplement={importSupplement} isReturningToJourney={returningToJourney} /> : currentRoute === '/settings/ai' ? <AiSettings onClose={returnFromReading} /> : currentRoute === '/settings/cloud' ? <CloudSettings saves={saves} onRestore={async archive => {
     const copied = { ...archive, saveId: createSaveId(), name: `${archive.name}（云端副本）`, updatedAt: new Date().toISOString() };
     const expected = readSaves(); const result = await commitSaves(expected, [copied, ...expected]);
     setSaves(result.saves); if (result.ok) setNotice(commitSuccessMessage(result, '云端档已恢复为新副本。')); return result.ok ? copied : null;
@@ -809,7 +809,7 @@ function App() {
       const branch = { ...stale, saveId: createSaveId(), name: `${stale.name}（冲突分支）`, createdAt: now, updatedAt: now };
       const result = await commitSaves(saves, [branch, ...saves]);
       setSaves(result.saves); if (result.ok && result.warning) setNotice(commitSuccessMessage(result, '冲突内容已另存为独立分支；原存档保持不变。')); return result.ok;
-    }} /> : <CloudGame saveId={decodeURIComponent(currentRoute.slice('/game/'.length))} onBack={() => go('/lobby')} onHome={() => go('/')} onLogin={() => go('/settings/cloud')} /> : <Landing />;
+    }} /> : <CloudGame saveId={decodeURIComponent(currentRoute.slice('/game/'.length))} onBack={() => go('/lobby')} onHome={() => go('/')} onLogin={() => go('/settings/cloud')} onWorld={() => go('/world')} /> : <Landing />;
   const migrationAction = legacyText ? <button className="notice-action" onClick={migrateLegacyLibrary}>下载原文备份并迁移</button> : undefined;
   const storageNotice = indexedDbReady ? notice : `${notice} IndexedDB 回退模式。`;
   const activeScene = scenePreview ?? (game ? sceneForLocation(game.location) : 'mountain-gate');

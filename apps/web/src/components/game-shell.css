@@ -3,6 +3,7 @@ body:has(.game-frame) { overflow: hidden; }
 .jx-shell:has(.game-frame) { position: fixed; inset: var(--jx-game-viewport-top, 0px) 0 auto; height: var(--jx-game-viewport-height, 100dvh); min-height: 0; }
 .jx-shell:has(.game-frame) > header { flex: none; height: 56px; padding-inline: var(--jx-space-4); }
 .jx-shell:has(.game-frame) > main { display: flex; flex: 1; min-height: 0; width: min(1320px, calc(100% - 24px)); }
+.jx-shell:has(.game-frame):has(.import-preview) > main { z-index: 3; }
 .jx-shell:has(.game-frame) > footer { flex: none; padding: var(--jx-space-1) var(--jx-space-3); color: #dfe6e8; background: #07121ef5; }
 :root[data-theme='day'] .jx-shell:has(.game-frame) > footer { color: #283c49; background: #faf9f4; }
 .jx-shell:has(.game-frame) > .notice { flex: none; max-height: 70px; overflow: auto; margin: var(--jx-space-1) var(--jx-space-3) 0; }
@@ -16,7 +17,16 @@ body:has(.game-frame) { overflow: hidden; }
 .game-frame .game-rail { position: static; align-content: start; }
 .game-frame .story-column { min-height: 0; grid-template-rows: minmax(0, 1fr) auto auto; gap: var(--jx-space-2); }
 .game-frame .story-reading { min-height: 0; overflow-y: auto; overscroll-behavior-y: contain; scrollbar-gutter: stable; padding: var(--jx-space-4); }
+.game-frame .cloud-game-state { display: flex; flex-wrap: wrap; gap: var(--jx-space-2) var(--jx-space-4); }
+.game-frame .cloud-game-state p { margin: 0; }
+.game-frame .cloud-game code { overflow-wrap: anywhere; }
+.game-frame .cloud-game-suggestions { max-height: 120px; overflow-y: auto; color: var(--jx-text-body); background: #0b1b29; border-radius: var(--jx-radius-control); padding: var(--jx-space-2); }
+:root[data-theme='day'] .game-frame .cloud-game-suggestions { color: #283c49; background: #faf9f4; }
+.game-frame .cloud-game-suggestions summary { min-height: 24px; cursor: pointer; }
+.game-frame .cloud-game .game-statusline { display: block; }
 .game-frame .story-opening { min-height: 0; }
+.game-frame .story-opening small { color: #dfe6e8; }
+:root[data-theme='day'] .game-frame .story-opening small { color: #283c49; }
 .game-frame .game-tools { gap: var(--jx-space-2); margin: 0; padding: 0; border: 0; }
 .game-frame .game-tools button, .game-frame .game-tools label { min-height: 44px; padding: var(--jx-space-2) var(--jx-space-3); }
 .game-frame .intent-composer { min-height: 0; max-height: min(200px, 50dvh); overflow-y: auto; padding: var(--jx-space-2) var(--jx-space-3); gap: var(--jx-space-2); }
