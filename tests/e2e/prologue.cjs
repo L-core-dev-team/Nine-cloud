@@ -13,7 +13,7 @@ const net = require('node:net');
 
 const root = resolve(__dirname, '../..');
 const apiFile = join(root, 'apps/api/dist/index.js');
-const pluginFile = join(root, 'apps/api/dist/services/p1-prologue-plugin.js');
+const candidateModule = join(root, 'packages/content/dist/prologue/prologue-v1.rulebook-candidate.js');
 const apiRequire = createRequire(join(root, 'apps/api/package.json'));
 const { Pool } = apiRequire('pg');
 const testDatabaseUrl = process.env.TEST_DATABASE_URL;
@@ -65,7 +65,7 @@ async function stop(child) {
   assert.ok(testDatabaseUrl, 'Set TEST_DATABASE_URL to a disposable jiuxiao_test database');
   assertTestDatabase();
   assert.ok(existsSync(apiFile), 'Run pnpm build before pnpm test:e2e');
-  assert.ok(existsSync(pluginFile), 'Build the review-only P1 plugin before the production gate preflight');
+  assert.ok(existsSync(candidateModule), 'Build the candidate rule module before the gate preflight');
 
   const pool = new Pool({ connectionString: testDatabaseUrl, max: 2, connectionTimeoutMillis: 3_000 });
   const ownerId = `p1-pr6-${randomUUID()}`;
@@ -78,7 +78,6 @@ async function stop(child) {
   const quotaKey = createHash('sha256').update(`turn\0${ownerId}`).digest('hex');
   const port = await availablePort();
   const origin = `http://127.0.0.1:${port}`;
-  const publicOrigin = 'https://jiuxiao-e2e.invalid';
   let child;
   let childStderr = '';
   let seededSave = false;
@@ -140,16 +139,10 @@ async function stop(child) {
       cwd: root,
       env: {
         ...process.env,
-        NODE_ENV: 'production',
         API_HOST: '127.0.0.1',
         API_PORT: String(port),
         AUTH_ENABLED: 'true',
-        AUTH_PUBLIC_ORIGIN: publicOrigin,
-        // NODE_ENV=production above makes the runtime demand an approved public
-        // policy URL and version before it validates anything else. This test is
-        // about the rule-bundle gate, not about auth, so it supplies both.
-        AUTH_PRIVACY_POLICY_URL: 'https://jiuxiao-e2e.invalid/privacy',
-        AUTH_PRIVACY_POLICY_VERSION: 'e2e-2026-10-09',
+        AUTH_PUBLIC_ORIGIN: origin,
         AUTH_SECRET: randomBytes(32).toString('hex'),
         AUTH_MAIL_FROM: 'p1-test@example.invalid',
         // The runtime defaults to the Tencent SES API, so the SMTP transport has
@@ -171,17 +164,17 @@ async function stop(child) {
     child.stdout.on('data', () => {});
 
     const health = await waitFor(`${origin}/health`, child, () => childStderr);
-    assert.equal((await health.json()).saveSchemaVersion, 3);
+    assert.equal((await health.json()).saveSchemaVersion, 2);
     const ready = await waitFor(`${origin}/ready`, child, () => childStderr);
     assert.equal((await ready.json()).status, 'ready');
 
     const session = await fetch(`${origin}/api/auth/session`, {
-      headers: { cookie: `jx_session=${token}`, origin: publicOrigin },
+      headers: { cookie: `jx_session=${token}`, origin },
     });
     assert.equal(session.status, 200);
     assert.equal((await session.json()).account.id, ownerId);
 
-    const headers = { 'content-type': 'application/json', cookie: `jx_session=${token}`, origin: publicOrigin };
+    const headers = { 'content-type': 'application/json', cookie: `jx_session=${token}`, origin };
     const create = await fetch(`${origin}/api/games`, {
       method: 'POST', headers,
       body: JSON.stringify({ idempotencyKey: `create-${randomUUID()}`, choices: { name: 'P1 门禁探针' } }),
