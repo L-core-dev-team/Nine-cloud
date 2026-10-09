@@ -971,6 +971,7 @@ body:not(:has(.ai-page)):not(:has(.world-page)) :is(button[aria-pressed='true'],
 body:not(:has(.ai-page)) .jx-shell > footer { color: #e0e6e8; }
 :root[data-theme='day'] body:not(:has(.ai-page)) .jx-shell > footer { color: #283c49; }
 :root:not([data-theme='day']) body:not(:has(.ai-page)) .lobby-page > p { color: #f0f3f4; background: #0b1b29; padding: var(--jx-space-2); border-radius: var(--jx-radius-control); }
+:root:not([data-theme='day']) .lobby-page .secondary { color: #f0f3f4; background: #0b1b29; border-color: #b8c9d3; }
 :root[data-theme='day'] body:not(:has(.ai-page)) .eyebrow { color: #403024; }
 :root[data-theme='day'] body:not(:has(.ai-page)) .hero .hero-mark { color: #0a1b27; }
 :root[data-theme='day'] body:not(:has(.ai-page)) .lobby-page > p,
