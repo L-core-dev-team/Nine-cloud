@@ -96,6 +96,12 @@ async function stop(child) {
         AUTH_PUBLIC_ORIGIN: origin,
         AUTH_SECRET: randomBytes(32).toString('hex'),
         AUTH_MAIL_FROM: 'p1-test@example.invalid',
+        // The runtime defaults to the Tencent SES API, so the SMTP transport has
+        // to be named explicitly. This test never sends mail — it seeds the
+        // session rows directly — it only needs the API to boot past the
+        // fail-closed mailer check, which is why the unreachable port stays:
+        // startup must not depend on a reachable mail server.
+        AUTH_MAILER: 'smtp',
         SMTP_URL: 'smtp://127.0.0.1:1',
         DATABASE_URL: testDatabaseUrl,
         // A raw content rulebook path is not the approved review plugin path.
