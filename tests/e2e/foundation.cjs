@@ -10,7 +10,7 @@ const { chromium } = require('playwright');
 
 const root = resolve(__dirname, '../..');
 const webRoot = join(root, 'apps/web');
-const screenshotDir = join(root, 'test-results/e2e');
+const screenshotDir = process.env.JX_E2E_OUTPUT_DIR || join(root, 'test-results/e2e');
 // 视觉冻结基线：由作者于 2026-10-08 批准后重置。
 // 旧基线 69471c7（2026-10-05）之后 style.css 经历 9 次经批准的视觉改动
 // （d8e8e02 player shell、17c63fe candidate atlas、c776de9 合并、d73e0b7 页脚等），

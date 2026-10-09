@@ -134,8 +134,10 @@ function textAudit(original, backgrounds, runs, label = '') {
     }
     const threshold = run.large ? 3 : 4.5;
     const bare = glyphPixels ? minimum : Infinity;
-    const relief = glyphPixels && shadow && shadow[3] > 0.2 ? cushioned : Infinity;
-    if (bare >= threshold || relief >= threshold) {
+    const relief = glyphPixels && shadow && shadow[3] > 0.2 ? cushioned : -Infinity;
+    // The analytic shadow estimate omits blur/offset geometry. Keep it as
+    // diagnostic evidence, never use a hypothetical opaque halo to pass AA.
+    if (bare >= threshold) {
       // Either it passes outright, or the author-provided shadow carries it over the
       // line. Record the latter so a shadow doing real work stays visible in the log
       // instead of quietly passing.
@@ -265,7 +267,15 @@ async function getInteractiveControls(page) {
 }
 
 async function maskText(page) {
-  return page.addStyleTag({ content: '*, *::before, *::after { color: transparent !important; -webkit-text-fill-color: transparent !important; text-shadow: none !important; }' });
+  // Preserve the browser-rendered shadow in the background screenshot. This
+  // measures its actual blur and coverage instead of compositing its nominal
+  // color at full opacity across every glyph bounding box.
+  await page.evaluate(() => {
+    for (const element of document.querySelectorAll('*')) {
+      element.style.setProperty('--jx-audit-shadow', getComputedStyle(element).textShadow);
+    }
+  });
+  return page.addStyleTag({ content: '*, *::before, *::after { color: transparent !important; -webkit-text-fill-color: transparent !important; text-shadow: var(--jx-audit-shadow, none) !important; }' });
 }
 
 // A full-page screenshot is only comparable while the document height holds still.
@@ -350,7 +360,17 @@ async function runDesignAcceptance(browser, origin, outputDir) {
           return Number.isInteger(reported) && document.querySelectorAll('.worldbook-entry').length >= reported;
         }, null, { timeout: 10000 });
       }
-      await page.evaluate(() => { document.documentElement.dataset.jxAtmosphere = 'off'; return document.fonts.ready; });
+      await page.evaluate(async () => {
+        document.documentElement.dataset.jxAtmosphere = 'off';
+        // A full-page capture can trigger offscreen lazy media after the height
+        // has appeared stable. Decode it first so the source and masked frames
+        // measure the same rendered document, including the atlas below the fold.
+        await Promise.all(Array.from(document.images, async image => {
+          image.loading = 'eager';
+          try { await image.decode(); } catch { /* Broken media is still measurable. */ }
+        }));
+        await document.fonts.ready;
+      });
       const staticRuns = await getTextRuns(page);
       const controls = await getInteractiveControls(page);
       const name = `${target.key}-${theme}-${width}.png`;
@@ -402,9 +422,9 @@ async function runDesignAcceptance(browser, origin, outputDir) {
     ...result.text.dynamic.failures.map(failure => ({ page: result.page, theme: result.theme, width: result.width, kind: 'dynamic-text', ...failure })),
     ...result.controls.failures.map(failure => ({ page: result.page, theme: result.theme, width: result.width, kind: 'control-boundary', ...failure })),
   ]);
-  const actionableFailures = failures.filter(failure => failure.page !== 'ai-professional' && !(failure.page === 'world' && failure.kind === 'control-boundary'));
+  const actionableFailures = failures.filter(failure => failure.page !== 'ai-professional');
   if (actionableFailures.length) {
-    throw new Error(`Contrast audit found ${actionableFailures.length} failing samples outside the frozen professional AI and worldbook-boundary scopes (${failures.length - actionableFailures.length} protected-scope exceptions): ${JSON.stringify(actionableFailures.slice(0, 25))}`);
+    throw new Error(`Contrast audit found ${actionableFailures.length} failing samples outside the frozen professional AI scope (${failures.length - actionableFailures.length} protected-scope exceptions): ${JSON.stringify(actionableFailures.slice(0, 25))}`);
   }
   const checkedRuns = contrastResults.filter(item => item.page !== 'ai-professional').reduce((sum, item) => sum + item.text.static.checkedRuns + item.text.dynamic.checkedRuns, 0);
   const checkedEdges = contrastResults.filter(item => item.page !== 'ai-professional' && item.page !== 'world').reduce((sum, item) => sum + item.controls.checkedEdges, 0);
@@ -413,4 +433,4 @@ async function runDesignAcceptance(browser, origin, outputDir) {
   console.log(`Design acceptance: ${manifest.length} five-page baselines; ${checkedRuns} non-professional text runs and ${checkedEdges} in-scope control-boundary samples passed across night/day and mobile/desktop. Protected-scope contrast exceptions: professional AI ${frozenProExceptions}; worldbook controls ${protectedWorldbookExceptions}.`);
 }
 
-module.exports = { runDesignAcceptance };
+module.exports = { runDesignAcceptance, textAudit };

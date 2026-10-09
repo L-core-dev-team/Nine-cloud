@@ -1161,14 +1161,52 @@ body:not(:has(.ai-page)) .jx-shell > footer { color: #e0e6e8; }
 }
 
 /* UI polish merged from origin/codex/ui-polish-20261005. */
-.header-tools { display: flex; align-items: center; gap: 8px; }
+/* S-FINAL: readable controls over every atmosphere frame; no Canon changes. */
+.worldbook-grid { grid-template-columns: minmax(0, 1fr); }
+.worldbook-entry, .worldbook-entry-summary > span { min-width: 0; }
+.worldbook-entry-summary > .eyebrow, .worldbook-source p { overflow-wrap: anywhere; }
+.world-view-switch { flex-wrap: wrap; }
+body:not(:has(.ai-page)) .menu, body:not(:has(.ai-page)) .ambient-toggle { border-color: #b8c9d3; }
+:root[data-theme='day'] body:not(:has(.ai-page)) .menu,
+:root[data-theme='day'] body:not(:has(.ai-page)) .ambient-toggle { border-color: #283c49; }
+.world-page .world-return-bar .secondary,
+.world-page .world-view-switch button,
+.world-page .worldbook-categories button,
+.world-page .atlas-collections button,
+.world-page .world-search input {
+  color: #e2e9ed;
+  background: #0b1b29;
+  border-color: #b8c9d3;
+}
+.world-page .world-view-switch button[aria-selected='true'],
+.world-page .worldbook-categories button[aria-pressed='true'],
+.world-page .atlas-collections button[aria-pressed='true'] {
+  background: #284350;
+  border-color: #e2e9ed;
+}
+:root[data-theme='day'] .world-page .world-return-bar .secondary,
+:root[data-theme='day'] .world-page .world-view-switch button,
+:root[data-theme='day'] .world-page .worldbook-categories button,
+:root[data-theme='day'] .world-page .atlas-collections button,
+:root[data-theme='day'] .world-page .world-search input {
+  color: #283c49;
+  background: #faf9f4;
+  border-color: #283c49;
+}
+:root[data-theme='day'] .world-page .world-view-switch button[aria-selected='true'],
+:root[data-theme='day'] .world-page .worldbook-categories button[aria-pressed='true'],
+:root[data-theme='day'] .world-page .atlas-collections button[aria-pressed='true'] {
+  background: #dbe3e9;
+  border-color: #283c49;
+}
+.header-tools { display: flex; align-items: center; gap: var(--jx-space-2); }
 .menu-overlay { position: fixed; z-index: 3; inset: 0; background: rgba(2, 8, 14, .28); }
 :root[data-theme='day'] .menu-overlay { background: rgba(56, 65, 72, .16); }
 input:not([type='range']):not([type='checkbox']):not([type='radio']), select, textarea { font-size: max(1em, 16px); }
 .worldbook-entry { content-visibility: auto; contain-intrinsic-size: auto 420px; }
 .intent-composer textarea { font-size: 1rem; }
 .intent-composer .primary { white-space: nowrap; }
-.game-tools { flex-wrap: wrap; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+.game-tools { flex-wrap: wrap; gap: var(--jx-space-2); margin-top: var(--jx-space-3); padding-top: var(--jx-space-3); border-top: 1px solid var(--line); }
 :root[data-theme='day'] .intent-composer { box-shadow: 0 16px 38px rgba(56, 65, 72, .12); }
 :root[data-theme='day'] .chapter-mark { color: #8a6f3c; }
 :root[data-theme='day'] .chapter-mark i { background: linear-gradient(90deg, #8a6f3c66, transparent); }

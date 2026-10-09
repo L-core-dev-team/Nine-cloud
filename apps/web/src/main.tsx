@@ -477,7 +477,7 @@ function Game({ save, onExport, onImportSupplement, onUpdate, onBranch, onReload
     <header className="game-topline"><div><span className="eyebrow">{save.location} · 本地存档</span><h1>{save.name}</h1></div><button className="quiet-action" onClick={() => go('/lobby')}>离开此局<span>回到山门</span></button></header>
     <div className="game-workspace">
       <aside className="game-rail" aria-label="游戏资料"><button aria-pressed={activePanel === 'character'} onClick={() => setActivePanel(activePanel === 'character' ? null : 'character')}>角色状态</button><button aria-pressed={activePanel === 'intel'} onClick={() => setActivePanel(activePanel === 'intel' ? null : 'intel')}>综合情报</button><button aria-pressed={activePanel === 'memory'} onClick={() => setActivePanel(activePanel === 'memory' ? null : 'memory')}>星记忆</button></aside>
-      <div className="story-column"><div className="story-reading" aria-label="剧情记录">
+      <div className="story-column"><div className="story-reading" role="region" tabIndex={0} aria-label="剧情记录">
         <div className="chapter-mark"><span>九霄 · {save.location}</span><i aria-hidden="true" /></div>
         {save.messages.length > 80 && <small className="history-limit-note">此处显示最近 80 条可读文字；完整旧档仍保存在「旧档资料与迁移核对」中。</small>}
         {readableMessages.map(({ message, index, content }) => {

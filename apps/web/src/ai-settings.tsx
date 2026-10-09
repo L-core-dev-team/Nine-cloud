@@ -343,7 +343,7 @@ function ProfessionalAiSettings({ onClose }: { onClose: () => void }) {
     try {
       sessionStorage.setItem(CONFIG_KEY, JSON.stringify(safeConfig(config)));
       armPageNarrative(config.roles, keys,(row,elapsedMs)=>{addLog({at:new Date().toISOString(),role:row.role,model:config.roles[row.role].model,elapsedMs,outcome:row.status==='received'?'success':'failure',...(row.status==='received'?row.reportedOutputTokens===null?{}:{outputTokens:row.reportedOutputTokens}:{errorCode:'NETWORK_OR_FORMAT'})},config.logRetentionDays);});
-    } catch { setError('当前浏览器无法保存设置；页面中的输入仍在，请先导出配置前确认不包含密钥。'); setSaved(false); return; }
+    } catch { setError('当前浏览器无法保存设置；页面中的输入仍在。请检查浏览器存储权限后重新保存。'); setSaved(false); return; }
     try {
       const retained = readLogs(config.logRetentionDays);
       if (config.logRetentionDays === 0) sessionStorage.removeItem(LOG_KEY);
