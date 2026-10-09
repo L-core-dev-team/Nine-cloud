@@ -97,6 +97,15 @@ async function stop(child) {
         AUTH_PUBLIC_ORIGIN: publicOrigin,
         AUTH_SECRET: randomBytes(32).toString('hex'),
         AUTH_MAIL_FROM: 'p1-test@example.invalid',
+        // NODE_ENV=production above makes the runtime demand an approved public
+        // policy URL and version before it looks at anything else, and the mailer
+        // defaults to the Tencent SES API. This test never sends mail — it is
+        // about the rule-bundle gate — so both have to be supplied for the child
+        // to reach that gate at all. The unreachable SMTP port stays: startup
+        // must not depend on a reachable mail server.
+        AUTH_PRIVACY_POLICY_URL: 'https://jiuxiao-e2e.invalid/privacy',
+        AUTH_PRIVACY_POLICY_VERSION: 'e2e-2026-10-09',
+        AUTH_MAILER: 'smtp',
         SMTP_URL: 'smtp://127.0.0.1:1',
         DATABASE_URL: testDatabaseUrl,
         // The approved candidate path remains unavailable in production.
