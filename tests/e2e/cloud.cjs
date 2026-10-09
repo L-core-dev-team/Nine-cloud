@@ -51,7 +51,7 @@ async function readySmtp(host, port) {
 async function login(page, email) {
   await page.goto(`${origin}/settings/cloud`); await page.getByLabel('邮箱', { exact: true }).fill(email);
   await page.getByRole('button', { name: '发送验证码', exact: true }).click();
-  try { await page.getByText('验证码已发送，10 分钟内有效。', { exact: true }).waitFor(); }
+  try { await page.getByText('如果邮箱可用，验证码已发送。请按邮件中的有效期完成验证。', { exact: true }).waitFor(); }
   catch (error) { console.error('Isolated login notice:', await page.getByRole('status').allTextContents()); throw error; }
   let code;
   for (let i = 0; i < 40; i++) {
