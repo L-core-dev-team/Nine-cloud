@@ -92,6 +92,10 @@ footer { display: flex; justify-content: space-between; padding: 18px clamp(18px
 footer .footer-legal { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; }
 footer .footer-legal a { color: inherit; text-decoration: none; border-bottom: 1px solid transparent; transition: color .18s ease, border-color .18s ease; }
 footer .footer-legal a:hover, footer .footer-legal a:focus-visible { color: #bdcad7; border-bottom-color: currentColor; }
+/* ICP 备案号：法规要求必须可点击跳转工信部查询页。样式随法律链接保持一致，
+   但用 flex-shrink:0 防止窄视口下被压到不可读——它是被监管要求的文本，不能被挤压。 */
+footer .footer-filing { flex-shrink: 0; white-space: nowrap; color: inherit; text-decoration: none; border-bottom: 1px solid transparent; transition: color .18s ease, border-color .18s ease; }
+footer .footer-filing:hover, footer .footer-filing:focus-visible { color: #bdcad7; border-bottom-color: currentColor; }
 .notice { max-width: 1180px; margin: 12px auto 0; padding: 10px 14px; color: #dce8ef; background: #ffffff10; border: 1px solid var(--line); border-radius: 10px; font: 0.78rem system-ui; }
 .notice-action { margin-left: 8px; padding: 6px 10px; color: #142431; background: var(--accent); border-radius: 7px; font: 0.76rem system-ui; }
 
