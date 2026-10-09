@@ -255,7 +255,7 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
     await pool.query(
       'INSERT INTO turn_events ' +
       '(id,save_id,idempotency_key,sequence,event_type,source,rule_version,before_revision,after_revision,payload,occurred_at,branch_id) ' +
-      'VALUES ($1,$2,$3,1,\'PLAYER_ARRIVED\',\'RULES\',\'rules-test-v1\',0,1,$4::jsonb,$5,\'root\')',
+      'VALUES ($1,$2,$3,0,\'PLAYER_ARRIVED\',\'RULES\',\'rules-test-v1\',0,1,$4::jsonb,$5,\'root\')',
       [recallEventId, recallSaveId, 'fixture-' + recallEventId,
         JSON.stringify({ destinationId: 'ferry' }), '2026-10-05T12:00:00.000Z'],
     );
