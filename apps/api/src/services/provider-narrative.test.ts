@@ -36,3 +36,13 @@ it('keeps missing usage unknown and bounds provider context before dispatch',asy
  expect(await adapter(input,new AbortController().signal)).toEqual({text:'story',outputTokens:null});
  await expect(adapter({...input,candidates:{director:'x'.repeat(100001)}},new AbortController().signal)).rejects.toThrow('CONTEXT_TOO_LARGE');expect(fetcher).toHaveBeenCalledOnce();
 });
+
+it('omits sampling controls for Claude Sonnet 5.5 requests',async()=>{
+ const fetcher=vi.fn<typeof fetch>().mockResolvedValue(Response.json({content:[{type:'text',text:'story'}],usage:{output_tokens:2}}));
+ const adapter=providerAdapter({protocol:'anthropic-messages',baseUrl:'https://api.anthropic.com/v1',model:'claude-sonnet-5-5',keyEnv:'NARRATIVE_KEY_STORY',temperature:0.82,top_p:0.92},{NARRATIVE_KEY_STORY:'fixture-secret'},fetcher);
+ expect(await adapter(input,new AbortController().signal)).toEqual({text:'story',outputTokens:2});
+ const body=JSON.parse(String(fetcher.mock.calls[0]?.[1]?.body));
+ expect(body).toMatchObject({model:'claude-sonnet-5-5',max_tokens:10});
+ expect(body).not.toHaveProperty('temperature');
+ expect(body).not.toHaveProperty('top_p');
+});

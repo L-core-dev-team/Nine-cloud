@@ -8,4 +8,5 @@ export * from './memory/policy.js';
 export * from './memory/belief.js';
 export * from './memory/retrieve.js';
 export * from './memory/turn-journal.js';
+export * from './memory/recall-authorized.js';
 export * from './nlu/index.js';

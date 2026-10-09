@@ -18,8 +18,8 @@ export type ModelRate = {
   note?: string;
 };
 
-export const MODEL_RATE_SNAPSHOT_DATE = '2026-10-04';
-export const MODEL_RATE_VALID_UNTIL = '2027-01-02';
+export const MODEL_RATE_SNAPSHOT_DATE = '2026-10-05';
+export const MODEL_RATE_VALID_UNTIL = '2027-01-03';
 const snapshotAt = Date.parse(`${MODEL_RATE_SNAPSHOT_DATE}T00:00:00Z`);
 const expiresAt = Date.parse(`${MODEL_RATE_VALID_UNTIL}T00:00:00Z`);
 
@@ -116,6 +116,14 @@ const MODEL_RATES: Readonly<Record<string, ModelRate>> = {
     sourceUrl: ANTHROPIC_PRICING, sourceCategory: 'official-provider-price', verifiedOn: '2026-10-04',
     region: 'Claude API 全球端点', billingTier: '标准输入/输出；不含 prompt cache 与 Batch API',
     unit: 'per 1M input/output tokens',
+  },
+  'claude-sonnet-5-5': {
+    input: 2, output: 10, currency: 'USD',
+    sourceUrl: 'https://platform.claude.com/docs/en/models/sonnet-5-5/overview',
+    sourceCategory: 'official-provider-price', verifiedOn: '2026-10-05',
+    region: 'Claude API 全球端点', billingTier: '标准输入/输出；不含 prompt cache 与 Batch API',
+    unit: 'per 1M input/output tokens',
+    note: '官方型号页列示 1M 上下文与 128K 最大输出；缓存和 Batch API 采用不同费率。',
   },
   'gemini-3.8-flash': {
     input: 0.75, output: 3.75, currency: 'USD',

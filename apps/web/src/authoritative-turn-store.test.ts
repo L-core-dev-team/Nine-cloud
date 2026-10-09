@@ -174,6 +174,7 @@ function authorized(event: DomainEvent) {
     grantIdVersion: 2 as const,
     saveId: 'local-save-1', branchId: 'root' as const, npcId: 'npc-1', eventId: event.id,
     eventRevision: event.afterRevision, observedAtMinute: 15, channel: 'witnessed' as const,
+    memoryClass: 'unclassified' as const,
     authorizationPolicyVersion: 'visibility-v1', authorizedFields: ['summary'],
     authorizedFacts: { summary }, summary,
   }];

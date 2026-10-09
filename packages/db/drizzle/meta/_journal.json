@@ -141,6 +141,13 @@
       "when": 1791285000002,
       "tag": "0019_p1_guest_accounts",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1791178800000,
+      "tag": "0020_npc_memory_recall_semantics",
+      "breakpoints": true
     }
   ]
 }

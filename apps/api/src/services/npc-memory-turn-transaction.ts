@@ -11,7 +11,10 @@ import {
   parseNpcMemoryJournalJson,
   serializeNpcMemoryJournal,
   assertAuthorizedObservationOutboxRecord,
+  assertAuthorizedObservationSupersessionRecord,
   type AuthorizedObservationOutboxRecord,
+  type AuthorizedObservationSupersessionRecord,
+  type AuthorizedRecallObservation,
   type NpcMemoryJournal,
 } from '@jiuxiao/domain';
 import type { Pool, PoolClient, QueryResult, QueryResultRow } from 'pg';
@@ -63,10 +66,12 @@ interface AuthorizedObservationRow extends QueryResultRow {
   event_revision: number;
   observed_at_minute: number | string;
   channel: string;
+  memory_class: string;
   authorization_policy_version: string;
   authorized_fields: unknown;
   authorized_facts: unknown;
   summary: string;
+  supersessions: unknown;
 }
 
 export type AcceptedTurnCommitInput = {
@@ -78,6 +83,7 @@ export type AcceptedTurnCommitInput = {
   previousJournal: NpcMemoryJournal;
   nextJournal: NpcMemoryJournal;
   authorizedObservations: readonly AuthorizedObservationOutboxRecord[];
+  authorizedSupersessions?: readonly AuthorizedObservationSupersessionRecord[];
 };
 
 export type AcceptedTurnCommitResult =
@@ -101,7 +107,7 @@ export type NonAcceptedTurnRecordResult =
   | { kind: 'idempotency_conflict' }
   | { kind: 'not_found' };
 
-type NormalizedCommit = Omit<AcceptedTurnCommitInput, 'ownerId' | 'receipt' | 'save' | 'events' | 'previousJournal' | 'nextJournal' | 'authorizedObservations'> & {
+type NormalizedCommit = Omit<AcceptedTurnCommitInput, 'ownerId' | 'receipt' | 'save' | 'events' | 'previousJournal' | 'nextJournal' | 'authorizedObservations' | 'authorizedSupersessions'> & {
   ownerId: string;
   receipt: TurnReceipt;
   save: SaveEnvelope;
@@ -109,6 +115,7 @@ type NormalizedCommit = Omit<AcceptedTurnCommitInput, 'ownerId' | 'receipt' | 's
   previousJournal: NpcMemoryJournal;
   nextJournal: NpcMemoryJournal;
   authorizedObservations: AuthorizedObservationOutboxRecord[];
+  authorizedSupersessions: AuthorizedObservationSupersessionRecord[];
 };
 
 /**
@@ -228,23 +235,32 @@ export class PostgresNpcMemoryTurnRepository {
   /** Reads frozen authorized facts only; caller must use these rows instead of reauthorizing source events. */
   async getAuthorizedObservationPage(ownerId: string, saveId: string, npcId: string, cursor?: {
     eventRevision: number; grantId: string;
-  }, limit = 50): Promise<{ items: AuthorizedObservationOutboxRecord[]; nextCursor: { eventRevision: number; grantId: string } | null }> {
+  }, limit = 50, throughRevision?: number): Promise<{ items: AuthorizedRecallObservation[]; nextCursor: { eventRevision: number; grantId: string } | null }> {
     const owner = normalizeOwnerId(ownerId);
     if (!isValidId(saveId) || typeof npcId !== 'string' || !npcId.trim() || npcId.length > 200
       || !Number.isSafeInteger(limit) || limit < 1 || limit > 100
+      || (throughRevision !== undefined && (!Number.isSafeInteger(throughRevision) || throughRevision < 0))
       || (cursor !== undefined && (!Number.isSafeInteger(cursor.eventRevision) || cursor.eventRevision < 1
         || typeof cursor.grantId !== 'string' || !cursor.grantId.trim() || cursor.grantId.length > 2000))) {
       throw new TypeError('Invalid authorized observation query.');
     }
     const result = await this.database.query<AuthorizedObservationRow>(
       'SELECT o.grant_id,o.grant_id_version,o.save_id,o.branch_id,o.npc_id,o.event_id,o.event_revision,o.observed_at_minute,' +
-      'o.channel,o.authorization_policy_version,o.authorized_fields,o.authorized_facts,o.summary ' +
+      'o.channel,o.memory_class,o.authorization_policy_version,o.authorized_fields,o.authorized_facts,o.summary,' +
+      'COALESCE(sx.supersessions,\'[]\'::jsonb) AS supersessions ' +
       'FROM npc_authorized_observation_outbox o JOIN game_saves s ON s.id=o.save_id ' +
+      'LEFT JOIN LATERAL (SELECT jsonb_agg(jsonb_build_object(' +
+      '\'saveId\',x.save_id,\'branchId\',x.branch_id,\'npcId\',x.npc_id,\'observationGrantId\',x.observation_grant_id,' +
+      '\'supersededByEventId\',x.superseded_by_event_id,\'supersededAtRevision\',x.superseded_at_revision,' +
+      '\'kind\',x.kind,\'reason\',x.reason,\'policyVersion\',x.policy_version) ORDER BY x.superseded_at_revision) AS supersessions ' +
+      'FROM npc_memory_observation_supersessions x WHERE x.observation_grant_id=o.grant_id ' +
+      'AND ($6::integer IS NULL OR x.superseded_at_revision <= $6)) sx ON true ' +
       'WHERE s.id=$1 AND s.owner_id=$2 AND o.npc_id=$3 ' +
       'AND NOT EXISTS (SELECT 1 FROM cloud_archive_trash t WHERE t.save_id=s.id) ' +
+      'AND ($6::integer IS NULL OR o.event_revision <= $6) ' +
       'AND ($4::integer IS NULL OR o.event_revision>$4 OR (o.event_revision=$4 AND o.grant_id>$5)) ' +
-      'ORDER BY o.event_revision,o.grant_id LIMIT $6',
-      [saveId, owner, npcId, cursor?.eventRevision ?? null, cursor?.grantId ?? '', limit + 1],
+      'ORDER BY o.event_revision,o.grant_id LIMIT $7',
+      [saveId, owner, npcId, cursor?.eventRevision ?? null, cursor?.grantId ?? '', throughRevision ?? null, limit + 1],
     );
     const hasMore = result.rows.length > limit;
     const items = result.rows.slice(0, limit).map(parseAuthorizedObservationRow);
@@ -367,13 +383,24 @@ export class PostgresNpcMemoryTurnRepository {
       for (const observation of commit.authorizedObservations) {
         await client.query(
           'INSERT INTO npc_authorized_observation_outbox ' +
-          '(grant_id,grant_id_version,save_id,branch_id,npc_id,event_id,event_revision,observed_at_minute,channel,' +
+          '(grant_id,grant_id_version,save_id,branch_id,npc_id,event_id,event_revision,observed_at_minute,channel,memory_class,' +
           'authorization_policy_version,authorized_fields,authorized_facts,summary) ' +
-          'VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11::jsonb,$12::jsonb,$13)',
+          'VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12::jsonb,$13::jsonb,$14)',
           [observation.grantId, observation.grantIdVersion, observation.saveId, observation.branchId, observation.npcId, observation.eventId,
-            observation.eventRevision, observation.observedAtMinute, observation.channel,
+            observation.eventRevision, observation.observedAtMinute, observation.channel, observation.memoryClass,
             observation.authorizationPolicyVersion, JSON.stringify(observation.authorizedFields),
             JSON.stringify(observation.authorizedFacts), observation.summary],
+        );
+      }
+
+      for (const supersession of commit.authorizedSupersessions) {
+        await client.query(
+          'INSERT INTO npc_memory_observation_supersessions ' +
+          '(save_id,branch_id,npc_id,observation_grant_id,superseded_by_event_id,superseded_at_revision,kind,reason,policy_version) ' +
+          'VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)',
+          [supersession.saveId, supersession.branchId, supersession.npcId, supersession.observationGrantId,
+            supersession.supersededByEventId, supersession.supersededAtRevision, supersession.kind,
+            supersession.reason, supersession.policyVersion],
         );
       }
 
@@ -432,6 +459,8 @@ function normalizeCommit(input: AcceptedTurnCommitInput): NormalizedCommit {
   const nextJournal = parseJournal(input.nextJournal);
   if (!Array.isArray(input.authorizedObservations)) throw new TypeError('Authorized observation outbox must be an array.');
   const authorizedObservations = input.authorizedObservations.map(observation => structuredClone(observation));
+  if (input.authorizedSupersessions !== undefined && !Array.isArray(input.authorizedSupersessions)) throw new TypeError('Authorized observation supersessions must be an array.');
+  const authorizedSupersessions = (input.authorizedSupersessions ?? []).map(supersession => structuredClone(supersession));
   serializeNpcMemoryJournal(nextJournal);
 
   if (!Number.isSafeInteger(input.expectedRevision) || input.expectedRevision < 0 ||
@@ -477,16 +506,30 @@ function normalizeCommit(input: AcceptedTurnCommitInput): NormalizedCommit {
     observationKeys.add(`${observation.eventId}\0${observation.npcId}`);
   }
 
+  const supersededGrantIds = new Set<string>();
+  for (const supersession of authorizedSupersessions) {
+    assertAuthorizedObservationSupersessionRecord(supersession);
+    const event = eventsById.get(supersession.supersededByEventId);
+    const newGrant = authorizedObservations.find(item => item.eventId === supersession.supersededByEventId && item.npcId === supersession.npcId);
+    if (supersession.saveId !== save.saveId || supersession.branchId !== 'root'
+      || !event || event.source !== 'RULES' || event.branchId !== supersession.branchId
+      || event.afterRevision !== supersession.supersededAtRevision
+      || !newGrant || supersededGrantIds.has(supersession.observationGrantId)) {
+      throw new TypeError('Authorized memory supersession does not match the accepted rules event and NPC grant.');
+    }
+    supersededGrantIds.add(supersession.observationGrantId);
+  }
+
   const marker = nextJournal.lastTurn;
   if (!marker || marker.fromRevision !== input.expectedRevision || marker.toRevision !== save.revision ||
     canonicalJson(marker.eventIds) !== canonicalJson(eventIds)) {
     throw new TypeError('NPC memory journal does not correspond to the accepted event batch.');
   }
 
-  return { ...input, ownerId, save, receipt, events, previousJournal, nextJournal, authorizedObservations };
+  return { ...input, ownerId, save, receipt, events, previousJournal, nextJournal, authorizedObservations, authorizedSupersessions };
 }
 
-function parseAuthorizedObservationRow(row: AuthorizedObservationRow): AuthorizedObservationOutboxRecord {
+function parseAuthorizedObservationRow(row: AuthorizedObservationRow): AuthorizedRecallObservation {
   const eventRevision = Number(row.event_revision);
   const observedAtMinute = Number(row.observed_at_minute);
   const authorizedFields = parseJsonArray(row.authorized_fields);
@@ -501,13 +544,26 @@ function parseAuthorizedObservationRow(row: AuthorizedObservationRow): Authorize
     eventRevision,
     observedAtMinute,
     channel: row.channel as 'witnessed' | 'reported',
+    memoryClass: row.memory_class as AuthorizedObservationOutboxRecord['memoryClass'],
     authorizationPolicyVersion: row.authorization_policy_version,
     authorizedFields,
     authorizedFacts,
     summary: row.summary,
   };
   assertAuthorizedObservationOutboxRecord(observation);
-  return observation;
+  return { ...observation, supersessions: parseSupersessions(row.supersessions) };
+}
+
+function parseSupersessions(value: unknown): AuthorizedObservationSupersessionRecord[] {
+  const parsed = typeof value === 'string' ? JSON.parse(value) as unknown : value;
+  if (!Array.isArray(parsed)) throw new Error('Stored authorized memory supersessions are invalid.');
+  const rows = parsed.map(raw => {
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new Error('Stored authorized memory supersessions are invalid.');
+    const item = raw as AuthorizedObservationSupersessionRecord;
+    assertAuthorizedObservationSupersessionRecord(item);
+    return item;
+  });
+  return rows;
 }
 
 function parseJsonArray(value: unknown): string[] {

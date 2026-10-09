@@ -90,7 +90,7 @@ describe('NPC memory turn journal', () => {
       grantId: ['save-1', 'root', EVENT_1, 'npc-1'].map(part => `${part.length}:${part}`).join(''),
       grantIdVersion: 1,
       saveId: 'save-1', branchId: 'root', npcId: 'npc-1', eventId: EVENT_1,
-      eventRevision: 1, observedAtMinute: 10, channel: 'witnessed',
+      eventRevision: 1, observedAtMinute: 10, channel: 'witnessed', memoryClass: 'unclassified',
       authorizationPolicyVersion: 'visibility-v1', authorizedFields: ['summary'],
       authorizedFacts: { summary: '旧 grant 身份继续有效' }, summary: '旧 grant 身份继续有效',
     };
@@ -137,7 +137,42 @@ describe('NPC memory turn journal', () => {
       journal: first.journal,
       recordedObservations: 0,
       authorizedObservations: [],
+      authorizedSupersessions: [],
     });
+  });
+
+  it('keeps legacy grants unclassified and accepts only rules-authored current-state supersession metadata', () => {
+    const firstEvent = makeEvent();
+    const first = prepareNpcMemoryTurn({ journal: createNpcMemoryJournal('save-1', 0), saveId: 'save-1',
+      beforeRevision: 0, afterRevision: 1, events: [firstEvent], observedAtMinute: 10,
+      grantsForEvent: event => [{ npcId: 'npc-1', eventId: event.id, channel: 'witnessed',
+        authorizationPolicyVersion: 'visibility-v1', authorizedFields: ['summary'],
+        authorizedFacts: { summary: '林月住在中州。' }, visibleSummary: '林月住在中州。', memoryClass: 'current-state' }],
+      policyForNpc: () => 'accessibility-v1' });
+    if (first.status !== 'prepared') throw new Error('Expected prepared current-state observation');
+    expect(first.authorizedObservations[0]?.memoryClass).toBe('current-state');
+
+    const nextEvent = makeEvent(EVENT_2, { beforeRevision: 1, afterRevision: 2 });
+    const supersession = prepareNpcMemoryTurn({ journal: first.journal, saveId: 'save-1', beforeRevision: 1,
+      afterRevision: 2, events: [nextEvent], observedAtMinute: 20,
+      grantsForEvent: event => [{ npcId: 'npc-1', eventId: event.id, channel: 'witnessed',
+        authorizationPolicyVersion: 'visibility-v1', authorizedFields: ['summary'],
+        authorizedFacts: { summary: '林月已迁离中州。' }, visibleSummary: '林月已迁离中州。', memoryClass: 'current-state' }],
+      supersessionsForEvent: () => [{ npcId: 'npc-1', observationGrantId: first.authorizedObservations[0]!.grantId,
+        kind: 'premise-revised', reason: '规则事件确认住处已变化。', policyVersion: 'recall-v1' }],
+      policyForNpc: () => 'accessibility-v1' });
+    expect(supersession.status).toBe('prepared');
+    if (supersession.status !== 'prepared') throw new Error('Expected prepared supersession');
+    expect(supersession.authorizedSupersessions).toMatchObject([{ observationGrantId: first.authorizedObservations[0]?.grantId,
+      supersededByEventId: EVENT_2, supersededAtRevision: 2 }]);
+    expect(() => prepareNpcMemoryTurn({ journal: first.journal, saveId: 'save-1', beforeRevision: 1,
+      afterRevision: 2, events: [nextEvent], observedAtMinute: 20,
+      grantsForEvent: event => [{ npcId: 'npc-1', eventId: event.id, channel: 'witnessed',
+        authorizationPolicyVersion: 'visibility-v1', authorizedFields: ['summary'],
+        authorizedFacts: { summary: '林月已迁离中州。' }, visibleSummary: '林月已迁离中州.' }],
+      supersessionsForEvent: () => [{ npcId: 'npc-1', observationGrantId: first.authorizedObservations[0]!.grantId,
+        kind: 'premise-revised', reason: '规则事件确认住处已变化。', policyVersion: 'recall-v1' }],
+      policyForNpc: () => 'accessibility-v1' })).toThrow();
   });
 
   it('rejects stale, cross-save, migration, mixed-revision, and duplicate-event batches', () => {
