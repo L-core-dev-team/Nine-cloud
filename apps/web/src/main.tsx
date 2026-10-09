@@ -55,7 +55,8 @@ const go = (path: string) => {
   const sourceRoute = route();
   if (sourceRoute.startsWith('/game/')) {
     const sourceSaveId = sourceRoute.slice('/game/'.length);
-    try { sessionStorage.setItem(`jiuxiao_1_game_scroll_${sourceSaveId}`, String(window.scrollY)); } catch { /* Scroll position is optional. */ }
+    const reading = document.querySelector<HTMLElement>('.game-frame .story-reading');
+    try { sessionStorage.setItem(`jiuxiao_1_game_scroll_${sourceSaveId}`, String(reading ? reading.scrollTop : window.scrollY)); } catch { /* Scroll position is optional. */ }
   }
   const destination = path === '/turns' && !INTERNAL_TURN_WORKSPACE_ENABLED ? '/lobby' : path;
   if (destination.startsWith('/game/')) {

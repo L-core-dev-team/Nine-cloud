@@ -94,7 +94,7 @@ export function CloudGame({ saveId, onBack, onHome, onLogin, onWorld }: { saveId
 
   const eventRows = projectReceiptEvents(receipt);
   return <GameShell saveId={saveId} readingReady={!!save}>
-    <header className="game-topline"><div><span className="eyebrow">服务端规则存档</span><h1>行旅</h1></div><button className="secondary" onClick={onBack}>返回山门</button></header>
+    <header className="game-topline"><div><span className="eyebrow">服务端规则存档</span><h2>行旅</h2></div><button className="secondary" onClick={onBack}>返回山门</button></header>
     <div className="game-workspace cloud-game" data-testid="p2-cloud-game">
       <aside className="game-rail" aria-label="游戏资料"><button aria-expanded={showState} disabled={!save} onClick={() => setShowState(true)}>存档状态</button><button onClick={onWorld}>世界设定</button></aside>
       <div className="story-column">
