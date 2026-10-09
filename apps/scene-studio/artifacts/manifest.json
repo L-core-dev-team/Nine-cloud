@@ -1,0 +1,136 @@
+{
+  "status": "internal-candidate",
+  "sourceAndLicense": "unverified",
+  "authorApproval": "pending",
+  "source": "packages/scene-gate/src/index.ts",
+  "sourceFiles": [
+    {
+      "path": "packages/scene-gate/src/index.ts",
+      "sha256": "074a2ab6d21d989768e373d0b1e72c6b0b089d97e0684d55a2a60025b1e2a706",
+      "bytes": 25524
+    },
+    {
+      "path": "apps/scene-studio/src/main.tsx",
+      "sha256": "e6bcf80ac14e255f234d36c21b963ddd0c8ebc890500ebec45c8f74a9b6d904d",
+      "bytes": 8113
+    },
+    {
+      "path": "apps/scene-studio/src/style.css",
+      "sha256": "2aff629b7f3166be58fe0bda227eef7b3acf592be69b902a9747271c7a756e69",
+      "bytes": 1628
+    },
+    {
+      "path": "apps/scene-studio/scripts/export.mjs",
+      "sha256": "4d245e301890eebf7e8607896480e7f1106a2b8283e3eacf9df6c96c5e054c02",
+      "bytes": 11013
+    },
+    {
+      "path": "apps/scene-studio/scripts/local-server.mjs",
+      "sha256": "4bf8ef1a03987b322a8638aa35dd48e901c631d41f7d664abd75ca058a26112c",
+      "bytes": 2433
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256": "629beeb953703bdcd59d844f47f6054db56a90d1a631028d211464f50ee48ed0",
+      "bytes": 47161
+    }
+  ],
+  "sourceAssets": [
+    {
+      "path": "apps/scene-studio/src/assets/gate-environment-landscape.webp",
+      "sha256": "3fdf4cae5eeaaf425cf2d9602278082ff91cc0f30a777186492f4163acf1f8e7",
+      "bytes": 179460
+    },
+    {
+      "path": "apps/scene-studio/src/assets/gate-environment-portrait.webp",
+      "sha256": "264952cda3b85e739ed467b8db6b725827573c2c80ee7949e7caa3da810ea6d9",
+      "bytes": 198506
+    }
+  ],
+  "seconds": 8,
+  "fps": 30,
+  "technicalQC": "passed",
+  "blackFrameScan": "passed",
+  "codec": "h264",
+  "pixelFormat": "yuv420p",
+  "frameCountPerVariant": 240,
+  "loopMetrics": {
+    "landscape": {
+      "firstToSecondFrameSsim": 0.978299,
+      "lastToFirstFrameSsim": 0.980611
+    },
+    "portrait": {
+      "firstToSecondFrameSsim": 0.978434,
+      "lastToFirstFrameSsim": 0.978144
+    }
+  },
+  "generatedAt": "2026-10-04T13:37:29.080Z",
+  "modelUsage": {
+    "exportModelCalls": 0,
+    "authoringTokens": null,
+    "authoringMetering": "unavailable in this Codex session"
+  },
+  "elapsedSeconds": 92,
+  "files": [
+    {
+      "path": "mountain-gate.landscape.mp4",
+      "sha256": "5362b253950438fcfa1ef18b589e2e36d7d480161f0d2092cba292e2ef2c4e8a",
+      "bytes": 624002
+    },
+    {
+      "path": "mountain-gate.landscape.webp",
+      "sha256": "1400f026b41916206fcf3aa1d566218d66663fdfcde1a8d27b21035764727eff",
+      "bytes": 58956
+    },
+    {
+      "path": "mountain-gate.landscape.contact.png",
+      "sha256": "1932965a35c76e2d2ab04f48c8c648bfcb2a69c930d74a4024a36b48a8b1b8f6",
+      "bytes": 1125825
+    },
+    {
+      "path": "key-000.landscape.png",
+      "sha256": "c686e17624fed8247ee68d9b868b0813f7d896b2afee2ee6e02bb37c3f768566",
+      "bytes": 640454
+    },
+    {
+      "path": "key-080.landscape.png",
+      "sha256": "4ed154a6a8c3e6361f3916c79e329cde64c26114731b8f9b531fefe409a572c8",
+      "bytes": 643075
+    },
+    {
+      "path": "key-160.landscape.png",
+      "sha256": "c8877b59adfa50eea79c18e94b426645574d0f6bf4d47a2bc0ca6ed8d76a6f15",
+      "bytes": 638858
+    },
+    {
+      "path": "mountain-gate.portrait.mp4",
+      "sha256": "de9bce03c7eba6319bba2985894ebb35f8e245b2d559453ef750190cb2011aa2",
+      "bytes": 712139
+    },
+    {
+      "path": "mountain-gate.portrait.webp",
+      "sha256": "02971a421e74ccea90ae43c9632c393285c0d44c986ec7aee6d37d8837f8c208",
+      "bytes": 59950
+    },
+    {
+      "path": "mountain-gate.portrait.contact.png",
+      "sha256": "b6564c6c129310ac6cd012cda4c57ffc4461ef0c6dc2949aec21bbc258bebc22",
+      "bytes": 3138738
+    },
+    {
+      "path": "key-000.portrait.png",
+      "sha256": "24e372d11adba36fdb0514526814333f8736c9ecb7a5ffc6e96a70a7b9361d4a",
+      "bytes": 647581
+    },
+    {
+      "path": "key-080.portrait.png",
+      "sha256": "1aba847fc40b95df539478bb3ffad3b262ee0e0979b1480e2e4d49d4f97f079a",
+      "bytes": 651847
+    },
+    {
+      "path": "key-160.portrait.png",
+      "sha256": "7929da5dbf336e47cc1a5dcb928608b6d8bba7e7afff3108e889f46bd792d37b",
+      "bytes": 650508
+    }
+  ]
+}

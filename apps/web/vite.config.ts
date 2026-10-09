@@ -11,6 +11,25 @@ const pagesApprovedFont: Plugin = { name: 'pages-approved-font', apply: 'build',
   }
 } };
 
+// Vite runs in production mode for `pnpm build`, but the workspace build needs a
+// testable bundle that still contains the candidate scene media (the foundation
+// e2e asserts those posters are served) even though their licences are pending.
+// The release licence gate therefore stays opt-in through an explicit target, and
+// CI proves it fails closed in a dedicated `JIUXIAO_BUILD_TARGET=release` step.
+//
+// The risk that gate must not carry is a silent typo: `relese` or `staging` used
+// to behave exactly like `test`, skipping the audit with no signal. Recognise the
+// intended targets explicitly and reject anything else, so a misspelling is a
+// build error rather than an unlicensed bundle.
+const BUILD_TARGET = process.env.JIUXIAO_BUILD_TARGET ?? 'test';
+// `release` audits the media receipts; `cloudflare-preview` packages via its own
+// approval-gated copier; `test` is the workspace/e2e bundle. Anything else — a
+// typo, an unknown CI variable — must fail rather than silently skip the gate.
+const KNOWN_TARGETS = new Set(['release', 'cloudflare-preview', 'test']);
+if (!KNOWN_TARGETS.has(BUILD_TARGET)) {
+  throw new Error(`Unknown JIUXIAO_BUILD_TARGET "${BUILD_TARGET}"; expected one of ${[...KNOWN_TARGETS].join(', ')}. Refusing to build without a recognised media-licence posture.`);
+}
+
 function requirePublicPreviewApi(raw: string | undefined) {
   // A frontend-only preview is allowed without a backend. The transport rejects
   // API requests in that case, rather than calling a localhost or SPA endpoint.
@@ -26,7 +45,8 @@ function requirePublicPreviewApi(raw: string | undefined) {
 }
 
 export default defineConfig(({ mode }) => {
-  const pagesPreview = process.env.JIUXIAO_BUILD_TARGET === 'cloudflare-preview';
+  const pagesPreview = BUILD_TARGET === 'cloudflare-preview';
+  const releaseBuild = BUILD_TARGET === 'release';
   if (pagesPreview) requirePublicPreviewApi(loadEnv(mode, webRoot, 'VITE_').VITE_API_BASE_URL);
   return {
     define: { 'import.meta.env.JIUXIAO_PAGES_PREVIEW': JSON.stringify(pagesPreview) },
@@ -35,7 +55,7 @@ export default defineConfig(({ mode }) => {
     // builds continue to use the stricter media receipt gate below.
     publicDir: pagesPreview ? false : 'public',
     plugins: [react(), { name: 'media-release-gate', apply: 'build', buildStart() {
-      if (process.env.JIUXIAO_BUILD_TARGET === 'release') {
+      if (releaseBuild) {
         const publicRoot = fileURLToPath(new URL('./public/', import.meta.url));
         requireReleasedMedia(JSON.parse(readFileSync(new URL('./public/scenes/candidate/asset-manifest.json', import.meta.url), 'utf8')), publicRoot);
       }
