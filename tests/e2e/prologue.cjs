@@ -95,16 +95,18 @@ async function stop(child) {
         API_PORT: String(port),
         AUTH_ENABLED: 'true',
         AUTH_PUBLIC_ORIGIN: publicOrigin,
-        AUTH_SECRET: randomBytes(32).toString('hex'),
-        AUTH_MAIL_FROM: 'p1-test@example.invalid',
         // NODE_ENV=production above makes the runtime demand an approved public
-        // policy URL and version before it looks at anything else, and the mailer
-        // defaults to the Tencent SES API. This test never sends mail — it is
-        // about the rule-bundle gate — so both have to be supplied for the child
-        // to reach that gate at all. The unreachable SMTP port stays: startup
-        // must not depend on a reachable mail server.
+        // policy URL and version before it validates anything else. This test is
+        // about the rule-bundle gate, not about auth, so it supplies both.
         AUTH_PRIVACY_POLICY_URL: 'https://jiuxiao-e2e.invalid/privacy',
         AUTH_PRIVACY_POLICY_VERSION: 'e2e-2026-10-09',
+        AUTH_SECRET: randomBytes(32).toString('hex'),
+        AUTH_MAIL_FROM: 'p1-test@example.invalid',
+        // The runtime defaults to the Tencent SES API, so the SMTP transport has
+        // to be named explicitly. This test never sends mail — it seeds the
+        // session rows directly — it only needs the API to boot past the
+        // fail-closed mailer check, which is why the unreachable port stays:
+        // startup must not depend on a reachable mail server.
         AUTH_MAILER: 'smtp',
         SMTP_URL: 'smtp://127.0.0.1:1',
         DATABASE_URL: testDatabaseUrl,
