@@ -304,7 +304,7 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
       '(id, owner_id, revision, schema_version, canon_version, rule_version, memory_policy_version, memory_mode, memory_policy, snapshot) ' +
       'VALUES ($1, $2, 2, 2, $3, $4, $5, $6, $7::jsonb, $8::jsonb)',
       [refusedSaveId, recallOwnerId, 'canon-test-v1', 'rules-test-v1', recallPolicy.policyVersion, 'forgetting',
-        JSON.stringify(recallPolicy),
+        JSON.stringify({ ...recallPolicy, mode: 'forgetting' }),
         JSON.stringify({ playerId: 'player-s4-test', locationId: 'ferry', elapsedMinutes: 30, facts: { gameMinute: 30 } })],
     );
     const refusedUrl = `/api/games/${refusedSaveId}/npcs/${recallNpcId}/memory-recall?utterance=${encodeURIComponent('你还记得中州渡口吗？')}`;
