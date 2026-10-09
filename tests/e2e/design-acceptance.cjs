@@ -349,6 +349,12 @@ async function runDesignAcceptance(browser, origin, outputDir) {
           const reported = Number(scope?.textContent?.match(/当前\s*(\d+)\s*条/)?.[1]);
           return Number.isInteger(reported) && document.querySelectorAll('.worldbook-entry').length >= reported;
         }, null, { timeout: 10000 });
+        // content-visibility: auto re-layouts off-screen worldbook entries from their
+        // 420px contain-intrinsic-size estimate as the full-page capture scrolls, so
+        // the document height drifts between frames (observed 12499px vs 12177px).
+        // Render every entry at full size for the whole capture session so the
+        // source shot and all dynamic frames share one stable document height.
+        await page.addStyleTag({ content: '.worldbook-entry { content-visibility: visible !important; }' });
       }
       await page.evaluate(() => { document.documentElement.dataset.jxAtmosphere = 'off'; return document.fonts.ready; });
       const staticRuns = await getTextRuns(page);
