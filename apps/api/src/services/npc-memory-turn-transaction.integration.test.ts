@@ -296,15 +296,22 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
     });
 
     // A forgetting save refuses honestly at the route boundary instead of degrading.
-    const setMemoryMode = (mode: 'continue' | 'forgetting') => pool.query(
-      'UPDATE game_saves SET memory_mode=$2, memory_policy=jsonb_set(memory_policy,\'{mode}\',$3::jsonb) WHERE id=$1',
-      [recallSaveId, mode, JSON.stringify(mode)]);
-    await setMemoryMode('forgetting');
-    const refused = await app.request(recallUrl);
+    // Memory mode is pinned at creation for schema-2 saves, so the refusal save is
+    // created in forgetting mode rather than toggling the pinned first save.
+    const refusedSaveId = 's4-save-' + randomUUID();
+    await pool.query(
+      'INSERT INTO game_saves ' +
+      '(id, owner_id, revision, schema_version, canon_version, rule_version, memory_policy_version, memory_mode, memory_policy, snapshot) ' +
+      'VALUES ($1, $2, 2, 2, $3, $4, $5, $6, $7::jsonb, $8::jsonb)',
+      [refusedSaveId, recallOwnerId, 'canon-test-v1', 'rules-test-v1', recallPolicy.policyVersion, 'forgetting',
+        JSON.stringify(recallPolicy),
+        JSON.stringify({ playerId: 'player-s4-test', locationId: 'ferry', elapsedMinutes: 30, facts: { gameMinute: 30 } })],
+    );
+    const refusedUrl = `/api/games/${refusedSaveId}/npcs/${recallNpcId}/memory-recall?utterance=${encodeURIComponent('你还记得中州渡口吗？')}`;
+    const refused = await app.request(refusedUrl);
     expect(refused.status).toBe(503);
     expect(await refused.json()).toEqual({ code: 'RECALL_MODE_UNAVAILABLE' });
 
-    await setMemoryMode('continue');
     const foreign = await app.request(recallUrl, { headers: { 'x-jiuxiao-account': 'other-owner' } });
     expect(foreign.status).toBe(401);
 
@@ -313,6 +320,7 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
       await cleanup.query("SELECT set_config('jiuxiao.account_erasure_operation','test-cleanup',true)");
       await cleanup.query('DELETE FROM npc_authorized_observation_outbox WHERE save_id=$1', [recallSaveId]);
       await cleanup.query('DELETE FROM game_saves WHERE id=$1 AND owner_id=$2', [recallSaveId, recallOwnerId]);
+      await cleanup.query('DELETE FROM game_saves WHERE id=$1 AND owner_id=$2', [refusedSaveId, recallOwnerId]);
       await cleanup.query('COMMIT');
     } catch { await cleanup.query('ROLLBACK').catch(() => undefined); } finally { cleanup.release(); } }
   });
