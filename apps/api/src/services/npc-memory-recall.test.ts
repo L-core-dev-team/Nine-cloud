@@ -42,6 +42,12 @@ function observation(memoryClass: 'historical-event' | 'current-state' | 'unclas
   };
 }
 
+const saveV3: SaveEnvelope = {
+  ...save, schemaVersion: 3, canonArtifactHash: `sha256:${'b'.repeat(64)}`,
+  branchId: 'root', parentBranchId: null, forkRevision: 0,
+  createdPolicyVersion: NPC_MEMORY_RECALL_POLICY.retrievalVersion, sourceMigrationId: null,
+};
+
 describe('P4 authorized memory retrieval consumer', () => {
   it('reads through the committed pre-turn revision and only passes authorized historical evidence', async () => {
     const reader = vi.fn(async (_owner: string, _saveId: string, _npc: string, _cursor?: unknown, _limit?: number, _throughRevision?: number) => ({
@@ -51,6 +57,18 @@ describe('P4 authorized memory retrieval consumer', () => {
     expect(result?.kind).toBe('evidence');
     if (result?.kind === 'evidence') expect(result.recall).toMatchObject({ status: 'complete', slot: 'historical-event', authorizedFacts: { summary: '林月曾在中州渡口救下旅人。' } });
     expect(reader).toHaveBeenCalledWith('owner', saveId, npcId, undefined, 100, 1);
+  });
+
+  it('accepts the same pinned policy on v3 lineage envelopes without loosening any other check', async () => {
+    const reader = vi.fn(async () => ({ items: [observation()], nextCursor: null }));
+    const result = await resolveNpcMemoryRecall({ reader, ownerId: 'owner', save: saveV3, receipt, npcId, utterance: '你还记得中州渡口吗？' });
+    expect(result?.kind).toBe('evidence');
+    expect(reader).toHaveBeenCalledWith('owner', saveId, npcId, undefined, 100, 1);
+    const forgettingV3 = await resolveNpcMemoryRecall({ reader, ownerId: 'owner',
+      save: { ...saveV3, memoryMode: 'forgetting', memoryPolicy: { ...saveV3.memoryPolicy, mode: 'forgetting' } },
+      receipt, npcId, utterance: '你还记得中州渡口吗？' });
+    expect(forgettingV3).toMatchObject({ kind: 'deterministic', reason: 'policy-unavailable' });
+    expect(reader).toHaveBeenCalledTimes(1);
   });
 
   it('does not report a historical current-state observation as a fact about now', async () => {

@@ -1,10 +1,12 @@
 import type { Hono } from 'hono';
-import { ActionIntentSchema } from '@jiuxiao/contracts';
+import { ActionIntentSchema, type TurnReceipt } from '@jiuxiao/contracts';
+import { readGameMinute } from '@jiuxiao/domain';
 import { readJson, type CloudSaveRouteAuth } from './saves.js';
 import { serverTurnHttpResponse } from './turn-http.js';
 import type { AuthoritativeGameService } from '../services/authoritative-game.js';
 import { consumeAccountQuota } from '../services/account-rate-limit.js';
 import { CloudCapacityError } from '../services/cloud-save-service.js';
+import { resolveNpcMemoryRecall, type AuthorizedRecallPageReader } from '../services/npc-memory-recall.js';
 import type { ServerTurnService } from '../services/server-turn.js';
 import { SaveSchemaNotReadyError } from '../services/save-storage-contract.js';
 
@@ -13,6 +15,7 @@ export function mountGames(
   service: AuthoritativeGameService,
   auth: CloudSaveRouteAuth,
   turns?: ServerTurnService,
+  memoryRecall?: { reader: AuthorizedRecallPageReader },
 ) {
   app.get('/api/games/:saveId', async c => {
     const owner = await resolveOwner(c.req.raw, c.req.header('x-jiuxiao-account'), auth);
@@ -36,6 +39,35 @@ export function mountGames(
       if (result.status === 'not_found') return c.json({ code: 'NOT_FOUND' }, 404);
       return c.json(result);
     } catch {
+      return c.json({ code: 'GAME_UNAVAILABLE' }, 503);
+    }
+  });
+
+  // P4: read-only authorized memory recall. It never writes state, grants, or receipts.
+  if (memoryRecall) app.get('/api/games/:saveId/npcs/:npcId/memory-recall', async c => {
+    const owner = await resolveOwner(c.req.raw, c.req.header('x-jiuxiao-account'), auth);
+    if (!owner) return c.json({ code: 'UNAUTHENTICATED' }, 401);
+    if (!await consumeAccountQuota(owner, 'recall', 60, 3_600_000)) return c.json({ code: 'RATE_LIMITED' }, 429);
+    const npcId = c.req.param('npcId');
+    if (!npcId.trim() || npcId.length > 200) return c.json({ code: 'NOT_FOUND' }, 404);
+    const utterance = c.req.query('utterance');
+    if (typeof utterance !== 'string' || !utterance.trim() || utterance.length > 8_000) return c.json({ recall: null });
+    try {
+      const game = await service.read(owner, c.req.param('saveId'));
+      if (game.status === 'not_found') return c.json({ code: 'NOT_FOUND' }, 404);
+      // Forgetting saves cannot answer from a continue-mode policy: refuse honestly instead of silently degrading.
+      if ('memoryMode' in game.save && game.save.memoryMode === 'forgetting') return c.json({ code: 'RECALL_MODE_UNAVAILABLE' }, 503);
+      const save = game.save;
+      // The current committed revision is the recall boundary. The read is a partial
+      // TurnReceipt projection; resolveNpcMemoryRecall only consumes these fields.
+      const receipt = {
+        saveId: save.saveId, branchId: 'root' as const, resultingRevision: save.revision,
+        ...(save.schemaVersion === 1 ? {} : { clockMinute: readGameMinute(save.state) }),
+      } as TurnReceipt;
+      const recall = await resolveNpcMemoryRecall({ reader: memoryRecall.reader, ownerId: owner, save, receipt, npcId, utterance });
+      return c.json({ recall });
+    } catch (error) {
+      if (error instanceof SaveSchemaNotReadyError) return c.json({ code: 'SAVE_SCHEMA_NOT_READY' }, 503);
       return c.json({ code: 'GAME_UNAVAILABLE' }, 503);
     }
   });

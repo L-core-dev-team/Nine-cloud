@@ -13,6 +13,7 @@ import type { AccountLifecycle } from './services/account-lifecycle.js';
 import type { AccountExport } from './services/account-export.js';
 import {mountGames} from './routes/games.js';
 import type {AuthoritativeGameService} from './services/authoritative-game.js';
+import type { AuthorizedRecallPageReader } from './services/npc-memory-recall.js';
 import type { AccountQuotaLimiter } from './services/account-rate-limit.js';
 
 export type ReadinessDatabase = {
@@ -23,7 +24,7 @@ export function createApp(database?: ReadinessDatabase, cloudSaves?: {
   service: CloudSaveService;
   auth: CloudSaveRouteAuth;
   archive?: CloudArchiveLifecycle;
-}, emailAuth?: { service: AuthSessionService; routesService?: AuthSessionService; supabaseAuth?: SupabaseAuthService | undefined; origin: string; cookieSameSite?: 'Strict' | 'None'; trustedProxyAddresses?: readonly string[]; privacyPolicyUrl?: string | null; privacyPolicyVersion?: string | null; lifecycle?: AccountLifecycle; exporter?: AccountExport; accountQuota?: AccountQuotaLimiter }, turns?: ServerTurnRouteDependencies & {games?:AuthoritativeGameService}) {
+}, emailAuth?: { service: AuthSessionService; routesService?: AuthSessionService; supabaseAuth?: SupabaseAuthService | undefined; origin: string; cookieSameSite?: 'Strict' | 'None'; trustedProxyAddresses?: readonly string[]; privacyPolicyUrl?: string | null; privacyPolicyVersion?: string | null; lifecycle?: AccountLifecycle; exporter?: AccountExport; accountQuota?: AccountQuotaLimiter }, turns?: ServerTurnRouteDependencies & {games?:AuthoritativeGameService;memoryRecall?:{reader:AuthorizedRecallPageReader}|undefined}) {
   const app = new Hono();
   if (emailAuth) mountAuth(app, emailAuth.routesService ?? emailAuth.service, emailAuth.origin, emailAuth.cookieSameSite, emailAuth.trustedProxyAddresses,
     () => ({ ...(emailAuth.supabaseAuth?.providers() ?? { email: true, phone: false }),
@@ -50,7 +51,7 @@ export function createApp(database?: ReadinessDatabase, cloudSaves?: {
   // resolver. The production entry point supplies it only when auth is enabled.
   if (cloudSaves) mountCloudSaveRoutes(app, cloudSaves);
   if (turns) mountServerTurnRoutes(app, turns);
-  if (turns?.games) mountGames(app,turns.games,turns.auth,turns.service);
+  if (turns?.games) mountGames(app,turns.games,turns.auth,turns.service,turns.memoryRecall);
 
   app.notFound(c => c.json({ code: 'NOT_FOUND', message: '接口不存在。' }, 404));
   return app;

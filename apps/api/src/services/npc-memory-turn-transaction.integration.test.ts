@@ -1,9 +1,13 @@
 import { randomUUID } from 'node:crypto';
 import { beforeAll, afterAll, describe, expect, it } from 'vitest';
+import { Hono } from 'hono';
 import { Pool } from 'pg';
 import type { DomainEvent, SaveEnvelope, TurnReceipt } from '@jiuxiao/contracts';
 import { createNpcMemoryJournal, prepareNpcMemoryTurn, type NpcMemoryJournal } from '@jiuxiao/domain';
 import { PostgresNpcMemoryTurnRepository } from './npc-memory-turn-transaction.js';
+import { AuthoritativeGameService } from './authoritative-game.js';
+import { NPC_MEMORY_RECALL_POLICY } from './npc-memory-recall.js';
+import { mountGames } from '../routes/games.js';
 
 const databaseUrl = process.env.TEST_DATABASE_URL;
 const suite = databaseUrl ? describe : describe.skip;
@@ -221,5 +225,88 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
       ownerId, expectedRevision: 1, ...secondInput, events: [secondInput.event],
     });
     expect(replay).toEqual({ kind: 'duplicate', receipt: secondInput.receipt });
+  });
+
+  it('recalls a committed authorized observation through the read-only endpoint', async () => {
+    const recallOwnerId = 's4-owner-' + randomUUID();
+    const recallSaveId = 's4-save-' + randomUUID();
+    const recallEventId = randomUUID();
+    const recallNpcId = 'npc-s4-recall';
+    const grantId = [recallSaveId, 'root', recallEventId, recallNpcId].map(part => `${part.length}:${part}`).join('');
+    const recallPolicy = {
+      mode: 'continue', policyVersion: NPC_MEMORY_RECALL_POLICY.retrievalVersion, schemaVersion: 1,
+      clockBasis: 'game-minute+npc-grant-sequence-v1' as const,
+      policyArtifactHash: NPC_MEMORY_RECALL_POLICY.policyArtifactHash,
+      cueDictionaryHash: NPC_MEMORY_RECALL_POLICY.cueDictionaryHash,
+      normalizerVersion: NPC_MEMORY_RECALL_POLICY.normalizerVersion,
+      retrievalVersion: NPC_MEMORY_RECALL_POLICY.retrievalVersion,
+      visibilityPolicyVersion: 'visibility-v1', visibilityPolicyHash: `sha256:${'c'.repeat(64)}`,
+      createdAtRevision: 0,
+    };
+    await pool.query('INSERT INTO auth_accounts(id,email) VALUES($1,$2) ON CONFLICT DO NOTHING', [recallOwnerId, recallOwnerId + '@fixture.invalid']);
+    await pool.query(
+      'INSERT INTO game_saves ' +
+      '(id, owner_id, revision, schema_version, canon_version, rule_version, memory_policy_version, memory_mode, memory_policy, snapshot) ' +
+      'VALUES ($1, $2, 2, 2, $3, $4, $5, $6, $7::jsonb, $8::jsonb)',
+      [recallSaveId, recallOwnerId, 'canon-test-v1', 'rules-test-v1', recallPolicy.policyVersion, 'continue',
+        JSON.stringify(recallPolicy),
+        JSON.stringify({ playerId: 'player-s4-test', locationId: 'ferry', elapsedMinutes: 30, facts: { gameMinute: 30 } })],
+    );
+    await pool.query(
+      'INSERT INTO npc_authorized_observation_outbox ' +
+      '(grant_id,grant_id_version,save_id,branch_id,npc_id,event_id,event_revision,observed_at_minute,channel,memory_class,' +
+      'authorization_policy_version,authorized_fields,authorized_facts,summary) ' +
+      'VALUES ($1,1,$2,\'root\',$3,$4,1,18,\'witnessed\',\'historical-event\',\'visibility-v1\',$5::jsonb,$6::jsonb,$7)',
+      [grantId, recallSaveId, recallNpcId, recallEventId, JSON.stringify(['summary']),
+        JSON.stringify({ summary: '林月曾在中州渡口救下旅人。' }), '林月曾在中州渡口救下旅人。'],
+    );
+    const games = new AuthoritativeGameService({
+      getForOwner: async (owner, id) => {
+        const row = (await pool.query(
+          'SELECT revision, schema_version, canon_version, rule_version, memory_policy_version, memory_mode, memory_policy, snapshot ' +
+          'FROM game_saves WHERE id=$1 AND owner_id=$2', [id, owner])).rows[0];
+        if (!row) return null;
+        return {
+          schemaVersion: Number(row.schema_version), saveId: id,
+          canonVersion: row.canon_version, ruleVersion: row.rule_version,
+          memoryPolicyVersion: row.memory_policy_version,
+          memoryMode: row.memory_mode, memoryPolicy: row.memory_policy,
+          revision: Number(row.revision), state: row.snapshot,
+        } as SaveEnvelope;
+      },
+      createForOwner: async () => false,
+    });
+    const app = new Hono();
+    mountGames(app, games, { resolveOwnerId: async () => recallOwnerId }, undefined, {
+      reader: (owner, id, npc, cursor, limit, throughRevision) =>
+        repository.getAuthorizedObservationPage(owner, id, npc, cursor, limit, throughRevision),
+    });
+    const recallUrl = `/api/games/${recallSaveId}/npcs/${recallNpcId}/memory-recall?utterance=${encodeURIComponent('你还记得中州渡口吗？')}`;
+    const found = await app.request(recallUrl);
+    expect(found.status).toBe(200);
+    expect(await found.json()).toMatchObject({
+      recall: { kind: 'evidence', recall: { status: 'complete', slot: 'historical-event', authorizedFacts: { summary: '林月曾在中州渡口救下旅人。' } } },
+    });
+
+    // A forgetting save refuses honestly at the route boundary instead of degrading.
+    const setMemoryMode = (mode: 'continue' | 'forgetting') => pool.query(
+      'UPDATE game_saves SET memory_mode=$2, memory_policy=jsonb_set(memory_policy,\'{mode}\',$3::jsonb) WHERE id=$1',
+      [recallSaveId, mode, JSON.stringify(mode)]);
+    await setMemoryMode('forgetting');
+    const refused = await app.request(recallUrl);
+    expect(refused.status).toBe(503);
+    expect(await refused.json()).toEqual({ code: 'RECALL_MODE_UNAVAILABLE' });
+
+    await setMemoryMode('continue');
+    const foreign = await app.request(recallUrl, { headers: { 'x-jiuxiao-account': 'other-owner' } });
+    expect(foreign.status).toBe(401);
+
+    { const cleanup = await pool.connect(); try {
+      await cleanup.query('BEGIN');
+      await cleanup.query("SELECT set_config('jiuxiao.account_erasure_operation','test-cleanup',true)");
+      await cleanup.query('DELETE FROM npc_authorized_observation_outbox WHERE save_id=$1', [recallSaveId]);
+      await cleanup.query('DELETE FROM game_saves WHERE id=$1 AND owner_id=$2', [recallSaveId, recallOwnerId]);
+      await cleanup.query('COMMIT');
+    } catch { await cleanup.query('ROLLBACK').catch(() => undefined); } finally { cleanup.release(); } }
   });
 });

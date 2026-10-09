@@ -14,6 +14,7 @@ import type {
 } from './npc-memory-turn-transaction.js';
 import type { NarrativeContext } from './narrative-scheduler.js';
 import { buildNarrativeMemoryContext, type AuthorizedObservationPageReader } from './narrative-memory-context.js';
+import type { AuthorizedRecallPageReader } from './npc-memory-recall.js';
 import { buildP1NarrativeHints, ensureP1NarrativeHints } from './p1-narrative-hints.js';
 
 /** Supplied only by the host's versioned rules and visibility implementation. */
@@ -33,6 +34,8 @@ export interface ServerTurnRepository {
   recordNonAcceptedDecision(input: NonAcceptedTurnRecordInput): Promise<NonAcceptedTurnRecordResult>;
   commitAcceptedTurn(input: AcceptedTurnCommitInput): Promise<AcceptedTurnCommitResult>;
   getAuthorizedObservationPage?: AuthorizedObservationPageReader;
+  /** Read-only authorized recall page for the P4 NPC memory recall endpoint. */
+  recallObservationPage?: AuthorizedRecallPageReader;
   recordNarrativeStatus?(ownerId:string,saveId:string,requestId:string,attemptId:string,status:'generating'|'received'|'unavailable'|'timeout'|'cancelled'):Promise<void>;
 }
 export type NarrativeResult =

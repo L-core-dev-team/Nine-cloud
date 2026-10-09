@@ -43,7 +43,8 @@ export async function resolveNpcMemoryRecall(input: {
   const cue = recognizeAuthorizedMemoryCue(input.utterance);
   if (!cue) return null;
   const { save, receipt } = input;
-  if (save.schemaVersion !== 2 || save.memoryMode !== 'continue'
+  // V3 adds explicit branch lineage only; the pinned memory policy identity is unchanged.
+  if ((save.schemaVersion !== 2 && save.schemaVersion !== 3) || save.memoryMode !== 'continue'
     || save.memoryPolicy.retrievalVersion !== NPC_MEMORY_RECALL_POLICY.retrievalVersion
     || save.memoryPolicy.normalizerVersion !== NPC_MEMORY_RECALL_POLICY.normalizerVersion
     || save.memoryPolicy.policyArtifactHash !== NPC_MEMORY_RECALL_POLICY.policyArtifactHash

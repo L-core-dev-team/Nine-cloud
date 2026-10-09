@@ -34,15 +34,17 @@ const preparedRuntime=plugin?prepareTurnRuntime(plugin,await loadNarrativeSlots(
 const runtime=preparedRuntime&&plugin?await connectActionTextRuntime(preparedRuntime,plugin):undefined;
 const dataPolicy=process.env.NODE_ENV==='production'?loadDataPolicy(process.env.ACCOUNT_DATA_POLICY_PATH):undefined;
 const cloudRepository=process.env.NODE_ENV==='production'?new PolicyCloudSaveRepository(pool,dataPolicy):new PostgresCloudSaveRepository(pool,true);
+const turnRepository=createPostgresServerTurnRepository(pool, true,process.env.NODE_ENV==='production'?()=>dataPolicy:undefined);
 const app = createApp({ query: sql => pool.query(sql) }, emailAuth ? {
   service: new CloudSaveService(cloudRepository, true, true),
   archive: new CloudArchiveLifecycle(pool, true),
   auth: { resolveOwnerId: async request => (await emailAuth.service.resolve(sessionToken(request)))?.ownerId || null },
 } : undefined, emailAuth, emailAuth ? {
   // No author rules are bundled: absent host plugin remains fail closed.
-  service: new ServerTurnService(createPostgresServerTurnRepository(pool, true,process.env.NODE_ENV==='production'?()=>dataPolicy:undefined),runtime?.rules,runtime?.narrator,120_000,runtime?.narrativeFallback),
+  service: new ServerTurnService(turnRepository,runtime?.rules,runtime?.narrator,120_000,runtime?.narrativeFallback),
   games: new AuthoritativeGameService(cloudRepository,runtime),
   auth: { resolveOwnerId: async request => (await emailAuth.service.resolve(sessionToken(request)))?.ownerId || null },
+  memoryRecall: turnRepository.recallObservationPage ? { reader: turnRepository.recallObservationPage } : undefined,
 } : undefined);
 
 const server = serve({ fetch: app.fetch, port, hostname });

@@ -20,6 +20,7 @@ export function createPostgresServerTurnRepository(pool: Pool, requiresLiveAccou
     getReceiptForOwner: (owner, id, key) => turns.getReceiptForOwner(owner, id, key),
     getForOwner: (owner, id) => turns.getForOwner(owner, id),
     getAuthorizedObservationPage: (owner, id, npcId, cursor, limit) => turns.getAuthorizedObservationPage(owner, id, npcId, cursor, limit),
+    recallObservationPage: (owner, id, npcId, cursor, limit, throughRevision) => turns.getAuthorizedObservationPage(owner, id, npcId, cursor, limit, throughRevision),
     recordNonAcceptedDecision: input => turns.recordNonAcceptedDecision(input),
     commitAcceptedTurn: input => turns.commitAcceptedTurn(input),
     recordNarrativeStatus: async(owner,id,key,attempt,status)=>{
