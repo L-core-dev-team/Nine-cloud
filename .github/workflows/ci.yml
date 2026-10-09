@@ -58,6 +58,19 @@ jobs:
         run: node --test scripts/build/ci-evidence.test.mjs
       - name: Test fail-closed media publication gate
         run: node scripts/audit/media-release-check.test.mjs
+      - name: Validate the production Caddyfile
+        # SEC-06: the reverse-proxy config is part of the production topology, so
+        # it belongs under review like any other code. A Caddyfile syntax error
+        # makes Caddy exit 1 on startup and restart-loop; ACME never runs, no
+        # certificate is issued, and the log shows nothing but
+        # "Using config from file" — so an unreviewed mistake here keeps the API
+        # dark while looking like it is merely waiting on DNS. Validate it on
+        # every build with the same image tag the server runs.
+        run: |
+          docker run --rm \
+            --volume "$PWD/deployment/Caddyfile:/etc/caddy/Caddyfile:ro" \
+            caddy:2-alpine \
+            caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build

@@ -1,0 +1,21 @@
+# 自动 HTTPS（Let's Encrypt），反代 API 并保留认证所需头
+api.jiuxiaogame.cn {
+    encode zstd gzip
+
+    # 回合请求体较大，放宽上限。
+    # 注意：Caddyfile 的块起始 `{` 必须是该行最后一个 token，
+    # 单行写法 `request_body { max_size 8MB }` 会被适配器拒绝：
+    #   ERROR adapt/caddyfile: Unexpected next token after '{' on same line
+    # 那个错误让 Caddy 启动即退出（exit 1）并反复重启，
+    # 于是连 ACME 证书申请都不会开始，日志里只看得到 "Using config from file"。
+    request_body {
+        max_size 8MB
+    }
+
+    reverse_proxy api:8787 {
+        header_up Host {host}
+        header_up Origin {header.Origin}
+        header_up Cookie {header.Cookie}
+        header_down Access-Control-Allow-Origin {header.Origin}
+    }
+}
