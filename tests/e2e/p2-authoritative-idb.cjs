@@ -189,7 +189,7 @@ async function stop(child) {
           const summary = '一名目击者看见旅人经过。';
           return {
             grantId: stableGrantIdV2(event.saveId, 'root', 'npc-witness', event.id, authorizationPolicyVersion),
-            grantIdVersion: 2, saveId: event.saveId, branchId: 'root', npcId: 'npc-witness', eventId: event.id,
+            grantIdVersion: 2, saveId: event.saveId, branchId: 'root', npcId: 'npc-witness', eventId: event.id, memoryClass: 'unclassified',
             eventRevision: event.afterRevision, observedAtMinute: 15, channel: 'witnessed', authorizationPolicyVersion,
             authorizedFields: ['summary'], authorizedFacts: { summary }, summary,
           };
@@ -227,7 +227,7 @@ async function stop(child) {
           const summary = '一名目击者看见旅人经过。';
           return {
             grantId: stableGrantIdV2(event.saveId, 'root', 'npc-witness', event.id, authorizationPolicyVersion),
-            grantIdVersion: 2, saveId: event.saveId, branchId: 'root', npcId: 'npc-witness', eventId: event.id,
+            grantIdVersion: 2, saveId: event.saveId, branchId: 'root', npcId: 'npc-witness', eventId: event.id, memoryClass: 'unclassified',
             eventRevision: event.afterRevision, observedAtMinute: 15, channel: 'witnessed', authorizationPolicyVersion,
             authorizedFields: ['summary'], authorizedFacts: { summary }, summary,
           };
