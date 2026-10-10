@@ -24,7 +24,7 @@ body:has(.game-frame) { overflow: hidden; }
 :root[data-theme='day'] .game-frame .cloud-game-suggestions { color: #283c49; background: #faf9f4; }
 .game-frame .cloud-game-suggestions summary { min-height: 24px; cursor: pointer; }
 .game-frame .cloud-game .game-statusline { display: block; }
-.game-frame .story-opening { min-height: 0; }
+.game-frame .story-opening { min-height: min-content; }
 .game-frame .story-opening small { color: #dfe6e8; }
 :root[data-theme='day'] .game-frame .story-opening small { color: #283c49; }
 .game-frame .game-tools { gap: var(--jx-space-2); margin: 0; padding: 0; border: 0; }
