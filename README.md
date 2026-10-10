@@ -6,7 +6,7 @@
 
 > **世界书进度更正（诚实纪律）：** 原图与逐图文字已交付并经过拼接和部分作者审核；旧 182 条 OCR 清单仍未全部转成游戏 Canon，不能表述为"素材未提供／文字完全未审核"。详见 [世界书核验状态更正](docs/世界书核验状态更正.md)。本仓库的完整工作文档（快速入口、仓库结构、原型构建说明）已迁至 [docs/README-workspace-guide.md](docs/README-workspace-guide.md)。
 
-[![CI](https://github.com/L-core-dev-team/Nine-cloud/actions/workflows/ci.yml/badge.svg)](https://github.com/L-core-dev-team/Nine-cloud/actions/workflows/ci.yml)
+[![CI](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2FLYL-Z%2F473f5c2c4d11d64f2f3e043e20d27a75%2Fraw%2Fci.json&cacheSeconds=300)](https://github.com/L-core-dev-team/Nine-cloud/actions/workflows/ci.yml)
 ![Version](https://img.shields.io/badge/version-1.0.0--alpha.0-blue)
 ![Node](https://img.shields.io/badge/node-%E2%89%A524-brightgreen)
 ![pnpm](https://img.shields.io/badge/pnpm-11.19-orange)
