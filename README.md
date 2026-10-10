@@ -4,7 +4,7 @@
 
 **叙事归于模型，事实归于规则。**
 
-> **世界书进度更正（诚实纪律）：** 原图与逐图文字已交付并经过拼接和部分作者审核；旧 182 条 OCR 清单仍未全部转成游戏 Canon，不能表述为"素材未提供／文字完全未审核"。详见 [世界书核验状态更正](docs/世界书核验状态更正.md)。本仓库的完整工作文档（快速入口、仓库结构、原型构建说明）已迁至 [docs/README-工作文档.md](docs/README-工作文档.md)。
+> **世界书进度更正（诚实纪律）：** 原图与逐图文字已交付并经过拼接和部分作者审核；旧 182 条 OCR 清单仍未全部转成游戏 Canon，不能表述为"素材未提供／文字完全未审核"。详见 [世界书核验状态更正](docs/世界书核验状态更正.md)。本仓库的完整工作文档（快速入口、仓库结构、原型构建说明）已迁至 [docs/README-workspace-guide.md](docs/README-workspace-guide.md)。
 
 [![CI](https://github.com/L-core-dev-team/Nine-cloud/actions/workflows/ci.yml/badge.svg)](https://github.com/L-core-dev-team/Nine-cloud/actions/workflows/ci.yml)
 ![Version](https://img.shields.io/badge/version-1.0.0--alpha.0-blue)
@@ -537,7 +537,7 @@ AI 代理可在作者明确授权下执行实施工作，所有产出**逐处标
 
 ### 12.3 贡献
 
-私有开发阶段，暂不接受外部 PR。文档规范：现状记录与历史快照严格分离（[文档索引](docs/README.md)）；重大技术决策必须落 ADR（`docs/adr/`，含状态、日期、supersede 关系与参考文献 MLA 格式）；仓库工作区结构、原型构建与私有材料边界见 [docs/README-工作文档.md](docs/README-工作文档.md)。
+私有开发阶段，暂不接受外部 PR。文档规范：现状记录与历史快照严格分离（[文档索引](docs/README.md)）；重大技术决策必须落 ADR（`docs/adr/`，含状态、日期、supersede 关系与参考文献 MLA 格式）；仓库工作区结构、原型构建与私有材料边界见 [docs/README-workspace-guide.md](docs/README-workspace-guide.md)。
 
 ### 12.4 交流
 
