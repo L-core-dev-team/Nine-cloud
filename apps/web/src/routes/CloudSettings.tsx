@@ -167,7 +167,7 @@ export function CloudSettings({ saves, onRestore }: { saves: LocalSave[]; onRest
           setAccount(user); setPhoneCode(''); setPhoneLinked(true); await refresh(user.id, 0); await refreshPhoneStatus(user.id); return '账号已恢复。';
         })}>恢复30天宽限期内的已关闭账号</button>
       </>}
-      {!providers.phone && <p className="auth-provider-note">手机号登录当前关闭。默认短信预算为 ¥0；邮件登录仍可使用。</p>}
+      {!providers.phone && <p className="auth-provider-note">{providers.email ? '手机号登录当前关闭；可使用邮箱登录。' : '手机号和邮箱登录当前均不可用；你可以继续使用本地存档。'}</p>}
       {providers.phone && !turnstileSiteKey && <p className="auth-provider-note">手机号登录尚未就绪：网站缺少 Turnstile 公钥配置。</p>}
     </>
       : <><p>{account.kind === 'guest' ? '游客会话' : account.email}</p>{account.kind === 'guest' && <p>游客会话有效期为 7 天。丢失或清除浏览器站点数据后，无法仅凭存档编号找回云档；连续 90 天无活动后，在线资料进入服务器获批的清理范围，冷备遵循独立政策。</p>}<div className="actions"><button disabled={busy} onClick={() => void act(async () => { await cloudRequest('/api/auth/refresh', 'POST', {}, account.id); return account.kind === 'guest' ? '会话已刷新，有效期延长 7 天。' : '会话已刷新。'; })}>刷新会话</button>

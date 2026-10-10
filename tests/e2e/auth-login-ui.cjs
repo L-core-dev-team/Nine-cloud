@@ -110,7 +110,7 @@ async function main() {
     const closedContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
     const closedPage = await closedContext.newPage();
     await closedPage.goto(`${origin}/settings/cloud`);
-    await closedPage.getByText('手机号登录当前关闭。默认短信预算为 ¥0；邮件登录仍可使用。', { exact: true }).waitFor();
+    await closedPage.getByText('手机号登录当前关闭；可使用邮箱登录。', { exact: true }).waitFor();
     assert.equal(await closedPage.getByRole('button', { name: '手机号验证码', exact: true }).count(), 0);
     await closedContext.close(); await browserContext.close();
     console.log('Mocked login browser flow passed: Turnstile token, SMS request, phone OTP login, and fail-closed provider UI. No real provider behavior claimed.');
