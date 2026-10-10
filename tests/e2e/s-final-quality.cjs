@@ -15,7 +15,8 @@ let server, browser;
   for(let i=0;i<100;i++){try{if((await fetch(base)).ok)break;}catch{}await new Promise(resolve=>setTimeout(resolve,100));}
   browser=await chromium.launch({executablePath:process.env.PLAYWRIGHT_BROWSER_EXECUTABLE||'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'});
   const results=[];
-  for(const viewport of [{width:320,height:568},{width:360,height:800},{width:844,height:390},{width:720,height:900}]) for(const theme of ['night','day']) {
+  // Keep the original 64 checks and add the requested 390/430 phone widths.
+  for(const viewport of [{width:320,height:568},{width:360,height:800},{width:844,height:390},{width:720,height:900},{width:390,height:844},{width:430,height:932}]) for(const theme of ['night','day']) {
     const context=await browser.newContext({viewport,reducedMotion:'reduce'});
     const page=await context.newPage(); const errors=[];
     page.on('pageerror',error=>errors.push(error.message));

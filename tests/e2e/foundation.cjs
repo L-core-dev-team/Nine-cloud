@@ -18,6 +18,8 @@ const screenshotDir = process.env.JX_E2E_OUTPUT_DIR || join(root, 'test-results/
 // 新基线取 d73e0b7 —— 作者已确认其为当前期望的视觉状态。
 const PROFESSIONAL_BASELINE_COMMIT = 'd73e0b7';
 const professionalBaselineCss = execFileSync('git', ['show', `${PROFESSIONAL_BASELINE_COMMIT}:apps/web/src/style.css`], { cwd: root, encoding: 'utf8' });
+const { authorizedProfessionalCss } = require('./professional-readability-contract.cjs');
+const professionalReadabilityDelta = authorizedProfessionalCss(root);
 const children = [];
 
 async function availablePorts(count) {
@@ -760,12 +762,12 @@ async function ready(url) {
           links.forEach(link => { link.disabled = true; });
           return states;
         });
-        const baselineStyleTag = await page.addStyleTag({ content: professionalBaselineCss });
+        const baselineStyleTag = await page.addStyleTag({ content: professionalBaselineCss + '\n' + professionalReadabilityDelta });
         await page.evaluate(() => document.fonts.ready);
         const baselineProVisualContract = await readVisualContract();
         await baselineStyleTag.evaluate(style => style.remove());
         await page.locator('link[rel="stylesheet"]').evaluateAll((links, states) => links.forEach((link, index) => { link.disabled = states[index] ?? false; }), activeStylesheetStates);
-        assert.deepEqual(activeProVisualContract, baselineProVisualContract, 'professional AI computed layout, type, color, and interaction styles must match the frozen baseline');
+        assert.deepEqual(activeProVisualContract, baselineProVisualContract, 'professional AI must match the historic baseline plus only the explicit authorized readability delta');
         await page.emulateMedia({ reducedMotion: 'no-preference' });
       };
       await assertFrozenProfessionalStyles();

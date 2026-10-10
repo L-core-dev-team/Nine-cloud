@@ -206,38 +206,57 @@ function borderAudit(background, controls) {
   return { checkedEdges, failures };
 }
 
-async function getTextRuns(page) {
-  return page.evaluate(() => {
+async function getTextRuns(page, rootSelector = 'body') {
+  return page.evaluate(rootSelector => {
     const runs = [];
-    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    const walker = document.createTreeWalker(document.querySelector(rootSelector), NodeFilter.SHOW_TEXT);
+    let runId = 0;
     for (let node = walker.nextNode(); node; node = walker.nextNode()) {
       const text = node.nodeValue || '';
       if (!text.trim()) continue;
       const element = node.parentElement;
       if (!element || ['SCRIPT', 'STYLE', 'NOSCRIPT'].includes(element.tagName)) continue;
+      // Range geometry can expose the retained layout of closed <details>.
+      // Only its summary is rendered until the disclosure is opened.
+      if ([...document.querySelectorAll('details:not([open])')].some(details => details.contains(element) && !details.querySelector(':scope > summary')?.contains(element))) continue;
       const style = getComputedStyle(element);
       if (style.display === 'none' || style.visibility === 'hidden') continue;
       const range = document.createRange(); range.selectNode(node);
-      const rects = [...range.getClientRects()].map(rect => ({
+      let rects = [...range.getClientRects()].map(rect => ({
         x: rect.left + window.scrollX, y: rect.top + window.scrollY,
         width: rect.width, height: rect.height,
       })).filter(rect => rect.width > 0 && rect.height > 0);
+      for (let ancestor = element; ancestor && ancestor !== document.documentElement; ancestor = ancestor.parentElement) {
+        const ancestorStyle = getComputedStyle(ancestor);
+        const clipX = /hidden|clip|auto|scroll/.test(ancestorStyle.overflowX);
+        const clipY = /hidden|clip|auto|scroll/.test(ancestorStyle.overflowY);
+        if (!clipX && !clipY) continue;
+        const bounds = ancestor.getBoundingClientRect();
+        rects = rects.map(rect => {
+          const x = clipX ? Math.max(rect.x, bounds.left + scrollX) : rect.x;
+          const y = clipY ? Math.max(rect.y, bounds.top + scrollY) : rect.y;
+          const right = clipX ? Math.min(rect.x + rect.width, bounds.right + scrollX) : rect.x + rect.width;
+          const bottom = clipY ? Math.min(rect.y + rect.height, bounds.bottom + scrollY) : rect.y + rect.height;
+          return { x, y, width: right-x, height: bottom-y };
+        }).filter(rect => rect.width > 0 && rect.height > 0);
+      }
       if (!rects.length) continue;
       let opacity = 1;
       for (let ancestor = element; ancestor && ancestor !== document.documentElement; ancestor = ancestor.parentElement) {
         opacity *= Number(getComputedStyle(ancestor).opacity || 1);
       }
       const selector = `${element.tagName.toLowerCase()}${element.id ? `#${element.id}` : ''}${[...element.classList].slice(0, 2).map(name => `.${name}`).join('')}`;
-      runs.push({ text: text.trim().slice(0, 48), selector, color: style.color, opacity, fontSize: parseFloat(style.fontSize), fontWeight: Number(style.fontWeight) || 400, textShadowColor: style.textShadow && style.textShadow !== 'none' ? style.textShadow : null, rects });
+      runs.push({ runId: runId++, fixedBar: !!element.closest('.ai-actionbar'), text: text.trim().slice(0, 48), selector, color: style.color, opacity, fontSize: parseFloat(style.fontSize), fontWeight: Number(style.fontWeight) || 400, textShadowColor: style.textShadow && style.textShadow !== 'none' ? style.textShadow : null, rects });
     }
     return runs.map(run => ({ ...run, large: run.fontSize >= 24 || (run.fontSize >= 18.67 && run.fontWeight >= 700) }));
-  });
+  }, rootSelector);
 }
 
 async function getInteractiveControls(page) {
   return page.evaluate(() => [...document.querySelectorAll('button, input, select, textarea, a[href], summary, [role="button"]')]
     .filter(element => {
       const style = getComputedStyle(element), rect = element.getBoundingClientRect();
+      if ([...document.querySelectorAll('details:not([open])')].some(details => details.contains(element) && !details.querySelector(':scope > summary')?.contains(element))) return false;
       const stateful = element.matches('[aria-pressed], [aria-expanded], [aria-selected], [role="tab"], [role="checkbox"], [role="radio"]');
       const formControl = element.matches('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea');
       return (stateful || formControl) && style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
@@ -314,7 +333,70 @@ async function prepareGame(page) {
   await page.locator('.game-topline h1').waitFor();
 }
 
-async function runDesignAcceptance(browser, origin, outputDir) {
+async function auditProfessionalViewports(page, outputDir, label) {
+  // A full-document PNG contains viewport-fixed chrome but DOM ranges use
+  // document coordinates. Audit overlapping real viewports instead: every run
+  // must be reached, and the operation bar is sampled in every tile as rendered.
+  const initialRuns = await getTextRuns(page);
+  const covered = new Set();
+  const coveredControls = new Set();
+  const staticResult = { checkedRuns: 0, failures: [], shadowRelief: [] };
+  const dynamicResult = { checkedRuns: 0, failures: [], shadowRelief: [] };
+  const controlsResult = { checkedEdges: 0, failures: [] };
+  const viewport = page.viewportSize();
+  const barHeight = await page.locator('.ai-actionbar').evaluate(e => e.getBoundingClientRect().height);
+  const step = Math.max(100, viewport.height - barHeight - 40);
+  const height = await page.evaluate(() => document.documentElement.scrollHeight);
+  const offsets = [...new Set([...Array.from({length: Math.ceil(height / step)}, (_, i) => Math.min(i * step, height - viewport.height)), Math.max(0, height - viewport.height)])];
+  const merge = (into, from, tile) => {
+    into.checkedRuns !== undefined && (into.checkedRuns += from.checkedRuns);
+    into.checkedEdges !== undefined && (into.checkedEdges += from.checkedEdges);
+    into.failures.push(...from.failures.map(f => ({ ...f, tile })));
+  };
+  for (const [tile, offset] of offsets.entries()) {
+    await page.evaluate(y => window.scrollTo(0, y), offset);
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.evaluate(() => { document.documentElement.dataset.jxAtmosphere = 'off'; });
+    const clip = async () => {
+      const geometry = await page.evaluate(() => ({ scrollY, barTop: document.querySelector('.ai-actionbar').getBoundingClientRect().top }));
+      const runs = (await getTextRuns(page)).map(run => ({ ...run, rects: run.rects.map(r => {
+        const y = r.y - geometry.scrollY;
+        const left = Math.max(0, r.x), top = Math.max(0, y);
+        const right = Math.min(viewport.width, r.x + r.width);
+        const bottom = Math.min(run.fixedBar ? viewport.height : geometry.barTop, y + r.height);
+        return { x: left, y: top, width: right-left, height: bottom-top };
+      }).filter(r => r.width > 0 && r.height > 0) })).filter(run => run.rects.length);
+      runs.forEach(run => covered.add(run.runId));
+      const controls = (await getInteractiveControls(page)).map((c, i) => ({...c, auditId:i, rect:{...c.rect, y:c.rect.y-geometry.scrollY}}))
+        .filter(c => c.rect.y >= 2 && c.rect.y + c.rect.height + 2 <= geometry.barTop);
+      controls.forEach(c => coveredControls.add(c.auditId));
+      return {runs, controls};
+    };
+    await settleHeight(page);
+    const sampled = await clip();
+    const source = await page.screenshot({path:join(outputDir,`${label}-tile-${tile}.png`),animations:'disabled'});
+    const mask = await maskText(page);
+    const background = await page.screenshot({animations:'disabled'});
+    await mask.evaluate(e => e.remove());
+    merge(staticResult, textAudit(source,[background],sampled.runs,`${label}/${tile}/static `), tile);
+    merge(controlsResult,borderAudit(background,sampled.controls),tile);
+    await page.emulateMedia({reducedMotion:'no-preference'});
+    await page.evaluate(()=>{document.documentElement.dataset.jxAtmosphere='on';});
+    await page.waitForTimeout(320);
+    const dynamicSampled = await clip();
+    const dynamicSource = await page.screenshot({animations:'disabled'});
+    const dynamicMask = await maskText(page);
+    const backgrounds=[];
+    for(let frame=0;frame<3;frame++){await page.waitForTimeout(100);backgrounds.push(await page.screenshot({animations:'disabled'}));}
+    await dynamicMask.evaluate(e=>e.remove());
+    merge(dynamicResult,textAudit(dynamicSource,backgrounds,dynamicSampled.runs,`${label}/${tile}/dynamic `),tile);
+  }
+  const missed = initialRuns.filter(run => !covered.has(run.runId));
+  assert.deepEqual(missed.map(run=>({selector:run.selector,text:run.text})),[], 'Every professional text run must be reached by viewport contrast sampling');
+  return {staticResult,dynamicResult,controlsResult,coverage:{tiles:offsets.length,totalRuns:initialRuns.length,coveredRuns:covered.size,coveredControls:coveredControls.size}};
+}
+
+async function runDesignAcceptance(browser, origin, outputDir, options = {}) {
   mkdirSync(outputDir, { recursive: true });
   const manifest = [];
   const contrastResults = [];
@@ -329,7 +411,7 @@ async function runDesignAcceptance(browser, origin, outputDir) {
     { key: 'ai-professional', path: '/settings/ai', professional: true },
   ];
   for (const [width, height] of [[390, 844], [1366, 768]]) {
-    for (const theme of ['night', 'day']) for (const target of targets) {
+    for (const theme of ['night', 'day']) for (const target of targets.filter(target => !options.targets || options.targets.includes(target.key))) {
       const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: 1, reducedMotion: 'reduce' });
       const page = await context.newPage();
       await page.addInitScript(themeName => localStorage.setItem('jx10_appearance', themeName), theme);
@@ -352,6 +434,10 @@ async function runDesignAcceptance(browser, origin, outputDir) {
           const reported = Number(scope?.textContent?.match(/当前\s*(\d+)\s*条/)?.[1]);
           return Number.isInteger(reported) && document.querySelectorAll('.worldbook-entry').length >= reported;
         }, null, { timeout: 10000 });
+        // Reviewed isolated main fix (3d716279): capture lazy worldbook entries
+        // at their full rendered height so source/background frames share size.
+        // This is a screenshot fixture, not a change to runtime virtualization.
+        await page.addStyleTag({ content: '.worldbook-entry { content-visibility: visible !important; }' });
       }
       await page.evaluate(async () => {
         document.documentElement.dataset.jxAtmosphere = 'off';
@@ -382,7 +468,7 @@ async function runDesignAcceptance(browser, origin, outputDir) {
       const dynamicRuns = await getTextRuns(page);
       await settleHeight(page);
       const dynamicOriginal = await page.screenshot({ fullPage: true, animations: 'disabled' });
-      await maskText(page);
+      const dynamicTextMask = await maskText(page);
       await settleHeight(page);
       const dynamicBackgrounds = [];
       for (let frame = 0; frame < 3; frame++) {
@@ -393,11 +479,13 @@ async function runDesignAcceptance(browser, origin, outputDir) {
         await settleHeight(page);
         dynamicBackgrounds.push(await page.screenshot({ fullPage: true, animations: 'disabled' }));
       }
+      await dynamicTextMask.evaluate(style => style.remove());
       const frameLabel = `${target.key}/${theme}/${width}px `;
-      const staticAudit = textAudit(staticOriginal, [staticBackground], staticRuns, `${frameLabel}static `);
-      const dynamicAudit = textAudit(dynamicOriginal, dynamicBackgrounds, dynamicRuns, `${frameLabel}dynamic `);
-      const controlAudit = borderAudit(staticBackground, controls);
-      contrastResults.push({ page: target.key, theme, width, text: { static: staticAudit, dynamic: dynamicAudit }, controls: controlAudit, dynamicFrames: dynamicBackgrounds.length });
+      const tiled = target.professional ? await auditProfessionalViewports(page,outputDir,`${target.key}-${theme}-${width}`) : null;
+      const staticAudit = tiled?.staticResult || textAudit(staticOriginal, [staticBackground], staticRuns, `${frameLabel}static `);
+      const dynamicAudit = tiled?.dynamicResult || textAudit(dynamicOriginal, dynamicBackgrounds, dynamicRuns, `${frameLabel}dynamic `);
+      const controlAudit = tiled?.controlsResult || borderAudit(staticBackground, controls);
+      contrastResults.push({ page: target.key, theme, width, text: { static: staticAudit, dynamic: dynamicAudit }, controls: controlAudit, dynamicFrames: dynamicBackgrounds.length, coverage:tiled?.coverage });
       if (baselinePages.has(target.key)) {
         manifest.push({ page: target.key, route: target.path, theme, viewport: { width, height }, file: name, sha256: createHash('sha256').update(staticOriginal).digest('hex') });
       }
@@ -406,7 +494,7 @@ async function runDesignAcceptance(browser, origin, outputDir) {
   }
   writeFileSync(join(outputDir, 'ui-baseline-manifest.json'), `${JSON.stringify({
     generatedAt: new Date().toISOString(),
-    criteria: 'Five baseline pages: home, lobby, game, world, and AI mode. Two themes, 390x844 and 1366x768 viewports, full-page static PNGs with atmosphere disabled. Contrast audit additionally covers graphics settings and the frozen professional AI settings view. Text is sampled against static backgrounds and three atmosphere-on frames at WCAG AA 4.5:1 normal / 3:1 large, including effective ancestor opacity. The custom control-boundary sampler targets 3:1 rendered fill or border against adjacent pixels; native checkbox, radio, and range controls are excluded from rectangular sampling, clipped shapes remain outside its geometry, and worldbook boundary styling remains frozen per UI-11.',
+    criteria: 'Five baseline pages: home, lobby, game, world, and AI mode; two themes and 390/1366px viewports. Contrast additionally covers graphics and professional AI with no protected-scope exemptions. Professional text uses overlapping real viewport tiles with complete rendered-run coverage, preserving the fixed operation bar. Static backgrounds and three atmosphere-on frames use unchanged WCAG AA 4.5:1 normal / 3:1 large thresholds and effective opacity. Control boundaries use 3:1 fill or border against adjacent pixels; native checkbox/radio/range and clipped shapes remain outside rectangular sampling. Closed disclosures and clipped-off glyphs are not rendered text; expanded professional fields and dialog states are checked separately.',
     screenshots: manifest,
     contrast: contrastResults,
   }, null, 2)}\n`);
@@ -415,15 +503,15 @@ async function runDesignAcceptance(browser, origin, outputDir) {
     ...result.text.dynamic.failures.map(failure => ({ page: result.page, theme: result.theme, width: result.width, kind: 'dynamic-text', ...failure })),
     ...result.controls.failures.map(failure => ({ page: result.page, theme: result.theme, width: result.width, kind: 'control-boundary', ...failure })),
   ]);
-  const actionableFailures = failures.filter(failure => failure.page !== 'ai-professional');
+  const actionableFailures = failures;
   if (actionableFailures.length) {
-    throw new Error(`Contrast audit found ${actionableFailures.length} failing samples outside the frozen professional AI scope (${failures.length - actionableFailures.length} protected-scope exceptions): ${JSON.stringify(actionableFailures.slice(0, 25))}`);
+    throw new Error(`Contrast audit found ${actionableFailures.length} failing samples including professional AI (no protected-scope exemptions): ${JSON.stringify(actionableFailures.slice(0, 25))}`);
   }
-  const checkedRuns = contrastResults.filter(item => item.page !== 'ai-professional').reduce((sum, item) => sum + item.text.static.checkedRuns + item.text.dynamic.checkedRuns, 0);
-  const checkedEdges = contrastResults.filter(item => item.page !== 'ai-professional').reduce((sum, item) => sum + item.controls.checkedEdges, 0);
+  const checkedRuns = contrastResults.reduce((sum, item) => sum + item.text.static.checkedRuns + item.text.dynamic.checkedRuns, 0);
+  const checkedEdges = contrastResults.reduce((sum, item) => sum + item.controls.checkedEdges, 0);
   const frozenProExceptions = failures.filter(failure => failure.page === 'ai-professional').length;
   const protectedWorldbookExceptions = failures.filter(failure => failure.page === 'world').length;
-  console.log(`Design acceptance: ${manifest.length} five-page baselines; ${checkedRuns} non-professional text runs and ${checkedEdges} in-scope control-boundary samples passed across night/day and mobile/desktop. Protected-scope contrast exceptions: professional AI ${frozenProExceptions}; worldbook controls ${protectedWorldbookExceptions}.`);
+  console.log(`Design acceptance: ${manifest.length} five-page baselines; ${checkedRuns} text runs including professional AI and ${checkedEdges} control-boundary samples passed across night/day and mobile/desktop. Contrast failures: professional AI ${frozenProExceptions}; worldbook controls ${protectedWorldbookExceptions}.`);
 }
 
-module.exports = { runDesignAcceptance, textAudit };
+module.exports = { runDesignAcceptance, textAudit, getTextRuns, maskText };
