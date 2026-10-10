@@ -3237,6 +3237,132 @@
           "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
         }
       ]
+    },
+    {
+      "sceneId": "gate-moonlight",
+      "variant": "desktop",
+      "path": "/scenes/gate-moonlight.webp",
+      "mimeType": "image/webp",
+      "sourcePath": null,
+      "sourceSha256": null,
+      "licenseBasis": "OpenAI gpt-image 委托生成（作者 2026-10-10 口径）；OpenAI 服务条款输出归属用户",
+      "sha256": "7a1995a609ce04a8af2b32a1918b8e38ed3e880f08325ee55c375cf8e5b29dea",
+      "bytes": 229422,
+      "width": 1672,
+      "height": 941,
+      "sourceDimensions": [
+        1672,
+        941
+      ],
+      "metadataValuesCopied": false,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "99b858a2e20adbd3aa80b6308b7b10150052beccded0d8d2427bbe115e9e6a10",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "7a1995a609ce04a8af2b32a1918b8e38ed3e880f08325ee55c375cf8e5b29dea",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 3: see docs/acceptance/2026-10-10/G05-batch3-license-evidence.md (author per-file attestations 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "7a1995a609ce04a8af2b32a1918b8e38ed3e880f08325ee55c375cf8e5b29dea",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 3: see docs/acceptance/2026-10-10/G05-batch3-license-evidence.md (author per-file attestations 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
+    },
+    {
+      "sceneId": "gate-moonlight",
+      "variant": "mobile",
+      "path": "/scenes/gate-moonlight-mobile.webp",
+      "mimeType": "image/webp",
+      "sourcePath": null,
+      "sourceSha256": null,
+      "licenseBasis": "OpenAI gpt-image 委托生成（作者 2026-10-10 口径）；OpenAI 服务条款输出归属用户",
+      "sha256": "fa4ab0e8e7080bd040a0b1b2dd6895b65e43e31770fd03e003b6dcb73989c740",
+      "bytes": 252508,
+      "width": 1024,
+      "height": 1536,
+      "sourceDimensions": [
+        1024,
+        1536
+      ],
+      "metadataValuesCopied": false,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "99b858a2e20adbd3aa80b6308b7b10150052beccded0d8d2427bbe115e9e6a10",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "fa4ab0e8e7080bd040a0b1b2dd6895b65e43e31770fd03e003b6dcb73989c740",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 3: see docs/acceptance/2026-10-10/G05-batch3-license-evidence.md (author per-file attestations 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "fa4ab0e8e7080bd040a0b1b2dd6895b65e43e31770fd03e003b6dcb73989c740",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 3: see docs/acceptance/2026-10-10/G05-batch3-license-evidence.md (author per-file attestations 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
+    },
+    {
+      "path": "/favicon.svg",
+      "mimeType": "image/svg+xml",
+      "licenseBasis": "站点自有标识资产（作者确认为本项目站点标识）",
+      "sha256": "8b68e4d0c46ca5429e755acf1630c0875ae7b4f4f1dc666cfe10f3d50099ccc3",
+      "bytes": 407,
+      "metadataValuesCopied": false,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "99b858a2e20adbd3aa80b6308b7b10150052beccded0d8d2427bbe115e9e6a10",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "8b68e4d0c46ca5429e755acf1630c0875ae7b4f4f1dc666cfe10f3d50099ccc3",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 3: see docs/acceptance/2026-10-10/G05-batch3-license-evidence.md (author per-file attestations 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "8b68e4d0c46ca5429e755acf1630c0875ae7b4f4f1dc666cfe10f3d50099ccc3",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 3: see docs/acceptance/2026-10-10/G05-batch3-license-evidence.md (author per-file attestations 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
+    },
+    {
+      "path": "/compliance/beian-police.png",
+      "mimeType": "image/png",
+      "licenseBasis": "公安备案官方徽章，备案网站依规展示",
+      "sha256": "a20583c81805fe64f7fa210851ce29754af9d25fd6aa5a3225a9557529602513",
+      "bytes": 19256,
+      "width": 20,
+      "height": 20,
+      "metadataValuesCopied": false,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "99b858a2e20adbd3aa80b6308b7b10150052beccded0d8d2427bbe115e9e6a10",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "a20583c81805fe64f7fa210851ce29754af9d25fd6aa5a3225a9557529602513",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 3: see docs/acceptance/2026-10-10/G05-batch3-license-evidence.md (author per-file attestations 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "a20583c81805fe64f7fa210851ce29754af9d25fd6aa5a3225a9557529602513",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 3: see docs/acceptance/2026-10-10/G05-batch3-license-evidence.md (author per-file attestations 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     }
   ]
 }

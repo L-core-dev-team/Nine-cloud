@@ -8,7 +8,14 @@ export function requireReleasedMedia(manifest, publicRoot) {
   if (manifest.sourceAndLicense !== 'verified' || manifest.authorApproval !== 'approved' || !Array.isArray(manifest.files) || manifest.files.length === 0) throw new Error('LICENSE_PENDING');
   const listed = new Set();
   for (const asset of manifest.files) {
-    if (!asset || typeof asset.path !== 'string' || !/^\/scenes\/[a-zA-Z0-9/._-]+$/.test(asset.path) || asset.path.includes('..') || !/^[a-f0-9]{64}$/.test(asset.sha256)) throw new Error('INVALID_MEDIA_MANIFEST');
+    // 2026-10-10: paths extended (author-approved option A) to also admit the
+    // site favicon and compliance badges — both were unregistrable under the
+    // /scenes/-only pattern and blocked the whole-tree SEC-05 walk. The
+    // widening is an exact-match plus one literal prefix, not a relaxation.
+    const pathAllowed = /^\/scenes\/[a-zA-Z0-9/._-]+$/.test(asset.path)
+      || asset.path === '/favicon.svg'
+      || /^\/compliance\/[a-zA-Z0-9/._-]+$/.test(asset.path);
+    if (!asset || typeof asset.path !== 'string' || !pathAllowed || asset.path.includes('..') || !/^[a-f0-9]{64}$/.test(asset.sha256)) throw new Error('INVALID_MEDIA_MANIFEST');
     if (asset.licenseStatus !== 'approved' || typeof asset.licenseEvidenceSha256 !== 'string' || !/^[a-f0-9]{64}$/.test(asset.licenseEvidenceSha256)) throw new Error('LICENSE_PENDING');
     const reviewers = new Set((asset.authorReceipts || []).filter(receipt => receipt.assetSha256 === asset.sha256 && receipt.status === 'approved').map(receipt => receipt.author));
     if (!reviewers.has('Bird') || !reviewers.has('LYL')) throw new Error('MEDIA_AUTHOR_APPROVAL_PENDING');
