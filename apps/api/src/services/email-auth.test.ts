@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createApp } from '../app.js';
+import { AuthFailure } from './auth-failure.js';
 import { EmailAuthService, hashToken, normalizeEmail, SESSION_SECONDS, type AuthSession, type EmailAuthRepository } from './email-auth.js';
 
 class TestAuthRepository implements EmailAuthRepository {
@@ -213,5 +214,61 @@ describe('same-origin auth routes', () => {
     expect((await app.request('/api/auth/code', { method: 'POST', headers, body: 'x'.repeat(4097) })).status).toBe(400);
     const response = await app.request('/api/auth/code', { method: 'POST', headers, body: JSON.stringify({ email: 'a@example.invalid' }) });
     expect(response.status).toBe(503); expect(await response.text()).not.toContain('smtp-key-secret');
+  });
+});
+
+describe('anonymous email challenge turnstile gate', () => {
+  const origin = 'https://game.example.invalid';
+  const post = (app: ReturnType<typeof createApp>, body: unknown, cookie?: string) => app.request('/api/auth/code', {
+    method: 'POST', headers: { origin, 'content-type': 'application/json', ...(cookie ? { cookie } : {}) }, body: JSON.stringify(body) });
+
+  it('keeps the previous behaviour when no verifier is configured and advertises emailCaptcha accordingly', async () => {
+    const f = fixture();
+    const app = createApp(undefined, undefined, { service: f.service, origin });
+    expect((await post(app, { email: 'a@example.invalid' })).status).toBe(202);
+    const providers = await (await app.request('/api/auth/providers')).json();
+    expect(providers.emailCaptcha).toBe(false);
+  });
+
+  it('refuses anonymous requests without a valid token when the verifier is enabled, but skips the gate for sessions', async () => {
+    const f = fixture();
+    const checked: unknown[] = [];
+    const emailCaptcha = async (token: unknown) => {
+      checked.push(token);
+      if (token !== 'good-token') throw new AuthFailure(token === null ? 'CAPTCHA_REQUIRED' : 'CAPTCHA_INVALID', 'captcha_verify');
+    };
+    const app = createApp(undefined, undefined, { service: f.service, origin, emailCaptcha });
+    const providers = await (await app.request('/api/auth/providers')).json();
+    expect(providers.emailCaptcha).toBe(true);
+
+    const missing = await post(app, { email: 'a@example.invalid' });
+    expect(missing.status).toBe(403); expect((await missing.json()).code).toBe('CAPTCHA_REQUIRED');
+    const invalid = await post(app, { email: 'a@example.invalid', captchaToken: 'bad-token' });
+    expect(invalid.status).toBe(403); expect((await invalid.json()).code).toBe('CAPTCHA_INVALID');
+    expect(f.sent.size).toBe(0); // No challenge was issued for refused requests.
+
+    expect((await post(app, { email: 'a@example.invalid', captchaToken: 'good-token' })).status).toBe(202);
+    expect(checked).toEqual([null, 'bad-token', 'good-token']);
+
+    // Authenticated reuse (guest upgrade / unlink confirmation) bypasses the gate.
+    const guestResponse = await app.request('/api/auth/guest', { method: 'POST', headers: { origin, 'content-type': 'application/json' }, body: '{}' });
+    const guestCookie = guestResponse.headers.get('set-cookie')!.split(';')[0]!;
+    const before = checked.length;
+    expect((await post(app, { email: 'upgrade@example.invalid' }, guestCookie)).status).toBe(202);
+    expect(checked.length).toBe(before); // The gate did not run for the authenticated caller.
+  });
+
+  it('fails closed with CAPTCHA_UNAVAILABLE when the verification service is unreachable', async () => {
+    const f = fixture();
+    const app = createApp(undefined, undefined, { service: f.service, origin, emailCaptcha: async () => { throw new AuthFailure('CAPTCHA_UNAVAILABLE', 'captcha_verify'); } });
+    const response = await post(app, { email: 'a@example.invalid', captchaToken: 'whatever' });
+    expect(response.status).toBe(403); expect((await response.json()).code).toBe('CAPTCHA_UNAVAILABLE');
+    expect(f.sent.size).toBe(0);
+  });
+
+  it('rejects unknown body keys on the challenge endpoint', async () => {
+    const f = fixture();
+    const app = createApp(undefined, undefined, { service: f.service, origin });
+    expect((await post(app, { email: 'a@example.invalid', extra: 1 })).status).toBe(400);
   });
 });

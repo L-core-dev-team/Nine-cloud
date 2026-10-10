@@ -63,10 +63,11 @@ export function CloudSettings({ saves, onRestore }: { saves: LocalSave[]; onRest
   const sync = useRef(new CloudSync(new IndexedCloudQueue())).current;
   const [account, setAccount] = useState<Account | null>(null); const [email, setEmail] = useState(''); const [code, setCode] = useState('');
   const [upgradeEmail, setUpgradeEmail] = useState(''); const [upgradeCode, setUpgradeCode] = useState('');
-  const [providers, setProviders] = useState<{ email: boolean; phone: boolean; privacyPolicyUrl: string | null; privacyPolicyVersion: string | null }>(
-    { email: false, phone: false, privacyPolicyUrl: null, privacyPolicyVersion: null }); const [loginMethod, setLoginMethod] = useState<'email' | 'phone'>('email');
+  const [providers, setProviders] = useState<{ email: boolean; phone: boolean; emailCaptcha: boolean; privacyPolicyUrl: string | null; privacyPolicyVersion: string | null }>(
+    { email: false, phone: false, emailCaptcha: false, privacyPolicyUrl: null, privacyPolicyVersion: null }); const [loginMethod, setLoginMethod] = useState<'email' | 'phone'>('email');
   const [phone, setPhone] = useState(''); const [phoneCode, setPhoneCode] = useState(''); const [phoneLinked, setPhoneLinked] = useState<boolean | null>(null);
   const [phoneCaptchaToken, setPhoneCaptchaToken] = useState(''); const [captchaGeneration, setCaptchaGeneration] = useState(0); const [unlinkCode, setUnlinkCode] = useState('');
+  const [emailCaptchaToken, setEmailCaptchaToken] = useState(''); const [emailCaptchaGeneration, setEmailCaptchaGeneration] = useState(0);
   const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY?.trim() || '';
   const phoneAvailable = providers.phone && Boolean(turnstileSiteKey);
   const [notice, setNotice] = useState('正在检查云档服务…'); const [busy, setBusy] = useState(true); const busyRef = useRef(true);
@@ -107,7 +108,8 @@ export function CloudSettings({ saves, onRestore }: { saves: LocalSave[]; onRest
       if (typeof value.privacyPolicyUrl === 'string') {
         try { const url = new URL(value.privacyPolicyUrl); if (url.protocol === 'https:') privacyPolicyUrl = url.toString(); } catch { /* Ignore invalid policy links. */ }
       }
-      setProviders({ email: value.email, phone: value.phone, privacyPolicyUrl,
+      setProviders({ email: value.email, phone: value.phone,
+        emailCaptcha: value.emailCaptcha === true, privacyPolicyUrl,
         privacyPolicyVersion: typeof value.privacyPolicyVersion === 'string' ? value.privacyPolicyVersion : null });
     }).catch(() => { /* Keep conservative defaults: email UI may report API unavailability; phone stays closed. */ });
     return () => { active = false; };
@@ -120,8 +122,9 @@ export function CloudSettings({ saves, onRestore }: { saves: LocalSave[]; onRest
         : code === 'UPGRADE_UNAVAILABLE' ? '邮箱升级未完成。账号与存档没有转移；请核对邮箱、验证码和当前游客会话后重试。'
         : code === 'INVALID_OR_EXPIRED_CODE' ? '验证码错误或已过期，请重新获取后再试。'
           : code === 'PHONE_REGION_NOT_SUPPORTED' ? '当前短信服务尚未开放该号码所属地区。'
-            : code === 'CAPTCHA_REQUIRED' ? '人机验证未完成或已过期，请重新验证。'
-              : code === 'SMS_NOT_ENABLED' ? '手机号登录当前关闭；邮箱入口状态以服务端为准。'
+            : code === 'CAPTCHA_REQUIRED' || code === 'CAPTCHA_INVALID' ? '人机验证未完成或已过期，请重新验证后再发送。'
+              : code === 'CAPTCHA_UNAVAILABLE' ? '人机验证服务暂不可用，请稍后重试。'
+                : code === 'SMS_NOT_ENABLED' ? '手机号登录当前关闭；邮箱入口状态以服务端为准。'
                 : code === 'SMS_UNAVAILABLE' || code === 'MAIL_UNAVAILABLE' || code === 'AUTH_PROVIDER_UNAVAILABLE' ? '认证服务暂不可用，请稍后重试。'
                   : code === 'IDENTITY_CONFLICT_OR_INVALID_CODE' ? '身份验证失败或该身份已关联其他账户；未合并或移动任何云档。'
                     : code === 'UNAUTHENTICATED' ? '会话已失效，请重新登录。原账号队列保留。'
@@ -145,7 +148,12 @@ export function CloudSettings({ saves, onRestore }: { saves: LocalSave[]; onRest
       {loginMethod === 'email' ? <>
         {!providers.email && <p>邮箱登录暂未启用。</p>}
         <label>邮箱<input type="email" autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} /></label>
-        <button disabled={busy || !providers.email} onClick={() => void act(async () => { await cloudRequest('/api/auth/code', 'POST', { email }); return '如果邮箱可用，验证码已发送。请按邮件中的有效期完成验证。'; })}>发送验证码</button>
+        {providers.emailCaptcha && turnstileSiteKey && <TurnstileBox siteKey={turnstileSiteKey} generation={emailCaptchaGeneration} onToken={setEmailCaptchaToken} />}
+        <button disabled={busy || !providers.email || (providers.emailCaptcha && turnstileSiteKey ? !emailCaptchaToken : false)} onClick={() => void act(async () => {
+          const captchaToken = emailCaptchaToken; setEmailCaptchaToken(''); setEmailCaptchaGeneration(value => value + 1);
+          await cloudRequest('/api/auth/code', 'POST', providers.emailCaptcha && turnstileSiteKey ? { email, captchaToken } : { email });
+          return '如果邮箱可用，验证码已发送。请按邮件中的有效期完成验证。';
+        })}>发送验证码</button>
         <label>验证码<input inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={code} onChange={e => setCode(e.target.value)} /></label>
         <button disabled={busy || !providers.email} onClick={() => void act(async () => { const result = await cloudRequest('/api/auth/verify', 'POST', { email, code }); const user = readAccount(result.account); setAccount(user); setCode(''); await refresh(user.id, 0); await refreshPhoneStatus(user.id); return '已登录。'; })}>登录</button>
         <button disabled={busy || !providers.email} onClick={() => void act(async () => { const result=await cloudRequest('/api/auth/restore','POST',{email,code});const user=readAccount(result.account);setAccount(user);setCode('');await refresh(user.id,0);await refreshPhoneStatus(user.id);return '账号已恢复。'; })}>恢复30天宽限期内的已关闭账号</button>
@@ -169,6 +177,7 @@ export function CloudSettings({ saves, onRestore }: { saves: LocalSave[]; onRest
       </>}
       {!providers.phone && <p className="auth-provider-note">手机号登录当前关闭。默认短信预算为 ¥0；邮件登录仍可使用。</p>}
       {providers.phone && !turnstileSiteKey && <p className="auth-provider-note">手机号登录尚未就绪：网站缺少 Turnstile 公钥配置。</p>}
+      {providers.emailCaptcha && !turnstileSiteKey && <p className="auth-provider-note">邮箱登录尚未就绪：网站缺少 Turnstile 公钥配置。</p>}
     </>
       : <><p>{account.kind === 'guest' ? '游客会话' : account.email}</p>{account.kind === 'guest' && <p>游客会话有效期为 7 天。丢失或清除浏览器站点数据后，无法仅凭存档编号找回云档；连续 90 天无活动后，在线资料进入服务器获批的清理范围，冷备遵循独立政策。</p>}<div className="actions"><button disabled={busy} onClick={() => void act(async () => { await cloudRequest('/api/auth/refresh', 'POST', {}, account.id); return account.kind === 'guest' ? '会话已刷新，有效期延长 7 天。' : '会话已刷新。'; })}>刷新会话</button>
         <button disabled={busy} onClick={() => { if (account.kind === 'guest' && !window.confirm('退出会撤销此游客会话。除非已升级邮箱，否则清除站点数据或丢失会话后无法找回云档。仍要退出吗？')) return; void act(async () => { await cloudRequest('/api/auth/logout', 'POST', {}, account.id); setAccount(null); setRemote([]); setQueue([]); setTrash([]); setPhoneLinked(null); setPhoneCode(''); setUnlinkCode(''); setPhoneCaptchaToken(''); return '已退出；本地存档及未完成队列保留。'; }); }}>退出</button>

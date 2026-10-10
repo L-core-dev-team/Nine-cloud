@@ -11,6 +11,7 @@ import { PostgresEmailAuthRepository } from './postgres-email-auth.js';
 import { AccountLifecycle } from './account-lifecycle.js';
 import { AccountExport } from './account-export.js';
 import { SupabaseAuthService } from './supabase-auth.js';
+import { createTurnstileVerifier, type TurnstileVerifier } from './turnstile.js';
 
 /** Disabled by default; explicit enablement requires every deployment input. */
 export function createEmailAuthRuntime(pool: Pool, env: NodeJS.ProcessEnv) {
@@ -144,9 +145,15 @@ export function createEmailAuthRuntime(pool: Pool, env: NodeJS.ProcessEnv) {
   const verifyMail = mailer === 'smtp'
     ? async () => { try { await smtpTransport!.verify(); return { status: 'SMTP_CONNECTION_VERIFIED', delivery: 'NOT_TESTED' }; } catch (error) { throw classifyMailFailure(error); } }
     : async () => ({ status: 'MAIL_CHANNEL_CONFIGURED', delivery: 'NOT_TESTED' });
+  // Optional Turnstile gate for anonymous login challenge requests. Unset key
+  // keeps the previous behaviour; a set key makes an invalid/unverifiable
+  // token fail closed (CAPTCHA_* responses on POST /api/auth/code).
+  const emailCaptcha: TurnstileVerifier | undefined = env.TURNSTILE_SECRET_KEY?.trim()
+    ? createTurnstileVerifier(env.TURNSTILE_SECRET_KEY.trim())
+    : undefined;
   return { service, routesService: supabaseAuth ?? service, supabaseAuth, origin, cookieSameSite:cookieSameSite as 'Strict'|'None', trustedProxyAddresses,
     privacyPolicyUrl: privacyPolicyUrl || null, privacyPolicyVersion: privacyPolicyVersion || null,
-    lifecycle, exporter: new AccountExport(pool),verifyMail };
+    lifecycle, exporter: new AccountExport(pool),verifyMail, emailCaptcha };
 }
 
 function parseNonNegativeInteger(value: string | undefined, name: string): number {
