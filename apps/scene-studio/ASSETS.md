@@ -21,3 +21,5 @@
 - **隐式标识**：保留文件级 C2PA 内容凭证与元数据，导出链中不得抹除。
 
 依据：中国《人工智能生成合成内容标识办法》（2025-09-01 施行）及 OpenAI 条款"不得冒称人工生成"限制；详见 `docs/acceptance/2026-10-10/scene-studio许可与真机查证结论.md`。
+
+**实施记录（2026-10-10，发布范围批准 · 一次到位含商用档）**：本组两张环境图所对应的运行包文件 `gate-moonlight.webp` / `gate-moonlight-mobile.webp` 已随 G-05 批次 3 入库，并已按《标识办法》第六条补加传播要素隐式标识（`AIGC{ContentProducer:"openai", ContentPropagator:"jiuxiao-web", ...}`，载体 RIFF XMP chunk；注入脚本 `scripts/audit/apply-aigc-propagation-labels.mjs`）。显式标识已在站点四处落地（全站页脚声明、画卷图鉴边界说明、画卷放大查看器、建角页地域画影标注，见 `apps/web/src/main.tsx`）。注意：本 studio 内的 `src/assets/*.webp` 环境图源文件仍无元数据——若后续经决策树 §4.1 把本组导出物纳入运行包，须先经同一注入脚本补加标识并重算清单哈希；真机对照（作者待办 2）仍是 scene 晋升的前置证据条件。
