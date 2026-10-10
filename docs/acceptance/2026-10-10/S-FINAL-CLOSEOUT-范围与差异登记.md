@@ -68,3 +68,7 @@ style.css 的 professional readability start/end 内为完整专业增量。prof
 临时 closeout.cjs 已创建圈内 closeout-20261010/runtime-tmp，并向最终回归子进程显式设置 TEMP/TMP；本次观察到编译缓存及浏览器临时日志生成在圈内。早期 Playwright 确实使用过系统 AppData/Local/Temp 的隔离浏览器配置，保留边界遗漏记录，不宣称全程没有圈外临时写入。
 
 最终专业详情焦点仍为10组失败，专项总体退出1；content测试仍为3失败/22通过，未更改原稿、摘要或断言。完整E2E完成认证UI、Foundation与设计基线后因缺少TEST_DATABASE_URL退出1，后续数据库旅程未运行；独立IndexedDB E2E已单独通过。实际日志、55项矩阵及其余授权/外部依赖见同目录最终UI质量报告。
+
+## S-HANDOFF后继：D8已授权修复
+
+道主本轮明确解冻最小详情视图焦点管理。代码7407cc00ca2c434fb9e9aebb9f4ef7c43eee18b0修复详情进入标题与返回目录定位，原专业10组焦点失败归零，新增10组扩展专项通过；CSS及专业非必要风格仍冻结。旧FAIL记录为真实历史，不覆盖；当前状态见[S-HANDOFF-D8修复报告.md](S-HANDOFF-D8修复报告.md)与[技术UI冻结报告](S-HANDOFF-技术UI冻结报告.md)。D4/P3和B1/B2/B4例外保持原边界。
