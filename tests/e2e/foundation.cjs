@@ -10,7 +10,7 @@ const { chromium } = require('playwright');
 
 const root = resolve(__dirname, '../..');
 const webRoot = join(root, 'apps/web');
-const screenshotDir = join(root, 'test-results/e2e');
+const screenshotDir = process.env.JX_E2E_OUTPUT_DIR || join(root, 'test-results/e2e');
 // 视觉冻结基线：由作者于 2026-10-08 批准后重置。
 // 旧基线 69471c7（2026-10-05）之后 style.css 经历 9 次经批准的视觉改动
 // （d8e8e02 player shell、17c63fe candidate atlas、c776de9 合并、d73e0b7 页脚等），
@@ -18,6 +18,8 @@ const screenshotDir = join(root, 'test-results/e2e');
 // 新基线取 d73e0b7 —— 作者已确认其为当前期望的视觉状态。
 const PROFESSIONAL_BASELINE_COMMIT = 'd73e0b7';
 const professionalBaselineCss = execFileSync('git', ['show', `${PROFESSIONAL_BASELINE_COMMIT}:apps/web/src/style.css`], { cwd: root, encoding: 'utf8' });
+const { authorizedProfessionalCss } = require('./professional-readability-contract.cjs');
+const professionalReadabilityDelta = authorizedProfessionalCss(root);
 const children = [];
 
 async function availablePorts(count) {
@@ -442,7 +444,7 @@ async function ready(url) {
       assert.equal(await page.getByRole('button', { name: '综合情报', exact: true }).count(), 1, 'intel has one visible entry');
       assert.equal(await page.getByRole('button', { name: '星记忆', exact: true }).count(), 1, 'memory has one visible entry');
       await page.getByRole('button', { name: '角色状态', exact: true }).click();
-      assert.equal(await page.locator('.game-info-panel').getAttribute('aria-label'), '角色状态详情');
+      assert.equal(await page.locator('.game-info-dialog').getAttribute('aria-label'), '角色状态详情');
       await page.getByRole('button', { name: '关闭资料面板' }).click();
 
       const stalePage = await context.newPage();
@@ -760,12 +762,12 @@ async function ready(url) {
           links.forEach(link => { link.disabled = true; });
           return states;
         });
-        const baselineStyleTag = await page.addStyleTag({ content: professionalBaselineCss });
+        const baselineStyleTag = await page.addStyleTag({ content: professionalBaselineCss + '\n' + professionalReadabilityDelta });
         await page.evaluate(() => document.fonts.ready);
         const baselineProVisualContract = await readVisualContract();
         await baselineStyleTag.evaluate(style => style.remove());
         await page.locator('link[rel="stylesheet"]').evaluateAll((links, states) => links.forEach((link, index) => { link.disabled = states[index] ?? false; }), activeStylesheetStates);
-        assert.deepEqual(activeProVisualContract, baselineProVisualContract, 'professional AI computed layout, type, color, and interaction styles must match the frozen baseline');
+        assert.deepEqual(activeProVisualContract, baselineProVisualContract, 'professional AI must match the historic baseline plus only the explicit authorized readability delta');
         await page.emulateMedia({ reducedMotion: 'no-preference' });
       };
       await assertFrozenProfessionalStyles();
@@ -1355,22 +1357,23 @@ async function ready(url) {
       await page.getByRole('button', { name: '导入此档' }).click();
       assert.equal(await page.locator('.game-topline h1').innerText(), '导入旧局');
       await page.getByRole('button', { name: '角色状态', exact: true }).click();
-      let legacyPanel = page.locator('.game-info-panel [aria-label="资料内容"]');
+      let legacyPanel = page.locator('.game-info-dialog [aria-label="资料内容"]');
       assert.ok((await legacyPanel.innerText()).includes('旧版状态记录'));
       assert.ok((await legacyPanel.innerText()).includes('姓名：迁移修士'));
       await page.getByRole('button', { name: '关闭资料面板' }).click();
       await page.getByRole('button', { name: '综合情报', exact: true }).click();
-      legacyPanel = page.locator('.game-info-panel [aria-label="资料内容"]');
+      legacyPanel = page.locator('.game-info-dialog [aria-label="资料内容"]');
       assert.ok((await legacyPanel.innerText()).includes('旧版世界资料'));
       assert.ok((await legacyPanel.innerText()).includes('旧版综合情报'));
       assert.ok((await legacyPanel.innerText()).includes('石阶留有剑痕'));
       await page.getByRole('button', { name: '关闭资料面板' }).click();
       await page.getByRole('button', { name: '星记忆', exact: true }).click();
-      legacyPanel = page.locator('.game-info-panel [aria-label="资料内容"]');
+      legacyPanel = page.locator('.game-info-dialog [aria-label="资料内容"]');
       for (const memoryField of ['旧版记忆记录', '短期记忆', '长期记忆', '曾与守门弟子交谈', '短期线索甲', '长期约定乙']) {
         assert.ok((await legacyPanel.innerText()).includes(memoryField), `memory panel should retain ${memoryField}`);
       }
       await page.getByRole('button', { name: '关闭资料面板' }).click();
+      await page.getByRole('button', { name: '旧档资料与迁移核对', exact: true }).click();
       await page.locator('.legacy-groups summary').filter({ hasText: 'status' }).click();
       assert.ok((await page.locator('.legacy-groups').innerText()).includes('姓名：迁移修士'));
       await page.locator('.legacy-groups summary').filter({ hasText: 'pendingQueue' }).click();
@@ -1473,8 +1476,9 @@ async function ready(url) {
       await page.getByRole('button', { name: '导入此档' }).click();
       await page.locator('.game-topline h1').waitFor();
       assert.ok((await page.locator('.story-reading').innerText()).includes('应保留的正文'));
-      assert.equal(await page.locator('.story-reading').evaluate(element => ['auto', 'scroll'].includes(getComputedStyle(element).overflowY)), false,
-        'the story stays in the document flow instead of becoming a nested scroll region');
+      assert.equal(await page.locator('.story-reading').evaluate(element => ['auto', 'scroll'].includes(getComputedStyle(element).overflowY)), true,
+        'the story scrolls inside the fixed game frame');
+      assert.equal(await page.evaluate(() => window.scrollY), 0, 'the outer game document does not compete for scrolling');
       assert.equal(await page.evaluate(() => window.__legacyInjected), undefined, 'HTML import must never execute script elements');
       const txtBytes = Buffer.from('[USER]:山门之外有何去处？\n[AI]:沿石阶向东，可见一条溪谷。\n#-----#\n');
       await page.goto(`http://127.0.0.1:${webPort}/lobby`);
@@ -1529,17 +1533,17 @@ async function ready(url) {
       await page.getByRole('button', { name: '继续游玩' }).click();
       await page.locator('.game-topline h1').waitFor();
       assert.equal(await page.locator('.game-topline h1').innerText(), '旧库修士');
-      const beforeWorld = await page.evaluate(() => {
-        window.scrollTo(0, 280);
-        return window.scrollY;
+      const beforeWorld = await page.locator('.story-reading').evaluate(element => {
+        element.scrollTop = 280;
+        return element.scrollTop;
       });
-      assert.ok(beforeWorld > 0, 'the document should scroll through the full story history');
+      assert.ok(beforeWorld > 0, 'the story container should scroll through the full story history');
       await page.locator('.game-tools').getByRole('button', { name: '世界设定' }).evaluate(button => button.click());
       await page.getByRole('button', { name: '返回当前行旅' }).click();
       await page.locator('.story-reading').waitFor();
-      await page.waitForFunction(expected => Math.abs(window.scrollY - expected) <= 2, beforeWorld);
-      assert.ok(Math.abs((await page.evaluate(() => window.scrollY)) - beforeWorld) <= 2,
-        'worldbook reading should restore the document scroll position');
+      await page.waitForFunction(expected => Math.abs(document.querySelector('.story-reading').scrollTop - expected) <= 2, beforeWorld);
+      assert.ok(Math.abs((await page.locator('.story-reading').evaluate(element => element.scrollTop)) - beforeWorld) <= 2,
+        'worldbook reading should restore the story container scroll position');
       await page.evaluate(() => {
         localStorage.removeItem('jiuxiao_1_local_saves');
         localStorage.removeItem('jiuxiao_1_local_saves_v2');

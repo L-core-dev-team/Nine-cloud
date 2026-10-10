@@ -1,0 +1,5947 @@
+{
+  "generatedAt": "2026-10-10T14:09:14.799Z",
+  "branch": "shuilongyin/s-stress-audit-20261010",
+  "auditCodeSha": "d3477a63a63340c6e2c68000cdb190e2078c7ca2",
+  "main": "b379719b33cc2f0eced797caa9cdd95c2ab40cf0",
+  "frozenS": "eb29fa1114592130419116ef3426fc47fa30e0bf",
+  "productionDiff": "",
+  "summaries": {
+    "navigation": {
+      "mode": "navigation",
+      "started": "2026-10-10T13:58:38.250Z",
+      "sha": "004fcf0a250953daff1bc09800f5d990dadfba98",
+      "results": [
+        {
+          "name": "route-0-/lobby",
+          "status": "PASS",
+          "ms": 171,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-0-/new",
+          "status": "PASS",
+          "ms": 51,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-0-/world",
+          "status": "PASS",
+          "ms": 91,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-0-/settings/ai",
+          "status": "PASS",
+          "ms": 365,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-0-/settings/graphics",
+          "status": "PASS",
+          "ms": 120,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-0-/settings/cloud",
+          "status": "PASS",
+          "ms": 71,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-0-/lobby",
+          "status": "PASS",
+          "ms": 63,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-0-/saves",
+          "status": "PASS",
+          "ms": 31,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-0",
+          "status": "PASS",
+          "ms": 26
+        },
+        {
+          "name": "refresh-0",
+          "status": "PASS",
+          "ms": 120
+        },
+        {
+          "name": "route-1-/lobby",
+          "status": "PASS",
+          "ms": 56,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-1-/new",
+          "status": "PASS",
+          "ms": 64,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-1-/world",
+          "status": "PASS",
+          "ms": 107,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-1-/settings/ai",
+          "status": "PASS",
+          "ms": 271,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-1-/settings/graphics",
+          "status": "PASS",
+          "ms": 72,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-1-/settings/cloud",
+          "status": "PASS",
+          "ms": 71,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-1-/lobby",
+          "status": "PASS",
+          "ms": 56,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-1-/saves",
+          "status": "PASS",
+          "ms": 48,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-1",
+          "status": "PASS",
+          "ms": 26
+        },
+        {
+          "name": "route-2-/lobby",
+          "status": "PASS",
+          "ms": 56,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-2-/new",
+          "status": "PASS",
+          "ms": 67,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-2-/world",
+          "status": "PASS",
+          "ms": 72,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-2-/settings/ai",
+          "status": "PASS",
+          "ms": 244,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-2-/settings/graphics",
+          "status": "PASS",
+          "ms": 78,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-2-/settings/cloud",
+          "status": "PASS",
+          "ms": 63,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-2-/lobby",
+          "status": "PASS",
+          "ms": 63,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-2-/saves",
+          "status": "PASS",
+          "ms": 30,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-2",
+          "status": "PASS",
+          "ms": 23
+        },
+        {
+          "name": "route-3-/lobby",
+          "status": "PASS",
+          "ms": 58,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-3-/new",
+          "status": "PASS",
+          "ms": 53,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-3-/world",
+          "status": "PASS",
+          "ms": 63,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-3-/settings/ai",
+          "status": "PASS",
+          "ms": 201,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-3-/settings/graphics",
+          "status": "PASS",
+          "ms": 84,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-3-/settings/cloud",
+          "status": "PASS",
+          "ms": 64,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-3-/lobby",
+          "status": "PASS",
+          "ms": 50,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-3-/saves",
+          "status": "PASS",
+          "ms": 32,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-3",
+          "status": "PASS",
+          "ms": 24
+        },
+        {
+          "name": "refresh-3",
+          "status": "PASS",
+          "ms": 183
+        },
+        {
+          "name": "route-4-/lobby",
+          "status": "PASS",
+          "ms": 59,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-4-/new",
+          "status": "PASS",
+          "ms": 50,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-4-/world",
+          "status": "PASS",
+          "ms": 90,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-4-/settings/ai",
+          "status": "PASS",
+          "ms": 216,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-4-/settings/graphics",
+          "status": "PASS",
+          "ms": 71,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-4-/settings/cloud",
+          "status": "PASS",
+          "ms": 55,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-4-/lobby",
+          "status": "PASS",
+          "ms": 47,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-4-/saves",
+          "status": "PASS",
+          "ms": 28,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-4",
+          "status": "PASS",
+          "ms": 23
+        },
+        {
+          "name": "route-5-/lobby",
+          "status": "PASS",
+          "ms": 50,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-5-/new",
+          "status": "PASS",
+          "ms": 62,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-5-/world",
+          "status": "PASS",
+          "ms": 61,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-5-/settings/ai",
+          "status": "PASS",
+          "ms": 213,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-5-/settings/graphics",
+          "status": "PASS",
+          "ms": 79,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-5-/settings/cloud",
+          "status": "PASS",
+          "ms": 59,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-5-/lobby",
+          "status": "PASS",
+          "ms": 50,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-5-/saves",
+          "status": "PASS",
+          "ms": 26,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-5",
+          "status": "PASS",
+          "ms": 21
+        },
+        {
+          "name": "route-6-/lobby",
+          "status": "PASS",
+          "ms": 48,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-6-/new",
+          "status": "PASS",
+          "ms": 47,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-6-/world",
+          "status": "PASS",
+          "ms": 60,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-6-/settings/ai",
+          "status": "PASS",
+          "ms": 171,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-6-/settings/graphics",
+          "status": "PASS",
+          "ms": 69,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-6-/settings/cloud",
+          "status": "PASS",
+          "ms": 51,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-6-/lobby",
+          "status": "PASS",
+          "ms": 46,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-6-/saves",
+          "status": "PASS",
+          "ms": 27,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-6",
+          "status": "PASS",
+          "ms": 20
+        },
+        {
+          "name": "refresh-6",
+          "status": "PASS",
+          "ms": 125
+        },
+        {
+          "name": "route-7-/lobby",
+          "status": "PASS",
+          "ms": 49,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-7-/new",
+          "status": "PASS",
+          "ms": 48,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-7-/world",
+          "status": "PASS",
+          "ms": 79,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-7-/settings/ai",
+          "status": "PASS",
+          "ms": 206,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-7-/settings/graphics",
+          "status": "PASS",
+          "ms": 79,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-7-/settings/cloud",
+          "status": "PASS",
+          "ms": 50,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-7-/lobby",
+          "status": "PASS",
+          "ms": 55,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-7-/saves",
+          "status": "PASS",
+          "ms": 28,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-7",
+          "status": "PASS",
+          "ms": 23
+        },
+        {
+          "name": "route-8-/lobby",
+          "status": "PASS",
+          "ms": 48,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-8-/new",
+          "status": "PASS",
+          "ms": 48,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-8-/world",
+          "status": "PASS",
+          "ms": 61,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-8-/settings/ai",
+          "status": "PASS",
+          "ms": 165,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-8-/settings/graphics",
+          "status": "PASS",
+          "ms": 68,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-8-/settings/cloud",
+          "status": "PASS",
+          "ms": 55,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-8-/lobby",
+          "status": "PASS",
+          "ms": 49,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-8-/saves",
+          "status": "PASS",
+          "ms": 25,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-8",
+          "status": "PASS",
+          "ms": 22
+        },
+        {
+          "name": "route-9-/lobby",
+          "status": "PASS",
+          "ms": 49,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-9-/new",
+          "status": "PASS",
+          "ms": 51,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-9-/world",
+          "status": "PASS",
+          "ms": 60,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-9-/settings/ai",
+          "status": "PASS",
+          "ms": 176,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-9-/settings/graphics",
+          "status": "PASS",
+          "ms": 67,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-9-/settings/cloud",
+          "status": "PASS",
+          "ms": 52,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-9-/lobby",
+          "status": "PASS",
+          "ms": 49,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-9-/saves",
+          "status": "PASS",
+          "ms": 26,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-9",
+          "status": "PASS",
+          "ms": 19
+        },
+        {
+          "name": "refresh-9",
+          "status": "PASS",
+          "ms": 133
+        },
+        {
+          "name": "route-10-/lobby",
+          "status": "PASS",
+          "ms": 54,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-10-/new",
+          "status": "PASS",
+          "ms": 55,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-10-/world",
+          "status": "PASS",
+          "ms": 81,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-10-/settings/ai",
+          "status": "PASS",
+          "ms": 203,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-10-/settings/graphics",
+          "status": "PASS",
+          "ms": 80,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-10-/settings/cloud",
+          "status": "PASS",
+          "ms": 55,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-10-/lobby",
+          "status": "PASS",
+          "ms": 48,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-10-/saves",
+          "status": "PASS",
+          "ms": 32,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-10",
+          "status": "PASS",
+          "ms": 25
+        },
+        {
+          "name": "route-11-/lobby",
+          "status": "PASS",
+          "ms": 55,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-11-/new",
+          "status": "PASS",
+          "ms": 51,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-11-/world",
+          "status": "PASS",
+          "ms": 58,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-11-/settings/ai",
+          "status": "PASS",
+          "ms": 168,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-11-/settings/graphics",
+          "status": "PASS",
+          "ms": 67,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-11-/settings/cloud",
+          "status": "PASS",
+          "ms": 54,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-11-/lobby",
+          "status": "PASS",
+          "ms": 48,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-11-/saves",
+          "status": "PASS",
+          "ms": 27,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-11",
+          "status": "PASS",
+          "ms": 22
+        },
+        {
+          "name": "route-12-/lobby",
+          "status": "PASS",
+          "ms": 51,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-12-/new",
+          "status": "PASS",
+          "ms": 48,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-12-/world",
+          "status": "PASS",
+          "ms": 58,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-12-/settings/ai",
+          "status": "PASS",
+          "ms": 161,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-12-/settings/graphics",
+          "status": "PASS",
+          "ms": 77,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-12-/settings/cloud",
+          "status": "PASS",
+          "ms": 66,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-12-/lobby",
+          "status": "PASS",
+          "ms": 48,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-12-/saves",
+          "status": "PASS",
+          "ms": 26,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-12",
+          "status": "PASS",
+          "ms": 24
+        },
+        {
+          "name": "refresh-12",
+          "status": "PASS",
+          "ms": 151
+        },
+        {
+          "name": "route-13-/lobby",
+          "status": "PASS",
+          "ms": 52,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-13-/new",
+          "status": "PASS",
+          "ms": 53,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-13-/world",
+          "status": "PASS",
+          "ms": 84,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-13-/settings/ai",
+          "status": "PASS",
+          "ms": 209,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-13-/settings/graphics",
+          "status": "PASS",
+          "ms": 70,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-13-/settings/cloud",
+          "status": "PASS",
+          "ms": 53,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-13-/lobby",
+          "status": "PASS",
+          "ms": 51,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-13-/saves",
+          "status": "PASS",
+          "ms": 26,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-13",
+          "status": "PASS",
+          "ms": 19
+        },
+        {
+          "name": "route-14-/lobby",
+          "status": "PASS",
+          "ms": 49,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-14-/new",
+          "status": "PASS",
+          "ms": 47,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-14-/world",
+          "status": "PASS",
+          "ms": 58,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-14-/settings/ai",
+          "status": "PASS",
+          "ms": 167,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-14-/settings/graphics",
+          "status": "PASS",
+          "ms": 70,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-14-/settings/cloud",
+          "status": "PASS",
+          "ms": 54,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-14-/lobby",
+          "status": "PASS",
+          "ms": 52,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-14-/saves",
+          "status": "PASS",
+          "ms": 30,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-14",
+          "status": "PASS",
+          "ms": 19
+        },
+        {
+          "name": "route-15-/lobby",
+          "status": "PASS",
+          "ms": 48,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-15-/new",
+          "status": "PASS",
+          "ms": 48,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-15-/world",
+          "status": "PASS",
+          "ms": 61,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-15-/settings/ai",
+          "status": "PASS",
+          "ms": 168,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-15-/settings/graphics",
+          "status": "PASS",
+          "ms": 75,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-15-/settings/cloud",
+          "status": "PASS",
+          "ms": 57,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-15-/lobby",
+          "status": "PASS",
+          "ms": 49,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-15-/saves",
+          "status": "PASS",
+          "ms": 26,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-15",
+          "status": "PASS",
+          "ms": 23
+        },
+        {
+          "name": "refresh-15",
+          "status": "PASS",
+          "ms": 115
+        },
+        {
+          "name": "route-16-/lobby",
+          "status": "PASS",
+          "ms": 63,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-16-/new",
+          "status": "PASS",
+          "ms": 48,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-16-/world",
+          "status": "PASS",
+          "ms": 88,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-16-/settings/ai",
+          "status": "PASS",
+          "ms": 199,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-16-/settings/graphics",
+          "status": "PASS",
+          "ms": 65,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-16-/settings/cloud",
+          "status": "PASS",
+          "ms": 54,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-16-/lobby",
+          "status": "PASS",
+          "ms": 49,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-16-/saves",
+          "status": "PASS",
+          "ms": 28,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-16",
+          "status": "PASS",
+          "ms": 23
+        },
+        {
+          "name": "route-17-/lobby",
+          "status": "PASS",
+          "ms": 49,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-17-/new",
+          "status": "PASS",
+          "ms": 53,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-17-/world",
+          "status": "PASS",
+          "ms": 71,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-17-/settings/ai",
+          "status": "PASS",
+          "ms": 201,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-17-/settings/graphics",
+          "status": "PASS",
+          "ms": 59,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-17-/settings/cloud",
+          "status": "PASS",
+          "ms": 54,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-17-/lobby",
+          "status": "PASS",
+          "ms": 53,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-17-/saves",
+          "status": "PASS",
+          "ms": 31,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-17",
+          "status": "PASS",
+          "ms": 32
+        },
+        {
+          "name": "route-18-/lobby",
+          "status": "PASS",
+          "ms": 60,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-18-/new",
+          "status": "PASS",
+          "ms": 65,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-18-/world",
+          "status": "PASS",
+          "ms": 72,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-18-/settings/ai",
+          "status": "PASS",
+          "ms": 185,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-18-/settings/graphics",
+          "status": "PASS",
+          "ms": 80,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-18-/settings/cloud",
+          "status": "PASS",
+          "ms": 54,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-18-/lobby",
+          "status": "PASS",
+          "ms": 57,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-18-/saves",
+          "status": "PASS",
+          "ms": 32,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-18",
+          "status": "PASS",
+          "ms": 22
+        },
+        {
+          "name": "refresh-18",
+          "status": "PASS",
+          "ms": 187
+        },
+        {
+          "name": "route-19-/lobby",
+          "status": "PASS",
+          "ms": 75,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-19-/new",
+          "status": "PASS",
+          "ms": 76,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-19-/world",
+          "status": "PASS",
+          "ms": 114,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-19-/settings/ai",
+          "status": "PASS",
+          "ms": 247,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-19-/settings/graphics",
+          "status": "PASS",
+          "ms": 86,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-19-/settings/cloud",
+          "status": "PASS",
+          "ms": 75,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-19-/lobby",
+          "status": "PASS",
+          "ms": 63,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-19-/saves",
+          "status": "PASS",
+          "ms": 37,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-19",
+          "status": "PASS",
+          "ms": 33
+        },
+        {
+          "name": "route-20-/lobby",
+          "status": "PASS",
+          "ms": 64,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-20-/new",
+          "status": "PASS",
+          "ms": 62,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-20-/world",
+          "status": "PASS",
+          "ms": 61,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-20-/settings/ai",
+          "status": "PASS",
+          "ms": 211,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-20-/settings/graphics",
+          "status": "PASS",
+          "ms": 72,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-20-/settings/cloud",
+          "status": "PASS",
+          "ms": 61,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-20-/lobby",
+          "status": "PASS",
+          "ms": 61,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-20-/saves",
+          "status": "PASS",
+          "ms": 32,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-20",
+          "status": "PASS",
+          "ms": 26
+        },
+        {
+          "name": "route-21-/lobby",
+          "status": "PASS",
+          "ms": 52,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-21-/new",
+          "status": "PASS",
+          "ms": 51,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-21-/world",
+          "status": "PASS",
+          "ms": 63,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-21-/settings/ai",
+          "status": "PASS",
+          "ms": 226,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-21-/settings/graphics",
+          "status": "PASS",
+          "ms": 89,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-21-/settings/cloud",
+          "status": "PASS",
+          "ms": 54,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-21-/lobby",
+          "status": "PASS",
+          "ms": 50,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-21-/saves",
+          "status": "PASS",
+          "ms": 32,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-21",
+          "status": "PASS",
+          "ms": 27
+        },
+        {
+          "name": "refresh-21",
+          "status": "PASS",
+          "ms": 184
+        },
+        {
+          "name": "route-22-/lobby",
+          "status": "PASS",
+          "ms": 55,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-22-/new",
+          "status": "PASS",
+          "ms": 58,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-22-/world",
+          "status": "PASS",
+          "ms": 106,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-22-/settings/ai",
+          "status": "PASS",
+          "ms": 240,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-22-/settings/graphics",
+          "status": "PASS",
+          "ms": 88,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-22-/settings/cloud",
+          "status": "PASS",
+          "ms": 65,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-22-/lobby",
+          "status": "PASS",
+          "ms": 62,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-22-/saves",
+          "status": "PASS",
+          "ms": 27,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-22",
+          "status": "PASS",
+          "ms": 26
+        },
+        {
+          "name": "route-23-/lobby",
+          "status": "PASS",
+          "ms": 54,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-23-/new",
+          "status": "PASS",
+          "ms": 56,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-23-/world",
+          "status": "PASS",
+          "ms": 72,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-23-/settings/ai",
+          "status": "PASS",
+          "ms": 240,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-23-/settings/graphics",
+          "status": "PASS",
+          "ms": 78,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-23-/settings/cloud",
+          "status": "PASS",
+          "ms": 66,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-23-/lobby",
+          "status": "PASS",
+          "ms": 64,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-23-/saves",
+          "status": "PASS",
+          "ms": 29,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-23",
+          "status": "PASS",
+          "ms": 25
+        },
+        {
+          "name": "route-24-/lobby",
+          "status": "PASS",
+          "ms": 60,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-24-/new",
+          "status": "PASS",
+          "ms": 55,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-24-/world",
+          "status": "PASS",
+          "ms": 69,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-24-/settings/ai",
+          "status": "PASS",
+          "ms": 231,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-24-/settings/graphics",
+          "status": "PASS",
+          "ms": 84,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-24-/settings/cloud",
+          "status": "PASS",
+          "ms": 75,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-24-/lobby",
+          "status": "PASS",
+          "ms": 57,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-24-/saves",
+          "status": "PASS",
+          "ms": 25,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-24",
+          "status": "PASS",
+          "ms": 27
+        },
+        {
+          "name": "refresh-24",
+          "status": "PASS",
+          "ms": 135
+        },
+        {
+          "name": "route-25-/lobby",
+          "status": "PASS",
+          "ms": 78,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-25-/new",
+          "status": "PASS",
+          "ms": 62,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-25-/world",
+          "status": "PASS",
+          "ms": 99,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-25-/settings/ai",
+          "status": "PASS",
+          "ms": 221,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-25-/settings/graphics",
+          "status": "PASS",
+          "ms": 79,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-25-/settings/cloud",
+          "status": "PASS",
+          "ms": 62,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-25-/lobby",
+          "status": "PASS",
+          "ms": 56,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-25-/saves",
+          "status": "PASS",
+          "ms": 34,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-25",
+          "status": "PASS",
+          "ms": 23
+        },
+        {
+          "name": "route-26-/lobby",
+          "status": "PASS",
+          "ms": 55,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-26-/new",
+          "status": "PASS",
+          "ms": 52,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-26-/world",
+          "status": "PASS",
+          "ms": 68,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-26-/settings/ai",
+          "status": "PASS",
+          "ms": 189,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-26-/settings/graphics",
+          "status": "PASS",
+          "ms": 70,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-26-/settings/cloud",
+          "status": "PASS",
+          "ms": 52,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-26-/lobby",
+          "status": "PASS",
+          "ms": 53,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-26-/saves",
+          "status": "PASS",
+          "ms": 29,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-26",
+          "status": "PASS",
+          "ms": 24
+        },
+        {
+          "name": "route-27-/lobby",
+          "status": "PASS",
+          "ms": 52,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-27-/new",
+          "status": "PASS",
+          "ms": 47,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-27-/world",
+          "status": "PASS",
+          "ms": 59,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-27-/settings/ai",
+          "status": "PASS",
+          "ms": 202,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-27-/settings/graphics",
+          "status": "PASS",
+          "ms": 72,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-27-/settings/cloud",
+          "status": "PASS",
+          "ms": 54,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-27-/lobby",
+          "status": "PASS",
+          "ms": 69,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-27-/saves",
+          "status": "PASS",
+          "ms": 36,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-27",
+          "status": "PASS",
+          "ms": 26
+        },
+        {
+          "name": "refresh-27",
+          "status": "PASS",
+          "ms": 169
+        },
+        {
+          "name": "route-28-/lobby",
+          "status": "PASS",
+          "ms": 81,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-28-/new",
+          "status": "PASS",
+          "ms": 66,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-28-/world",
+          "status": "PASS",
+          "ms": 109,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-28-/settings/ai",
+          "status": "PASS",
+          "ms": 248,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-28-/settings/graphics",
+          "status": "PASS",
+          "ms": 91,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-28-/settings/cloud",
+          "status": "PASS",
+          "ms": 69,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-28-/lobby",
+          "status": "PASS",
+          "ms": 56,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-28-/saves",
+          "status": "PASS",
+          "ms": 31,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-28",
+          "status": "PASS",
+          "ms": 26
+        },
+        {
+          "name": "route-29-/lobby",
+          "status": "PASS",
+          "ms": 50,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-29-/new",
+          "status": "PASS",
+          "ms": 60,
+          "evidence": {
+            "pathname": "/new",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-29-/world",
+          "status": "PASS",
+          "ms": 74,
+          "evidence": {
+            "pathname": "/world",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-29-/settings/ai",
+          "status": "PASS",
+          "ms": 227,
+          "evidence": {
+            "pathname": "/settings/ai",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-29-/settings/graphics",
+          "status": "PASS",
+          "ms": 85,
+          "evidence": {
+            "pathname": "/settings/graphics",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-29-/settings/cloud",
+          "status": "PASS",
+          "ms": 63,
+          "evidence": {
+            "pathname": "/settings/cloud",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-29-/lobby",
+          "status": "PASS",
+          "ms": 61,
+          "evidence": {
+            "pathname": "/lobby",
+            "changed": true
+          }
+        },
+        {
+          "name": "route-29-/saves",
+          "status": "PASS",
+          "ms": 31,
+          "evidence": {
+            "pathname": "/saves",
+            "changed": true
+          }
+        },
+        {
+          "name": "history-29",
+          "status": "PASS",
+          "ms": 26
+        },
+        {
+          "name": "world-dwell-0",
+          "status": "PASS",
+          "ms": 108,
+          "evidence": {
+            "frames": 4951,
+            "visibility": "visible",
+            "canvas": 2,
+            "entries": 34
+          }
+        },
+        {
+          "name": "world-dwell-30",
+          "status": "PASS",
+          "ms": 29,
+          "evidence": {
+            "frames": 9912,
+            "visibility": "visible",
+            "canvas": 2,
+            "entries": 34
+          }
+        },
+        {
+          "name": "world-dwell-60",
+          "status": "PASS",
+          "ms": 38,
+          "evidence": {
+            "frames": 14869,
+            "visibility": "visible",
+            "canvas": 2,
+            "entries": 34
+          }
+        },
+        {
+          "name": "world-dwell-90",
+          "status": "PASS",
+          "ms": 34,
+          "evidence": {
+            "frames": 19829,
+            "visibility": "visible",
+            "canvas": 2,
+            "entries": 34
+          }
+        },
+        {
+          "name": "world-dwell-120",
+          "status": "PASS",
+          "ms": 34,
+          "evidence": {
+            "frames": 24786,
+            "visibility": "visible",
+            "canvas": 2,
+            "entries": 34
+          }
+        },
+        {
+          "name": "world-dwell-150",
+          "status": "PASS",
+          "ms": 31,
+          "evidence": {
+            "frames": 29745,
+            "visibility": "visible",
+            "canvas": 2,
+            "entries": 34
+          }
+        },
+        {
+          "name": "world-dwell-180",
+          "status": "PASS",
+          "ms": 32,
+          "evidence": {
+            "frames": 34702,
+            "visibility": "visible",
+            "canvas": 2,
+            "entries": 34
+          }
+        },
+        {
+          "name": "world-dwell-210",
+          "status": "PASS",
+          "ms": 31,
+          "evidence": {
+            "frames": 39660,
+            "visibility": "visible",
+            "canvas": 2,
+            "entries": 34
+          }
+        },
+        {
+          "name": "world-dwell-240",
+          "status": "PASS",
+          "ms": 31,
+          "evidence": {
+            "frames": 44616,
+            "visibility": "visible",
+            "canvas": 2,
+            "entries": 34
+          }
+        },
+        {
+          "name": "world-dwell-270",
+          "status": "PASS",
+          "ms": 32,
+          "evidence": {
+            "frames": 49574,
+            "visibility": "visible",
+            "canvas": 2,
+            "entries": 34
+          }
+        },
+        {
+          "name": "world-dwell-300",
+          "status": "PASS",
+          "ms": 36,
+          "evidence": {
+            "frames": 54533,
+            "visibility": "visible",
+            "canvas": 2,
+            "entries": 34
+          }
+        },
+        {
+          "name": "world-dwell-330",
+          "status": "PASS",
+          "ms": 39,
+          "evidence": {
+            "frames": 59490,
+            "visibility": "visible",
+            "canvas": 2,
+            "entries": 34
+          }
+        },
+        {
+          "name": "world-dwell-360",
+          "status": "PASS",
+          "ms": 32,
+          "evidence": {
+            "frames": 64450,
+            "visibility": "visible",
+            "canvas": 2,
+            "entries": 34
+          }
+        },
+        {
+          "name": "world-dwell-390",
+          "status": "PASS",
+          "ms": 26,
+          "evidence": {
+            "frames": 69409,
+            "visibility": "visible",
+            "canvas": 2,
+            "entries": 34
+          }
+        },
+        {
+          "name": "world-dwell-420",
+          "status": "PASS",
+          "ms": 28,
+          "evidence": {
+            "frames": 74368,
+            "visibility": "visible",
+            "canvas": 2,
+            "entries": 34
+          }
+        },
+        {
+          "name": "world-dwell-450",
+          "status": "PASS",
+          "ms": 29,
+          "evidence": {
+            "frames": 79325,
+            "visibility": "visible",
+            "canvas": 2,
+            "entries": 34
+          }
+        },
+        {
+          "name": "world-dwell-480",
+          "status": "PASS",
+          "ms": 31,
+          "evidence": {
+            "frames": 84282,
+            "visibility": "visible",
+            "canvas": 2,
+            "entries": 34
+          }
+        },
+        {
+          "name": "world-dwell-510",
+          "status": "PASS",
+          "ms": 28,
+          "evidence": {
+            "frames": 89241,
+            "visibility": "visible",
+            "canvas": 2,
+            "entries": 34
+          }
+        },
+        {
+          "name": "world-dwell-540",
+          "status": "PASS",
+          "ms": 26,
+          "evidence": {
+            "frames": 94197,
+            "visibility": "visible",
+            "canvas": 2,
+            "entries": 34
+          }
+        },
+        {
+          "name": "world-dwell-570",
+          "status": "PASS",
+          "ms": 23,
+          "evidence": {
+            "frames": 99155,
+            "visibility": "visible",
+            "canvas": 2,
+            "entries": 34
+          }
+        },
+        {
+          "name": "no-runtime-crash-or-pageerror",
+          "status": "PASS",
+          "ms": 1
+        }
+      ],
+      "memory": [
+        {
+          "seconds": 2.683,
+          "phase": "cycle-0",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": false,
+          "raw": {
+            "Documents": 32,
+            "JSEventListeners": 1516,
+            "Nodes": 5962,
+            "JSHeapUsedSize": 10955536,
+            "JSHeapTotalSize": 16961536
+          },
+          "measured": {
+            "Documents": 32,
+            "JSEventListeners": 1531,
+            "Nodes": 5962,
+            "JSHeapUsedSize": 10970364,
+            "JSHeapTotalSize": 16961536
+          },
+          "dom": {
+            "documents": 32,
+            "nodes": 5962,
+            "jsEventListeners": 1531
+          }
+        },
+        {
+          "seconds": 3.472,
+          "phase": "cycle-1",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": false,
+          "raw": {
+            "Documents": 48,
+            "JSEventListeners": 2430,
+            "Nodes": 10304,
+            "JSHeapUsedSize": 14330168,
+            "JSHeapTotalSize": 20168704
+          },
+          "measured": {
+            "Documents": 50,
+            "JSEventListeners": 2430,
+            "Nodes": 10318,
+            "JSHeapUsedSize": 14330168,
+            "JSHeapTotalSize": 20168704
+          },
+          "dom": {
+            "documents": 50,
+            "nodes": 10318,
+            "jsEventListeners": 2430
+          }
+        },
+        {
+          "seconds": 4.211,
+          "phase": "cycle-2",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": true,
+          "raw": {
+            "Documents": 15,
+            "JSEventListeners": 1217,
+            "Nodes": 6244,
+            "JSHeapUsedSize": 10567312,
+            "JSHeapTotalSize": 20430848
+          },
+          "measured": {
+            "Documents": 5,
+            "JSEventListeners": 366,
+            "Nodes": 290,
+            "JSHeapUsedSize": 5588588,
+            "JSHeapTotalSize": 6414336
+          },
+          "dom": {
+            "documents": 5,
+            "nodes": 290,
+            "jsEventListeners": 366
+          }
+        },
+        {
+          "seconds": 5.035,
+          "phase": "cycle-3",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": false,
+          "raw": {
+            "Documents": 17,
+            "JSEventListeners": 1105,
+            "Nodes": 4805,
+            "JSHeapUsedSize": 10219416,
+            "JSHeapTotalSize": 14864384
+          },
+          "measured": {
+            "Documents": 17,
+            "JSEventListeners": 1105,
+            "Nodes": 4805,
+            "JSHeapUsedSize": 10219416,
+            "JSHeapTotalSize": 14864384
+          },
+          "dom": {
+            "documents": 17,
+            "nodes": 4805,
+            "jsEventListeners": 1105
+          }
+        },
+        {
+          "seconds": 5.684,
+          "phase": "cycle-4",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": false,
+          "raw": {
+            "Documents": 33,
+            "JSEventListeners": 2004,
+            "Nodes": 9147,
+            "JSHeapUsedSize": 13474212,
+            "JSHeapTotalSize": 19120128
+          },
+          "measured": {
+            "Documents": 33,
+            "JSEventListeners": 2004,
+            "Nodes": 9147,
+            "JSHeapUsedSize": 13474212,
+            "JSHeapTotalSize": 19120128
+          },
+          "dom": {
+            "documents": 35,
+            "nodes": 9161,
+            "jsEventListeners": 2004
+          }
+        },
+        {
+          "seconds": 6.319,
+          "phase": "cycle-5",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": false,
+          "raw": {
+            "Documents": 9,
+            "JSEventListeners": 813,
+            "Nodes": 4300,
+            "JSHeapUsedSize": 7455724,
+            "JSHeapTotalSize": 21417984
+          },
+          "measured": {
+            "Documents": 9,
+            "JSEventListeners": 813,
+            "Nodes": 4300,
+            "JSHeapUsedSize": 7455724,
+            "JSHeapTotalSize": 21417984
+          },
+          "dom": {
+            "documents": 9,
+            "nodes": 4300,
+            "jsEventListeners": 813
+          }
+        },
+        {
+          "seconds": 6.992,
+          "phase": "cycle-6",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": false,
+          "raw": {
+            "Documents": 37,
+            "JSEventListeners": 1807,
+            "Nodes": 8995,
+            "JSHeapUsedSize": 10488392,
+            "JSHeapTotalSize": 22265856
+          },
+          "measured": {
+            "Documents": 37,
+            "JSEventListeners": 1807,
+            "Nodes": 8995,
+            "JSHeapUsedSize": 10488392,
+            "JSHeapTotalSize": 22265856
+          },
+          "dom": {
+            "documents": 37,
+            "nodes": 8995,
+            "jsEventListeners": 1807
+          }
+        },
+        {
+          "seconds": 7.621,
+          "phase": "cycle-7",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": false,
+          "raw": {
+            "Documents": 9,
+            "JSEventListeners": 689,
+            "Nodes": 2569,
+            "JSHeapUsedSize": 8549032,
+            "JSHeapTotalSize": 21803008
+          },
+          "measured": {
+            "Documents": 11,
+            "JSEventListeners": 689,
+            "Nodes": 2583,
+            "JSHeapUsedSize": 8549116,
+            "JSHeapTotalSize": 21803008
+          },
+          "dom": {
+            "documents": 11,
+            "nodes": 2583,
+            "jsEventListeners": 689
+          }
+        },
+        {
+          "seconds": 8.176,
+          "phase": "cycle-8",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": false,
+          "raw": {
+            "Documents": 29,
+            "JSEventListeners": 1463,
+            "Nodes": 6945,
+            "JSHeapUsedSize": 12479624,
+            "JSHeapTotalSize": 22327296
+          },
+          "measured": {
+            "Documents": 31,
+            "JSEventListeners": 1463,
+            "Nodes": 6959,
+            "JSHeapUsedSize": 12479624,
+            "JSHeapTotalSize": 22327296
+          },
+          "dom": {
+            "documents": 31,
+            "nodes": 6959,
+            "jsEventListeners": 1463
+          }
+        },
+        {
+          "seconds": 8.898,
+          "phase": "cycle-9",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": true,
+          "raw": {
+            "Documents": 55,
+            "JSEventListeners": 2457,
+            "Nodes": 11626,
+            "JSHeapUsedSize": 14864656,
+            "JSHeapTotalSize": 25796608
+          },
+          "measured": {
+            "Documents": 1,
+            "JSEventListeners": 210,
+            "Nodes": 258,
+            "JSHeapUsedSize": 4532992,
+            "JSHeapTotalSize": 5304320
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 258,
+            "jsEventListeners": 210
+          }
+        },
+        {
+          "seconds": 9.543,
+          "phase": "cycle-10",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": false,
+          "raw": {
+            "Documents": 9,
+            "JSEventListeners": 689,
+            "Nodes": 2569,
+            "JSHeapUsedSize": 7142300,
+            "JSHeapTotalSize": 9822208
+          },
+          "measured": {
+            "Documents": 9,
+            "JSEventListeners": 689,
+            "Nodes": 2569,
+            "JSHeapUsedSize": 7143448,
+            "JSHeapTotalSize": 9822208
+          },
+          "dom": {
+            "documents": 11,
+            "nodes": 2583,
+            "jsEventListeners": 689
+          }
+        },
+        {
+          "seconds": 10.109,
+          "phase": "cycle-11",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": false,
+          "raw": {
+            "Documents": 29,
+            "JSEventListeners": 1489,
+            "Nodes": 6945,
+            "JSHeapUsedSize": 8764464,
+            "JSHeapTotalSize": 11395072
+          },
+          "measured": {
+            "Documents": 29,
+            "JSEventListeners": 1489,
+            "Nodes": 6945,
+            "JSHeapUsedSize": 8764464,
+            "JSHeapTotalSize": 11395072
+          },
+          "dom": {
+            "documents": 29,
+            "nodes": 6945,
+            "jsEventListeners": 1489
+          }
+        },
+        {
+          "seconds": 10.829,
+          "phase": "cycle-12",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": false,
+          "raw": {
+            "Documents": 17,
+            "JSEventListeners": 1062,
+            "Nodes": 4611,
+            "JSHeapUsedSize": 11639560,
+            "JSHeapTotalSize": 15650816
+          },
+          "measured": {
+            "Documents": 17,
+            "JSEventListeners": 1062,
+            "Nodes": 4611,
+            "JSHeapUsedSize": 11639560,
+            "JSHeapTotalSize": 15650816
+          },
+          "dom": {
+            "documents": 17,
+            "nodes": 4611,
+            "jsEventListeners": 1062
+          }
+        },
+        {
+          "seconds": 11.457,
+          "phase": "cycle-13",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": false,
+          "raw": {
+            "Documents": 9,
+            "JSEventListeners": 689,
+            "Nodes": 2569,
+            "JSHeapUsedSize": 7607780,
+            "JSHeapTotalSize": 19906560
+          },
+          "measured": {
+            "Documents": 9,
+            "JSEventListeners": 689,
+            "Nodes": 2569,
+            "JSHeapUsedSize": 7607780,
+            "JSHeapTotalSize": 19906560
+          },
+          "dom": {
+            "documents": 9,
+            "nodes": 2569,
+            "jsEventListeners": 689
+          }
+        },
+        {
+          "seconds": 12.013,
+          "phase": "cycle-14",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": false,
+          "raw": {
+            "Documents": 29,
+            "JSEventListeners": 1472,
+            "Nodes": 6945,
+            "JSHeapUsedSize": 11757796,
+            "JSHeapTotalSize": 21217280
+          },
+          "measured": {
+            "Documents": 29,
+            "JSEventListeners": 1472,
+            "Nodes": 6945,
+            "JSHeapUsedSize": 11757880,
+            "JSHeapTotalSize": 21217280
+          },
+          "dom": {
+            "documents": 29,
+            "nodes": 6945,
+            "jsEventListeners": 1472
+          }
+        },
+        {
+          "seconds": 12.693,
+          "phase": "cycle-15",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": false,
+          "raw": {
+            "Documents": 17,
+            "JSEventListeners": 914,
+            "Nodes": 2853,
+            "JSHeapUsedSize": 11755092,
+            "JSHeapTotalSize": 21278720
+          },
+          "measured": {
+            "Documents": 17,
+            "JSEventListeners": 914,
+            "Nodes": 2853,
+            "JSHeapUsedSize": 11755092,
+            "JSHeapTotalSize": 21278720
+          },
+          "dom": {
+            "documents": 17,
+            "nodes": 2853,
+            "jsEventListeners": 914
+          }
+        },
+        {
+          "seconds": 13.324,
+          "phase": "cycle-16",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": false,
+          "raw": {
+            "Documents": 33,
+            "JSEventListeners": 1813,
+            "Nodes": 7195,
+            "JSHeapUsedSize": 12050312,
+            "JSHeapTotalSize": 22388736
+          },
+          "measured": {
+            "Documents": 33,
+            "JSEventListeners": 1813,
+            "Nodes": 7195,
+            "JSHeapUsedSize": 12050312,
+            "JSHeapTotalSize": 22388736
+          },
+          "dom": {
+            "documents": 33,
+            "nodes": 7195,
+            "jsEventListeners": 1813
+          }
+        },
+        {
+          "seconds": 13.945,
+          "phase": "cycle-17",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": false,
+          "raw": {
+            "Documents": 13,
+            "JSEventListeners": 1480,
+            "Nodes": 8677,
+            "JSHeapUsedSize": 11364332,
+            "JSHeapTotalSize": 22388736
+          },
+          "measured": {
+            "Documents": 15,
+            "JSEventListeners": 1480,
+            "Nodes": 8691,
+            "JSHeapUsedSize": 11364416,
+            "JSHeapTotalSize": 22388736
+          },
+          "dom": {
+            "documents": 15,
+            "nodes": 8691,
+            "jsEventListeners": 1480
+          }
+        },
+        {
+          "seconds": 14.774,
+          "phase": "cycle-18",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": false,
+          "raw": {
+            "Documents": 41,
+            "JSEventListeners": 2474,
+            "Nodes": 13372,
+            "JSHeapUsedSize": 12825976,
+            "JSHeapTotalSize": 24285184
+          },
+          "measured": {
+            "Documents": 41,
+            "JSEventListeners": 2474,
+            "Nodes": 13372,
+            "JSHeapUsedSize": 12825976,
+            "JSHeapTotalSize": 24285184
+          },
+          "dom": {
+            "documents": 41,
+            "nodes": 13372,
+            "jsEventListeners": 2474
+          }
+        },
+        {
+          "seconds": 15.637,
+          "phase": "cycle-19",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": true,
+          "raw": {
+            "Documents": 15,
+            "JSEventListeners": 1046,
+            "Nodes": 4482,
+            "JSHeapUsedSize": 12316848,
+            "JSHeapTotalSize": 24870912
+          },
+          "measured": {
+            "Documents": 3,
+            "JSEventListeners": 366,
+            "Nodes": 276,
+            "JSHeapUsedSize": 5588196,
+            "JSHeapTotalSize": 6676480
+          },
+          "dom": {
+            "documents": 3,
+            "nodes": 276,
+            "jsEventListeners": 366
+          }
+        },
+        {
+          "seconds": 16.301,
+          "phase": "cycle-20",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": false,
+          "raw": {
+            "Documents": 9,
+            "JSEventListeners": 839,
+            "Nodes": 4486,
+            "JSHeapUsedSize": 7140692,
+            "JSHeapTotalSize": 10870784
+          },
+          "measured": {
+            "Documents": 9,
+            "JSEventListeners": 839,
+            "Nodes": 4486,
+            "JSHeapUsedSize": 7140692,
+            "JSHeapTotalSize": 10870784
+          },
+          "dom": {
+            "documents": 11,
+            "nodes": 4500,
+            "jsEventListeners": 839
+          }
+        },
+        {
+          "seconds": 17.146,
+          "phase": "cycle-21",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": false,
+          "raw": {
+            "Documents": 37,
+            "JSEventListeners": 1864,
+            "Nodes": 9171,
+            "JSHeapUsedSize": 11080440,
+            "JSHeapTotalSize": 15126528
+          },
+          "measured": {
+            "Documents": 37,
+            "JSEventListeners": 1864,
+            "Nodes": 9171,
+            "JSHeapUsedSize": 11080440,
+            "JSHeapTotalSize": 15126528
+          },
+          "dom": {
+            "documents": 37,
+            "nodes": 9171,
+            "jsEventListeners": 1864
+          }
+        },
+        {
+          "seconds": 17.89,
+          "phase": "cycle-22",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": false,
+          "raw": {
+            "Documents": 9,
+            "JSEventListeners": 689,
+            "Nodes": 2569,
+            "JSHeapUsedSize": 7204612,
+            "JSHeapTotalSize": 19320832
+          },
+          "measured": {
+            "Documents": 9,
+            "JSEventListeners": 689,
+            "Nodes": 2569,
+            "JSHeapUsedSize": 7204612,
+            "JSHeapTotalSize": 19320832
+          },
+          "dom": {
+            "documents": 11,
+            "nodes": 2583,
+            "jsEventListeners": 689
+          }
+        },
+        {
+          "seconds": 18.59,
+          "phase": "cycle-23",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": false,
+          "raw": {
+            "Documents": 29,
+            "JSEventListeners": 1459,
+            "Nodes": 6935,
+            "JSHeapUsedSize": 8594072,
+            "JSHeapTotalSize": 19320832
+          },
+          "measured": {
+            "Documents": 29,
+            "JSEventListeners": 1459,
+            "Nodes": 6935,
+            "JSHeapUsedSize": 8594072,
+            "JSHeapTotalSize": 19320832
+          },
+          "dom": {
+            "documents": 31,
+            "nodes": 6949,
+            "jsEventListeners": 1459
+          }
+        },
+        {
+          "seconds": 19.423,
+          "phase": "cycle-24",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": false,
+          "raw": {
+            "Documents": 17,
+            "JSEventListeners": 938,
+            "Nodes": 2853,
+            "JSHeapUsedSize": 11370208,
+            "JSHeapTotalSize": 17285120
+          },
+          "measured": {
+            "Documents": 17,
+            "JSEventListeners": 938,
+            "Nodes": 2853,
+            "JSHeapUsedSize": 11370208,
+            "JSHeapTotalSize": 17285120
+          },
+          "dom": {
+            "documents": 17,
+            "nodes": 2853,
+            "jsEventListeners": 938
+          }
+        },
+        {
+          "seconds": 20.151,
+          "phase": "cycle-25",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": false,
+          "raw": {
+            "Documents": 9,
+            "JSEventListeners": 663,
+            "Nodes": 2534,
+            "JSHeapUsedSize": 8163364,
+            "JSHeapTotalSize": 18395136
+          },
+          "measured": {
+            "Documents": 9,
+            "JSEventListeners": 663,
+            "Nodes": 2534,
+            "JSHeapUsedSize": 8163472,
+            "JSHeapTotalSize": 18395136
+          },
+          "dom": {
+            "documents": 11,
+            "nodes": 2548,
+            "jsEventListeners": 663
+          }
+        },
+        {
+          "seconds": 20.762,
+          "phase": "cycle-26",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": false,
+          "raw": {
+            "Documents": 29,
+            "JSEventListeners": 1418,
+            "Nodes": 6910,
+            "JSHeapUsedSize": 12034452,
+            "JSHeapTotalSize": 19443712
+          },
+          "measured": {
+            "Documents": 31,
+            "JSEventListeners": 1418,
+            "Nodes": 6924,
+            "JSHeapUsedSize": 12034452,
+            "JSHeapTotalSize": 19443712
+          },
+          "dom": {
+            "documents": 33,
+            "nodes": 6938,
+            "jsEventListeners": 1418
+          }
+        },
+        {
+          "seconds": 21.563,
+          "phase": "cycle-27",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": false,
+          "raw": {
+            "Documents": 13,
+            "JSEventListeners": 869,
+            "Nodes": 2541,
+            "JSHeapUsedSize": 11999456,
+            "JSHeapTotalSize": 22388736
+          },
+          "measured": {
+            "Documents": 13,
+            "JSEventListeners": 869,
+            "Nodes": 2541,
+            "JSHeapUsedSize": 11999456,
+            "JSHeapTotalSize": 22388736
+          },
+          "dom": {
+            "documents": 13,
+            "nodes": 2541,
+            "jsEventListeners": 869
+          }
+        },
+        {
+          "seconds": 22.359,
+          "phase": "cycle-28",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": false,
+          "raw": {
+            "Documents": 29,
+            "JSEventListeners": 1768,
+            "Nodes": 6883,
+            "JSHeapUsedSize": 17094460,
+            "JSHeapTotalSize": 23236608
+          },
+          "measured": {
+            "Documents": 31,
+            "JSEventListeners": 1768,
+            "Nodes": 6897,
+            "JSHeapUsedSize": 17095764,
+            "JSHeapTotalSize": 23236608
+          },
+          "dom": {
+            "documents": 33,
+            "nodes": 6911,
+            "jsEventListeners": 1768
+          }
+        },
+        {
+          "seconds": 23.081,
+          "phase": "cycle-29",
+          "url": "http://127.0.0.1:64553/saves",
+          "gc": true,
+          "raw": {
+            "Documents": 11,
+            "JSEventListeners": 1032,
+            "Nodes": 4570,
+            "JSHeapUsedSize": 11157684,
+            "JSHeapTotalSize": 23236608
+          },
+          "measured": {
+            "Documents": 3,
+            "JSEventListeners": 366,
+            "Nodes": 276,
+            "JSHeapUsedSize": 5630108,
+            "JSHeapTotalSize": 6676480
+          },
+          "dom": {
+            "documents": 3,
+            "nodes": 276,
+            "jsEventListeners": 366
+          }
+        },
+        {
+          "seconds": 53.583,
+          "phase": "dwell-0",
+          "url": "http://127.0.0.1:64553/world",
+          "gc": false,
+          "raw": {
+            "Documents": 1,
+            "JSEventListeners": 901,
+            "Nodes": 2406,
+            "JSHeapUsedSize": 6987416,
+            "JSHeapTotalSize": 7725056
+          },
+          "measured": {
+            "Documents": 1,
+            "JSEventListeners": 901,
+            "Nodes": 2406,
+            "JSHeapUsedSize": 6988164,
+            "JSHeapTotalSize": 7725056
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 2406,
+            "jsEventListeners": 901
+          }
+        },
+        {
+          "seconds": 83.63,
+          "phase": "dwell-30",
+          "url": "http://127.0.0.1:64553/world",
+          "gc": false,
+          "raw": {
+            "Documents": 1,
+            "JSEventListeners": 829,
+            "Nodes": 2426,
+            "JSHeapUsedSize": 6695080,
+            "JSHeapTotalSize": 8249344
+          },
+          "measured": {
+            "Documents": 1,
+            "JSEventListeners": 829,
+            "Nodes": 2426,
+            "JSHeapUsedSize": 6695792,
+            "JSHeapTotalSize": 8249344
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 2426,
+            "jsEventListeners": 829
+          }
+        },
+        {
+          "seconds": 113.681,
+          "phase": "dwell-60",
+          "url": "http://127.0.0.1:64553/world",
+          "gc": false,
+          "raw": {
+            "Documents": 1,
+            "JSEventListeners": 775,
+            "Nodes": 2427,
+            "JSHeapUsedSize": 6612276,
+            "JSHeapTotalSize": 8773632
+          },
+          "measured": {
+            "Documents": 1,
+            "JSEventListeners": 775,
+            "Nodes": 2427,
+            "JSHeapUsedSize": 6612980,
+            "JSHeapTotalSize": 8773632
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 2427,
+            "jsEventListeners": 775
+          }
+        },
+        {
+          "seconds": 143.733,
+          "phase": "dwell-90",
+          "url": "http://127.0.0.1:64553/world",
+          "gc": false,
+          "raw": {
+            "Documents": 1,
+            "JSEventListeners": 685,
+            "Nodes": 2428,
+            "JSHeapUsedSize": 7129872,
+            "JSHeapTotalSize": 8511488
+          },
+          "measured": {
+            "Documents": 1,
+            "JSEventListeners": 685,
+            "Nodes": 2428,
+            "JSHeapUsedSize": 7129944,
+            "JSHeapTotalSize": 8511488
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 2428,
+            "jsEventListeners": 685
+          }
+        },
+        {
+          "seconds": 173.775,
+          "phase": "dwell-120",
+          "url": "http://127.0.0.1:64553/world",
+          "gc": false,
+          "raw": {
+            "Documents": 1,
+            "JSEventListeners": 613,
+            "Nodes": 2429,
+            "JSHeapUsedSize": 6908056,
+            "JSHeapTotalSize": 9297920
+          },
+          "measured": {
+            "Documents": 1,
+            "JSEventListeners": 613,
+            "Nodes": 2429,
+            "JSHeapUsedSize": 6911848,
+            "JSHeapTotalSize": 9297920
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 2429,
+            "jsEventListeners": 613
+          }
+        },
+        {
+          "seconds": 203.827,
+          "phase": "dwell-150",
+          "url": "http://127.0.0.1:64553/world",
+          "gc": false,
+          "raw": {
+            "Documents": 1,
+            "JSEventListeners": 559,
+            "Nodes": 2430,
+            "JSHeapUsedSize": 6748604,
+            "JSHeapTotalSize": 8249344
+          },
+          "measured": {
+            "Documents": 1,
+            "JSEventListeners": 559,
+            "Nodes": 2430,
+            "JSHeapUsedSize": 6748664,
+            "JSHeapTotalSize": 8249344
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 2430,
+            "jsEventListeners": 559
+          }
+        },
+        {
+          "seconds": 233.868,
+          "phase": "dwell-180",
+          "url": "http://127.0.0.1:64553/world",
+          "gc": false,
+          "raw": {
+            "Documents": 1,
+            "JSEventListeners": 1163,
+            "Nodes": 3451,
+            "JSHeapUsedSize": 6938700,
+            "JSHeapTotalSize": 9035776
+          },
+          "measured": {
+            "Documents": 1,
+            "JSEventListeners": 1163,
+            "Nodes": 3451,
+            "JSHeapUsedSize": 6938760,
+            "JSHeapTotalSize": 9035776
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 3451,
+            "jsEventListeners": 1163
+          }
+        },
+        {
+          "seconds": 263.909,
+          "phase": "dwell-210",
+          "url": "http://127.0.0.1:64553/world",
+          "gc": false,
+          "raw": {
+            "Documents": 1,
+            "JSEventListeners": 1063,
+            "Nodes": 2432,
+            "JSHeapUsedSize": 6733000,
+            "JSHeapTotalSize": 8249344
+          },
+          "measured": {
+            "Documents": 1,
+            "JSEventListeners": 1063,
+            "Nodes": 2432,
+            "JSHeapUsedSize": 6733448,
+            "JSHeapTotalSize": 8249344
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 2432,
+            "jsEventListeners": 1063
+          }
+        },
+        {
+          "seconds": 293.954,
+          "phase": "dwell-240",
+          "url": "http://127.0.0.1:64553/world",
+          "gc": false,
+          "raw": {
+            "Documents": 1,
+            "JSEventListeners": 1009,
+            "Nodes": 2433,
+            "JSHeapUsedSize": 6419828,
+            "JSHeapTotalSize": 8773632
+          },
+          "measured": {
+            "Documents": 1,
+            "JSEventListeners": 1009,
+            "Nodes": 2433,
+            "JSHeapUsedSize": 6419888,
+            "JSHeapTotalSize": 8773632
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 2433,
+            "jsEventListeners": 1009
+          }
+        },
+        {
+          "seconds": 324.002,
+          "phase": "dwell-270",
+          "url": "http://127.0.0.1:64553/world",
+          "gc": false,
+          "raw": {
+            "Documents": 1,
+            "JSEventListeners": 919,
+            "Nodes": 2434,
+            "JSHeapUsedSize": 6955748,
+            "JSHeapTotalSize": 8249344
+          },
+          "measured": {
+            "Documents": 1,
+            "JSEventListeners": 919,
+            "Nodes": 2434,
+            "JSHeapUsedSize": 6956424,
+            "JSHeapTotalSize": 8249344
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 2434,
+            "jsEventListeners": 919
+          }
+        },
+        {
+          "seconds": 354.054,
+          "phase": "dwell-300",
+          "url": "http://127.0.0.1:64553/world",
+          "gc": false,
+          "raw": {
+            "Documents": 1,
+            "JSEventListeners": 847,
+            "Nodes": 2435,
+            "JSHeapUsedSize": 6767392,
+            "JSHeapTotalSize": 7725056
+          },
+          "measured": {
+            "Documents": 1,
+            "JSEventListeners": 847,
+            "Nodes": 2435,
+            "JSHeapUsedSize": 6767668,
+            "JSHeapTotalSize": 7725056
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 2435,
+            "jsEventListeners": 847
+          }
+        },
+        {
+          "seconds": 384.102,
+          "phase": "dwell-330",
+          "url": "http://127.0.0.1:64553/world",
+          "gc": false,
+          "raw": {
+            "Documents": 1,
+            "JSEventListeners": 757,
+            "Nodes": 2436,
+            "JSHeapUsedSize": 6448308,
+            "JSHeapTotalSize": 8511488
+          },
+          "measured": {
+            "Documents": 1,
+            "JSEventListeners": 757,
+            "Nodes": 2436,
+            "JSHeapUsedSize": 6448984,
+            "JSHeapTotalSize": 8511488
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 2436,
+            "jsEventListeners": 757
+          }
+        },
+        {
+          "seconds": 414.152,
+          "phase": "dwell-360",
+          "url": "http://127.0.0.1:64553/world",
+          "gc": false,
+          "raw": {
+            "Documents": 1,
+            "JSEventListeners": 757,
+            "Nodes": 2437,
+            "JSHeapUsedSize": 6460404,
+            "JSHeapTotalSize": 8511488
+          },
+          "measured": {
+            "Documents": 1,
+            "JSEventListeners": 757,
+            "Nodes": 2437,
+            "JSHeapUsedSize": 6461080,
+            "JSHeapTotalSize": 8511488
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 2437,
+            "jsEventListeners": 757
+          }
+        },
+        {
+          "seconds": 444.201,
+          "phase": "dwell-390",
+          "url": "http://127.0.0.1:64553/world",
+          "gc": false,
+          "raw": {
+            "Documents": 1,
+            "JSEventListeners": 685,
+            "Nodes": 2438,
+            "JSHeapUsedSize": 7050364,
+            "JSHeapTotalSize": 8249344
+          },
+          "measured": {
+            "Documents": 1,
+            "JSEventListeners": 685,
+            "Nodes": 2438,
+            "JSHeapUsedSize": 6395852,
+            "JSHeapTotalSize": 8511488
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 2438,
+            "jsEventListeners": 685
+          }
+        },
+        {
+          "seconds": 474.252,
+          "phase": "dwell-420",
+          "url": "http://127.0.0.1:64553/world",
+          "gc": false,
+          "raw": {
+            "Documents": 1,
+            "JSEventListeners": 685,
+            "Nodes": 2439,
+            "JSHeapUsedSize": 7054716,
+            "JSHeapTotalSize": 8511488
+          },
+          "measured": {
+            "Documents": 1,
+            "JSEventListeners": 685,
+            "Nodes": 2439,
+            "JSHeapUsedSize": 6426032,
+            "JSHeapTotalSize": 8773632
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 2439,
+            "jsEventListeners": 685
+          }
+        },
+        {
+          "seconds": 504.293,
+          "phase": "dwell-450",
+          "url": "http://127.0.0.1:64553/world",
+          "gc": false,
+          "raw": {
+            "Documents": 1,
+            "JSEventListeners": 613,
+            "Nodes": 2440,
+            "JSHeapUsedSize": 6913108,
+            "JSHeapTotalSize": 8249344
+          },
+          "measured": {
+            "Documents": 1,
+            "JSEventListeners": 613,
+            "Nodes": 2440,
+            "JSHeapUsedSize": 6913784,
+            "JSHeapTotalSize": 8249344
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 2440,
+            "jsEventListeners": 613
+          }
+        },
+        {
+          "seconds": 534.339,
+          "phase": "dwell-480",
+          "url": "http://127.0.0.1:64553/world",
+          "gc": false,
+          "raw": {
+            "Documents": 1,
+            "JSEventListeners": 541,
+            "Nodes": 2441,
+            "JSHeapUsedSize": 6789976,
+            "JSHeapTotalSize": 7987200
+          },
+          "measured": {
+            "Documents": 1,
+            "JSEventListeners": 541,
+            "Nodes": 2441,
+            "JSHeapUsedSize": 6790652,
+            "JSHeapTotalSize": 7987200
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 2441,
+            "jsEventListeners": 541
+          }
+        },
+        {
+          "seconds": 564.386,
+          "phase": "dwell-510",
+          "url": "http://127.0.0.1:64553/world",
+          "gc": false,
+          "raw": {
+            "Documents": 1,
+            "JSEventListeners": 1163,
+            "Nodes": 3462,
+            "JSHeapUsedSize": 7004096,
+            "JSHeapTotalSize": 9822208
+          },
+          "measured": {
+            "Documents": 1,
+            "JSEventListeners": 1163,
+            "Nodes": 3462,
+            "JSHeapUsedSize": 7004772,
+            "JSHeapTotalSize": 9822208
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 3462,
+            "jsEventListeners": 1163
+          }
+        },
+        {
+          "seconds": 594.42,
+          "phase": "dwell-540",
+          "url": "http://127.0.0.1:64553/world",
+          "gc": false,
+          "raw": {
+            "Documents": 1,
+            "JSEventListeners": 1045,
+            "Nodes": 2443,
+            "JSHeapUsedSize": 6905192,
+            "JSHeapTotalSize": 8511488
+          },
+          "measured": {
+            "Documents": 1,
+            "JSEventListeners": 1045,
+            "Nodes": 2443,
+            "JSHeapUsedSize": 6905868,
+            "JSHeapTotalSize": 8511488
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 2443,
+            "jsEventListeners": 1045
+          }
+        },
+        {
+          "seconds": 624.46,
+          "phase": "dwell-570",
+          "url": "http://127.0.0.1:64553/world",
+          "gc": false,
+          "raw": {
+            "Documents": 1,
+            "JSEventListeners": 991,
+            "Nodes": 2444,
+            "JSHeapUsedSize": 6654664,
+            "JSHeapTotalSize": 8511488
+          },
+          "measured": {
+            "Documents": 1,
+            "JSEventListeners": 991,
+            "Nodes": 2444,
+            "JSHeapUsedSize": 6655340,
+            "JSHeapTotalSize": 8511488
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 2444,
+            "jsEventListeners": 991
+          }
+        },
+        {
+          "seconds": 624.478,
+          "phase": "world-end-GC",
+          "url": "http://127.0.0.1:64553/world",
+          "gc": true,
+          "raw": {
+            "Documents": 1,
+            "JSEventListeners": 991,
+            "Nodes": 2444,
+            "JSHeapUsedSize": 6655340,
+            "JSHeapTotalSize": 8511488
+          },
+          "measured": {
+            "Documents": 1,
+            "JSEventListeners": 441,
+            "Nodes": 1424,
+            "JSHeapUsedSize": 6202408,
+            "JSHeapTotalSize": 7200768
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 1424,
+            "jsEventListeners": 441
+          }
+        }
+      ],
+      "errors": [],
+      "crashes": [],
+      "consoleErrors": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/ai"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:64553/settings/cloud"
+        }
+      ],
+      "blocked": [],
+      "limits": {
+        "screenshots": 8,
+        "diagnostics": 100
+      },
+      "browser": "155.0.4283.45",
+      "dwellSeconds": 601,
+      "seconds": 624.788
+    },
+    "mobile": {
+      "mode": "mobile",
+      "started": "2026-10-10T14:04:30.938Z",
+      "sha": "d3477a63a63340c6e2c68000cdb190e2078c7ca2",
+      "results": [
+        {
+          "name": "mobile-320-no-preference-0",
+          "status": "PASS",
+          "ms": 1129,
+          "evidence": {
+            "theme": "day",
+            "viewport": {
+              "width": 320,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-320-no-preference-1",
+          "status": "PASS",
+          "ms": 984,
+          "evidence": {
+            "theme": "night",
+            "viewport": {
+              "width": 320,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-320-no-preference-2",
+          "status": "PASS",
+          "ms": 965,
+          "evidence": {
+            "theme": "day",
+            "viewport": {
+              "width": 320,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-320-no-preference-3",
+          "status": "PASS",
+          "ms": 1007,
+          "evidence": {
+            "theme": "night",
+            "viewport": {
+              "width": 320,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-320-no-preference-4",
+          "status": "PASS",
+          "ms": 912,
+          "evidence": {
+            "theme": "day",
+            "viewport": {
+              "width": 320,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-320-reduce-0",
+          "status": "PASS",
+          "ms": 891,
+          "evidence": {
+            "theme": "day",
+            "viewport": {
+              "width": 320,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-320-reduce-1",
+          "status": "PASS",
+          "ms": 894,
+          "evidence": {
+            "theme": "night",
+            "viewport": {
+              "width": 320,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-320-reduce-2",
+          "status": "PASS",
+          "ms": 880,
+          "evidence": {
+            "theme": "day",
+            "viewport": {
+              "width": 320,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-320-reduce-3",
+          "status": "PASS",
+          "ms": 931,
+          "evidence": {
+            "theme": "night",
+            "viewport": {
+              "width": 320,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-320-reduce-4",
+          "status": "PASS",
+          "ms": 866,
+          "evidence": {
+            "theme": "day",
+            "viewport": {
+              "width": 320,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-390-no-preference-0",
+          "status": "PASS",
+          "ms": 930,
+          "evidence": {
+            "theme": "day",
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-390-no-preference-1",
+          "status": "PASS",
+          "ms": 923,
+          "evidence": {
+            "theme": "night",
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-390-no-preference-2",
+          "status": "PASS",
+          "ms": 897,
+          "evidence": {
+            "theme": "day",
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-390-no-preference-3",
+          "status": "PASS",
+          "ms": 940,
+          "evidence": {
+            "theme": "night",
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-390-no-preference-4",
+          "status": "PASS",
+          "ms": 923,
+          "evidence": {
+            "theme": "day",
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-390-reduce-0",
+          "status": "PASS",
+          "ms": 850,
+          "evidence": {
+            "theme": "day",
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-390-reduce-1",
+          "status": "PASS",
+          "ms": 847,
+          "evidence": {
+            "theme": "night",
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-390-reduce-2",
+          "status": "PASS",
+          "ms": 824,
+          "evidence": {
+            "theme": "day",
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-390-reduce-3",
+          "status": "PASS",
+          "ms": 822,
+          "evidence": {
+            "theme": "night",
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-390-reduce-4",
+          "status": "PASS",
+          "ms": 853,
+          "evidence": {
+            "theme": "day",
+            "viewport": {
+              "width": 390,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-430-no-preference-0",
+          "status": "PASS",
+          "ms": 932,
+          "evidence": {
+            "theme": "day",
+            "viewport": {
+              "width": 430,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-430-no-preference-1",
+          "status": "PASS",
+          "ms": 891,
+          "evidence": {
+            "theme": "night",
+            "viewport": {
+              "width": 430,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-430-no-preference-2",
+          "status": "PASS",
+          "ms": 914,
+          "evidence": {
+            "theme": "day",
+            "viewport": {
+              "width": 430,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-430-no-preference-3",
+          "status": "PASS",
+          "ms": 937,
+          "evidence": {
+            "theme": "night",
+            "viewport": {
+              "width": 430,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-430-no-preference-4",
+          "status": "PASS",
+          "ms": 927,
+          "evidence": {
+            "theme": "day",
+            "viewport": {
+              "width": 430,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-430-reduce-0",
+          "status": "PASS",
+          "ms": 833,
+          "evidence": {
+            "theme": "day",
+            "viewport": {
+              "width": 430,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-430-reduce-1",
+          "status": "PASS",
+          "ms": 848,
+          "evidence": {
+            "theme": "night",
+            "viewport": {
+              "width": 430,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-430-reduce-2",
+          "status": "PASS",
+          "ms": 891,
+          "evidence": {
+            "theme": "day",
+            "viewport": {
+              "width": 430,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-430-reduce-3",
+          "status": "PASS",
+          "ms": 896,
+          "evidence": {
+            "theme": "night",
+            "viewport": {
+              "width": 430,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "mobile-430-reduce-4",
+          "status": "PASS",
+          "ms": 868,
+          "evidence": {
+            "theme": "day",
+            "viewport": {
+              "width": 430,
+              "height": 844
+            },
+            "scrollOperations": 8,
+            "dialogs": 3
+          }
+        },
+        {
+          "name": "no-runtime-crash-or-pageerror",
+          "status": "PASS",
+          "ms": 1
+        }
+      ],
+      "memory": [],
+      "errors": [],
+      "crashes": [],
+      "consoleErrors": [],
+      "blocked": [],
+      "limits": {
+        "screenshots": 8,
+        "diagnostics": 100
+      },
+      "browser": "155.0.4283.45",
+      "seconds": 31.375
+    },
+    "recovery": {
+      "mode": "recovery",
+      "started": "2026-10-10T14:05:35.532Z",
+      "sha": "d3477a63a63340c6e2c68000cdb190e2078c7ca2",
+      "results": [
+        {
+          "name": "save-refresh-0",
+          "status": "PASS",
+          "ms": 131
+        },
+        {
+          "name": "save-refresh-1",
+          "status": "PASS",
+          "ms": 130
+        },
+        {
+          "name": "save-refresh-2",
+          "status": "PASS",
+          "ms": 144
+        },
+        {
+          "name": "save-refresh-3",
+          "status": "PASS",
+          "ms": 138
+        },
+        {
+          "name": "save-refresh-4",
+          "status": "PASS",
+          "ms": 130
+        },
+        {
+          "name": "save-refresh-5",
+          "status": "PASS",
+          "ms": 127
+        },
+        {
+          "name": "save-refresh-6",
+          "status": "PASS",
+          "ms": 130
+        },
+        {
+          "name": "save-refresh-7",
+          "status": "PASS",
+          "ms": 132
+        },
+        {
+          "name": "save-refresh-8",
+          "status": "PASS",
+          "ms": 115
+        },
+        {
+          "name": "save-refresh-9",
+          "status": "PASS",
+          "ms": 134
+        },
+        {
+          "name": "save-refresh-10",
+          "status": "PASS",
+          "ms": 136
+        },
+        {
+          "name": "save-refresh-11",
+          "status": "PASS",
+          "ms": 145
+        },
+        {
+          "name": "invalid-import-0",
+          "status": "PASS",
+          "ms": 358,
+          "evidence": {
+            "protected": true
+          }
+        },
+        {
+          "name": "invalid-import-1",
+          "status": "PASS",
+          "ms": 364,
+          "evidence": {
+            "protected": true
+          }
+        },
+        {
+          "name": "invalid-import-2",
+          "status": "PASS",
+          "ms": 341,
+          "evidence": {
+            "protected": true
+          }
+        },
+        {
+          "name": "tab-interruption-save-0",
+          "status": "PASS",
+          "ms": 3,
+          "evidence": {
+            "saveProtected": true
+          }
+        },
+        {
+          "name": "tab-interruption-draft-0",
+          "status": "FAIL",
+          "ms": 3,
+          "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'' !== '合成未提交草稿'\n\n    at C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-S-stress-20261010\\tests\\e2e\\stress-audit.cjs:142:63\n    at async test (C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-S-stress-20261010\\tests\\e2e\\stress-audit.cjs:18:23)\n    at async recovery (C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-S-stress-20261010\\tests\\e2e\\stress-audit.cjs:142:5)\n    at async C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-S-stress-20261010\\tests\\e2e\\stress-audit.cjs:193:149"
+        },
+        {
+          "name": "tab-interruption-save-1",
+          "status": "PASS",
+          "ms": 3,
+          "evidence": {
+            "saveProtected": true
+          }
+        },
+        {
+          "name": "tab-interruption-draft-1",
+          "status": "FAIL",
+          "ms": 3,
+          "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'' !== '合成未提交草稿'\n\n    at C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-S-stress-20261010\\tests\\e2e\\stress-audit.cjs:142:63\n    at async test (C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-S-stress-20261010\\tests\\e2e\\stress-audit.cjs:18:23)\n    at async recovery (C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-S-stress-20261010\\tests\\e2e\\stress-audit.cjs:142:5)\n    at async C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-S-stress-20261010\\tests\\e2e\\stress-audit.cjs:193:149"
+        },
+        {
+          "name": "tab-interruption-save-2",
+          "status": "PASS",
+          "ms": 3,
+          "evidence": {
+            "saveProtected": true
+          }
+        },
+        {
+          "name": "tab-interruption-draft-2",
+          "status": "FAIL",
+          "ms": 3,
+          "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'' !== '合成未提交草稿'\n\n    at C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-S-stress-20261010\\tests\\e2e\\stress-audit.cjs:142:63\n    at async test (C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-S-stress-20261010\\tests\\e2e\\stress-audit.cjs:18:23)\n    at async recovery (C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-S-stress-20261010\\tests\\e2e\\stress-audit.cjs:142:5)\n    at async C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-S-stress-20261010\\tests\\e2e\\stress-audit.cjs:193:149"
+        },
+        {
+          "name": "cloud-503-retry-0",
+          "status": "PASS",
+          "ms": 2210,
+          "evidence": {
+            "requests": 2,
+            "automaticRetries": 0
+          }
+        },
+        {
+          "name": "cloud-503-retry-1",
+          "status": "PASS",
+          "ms": 1383,
+          "evidence": {
+            "requests": 2,
+            "automaticRetries": 0
+          }
+        },
+        {
+          "name": "cloud-503-retry-2",
+          "status": "PASS",
+          "ms": 2101,
+          "evidence": {
+            "requests": 2,
+            "automaticRetries": 0
+          }
+        },
+        {
+          "name": "cloud-pending-double-submit",
+          "status": "PASS",
+          "ms": 3130,
+          "evidence": {
+            "requests": 1
+          }
+        },
+        {
+          "name": "cloud-actual-timeout-0",
+          "status": "PASS",
+          "ms": 20592,
+          "evidence": {
+            "timeoutMs": 20193,
+            "requests": 2,
+            "automaticRetries": 0
+          }
+        },
+        {
+          "name": "cloud-actual-timeout-1",
+          "status": "PASS",
+          "ms": 20623,
+          "evidence": {
+            "timeoutMs": 20226,
+            "requests": 2,
+            "automaticRetries": 0
+          }
+        },
+        {
+          "name": "cloud-actual-timeout-2",
+          "status": "PASS",
+          "ms": 20626,
+          "evidence": {
+            "timeoutMs": 20227,
+            "requests": 2,
+            "automaticRetries": 0
+          }
+        },
+        {
+          "name": "no-runtime-crash-or-pageerror",
+          "status": "PASS",
+          "ms": 1
+        }
+      ],
+      "memory": [],
+      "errors": [],
+      "crashes": [],
+      "consoleErrors": [
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:60872/game/cloud-stress-synthetic"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:60872/game/cloud-stress-synthetic"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:60872/game/cloud-stress-synthetic"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:60872/game/cloud-stress-synthetic"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:60872/game/cloud-stress-synthetic"
+        },
+        {
+          "text": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+          "url": "http://127.0.0.1:60872/game/cloud-stress-synthetic"
+        }
+      ],
+      "blocked": [
+        {
+          "name": "P3-authoritative-recovery",
+          "status": "BLOCKED",
+          "reason": "Mock UI observations do not verify server idempotency, authoritative history, cloud draft durability, memory permissions or retry contracts. Await P3 contracts."
+        }
+      ],
+      "limits": {
+        "screenshots": 8,
+        "diagnostics": 100
+      },
+      "browser": "155.0.4283.45",
+      "seconds": 77.529
+    },
+    "renderer": {
+      "mode": "renderer",
+      "started": "2026-10-10T14:03:52.017Z",
+      "sha": "d3477a63a63340c6e2c68000cdb190e2078c7ca2",
+      "results": [
+        {
+          "name": "actual-world-renderer-0",
+          "status": "PASS",
+          "ms": 10020,
+          "evidence": {
+            "renderer": {
+              "backend": "WebGL 2",
+              "fps": 55,
+              "renderScale": 1,
+              "targetFps": 60,
+              "sceneId": "mountain-gate"
+            },
+            "motion": false,
+            "graphics": null,
+            "visibility": "visible"
+          }
+        },
+        {
+          "name": "actual-world-renderer-1",
+          "status": "PASS",
+          "ms": 10020,
+          "evidence": {
+            "renderer": {
+              "backend": "WebGL 2",
+              "fps": 55,
+              "renderScale": 1,
+              "targetFps": 60,
+              "sceneId": "mountain-gate"
+            },
+            "motion": false,
+            "graphics": null,
+            "visibility": "visible"
+          }
+        },
+        {
+          "name": "actual-world-renderer-2",
+          "status": "PASS",
+          "ms": 10009,
+          "evidence": {
+            "renderer": {
+              "backend": "WebGL 2",
+              "fps": 55,
+              "renderScale": 1,
+              "targetFps": 60,
+              "sceneId": "mountain-gate"
+            },
+            "motion": false,
+            "graphics": null,
+            "visibility": "visible"
+          }
+        },
+        {
+          "name": "no-runtime-crash-or-pageerror",
+          "status": "PASS",
+          "ms": 0
+        }
+      ],
+      "memory": [
+        {
+          "seconds": 11.205,
+          "phase": "renderer-0",
+          "url": "http://127.0.0.1:55344/world",
+          "gc": false,
+          "raw": {
+            "Documents": 6,
+            "JSEventListeners": 528,
+            "Nodes": 1405,
+            "JSHeapUsedSize": 6131504,
+            "JSHeapTotalSize": 10022912
+          },
+          "measured": {
+            "Documents": 6,
+            "JSEventListeners": 528,
+            "Nodes": 1405,
+            "JSHeapUsedSize": 6131504,
+            "JSHeapTotalSize": 10022912
+          },
+          "dom": {
+            "documents": 6,
+            "nodes": 1405,
+            "jsEventListeners": 528
+          }
+        },
+        {
+          "seconds": 21.226,
+          "phase": "renderer-1",
+          "url": "http://127.0.0.1:55344/world",
+          "gc": false,
+          "raw": {
+            "Documents": 6,
+            "JSEventListeners": 690,
+            "Nodes": 1405,
+            "JSHeapUsedSize": 5731748,
+            "JSHeapTotalSize": 7925760
+          },
+          "measured": {
+            "Documents": 6,
+            "JSEventListeners": 690,
+            "Nodes": 1405,
+            "JSHeapUsedSize": 5731748,
+            "JSHeapTotalSize": 7925760
+          },
+          "dom": {
+            "documents": 6,
+            "nodes": 1405,
+            "jsEventListeners": 690
+          }
+        },
+        {
+          "seconds": 31.235,
+          "phase": "renderer-2",
+          "url": "http://127.0.0.1:55344/world",
+          "gc": false,
+          "raw": {
+            "Documents": 1,
+            "JSEventListeners": 285,
+            "Nodes": 1362,
+            "JSHeapUsedSize": 4224724,
+            "JSHeapTotalSize": 7139328
+          },
+          "measured": {
+            "Documents": 1,
+            "JSEventListeners": 285,
+            "Nodes": 1362,
+            "JSHeapUsedSize": 4224748,
+            "JSHeapTotalSize": 7139328
+          },
+          "dom": {
+            "documents": 1,
+            "nodes": 1362,
+            "jsEventListeners": 285
+          }
+        }
+      ],
+      "errors": [],
+      "crashes": [],
+      "consoleErrors": [],
+      "blocked": [],
+      "limits": {
+        "screenshots": 8,
+        "diagnostics": 100
+      },
+      "browser": "155.0.4283.45",
+      "seconds": 31.252
+    }
+  },
+  "commands": {
+    "build": [
+      {
+        "command": [
+          "C:\\Program Files\\nodejs\\node.exe",
+          "C:\\Users\\11954\\Desktop\\水龙吟专用\\临时\\S-FINAL\\tools\\node_modules\\pnpm\\bin\\pnpm.cjs",
+          "build"
+        ],
+        "started": "2026-10-10T13:56:19.296Z",
+        "finished": "2026-10-10T13:56:23.273Z",
+        "exitCode": 0
+      }
+    ],
+    "navigation": [
+      {
+        "command": [
+          "C:\\Program Files\\nodejs\\node.exe",
+          "tests/e2e/stress-audit.cjs",
+          "navigation"
+        ],
+        "started": "2026-10-10T13:58:37.911Z",
+        "finished": "2026-10-10T14:09:03.303Z",
+        "exitCode": 0
+      }
+    ],
+    "mobile": [
+      {
+        "command": [
+          "C:\\Program Files\\nodejs\\node.exe",
+          "tests/e2e/stress-audit.cjs",
+          "mobile"
+        ],
+        "started": "2026-10-10T14:04:30.623Z",
+        "finished": "2026-10-10T14:05:02.660Z",
+        "exitCode": 0
+      }
+    ],
+    "recovery": [
+      {
+        "command": [
+          "C:\\Program Files\\nodejs\\node.exe",
+          "tests/e2e/stress-audit.cjs",
+          "recovery"
+        ],
+        "started": "2026-10-10T14:05:35.207Z",
+        "finished": "2026-10-10T14:07:02.461Z",
+        "exitCode": 1
+      }
+    ],
+    "renderer": [
+      {
+        "command": [
+          "C:\\Program Files\\nodejs\\node.exe",
+          "tests/e2e/stress-audit.cjs",
+          "renderer"
+        ],
+        "started": "2026-10-10T14:03:51.709Z",
+        "finished": "2026-10-10T14:04:23.554Z",
+        "exitCode": 0
+      }
+    ],
+    "foundation": [
+      {
+        "command": [
+          "C:\\Program Files\\nodejs\\node.exe",
+          "tests/e2e/foundation.cjs"
+        ],
+        "started": "2026-10-10T13:58:51.696Z",
+        "finished": "2026-10-10T14:05:45.177Z",
+        "exitCode": 0
+      }
+    ],
+    "regression": [
+      {
+        "command": [
+          "C:\\Program Files\\nodejs\\node.exe",
+          "C:\\Users\\11954\\Desktop\\水龙吟专用\\临时\\S-FINAL\\tools\\node_modules\\pnpm\\bin\\pnpm.cjs",
+          "--filter",
+          "@jiuxiao/web",
+          "test"
+        ],
+        "started": "2026-10-10T13:59:18.434Z",
+        "finished": "2026-10-10T13:59:20.856Z",
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "C:\\Program Files\\nodejs\\node.exe",
+          "tests/e2e/professional-focus.cjs"
+        ],
+        "started": "2026-10-10T13:59:20.856Z",
+        "finished": "2026-10-10T13:59:42.603Z",
+        "exitCode": 0
+      },
+      {
+        "command": [
+          "C:\\Program Files\\nodejs\\node.exe",
+          "tests/e2e/cloud-game-shell.cjs"
+        ],
+        "started": "2026-10-10T13:59:42.603Z",
+        "finished": "2026-10-10T13:59:51.936Z",
+        "exitCode": 0
+      }
+    ]
+  },
+  "total": {
+    "pass": 362,
+    "fail": 3,
+    "blocked": 1
+  },
+  "fileHashes": [
+    {
+      "path": "build/command-0.log",
+      "bytes": 1906,
+      "sha256": "be48dbca1ae830d23bb46ecbeda73632e4b886567acc13f91cd42f2924197022"
+    },
+    {
+      "path": "build/commands.json",
+      "bytes": 310,
+      "sha256": "563e0dc173d69ed12eeca72e666685a21b3012e107caf09518028accbc10fcaa"
+    },
+    {
+      "path": "build.log",
+      "bytes": 1310,
+      "sha256": "eb1847f72b83f3fbe1d26f36128592477adb2f0425c956db71e088d80c478912"
+    },
+    {
+      "path": "foundation/command-0.log",
+      "bytes": 6828,
+      "sha256": "f67ced82aa9c6936576c839021fa942d90c58d02caeb28402c9222a2ea9f0c18"
+    },
+    {
+      "path": "foundation/commands.json",
+      "bytes": 218,
+      "sha256": "651d00d054c7841948f9919155cf3d8c36fbd7175e88f5b612a231d2c93bc204"
+    },
+    {
+      "path": "foundation/e2e/03-home-mobile-after-layers.png",
+      "bytes": 437267,
+      "sha256": "76752516099f0a7e2e10240b5138f8725bef9bab4af9661e8785652565184491"
+    },
+    {
+      "path": "foundation/e2e/04-home-desktop-after-layers.png",
+      "bytes": 1069682,
+      "sha256": "a0f4a984e00cd4467e3d6c716d81813f1f35943f2e74ad3bda93ff4f4982eb8c"
+    },
+    {
+      "path": "foundation/e2e/05-home-mobile-day.png",
+      "bytes": 466671,
+      "sha256": "b683f25b340f03bd4ec01a4089748218b7d3809702088dec130d9faae83807cc"
+    },
+    {
+      "path": "foundation/e2e/06-home-desktop-day.png",
+      "bytes": 1242355,
+      "sha256": "453b9bd74dbb622ada86907ddd066bd871c78a3dfe5f007074877a511f2a3134"
+    },
+    {
+      "path": "foundation/e2e/07-ai-settings-mobile-day.png",
+      "bytes": 836141,
+      "sha256": "20abd684cb1e7f672dec4fa7dbb04f91b6726153ff9d2f8c5f467edbd505701b"
+    },
+    {
+      "path": "foundation/e2e/08-ai-settings-desktop-day.png",
+      "bytes": 1661172,
+      "sha256": "ec8fa685e3115b8baf4d4b42fb4365be193a07828a70e0bef21300f355fda645"
+    },
+    {
+      "path": "foundation/e2e/09-game-mobile-after-workspace.png",
+      "bytes": 302657,
+      "sha256": "0d84e0cea46391cbbf77273cd2955f612392eb0d14a2836fe02ba225eb0e0e68"
+    },
+    {
+      "path": "foundation/e2e/10-game-desktop-after-workspace.png",
+      "bytes": 670522,
+      "sha256": "1826e550cc47bb2deb746f5ac6c8dcb5828327fd2c9108a6b4e4650ede09f7c5"
+    },
+    {
+      "path": "foundation/e2e/11-saves-mobile.png",
+      "bytes": 346126,
+      "sha256": "04b73cff90fc1382ea2c7ee78c457d5f21cd2d66818657641d88f0dca665d8d8"
+    },
+    {
+      "path": "foundation/e2e/12-saves-desktop.png",
+      "bytes": 958902,
+      "sha256": "12ed03e6aa31e5d85e36c2b59916546453ee9725fb2ce505be828f087a7ff69e"
+    },
+    {
+      "path": "foundation/e2e/13-lobby-mobile-night.png",
+      "bytes": 270345,
+      "sha256": "60cc0349cba53271d84814a0fc3e898394c3ff67d8963173664130a024a774d4"
+    },
+    {
+      "path": "foundation/e2e/14-lobby-desktop-night.png",
+      "bytes": 896628,
+      "sha256": "af85986a84ea575a37a895e35fb17a55969799da2dfa5a082c8beec94fb679b5"
+    },
+    {
+      "path": "foundation/e2e/15-ai-mode-mobile-night.png",
+      "bytes": 306636,
+      "sha256": "7ba41f49e9bba0e92c159a2faa1761fb8abbde9f44103f27e05279a4a3a1d398"
+    },
+    {
+      "path": "foundation/e2e/16-ai-mode-desktop-night.png",
+      "bytes": 740458,
+      "sha256": "82a91ee748411a33fdd39c31283b45f3ff972e21ec3f04c128b4632ca72ce2c3"
+    },
+    {
+      "path": "foundation/e2e/17-ai-beginner-provider-mobile-night.png",
+      "bytes": 344795,
+      "sha256": "63fd51fd66025d5d723483d94af8367680f288ccc06f9c2b6361e14c2188865a"
+    },
+    {
+      "path": "foundation/e2e/18-ai-beginner-provider-desktop-night.png",
+      "bytes": 802272,
+      "sha256": "7251082c4bac0b4ef340390f88b3f62907343dfe06a461eb292096327956ad37"
+    },
+    {
+      "path": "foundation/e2e/19-ai-beginner-config-mobile-night.png",
+      "bytes": 383998,
+      "sha256": "0e03959b25e91a27a2469b7f4d7d7291c91952408c53063a1c0cb4fe83ca3629"
+    },
+    {
+      "path": "foundation/e2e/20-ai-beginner-config-desktop-night.png",
+      "bytes": 930210,
+      "sha256": "00d66bcbf73a9df79e64cd1956bcfcd9296b34cff94b385bb6d9f4088192755d"
+    },
+    {
+      "path": "foundation/e2e/21-worldbook-mobile-night.png",
+      "bytes": 1663325,
+      "sha256": "a7f7c481098f9bb9114f2160f800cb8b619456affe1d65c147d3dab643a9b47d"
+    },
+    {
+      "path": "foundation/e2e/22-worldbook-desktop-night.png",
+      "bytes": 3702127,
+      "sha256": "69058a3c92a2ee7fda1b7bf607d1e5d05b42a90d0982cca10a4f70125c4c8176"
+    },
+    {
+      "path": "foundation/e2e/23-ai-professional-mobile-night.png",
+      "bytes": 835703,
+      "sha256": "40a39bae562be3ec6624130781b699cc1f886ce759c264008be581903bffe2d1"
+    },
+    {
+      "path": "foundation/e2e/24-ai-professional-desktop-night.png",
+      "bytes": 1689279,
+      "sha256": "d8c08e60673687b3323c25b596d456daf0efef5f02c8a651b8a5ca9267fcec9e"
+    },
+    {
+      "path": "foundation/e2e/ai-mode-day-1366.png",
+      "bytes": 740208,
+      "sha256": "a139d8ab546ee30f4e417fe1d044161690923290df1551cc9db3306a8570c496"
+    },
+    {
+      "path": "foundation/e2e/ai-mode-day-390.png",
+      "bytes": 296893,
+      "sha256": "d989b4e5c43d23415200130ec19d875d419502b7acc068d4f0dac0d388145ac4"
+    },
+    {
+      "path": "foundation/e2e/ai-mode-night-1366.png",
+      "bytes": 741980,
+      "sha256": "16da4308364d9eccc7523a45989edd521caadcae45ede71e784e7f16c8f02b91"
+    },
+    {
+      "path": "foundation/e2e/ai-mode-night-390.png",
+      "bytes": 306291,
+      "sha256": "653b0f2177451afb9b26f97ce646ce597c021ae0bdbd09fa39b6a649f0ce8788"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-day-1366-tile-0.png",
+      "bytes": 686689,
+      "sha256": "5f2e6e78e0546c30bf065a04b9add63d8769e4fa7f7eb96e2e0ebe32a947e1eb"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-day-1366-tile-1.png",
+      "bytes": 503808,
+      "sha256": "2b965c892c0ec271a62e6d148d06b094245182625897ee82d07abda377dcfc92"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-day-1366-tile-2.png",
+      "bytes": 572916,
+      "sha256": "c3a117e9374bfcc9cee44c899aca10d07af0e9aaa85daefc64d0da1dc78d3def"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-day-1366-tile-3.png",
+      "bytes": 514126,
+      "sha256": "b3b505870d30934017f19128c1e176bcfad9519fc0fcc965821d611dc04ed137"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-day-1366-tile-4.png",
+      "bytes": 760543,
+      "sha256": "bc6c6003300677c99efb94168618e753ab74a49ec8445cf2d4c94863b01dab49"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-day-1366-tile-5.png",
+      "bytes": 810434,
+      "sha256": "bee3b9b857964ec92fb51735ec3c23a1a6280b083dbdfa4f92ba2bacaa221614"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-day-1366.png",
+      "bytes": 1654658,
+      "sha256": "bef9fede4405539d1263bf0c74c97bcbffb927a8409e7d631181ead0eda8cc71"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-day-390-tile-0.png",
+      "bytes": 252000,
+      "sha256": "1747d04aac363d7678ffcb0cab388c8557686a0cb2fce1a90751cd608f42df51"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-day-390-tile-1.png",
+      "bytes": 137816,
+      "sha256": "541ad3ec83c13010d0d8da07f43fdea1dafcb3f281dd9554685e511b0d6b1e9b"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-day-390-tile-2.png",
+      "bytes": 147237,
+      "sha256": "61ec3cea483428c234e0677d930bc315d249ed03b0d311687dff562740d148ed"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-day-390-tile-3.png",
+      "bytes": 241474,
+      "sha256": "3bfada48859d92da16aa8a19fcc725d2e63e2518a170ca9dc11d5f00d8cec547"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-day-390-tile-4.png",
+      "bytes": 237506,
+      "sha256": "c50126d6ebeb6481f23bf0340ba013db43756b33962925f87d7f8457ff1b8ef4"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-day-390-tile-5.png",
+      "bytes": 307481,
+      "sha256": "24a3ebe13bbb4e1d0b198a46c211462638b16b814861b1458839f53ef9aa9697"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-day-390-tile-6.png",
+      "bytes": 326346,
+      "sha256": "8a95b297e1eb6681ed67ff63df645e091225d7f19376a7883adb860f96a49885"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-day-390.png",
+      "bytes": 835713,
+      "sha256": "649806480d95d905dcd51baf9ed38e268cadbcc658365f72f1d4c8fd28e3c26c"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-night-1366-tile-0.png",
+      "bytes": 718188,
+      "sha256": "d640900838318c398ff5d5ed2f52fe5a26647a72914756d27e1b527eaa90e3e6"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-night-1366-tile-1.png",
+      "bytes": 494977,
+      "sha256": "02423cbcb25a2db537999c3221988a0d3be79f0f1f90fe6462707accfcdd4f52"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-night-1366-tile-2.png",
+      "bytes": 520729,
+      "sha256": "84ec9b42bb1a5c0a8078fc9aa755411fe2fe2fa0904cef1b60159775367ce920"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-night-1366-tile-3.png",
+      "bytes": 493467,
+      "sha256": "94c3a9a14a7c3f85cbd554dcd3110af513203b5fb721c21966deac99fc12d659"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-night-1366-tile-4.png",
+      "bytes": 745457,
+      "sha256": "b03acf678fc7d5865033acf8f268b0a8a2fef30c380f1cb354a994cfe7040310"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-night-1366-tile-5.png",
+      "bytes": 802764,
+      "sha256": "e69935f95f5f462414221c69a49afe38a2a89c3d9123db80c8d54be69984be30"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-night-1366.png",
+      "bytes": 1685764,
+      "sha256": "7d5a048f221818eaf2f64a5e4adba35aa7b54e574f86a6ad1a5acfedd2b61c43"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-night-390-tile-0.png",
+      "bytes": 261535,
+      "sha256": "8e06b055365286e0f117e1a8f74bd24d35bd819abe9e367d67bbb3a3a67bb0da"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-night-390-tile-1.png",
+      "bytes": 137531,
+      "sha256": "783b2ad9407aedcfc1c783f6a2148a85274355a5e0084835ab7142c66109408d"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-night-390-tile-2.png",
+      "bytes": 146902,
+      "sha256": "a7af9f66ad5798a1e0c08537700351950a524dd3b6c3ce45fab0811b6d219cb9"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-night-390-tile-3.png",
+      "bytes": 220605,
+      "sha256": "b05d0fdd02c666ee0faeb66aa3ed708e64ae9d01bbc3a8b12c500087296d51f6"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-night-390-tile-4.png",
+      "bytes": 238734,
+      "sha256": "71ce3f26af84de56b7d0c18bc30635f196d4203c846ebcb0e016190632326dee"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-night-390-tile-5.png",
+      "bytes": 311083,
+      "sha256": "250c45fa942ccc4c38fa835d95674763ef78936b2b0d9ada91f82d25cfd36036"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-night-390-tile-6.png",
+      "bytes": 325355,
+      "sha256": "6544a20766ee4723acff57fa7fc226ce537413ca7a9bae91702a1b6fb93c3480"
+    },
+    {
+      "path": "foundation/e2e/ai-professional-night-390.png",
+      "bytes": 836980,
+      "sha256": "f041f092581bbffe7d3fcdb46425914b6d2703e397f9bed874c8140246160fe0"
+    },
+    {
+      "path": "foundation/e2e/game-day-1366.png",
+      "bytes": 479006,
+      "sha256": "2b087befc658f6b3117c150646d018e2d1a948d6723594911f2c9628c976f81d"
+    },
+    {
+      "path": "foundation/e2e/game-day-390.png",
+      "bytes": 230166,
+      "sha256": "a457274d579c66147047762b6a890182ca47a2729d62fa161897731a18b2b44e"
+    },
+    {
+      "path": "foundation/e2e/game-night-1366.png",
+      "bytes": 615879,
+      "sha256": "06672b623b570b330ab0c4f0d14c07ad9ea87bea38f28572aebe2af7f3feee27"
+    },
+    {
+      "path": "foundation/e2e/game-night-390.png",
+      "bytes": 284986,
+      "sha256": "3d279e1c12414ce94dc991859500d5123b46c65305bec72b71e15acb52cb3e73"
+    },
+    {
+      "path": "foundation/e2e/graphics-day-1366.png",
+      "bytes": 1321280,
+      "sha256": "7c928ae39d8cc7b996d85df040e1cb2dfef1cd63c44d8a92f476ee7e6bb6953a"
+    },
+    {
+      "path": "foundation/e2e/graphics-day-390.png",
+      "bytes": 663644,
+      "sha256": "1c33212dba9773467b01ddc2ac54f4322135c5d41ae1c7712e9d0312a09a39dc"
+    },
+    {
+      "path": "foundation/e2e/graphics-night-1366.png",
+      "bytes": 1328754,
+      "sha256": "97e65ae78ac9857e983a914e35212f70c3c035375da9f00842abaae69b021b6d"
+    },
+    {
+      "path": "foundation/e2e/graphics-night-390.png",
+      "bytes": 618293,
+      "sha256": "f4751994a669a3e5efe4d9f0e0e50d034e0e381c830e9628a3c77685fb37a89b"
+    },
+    {
+      "path": "foundation/e2e/home-day-1366.png",
+      "bytes": 1244772,
+      "sha256": "fd0fc14a9cfc401421582557ec8543cfa500c62d2edb487fcd78ae35de602430"
+    },
+    {
+      "path": "foundation/e2e/home-day-390.png",
+      "bytes": 466516,
+      "sha256": "e3969bdfeb52d21ae4a60f2b628e55a263b076d3f7e4fd76514e88460ec62c66"
+    },
+    {
+      "path": "foundation/e2e/home-night-1366.png",
+      "bytes": 1074056,
+      "sha256": "095ecee70aebf8a738798138d4a63ddf5dbe1fdf6f0fcbcfec71fbe2b0eae121"
+    },
+    {
+      "path": "foundation/e2e/home-night-390.png",
+      "bytes": 438891,
+      "sha256": "368359ba30680612ef8c782233fbfbcd11f510058429984c52c3aac5892b5e06"
+    },
+    {
+      "path": "foundation/e2e/lobby-day-1366.png",
+      "bytes": 980048,
+      "sha256": "1ec9820d13af1737e5c874d5e93746f410b7d34d436dc410ea43764450fe9ace"
+    },
+    {
+      "path": "foundation/e2e/lobby-day-390.png",
+      "bytes": 351290,
+      "sha256": "d449e6cd301e4076dcd0bed2bf80d769d90d7141a1cb31c6ec636602734d7350"
+    },
+    {
+      "path": "foundation/e2e/lobby-night-1366.png",
+      "bytes": 896735,
+      "sha256": "c104a7cb7ccecdeaf560e90cc4966871b067655388ef44af9e2d55dbe8d2280f"
+    },
+    {
+      "path": "foundation/e2e/lobby-night-390.png",
+      "bytes": 269970,
+      "sha256": "fe591295379a6c02e23ac0bc65148074559b48dbcd59fd7ffc2b6a8529157bc7"
+    },
+    {
+      "path": "foundation/e2e/ui-baseline-manifest.json",
+      "bytes": 19275,
+      "sha256": "d5dc609f5279639e6182db7bfc90674d77cda717bddc7e51a69f45f483829a41"
+    },
+    {
+      "path": "foundation/e2e/world-day-1366.png",
+      "bytes": 2673337,
+      "sha256": "d8becfc68215152da1cfb41c05a158ea670396e4028082f9b6784c7763f0a635"
+    },
+    {
+      "path": "foundation/e2e/world-day-390.png",
+      "bytes": 1081549,
+      "sha256": "295eea6ca60e6eccb8498c6ee0da8504a76f41680c6279605cee063cc3ce6f09"
+    },
+    {
+      "path": "foundation/e2e/world-night-1366.png",
+      "bytes": 2428180,
+      "sha256": "c308bca1e30ff3b0980f6e0ae13a0d4999d5cab7212c9aad5cb6d0dfd0accc48"
+    },
+    {
+      "path": "foundation/e2e/world-night-390.png",
+      "bytes": 988648,
+      "sha256": "b6830e6c058f7bbbf8144e448d9b9db8cd6046de64d1b159528e4fa13f188e5c"
+    },
+    {
+      "path": "mobile/command-0.log",
+      "bytes": 68,
+      "sha256": "69ff241683afc614a4005f60674a7f3b48df6efd1b769c27a4aed954efef77dd"
+    },
+    {
+      "path": "mobile/commands.json",
+      "bytes": 236,
+      "sha256": "49298080a541d065c285100ba16c781eec6df4e1284da46440d8811e5d5a7675"
+    },
+    {
+      "path": "mobile/summary.json",
+      "bytes": 8848,
+      "sha256": "bf4b836edfa7a0e57fa9e97bf7741cf5e7d5ccc2840d6b28e132d31ac6a8b53d"
+    },
+    {
+      "path": "mobile-initial/command-0.log",
+      "bytes": 67,
+      "sha256": "77a35285237a2213e6455a458e99fef1aeafb9f5d49ffd22eacb38d728040a08"
+    },
+    {
+      "path": "mobile-initial/commands.json",
+      "bytes": 236,
+      "sha256": "ab8347f6357cfc2701a29789cde53dce32af0a7a6d9ec35bc0497eb4101509ae"
+    },
+    {
+      "path": "mobile-initial/summary.json",
+      "bytes": 8847,
+      "sha256": "2702ac01a7366aa7cbe41f8d8afc9fc86e015020a8ddd1db8f21dfa5099cb97f"
+    },
+    {
+      "path": "navigation/command-0.log",
+      "bytes": 962,
+      "sha256": "a0f1be9da73895f1d476c4e4c4e14ddc6df0d1d652857684f6422e70752e2f61"
+    },
+    {
+      "path": "navigation/commands.json",
+      "bytes": 240,
+      "sha256": "7124fda7e887268bdbf372bd5df5295db0a693912e62913126503431173f2e93"
+    },
+    {
+      "path": "navigation/summary.json",
+      "bytes": 95141,
+      "sha256": "b0b449cf3ae0e9c4b08b0ae306549a8341c0b8e202e61be2e2f43dd310c242bc"
+    },
+    {
+      "path": "navigation/world-end.png",
+      "bytes": 949462,
+      "sha256": "598654460638732ed106ae5bd5e935a807a7a816dc726966637b4fc49ff68471"
+    },
+    {
+      "path": "navigation/world-start.png",
+      "bytes": 951054,
+      "sha256": "5b5604b01bcc7a68aeb42adf857e4b2abf25be73c5efe8dbd36a5d2ab152ff58"
+    },
+    {
+      "path": "recovery/command-0.log",
+      "bytes": 70,
+      "sha256": "b48bac70911684002db41e66fb8fbeb24e59256c4ec6f2b07cefc1ab0032d0f4"
+    },
+    {
+      "path": "recovery/commands.json",
+      "bytes": 238,
+      "sha256": "2e64758cfd598f1341e8f7cd3a7f44807d8ff4acba4207b387108ac06c0cba7c"
+    },
+    {
+      "path": "recovery/failure-1.png",
+      "bytes": 666081,
+      "sha256": "0f457b9ad68e2d9cb4b7fa02c51baae5225e2c70c3b595c66410e6892b81741c"
+    },
+    {
+      "path": "recovery/failure-2.png",
+      "bytes": 666042,
+      "sha256": "6ad1e1be29a6fe5cee5db24ffafef0b0439654085f04ccb98f6a1daf1e8bde5b"
+    },
+    {
+      "path": "recovery/failure-3.png",
+      "bytes": 666077,
+      "sha256": "3d9f265d2993fc798e7bf24e51a6e0fc3274e4aff05cab4933b76487ce10e57d"
+    },
+    {
+      "path": "recovery/summary.json",
+      "bytes": 7262,
+      "sha256": "76b2d6ca59ea533942cc56e1185d2c003d46b4e78302568ed68905a0c3a7d917"
+    },
+    {
+      "path": "recovery-c13e326/command-0.log",
+      "bytes": 70,
+      "sha256": "03eabbabdefab2a7466466c8fc9740844ec806f7a1a462ea6da5be549633f5da"
+    },
+    {
+      "path": "recovery-c13e326/commands.json",
+      "bytes": 238,
+      "sha256": "8dd35e46932ae8222d014b6589efd9586f640537e537289eaf4d73269701b376"
+    },
+    {
+      "path": "recovery-c13e326/failure-1.png",
+      "bytes": 666277,
+      "sha256": "957166b23008c848a90df3f9b2351ce449441aa85b7359fa4585c8f751e25cc0"
+    },
+    {
+      "path": "recovery-c13e326/failure-2.png",
+      "bytes": 666161,
+      "sha256": "4e5bd83b5bec79be50048ca6e9b393fdedb80d8b8dd85cb11d9eaf6d0e626842"
+    },
+    {
+      "path": "recovery-c13e326/failure-3.png",
+      "bytes": 665109,
+      "sha256": "ab64acd936ba46ced048cc959fa3c74759e3c2e89ddadaf40f6bd08f0dc678ea"
+    },
+    {
+      "path": "recovery-c13e326/summary.json",
+      "bytes": 7262,
+      "sha256": "07de9568123dc9242249630a19e6f33a090a99360dd61ea9948190ff4a487a36"
+    },
+    {
+      "path": "recovery-empty-submit-precheck/command-0.log",
+      "bytes": 71,
+      "sha256": "0b066400c46099ce165b59fbfee315ce7910fa3e9799403bce569220a2e21d16"
+    },
+    {
+      "path": "recovery-empty-submit-precheck/commands.json",
+      "bytes": 238,
+      "sha256": "787f21aaf6a5091740e63ac1ba210eac4fb0f7d85e399dc55aecd8e0454c8db7"
+    },
+    {
+      "path": "recovery-empty-submit-precheck/failure-1.png",
+      "bytes": 665827,
+      "sha256": "1948740a673a95004b5c72119b81759e27d42f0e8d0fc15339f28bdaaa46aeec"
+    },
+    {
+      "path": "recovery-empty-submit-precheck/failure-2.png",
+      "bytes": 666023,
+      "sha256": "1fff83bc71f17463442259f9acfb0850dc42f8818fa413ce01cf54c5c6a26639"
+    },
+    {
+      "path": "recovery-empty-submit-precheck/failure-3.png",
+      "bytes": 665115,
+      "sha256": "eed2037d09aae77ec7a702a63151e7eee7b07e05b48d6d9a11a59a140e84eb63"
+    },
+    {
+      "path": "recovery-empty-submit-precheck/failure-4.png",
+      "bytes": 630893,
+      "sha256": "84eeffcb6b70dc99439818bd6569282a92d485d15dd97622dbc3b44ca1d2123b"
+    },
+    {
+      "path": "recovery-empty-submit-precheck/failure-5.png",
+      "bytes": 628093,
+      "sha256": "cf58eb4b1272065010af516cfe449f32a0470d9a12a49e9db1b5261062734a65"
+    },
+    {
+      "path": "recovery-empty-submit-precheck/failure-6.png",
+      "bytes": 629424,
+      "sha256": "0e4a1751bf8ee48ea7cc31acb3732623bfd785914594d519cf5fe90c68d1956a"
+    },
+    {
+      "path": "recovery-empty-submit-precheck/summary.json",
+      "bytes": 8748,
+      "sha256": "45ab865c48f4366b3d64bfec6b7e17bbffb3aac5db593344abf37a30efe6ffe6"
+    },
+    {
+      "path": "recovery-initial/command-0.log",
+      "bytes": 70,
+      "sha256": "46e0fb0f9d59885a05c76627abd88efede047dd0fecf2a349f60e9064037a6d1"
+    },
+    {
+      "path": "recovery-initial/commands.json",
+      "bytes": 238,
+      "sha256": "97a2d02a3cee342b5af536e9679b3b4dfcfbc848cf016ffd08a1ae2ae82b30e4"
+    },
+    {
+      "path": "recovery-initial/summary.json",
+      "bytes": 4677,
+      "sha256": "713011998cd6eb95246181a53d943051795f0531c151a5d1d0d2d61be66ae770"
+    },
+    {
+      "path": "regression/command-0.log",
+      "bytes": 520,
+      "sha256": "92f0a8ba59100fd5a5aac0067595201ed0c32a410a3a24f520fa07e3ba1a7158"
+    },
+    {
+      "path": "regression/command-1.log",
+      "bytes": 175,
+      "sha256": "5812226c54d94acb82a397fbe81cd55accc6aecea17e326597d1bc7237449bd9"
+    },
+    {
+      "path": "regression/command-2.log",
+      "bytes": 90,
+      "sha256": "2835546afcbfb3dd0199289d3f9a06bb8437a6ab1e788a4de39840eeba72731c"
+    },
+    {
+      "path": "regression/commands.json",
+      "bytes": 795,
+      "sha256": "b7a3a5e138e2e733051a2bb95d76fef004d4ce029f42ec7e0778391a6420de05"
+    },
+    {
+      "path": "regression/e2e/professional-focus.json",
+      "bytes": 5272,
+      "sha256": "2ad3e3f47a24dc777322c4eae4d5aabb4ac011df80ffa232c2c0c3cda0a874f6"
+    },
+    {
+      "path": "renderer/command-0.log",
+      "bytes": 69,
+      "sha256": "ed7c4274121923d83c0eb8ca93d2dd0c284ddb6f7632907279e4494bed789430"
+    },
+    {
+      "path": "renderer/commands.json",
+      "bytes": 238,
+      "sha256": "8fcf524e271013c12b71c3817891082909ed0e3436ace00800cf8764b03a0179"
+    },
+    {
+      "path": "renderer/summary.json",
+      "bytes": 3359,
+      "sha256": "defc1be8740dc46cbb04eabdf58c2117f3d96ef6ac472c786658a81f844cb630"
+    },
+    {
+      "path": "smoke/command-0.log",
+      "bytes": 116,
+      "sha256": "58e739269e1c9c21126906299461f7b2e9da62fa0f7c101e7a3a610474b3a057"
+    },
+    {
+      "path": "smoke/commands.json",
+      "bytes": 235,
+      "sha256": "db99d83d9ec2107a9e15af875df16b855bb23ed4303e48dbe57595d65c661d81"
+    },
+    {
+      "path": "smoke/summary.json",
+      "bytes": 7070,
+      "sha256": "9a349e256760c0d7ac974c97cd735e459d27c0f8dec767630a3a316c48b6f257"
+    },
+    {
+      "path": "smoke/world-end.png",
+      "bytes": 949628,
+      "sha256": "6f75d9e6c898eb7aa3a530f3001f24fbe114bd1c1ac612201d6b1fd7d5d23c69"
+    },
+    {
+      "path": "smoke/world-start.png",
+      "bytes": 951022,
+      "sha256": "1bf0cd6f292461eb043f0dcff56c7e34c09cafb8b3675406f507ec40912b6bca"
+    },
+    {
+      "path": "smoke-lazy-render-precheck/command-0.log",
+      "bytes": 116,
+      "sha256": "166df4f5ba9a2d54426c2887df6a026cf0f313769362f0c9032a875de6746884"
+    },
+    {
+      "path": "smoke-lazy-render-precheck/commands.json",
+      "bytes": 235,
+      "sha256": "a45844643bb6eb419a3e3e43e254b17744869777def7fb3a5f580f25651b094a"
+    },
+    {
+      "path": "smoke-lazy-render-precheck/failure-1.png",
+      "bytes": 951303,
+      "sha256": "8fb0d57e7ade430c5eab692c295e8660cdd292b3e06b1742e3e7a186e2319477"
+    },
+    {
+      "path": "smoke-lazy-render-precheck/failure-2.png",
+      "bytes": 950096,
+      "sha256": "6a426936e48c15c5490b9602d65a3ff3185e63252f47dd2806267fe349214f23"
+    },
+    {
+      "path": "smoke-lazy-render-precheck/summary.json",
+      "bytes": 8189,
+      "sha256": "37e0fc0cd7b716ac94dc383533d1bf78589e1308278a946fce24936548a0bc15"
+    },
+    {
+      "path": "smoke-lazy-render-precheck/world-end.png",
+      "bytes": 951179,
+      "sha256": "ce6b6159b3afe2994141a5437116844c7dec2464b5f58459aee94aebb236fa6e"
+    },
+    {
+      "path": "smoke-lazy-render-precheck/world-start.png",
+      "bytes": 951478,
+      "sha256": "2fcc0f058d30ec83f6debfc41238454054b848f10ade7a90c4c13a1f572ec7ab"
+    },
+    {
+      "path": "smoke-selector-precheck/command-0.log",
+      "bytes": 117,
+      "sha256": "d83bf13d657870cdadd46ee0ad7245f234d2659616c09a05d784021d72246707"
+    },
+    {
+      "path": "smoke-selector-precheck/commands.json",
+      "bytes": 235,
+      "sha256": "7d185fddc8edf57ba650c667f8ef8cdf77e71bbba809d8500989fab1492ba6d9"
+    },
+    {
+      "path": "smoke-selector-precheck/failure-1.png",
+      "bytes": 950732,
+      "sha256": "8ac84b44734f5564076542af9e2c80144c786c83481f9b01570359a8582209a2"
+    },
+    {
+      "path": "smoke-selector-precheck/failure-2.png",
+      "bytes": 1030960,
+      "sha256": "32d4595bc88b7cfc4c4ba25d2a9098d12d70a723cb53029c4dd1c136a5ec0ad4"
+    },
+    {
+      "path": "smoke-selector-precheck/failure-3.png",
+      "bytes": 880291,
+      "sha256": "20829e80b659f501172bb79a7c093f1f85d0a6f5b4b6c0e05275d95427ca3634"
+    },
+    {
+      "path": "smoke-selector-precheck/failure-4.png",
+      "bytes": 878841,
+      "sha256": "4269d42a2983afc90dc4c7fe9a30a0b82d99e1958e86d7a0f2bcc83ee8599196"
+    },
+    {
+      "path": "smoke-selector-precheck/failure-5.png",
+      "bytes": 952596,
+      "sha256": "67505f109a0c6e6615e5d53b4795a59b96dfe7bfac85e8a705225b07e9a0d71a"
+    },
+    {
+      "path": "smoke-selector-precheck/failure-6.png",
+      "bytes": 1029084,
+      "sha256": "a79cce695feba92d6cff544ca98dc14b88e35e0579e5d3f4e729ddacdfe50439"
+    },
+    {
+      "path": "smoke-selector-precheck/failure-7.png",
+      "bytes": 877005,
+      "sha256": "99870971655dafaeb642c3c693c257395beec57081dbf98c3b1958f6750556c4"
+    },
+    {
+      "path": "smoke-selector-precheck/summary.json",
+      "bytes": 12338,
+      "sha256": "cc87eb0d6847d8aa06a935ed728066fad35c33d32b9b09db1ff216c461cb7c49"
+    },
+    {
+      "path": "smoke-selector-precheck/world-end.png",
+      "bytes": 951467,
+      "sha256": "f6a7e0359dbf31e6a56b66ad2d436bac34747c145e0685f3a67092906f87850b"
+    },
+    {
+      "path": "smoke-selector-precheck/world-start.png",
+      "bytes": 954149,
+      "sha256": "b0306838a989dc00243664de02ce5342729cffbb8cd5ac764f34bea6f9c225bc"
+    }
+  ],
+  "scope": "Synthetic test-only; no live player or authority API; no production changes."
+}
