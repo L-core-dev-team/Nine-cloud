@@ -6,7 +6,7 @@ import { serverTurnHttpResponse } from './turn-http.js';
 import type { AuthoritativeGameService } from '../services/authoritative-game.js';
 import { consumeAccountQuota } from '../services/account-rate-limit.js';
 import { CloudCapacityError } from '../services/cloud-save-service.js';
-import { resolveNpcMemoryRecall, type AuthorizedRecallPageReader } from '../services/npc-memory-recall.js';
+import { NPC_MEMORY_RECALL_POLICY, resolveNpcMemoryRecall, type AuthorizedRecallPageReader } from '../services/npc-memory-recall.js';
 import type { ServerTurnService } from '../services/server-turn.js';
 import { SaveSchemaNotReadyError } from '../services/save-storage-contract.js';
 
@@ -55,8 +55,13 @@ export function mountGames(
     try {
       const game = await service.read(owner, c.req.param('saveId'));
       if (game.status === 'not_found') return c.json({ code: 'NOT_FOUND' }, 404);
-      // Forgetting saves cannot answer from a continue-mode policy: refuse honestly instead of silently degrading.
-      if ('memoryMode' in game.save && game.save.memoryMode === 'forgetting') return c.json({ code: 'RECALL_MODE_UNAVAILABLE' }, 503);
+      // P4 plan B (2026-10-10): v2 forgetting saves answer through the decay gate.
+      // Old v1-artifact forgetting saves cannot upgrade (pinned at creation), so
+      // they are still refused honestly instead of silently degrading.
+      if ('memoryMode' in game.save && game.save.memoryMode === 'forgetting'
+        && game.save.memoryPolicy.retrievalVersion !== NPC_MEMORY_RECALL_POLICY.retrievalVersion) {
+        return c.json({ code: 'RECALL_MODE_UNAVAILABLE' }, 503);
+      }
       const save = game.save;
       // The current committed revision is the recall boundary. The read is a partial
       // TurnReceipt projection; resolveNpcMemoryRecall only consumes these fields.

@@ -105,3 +105,16 @@
 ---
 
 *本材料仅陈述代码事实与方案推演，不代表已裁决。裁决以 LYL+Bird 签署为准。*
+
+---
+
+## 7. 裁决记录
+
+- **2026-10-10，LYL 裁决：采纳方案 B——Forgetting 模式衰减门控授权召回（Decay-gated authorized recall）。**
+- 问题 2（观察级衰减面）：采纳编制方建议口径——later = 该 NPC 在该存档中 eventRevision 更大的**授权观察数**，与叙事层衰减面同构。
+- 问题 3（阈值）：复用 `FORGETTING_CUE_FLOOR = 0.35`（单一阈值）。
+- 问题 4（被取代 current-state）：time-qualified 残影，与 Continue 现状一致，不改。
+- 问题 5（"记不清"话术）：API 确定性模板结果类型，不走 LLM。
+- 问题 6（版本化）：确认走 `p4-recall-policy-v2` + `semanticSha256` 实算重签流程。
+- 迁移纪律：策略创建即钉死，旧 Forgetting 存档（v1 artifacts）维持 503 `RECALL_MODE_UNAVAILABLE`，不可迁移；Continue 存档行为完全不变。
+- 签名：AI 代理执行（LYL 授权）+ Bird 复核代理。

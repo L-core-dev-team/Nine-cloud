@@ -295,20 +295,74 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
       recall: { kind: 'evidence', recall: { status: 'complete', slot: 'historical-event', authorizedFacts: { summary: '林月曾在中州渡口救下旅人。' } } },
     });
 
-    // A forgetting save refuses honestly at the route boundary instead of degrading.
-    // Memory mode is pinned at creation for schema-2 saves, so the refusal save is
-    // created in forgetting mode rather than toggling the pinned first save.
-    const refusedSaveId = 's4-save-' + randomUUID();
-    await pool.query(
-      'INSERT INTO game_saves ' +
-      '(id, owner_id, revision, schema_version, canon_version, rule_version, memory_policy_version, memory_mode, memory_policy, snapshot) ' +
-      'VALUES ($1, $2, 2, 2, $3, $4, $5, $6, $7::jsonb, $8::jsonb)',
-      [refusedSaveId, recallOwnerId, 'canon-test-v1', 'rules-test-v1', recallPolicy.policyVersion, 'forgetting',
-        JSON.stringify({ ...recallPolicy, mode: 'forgetting' }),
-        JSON.stringify({ playerId: 'player-s4-test', locationId: 'ferry', elapsedMinutes: 30, facts: { gameMinute: 30 } })],
+    // Forgetting saves are pinned at creation. A v2 forgetting save answers through
+    // the decay gate; a v1 forgetting save (option a, 2026-10-09) keeps the 503.
+    // Each variant is created in forgetting mode rather than toggling the pinned saves.
+    const forgetObservation = (saveId: string, eventId: string, npc: string) => {
+      const grant = [saveId, 'root', eventId, npc].map(part => `${part.length}:${part}`).join('');
+      return pool.query(
+        'INSERT INTO npc_authorized_observation_outbox ' +
+        '(grant_id,grant_id_version,save_id,branch_id,npc_id,event_id,event_revision,observed_at_minute,channel,memory_class,' +
+        'authorization_policy_version,authorized_fields,authorized_facts,summary) ' +
+        'VALUES ($1,1,$2,\'root\',$3,$4,1,18,\'witnessed\',\'historical-event\',\'visibility-v1\',$5::jsonb,$6::jsonb,$7)',
+        [grant, saveId, npc, eventId, JSON.stringify(['summary']),
+          JSON.stringify({ summary: '林月曾在中州渡口救下旅人。' }), '林月曾在中州渡口救下旅人。'],
+      );
+    };
+    const forgetEvent = (saveId: string, eventId: string) => pool.query(
+      'INSERT INTO turn_events ' +
+      '(id,save_id,idempotency_key,sequence,event_type,source,rule_version,before_revision,after_revision,payload,occurred_at,branch_id) ' +
+      'VALUES ($1,$2,$3,0,\'PLAYER_ARRIVED\',\'RULES\',\'rules-test-v1\',0,1,$4::jsonb,$5,\'root\')',
+      [eventId, saveId, 'fixture-' + eventId, JSON.stringify({ destinationId: 'ferry' }), '2026-10-10T00:00:00.000Z'],
     );
-    const refusedUrl = `/api/games/${refusedSaveId}/npcs/${recallNpcId}/memory-recall?utterance=${encodeURIComponent('你还记得中州渡口吗？')}`;
-    const refused = await app.request(refusedUrl);
+    const forgetSaveIds: string[] = [];
+    const createForgettingSave = async (gameMinute: number, policy: Record<string, unknown>) => {
+      const saveId = 's4-save-' + randomUUID();
+      forgetSaveIds.push(saveId);
+      await pool.query(
+        'INSERT INTO game_saves ' +
+        '(id, owner_id, revision, schema_version, canon_version, rule_version, memory_policy_version, memory_mode, memory_policy, snapshot) ' +
+        'VALUES ($1, $2, 2, 2, $3, $4, $5, \'forgetting\', $6::jsonb, $7::jsonb)',
+        [saveId, recallOwnerId, 'canon-test-v1', 'rules-test-v1', String(policy.policyVersion),
+          JSON.stringify(policy), JSON.stringify({ playerId: 'player-s4-test', locationId: 'ferry', elapsedMinutes: gameMinute, facts: { gameMinute } })],
+      );
+      return saveId;
+    };
+    const recallUrlFor = (saveId: string) =>
+      `/api/games/${saveId}/npcs/${recallNpcId}/memory-recall?utterance=${encodeURIComponent('你还记得中州渡口吗？')}`;
+
+    // v2 forgetting save with a fresh observation: the reviewed curve still passes the floor.
+    const freshEventId = randomUUID();
+    const freshForgetting = await createForgettingSave(30, { ...recallPolicy, mode: 'forgetting' });
+    await forgetEvent(freshForgetting, freshEventId);
+    await forgetObservation(freshForgetting, freshEventId, recallNpcId);
+    const fresh = await app.request(recallUrlFor(freshForgetting));
+    expect(fresh.status).toBe(200);
+    expect(await fresh.json()).toMatchObject({
+      recall: { kind: 'evidence', recall: { status: 'complete', slot: 'historical-event', authorizedFacts: { summary: '林月曾在中州渡口救下旅人。' } } },
+    });
+
+    // v2 forgetting save whose only observation decayed below 0.35: deterministic forgotten template.
+    const decayedEventId = randomUUID();
+    const decayedForgetting = await createForgettingSave(20_000, { ...recallPolicy, mode: 'forgetting' });
+    await forgetEvent(decayedForgetting, decayedEventId);
+    await forgetObservation(decayedForgetting, decayedEventId, recallNpcId);
+    const decayed = await app.request(recallUrlFor(decayedForgetting));
+    expect(decayed.status).toBe(200);
+    expect(await decayed.json()).toMatchObject({
+      recall: { kind: 'deterministic', reason: 'forgotten', text: '我不太记得了。' },
+    });
+
+    // v1-artifact forgetting save: fail-closed migration refusal, storage untouched.
+    const v1Policy = {
+      ...recallPolicy,
+      mode: 'forgetting',
+      policyVersion: 'authorized-cue-recall-v1',
+      retrievalVersion: 'authorized-cue-recall-v1',
+      policyArtifactHash: 'sha256:a7e096c182da6e5e77f2f5d8ae6fafe84786e8c481ea2b033125aecb8529a70c',
+    };
+    const refusedSaveId = await createForgettingSave(30, v1Policy);
+    const refused = await app.request(recallUrlFor(refusedSaveId));
     expect(refused.status).toBe(503);
     expect(await refused.json()).toEqual({ code: 'RECALL_MODE_UNAVAILABLE' });
 
@@ -319,8 +373,10 @@ suite('PostgresNpcMemoryTurnRepository (TEST_DATABASE_URL)', () => {
       await cleanup.query('BEGIN');
       await cleanup.query("SELECT set_config('jiuxiao.account_erasure_operation','test-cleanup',true)");
       await cleanup.query('DELETE FROM npc_authorized_observation_outbox WHERE save_id=$1', [recallSaveId]);
+      await cleanup.query('DELETE FROM npc_authorized_observation_outbox WHERE save_id = ANY($1)', [forgetSaveIds]);
+      await cleanup.query('DELETE FROM turn_events WHERE save_id = ANY($1)', [forgetSaveIds]);
       await cleanup.query('DELETE FROM game_saves WHERE id=$1 AND owner_id=$2', [recallSaveId, recallOwnerId]);
-      await cleanup.query('DELETE FROM game_saves WHERE id=$1 AND owner_id=$2', [refusedSaveId, recallOwnerId]);
+      await cleanup.query('DELETE FROM game_saves WHERE id = ANY($1) AND owner_id=$2', [forgetSaveIds, recallOwnerId]);
       await cleanup.query('COMMIT');
     } catch { await cleanup.query('ROLLBACK').catch(() => undefined); } finally { cleanup.release(); } }
   });

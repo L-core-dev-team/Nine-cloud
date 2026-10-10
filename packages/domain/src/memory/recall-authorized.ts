@@ -3,6 +3,11 @@ import {
   assertAuthorizedObservationSupersessionRecord,
   type AuthorizedRecallObservation,
 } from './turn-journal.js';
+import {
+  FORGETTING_CUE_FLOOR,
+  FORGETTING_HALF_LIFE_GAME_MINUTES,
+  FORGETTING_HALF_LIFE_OBSERVED_EVENTS,
+} from './retrieve.js';
 
 export type RecallSlot = 'current-state' | 'historical-event' | 'subjective-belief';
 export type AuthorizedMemoryCue = { query: string; slot: RecallSlot };
@@ -10,7 +15,30 @@ export type AuthorizedMemoryCue = { query: string; slot: RecallSlot };
 export type AuthorizedRecallResult =
   | { status: 'complete'; query: string; slot: RecallSlot; grantId: string; eventId: string; memoryClass: Exclude<AuthorizedRecallObservation['memoryClass'], 'unclassified'>; authorizedFacts: Readonly<Record<string, unknown>>; matchingFields: readonly string[]; supersessions: readonly AuthorizedRecallObservation['supersessions'][number][] }
   | { status: 'partial'; query: string; slot: RecallSlot; candidates: readonly { grantId: string; eventId: string; memoryClass: Exclude<AuthorizedRecallObservation['memoryClass'], 'unclassified'>; summary: string; matchingFields: readonly string[] }[]; omittedCandidates: number }
-  | { status: 'abstain'; query: string; slot: RecallSlot; reason: 'no-match' | 'stale-only' | 'unclassified-only'; message: string };
+  | { status: 'abstain'; query: string; slot: RecallSlot; reason: 'no-match' | 'stale-only' | 'unclassified-only'; message: string }
+  | { status: 'forgotten'; query: string; slot: RecallSlot; message: string };
+
+/**
+ * P4 v2 decay-gated authorized recall (author adjudication, plan B, 2026-10-10).
+ * The explicit question shares the already-reviewed narrative forgetting curve;
+ * the constants live in retrieve.ts and are never copied here.
+ */
+export const AUTHORIZED_RECALL_DECAY = Object.freeze({
+  halfLifeGameMinutes: FORGETTING_HALF_LIFE_GAME_MINUTES,
+  halfLifeObservations: FORGETTING_HALF_LIFE_OBSERVED_EVENTS,
+  accessibilityFloor: FORGETTING_CUE_FLOOR,
+} as const);
+
+/** Deterministic accessibility of one authorized observation: 2^-(elapsed/10080 + later/16). */
+export function observationAccessibility(elapsedGameMinutes: number, laterAuthorizedObservations: number): number {
+  if (!Number.isSafeInteger(elapsedGameMinutes) || elapsedGameMinutes < 0
+    || !Number.isSafeInteger(laterAuthorizedObservations) || laterAuthorizedObservations < 0) {
+    throw new Error('Invalid forgetting decay inputs');
+  }
+  const halfLives = elapsedGameMinutes / AUTHORIZED_RECALL_DECAY.halfLifeGameMinutes
+    + laterAuthorizedObservations / AUTHORIZED_RECALL_DECAY.halfLifeObservations;
+  return 0.5 ** halfLives;
+}
 
 const MAX_QUERY_LENGTH = 160;
 const MAX_RESULTS = 16;
@@ -42,6 +70,8 @@ export function recallAuthorizedObservations(rows: readonly AuthorizedRecallObse
   slot: RecallSlot;
   gameMinute: number;
   throughRevision: number;
+  /** P4 v2 forgetting saves: gate evidence behind the pinned accessibility floor. */
+  forgetting?: boolean;
 }): AuthorizedRecallResult {
   if (!Array.isArray(rows) || !input || typeof input !== 'object'
     || typeof input.query !== 'string' || !input.query.trim() || input.query.length > MAX_QUERY_LENGTH
@@ -57,7 +87,24 @@ export function recallAuthorizedObservations(rows: readonly AuthorizedRecallObse
   const matches: { row: AuthorizedRecallObservation; matchingFields: string[]; exact: boolean; score: number }[] = [];
   let staleMatches = 0;
   let unclassifiedMatches = 0;
+  let forgottenMatches = 0;
   const seenGrantIds = new Set<string>();
+  // Adjudication 2026-10-10 (problem 2): later counts authorized observations of
+  // this NPC in this save with a strictly larger eventRevision, mirroring the
+  // narrative layer's forgetting surface. Counted inside the already committed
+  // recall boundary, so the count and the evidence pool share one scope.
+  const laterCounts = new Map<number, number>();
+  if (input.forgetting) {
+    const revisionCounts = new Map<number, number>();
+    for (const row of rows) revisionCounts.set(row.eventRevision, (revisionCounts.get(row.eventRevision) ?? 0) + 1);
+    const sortedRevisions = [...revisionCounts.keys()].sort((left, right) => left - right);
+    let later = 0;
+    for (let index = sortedRevisions.length - 1; index >= 0; index -= 1) {
+      const revision = sortedRevisions[index]!;
+      laterCounts.set(revision, later);
+      later += revisionCounts.get(revision)!;
+    }
+  }
 
   for (const row of rows) {
     if (!row || typeof row !== 'object' || seenGrantIds.has(row.grantId)) throw new TypeError('Invalid or duplicated authorized memory evidence.');
@@ -84,6 +131,18 @@ export function recallAuthorizedObservations(rows: readonly AuthorizedRecallObse
       if (exactFields.length > 0 || hasTokenOverlap(cueTokens, fields)) staleMatches += 1;
       continue;
     }
+    if (input.forgetting) {
+      const elapsed = Math.max(0, input.gameMinute - row.observedAtMinute);
+      const accessibility = observationAccessibility(elapsed, laterCounts.get(row.eventRevision) ?? 0);
+      if (accessibility < AUTHORIZED_RECALL_DECAY.accessibilityFloor) {
+        // The observation cannot serve as evidence, but a would-be match must
+        // surface as "forgotten" instead of a false "never happened".
+        const matchingFields = fields.filter(field => tokens(normalize(field.value)).some(token => cueTokens.includes(token))).map(field => field.field);
+        if (exactFields.length > 0 || (cueTokens.length >= 2 && matchingFields.length > 0
+          && overlapScore(cueTokens, fields) >= 0.5)) forgottenMatches += 1;
+        continue;
+      }
+    }
     if (exactFields.length > 0) {
       matches.push({ row, matchingFields: exactFields, exact: true, score: 1 });
       continue;
@@ -95,8 +154,15 @@ export function recallAuthorizedObservations(rows: readonly AuthorizedRecallObse
   }
 
   const exact = matches.filter(match => match.exact);
-  if (input.slot === 'current-state' && exact.length === 0 && matches.length === 0 && staleMatches > 0) {
-    return { status: 'abstain', query: input.query, slot: input.slot, reason: 'stale-only', message: '这条旧状态后来已变化，我不能把它当作眼下的答案。' };
+  if (exact.length === 0 && matches.length === 0) {
+    // Decay answers before supersession: a forgotten observation never leaks
+    // whether some matching state was later replaced.
+    if (forgottenMatches > 0) {
+      return { status: 'forgotten', query: input.query, slot: input.slot, message: '我不太记得了。' };
+    }
+    if (input.slot === 'current-state' && staleMatches > 0) {
+      return { status: 'abstain', query: input.query, slot: input.slot, reason: 'stale-only', message: '这条旧状态后来已变化，我不能把它当作眼下的答案。' };
+    }
   }
   if (exact.length === 1) return complete(exact[0]!, input.query, input.slot);
   if (matches.length === 1) return complete(matches[0]!, input.query, input.slot);

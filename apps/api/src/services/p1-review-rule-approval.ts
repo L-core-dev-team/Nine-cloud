@@ -36,12 +36,20 @@
  * `memoryPolicyArtifacts` in the semantic inputs moved and `semanticSha256`
  * was re-signed for that real semantic change. `bundleSha256` still matches:
  * the reviewed rule sources themselves are byte-identical.
+ *
+ * Plan B (adjudicated by LYL, 2026-10-10, co-signed by the Bird review agent):
+ * newly created saves pin the v2 decay-gated recall artifacts
+ * (`p4-recall-policy-v2.json`), so the v1 identity above moved to a historical
+ * branch inside `p1-memory-policy.ts` and `semanticSha256` below was re-signed
+ * from the recomputed actual digest. The rulebook, mechanics, constants,
+ * templates and labels are unchanged; only the memory-policy artifact identity
+ * moved with the adjudicated decay-gating change.
  */
 export const P1_REVIEW_RULE_APPROVAL = Object.freeze({
   scope: 'p1-review-candidate-v1',
   bundleSha256: 'sha256:468a26ad109c64c6cf2a7224b0e895fd7614241e15c5b468842295d91dcddbce',
   pluginSourceSha256: 'sha256:94c57793bfde874469b81c1d97c914ab5591d628631564679f07d7e3aef83735',
-  semanticSha256: 'sha256:5354754c7ff701514e3077173796cc08ef96086b6eb418a482804b041737d1af',
+  semanticSha256: 'sha256:94afe4339c08d982e4cd304f34c905877bdf24fc5863f0bb73079306858310cb',
   ruleVersion: 'prologue-v1-candidate-20261005',
   canonVersion: 'prologue-canon-candidate-20261005',
   actionRulesVersion: 'p1-actions-a4b8fbf7e6120840',
