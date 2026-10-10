@@ -163,7 +163,11 @@ async function recovery(base){
     const elapsed=Date.now()-start;assert.ok(elapsed>=19000&&elapsed<25000,`deadline observed at ${elapsed}ms`);
     assert.equal(await p.getByTestId('p2-submit-action').isEnabled(),true);assert.equal(await p.getByTestId('p2-action-input').inputValue(),'合成超时行动');assert.equal(submissions,before+1);
     delay=350;fail=false;await p.getByTestId('p2-submit-action').click();await p.getByTestId('p2-action-input').filter({visible:true}).waitFor();
-    await p.waitForFunction(()=>document.querySelector('[data-testid="p2-submit-action"]')?.disabled===false);
+    // Successful recovery clears the draft, so the empty submit button must stay disabled.
+    await p.waitForFunction(()=>document.querySelector('[data-testid="p2-action-input"]')?.disabled===false);
+    assert.equal(await p.getByTestId('p2-action-input').inputValue(),'');
+    assert.equal(await p.getByTestId('p2-narrative').innerText(),'合成拒绝回执');
+    assert.equal(await p.getByTestId('p2-revision').innerText(),'0');
     assert.equal(submissions,before+2);return {timeoutMs:elapsed,requests:2,automaticRetries:0};
   },p);
   report.blocked.push({name:'P3-authoritative-recovery',status:'BLOCKED',reason:'Mock UI observations do not verify server idempotency, authoritative history, cloud draft durability, memory permissions or retry contracts. Await P3 contracts.'});
