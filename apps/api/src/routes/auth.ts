@@ -2,6 +2,7 @@ import type { Hono } from 'hono';
 import { isIP } from 'node:net';
 import { EmailAuthService, SESSION_SECONDS, type AuthSession, type GuestUpgradeResult } from '../services/email-auth.js';
 import { AuthFailure } from '../services/auth-failure.js';
+import type { TurnstileVerifier } from '../services/turnstile.js';
 
 export const AUTH_COOKIE = 'jx_session';
 export function authCookie(token: string, age: number, origin: string, sameSite: 'Strict' | 'None' = 'Strict'): string {
@@ -22,7 +23,7 @@ export type AuthSessionService = {
   createGuest?: EmailAuthService['createGuest'];
   upgradeGuest?: (ownerId: string, tokenValue: string | null, emailValue: unknown, code: unknown, confirmation: unknown) => Promise<GuestUpgradeResult>;
 };
-export function mountAuth(app: Hono, service: AuthSessionService, origin: string, sameSite: 'Strict' | 'None' = 'Strict', trustedProxyAddresses: readonly string[] = [], providerStatus: () => { email: boolean; phone: boolean; privacyPolicyUrl?: string | null; privacyPolicyVersion?: string | null } = () => ({ email: true, phone: false })): void {
+export function mountAuth(app: Hono, service: AuthSessionService, origin: string, sameSite: 'Strict' | 'None' = 'Strict', trustedProxyAddresses: readonly string[] = [], providerStatus: () => { email: boolean; phone: boolean; emailCaptcha?: boolean; privacyPolicyUrl?: string | null; privacyPolicyVersion?: string | null } = () => ({ email: true, phone: false }), emailCaptchaVerifier?: TurnstileVerifier): void {
   const url = new URL(origin);
   const local = url.protocol === 'http:' && ['127.0.0.1', 'localhost'].includes(url.hostname);
   if (origin !== url.origin || (url.protocol !== 'https:' && !local)) throw new Error('AUTH_PUBLIC_ORIGIN must be an exact HTTPS origin');
@@ -71,12 +72,18 @@ export function mountAuth(app: Hono, service: AuthSessionService, origin: string
   });
   app.post('/api/auth/code', async c => {
     const body = await authBody(c.req.raw);
-    if (!body) return c.json({ code: 'INVALID_REQUEST' }, 400);
+    if (!body || Object.keys(body).some(key => !['email', 'captchaToken'].includes(key))) return c.json({ code: 'INVALID_REQUEST' }, 400);
     try {
+      // Turnstile guards the anonymous entry only. Guest-upgrade and unlink
+      // confirmations reuse this endpoint behind an authenticated session, so
+      // they must not be blocked by (or depend on) the captcha widget.
+      if (!await service.resolve(sessionToken(c.req.raw))) {
+        if (emailCaptchaVerifier) await emailCaptchaVerifier(body.captchaToken ?? null, clientIp(c, trustedProxyAddresses));
+      }
       const result = await service.requestCode(body.email, clientIp(c, trustedProxyAddresses));
       if(result==='limited')c.header('Retry-After','60');
       return result === 'sent' ? c.json({ status: 'sent', resendAfterSeconds:60 }, 202) : c.json({ code: 'RATE_LIMITED',retryAfterSeconds:60 }, 429);
-    } catch (error) { if(error instanceof AuthFailure)return c.json({code:error.code,stage:error.stage,requestId:error.requestId},503);return c.json({ code: error instanceof TypeError ? 'INVALID_EMAIL' : 'MAIL_UNAVAILABLE' }, error instanceof TypeError ? 400 : 503); }
+    } catch (error) { if(error instanceof AuthFailure)return c.json({code:error.code,stage:error.stage,requestId:error.requestId},error.code.startsWith('CAPTCHA')?403:503);return c.json({ code: error instanceof TypeError ? 'INVALID_EMAIL' : 'MAIL_UNAVAILABLE' }, error instanceof TypeError ? 400 : 503); }
   });
   for(const path of ['/api/auth/verify','/api/auth/restore'])app.post(path, async c => {
     const body = await authBody(c.req.raw);
