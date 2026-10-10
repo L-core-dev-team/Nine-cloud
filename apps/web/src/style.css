@@ -1273,6 +1273,7 @@ input:not([type='range']):not([type='checkbox']):not([type='radio']), select, te
 .ai-actionbar .ai-feedback { color: #cbd5dc; }
 /* Legal links at the document end were hidden by the fixed operation bar. */
 body:has(.ai-page) .jx-shell > footer { color: #e0e6e8; font-size: var(--jx-type-caption); padding-bottom: calc(225px + env(safe-area-inset-bottom)); }
+body:has(.ai-page) .jx-shell > footer :is(.footer-meta, .footer-legal, .footer-filing) { background: #0b1b29; }
 body:has(.ai-page) header :is(.ambient-toggle, .theme-toggle, .menu) { border-color: #b8c9d3; font-size: var(--jx-type-caption); }
 body:has(.ai-page) header :is(.ambient-toggle, .theme-toggle, .menu):focus-visible,
 .ai-page :is(button, input, select, textarea, summary):focus-visible,
@@ -1316,6 +1317,7 @@ body:has(.ai-page) header :is(.ambient-toggle, .theme-toggle, .menu):focus-visib
 :root[data-theme='day'] .ai-page .role-state.enabled { color: #245536; }
 :root[data-theme='day'] .ai-actionbar .ai-feedback { color: #344b59; }
 :root[data-theme='day'] body:has(.ai-page) .jx-shell > footer { color: #172a36; }
+:root[data-theme='day'] body:has(.ai-page) .jx-shell > footer :is(.footer-meta, .footer-legal, .footer-filing) { background: #faf9f4; }
 :root[data-theme='day'] body:has(.ai-page) header :is(.ambient-toggle, .theme-toggle, .menu) { border-color: #283c49; }
 :root[data-theme='day'] body:has(.ai-page) header :is(.ambient-toggle, .theme-toggle, .menu):focus-visible,
 :root[data-theme='day'] .ai-page :is(button, input, select, textarea, summary):focus-visible,
