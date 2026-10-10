@@ -2,6 +2,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const net = require('node:net');
+const { createHash } = require('node:crypto');
 const { spawn, spawnSync } = require('node:child_process');
 const { chromium } = require('playwright');
 const { getTextRuns, maskText, textAudit } = require('./design-acceptance.cjs');
@@ -42,7 +43,12 @@ async function samplePixels(page, png, runs) {
   for (const viewport of [{ width: 320, height: 568 }, { width: 390, height: 844 }, { width: 430, height: 932 }, { width: 1366, height: 768 }]) for (const theme of ['night', 'day']) for (const mode of ['dynamic', 'static', 'reduced-motion']) {
     const context = await browser.newContext({ viewport, reducedMotion: mode === 'reduced-motion' ? 'reduce' : 'no-preference' });
     const page = await context.newPage(); page.setDefaultTimeout(10000);
-    await page.addInitScript(theme => localStorage.setItem('jx10_appearance', theme), theme);
+    await page.addInitScript(({ theme, mode }) => {
+      localStorage.setItem('jx10_appearance', theme);
+      // The existing graphics setting stops the renderer. The old audit's
+      // atmosphere data attribute alone does not stop the current GPU canvas.
+      if (mode === 'static') localStorage.setItem('jx10_graphics_v1', JSON.stringify({ reducedMotion: true, sceneVideoEnabled: false }));
+    }, { theme, mode });
     await page.route('**/api/**', route => route.fulfill({ status: 503, contentType: 'application/json', body: '{}' }));
     await page.goto(origin + '/world'); await page.locator('.worldbook-entry').first().waitFor();
     await page.evaluate(async mode => { document.documentElement.dataset.jxAtmosphere = mode === 'static' ? 'off' : 'on'; await document.fonts.ready; }, mode);
@@ -50,7 +56,7 @@ async function samplePixels(page, png, runs) {
     const layers = await page.evaluate(() => {
       const describe = element => { const s = getComputedStyle(element); return { tag: element.tagName, class: element.className, color: s.color, background: s.backgroundColor, opacity: s.opacity, blend: s.mixBlendMode, filter: s.filter, textShadow: s.textShadow }; };
       const video = document.querySelector('.scene-atmosphere-video');
-      return { description: describe(document.querySelector('.world-page > p')), ancestry: ['.world-page', 'main', '.jx-shell', 'body'].map(selector => ({ selector, ...describe(document.querySelector(selector)) })), layers: Array.from(document.querySelectorAll('.scene-atmosphere > *')).map(describe), video: { src: video.currentSrc, paused: video.paused, readyState: video.readyState, time: video.currentTime }, reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches };
+      return { description: describe(document.querySelector('.world-page > p')), ancestry: ['.world-page', 'main', '.jx-shell', 'body'].map(selector => ({ selector, ...describe(document.querySelector(selector)) })), layers: Array.from(document.querySelectorAll('.scene-atmosphere > *')).map(describe), video: { src: video.currentSrc, paused: video.paused, readyState: video.readyState, time: video.currentTime }, reducedMotion: matchMedia('(prefers-reduced-motion: reduce)').matches, graphics: localStorage.getItem('jx10_graphics_v1') };
     });
     const batches = [];
     for (let batch = 0; batch < (mode === 'dynamic' ? 2 : 1); batch++) {
@@ -67,13 +73,16 @@ async function samplePixels(page, png, runs) {
         const audit = textAudit(source, [png], runs, label);
         const samples = await samplePixels(page, png, target);
         const videoTime = await page.locator('video').evaluate(video => video.currentTime);
-        frames.push({ frame, capturedAt: new Date().toISOString(), videoTime, audit, samples });
+        frames.push({ frame, capturedAt: new Date().toISOString(), videoTime, sha256: createHash('sha256').update(png).digest('hex'), audit, samples });
         fs.writeFileSync(path.join(output, 'last-frame.json'), JSON.stringify({ label, batch, layers, frames }, null, 2));
         assert.equal(audit.failures.length, 0, label + ': unchanged audit must pass surrounding text');
         for (const sample of samples) assert.ok(sample.pixels > 0 && sample.ratio >= 4.5, label + ': every valid description sample must meet AA; ' + JSON.stringify(sample));
       }
       await mask.evaluate(element => element.remove()); batches.push({ batch, runs, frames });
     }
+    if (mode === 'dynamic') assert.ok(new Set(batches.flatMap(batch => batch.frames.map(frame => frame.sha256))).size > 1, label + ': actual background frames must vary');
+    if (mode === 'static') assert.equal(JSON.parse(layers.graphics).reducedMotion, true, label + ': use the real renderer setting');
+    if (mode === 'reduced-motion') assert.equal(layers.reducedMotion, true, label + ': use the real OS media preference');
     // Existing reading controls remain usable after sampling, without test-only
     // content-visibility styles or runtime rendering changes.
     const search = page.locator('.world-search input');
