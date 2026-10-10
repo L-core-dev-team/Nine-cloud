@@ -21,7 +21,25 @@
         2730,
         1536
       ],
-      "metadataValuesCopied": false
+      "metadataValuesCopied": false,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "fa26bb53e27316eb3faa2e71421b520024c517e4b873e16d4f6cdd0e13301ab3",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "53e5df04cef3d76d774cc37fb519ca6f4ca1fc1f3d5cb3792f74b475f1c18f35",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 1: see docs/acceptance/2026-10-10/G05-batch1-license-evidence.md (declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "53e5df04cef3d76d774cc37fb519ca6f4ca1fc1f3d5cb3792f74b475f1c18f35",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 1: see docs/acceptance/2026-10-10/G05-batch1-license-evidence.md (declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "sceneId": "mountain-gate",
@@ -38,7 +56,25 @@
         1536,
         2730
       ],
-      "metadataValuesCopied": false
+      "metadataValuesCopied": false,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "fa26bb53e27316eb3faa2e71421b520024c517e4b873e16d4f6cdd0e13301ab3",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "e89f5c2e2d964a9949d4ea035d5f5dacb1943de87b47880002b16a042183beec",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 1: see docs/acceptance/2026-10-10/G05-batch1-license-evidence.md (declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "e89f5c2e2d964a9949d4ea035d5f5dacb1943de87b47880002b16a042183beec",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 1: see docs/acceptance/2026-10-10/G05-batch1-license-evidence.md (declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "sceneId": "wilderness",
@@ -55,7 +91,25 @@
         2730,
         1536
       ],
-      "metadataValuesCopied": false
+      "metadataValuesCopied": false,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "fa26bb53e27316eb3faa2e71421b520024c517e4b873e16d4f6cdd0e13301ab3",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "5caa0f24db1e9a1f6b0cb70024e45be15cc8ed766c096a027483a339bf4ebe98",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 1: see docs/acceptance/2026-10-10/G05-batch1-license-evidence.md (declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "5caa0f24db1e9a1f6b0cb70024e45be15cc8ed766c096a027483a339bf4ebe98",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 1: see docs/acceptance/2026-10-10/G05-batch1-license-evidence.md (declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "sceneId": "wilderness",
@@ -72,7 +126,25 @@
         1536,
         2730
       ],
-      "metadataValuesCopied": false
+      "metadataValuesCopied": false,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "fa26bb53e27316eb3faa2e71421b520024c517e4b873e16d4f6cdd0e13301ab3",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "875fb60f34901b333d81bb791a8af3f7074b703b448d108f1d5c9442d54e8cd2",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 1: see docs/acceptance/2026-10-10/G05-batch1-license-evidence.md (declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "875fb60f34901b333d81bb791a8af3f7074b703b448d108f1d5c9442d54e8cd2",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 1: see docs/acceptance/2026-10-10/G05-batch1-license-evidence.md (declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "sceneId": "sect-town",
@@ -89,7 +161,25 @@
         2730,
         1536
       ],
-      "metadataValuesCopied": false
+      "metadataValuesCopied": false,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "fa26bb53e27316eb3faa2e71421b520024c517e4b873e16d4f6cdd0e13301ab3",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "8657b4d725763202a63ecb0c535f824755d217009d7f02ee0f66b09761cdf9d8",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 1: see docs/acceptance/2026-10-10/G05-batch1-license-evidence.md (declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "8657b4d725763202a63ecb0c535f824755d217009d7f02ee0f66b09761cdf9d8",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 1: see docs/acceptance/2026-10-10/G05-batch1-license-evidence.md (declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "sceneId": "sect-town",
@@ -106,7 +196,25 @@
         1536,
         2730
       ],
-      "metadataValuesCopied": false
+      "metadataValuesCopied": false,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "fa26bb53e27316eb3faa2e71421b520024c517e4b873e16d4f6cdd0e13301ab3",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "bd49b32d2cb11363e00cf538d250443b377ca43b2010628e0cfc507c038bae30",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 1: see docs/acceptance/2026-10-10/G05-batch1-license-evidence.md (declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "bd49b32d2cb11363e00cf538d250443b377ca43b2010628e0cfc507c038bae30",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 1: see docs/acceptance/2026-10-10/G05-batch1-license-evidence.md (declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "sceneId": "battle-anomaly",
@@ -123,7 +231,25 @@
         2730,
         1536
       ],
-      "metadataValuesCopied": false
+      "metadataValuesCopied": false,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "fa26bb53e27316eb3faa2e71421b520024c517e4b873e16d4f6cdd0e13301ab3",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "e02598934b30a11f7446fd5d85469a3fd2c84eba282887ead43367a8ec05e078",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 1: see docs/acceptance/2026-10-10/G05-batch1-license-evidence.md (declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "e02598934b30a11f7446fd5d85469a3fd2c84eba282887ead43367a8ec05e078",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 1: see docs/acceptance/2026-10-10/G05-batch1-license-evidence.md (declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "sceneId": "battle-anomaly",
@@ -140,7 +266,25 @@
         1536,
         2730
       ],
-      "metadataValuesCopied": false
+      "metadataValuesCopied": false,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "fa26bb53e27316eb3faa2e71421b520024c517e4b873e16d4f6cdd0e13301ab3",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "40b087b58f667e9c066c728785dfe274d440430f2ae9a054266ee0e571a8a0d6",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 1: see docs/acceptance/2026-10-10/G05-batch1-license-evidence.md (declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "40b087b58f667e9c066c728785dfe274d440430f2ae9a054266ee0e571a8a0d6",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 1: see docs/acceptance/2026-10-10/G05-batch1-license-evidence.md (declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "sceneId": "mountain-gate",
@@ -155,7 +299,25 @@
       "sourceSha256": "94ae58a2f99d105bcd45d65ee00eed10b751255a734af89f4fd289f421384b29",
       "sha256": "d70c0124b69931ad12cbed47dfbbdc41faf7799dd833835453af3515ebea3951",
       "bytes": 766596,
-      "audioTrack": false
+      "audioTrack": false,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "fa26bb53e27316eb3faa2e71421b520024c517e4b873e16d4f6cdd0e13301ab3",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "d70c0124b69931ad12cbed47dfbbdc41faf7799dd833835453af3515ebea3951",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 1: see docs/acceptance/2026-10-10/G05-batch1-license-evidence.md (declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "d70c0124b69931ad12cbed47dfbbdc41faf7799dd833835453af3515ebea3951",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 1: see docs/acceptance/2026-10-10/G05-batch1-license-evidence.md (declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "sceneId": "wilderness",
@@ -170,7 +332,25 @@
       "sourceSha256": "0e963713d1e631bc2e082da6890484bfba3e7c43c801bac30803c1da3820454d",
       "sha256": "0e3fcb5b694c79606744df07aa1db836749f06f4b66fe3ae66ba8c041be50f8b",
       "bytes": 739617,
-      "audioTrack": false
+      "audioTrack": false,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "fa26bb53e27316eb3faa2e71421b520024c517e4b873e16d4f6cdd0e13301ab3",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "0e3fcb5b694c79606744df07aa1db836749f06f4b66fe3ae66ba8c041be50f8b",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 1: see docs/acceptance/2026-10-10/G05-batch1-license-evidence.md (declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "0e3fcb5b694c79606744df07aa1db836749f06f4b66fe3ae66ba8c041be50f8b",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 1: see docs/acceptance/2026-10-10/G05-batch1-license-evidence.md (declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "world_jiuxiao",
