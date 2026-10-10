@@ -793,8 +793,8 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 .atlas-card { display: grid; align-content: start; gap: var(--jx-space-2); min-width: 0; padding: var(--jx-space-3); overflow: hidden; color: #eee8df; text-align: left; background: linear-gradient(150deg, #122638df, #07131fe8); border: 1px solid #bdcad733; border-radius: var(--jx-radius-card); transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease; }
 .atlas-card:hover, .atlas-card:focus-visible { transform: translateY(-2px); border-color: #d6cba995; box-shadow: 0 12px 28px #0005; }
 .atlas-card img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--jx-radius-control); background: #07121c; }
-.atlas-card--artifact img { aspect-ratio: 1; object-fit: contain; padding: 5px; }
-.atlas-card--character img { aspect-ratio: 4 / 5; object-fit: contain; padding: 4px; }
+.atlas-card--artifact img { aspect-ratio: 1; object-fit: contain; padding: var(--jx-space-2); }
+.atlas-card--character img { aspect-ratio: 4 / 5; object-fit: contain; padding: var(--jx-space-1); }
 .atlas-card--atmosphere img, .atlas-card--battle img { aspect-ratio: 16 / 9; object-fit: cover; }
 .atlas-card span { padding: 2px var(--jx-space-1) 0; font: var(--jx-type-small) 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
 .atlas-card small { padding: 0 var(--jx-space-1) 2px; color: var(--muted); font: var(--jx-type-caption) ui-monospace, monospace; }
@@ -811,9 +811,9 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
   .atlas-intro > div { padding: var(--jx-space-3) var(--jx-space-4) var(--jx-space-4); }
   .atlas-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--jx-space-2); }
   .atlas-card { padding: var(--jx-space-1); }
-  .atlas-card span { font-size: .75rem; }
+  .atlas-card span { font-size: var(--jx-type-caption); }
   .atlas-collections { gap: var(--jx-space-1); }
-  .atlas-collections button { min-height: 38px; padding: var(--jx-space-2) var(--jx-space-3); font-size: .72rem; }
+  .atlas-collections button { min-height: 38px; padding: var(--jx-space-2) var(--jx-space-3); font-size: var(--jx-type-caption); }
   .atlas-dialog { width: calc(100vw - 20px); max-height: 92svh; padding: var(--jx-space-2); }
   .atlas-dialog > img { max-height: calc(92svh - 110px); }
 }
@@ -1206,11 +1206,27 @@ body:not(:has(.ai-page)) .menu, body:not(:has(.ai-page)) .ambient-toggle { borde
   border-color: #283c49;
 }
 .header-tools { display: flex; align-items: center; gap: var(--jx-space-2); }
+/* Player-only token convergence. Shared rules above also serve the frozen
+   professional editor; keep its inherited header and card styles unchanged. */
+body:not(:has(.ai-page)) .brand { font-size: var(--jx-type-lead); }
+body:not(:has(.ai-page)) .theme-toggle { padding: var(--jx-space-2) var(--jx-space-3); border-radius: var(--jx-radius-pill); font-size: var(--jx-type-small); }
+body:not(:has(.ai-page)) .ambient-toggle { padding: var(--jx-space-2) var(--jx-space-3); border-radius: var(--jx-radius-pill); font-size: var(--jx-type-caption); }
+body:not(:has(.ai-page)) .card { padding: var(--jx-space-5); border-radius: var(--jx-radius-panel); }
+body:not(:has(.ai-page)) .notice { margin-top: var(--jx-space-3); padding: var(--jx-space-3) var(--jx-space-4); border-radius: var(--jx-radius-card); font-size: var(--jx-type-small); }
+body:not(:has(.ai-page)) .notice-action { margin-left: var(--jx-space-2); padding: var(--jx-space-2) var(--jx-space-3); border-radius: var(--jx-radius-control); font-size: var(--jx-type-small); }
+body:not(:has(.ai-page)) .action-suggestions { gap: var(--jx-space-2); margin-block: var(--jx-space-3) var(--jx-space-4); }
+@media (max-width: 720px) {
+  body:not(:has(.ai-page)) .brand { font-size: var(--jx-type-small); }
+  body:not(:has(.ai-page)) .theme-toggle { padding: var(--jx-space-2) var(--jx-space-3); font-size: var(--jx-type-caption); }
+}
+@media (max-width: 650px) {
+  body:not(:has(.ai-page)) .ambient-toggle { padding: var(--jx-space-2); font-size: var(--jx-type-caption); }
+}
 .menu-overlay { position: fixed; z-index: 3; inset: 0; background: rgba(2, 8, 14, .28); }
 :root[data-theme='day'] .menu-overlay { background: rgba(56, 65, 72, .16); }
 input:not([type='range']):not([type='checkbox']):not([type='radio']), select, textarea { font-size: max(1em, 16px); }
 .worldbook-entry { content-visibility: auto; contain-intrinsic-size: auto 420px; }
-.intent-composer textarea { font-size: 1rem; }
+.intent-composer textarea { font-size: var(--jx-type-body); }
 .intent-composer .primary { white-space: nowrap; }
 .game-tools { flex-wrap: wrap; gap: var(--jx-space-2); margin-top: var(--jx-space-3); padding-top: var(--jx-space-3); border-top: 1px solid var(--line); }
 :root[data-theme='day'] .intent-composer { box-shadow: 0 16px 38px rgba(56, 65, 72, .12); }
