@@ -82,6 +82,12 @@ async function checkFrame(page) {
           await page.getByRole('button', { name: /^保存角色并进入/ }).click();
           await page.locator('.game-topline h1').waitFor();
           await checkFrame(page);
+          await page.evaluate(() => document.fonts.ready);
+          const emptyGeometry = await page.locator('.story-reading').evaluate(element => ({
+            chapterBottom: element.querySelector('.chapter-mark').getBoundingClientRect().bottom,
+            emptyLabelTop: element.querySelector('.story-opening > span').getBoundingClientRect().top,
+          }));
+          assert.ok(emptyGeometry.emptyLabelTop >= emptyGeometry.chapterBottom, `Empty-state text must not overlap the chapter label: ${JSON.stringify(emptyGeometry)}`);
 
           const fixture = { name: '长局 UI 回归', saveId: `ui-long-${prefix}`, messages: Array.from({ length: 90 }, (_, index) => ({ role: 'assistant', content: `第${index}段：` + '月色落在山路上，行者沿溪谷前行。'.repeat(12) })), player: { name: '长局 UI 回归' }, world: { location: '山门' }, intel: { note: '旧版情报必须保留' }, stm: ['旧版短期记忆'], ltm: ['旧版长期记忆'] };
           const bytes = Buffer.from(JSON.stringify(fixture));
