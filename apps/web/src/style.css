@@ -1084,13 +1084,13 @@ body:not(:has(.ai-page)) .card { padding: var(--jx-space-5); border-radius: var(
 body:not(:has(.ai-page)) .notice { margin-top: var(--jx-space-3); padding: var(--jx-space-3) var(--jx-space-4); border-radius: var(--jx-radius-card); font-size: var(--jx-type-small); }
 body:not(:has(.ai-page)) .notice-action { margin-left: var(--jx-space-2); padding: var(--jx-space-2) var(--jx-space-3); border-radius: var(--jx-radius-control); font-size: var(--jx-type-small); }
 body:not(:has(.ai-page)) .action-suggestions { gap: var(--jx-space-2); margin-block: var(--jx-space-3) var(--jx-space-4); }
-body:not(:has(.ai-page)) .quiet-action { gap: var(--jx-space-1); padding: var(--jx-space-3) var(--jx-space-4); border-radius: var(--jx-radius-card); font-size: var(--jx-type-small); }
-body:not(:has(.ai-page)) .quiet-action span { font-size: var(--jx-type-caption); }
+body:not(:has(.ai-page)):not(:has(.game-frame)) .quiet-action { gap: var(--jx-space-1); padding: var(--jx-space-3) var(--jx-space-4); border-radius: var(--jx-radius-card); font-size: var(--jx-type-small); }
+body:not(:has(.ai-page)):not(:has(.game-frame)) .quiet-action span { font-size: var(--jx-type-caption); }
 body:not(:has(.ai-page)) .links button { font-size: var(--jx-type-small); }
 body:not(:has(.ai-page)) .jx-shell > footer { padding-top: var(--jx-space-5); font-size: var(--jx-type-caption); }
 body:not(:has(.ai-page)) .jx-shell > footer .footer-legal { gap: var(--jx-space-1) var(--jx-space-4); }
 body:not(:has(.ai-page)) .status-message { padding: var(--jx-space-3) var(--jx-space-4); border-radius: var(--jx-radius-card); font-size: var(--jx-type-small); }
-body:not(:has(.ai-page)) :is(.primary, .secondary) { gap: var(--jx-space-1); padding: var(--jx-space-4) var(--jx-space-5); border-radius: var(--jx-radius-card); }
+body:not(:has(.ai-page)):not(:has(.game-frame)) :is(.primary, .secondary) { gap: var(--jx-space-1); padding: var(--jx-space-4) var(--jx-space-5); border-radius: var(--jx-radius-card); }
 body:not(:has(.ai-page)) :is(.legacy-groups pre, .card pre) { padding: var(--jx-space-4); font-size: var(--jx-type-caption); }
 @media (max-width: 820px) { .scene-choice-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } .graphics-toggle-grid { grid-template-columns: 1fr; } }
 @media (max-width: 650px) {
