@@ -149,3 +149,37 @@ jobs:
             test-results/review-bundle/
             test-results/cloud/
             test-results/turns/
+
+  badge:
+    # The repository is private, so the native Actions badge 404s for
+    # unauthenticated visitors. Publish the verify outcome to a public gist
+    # that the README badge (shields.io endpoint) reads anonymously instead.
+    needs: verify
+    if: always() && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Publish the CI status badge to the public status gist
+        env:
+          VERIFY_RESULT: ${{ needs.verify.result }}
+          GIST_ID: 473f5c2c4d11d64f2f3e043e20d27a75
+          BADGE_TOKEN: ${{ secrets.JIUXIAO_BADGE_TOKEN }}
+        run: |
+          case "$VERIFY_RESULT" in
+            success) color=brightgreen; message=passing ;;
+            *) color=critical; message=failing ;;
+          esac
+          content=$(jq -cn --arg m "$message" --arg c "$color" '{schemaVersion:1,label:"CI",message:$m,color:$c}')
+          body=$(jq -cn --argjson content "$content" '{files:{"ci.json":{content:$content}}}')
+          # Fail-open: the badge is presentation only; a publication failure
+          # must never turn a green pipeline red (or a red one green).
+          if curl -fsS -X PATCH \
+            -H "Authorization: token $BADGE_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/gists/$GIST_ID \
+            -d "$body" > /dev/null; then
+            echo "badge published: $message ($color)"
+          else
+            echo "::warning::badge publication failed (non-blocking)"
+          fi
