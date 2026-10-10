@@ -90,6 +90,7 @@ jobs:
         run: |
           pnpm --filter @jiuxiao/web build
           node scripts/audit/media-release-check.mjs | grep -q "Media release evidence structure"
+          node scripts/build/write-manifest.mjs --stage S6
         env:
           JIUXIAO_BUILD_TARGET: release
       - name: Scan web artifacts for scene packages
