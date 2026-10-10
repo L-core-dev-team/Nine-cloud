@@ -74,6 +74,13 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm build
+      - name: Scan web artifacts for scene packages
+        # Defense in depth: the workspace build excludes the unapproved scene
+        # experiment packages via pnpm negative filters alone. This post-build
+        # scan fails closed if scene-studio/scene-gate paths or three.js code
+        # ever reach apps/web/dist; mountain-gate candidate media is exempt at
+        # the filename level only.
+        run: pnpm scan:artifacts
       - name: Prove the release-target build stays fail-closed while media licenses are pending
         # SEC-05: this step proves the media gate is actually wired into release
         # builds. While sourceAndLicense is unverified the release build must fail
@@ -86,6 +93,12 @@ jobs:
           grep -q "LICENSE_PENDING" "$RUNNER_TEMP/media-gate.log"
         env:
           JIUXIAO_BUILD_TARGET: release
+      - name: Scan web artifacts for scene packages
+        # Rescans whatever the release-target build attempt left in
+        # apps/web/dist; once the media manifest is verified and the
+        # release-target build is flipped to require success, this scan
+        # guards the actual release build output.
+        run: pnpm scan:artifacts
       - name: Build and smoke the production API container
         run: |
           docker build --tag "jiuxiao-api-review:$REVIEW_SHA" --file apps/api/Dockerfile .

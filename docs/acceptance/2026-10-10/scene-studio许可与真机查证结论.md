@@ -2,7 +2,7 @@
 
 - 查证人：查证代理（AI，代替作者 LYL/Bird 完成全部可代办部分）
 - 分支：`codex/p4-recall-decay-gated`（= main 内容）；未切分支、未 commit、未改动既有文件
-- 新增文件：本报告、`evidence/` 两张生成原图留档、`apps/scene-studio/scripts/device-audit.mjs`
+- 新增文件：本报告、`evidence/` 三张生成原图留档、`apps/scene-studio/scripts/device-audit.mjs`
 - 结论约定：凡"AI 建议"字样表示阈值或判断由编制方代理定稿，作者可否决；凡许可结论均附条款原文与 URL
 
 ---
@@ -22,6 +22,7 @@
    - 签名证书链：签发方 `OpenAI OpCo, LLC`（`OpenAI Media Service` / `OpenAI TSA Issuing CA`），CA 为 `Trufo C2PA Claim Signing CA (2025)`
    - manifest URN：横版 `urn:c2pa:dd3aab6a-d69c-4eee-bb34-c2b1d4abd499`（created 2026-10-03T16:35:39Z）；竖版 `urn:c2pa:0b457023-62d7-4579-a8c8-3d41732a07f8`（created 2026-10-03T16:34:22Z）——UTC 时间对应北京时间 10-04 00:34/00:35，与 ASSETS.md 记载吻合
    - 附带发现：同目录另有第三张 `exec-655feaac-85d1-4a51-97ab-397322287035.png`（2026-10-04 00:33:36，2,862,865 字节），属同会话同轮生成的第三张候选，不在本查证范围，仅记录存在
+   - 第三张状态更新（2026-10-10）：已于 2026-10-10 裁定补录留档（LYL 授权 AI 代办），复制至 `evidence/exec-655feaac-85d1-4a51-97ab-397322287035.png`，复制前后 SHA-256 一致：`262a794e637332a29d05b91adbe8cb7fa4b163f28e6f63eae43badb4f79ac288`（2,862,865 字节，与上行原记录吻合）
 4. 会话文本中出现的 `gpt-image-2.5` 字样（第 38 行）经上下文核实是引用第三方社交帖子的转述，与本生成无关；其余 `flux`/`dall` 命中均为 base64 噪声。
 5. 联网查证 OpenAI 条款（见下）。
 
@@ -205,8 +206,16 @@ release 门禁（`scripts/audit/media-release-check.mjs`）要求：顶层 `sour
 
 ## 附：本报告证据文件索引
 
-- 生成原图留档：`docs/acceptance/2026-10-10/evidence/exec-7502f1c6-ec02-4054-be6f-9796ae68de9f.png`、`evidence/exec-8a01f61c-4179-454f-b2d5-dae28478a33c.png`
+- 生成原图留档：`docs/acceptance/2026-10-10/evidence/exec-7502f1c6-ec02-4054-be6f-9796ae68de9f.png`、`evidence/exec-8a01f61c-4179-454f-b2d5-dae28478a33c.png`、`evidence/exec-655feaac-85d1-4a51-97ab-397322287035.png`（2026-10-10 补录，SHA-256 `262a794e637332a29d05b91adbe8cb7fa4b163f28e6f63eae43badb4f79ac288`）
 - 生成会话原始记录：`C:\Users\Lenovo\.codex\sessions\2026\10\03\rollout-2026-10-03T23-41-23-01a1026d-4718-7270-82ef-dcfa5852a1fc.jsonl`（第 1033/1035/1040/1094 行）
 - C2PA 凭证：两张 PNG 的 `caBX` chunk（本报告任务①节为直读摘录）
 - 媒体清单：`apps/web/public/scenes/candidate/asset-manifest.json`；门禁逻辑：`scripts/audit/media-release-check.mjs`
 - 真机脚本：`apps/scene-studio/scripts/device-audit.mjs`
+
+---
+
+## 真机执行状态（2026-10-10）
+
+- 探测方式：在主机 PowerShell 执行 `adb devices`，并核查常见 Android SDK 安装路径（`%LOCALAPPDATA%\Android\Sdk\platform-tools\adb.exe` 等）。
+- 探测结果：本机未安装 adb（PATH 与常见 SDK 路径均无可执行文件），当前无连接设备，无型号可列。
+- 编制方裁定（正式记录）：**当前无连接设备，真机测试推迟至 scene 晋升决策时执行（协议与脚本已就绪）**。设备就绪后按任务③④的 5 分钟流程执行 `apps/scene-studio/scripts/device-audit.mjs`；执行前置条件为安装 Android platform-tools（提供 adb）并对测试机完成一次开发者选项/USB 调试授权。
