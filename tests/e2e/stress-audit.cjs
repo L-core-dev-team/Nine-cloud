@@ -21,6 +21,7 @@ async function test(name, fn, page) {
 }
 async function context(viewport={width:1366,height:900},reducedMotion='no-preference') {
   const ctx=await browser.newContext({viewport,reducedMotion,acceptDownloads:true});
+  await ctx.addInitScript(()=>window.addEventListener('jx:scene-render-status',event=>{window.__stressRenderer=event.detail;}));
   await ctx.route('**/*',route=>{
     const u=new URL(route.request().url());
     if(u.hostname==='127.0.0.1' && !u.pathname.startsWith('/api/'))return route.continue();
@@ -173,11 +174,22 @@ async function recovery(base){
   report.blocked.push({name:'P3-authoritative-recovery',status:'BLOCKED',reason:'Mock UI observations do not verify server idempotency, authoritative history, cloud draft durability, memory permissions or retry contracts. Await P3 contracts.'});
   await cloud.ctx.close();
 }
+async function renderer(base){
+  const {ctx,page}=await context();await page.goto(base+'/world');await page.locator('.worldbook-entry').first().waitFor();
+  const cdp=await ctx.newCDPSession(page);await cdp.send('Performance.enable');
+  for(let n=0;n<3;n++)await test(`actual-world-renderer-${n}`,async()=>{
+    await page.waitForTimeout(10000);
+    const value=await page.evaluate(()=>({renderer:window.__stressRenderer,motion:matchMedia('(prefers-reduced-motion: reduce)').matches,graphics:localStorage.getItem('jx10_graphics_v1'),visibility:document.visibilityState}));
+    assert.ok(value.renderer && value.renderer.fps>0,JSON.stringify(value));assert.notEqual(value.renderer.backend,'静态回退');assert.equal(value.motion,false);
+    await sample(cdp,page,`renderer-${n}`);return value;
+  },page);
+  await ctx.close();
+}
 (async()=>{
   const port=await new Promise(resolve=>{const s=net.createServer().listen(0,'127.0.0.1',()=>{const p=s.address().port;s.close(()=>resolve(p));});});
   server=spawn(process.execPath,[path.join(root,'apps/web/node_modules/vite/bin/vite.js'),'preview','--host','127.0.0.1','--port',String(port),'--strictPort'],{cwd:path.join(root,'apps/web'),windowsHide:true,stdio:'ignore'});
   const base=`http://127.0.0.1:${port}`;let ready=false;for(let n=0;n<100;n++){try{if((await fetch(base)).ok){ready=true;break;}}catch{}await new Promise(r=>setTimeout(r,100));}assert.ok(ready);
   browser=await chromium.launch({executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'});report.browser=browser.version();
-  if(mode==='navigation'||mode==='smoke')await navigation(base,mode==='smoke');else if(mode==='mobile')await mobile(base);else if(mode==='recovery')await recovery(base);else throw Error('Unknown mode');
+  if(mode==='navigation'||mode==='smoke')await navigation(base,mode==='smoke');else if(mode==='mobile')await mobile(base);else if(mode==='recovery')await recovery(base);else if(mode==='renderer')await renderer(base);else throw Error('Unknown mode');
   await test('no-runtime-crash-or-pageerror',()=>{assert.deepEqual(report.errors,[]);assert.deepEqual(report.crashes,[]);});
 })().catch(e=>{report.results.push({name:'harness-or-setup',status:'FAIL',error:String(e.stack)});}).finally(async()=>{report.seconds=(Date.now()-started)/1000;persist();await browser?.close();server?.kill();process.exitCode=report.results.some(x=>x.status==='FAIL')?1:0;process.stdout.write(JSON.stringify({mode,seconds:report.seconds,pass:report.results.filter(x=>x.status==='PASS').length,fail:report.results.filter(x=>x.status==='FAIL').length,blocked:report.blocked.length})+'\n');});
