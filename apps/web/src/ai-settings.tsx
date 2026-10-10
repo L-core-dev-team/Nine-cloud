@@ -1,5 +1,5 @@
 import { armPageNarrative } from './page-narrative';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ModelPicker } from './components/ModelPicker';
 import { fetchAvailableModels, type AvailableModel } from './ai-model-list';
@@ -268,12 +268,29 @@ function ProfessionalAiSettings({ onClose }: { onClose: () => void }) {
     premiumDirector: { callsPer100: 0, inputTokens: 18000, outputTokens: 2600 },
   });
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const catalogReturnProviderRef = useRef<string | null>(null);
   const probeRef = useRef<AbortController | null>(null);
   useEffect(() => () => { probeRef.current?.abort(); probeRef.current = null; }, []);
-  useEffect(() => {
+  useLayoutEffect(() => {
     const dialog = dialogRef.current;
     if (modal && dialog && !dialog.open) dialog.showModal();
-    if (!modal && dialog?.open) dialog.close();
+    if (!modal) {
+      if (dialog?.open) dialog.close();
+      catalogReturnProviderRef.current = null;
+      return;
+    }
+    if (!dialog?.open || modal.kind !== 'catalog') return;
+    if (modal.view === 'provider') {
+      dialog.querySelector<HTMLElement>('#ai-modal-title')?.focus();
+    } else if (modal.view === 'providers' && catalogReturnProviderRef.current) {
+      // The keyed view remounts its buttons: restore by provider ID, not a stale node.
+      const providerId = catalogReturnProviderRef.current;
+      catalogReturnProviderRef.current = null;
+      const trigger = Array.from(dialog.querySelectorAll<HTMLButtonElement>('[data-provider-id]'))
+        .find(button => button.dataset.providerId === providerId && !button.disabled
+          && button.getClientRects().length && getComputedStyle(button).visibility !== 'hidden');
+      (trigger || dialog.querySelector<HTMLInputElement>('.catalog-search input'))?.focus();
+    }
   }, [modal]);
 
   useEffect(() => {
@@ -519,12 +536,12 @@ function ProfessionalAiSettings({ onClose }: { onClose: () => void }) {
           <label className="catalog-search">查找厂商<input value={catalogSearch} onChange={event => setCatalogSearch(event.target.value)} placeholder="输入厂商名称" autoFocus /></label>
           <div className="directory-toolbar"><button className="comparison-link" onClick={() => setModal({ kind: 'catalog', view: 'comparison' })}><span>价格与能力总览比较</span><span>模型表与参考指标　›</span></button></div>
           <nav className="provider-name-list" aria-label="服务商列表，可滚动浏览">
-            {visibleProviders.map(provider => <button key={provider.id} onClick={() => setModal({ kind: 'catalog', view: 'provider', providerId: provider.id })}><span>{provider.name}</span><span aria-hidden="true">›</span></button>)}
+            {visibleProviders.map(provider => <button key={provider.id} data-provider-id={provider.id} onClick={() => { catalogReturnProviderRef.current = provider.id; setModal({ kind: 'catalog', view: 'provider', providerId: provider.id }); }}><span>{provider.name}</span><span aria-hidden="true">›</span></button>)}
             {!visibleProviders.length && <p className="quiet-note">没有找到这个名称。</p>}
           </nav>
         </>}
         {modal?.kind === 'catalog' && modal.view === 'provider' && providerDetail && <>
-          <div className="dialog-heading detail-heading"><button className="back-link" onClick={() => setModal({ kind: 'catalog', view: 'providers' })}>‹　服务商</button><span className="eyebrow">{providerDetail.region} · {providerDetail.compatibility}</span><h2 id="ai-modal-title">{providerDetail.name}</h2><p>{providerDetail.summary}</p></div>
+          <div className="dialog-heading detail-heading"><button className="back-link" onClick={() => setModal({ kind: 'catalog', view: 'providers' })}>‹　服务商</button><span className="eyebrow">{providerDetail.region} · {providerDetail.compatibility}</span><h2 id="ai-modal-title" tabIndex={-1}>{providerDetail.name}</h2><p>{providerDetail.summary}</p></div>
           <div className="provider-detail-body">
             <div className="provider-tags">{providerDetail.capabilities.map(tag => <span key={tag}>{tag}</span>)}</div>
             <div className="provider-links detail-links">{providerDetail.keyUrl && <a href={providerDetail.keyUrl} target="_blank" rel="noreferrer">申请 API Key ↗</a>}{providerDetail.docsUrl && <a href={providerDetail.docsUrl} target="_blank" rel="noreferrer">API 文档 ↗</a>}{providerDetail.pricingUrl && <a href={providerDetail.pricingUrl} target="_blank" rel="noreferrer">官方型号与价格 ↗</a>}</div>
