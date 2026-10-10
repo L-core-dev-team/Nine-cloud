@@ -58,8 +58,26 @@ it('rejects cross-account recall requests before touching storage', async () => 
   expect(reader).not.toHaveBeenCalled();
 });
 
-it('refuses forgetting saves honestly instead of silently degrading to continue logic', async () => {
+it('answers v2 forgetting saves through the decay gate at the route boundary', async () => {
   const { app, reader } = appFor(saveEnvelope('forgetting'));
+  const response = await get(app);
+  expect(response.status).toBe(200);
+  const body = await response.json();
+  expect(body.recall).toMatchObject({
+    kind: 'evidence',
+    recall: { status: 'complete', slot: 'historical-event', authorizedFacts: { summary: '林月曾在中州渡口救下旅人。' } },
+  });
+  expect(reader).toHaveBeenCalledWith('owner', saveId, npcId, undefined, 100, 1);
+});
+
+it('keeps refusing v1-artifact forgetting saves with the migration 503', async () => {
+  const v1Policy = {
+    ...memoryPolicy,
+    retrievalVersion: 'authorized-cue-recall-v1',
+    policyArtifactHash: 'sha256:a7e096c182da6e5e77f2f5d8ae6fafe84786e8c481ea2b033125aecb8529a70c',
+  };
+  const v1Save = { ...saveEnvelope('forgetting'), memoryPolicy: v1Policy, memoryPolicyVersion: v1Policy.policyVersion };
+  const { app, reader } = appFor(v1Save);
   const response = await get(app);
   expect(response.status).toBe(503);
   expect(await response.json()).toEqual({ code: 'RECALL_MODE_UNAVAILABLE' });

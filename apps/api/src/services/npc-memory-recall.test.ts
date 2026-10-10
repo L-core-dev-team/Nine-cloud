@@ -64,11 +64,32 @@ describe('P4 authorized memory retrieval consumer', () => {
     const result = await resolveNpcMemoryRecall({ reader, ownerId: 'owner', save: saveV3, receipt, npcId, utterance: '你还记得中州渡口吗？' });
     expect(result?.kind).toBe('evidence');
     expect(reader).toHaveBeenCalledWith('owner', saveId, npcId, undefined, 100, 1);
-    const forgettingV3 = await resolveNpcMemoryRecall({ reader, ownerId: 'owner',
-      save: { ...saveV3, memoryMode: 'forgetting', memoryPolicy: { ...saveV3.memoryPolicy, mode: 'forgetting' } },
+  });
+
+  it('answers v2 forgetting saves through the decay gate and keeps v1 forgetting fail-closed', async () => {
+    // The observation sits at minute 18 with the clock at 30: still accessible (2^-12/10080).
+    const v2Reader = vi.fn(async () => ({ items: [observation()], nextCursor: null }));
+    const v2Forgetting = await resolveNpcMemoryRecall({ reader: v2Reader, ownerId: 'owner',
+      save: { ...save, memoryMode: 'forgetting', memoryPolicy: { ...save.memoryPolicy, mode: 'forgetting' } },
       receipt, npcId, utterance: '你还记得中州渡口吗？' });
-    expect(forgettingV3).toMatchObject({ kind: 'deterministic', reason: 'policy-unavailable' });
-    expect(reader).toHaveBeenCalledTimes(1);
+    expect(v2Forgetting).toMatchObject({ kind: 'evidence', recall: { status: 'complete', slot: 'historical-event' } });
+    expect(v2Reader).toHaveBeenCalledTimes(1);
+
+    // A decayed observation (clock far ahead) answers with the deterministic template, never evidence.
+    const decayed = await resolveNpcMemoryRecall({ reader: v2Reader, ownerId: 'owner',
+      save: { ...save, memoryMode: 'forgetting', memoryPolicy: { ...save.memoryPolicy, mode: 'forgetting' } },
+      receipt: { ...receipt, clockMinute: 20_000 }, npcId, utterance: '你还记得中州渡口吗？' });
+    expect(decayed).toMatchObject({ kind: 'deterministic', reason: 'forgotten', text: '我不太记得了。' });
+
+    // The v1 identity (option a, 2026-10-09) can never pass the v2 pin: fail-closed.
+    const v1Reader = vi.fn(async () => ({ items: [observation()], nextCursor: null }));
+    const v1Forgetting = await resolveNpcMemoryRecall({ reader: v1Reader, ownerId: 'owner',
+      save: { ...saveV3, memoryMode: 'forgetting',
+        memoryPolicy: { ...saveV3.memoryPolicy, mode: 'forgetting',
+          retrievalVersion: 'authorized-cue-recall-v1', policyArtifactHash: 'sha256:a7e096c182da6e5e77f2f5d8ae6fafe84786e8c481ea2b033125aecb8529a70c' } },
+      receipt, npcId, utterance: '你还记得中州渡口吗？' });
+    expect(v1Forgetting).toMatchObject({ kind: 'deterministic', reason: 'policy-unavailable' });
+    expect(v1Reader).not.toHaveBeenCalled();
   });
 
   it('does not report a historical current-state observation as a fact about now', async () => {

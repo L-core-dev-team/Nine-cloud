@@ -7,9 +7,9 @@ import {
 } from '@jiuxiao/domain';
 
 export const NPC_MEMORY_RECALL_POLICY = {
-  retrievalVersion: 'authorized-cue-recall-v1',
+  retrievalVersion: 'authorized-cue-recall-v2',
   normalizerVersion: 'NFKC-lowercase-space-v1',
-  policyArtifactHash: 'sha256:a7e096c182da6e5e77f2f5d8ae6fafe84786e8c481ea2b033125aecb8529a70c',
+  policyArtifactHash: 'sha256:5da8bd8e61e4859e5492b5393e3f458b12ded9cc36025858415fbe51c27261de',
   cueDictionaryHash: 'sha256:d3dcd20c850741d5095b960488310007a163b03b53cb40aaa60b57dae9031e31',
 } as const;
 
@@ -26,7 +26,7 @@ export type AuthorizedRecallPageReader = (ownerId: string, saveId: string, npcId
 
 export type NpcMemoryRecallResolution =
   | { kind: 'evidence'; recall: Extract<AuthorizedRecallResult, { status: 'complete' | 'partial' }> }
-  | { kind: 'deterministic'; text: string; reason: 'no-evidence' | 'time-qualified-state' | 'unclassified' | 'incomplete' | 'policy-unavailable' };
+  | { kind: 'deterministic'; text: string; reason: 'no-evidence' | 'time-qualified-state' | 'unclassified' | 'incomplete' | 'policy-unavailable' | 'forgotten' };
 
 /**
  * Read only the NPC's frozen, authorized facts up to the turn before the
@@ -44,7 +44,11 @@ export async function resolveNpcMemoryRecall(input: {
   if (!cue) return null;
   const { save, receipt } = input;
   // V3 adds explicit branch lineage only; the pinned memory policy identity is unchanged.
-  if ((save.schemaVersion !== 2 && save.schemaVersion !== 3) || save.memoryMode !== 'continue'
+  // P4 v2 (2026-10-10 plan B): forgetting saves with the pinned v2 artifacts answer
+  // through the same decay gate as the narrative layer; v1 forgetting saves stay
+  // fail-closed (the route layer refuses them with 503 before this point).
+  if ((save.schemaVersion !== 2 && save.schemaVersion !== 3)
+    || (save.memoryMode !== 'continue' && save.memoryMode !== 'forgetting')
     || save.memoryPolicy.retrievalVersion !== NPC_MEMORY_RECALL_POLICY.retrievalVersion
     || save.memoryPolicy.normalizerVersion !== NPC_MEMORY_RECALL_POLICY.normalizerVersion
     || save.memoryPolicy.policyArtifactHash !== NPC_MEMORY_RECALL_POLICY.policyArtifactHash
@@ -81,7 +85,8 @@ export async function resolveNpcMemoryRecall(input: {
   }
 
   const recalled = recallAuthorizedObservations(rows, { query: cue.query, slot: cue.slot,
-    gameMinute: receipt.clockMinute, throughRevision });
+    gameMinute: receipt.clockMinute, throughRevision,
+    ...(save.memoryMode === 'forgetting' ? { forgetting: true } : {}) });
   if (recalled.status === 'complete' || recalled.status === 'partial') {
     if (recalled.slot === 'current-state') {
       return { kind: 'deterministic',
@@ -91,6 +96,10 @@ export async function resolveNpcMemoryRecall(input: {
         reason: 'time-qualified-state' };
     }
     return { kind: 'evidence', recall: recalled };
+  }
+  if (recalled.status === 'forgotten') {
+    // Deterministic template produced by the API, never by a model (adjudication problem 5).
+    return { kind: 'deterministic', text: recalled.message, reason: 'forgotten' };
   }
   return { kind: 'deterministic', text: recalled.message,
     reason: recalled.reason === 'stale-only' ? 'time-qualified-state' : recalled.reason === 'unclassified-only' ? 'unclassified' : 'no-evidence' };
