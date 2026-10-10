@@ -181,6 +181,25 @@ README.md:52：桌面生产构建入口约 225 KB（71 KB gzip）、按需 3D ch
 
 ---
 
+## 7. 查证结果交付（2026-10-10，LYL 指令：六项缺口由 AI 代办完成）
+
+本文档 §2/§3/§5/§6 所列事实缺口已由 AI 查证补全，结论与证据落在两份配套文档：
+
+1. **[构建隔离验证报告](./P66-scene-studio构建隔离验证报告.md)**——对应用户红线"试验版本绝不构建进网站"：
+   - 实际执行 `pnpm build`：Scope 6 of 9，scene 两包不在构建图；453 个产物文件扫描 `scene-studio|scene-gate|gate-environment|three` 全部 **0 命中**
+   - 静态链 0 引用、CI 同款 filter 实证、逃逸路径（alias/optimizeDeps/outDir）逐一排除
+   - 文件名含 `mountain-gate` 的 3 个产物文件为 PR #66 之前入库的 web 自有候选媒体（`503edfd`），仅命名同词、非泄漏（git 已证）
+   - **残余风险**：隔离是逐命令负向 filter，未来显式 import 可穿透——报告建议 CI 增加构建后 fail-closed 产物扫描守卫（待作者批准后实施）
+2. **[许可与真机查证结论](./scene-studio许可与真机查证结论.md)**——六项缺口的结论：
+   - **模型已锁定（C2PA 内容凭证直读，非推测）**：两张原图内嵌 OpenAI 数字签名的内容凭证，`softwareAgent="ChatGPT" version="gpt-image"`；条款结论=输出所有权归用户，内部/公开/商用均允许，附条件（不得冒称人工生成、不得训练竞争模型、公开发布需按中国《AI 生成合成内容标识办法》加显式+隐式标识）
+   - **两张原图已取回留档**：`docs/acceptance/2026-10-10/evidence/`（SHA-256 复核一致，与 artifacts/manifest 闭环比对吻合）；**意外发现第三张生成图 `exec-655feaac-…`（ASSETS.md 未记载）**——是否补录由作者裁定
+   - **真机协议已脚本化**：`apps/scene-studio/scripts/device-audit.mjs`（adb+CDP 自动采集 FPS/JS 堆，PASS/FAIL JSON）；最低档建议骁龙 7s Gen3/天玑 7300+6GB、iPhone 12；阈值已定稿（均值与 P95 ≥30FPS、低帧 ≤5%、最差 60s 滑窗 ≥24、堆斜率 ≤0.5MB/min、首尾增长 ≤10MB）——AI 定稿，作者可否决
+   - **84 条媒体候选凭证盘点**：licenseStatus/licenseEvidenceSha256/双收据全部 **0/84**；74 条图鉴类缺许可+双收据，10 条场景海报/视频连来源核验都未标；来源均指向作者编号素材树（无第三方字段），权利属性待作者书面确认
+   - DESIGN.md 无图像资产（低风险）；山门候选海报（2 图 1 视频）内部参照低风险、公开/商用高风险
+3. **剩余必须人工的最小清单**：①作者书面确认素材树权利属性 ②两台真机各跑 5 分钟（脚本已就绪） ③Bird+LYL 双批准收据（机制强制，AI 不可代签） ④公开发布时加 AI 标识 ⑤第三张生成图是否补录的裁定 ⑥CI 产物扫描守卫是否采纳
+
+---
+
 *本材料仅陈述事实与方案，不代表已裁决。裁决以 LYL+Bird 签署为准。*
 
 签名：AI 代理执行（LYL 授权）+ Bird 复核代理
