@@ -28,7 +28,7 @@
     "worldbook:runtime:check": "node scripts/build-canon-runtime.mjs --check --allow-pending-receipts"
   },
   "devDependencies": {
-    "@types/node": "26.6.3",
+    "@types/node": "26.6.4",
     "playwright": "1.63.0",
     "typescript": "7.0.2",
     "typescript-compiler-api": "npm:typescript@6.0.2",
