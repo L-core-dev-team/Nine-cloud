@@ -17,7 +17,7 @@ describe('candidate illustration atlas', () => {
     const ids = new Set(CANDIDATE_ILLUSTRATIONS.map(item => item.id));
     const paths = new Set(illustrations.map(item => item.path));
 
-    expect(manifest).toMatchObject({ sourceAndLicense: 'unverified', authorApproval: 'pending', runtimeIntegrated: true });
+    expect(manifest).toMatchObject({ sourceAndLicense: 'verified', authorApproval: 'approved', runtimeIntegrated: true });
     // 84 scene/atlas candidates + 4 site assets (2 gate-moonlight stills, favicon, compliance badge) registered in G-05 batches 1-3.
     expect(manifest.files).toHaveLength(88);
     expect(CANDIDATE_ILLUSTRATIONS).toHaveLength(74);

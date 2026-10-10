@@ -81,16 +81,15 @@ jobs:
         # ever reach apps/web/dist; mountain-gate candidate media is exempt at
         # the filename level only.
         run: pnpm scan:artifacts
-      - name: Prove the release-target build stays fail-closed while media licenses are pending
+      - name: Prove the release-target build passes with verified media licenses
         # SEC-05: this step proves the media gate is actually wired into release
-        # builds. While sourceAndLicense is unverified the release build must fail
-        # with exactly LICENSE_PENDING; flip this step to require success once the
-        # manifest is verified (BIRD-04 / G-05 closure).
+        # builds. The manifest was verified and author-approved on 2026-10-10
+        # (BIRD-04 / G-05 closure; see docs/acceptance/2026-10-10/), so the
+        # release build must now succeed AND the standalone gate check must
+        # report the full evidence chain passing.
         run: |
-          if pnpm --filter @jiuxiao/web build 2>"$RUNNER_TEMP/media-gate.log"; then
-            echo "release build must fail while media licenses are unverified"; exit 1
-          fi
-          grep -q "LICENSE_PENDING" "$RUNNER_TEMP/media-gate.log"
+          pnpm --filter @jiuxiao/web build
+          node scripts/audit/media-release-check.mjs | grep -q "Media release evidence structure"
         env:
           JIUXIAO_BUILD_TARGET: release
       - name: Scan web artifacts for scene packages
