@@ -371,7 +371,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "7cf40335d072e9fd0b9c1cdb378a89c8a891500dbede5dd5f365388f1087cdec",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "7cf40335d072e9fd0b9c1cdb378a89c8a891500dbede5dd5f365388f1087cdec",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "region_zhongzhou_tianshu",
@@ -392,7 +410,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "a2bc6a40339d206824f519a0c9b2a9e926897320e2e029a22941c7308035c5ff",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "a2bc6a40339d206824f519a0c9b2a9e926897320e2e029a22941c7308035c5ff",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "region_donghan_longyin",
@@ -413,7 +449,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "d3e7df2f4ffa95c5f01733fcc513629b4d6f41fb370dd5216e73e5c8466713e1",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "d3e7df2f4ffa95c5f01733fcc513629b4d6f41fb370dd5216e73e5c8466713e1",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "region_xihuang_fentian",
@@ -434,7 +488,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "58efff005b9654df3265528203478ee31ec3b0427525c689e7881c64a3097c8e",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "58efff005b9654df3265528203478ee31ec3b0427525c689e7881c64a3097c8e",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "region_beijing_shuanghan",
@@ -455,7 +527,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "75f594af202b266fd62f525d206444ce33b22cb67ad2e9093710d9a5f6f978b8",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "75f594af202b266fd62f525d206444ce33b22cb67ad2e9093710d9a5f6f978b8",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "region_nanjiang_wangu",
@@ -476,7 +566,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "b09ff3267d2b9c3e9ccc34b235130893e882f0c8ed1bebf7a4aaaff2ba6ff798",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "b09ff3267d2b9c3e9ccc34b235130893e882f0c8ed1bebf7a4aaaff2ba6ff798",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "region_honghuang_yaolin",
@@ -497,7 +605,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "d5b40a8f30415d288186314777bf61e3ddcd45888dee5593d287606cf06e6d1c",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "d5b40a8f30415d288186314777bf61e3ddcd45888dee5593d287606cf06e6d1c",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "faction_haotian_jianzong",
@@ -518,7 +644,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "6054813b48b5fbbdbbdd4c8503d689f043f0cf1a8ea01bae19998ba6c08c4ae3",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "6054813b48b5fbbdbbdd4c8503d689f043f0cf1a8ea01bae19998ba6c08c4ae3",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "faction_yuqing_ge",
@@ -539,7 +683,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "6fc16a38ebdee06f7eef09c98a887a8a062540874e34c5f241409a4d90a4ffb3",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "6fc16a38ebdee06f7eef09c98a887a8a062540874e34c5f241409a4d90a4ffb3",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "faction_yantian_zong",
@@ -560,7 +722,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "fbe06a62df39ba6c8e543c7c5548d2e366da01ec82a236d664210b02fba0472f",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "fbe06a62df39ba6c8e543c7c5548d2e366da01ec82a236d664210b02fba0472f",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "faction_sihai_shanghui",
@@ -581,7 +761,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "d60ace6ad242242032f59cfca2e2d5c89f3dd4e776b0b855d180ed238b88e9ef",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "d60ace6ad242242032f59cfca2e2d5c89f3dd4e776b0b855d180ed238b88e9ef",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "faction_tiangong_ge",
@@ -602,7 +800,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "6541a859798af70eec6120b1085223c19529b7212dc2f797679bfa4567ea2698",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "6541a859798af70eec6120b1085223c19529b7212dc2f797679bfa4567ea2698",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "faction_daguangming_si",
@@ -623,7 +839,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "f7404dd41a60d465321bb80d4cc112c280cd46e1d7ffc0cdc5650d3b87c06cec",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "f7404dd41a60d465321bb80d4cc112c280cd46e1d7ffc0cdc5650d3b87c06cec",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "faction_jixia_xuegong",
@@ -644,7 +878,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "87470619036f7a41d956cc5ef4a6ed74aee5f99c11f507584cb16e594e11a5f2",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "87470619036f7a41d956cc5ef4a6ed74aee5f99c11f507584cb16e594e11a5f2",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "faction_tingchao_ge",
@@ -665,7 +917,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "60ee246d94a8e92de7c3275a92773069a5785c8254f781312fff146cdaa80372",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "60ee246d94a8e92de7c3275a92773069a5785c8254f781312fff146cdaa80372",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "faction_fuhai_zong",
@@ -686,7 +956,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "516459a5cce746e950654952c26bb4a616ce70c32aa82143ced22b7f3803b08f",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "516459a5cce746e950654952c26bb4a616ce70c32aa82143ced22b7f3803b08f",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "faction_shenghuo_jiao",
@@ -707,7 +995,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "fba7702da871c4ccb384afa4c62d54fcf347aebd3e5a800dd0ecbf95336205d8",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "fba7702da871c4ccb384afa4c62d54fcf347aebd3e5a800dd0ecbf95336205d8",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "faction_jingang_buhai_gu",
@@ -728,7 +1034,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "af3140898605a7ee85fce54d02c0dbf6db4f3d1e4c7ac0f8baa74a33405b702b",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "af3140898605a7ee85fce54d02c0dbf6db4f3d1e4c7ac0f8baa74a33405b702b",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "faction_bingshen_gong",
@@ -749,7 +1073,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "fa2ec6953e8e5a3cfc3af5c3b9ceee9b5702336a41d6f94f886e113d309893ae",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "fa2ec6953e8e5a3cfc3af5c3b9ceee9b5702336a41d6f94f886e113d309893ae",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "faction_beijing_lianmeng",
@@ -770,7 +1112,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "ea82b1ada17f99810d3f32d22dc8ee327f9be217f58f17630649281d1eaf1240",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "ea82b1ada17f99810d3f32d22dc8ee327f9be217f58f17630649281d1eaf1240",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "faction_wudu_shenjiao",
@@ -791,7 +1151,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "096bd16cb272254e7b1e9cd753e0c5b6dae9cbf6d5abf9a513f4232ccd267211",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "096bd16cb272254e7b1e9cd753e0c5b6dae9cbf6d5abf9a513f4232ccd267211",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "faction_wanshou_shanzhuang",
@@ -812,7 +1190,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "8228130bc9b4acb59b6079f1b527843fc1b5a24bb65bfbd1b4d9c24bfb35310f",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "8228130bc9b4acb59b6079f1b527843fc1b5a24bb65bfbd1b4d9c24bfb35310f",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "faction_yanshi_fu",
@@ -833,7 +1229,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "20528e90f7ec022ceb341c125880acfaf9fc10937e9548785adf3ccdcdfcc8b9",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "20528e90f7ec022ceb341c125880acfaf9fc10937e9548785adf3ccdcdfcc8b9",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "system_foundations",
@@ -854,7 +1268,25 @@
         2364
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "86bdcfcb31c6ae70a07ea3cdf0be6f0f56e1b55b54e5d5513848b4faf9c8b7fb",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "86bdcfcb31c6ae70a07ea3cdf0be6f0f56e1b55b54e5d5513848b4faf9c8b7fb",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "system_cultivation_schools",
@@ -875,7 +1307,25 @@
         2048
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "4f4e0573892223baab3050e73bdfe562b9705fee15aca1fc0c1112293f68c3e3",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "4f4e0573892223baab3050e73bdfe562b9705fee15aca1fc0c1112293f68c3e3",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "system_heterodox_cultivation",
@@ -896,7 +1346,25 @@
         2048
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "e0c5692153e1f36bdccef336d0160ba3bc3ef92ca7d1d2c433517fd5cdb6afe0",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "e0c5692153e1f36bdccef336d0160ba3bc3ef92ca7d1d2c433517fd5cdb6afe0",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "system_resource_grade",
@@ -917,7 +1385,25 @@
         2048
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "62b282b7fd7bd40e7103a7afdd017310aae2af7a53e819a243ee4c2bad4af690",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "62b282b7fd7bd40e7103a7afdd017310aae2af7a53e819a243ee4c2bad4af690",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "system_cultivation_realm_core",
@@ -938,7 +1424,25 @@
         2048
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "d104c0e0d76741e5d9c80b613a79ef165f75dd00298d69ae3d2c783b2c084c2c",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "d104c0e0d76741e5d9c80b613a79ef165f75dd00298d69ae3d2c783b2c084c2c",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "system_cultivation_realm_nascent",
@@ -959,7 +1463,25 @@
         2048
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "3d6072e58ae2626b98242675dbf760916d0be40e8fc9b508628f964e6ccd647b",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "3d6072e58ae2626b98242675dbf760916d0be40e8fc9b508628f964e6ccd647b",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "system_cultivation_realm_tribulation",
@@ -980,7 +1502,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "cf466bd2fbdaf1df838462fb7fdf7d598c685f6b308ae6e3890a46452530bea5",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "cf466bd2fbdaf1df838462fb7fdf7d598c685f6b308ae6e3890a46452530bea5",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "system_spiritual_root",
@@ -1001,7 +1541,25 @@
         2048
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "6ad19f2d0cd5fd509eb177311ffdb64298982cf190d7d688c1016a55e8718b76",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "6ad19f2d0cd5fd509eb177311ffdb64298982cf190d7d688c1016a55e8718b76",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "system_technique_grade",
@@ -1022,7 +1580,25 @@
         2048
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "1f466e7cd9c713b2a0f6eacb60f720b4ef0f231c81acd18b2c9567c7e176e85e",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "1f466e7cd9c713b2a0f6eacb60f720b4ef0f231c81acd18b2c9567c7e176e85e",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "system_economy",
@@ -1043,7 +1619,25 @@
         2048
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "ca819a3df7f1ba10cb20d2e8f930edb78a0a3c3bef224fa942a97d4f7cc292cd",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "ca819a3df7f1ba10cb20d2e8f930edb78a0a3c3bef224fa942a97d4f7cc292cd",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "system_prices",
@@ -1064,7 +1658,25 @@
         2048
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "7e2602257fe6d25abbce290d7c077f791a7c37b0ffbb7ba7422efd57b71755bf",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "7e2602257fe6d25abbce290d7c077f791a7c37b0ffbb7ba7422efd57b71755bf",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "system_spirit_beasts",
@@ -1085,7 +1697,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "8bc192985896f9479db3a8f21a7841a3e51f2adde44afc1c3134321ce39fac4c",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "8bc192985896f9479db3a8f21a7841a3e51f2adde44afc1c3134321ce39fac4c",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "system_spirit_beasts_feral",
@@ -1106,7 +1736,25 @@
         2048
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "8f00a023981a689baa098b6ae265b6c9f4f9d8790f8c9ad8c2481261ea820280",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "8f00a023981a689baa098b6ae265b6c9f4f9d8790f8c9ad8c2481261ea820280",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "system_realm_faction_tiers",
@@ -1127,7 +1775,25 @@
         2364
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "d433726bea569cde347a7a13c3ad726ca97f17d04b1ef9b6963ad6511270e38b",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "d433726bea569cde347a7a13c3ad726ca97f17d04b1ef9b6963ad6511270e38b",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "brand_calligraphy",
@@ -1148,7 +1814,25 @@
         1182
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "64500b1664b485875b9493d904408a0957451aecc2bc6dbcd0185dbc8aad7c2a",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "64500b1664b485875b9493d904408a0957451aecc2bc6dbcd0185dbc8aad7c2a",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "brand_plum",
@@ -1169,7 +1853,25 @@
         2048
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "0b502f3b0dc76310807c3f0aec38374b60bdae636f7df8f45fdcadf51546696f",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "0b502f3b0dc76310807c3f0aec38374b60bdae636f7df8f45fdcadf51546696f",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "brand_seal",
@@ -1190,7 +1892,25 @@
         2048
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "a54b0ba22b95ae9aefa669204f0cd58862a2ebdf5820a6829dc3b161c6dbbd28",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "a54b0ba22b95ae9aefa669204f0cd58862a2ebdf5820a6829dc3b161c6dbbd28",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "brand_scroll",
@@ -1211,7 +1931,25 @@
         1340
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "3d62d3fa53a3189f66ad0b2e02416afc02a6d6815b2452edfe2eacefa3849aaa",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "3d62d3fa53a3189f66ad0b2e02416afc02a6d6815b2452edfe2eacefa3849aaa",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "texture_day-paper",
@@ -1232,7 +1970,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "c54233446430a7e95422ec6f88e71cb5d2ec5a6cd58e110984be7f59e42041a8",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "c54233446430a7e95422ec6f88e71cb5d2ec5a6cd58e110984be7f59e42041a8",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "texture_night-ink",
@@ -1253,7 +2009,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "a1f0b823804903b9cd7fd959a8c526bf9d7f0fa9f65323ac91214d3ec2a6a817",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "a1f0b823804903b9cd7fd959a8c526bf9d7f0fa9f65323ac91214d3ec2a6a817",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "texture_mist-mountains",
@@ -1274,7 +2048,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "12936e29457eba51dcd22b2b31df9fa8e1364c8f7cc48a924b1c8d3f8132574c",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "12936e29457eba51dcd22b2b31df9fa8e1364c8f7cc48a924b1c8d3f8132574c",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "artifact_ice_marrow_vial",
@@ -1295,7 +2087,25 @@
         2048
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "14b9a63f4b521899fde06344bc45e6b36f1c514b786d3952fd399b8147718443",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "14b9a63f4b521899fde06344bc45e6b36f1c514b786d3952fd399b8147718443",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "artifact_message_mirror",
@@ -1316,7 +2126,25 @@
         2048
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "39f277717cbbf6bfd136becb3811c602d5f704bd31d082043c227f8fd0bc6365",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "39f277717cbbf6bfd136becb3811c602d5f704bd31d082043c227f8fd0bc6365",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "artifact_haotian_sword_token",
@@ -1337,7 +2165,25 @@
         2048
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "9bc8deb0faf83added622db3bf6b875429d64d61e1d7fad234347b04c89d3a7d",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "9bc8deb0faf83added622db3bf6b875429d64d61e1d7fad234347b04c89d3a7d",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "artifact_protective_mirror",
@@ -1358,7 +2204,25 @@
         2048
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "803c5de39f3beaa4864dc7011d003e5230dfe896012aa3185174ffe1ade678c7",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "803c5de39f3beaa4864dc7011d003e5230dfe896012aa3185174ffe1ade678c7",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "artifact_binding_rope",
@@ -1379,7 +2243,25 @@
         2048
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "db069cc485ba4b6140f13e8b0ccd96bd41a612c3c2669646c7264fba8ace83a7",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "db069cc485ba4b6140f13e8b0ccd96bd41a612c3c2669646c7264fba8ace83a7",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "artifact_mountain_river_fan",
@@ -1400,7 +2282,25 @@
         2048
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "adf7295c9cdb4faa3c2be07608ffdb26de1d9cdb95475beffdc1443ad581ec25",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "adf7295c9cdb4faa3c2be07608ffdb26de1d9cdb95475beffdc1443ad581ec25",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "artifact_sacred_fire_token",
@@ -1421,7 +2321,25 @@
         2048
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "e1586a6189e7c0a70799e44277a9404659d8912d623f940199bf046a5f4262c8",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "e1586a6189e7c0a70799e44277a9404659d8912d623f940199bf046a5f4262c8",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "artifact_five_poison_vessel",
@@ -1442,7 +2360,25 @@
         2048
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "6d73c068d674153ce028867da5df9cf8f1cfcbd965662e981a1f3826780da0c8",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "6d73c068d674153ce028867da5df9cf8f1cfcbd965662e981a1f3826780da0c8",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "artifact_wind_boat",
@@ -1463,7 +2399,25 @@
         2048
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "e9557c741d4ffd5c4e20cb4462d72f2ca8c6a53eb50f74576bcf08ddc451124f",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "e9557c741d4ffd5c4e20cb4462d72f2ca8c6a53eb50f74576bcf08ddc451124f",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "artifact_purple_gold_gourd",
@@ -1484,7 +2438,25 @@
         2048
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "d8ec5efe12b60eb03b86579baad09ab97b937559199d75bdbbe9288b37f3a7df",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "d8ec5efe12b60eb03b86579baad09ab97b937559199d75bdbbe9288b37f3a7df",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "character_white_robed_sword_cultivator",
@@ -1505,7 +2477,25 @@
         2730
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "e6072c80ce08884f8fdebc58961878b70b6eaa3e9c3ad215db6a2b6f78ee5dc0",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "e6072c80ce08884f8fdebc58961878b70b6eaa3e9c3ad215db6a2b6f78ee5dc0",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "character_icefield_messenger",
@@ -1526,7 +2516,25 @@
         2730
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "648ac4a05894c55b11c334f896a7d9ff1caff204c57eb6fa8fe447492114f9e1",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "648ac4a05894c55b11c334f896a7d9ff1caff204c57eb6fa8fe447492114f9e1",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "character_aged_wanderer",
@@ -1547,7 +2555,25 @@
         2730
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "e82197a153ffc1752f10ab64cbb50d245235f27191c7301959e5d86d1d317e2f",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "e82197a153ffc1752f10ab64cbb50d245235f27191c7301959e5d86d1d317e2f",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "character_dan_room_cultivator",
@@ -1568,7 +2594,25 @@
         2730
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "35f500c1db09be4102b5375286f6df39cd6a97d86b9c53545d19245dc2ecf9ad",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "35f500c1db09be4102b5375286f6df39cd6a97d86b9c53545d19245dc2ecf9ad",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "character_black_robed_heretic",
@@ -1589,7 +2633,25 @@
         2730
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "3a3a2842f0d31ea6528aa26d12e49b4963a964d7325d760adf427d22dc46c1b3",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "3a3a2842f0d31ea6528aa26d12e49b4963a964d7325d760adf427d22dc46c1b3",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "character_brocade_merchant",
@@ -1610,7 +2672,25 @@
         2730
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "9616179d6fd3bad3ed92dec2b1c96e6cbfea8f7f38633f8ab0668b7d9a3e8339",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "9616179d6fd3bad3ed92dec2b1c96e6cbfea8f7f38633f8ab0668b7d9a3e8339",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "character_wilderness_hunter",
@@ -1631,7 +2711,25 @@
         2730
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "69a6f89d58ce0e8ff6a569fc9d51156169b25575b07891c1f86f17c56d0045b1",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "69a6f89d58ce0e8ff6a569fc9d51156169b25575b07891c1f86f17c56d0045b1",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "character_miaojiang_gu_master",
@@ -1652,7 +2750,25 @@
         2730
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "d2e231006e4b803956aeb13bcb3b21ef1cfcaa547c3a9f4cfb69ea9e57580277",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "d2e231006e4b803956aeb13bcb3b21ef1cfcaa547c3a9f4cfb69ea9e57580277",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "character_yanshi_craftsman",
@@ -1673,7 +2789,25 @@
         2730
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "e73cb88c09c88511ef2759b9611f672a8e0762178c66579179a49ef55e0f6607",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "e73cb88c09c88511ef2759b9611f672a8e0762178c66579179a49ef55e0f6607",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "character_wandering_monk",
@@ -1694,7 +2828,25 @@
         2730
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "7b9253a03b9010667bf552dfee2680bf202e2f2476358defaa9e14b1cbf8e4ee",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "7b9253a03b9010667bf552dfee2680bf202e2f2476358defaa9e14b1cbf8e4ee",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "atmosphere_dawn_cloud_sea",
@@ -1715,7 +2867,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "fbe0f588fcd293e0ef30b46bab52ddf1311f627fe4a4c8e010795db2db67917d",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "fbe0f588fcd293e0ef30b46bab52ddf1311f627fe4a4c8e010795db2db67917d",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "atmosphere_spring_rain_ferry",
@@ -1736,7 +2906,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "70eb811e0f0afae769010121e01336e3617c391d1f656887c1c819b76f9ad273",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "70eb811e0f0afae769010121e01336e3617c391d1f656887c1c819b76f9ad273",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "atmosphere_stormy_night_temple",
@@ -1757,7 +2945,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "0d30f843a0825e0427ba9fab1e2569b21b5a31364262a301d79247c3e2b5c4b1",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "0d30f843a0825e0427ba9fab1e2569b21b5a31364262a301d79247c3e2b5c4b1",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "atmosphere_misty_forest",
@@ -1778,7 +2984,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "308ea5f303d4370b76f5f543e4fce4572fe131d5d23940765a9664f565f5e4b0",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "308ea5f303d4370b76f5f543e4fce4572fe131d5d23940765a9664f565f5e4b0",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "atmosphere_autumn_red_leaf_road",
@@ -1799,7 +3023,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "2b238c9a0f6e6580f58004625002808f26531778c2495245a9f72874b83cfe4a",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "2b238c9a0f6e6580f58004625002808f26531778c2495245a9f72874b83cfe4a",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "atmosphere_moonlit_snow_gate",
@@ -1820,7 +3062,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "fbf9e7643a241e68188d1b6496db806e82f9f577db5c152399ca470386861399",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "fbf9e7643a241e68188d1b6496db806e82f9f577db5c152399ca470386861399",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "battle_sword_duel",
@@ -1841,7 +3101,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "7310089b7acc12c0b92f8963dbe0c65b716de19386dbcb23275258cdcad9e81e",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "7310089b7acc12c0b92f8963dbe0c65b716de19386dbcb23275258cdcad9e81e",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "battle_beast_clash",
@@ -1862,7 +3140,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "8d3387686f1a3ce3bdedd4b1eecb5f2767b233e08b998155accae2439f078724",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "8d3387686f1a3ce3bdedd4b1eecb5f2767b233e08b998155accae2439f078724",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "battle_spell_exchange",
@@ -1883,7 +3179,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "4b7d12adb22f8cddde2c78078599664cd3acbf79cdf949d405cbf9ea0c06eda0",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "4b7d12adb22f8cddde2c78078599664cd3acbf79cdf949d405cbf9ea0c06eda0",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     },
     {
       "assetId": "battle_flying_sword_travel",
@@ -1904,7 +3218,25 @@
         1536
       ],
       "metadataValuesCopied": false,
-      "visualOnly": true
+      "visualOnly": true,
+      "licenseStatus": "approved",
+      "licenseEvidenceSha256": "0de1aecde90a5aa7ba1364bb02278c95d41bb926799d18d4c2d4c61c3258b543",
+      "authorReceipts": [
+        {
+          "author": "LYL",
+          "assetSha256": "aa3032a11dedc7dd5b1c0a5fbd3f8789ebd88f42fe244c1d532a1289660b52f8",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        },
+        {
+          "author": "Bird",
+          "assetSha256": "aa3032a11dedc7dd5b1c0a5fbd3f8789ebd88f42fe244c1d532a1289660b52f8",
+          "status": "approved",
+          "date": "2026-10-10",
+          "basis": "G-05 batch 2: see docs/acceptance/2026-10-10/G05-batch2-license-evidence.md (rights declaration effective 2026-10-10; recorded per LYL authorization + Bird review convention)"
+        }
+      ]
     }
   ]
 }
