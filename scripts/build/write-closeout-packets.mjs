@@ -24,7 +24,7 @@ const runResponse=await fetch(base,{headers});
 if (!runResponse.ok) throw new Error(`CI_RUN_VERIFY_FAILED_HTTP_${runResponse.status}`);
 const run=await runResponse.json();
 if(run.head_sha!==currentCommit||run.status!=='in_progress'||run.conclusion!==null)throw new Error('CI_RUN_HEAD_OR_STATUS_INVALID');
-const required=['Migrate ephemeral test database','Run pnpm license:check','Test GitHub evidence synchronization gate','Test fail-closed media publication gate','Run pnpm typecheck','Run pnpm test','Run pnpm build','Prove the release-target build stays fail-closed while media licenses are pending','Build and smoke the production API container','Run PostgreSQL integration tests','Run pnpm test:e2e','Test durable turn UI recovery with synthetic receipts','Test isolated SMTP and cloud browser path','Verify isolated database backup restoration','Bind review artifacts to the tested commit'];
+const required=['Migrate ephemeral test database','Run pnpm license:check','Test GitHub evidence synchronization gate','Test fail-closed media publication gate','Run pnpm typecheck','Run pnpm test','Run pnpm build','Prove the release-target build passes with verified media licenses','Build and smoke the production API container','Run PostgreSQL integration tests','Run pnpm test:e2e','Test durable turn UI recovery with synthetic receipts','Test isolated SMTP and cloud browser path','Verify isolated database backup restoration','Bind review artifacts to the tested commit'];
 await waitForVerifiedSteps(async()=>{
  const response=await fetch(base+'/jobs?per_page=100',{headers,signal:AbortSignal.timeout(10000)});
  if(!response.ok)throw new Error('CI_JOB_EVIDENCE_UNAVAILABLE_HTTP_'+response.status);
