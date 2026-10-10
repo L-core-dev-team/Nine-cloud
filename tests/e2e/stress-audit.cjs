@@ -133,7 +133,13 @@ async function recovery(base){
     await page.waitForTimeout(300);assert.equal(await page.locator('.import-preview').count(),0);assert.equal(await page.evaluate(key=>localStorage.getItem(key),key),snapshot);
     const text=await page.locator('body').innerText();assert.match(text,/失败|无法|错误|不是|解析/);return {protected:true};
   },page);
-  await test('tab-interruption',async()=>{await page.close();const next=await ctx.newPage();await next.goto(game);await next.locator('#player-intent').waitFor();assert.equal(await next.locator('#player-intent').inputValue(),'合成未提交草稿');assert.equal(await next.evaluate(key=>localStorage.getItem(key),key),snapshot);await next.close();});
+  let active=page;
+  for(let n=0;n<3;n++) {
+    await active.locator('#player-intent').fill('合成未提交草稿');await active.close();
+    active=await ctx.newPage();await active.goto(game);await active.locator('#player-intent').waitFor();
+    await test(`tab-interruption-save-${n}`,async()=>{assert.equal(await active.evaluate(key=>localStorage.getItem(key),key),snapshot);return {saveProtected:true};},active);
+    await test(`tab-interruption-draft-${n}`,async()=>{assert.equal(await active.locator('#player-intent').inputValue(),'合成未提交草稿');},active);
+  }
   await ctx.close();
   const cloud=await context();const p=cloud.page;
   const save={schemaVersion:1,saveId:'cloud-stress-synthetic',canonVersion:'synthetic-canon',ruleVersion:'synthetic-rules',memoryPolicyVersion:'synthetic-memory',revision:0,state:{playerId:'synthetic-player',locationId:'synthetic-location',elapsedMinutes:0,facts:{gameMinute:0}}};
@@ -150,6 +156,16 @@ async function recovery(base){
     fail=false;await p.getByTestId('p2-submit-action').click();await p.getByTestId('p2-narrative').waitFor();assert.equal(submissions,before+2);assert.equal(await p.getByTestId('p2-revision').innerText(),'0');return {requests:2,automaticRetries:0};
   },p);
   await test('cloud-pending-double-submit',async()=>{fail=true;delay=2000;const before=submissions;await p.getByTestId('p2-action-input').fill('合成待处理');await p.getByTestId('p2-submit-action').click();await p.locator('form').evaluate(e=>{e.requestSubmit();e.requestSubmit();});await p.getByTestId('p2-status').filter({hasText:'服务端请求未完成'}).waitFor();assert.equal(submissions,before+1);return {requests:submissions-before};},p);
+  for(let n=0;n<3;n++)await test(`cloud-actual-timeout-${n}`,async()=>{
+    fail=true;delay=30000;const before=submissions,start=Date.now();
+    await p.getByTestId('p2-action-input').fill('合成超时行动');await p.getByTestId('p2-submit-action').click();
+    await p.getByTestId('p2-status').filter({hasText:'服务端请求未完成'}).waitFor({timeout:25000});
+    const elapsed=Date.now()-start;assert.ok(elapsed>=19000&&elapsed<25000,`deadline observed at ${elapsed}ms`);
+    assert.equal(await p.getByTestId('p2-submit-action').isEnabled(),true);assert.equal(await p.getByTestId('p2-action-input').inputValue(),'合成超时行动');assert.equal(submissions,before+1);
+    delay=350;fail=false;await p.getByTestId('p2-submit-action').click();await p.getByTestId('p2-action-input').filter({visible:true}).waitFor();
+    await p.waitForFunction(()=>document.querySelector('[data-testid="p2-submit-action"]')?.disabled===false);
+    assert.equal(submissions,before+2);return {timeoutMs:elapsed,requests:2,automaticRetries:0};
+  },p);
   report.blocked.push({name:'P3-authoritative-recovery',status:'BLOCKED',reason:'Mock UI observations do not verify server idempotency, authoritative history, cloud draft durability, memory permissions or retry contracts. Await P3 contracts.'});
   await cloud.ctx.close();
 }
