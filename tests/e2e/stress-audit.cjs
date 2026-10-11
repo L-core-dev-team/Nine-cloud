@@ -178,12 +178,16 @@ async function recovery(base){
     await active.evaluate(()=>{Storage.prototype.setItem=window.__draftSet;});await input().fill('恢复写入后的草稿');
   },active);
   await test('draft-corruption-preserves-formal-save',async()=>{
+    // Establish the existing IDB hydration order before comparing exact mirror bytes.
+    await active.reload();await input().waitFor();await active.waitForFunction(()=>document.documentElement.dataset.jxStorageHydrated==='true');
     const before=await active.evaluate(key=>localStorage.getItem(key),key);
     const saveId=decodeURIComponent(new URL(isolatedGame).pathname.split('/').pop());
     await active.evaluate(({prefix,saveId})=>localStorage.setItem(prefix+encodeURIComponent(saveId)+':broken','{invalid'),{prefix:draftPrefix,saveId});
-    await active.reload();await input().waitFor();assert.equal(await input().inputValue(),'恢复写入后的草稿');
-    await active.getByRole('status').filter({hasText:'草稿记录损坏'}).waitFor();assert.equal(await active.evaluate(key=>localStorage.getItem(key),key),before);
-    await active.evaluate(({prefix,saveId})=>localStorage.removeItem(prefix+encodeURIComponent(saveId)+':broken'),{prefix:draftPrefix,saveId});
+    try {
+      await active.reload();await input().waitFor();await active.waitForFunction(()=>document.documentElement.dataset.jxStorageHydrated==='true');assert.equal(await input().inputValue(),'恢复写入后的草稿');
+      await active.getByRole('status').filter({hasText:'草稿记录损坏'}).waitFor();assert.equal(await active.evaluate(key=>localStorage.getItem(key),key),before);
+      assert.equal(await active.evaluate(({prefix,saveId})=>localStorage.getItem(prefix+encodeURIComponent(saveId)+':broken'),{prefix:draftPrefix,saveId}),'{invalid');
+    } finally {await active.evaluate(({prefix,saveId})=>localStorage.removeItem(prefix+encodeURIComponent(saveId)+':broken'),{prefix:draftPrefix,saveId});}
   },active);
   await test('draft-legacy-conflict-retains-both',async()=>{
     const saveId=decodeURIComponent(new URL(isolatedGame).pathname.split('/').pop());
