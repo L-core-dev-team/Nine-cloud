@@ -1,0 +1,28 @@
+✔ 200/500/1000 continuous deterministic synthetic histories have valid independent sources (14.2736ms)
+✔ gold oracle has 60 unique independent questions and real explicitly cited sources/facts (0.7401ms)
+✔ exact event lookup returns original narrative and provenance, never an invented answer (1.5783ms)
+✔ early gift is recoverable at turn 180 after 170 turns (0.6015ms)
+✔ explicit similar person names do not silently alias (0.3723ms)
+✔ NPC secret filtering happens before ranking, and does not erase the player archive (1.2999ms)
+✔ following a historical link cannot leak an unauthorized original source (3.1135ms)
+✔ as-of clock hides future sources AND future expiry metadata (0.2468ms)
+✔ historical ownership is distinguished from current ownership (0.3747ms)
+✔ rumors remain unverified even after independent confirmation; sensory detail is not a rule event (0.4258ms)
+✔ nonexistent event and unsupported destructive action are refused (0.2193ms)
+✔ range filter and player/NPC clock errors fail safely (0.4035ms)
+✔ all 60 questions respect all budgets with complete source texts and explicit estimates (118.6419ms)
+✔ insufficient budget cannot turn a partial source into a confident answer (0.2758ms)
+✔ packer skips oversize sources without cutting a claim qualification (0.2449ms)
+✔ recent baseline uses the full available budget, rather than an arbitrary eight-source ceiling (1.2651ms)
+✔ evaluator detects missing evidence, wrong fact values/status, future and unauthorized sources (0.9594ms)
+✔ quality results are reproducible; elapsed time is excluded from this assertion (10.8334ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 286.1947
+
+

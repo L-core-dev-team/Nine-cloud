@@ -1,0 +1,188 @@
+{
+  "startMainSha": "208ee6c18a1979363f62d144331c9b7d4646e25f",
+  "testedSourceCommit": "7426f1bf1bc66ab06785e6aa85b9c5c93800e5f1",
+  "branch": "shuilongyin/p6-longmem-benchmark-20261011",
+  "node": "v24.19.0",
+  "checks": [
+    {
+      "check": "unit",
+      "index": 0,
+      "started": "2026-10-11T05:21:27.492Z",
+      "finished": "2026-10-11T05:21:27.853Z",
+      "exitCode": 0,
+      "log": "unit-0.log",
+      "sha256": "efe74c088281f371dd77f2f450a09780982ca10140eb2a4b7b289f8d39c33da0"
+    },
+    {
+      "check": "typecheck",
+      "index": 0,
+      "started": "2026-10-11T05:21:27.912Z",
+      "finished": "2026-10-11T05:21:32.165Z",
+      "exitCode": 0,
+      "log": "typecheck-0.log",
+      "sha256": "e944681e91150bde6211368e8639f53261c07fc66098e9ba7fc1eb46a527c75d"
+    },
+    {
+      "check": "typecheck",
+      "index": 1,
+      "started": "2026-10-11T05:21:32.166Z",
+      "finished": "2026-10-11T05:21:32.333Z",
+      "exitCode": 0,
+      "log": "typecheck-1.log",
+      "sha256": "75a11da44c802486bc6f65640aa48a730f0f684c5c07a42ba3cd1735eb3fb070"
+    },
+    {
+      "check": "build",
+      "index": 0,
+      "started": "2026-10-11T05:15:20.827Z",
+      "finished": "2026-10-11T05:15:24.029Z",
+      "exitCode": 0,
+      "log": "build-0.log",
+      "sha256": "e6d9b54b0bd422fe47dfc46893915025a59779bebb4eb35067445f498424f4b8"
+    },
+    {
+      "check": "regression",
+      "index": 0,
+      "started": "2026-10-11T05:15:38.373Z",
+      "finished": "2026-10-11T05:15:40.008Z",
+      "exitCode": 0,
+      "log": "regression-0.log",
+      "sha256": "8b38db4f6cbcb92e4a05321b1b01d341c38895c39236342e711531c7a24f2de2"
+    },
+    {
+      "check": "regression",
+      "index": 1,
+      "started": "2026-10-11T05:15:40.009Z",
+      "finished": "2026-10-11T05:15:42.238Z",
+      "exitCode": 0,
+      "log": "regression-1.log",
+      "sha256": "874e242c64bd29dee1e1d82777c1ef933479bfb9be38c963e1c62f425f06d626"
+    },
+    {
+      "check": "allRegression",
+      "index": 0,
+      "started": "2026-10-11T05:15:15.388Z",
+      "finished": "2026-10-11T05:15:18.279Z",
+      "exitCode": 1,
+      "log": "allRegression-0.log",
+      "sha256": "e9b1707976ce946678ca560ea16568134247de0c137521979275add217a304d8"
+    },
+    {
+      "check": "final",
+      "index": 0,
+      "started": "2026-10-11T05:21:32.400Z",
+      "finished": "2026-10-11T05:21:33.255Z",
+      "exitCode": 0,
+      "log": "final-0.log",
+      "sha256": "c5aeebd1293cfabf7f145d4f35fc3080090c3a58b6546d0c80fb53c01a5b09a3"
+    },
+    {
+      "check": "strict",
+      "index": 0,
+      "started": "2026-10-11T05:21:33.323Z",
+      "finished": "2026-10-11T05:21:33.610Z",
+      "exitCode": 1,
+      "log": "strict-0.log",
+      "sha256": "e724ea7465523f59625805ba5b7a6e53fb7f8d985a779ae6e655d60b48b0ab78"
+    }
+  ],
+  "goldUnchangedSinceInitialRun": true,
+  "goldSha256": "91235f6ee8c4305979eadf46852af899815f1c0e04b52c07209d6c6ee680014f",
+  "initialAnchorSha256": "5bf8cc9dc9c08cfc3c18bfc5a86f0046ec403b341b67d4b20dbf659e1d8e1029",
+  "finalAnchorSha256": "f5425be375ece41a16fd3d9c39ae142e08bbe10d5f865ef28147200100868a11",
+  "anchorChange": "Turn 185 public narrative revised to avoid sharing a private narrator detail with the NPC; gold and expected facts unchanged.",
+  "methodChange": "Initial diagnostic run used a default maxSources=8 cap; final comparison removes this cap for BOTH methods and uses only the context-token budget. Recall@8 remains a ranking metric.",
+  "initialUnitFailure": "16 PASS / 1 FAIL: expected s185 not retrieved by predicate prefix matching; subsequent retrieval fix retained the assertion.",
+  "files": [
+    {
+      "name": "allRegression-0.log",
+      "bytes": 11371,
+      "sha256": "e9b1707976ce946678ca560ea16568134247de0c137521979275add217a304d8"
+    },
+    {
+      "name": "build-0.log",
+      "bytes": 1907,
+      "sha256": "e6d9b54b0bd422fe47dfc46893915025a59779bebb4eb35067445f498424f4b8"
+    },
+    {
+      "name": "evaluation.json",
+      "bytes": 5221496,
+      "sha256": "775056574f58ecac86a2086786adbe7ac2392e807621e7bcb0a95eee444c8616"
+    },
+    {
+      "name": "failures.json",
+      "bytes": 3628385,
+      "sha256": "baa227144abd18f608f310b53e9ae9d643858b111eedd6e619f51ad8268afaf3"
+    },
+    {
+      "name": "final-0.log",
+      "bytes": 1450,
+      "sha256": "c5aeebd1293cfabf7f145d4f35fc3080090c3a58b6546d0c80fb53c01a5b09a3"
+    },
+    {
+      "name": "gold-questions.json",
+      "bytes": 34120,
+      "sha256": "91235f6ee8c4305979eadf46852af899815f1c0e04b52c07209d6c6ee680014f"
+    },
+    {
+      "name": "history-1000.json",
+      "bytes": 640526,
+      "sha256": "dea4baacd67ed5b63dc3cef78aac59795ab2f4e927b716c19eea601c6caa13d0"
+    },
+    {
+      "name": "history-200.json",
+      "bytes": 132123,
+      "sha256": "4e551b324436534472455251d0aebaf4aedbdca9130f7c476ac54fc99248c0db"
+    },
+    {
+      "name": "history-500.json",
+      "bytes": 322833,
+      "sha256": "dc8fb12bc18eb5527cedc64b0c39278a6f89e0d4c96f435010183efd1409cb05"
+    },
+    {
+      "name": "initial-evaluation.json",
+      "bytes": 1321203,
+      "sha256": "3d871856d6447c5cdb9484827e36a79971d62841136f006f2c4f047edb3acb48"
+    },
+    {
+      "name": "read-only-hash-diagnostic.json",
+      "bytes": 5312,
+      "sha256": "cba5418cddea4195dd53e945a28b9770d120b2545864919c07a98c6532e90096"
+    },
+    {
+      "name": "regression-0.log",
+      "bytes": 466,
+      "sha256": "8b38db4f6cbcb92e4a05321b1b01d341c38895c39236342e711531c7a24f2de2"
+    },
+    {
+      "name": "regression-1.log",
+      "bytes": 459,
+      "sha256": "874e242c64bd29dee1e1d82777c1ef933479bfb9be38c963e1c62f425f06d626"
+    },
+    {
+      "name": "strict-0.log",
+      "bytes": 482,
+      "sha256": "e724ea7465523f59625805ba5b7a6e53fb7f8d985a779ae6e655d60b48b0ab78"
+    },
+    {
+      "name": "summary.md",
+      "bytes": 2661,
+      "sha256": "22063989346da052354d62ce28e1b92ec152d1af346a494dc8aa8dc7103042f0"
+    },
+    {
+      "name": "typecheck-0.log",
+      "bytes": 813,
+      "sha256": "e944681e91150bde6211368e8639f53261c07fc66098e9ba7fc1eb46a527c75d"
+    },
+    {
+      "name": "typecheck-1.log",
+      "bytes": 2,
+      "sha256": "75a11da44c802486bc6f65640aa48a730f0f684c5c07a42ba3cd1735eb3fb070"
+    },
+    {
+      "name": "unit-0.log",
+      "bytes": 1747,
+      "sha256": "efe74c088281f371dd77f2f450a09780982ca10140eb2a4b7b289f8d39c33da0"
+    }
+  ]
+}
