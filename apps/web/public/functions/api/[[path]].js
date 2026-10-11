@@ -18,6 +18,12 @@
 // 缺失时直接抛错而不是悄悄回落到某个域名。
 const UPSTREAM = 'https://api.jiuxiaogame.cn';
 
+// 路线 A 入口封锁（2026-10-11 裁决，docs/acceptance/2026-10-11/路线A入口封锁规则.md）：
+// 账号与身份端点在中继层显式 404，不转发到后端——与 Caddy 层封锁构成双防御。
+// 升级路线 B 时删除本名单并按文档 §5 走解除流程。
+const BLOCKED_PREFIXES = ['/api/auth/', '/api/account/'];
+const BLOCKED_EXACT = ['/api/auth', '/api/account'];
+
 // 允许透传的请求头。Host 必须重写（否则后端看到的是 Pages 的 Host），
 // Origin 要原样保留 —— 后端正是拿它与 AUTH_PUBLIC_ORIGIN 做全等比较。
 const FORWARD_REQUEST_HEADERS = [
@@ -42,6 +48,14 @@ const FORWARD_RESPONSE_HEADERS = [
 
 export async function onRequest(context) {
   const { request } = context;
+
+  const path = new URL(request.url).pathname;
+  if (BLOCKED_EXACT.includes(path) || BLOCKED_PREFIXES.some(prefix => path.startsWith(prefix))) {
+    return new Response(JSON.stringify({ code: 'ROUTE_A_BLOCKED', message: '该入口在当前部署阶段未开放。' }), {
+      status: 404,
+      headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
+    });
+  }
 
   const headers = new Headers();
   for (const name of FORWARD_REQUEST_HEADERS) {

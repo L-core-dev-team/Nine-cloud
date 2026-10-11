@@ -12,6 +12,14 @@ api.jiuxiaogame.cn {
         max_size 8MB
     }
 
+    # 路线 A 入口封锁（2026-10-11 裁决，docs/acceptance/2026-10-11/路线A入口封锁规则.md）：
+    # 账号与身份端点在边缘显式 404，双防御的第二层（第一层是 API 本身 AUTH_ENABLED=false）。
+    # 升级路线 B 时删除本 @blocked 段并按文档 §5 走解除流程。
+    @blocked {
+        path /api/auth/* /api/account/*
+    }
+    respond @blocked 404
+
     reverse_proxy api:8787 {
         header_up Host {host}
         header_up Origin {header.Origin}
