@@ -8,18 +8,19 @@
 
 ## 1. 封锁目标与非目标
 
-**封锁（边缘层显式 404）**——账号与身份端点，路由清单取自 [apps/api/src/routes](../../../apps/api/src/routes)：
+**封锁（边缘层显式 404）**——账号**写入与凭据签发**端点（v2 名单，路由清单取自 [apps/api/src/routes](../../../apps/api/src/routes)）：
 
-- `/api/auth/*`：`/api/auth/providers`、`/api/auth/guest`、`/api/auth/code`、`/api/auth/guest/upgrade`、`/api/auth/session`、`/api/auth/refresh`、`/api/auth/logout`（及 supabase-auth 的 `/api/auth/phone/*`）
+- `/api/auth/guest`、`/api/auth/code`、`/api/auth/guest/upgrade`、`/api/auth/refresh`、`/api/auth/logout`（游客建档、邮箱验证码、升级、会话轮换/吊销）
+- `/api/auth/phone/*`（短信身份端点，全部）
 - `/api/account/*`：`/api/account/capabilities`、`/api/account/export`、`/api/account/operation/{begin,verify,complete,cancel}`
 
-**不封锁**：`/api/health`、`/api/ready`、`/api/games/*`（云档依赖会话，路线 A 下 API 层恒 `UNAUTHENTICATED` fail-closed；封锁它会在升级 B 时产生解除遗漏风险——升级 B 的解除步骤见 §4）。
+**不封锁**：`/api/health`、`/api/ready`、`/api/games/*`（云档依赖会话，路线 A 下 API 层恒 `UNAUTHENTICATED` fail-closed；封锁它会在升级 B 时产生解除遗漏风险——升级 B 的解除步骤见 §4）；**v2 起亦不封锁只读诊断** `/api/auth/session`（auth 未挂载时 API notFound 兜底 404）与 `/api/auth/providers`（200，返回 provider 关闭状态）——保留 `api-production-smoke` 的 fail-closed 契约与运维诊断面。
 
 **非目标**：不隐藏前端"账号与云档"入口本身（页面可达，显示不可用状态）；不改动 API 代码；不改 compose 语义（仅 private env 显式 `AUTH_ENABLED=false`）。
 
 ## 2. Caddy 层封锁（第一边缘）
 
-[Caddyfile](../../../deployment/Caddyfile) 在 `reverse_proxy` 之前追加：
+[Caddyfile](../../../deployment/Caddyfile) 在 `reverse_proxy` 之前追加（**v2 名单**，修订原因见 §7）：
 
 ```caddyfile
 api.jiuxiaogame.cn {
@@ -28,10 +29,10 @@ api.jiuxiaogame.cn {
         max_size 8MB
     }
 
-    # 路线 A 入口封锁（2026-10-11 裁决）：账号与身份端点显式 404。
+    # 路线 A 入口封锁 v2：账号写入/凭据签发端点显式 404；只读诊断不封锁。
     # 升级路线 B 时删除本 @blocked 段并保留本文件历史记录。
     @blocked {
-        path /api/auth/* /api/account/*
+        path /api/auth/guest /api/auth/guest/upgrade /api/auth/code /api/auth/refresh /api/auth/logout /api/auth/phone/* /api/account/*
     }
     respond @blocked 404
 
@@ -46,18 +47,22 @@ api.jiuxiaogame.cn {
 
 ## 3. Pages Function 中继层封锁（第二边缘）
 
-前端 `/api` 经 Pages Function 中继到 API 源站（auth relay 提交 acc022a 已在链）。中继函数同步加同名单过滤：命中 `/api/auth/*`、`/api/account/*` 直接返回 404，不转发。双层封锁保证"直连 api.jiuxiaogame.cn"与"经 play.jiuxiaogame.cn 中继"两条路径都被覆盖。
+前端 `/api` 经 Pages Function 中继到 API 源站（auth relay 提交 acc022a 已在链）。中继函数同步加同名单过滤（v2）：命中封锁名单直接返回 404 `ROUTE_A_BLOCKED`，不转发。双层封锁保证"直连 api.jiuxiaogame.cn"与"经 play.jiuxiaogame.cn 中继"两条路径都被覆盖。
 
 ## 4. 验收断言（部署后逐条执行并留证据）
 
 | 断言 | 期望 |
 | --- | --- |
-| `curl -s -o /dev/null -w '%{http_code}' https://api.jiuxiaogame.cn/api/auth/providers` | 404 |
-| `curl … https://api.jiuxiaogame.cn/api/account/capabilities` | 404 |
-| `curl … https://play.jiuxiaogame.cn/api/auth/providers`（经中继） | 404 |
+| `curl -s -o /dev/null -w '%{http_code}' https://api.jiuxiaogame.cn/api/auth/guest` | 404（封锁） |
+| `curl -X POST … https://api.jiuxiaogame.cn/api/auth/code` | 404（封锁） |
+| `curl … https://api.jiuxiaogame.cn/api/account/capabilities` | 404（封锁） |
+| `curl … https://play.jiuxiaogame.cn/api/auth/guest`（经中继） | 404（封锁） |
+| `curl … https://api.jiuxiaogame.cn/api/auth/session` | 404（v2：auth 未挂载时 API notFound 兜底，不封锁但等效关闭） |
+| `curl … https://api.jiuxiaogame.cn/api/auth/providers` | 200（v2：只读诊断保留，返回 provider 关闭状态） |
 | `curl … https://api.jiuxiaogame.cn/api/health` 与 `/api/ready` | 200 |
-| `curl -X POST … https://api.jiuxiaogame.cn/api/games`（无会话） | 503 `RULES_NOT_READY` 或 401（API 层 fail-closed 正常） |
-| 前端"账号与云档"页 | 可达且显示不可用状态（不报 5xx） |
+| `curl -X POST … https://api.jiuxiaogame.cn/api/games`（无会话） | 503 `RULES_NOT_READY`（API 层 fail-closed 正常） |
+
+验收可用 `SMOKE_ROUTE_A=1 node scripts/api-production-smoke.mjs`（v2 smoke，含封锁与 session 404 断言）+ 上表逐条 curl 留证；另断言：前端"账号与云档"页可达且显示不可用状态（不报 5xx）。
 
 证据归档：`docs/acceptance/[上线日]/路线A封锁验收/`（curl 输出 + 截图）。
 
@@ -75,5 +80,13 @@ api.jiuxiaogame.cn {
 | 路线裁决（先 A 后 B） | LYL 已签（2026-10-11 对话裁决，见裁决材料）；Bird 待复核 |
 | 本封锁规则文本 | **✅ 已批准（2026-10-11，LYL+Bird 对话裁决："我和bird批准，请你执行文件1和文件2"）**；代码变更（Caddyfile + Pages Function 过滤）随执行 PR 落库，P2 部署时随边缘层一并生效 |
 | 生效时点 | P2 部署时随 Caddyfile/中继函数一并上线 |
+
+## 7. v2 修订记录（2026-10-11，P2 部署前契约核对）
+
+**修订原因**：v1 名单（全量 `/api/auth/*`）与两份既有契约冲突——① `scripts/api-production-smoke.mjs` 期望 `/api/auth/session` 返回 401（auth 挂载但未认证的 fail-closed 证明）；② 路线 A 下 `AUTH_ENABLED=false` 时 `mountAuth` 不挂载，`/api/auth/session` 实际由 API notFound 兜底返回 404（[app.ts](../../../apps/api/src/app.ts) §58）。边缘封锁 session 只会把"接口不存在"与"被封锁"混在一层，损失诊断面，且与 smoke 契约打架。
+
+**v2 名单**：只封锁**账号写入与凭据签发**端点（guest/code/guest-upgrade/refresh/logout/phone 全部 + account 全部）；只读诊断 `session`/`providers` 不封锁。封锁语义不变：路线 A 下无任何账号创建、邮件发送、会话签发路径可达（API 层第一道防线不挂载 + 边缘第二道防线 404 写端点）。
+
+**配套代码变更**：Caddyfile、Pages Function 名单同步 v2；`api-production-smoke.mjs` 增加 `SMOKE_ROUTE_A=1` 变体（session 期望 404 + 封锁端点 404 断言），默认行为不变（CI 不受影响）。
 
 ——AI 代理执行（LYL 授权）+ Bird 复核代理，2026-10-11。

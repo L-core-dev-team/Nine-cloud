@@ -12,11 +12,13 @@ api.jiuxiaogame.cn {
         max_size 8MB
     }
 
-    # 路线 A 入口封锁（2026-10-11 裁决，docs/acceptance/2026-10-11/路线A入口封锁规则.md）：
-    # 账号与身份端点在边缘显式 404，双防御的第二层（第一层是 API 本身 AUTH_ENABLED=false）。
+    # 路线 A 入口封锁 v2（2026-10-11 裁决，docs/acceptance/2026-10-11/路线A入口封锁规则.md）：
+    # 账号写入/凭据签发端点在边缘显式 404（双防御第二层；第一层是 API 本身 AUTH_ENABLED=false）。
+    # v2 修订：只读诊断端点 /api/auth/session（auth 未挂载时 API 自身 404）与 /api/auth/providers
+    # 不封锁——保留 api-production-smoke 的 fail-closed 契约与状态诊断。
     # 升级路线 B 时删除本 @blocked 段并按文档 §5 走解除流程。
     @blocked {
-        path /api/auth/* /api/account/*
+        path /api/auth/guest /api/auth/guest/upgrade /api/auth/code /api/auth/refresh /api/auth/logout /api/auth/phone/* /api/account/*
     }
     respond @blocked 404
 
