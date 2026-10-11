@@ -5,6 +5,7 @@ import { generateDataset, validateDataset } from './dataset.ts';
 import { goldQuestions } from './gold.ts';
 import { runEvaluation } from './evaluate.ts';
 import { HistoryIndex, tokenMethod } from './retrieval.ts';
+import { generateAdversarialDataset } from './adversarial.ts';
 
 const args = process.argv.slice(2);
 function option(name: string, fallback: string): string { const i = args.indexOf(name); return i < 0 ? fallback : args[i + 1] ?? fallback; }
@@ -15,6 +16,8 @@ const pretty = (value: unknown) => JSON.stringify(value, null, 2) + '\n';
 const hash = (text: string) => createHash('sha256').update(text).digest('hex');
 const runs = [];
 const stress = [];
+const adversarial = generateAdversarialDataset(); validateDataset(adversarial);
+writeFileSync(resolve(out, 'adversarial-history-200.json'), pretty(adversarial));
 for (const count of sizes) {
   const data = generateDataset(count); validateDataset(data);
   writeFileSync(resolve(out, `history-${count}.json`), pretty(data));

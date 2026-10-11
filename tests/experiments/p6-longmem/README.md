@@ -26,7 +26,7 @@ node tests/experiments/p6-longmem/query.ts --text "陆迟说密信藏在哪里�
 测试与类型检查：
 
 ```powershell
-node --test tests/experiments/p6-longmem/invariants.test.ts
+node --test tests/experiments/p6-longmem/*.test.ts
 node node_modules/typescript/bin/tsc -p tests/experiments/p6-longmem/tsconfig.json
 ```
 
@@ -34,6 +34,7 @@ node node_modules/typescript/bin/tsc -p tests/experiments/p6-longmem/tsconfig.js
 
 - `anchors.json`：人工编写的 25 个关键场景及人物/物品/地点词典。全部虚构，不导入 Canon。
 - `dataset.ts`：确定性生成连续历史。200 回合包括关键场景与沿途日常；500/1000 扩展只增加日常干扰项，不增加同等数量的复杂事实。
+- `adversarial.ts`：补充 200 回合同名实体对抗数据，增加另一位苏禾；原 60 题及原始剧情不变。唯一别名或稳定实体 ID 用于消歧，同名且无消歧条件的查询拒绝猜测。
 - `gold.ts`：单独人工标注的 60 题及来源、值、时序状态与授权边界，不导入剧情、索引或检索器。评测不生成或修改答案。问题、来源和正确事实在首次评测后未修改；可通过导出的答案哈希比较。
 - `retrieval.ts`：中文双字片段、实体别名、通用意图/动作约束、历史链接及来源级可见性。只读、线性扫描预计算文档特征。当前有效事实与历史已失效事实分开；角色说法始终标为未证实。未来来源及未来替代日期不会进入较早查询上下文。
 - `evaluate.ts`：只在评测阶段读取答案；检索器本身不访问答案。`run.ts` 执行四档预算两种策略；`query.ts` 可单独运行。
@@ -64,6 +65,10 @@ node node_modules/typescript/bin/tsc -p tests/experiments/p6-longmem/tsconfig.js
 500/1000 的 60 题保持各自原始查询时点，检测扩大语料时是否越过时间边界；另有独立压力探针把查询时点移到第 500/1000 回合末，观察早期物品、归属链与伏笔。探针的答案亦显式维护，不由检索器生成。
 
 ## 限制及正式集成建议
+
+`review-boundaries.test.ts` 另外验证同名人物、同标签事件、没有事实标签的原文细节和 NPC 元数据边界。原文细节以完整文字返回，不生成新的权威事实。NPC 的 `current` 表示截至查询时点的最新获准知识，不能解释为全世界的最新事实；未经授权的后继记录不会通过失效日期、替代 ID 或历史链接泄漏。没有消歧能力的表达仍可能漏检。
+
+验收证据从 `docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/review/summary.md` 进入；`node tests/experiments/p6-longmem/verify-evidence.ts` 校验原证据及冻结答案哈希，记录最终文件指纹。它是验收工具，不是游戏接口。
 
 合成词典和人工元数据不能代表真实长局叙事质量，60 题也不是隐藏测试集。关键词意图与实体消歧在自然表达变体上可能失败；足够证据标志是启发式判断。当前 NPC 权限是**整条来源**模拟，未模拟生产 grant、遗忘曲线、召回修订或跨分支规则，不能声称 P4/P5 验收通过。
 

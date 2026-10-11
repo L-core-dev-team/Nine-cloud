@@ -31,17 +31,21 @@ function visible(source: Source, query: Query): boolean {
     && (!query.gameMinuteRange || (source.gameMinute >= query.gameMinuteRange[0] && source.gameMinute <= query.gameMinuteRange[1]))
     && (query.audience.kind === 'player' || source.authorizedNpcIds.includes(query.audience.npcId));
 }
-function materialize(source: Source, query: Query, score: number): Evidence {
-  return { ...source, score,
-    // At an earlier query clock, do not disclose a future supersession date.
-    facts: source.facts.map(f => {
-      if (f.validUntil !== undefined && f.validUntil > query.asOfTurn) {
-        const { validUntil, ...known } = f;
-        return known;
-      }
-      return { ...f };
-    }),
-    factStates: source.facts.map(f => ({
+function materialize(source: Source, query: Query, score: number, data: Dataset): Evidence {
+  // Knowledge visibility is independent of the requested retrieval range.
+  const readable = (s: Source) => s.turnId <= query.asOfTurn
+    && (query.audience.kind === 'player' || s.authorizedNpcIds.includes(query.audience.npcId));
+  const facts = source.facts.map(f => {
+    const known = { ...f };
+    if (known.validUntil !== undefined && (known.validUntil > query.asOfTurn
+      || (query.audience.kind === 'npc' && !data.turns.some(s => readable(s)
+        && s.facts.some(next => next.supersedes === f.id && next.validFrom === known.validUntil))))) delete known.validUntil;
+    if (known.supersedes && !data.turns.some(s => readable(s) && s.facts.some(previous => previous.id === known.supersedes))) delete known.supersedes;
+    return known;
+  });
+  return { ...source, score, facts,
+    historicalSources: source.historicalSources.filter(id => data.turns.some(s => s.sourceId === id && readable(s))),
+    factStates: facts.map(f => ({
     factId: f.id, kind: f.kind,
     status: f.kind === 'character-claim' ? 'unverified' as const
       : f.validUntil !== undefined && f.validUntil <= query.asOfTurn ? 'historical' as const : 'current' as const,
@@ -88,7 +92,12 @@ export class HistoryIndex {
     const npcId = query.audience.kind === 'npc' ? query.audience.npcId : undefined;
     if (npcId && !this.data.entities.some(e => e.kind === 'person' && e.id === npcId)) throw new TypeError('Unknown NPC');
     const queryGrams = grams(query.text);
-    const entities = this.data.entities.filter(e => e.id !== 'p-player' && [e.name, ...e.aliases].some(alias => alias && query.text.includes(alias)));
+    const explicitIds = new Set(query.text.match(/\b[pli]-[a-z0-9-]+\b/gi) ?? []);
+    const entityMatches = this.data.entities.filter(e => e.id !== 'p-player' && (explicitIds.has(e.id) || [e.name, ...e.aliases].some(alias => alias && query.text.includes(alias))));
+    const uniqueAlias = (entity: Dataset['entities'][number]) => explicitIds.has(entity.id) || entity.aliases.some(alias => query.text.includes(alias)
+      && !this.data.entities.some(other => other.id !== entity.id && [other.id, other.name, ...other.aliases].includes(alias)));
+    const entities = entityMatches.filter(e => !entityMatches.some(other => other.id !== e.id && other.name === e.name && uniqueAlias(other)));
+    const ambiguousEntity = entities.some(e => !uniqueAlias(e) && entities.some(other => other.id !== e.id && other.name === e.name && !uniqueAlias(other)));
     const items = entities.filter(e => e.kind === 'item').map(e => e.id);
     const people = entities.filter(e => e.kind === 'person'
       && (query.audience.kind !== 'npc' || e.id !== query.audience.npcId)).map(e => e.id);
@@ -103,13 +112,15 @@ export class HistoryIndex {
     const requestedActions = ['盗走', '烧毁', '击败', '结为道侣', '获得王位', '杀害', '销毁', '出售'].filter(x => query.text.includes(x));
     const requestedGiftObject = query.text.match(/(?:把|将)([^，。？]+?)(?:送给|赠给|交给|转交给)/)?.[1];
     let ranked: Evidence[];
-    if (strategy === 'recent') {
-      ranked = this.documents.filter(d => visible(d.source, query)).map(d => materialize(d.source, query, d.source.turnId)).reverse();
+    if (strategy === 'historical' && ambiguousEntity) {
+      ranked = [];
+    } else if (strategy === 'recent') {
+      ranked = this.documents.filter(d => visible(d.source, query)).map(d => materialize(d.source, query, d.source.turnId, this.data)).reverse();
     } else {
       const matched: Evidence[] = [];
       for (const doc of this.documents) {
         const s = doc.source;
-        if (!visible(s, query) || !s.facts.length) continue;
+        if (!visible(s, query)) continue;
         if (eventId && !s.eventIds.includes(eventId)) continue;
         if (requestedActions.length && !requestedActions.every(x => s.narrative.includes(x))) continue;
         if (requestedGiftObject && !s.narrative.includes(requestedGiftObject)) continue;
@@ -121,17 +132,20 @@ export class HistoryIndex {
         if (items.length && people.length && /转交|购买|买下/.test(query.text)
           && !people.every(id => s.participants.includes(id))) continue;
         const featureHits = intents.filter(c => c.tags.some(tag => doc.features.has(tag))).length;
-        if (!eventId && intents.length && !featureHits) continue;
+        if (!eventId && intents.length && !featureHits
+          && !(s.facts.length === 0 && intents.some(c => c.query.test(s.narrative)))) continue;
         const overlap = [...queryGrams].filter(g => doc.grams.has(g)).length;
         const entityHits = entityIds.filter(id => s.participants.includes(id) || s.items.includes(id) || s.facts.some(f => f.subject === id)).length;
+        // Unannotated prose needs an explicit entity and a lexical match; it is never promoted to a fact.
+        if (!s.facts.length && !eventId && (!entityHits || overlap < 2)) continue;
         if (!eventId && overlap < 2 && !(featureHits && entityHits)) continue;
         let score = overlap + featureHits * 12 + entityIds.filter(id => s.participants.includes(id) || s.items.includes(id) || s.facts.some(f => f.subject === id)).length * 5;
         // Preserve uncertainty; prioritize directly related confirmed facts without promoting claims.
         if (!/传闻|说法|原文|气味|封面/.test(query.text) && s.facts.some(f => f.kind === 'world-event')) score += 3;
         if (eventId) score += 100;
         if (first && !temporalChain) score += 100 / (1 + s.turnId / 10);
-        if (now && !temporalChain) score += s.facts.some(f => f.kind !== 'character-claim' && (f.validUntil === undefined || f.validUntil > query.asOfTurn)) ? 25 : -25;
-        matched.push(materialize(s, query, score));
+        if (now && !temporalChain) score += materialize(s, query, 0, this.data).facts.some(f => f.kind !== 'character-claim' && (f.validUntil === undefined || f.validUntil > query.asOfTurn)) ? 25 : -25;
+        matched.push(materialize(s, query, score, this.data));
       }
       ranked = matched.sort((a, b) => b.score - a.score || a.turnId - b.turnId);
       // Follow historical links only for multi-stage queries, and ONLY after visibility filtering.
@@ -141,7 +155,7 @@ export class HistoryIndex {
         for (const current of queue) for (const id of current.historicalSources) {
           const s = this.data.turns.find(s => s.sourceId === id);
           if (s && !seen.has(id) && visible(s, query)) {
-            const evidence = materialize(s, query, current.score * 0.9);
+            const evidence = materialize(s, query, current.score * 0.9, this.data);
             ranked.push(evidence); queue.push(evidence); seen.add(id);
           }
         }
@@ -149,12 +163,12 @@ export class HistoryIndex {
       }
     }
     const packed = packEvidence(ranked, budget, maxSources);
-    const hasFacts = packed.evidence.some(s => s.facts.length > 0);
+    const hasEvidence = packed.evidence.length > 0;
     const chainComplete = !temporalChain || !packed.omittedSourceIds.length;
     // No generated answer: this flag describes only whether this evidence selection appears sufficient.
-    const enoughEvidence = strategy === 'recent' ? packed.evidence.length > 0 : hasFacts && chainComplete;
+    const enoughEvidence = hasEvidence && (strategy === 'recent' || chainComplete);
     return { strategy, ranked, ...packed, enoughEvidence,
-      reason: !hasFacts ? '证据不足' : !chainComplete ? '预算或条数限制导致相关来源缺失；证据不足' : strategy === 'recent' ? '近期截取未验证相关性；不能据此回答' : '已返回相关原始来源；仍须按标注区分说法与事实',
+      reason: strategy === 'historical' && ambiguousEntity ? '同名实体有歧义；请提供唯一别名或实体 ID，证据不足' : !hasEvidence ? '证据不足' : !chainComplete ? '预算或条数限制导致相关来源缺失；证据不足' : strategy === 'recent' ? '近期截取未验证相关性；不能据此回答' : '已返回相关原始来源；仍须按标注区分说法与事实',
       estimatedTokens: estimateTokens(packed.context), tokenMethod,
       contextBytes: Buffer.byteLength(packed.context, 'utf8'), elapsedMs: performance.now() - started,
     };
