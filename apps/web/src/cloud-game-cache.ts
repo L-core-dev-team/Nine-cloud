@@ -6,11 +6,14 @@ export type PendingGameAction = {
   text: string; expectedRevision: number; idempotencyKey: string;
   requestNarrative: boolean; clarificationOf?: string;
   draftVersion: number;
+  delivery?: 'prepared' | 'sent';
 };
+export type ReadingPosition = { entryId: string; fraction: number };
 export type ReadingTurn = { id: string; revision: number; text: string; receipt: TurnReceipt };
 export type GameCache = {
   key: string; account: string; epoch: number; version: 1;
   draft: string; draftVersion: number; pending: PendingGameAction | null; history: ReadingTurn[];
+  position?: ReadingPosition;
 };
 export interface GameCacheStore {
   read(scope: GameCacheScope): Promise<GameCache>;
@@ -29,6 +32,19 @@ export function emptyGameCache(scope: GameCacheScope, epoch: number): GameCache 
   return { ...cacheIdentity(scope), epoch, version: 1, draft: '', draftVersion: 0, pending: null, history: [] };
 }
 function checkSize(value: GameCache) {
+  if (typeof value.draft !== 'string' || !Number.isSafeInteger(value.draftVersion) || value.draftVersion < 0 || !Array.isArray(value.history)) throw new Error('GAME_CACHE_INVALID');
+  if (value.pending && (typeof value.pending.text !== 'string' || value.pending.text.length > 8000
+    || !Number.isSafeInteger(value.pending.expectedRevision) || value.pending.expectedRevision < 0
+    || typeof value.pending.idempotencyKey !== 'string' || !/^[a-f\d]{8}(-[a-f\d]{4}){3}-[a-f\d]{12}$/i.test(value.pending.idempotencyKey)
+    || !Number.isSafeInteger(value.pending.draftVersion) || value.pending.draftVersion < 0
+    || (value.pending.delivery !== undefined && !['prepared', 'sent'].includes(value.pending.delivery))
+    || typeof value.pending.requestNarrative !== 'boolean')) throw new Error('GAME_CACHE_INVALID');
+  if (value.position && (typeof value.position.entryId !== 'string' || !Number.isFinite(value.position.fraction)
+    || value.position.fraction < 0 || value.position.fraction > 1)) throw new Error('GAME_CACHE_INVALID');
+  for (const row of value.history) {
+    const receipt = TurnReceiptSchema.parse(row.receipt);
+    if (typeof row.text !== 'string' || row.id !== receipt.idempotencyKey || row.revision !== receipt.resultingRevision) throw new Error('GAME_CACHE_INVALID');
+  }
   if (value.draft.length > 8000 || value.history.length > 1000
     || new TextEncoder().encode(JSON.stringify(value)).length > 4_000_000) throw new Error('GAME_CACHE_FULL');
 }
@@ -64,6 +80,8 @@ export class IndexedGameCache implements GameCacheStore {
           const value = (request.result as GameCache | undefined) ?? emptyGameCache(scope, currentEpoch);
           if (value.version !== 1 || value.key !== identity.key || value.account !== identity.account || value.epoch !== currentEpoch)
             throw new Error('GAME_CACHE_INVALID');
+          checkSize(value);
+          if (value.history.some(row => row.receipt.saveId !== scope.saveId)) throw new Error('GAME_CACHE_INVALID');
           output = update ? update(structuredClone(value)) : value;
           if (output.key !== identity.key || output.account !== identity.account || output.epoch !== currentEpoch)
             throw new Error('GAME_CACHE_INVALID');
@@ -124,7 +142,7 @@ export async function recoverGameAction(store: GameCacheStore, scope: GameCacheS
   const cached = await store.read(scope);
   if (cached.epoch !== epoch) throw new Error('GAME_CACHE_SESSION_EXPIRED');
   if (!cached.pending) return cached;
-  const { draftVersion: _draftVersion, ...body } = cached.pending;
+  const { draftVersion: _draftVersion, delivery: _delivery, ...body } = cached.pending;
   const result = await send(body);
   return store.change(scope, epoch, current => finishGameAction(current, scope, body.idempotencyKey, result.receipt, result.text));
 }

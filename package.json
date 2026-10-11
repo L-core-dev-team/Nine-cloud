@@ -16,7 +16,7 @@
     "build": "pnpm worldbook:runtime:check && pnpm -r --filter=!@jiuxiao/scene-studio --filter=!@jiuxiao/scene-gate build && node scripts/build/write-manifest.mjs --stage S6",
     "build:pages-preview": "node scripts/build/pages-preview.mjs",
     "test:integration": "pnpm --filter @jiuxiao/api test:integration",
-    "test:e2e": "node tests/e2e/auth-login-ui.cjs && node tests/e2e/foundation.cjs && node tests/e2e/prologue.cjs && node tests/e2e/p1-authenticated-candidate.cjs && node tests/e2e/p1-action-suggestions-ui.cjs && node tests/e2e/p2-authoritative-idb.cjs && node tests/e2e/p2-gameplay.cjs",
+    "test:e2e": "node tests/e2e/auth-login-ui.cjs && node tests/e2e/foundation.cjs && node tests/e2e/prologue.cjs && node tests/e2e/p1-authenticated-candidate.cjs && node tests/e2e/p1-action-suggestions-ui.cjs && node tests/e2e/p2-authoritative-idb.cjs && node tests/e2e/p2-gameplay.cjs && node tests/e2e/cloud-game-cache.cjs && node tests/e2e/cloud-game-recovery.cjs && node tests/e2e/cloud-game-shell.cjs",
     "test:e2e:auth": "node tests/e2e/auth-login-ui.cjs",
     "license:check": "node scripts/audit/license-check.mjs",
     "scan:artifacts": "node scripts/audit/artifact-scan.mjs apps/web/dist",

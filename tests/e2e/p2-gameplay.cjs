@@ -202,7 +202,24 @@ async function stop(child) {
     await page.getByTestId('p2-cloud-game').waitFor({ state: 'visible', timeout: 20_000 });
     await page.waitForFunction(() => document.querySelector('[data-testid="p2-revision"]')?.textContent === '1', null, { timeout: 20_000 });
     await page.waitForFunction(() => document.body.innerText.includes('游戏分钟') && document.body.innerText.includes('315'), null, { timeout: 20_000 });
-    await page.getByTestId('p2-status').getByText('服务端存档已恢复').waitFor({ timeout: 20_000 });
+    await page.getByTestId('p2-status').getByText('存档已恢复。行动由服务端规则判定。').waitFor({ timeout: 20_000 });
+    // Continue the real first quest through the same editable natural-language entry.
+    for (const [text, revision] of [['去望气台', 2], ['观察落石堵渡', 3], ['去芦花渡', 4]]) {
+      await page.getByTestId('p2-action-input').fill(text);
+      await page.getByTestId('p2-submit-action').click();
+      await page.waitForFunction(revision => document.querySelector('[data-testid="p2-revision"]')?.textContent === String(revision), revision, { timeout: 20_000 });
+      await page.waitForFunction(() => !document.querySelector('[data-testid="p2-action-input"]')?.disabled);
+    }
+    const finished = (await pool.query('SELECT revision,snapshot FROM game_saves WHERE id=$1 AND owner_id=$2', [saveId, ownerId])).rows[0];
+    assert.equal(finished.snapshot.facts.questState.status, 'completed');
+    const finalCounts = (await pool.query(`SELECT (SELECT count(*)::int FROM turn_requests WHERE save_id=$1) AS requests,
+      (SELECT count(*)::int FROM turn_events WHERE save_id=$1) AS events`, [saveId])).rows[0];
+    expectedRequests = 4;
+    expectedEvents = 5;
+    assert.deepEqual(finalCounts, { requests: expectedRequests, events: expectedEvents });
+    await page.reload();
+    await page.waitForFunction(() => document.querySelector('[data-testid="p2-revision"]')?.textContent === '4');
+    await page.getByTestId('p3-world-brief').getByText('首段任务已完成，奖励尚未领取。').waitFor();
     assert.deepEqual(pageErrors, []);
 
     console.log(JSON.stringify({
@@ -215,6 +232,7 @@ async function stop(child) {
       committedEvents: expectedEvents,
       eventType: committed.rows[0].last_event,
       refreshedRevision: await page.getByTestId('p2-revision').textContent(),
+      firstQuestCompleted: finished.snapshot.facts.questState.status,
       pageErrors: pageErrors.length,
       screenshot: screenshotPath,
       accountKind: guestSession.body.account.kind,

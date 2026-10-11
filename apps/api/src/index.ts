@@ -42,6 +42,7 @@ const app = createApp({ query: sql => pool.query(sql) }, emailAuth ? {
 } : undefined, emailAuth, emailAuth ? {
   // No author rules are bundled: absent host plugin remains fail closed.
   service: new ServerTurnService(turnRepository,runtime?.rules,runtime?.narrator,120_000,runtime?.narrativeFallback),
+  readReceipt: (owner, saveId, key) => turnRepository.getReceiptForOwner(owner, saveId, key),
   games: new AuthoritativeGameService(cloudRepository,runtime),
   auth: { resolveOwnerId: async request => (await emailAuth.service.resolve(sessionToken(request)))?.ownerId || null },
   memoryRecall: turnRepository.recallObservationPage ? { reader: turnRepository.recallObservationPage } : undefined,
