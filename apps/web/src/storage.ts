@@ -255,6 +255,10 @@ export function writeActionDraft(saveId: string, text: string, previous?: Action
   let draft: ActionDraft | undefined;
   try {
     if (!readSaves().some(save => save.saveId === saveId)) return { ok: false, warning: '此存档已删除或暂不可读取，草稿未写入。请复制当前输入备份。' };
+    if (limited && previous?.text === limited && previous.key.startsWith(draftPrefix(saveId))
+      && readActionDraft(saveId).drafts.some(draft => draft.key === previous.key && draft.text === limited)) {
+      return { ok: true, draft: previous, warning: '' };
+    }
     if (limited) {
       draft = { key: `${draftPrefix(saveId)}${editorId}:${createSaveId()}`, text: limited, updatedAt: Date.now() };
       localStorage.setItem(draft.key, JSON.stringify({ version: 2, saveId, text: limited, updatedAt: draft.updatedAt }));

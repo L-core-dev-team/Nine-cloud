@@ -458,6 +458,7 @@ function LegacyGame({ save, onExport, onImportSupplement, onUpdate, onBranch, on
   const [activePanel, setActivePanel] = useState<'character' | 'intel' | 'memory' | null>(null);
   const [draftSnapshot, setDraftSnapshot] = useState(() => save ? readActionDraft(save.saveId) : { drafts: [], warning: '' });
   const currentDraft = useRef<ActionDraft | undefined>(draftSnapshot.drafts[0]);
+  const adoptedDrafts = useRef<ActionDraft[]>(currentDraft.current ? [currentDraft.current] : []);
   const [draftEditorId] = useState(createSaveId);
   const [intent, setIntent] = useState(() => currentDraft.current?.text ?? '');
   const [draftWarning, setDraftWarning] = useState(draftSnapshot.warning);
@@ -507,11 +508,14 @@ function LegacyGame({ save, onExport, onImportSupplement, onUpdate, onBranch, on
       if (!result.ok) { setDraftWarning(result.warning); return; }
     }
     currentDraft.current = draft;
+    adoptedDrafts.current.push(draft);
     setIntent(draft.text);
     setDraftSnapshot(readActionDraft(save.saveId));
   }
   function clearSubmittedDraft() {
-    const cleared = !save || !currentDraft.current || clearActionDraft(save.saveId, currentDraft.current);
+    const submitted = [...adoptedDrafts.current.filter(draft => draft.text === intent), ...(currentDraft.current ? [currentDraft.current] : [])];
+    const cleared = !save || submitted.map(draft => clearActionDraft(save.saveId, draft)).every(Boolean);
+    adoptedDrafts.current = [];
     currentDraft.current = undefined;
     setIntent('');
     setDraftWarning(cleared ? '' : '行动已加入队列，但草稿清理失败。请勿重复提交，恢复时先核对待处理队列。');

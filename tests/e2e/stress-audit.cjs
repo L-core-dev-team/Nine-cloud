@@ -208,6 +208,7 @@ async function recovery(base){
   },active);
   await test('draft-queue-success-clears-without-duplicate',async()=>{
     await input().fill('仅提交一次的待处理行动');
+    for(let n=0;n<3;n++) {await active.close();active=await ctx.newPage();await active.goto(queueGame);await input().waitFor();await input().fill('仅提交一次的待处理行动');}
     await active.getByRole('button',{name:'收入待处理',exact:true}).click();
     await active.getByRole('status').filter({hasText:'行动已加入本地待处理队列'}).waitFor();assert.equal(await input().inputValue(),'');
     await active.reload();await input().waitFor();assert.equal(await input().inputValue(),'');

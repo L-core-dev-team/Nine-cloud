@@ -88,6 +88,13 @@ it('keeps only the newest snapshot during repeated edits by the same owner', () 
   for (let n = 0; n < 100; n++) draft = writeActionDraft('a', `编辑${n}`, draft, 'one-editor').draft!;
   expect(readActionDraft('a').drafts).toEqual([draft]);
 });
+it('re-entering unchanged restored text does not leave duplicate drafts', () => {
+  let draft = writeActionDraft('a', '不变草稿', undefined, 'first-editor').draft!;
+  for (let n = 0; n < 20; n++) draft = writeActionDraft('a', '不变草稿', draft, `reopened-${n}`).draft!;
+  expect(readActionDraft('a').drafts).toEqual([draft]);
+  clearActionDraft('a', draft);
+  expect(readActionDraft('a').drafts).toEqual([]);
+});
 it('an editor recovering another active tab cannot retire its valid text', () => {
   const active = writeActionDraft('a', '甲的有效草稿', undefined, 'editor-a').draft!;
   const recoveredEdit = writeActionDraft('a', '乙的有效草稿', active, 'editor-b').draft!;
