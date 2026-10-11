@@ -19,7 +19,7 @@ import { CANDIDATE_ILLUSTRATIONS, type CandidateIllustration, type CandidateIllu
 import { SceneAtmosphere, type SceneRenderStatus } from './scenes/SceneAtmosphere';
 import { MAX_IMPORT_BYTES, migrateLegacyLibraryText, parseLegacySave } from './legacy';
 import { serializeJsonWithCredentialRedaction, serializeSaveForExport } from './export-save';
-import { clearDraft, commitSaves, createIdempotencyKey, createSaveId, hydrateSaves, readActionDraft, readDraft, readLegacyLibraryText, readSaves, writeActionDraft, writeDraft, type LocalSave } from './storage';
+import { ACTION_DRAFT_PREFIX, clearActionDraft, deleteActionDrafts, clearDraft, commitSaves, createIdempotencyKey, createSaveId, hydrateSaves, readActionDraft, readDraft, readLegacyLibraryText, readSaves, writeActionDraft, writeDraft, type ActionDraft, type LocalSave } from './storage';
 import type { SaveCommitResult } from './idb';
 import { mediaUrlForBrowser } from './media-compat';
 import { CloudHttpError, cloudRequest } from './cloud-sync';
@@ -451,16 +451,80 @@ function Game(props: GameProps) {
   if (import.meta.env.DEV && props.save?.p2ReviewCandidate && P2ReviewGame) {
     return <Suspense fallback={<section className="page" role="status">正在恢复本地审阅候选存档……</section>}><P2ReviewGame save={props.save} onBack={props.onBack ?? (() => go('/lobby'))} /></Suspense>;
   }
-  return <LegacyGame {...props} />;
+  return <LegacyGame key={props.save?.saveId} {...props} />;
 }
 
 function LegacyGame({ save, onExport, onImportSupplement, onUpdate, onBranch, onReload }: GameProps) {
   const [activePanel, setActivePanel] = useState<'character' | 'intel' | 'memory' | null>(null);
-  const [intent, setIntent] = useState(() => save ? readActionDraft(save.saveId) : '');
+  const [draftSnapshot, setDraftSnapshot] = useState(() => save ? readActionDraft(save.saveId) : { drafts: [], warning: '' });
+  const currentDraft = useRef<ActionDraft | undefined>(draftSnapshot.drafts[0]);
+  const [draftEditorId] = useState(createSaveId);
+  const [intent, setIntent] = useState(() => currentDraft.current?.text ?? '');
+  const [draftWarning, setDraftWarning] = useState(draftSnapshot.warning);
   const [feedback, setFeedback] = useState('');
   const [conflictDraft, setConflictDraft] = useState<LocalSave | null>(null);
+  const conflictActionDraft = useRef<ActionDraft | undefined>(undefined);
+  const conflictIntent = useRef('');
   const [submitting, setSubmitting] = useState(false);
   const submittingRef = useRef(false);
+  useEffect(() => {
+    if (!save) return;
+    const saveId = save.saveId;
+    const refresh = () => setDraftSnapshot(readActionDraft(saveId));
+    // Publish legacy session text independently, including when durable text differs.
+    const snapshot = readActionDraft(saveId);
+    const legacy = snapshot.drafts.find(draft => !draft.key.startsWith(ACTION_DRAFT_PREFIX));
+    if (legacy) {
+      const identical = snapshot.drafts.find(draft => draft.key.startsWith(ACTION_DRAFT_PREFIX) && draft.text === legacy.text);
+      if (identical) {
+        if (!clearActionDraft(saveId, legacy)) setDraftWarning('旧草稿已存在可靠副本，但旧标签页记录未能清理，请核对后再提交。');
+        if (currentDraft.current?.key === legacy.key) currentDraft.current = identical;
+      } else {
+        const result = writeActionDraft(saveId, legacy.text, legacy, draftEditorId);
+        if (result.ok && currentDraft.current?.key === legacy.key) currentDraft.current = result.draft;
+        if (result.warning) setDraftWarning(result.warning);
+      }
+    }
+    refresh();
+    const changed = (event: StorageEvent) => { if (event.key === null || event.key.startsWith(ACTION_DRAFT_PREFIX)) refresh(); };
+    const visible = () => { if (document.visibilityState === 'visible') refresh(); };
+    window.addEventListener('storage', changed);
+    document.addEventListener('visibilitychange', visible);
+    return () => { window.removeEventListener('storage', changed); document.removeEventListener('visibilitychange', visible); };
+  }, [save?.saveId, draftEditorId]);
+  function editIntent(text: string) {
+    if (!save) return;
+    setIntent(text);
+    const result = writeActionDraft(save.saveId, text, currentDraft.current, draftEditorId);
+    if (result.ok) currentDraft.current = result.draft;
+    setDraftWarning(result.warning);
+    setDraftSnapshot(readActionDraft(save.saveId));
+  }
+  function restoreDraft(draft: ActionDraft) {
+    if (!save) return;
+    if (intent && (intent !== currentDraft.current?.text || !readActionDraft(save.saveId).drafts.some(item => item.key === currentDraft.current?.key))) {
+      const result = writeActionDraft(save.saveId, intent, undefined, draftEditorId);
+      if (!result.ok) { setDraftWarning(result.warning); return; }
+    }
+    currentDraft.current = draft;
+    setIntent(draft.text);
+    setDraftSnapshot(readActionDraft(save.saveId));
+  }
+  function clearSubmittedDraft() {
+    const cleared = !save || !currentDraft.current || clearActionDraft(save.saveId, currentDraft.current);
+    currentDraft.current = undefined;
+    setIntent('');
+    setDraftWarning(cleared ? '' : '行动已加入队列，但草稿清理失败。请勿重复提交，恢复时先核对待处理队列。');
+    if (save) setDraftSnapshot(readActionDraft(save.saveId));
+  }
+  function clearBranchedDraft() {
+    if (intent === conflictIntent.current) { clearSubmittedDraft(); return; }
+    // Editing after a queue conflict must not be cleared by saving the older branch.
+    if (save && conflictActionDraft.current && !clearActionDraft(save.saveId, conflictActionDraft.current)) {
+      setDraftWarning('冲突行动已另存，但旧草稿未能清理，请核对待处理队列。');
+    }
+    if (save) setDraftSnapshot(readActionDraft(save.saveId));
+  }
   // GameShell records the scroll container position on scroll, preserving
   // main's navigation-race fix without competing window-scroll handlers.
   if (!save) return <section className="page"><h2>找不到这份存档</h2><p>它可能已被删除，或链接来自另一个浏览器。</p><button className="primary" onClick={() => go('/')}>回到首页</button></section>;
@@ -505,12 +569,12 @@ function LegacyGame({ save, onExport, onImportSupplement, onUpdate, onBranch, on
     try {
       const result = await onUpdate(nextSave);
       if (!result.ok) {
-        if (result.reason === 'conflict') { setConflictDraft(nextSave); setFeedback('这份存档已在另一标签页更新。较新的内容没有被覆盖；可重新载入，或把本次行动另存为分支。'); }
+        if (result.reason === 'conflict') { conflictActionDraft.current = currentDraft.current; conflictIntent.current = intent; setConflictDraft(nextSave); setFeedback('这份存档已在另一标签页更新。较新的内容没有被覆盖；可重新载入，或把本次行动另存为分支。'); }
         else setFeedback('本地数据库暂不可写。存档未更新；请导出当前资料，确认浏览器存储可用后重试。');
         return;
       }
       setConflictDraft(null);
-      setIntent(''); writeActionDraft(currentSave.saveId, '');
+      clearSubmittedDraft();
       setFeedback(commitSuccessMessage(result, '行动已加入本地待处理队列。规则结算接入前，它不会推进时间或改变角色状态。'));
     } catch {
       setFeedback('本次行动没有保存。请检查本地存储状态后重试；在收到保存反馈前，不要假定它已写入。');
@@ -536,7 +600,10 @@ function LegacyGame({ save, onExport, onImportSupplement, onUpdate, onBranch, on
         {pendingQueue.map((item, index) => <article className="pending-intent" key={String(item.idempotencyKey || index)}><span>待处理行动 {index + 1} · 尚未结算</span><p>{String(item.text)}</p></article>)}
       </div>
       <div className="game-tools" role="group" aria-label="行囊工具"><button onClick={() => go('/world')}>世界设定</button><button onClick={() => onExport(save)}>导出存档</button><label>补充资料<input type="file" accept=".txt,.md" onChange={event => { const file = event.currentTarget.files?.[0]; if (file) onImportSupplement(file, save); event.currentTarget.value = ''; }} /></label></div>
-      <form className="intent-composer" aria-busy={submitting} onSubmit={event => { event.preventDefault(); void saveIntent(); }}><label htmlFor="player-intent">此刻欲行何事</label><textarea id="player-intent" value={intent} onChange={event => { setIntent(event.target.value); writeActionDraft(save.saveId, event.target.value); }} placeholder="写下行动意图……" maxLength={4000} disabled={submitting} /><div><small>本地草稿 · 规则结算尚未接入 · {pendingCount} 项待处理</small><button className="primary" type="submit" disabled={submitting}>{submitting ? '正在保存…' : '收入待处理'}</button></div>{feedback && <p role="status">{feedback}</p>}{conflictDraft && <div className="save-conflict-actions" role="group" aria-label="存档冲突处理"><button className="secondary" type="button" disabled={submitting} onClick={() => { void onReload().then(() => { setConflictDraft(null); setFeedback('已载入最新存档。检查当前行动后，可再次提交。'); }); }}>载入最新存档</button><button className="secondary" type="button" disabled={submitting} onClick={() => { void onBranch(conflictDraft).then(saved => { if (saved) { setConflictDraft(null); setIntent(''); writeActionDraft(save.saveId, ''); setFeedback('冲突内容已另存为独立分支；原存档保持不变。'); } else setFeedback('分支未写入。请先导出冲突副本，并检查本地存储空间。'); }); }}>另存为分支</button><button className="quiet-action" type="button" disabled={submitting} onClick={() => onExport(conflictDraft)}>下载冲突副本</button></div>}</form>      </div>
+      <form className="intent-composer" aria-busy={submitting} onSubmit={event => { event.preventDefault(); void saveIntent(); }}><label htmlFor="player-intent">此刻欲行何事</label><textarea id="player-intent" value={intent} onChange={event => editIntent(event.target.value)} placeholder="写下行动意图……" maxLength={4000} disabled={submitting} /><div><small>本地草稿 · 规则结算尚未接入 · {pendingCount} 项待处理</small><button className="primary" type="submit" disabled={submitting}>{submitting ? '正在保存…' : '收入待处理'}</button></div><small>草稿保存在此设备、此站点的浏览器中；未加密，同源脚本可访问，清除站点数据后会丢失。</small>
+      {(draftWarning || draftSnapshot.warning) && <p role="status">{draftWarning || draftSnapshot.warning}</p>}
+      {draftSnapshot.drafts.some(draft => draft.text !== intent) && <section aria-label="其他未提交草稿"><p role="status">检测到其他未提交草稿，已分别保留；恢复不会自动提交。</p>{draftSnapshot.drafts.filter(draft => draft.text !== intent).map(draft => <details key={draft.key}><summary>查看另一份草稿（{draft.text.length} 字）</summary><textarea aria-label="保留的草稿" value={draft.text} readOnly maxLength={4000} /><button className="secondary" type="button" disabled={submitting} onClick={() => restoreDraft(draft)}>恢复这份草稿</button><button className="quiet-action" type="button" disabled={submitting} onClick={() => { if (!clearActionDraft(save.saveId, draft)) setDraftWarning('这份草稿未能删除，请检查浏览器存储状态。'); setDraftSnapshot(readActionDraft(save.saveId)); }}>删除这份草稿</button></details>)}</section>}
+      {feedback && <p role="status">{feedback}</p>}{conflictDraft && <div className="save-conflict-actions" role="group" aria-label="存档冲突处理"><button className="secondary" type="button" disabled={submitting} onClick={() => { void onReload().then(() => { setConflictDraft(null); setFeedback('已载入最新存档。检查当前行动后，可再次提交。'); }); }}>载入最新存档</button><button className="secondary" type="button" disabled={submitting} onClick={() => { void onBranch(conflictDraft).then(saved => { if (saved) { setConflictDraft(null); clearBranchedDraft(); setFeedback('冲突内容已另存为独立分支；原存档保持不变。'); } else setFeedback('分支未写入。请先导出冲突副本，并检查本地存储空间。'); }); }}>另存为分支</button><button className="quiet-action" type="button" disabled={submitting} onClick={() => onExport(conflictDraft)}>下载冲突副本</button></div>}</form>      </div>
       {activePanel && <GameInfoDialog label={activePanel === 'character' ? '角色状态' : activePanel === 'intel' ? '综合情报' : '星记忆'} onClose={() => setActivePanel(null)}><div className="game-readable-panel" aria-label="资料内容"><ReadableData value={panelContent} /></div></GameInfoDialog>}
     </div>
     <div className="game-statusline"><span>存档版本 {save.revision}</span><span>{pendingFromLegacy ? '旧档待恢复' : pendingCount ? `${pendingCount} 项待处理` : '等待规则结算'}</span><span>地点：{save.location}</span></div>
@@ -797,7 +864,9 @@ function App() {
       const result = await commitSaves(saves, saves.filter(item => item.saveId !== save.saveId));
       setSaves(result.saves);
       if (result.ok) {
-        if (result.warning) setNotice(commitSuccessMessage(result, '本地存档已删除。'));
+        const draftsDeleted = deleteActionDrafts(save.saveId);
+        if (!draftsDeleted) setNotice(`${commitSuccessMessage(result, '本地存档已删除。')} 遗留草稿未能清理，请在浏览器存储恢复后核对。`);
+        else if (result.warning) setNotice(commitSuccessMessage(result, '本地存档已删除。'));
         try { if (sessionStorage.getItem('jiuxiao_active_save_id') === save.saveId) sessionStorage.removeItem('jiuxiao_active_save_id'); }
         catch { /* Navigation remains available. */ }
       }

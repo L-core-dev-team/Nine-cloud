@@ -215,16 +215,77 @@ export function createIdempotencyKey(): string {
   return `${hex.slice(0, 8).join('')}-${hex.slice(8, 12).join('')}-${hex.slice(12, 16).join('')}-${hex.slice(16, 20).join('')}-${hex.slice(20).join('')}`;
 }
 
-export function readActionDraft(saveId: string): string {
-  try { return (sessionStorage.getItem(`jiuxiao_1_action_draft_${saveId}`) || '').slice(0, 4000); } catch { return ''; }
+export const ACTION_DRAFT_PREFIX = 'jiuxiao_1_action_drafts_v2_';
+export type ActionDraft = { key: string; text: string; updatedAt: number };
+export type ActionDraftSnapshot = { drafts: ActionDraft[]; warning: string };
+const draftPrefix = (saveId: string) => `${ACTION_DRAFT_PREFIX}${encodeURIComponent(saveId)}:`;
+const legacyDraftKey = (saveId: string) => `jiuxiao_1_action_draft_${saveId}`;
+const DRAFT_UNAVAILABLE = '草稿未能可靠保存。当前输入仍保留，请复制备份后再关闭页面。';
+
+/** Immutable keys avoid read/modify/write races and duplicated sessionStorage tab identities. */
+export function readActionDraft(saveId: string): ActionDraftSnapshot {
+  const drafts: ActionDraft[] = [];
+  let warning = '';
+  try {
+    const prefix = draftPrefix(saveId);
+    const keys = Array.from({ length: localStorage.length }, (_, index) => localStorage.key(index));
+    for (const key of keys) {
+      if (!key?.startsWith(prefix)) continue;
+      try {
+        const raw = localStorage.getItem(key);
+        if (raw === null) continue;
+        const value: unknown = JSON.parse(raw);
+        if (!isRecord(value) || value.version !== 2 || value.saveId !== saveId
+          || typeof value.text !== 'string' || !value.text || value.text.length > 4000
+          || typeof value.updatedAt !== 'number' || !Number.isFinite(value.updatedAt)) throw new Error('Invalid draft');
+        drafts.push({ key, text: value.text, updatedAt: value.updatedAt });
+      } catch { warning = '部分草稿记录损坏，原记录已保留；正式存档未受影响。请核对并复制当前输入。'; }
+    }
+  } catch { warning = DRAFT_UNAVAILABLE; }
+  try {
+    const text = sessionStorage.getItem(legacyDraftKey(saveId));
+    if (text) drafts.push({ key: legacyDraftKey(saveId), text: text.slice(0, 4000), updatedAt: 0 });
+  } catch { warning ||= '旧标签页草稿无法读取，请复制当前输入备份。'; }
+  return { drafts: drafts.sort((a, b) => b.updatedAt - a.updatedAt || a.key.localeCompare(b.key)), warning };
 }
 
-export function writeActionDraft(saveId: string, text: string): void {
+/** Publish first, retire only the exact immutable predecessor, never another editor's new key. */
+export function writeActionDraft(saveId: string, text: string, previous?: ActionDraft, editorId = createSaveId()): { draft?: ActionDraft; warning: string; ok: boolean } {
+  const limited = text.slice(0, 4000);
+  let draft: ActionDraft | undefined;
   try {
-    const key = `jiuxiao_1_action_draft_${saveId}`;
-    if (text) sessionStorage.setItem(key, text.slice(0, 4000));
-    else sessionStorage.removeItem(key);
-  } catch { /* The unsaved text remains in the current component state. */ }
+    if (!readSaves().some(save => save.saveId === saveId)) return { ok: false, warning: '此存档已删除或暂不可读取，草稿未写入。请复制当前输入备份。' };
+    if (limited) {
+      draft = { key: `${draftPrefix(saveId)}${editorId}:${createSaveId()}`, text: limited, updatedAt: Date.now() };
+      localStorage.setItem(draft.key, JSON.stringify({ version: 2, saveId, text: limited, updatedAt: draft.updatedAt }));
+    }
+  } catch { return { ok: false, warning: DRAFT_UNAVAILABLE }; }
+  // A recovered record can still belong to an active editor in another tab.
+  const canRetire = previous && (previous.key.startsWith(`${draftPrefix(saveId)}${editorId}:`) || previous.key === legacyDraftKey(saveId));
+  const cleared = canRetire ? clearActionDraft(saveId, previous) : true;
+  return { ok: true, ...(draft ? { draft } : {}), warning: cleared ? '' : '新草稿已保存，但旧草稿未能清理；恢复时请核对，避免重复提交。' };
+}
+
+export function clearActionDraft(saveId: string, draft: ActionDraft): boolean {
+  try {
+    if (draft.key === legacyDraftKey(saveId)) {
+      const current = sessionStorage.getItem(draft.key);
+      if (current !== null && current.slice(0, 4000) !== draft.text) return false;
+      sessionStorage.removeItem(draft.key);
+    } else if (draft.key.startsWith(draftPrefix(saveId))) localStorage.removeItem(draft.key);
+    else return false;
+    return true;
+  } catch { return false; }
+}
+
+/** Delete only after the formal save deletion commits. Stale editors refuse new orphan writes. */
+export function deleteActionDrafts(saveId: string): boolean {
+  try {
+    const keys = Array.from({ length: localStorage.length }, (_, index) => localStorage.key(index));
+    for (const key of keys) if (key?.startsWith(draftPrefix(saveId))) localStorage.removeItem(key);
+    sessionStorage.removeItem(legacyDraftKey(saveId));
+    return true;
+  } catch { return false; }
 }
 
 export function nonNegativeInteger(value: unknown, fallback = 0): number {
