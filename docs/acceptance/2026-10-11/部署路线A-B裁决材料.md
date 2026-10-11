@@ -40,7 +40,7 @@
 
 **裁决落地含义**：
 1. **拓扑 ③**：前端维持 Cloudflare Pages（`play.jiuxiaogame.cn` 生产入口，/api 经 Pages Function 中继——仓库已有 auth relay 提交）；API 以 Docker Compose + Caddy 部署于 `jiuxiao-api`（182.254.211.228），`api.jiuxiaogame.cn` 已指向。跨域 Cookie/CORS 验证列入 P2 清单。
-2. **路线 A 首步（P2 前置件）**：起草**入口封锁规则**（Caddy/边缘层显式阻断账号端点，非"隐藏前端按钮"）+ **SMTP 预检方案**，两份按手册要求留批准记录后再启动 P2 部署。
+2. **路线 A 首步（P2 前置件）**：起草**入口封锁规则**（Caddy/边缘层显式阻断账号端点，非"隐藏前端按钮"）+ **SMTP 预检方案**，两份按手册要求留批准记录后再启动 P2 部署。——**已完成起草（2026-10-11）**：[路线A入口封锁规则](路线A入口封锁规则.md)（双层边缘封锁 + 验收断言 + 升级 B 解除步骤）与[路线A邮件发信预检方案-SES-API](路线A邮件发信预检方案-SES-API.md)（腾讯云 SES API 替代 SMTP：个人实名认证不支持 SMTP 发信，SES 域名/发信地址/模板 62795/回调 Worker 已全部就绪）；事实更正：当前 compose `AUTH_ENABLED` 已是 `${AUTH_ENABLED:-false}` 默认 false，手册记录的"固定 true"冲突已消解大半。
 3. **并行件**：数据政策（`ACCOUNT_DATA_POLICY`）与真实邮件验收按路线 B 需求准备，不阻塞路线 A 上线。
 4. **公安联网备案依赖（2026-10-11 部署负责人澄清）**：备案审查以**网站已部署上线、内容可访问**为前提——部署顺序由此确定为"合规上线 → 提交公安备案"，与"先 A 后 B"天然一致。
 5. `RULES_NOT_READY` 保持 fail-closed：路线 A 上线的网站中行动结算仍关闭，这是诚实状态。
