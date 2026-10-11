@@ -45,3 +45,18 @@
 原专业专项10组PASS：五岗和全部高级字段、50弹窗/100位置、焦点失败0、文字对比度失败0；175个Web单测、六组本地旅程、八组模拟CloudGame展示、96项窄屏均通过。Foundation设计结果：20张设计基线已生成，4396个文字样本、572个控制边界样本；专业失败0，390px夜间世界书说明动态图样本1失败（4.16:1 < 4.5:1）。Foundation整体FAIL，不能称设计验收通过。保持相同SHA与原审计函数的窄范围3批/9帧复核未复现，但不抹去首次失败。相关main.tsx/style.css/审计模块相对cd417c6没有改变，未证明此失败由D8引入；动态图稳定性风险待水龙吟后续复核。
 
 证据根目录：水龙吟专用/临时/S-FINAL/s-handoff-20261010；快照C:\Users\11954\Desktop\水龙吟专用\临时\S-FINAL\s-handoff-20261010\final-7407cc0，evidence.json保存日志/JSON的SHA-256。完整数据库E2E、content失败项没有因D8被绕过；其旧结果与版本在冻结报告单列。真实手机和人工UI审查不由模拟触屏替代。
+
+## 独立复验（2026-10-11，main 现状；非水龙吟工作位执行）
+
+**结论：D8 修复候选在 main 最新提交上独立复验 PASS（本节实测范围）。** 复验对象为 main 提交 `208ee6c18a1979363f62d144331c9b7d4646e25f`（PR #74 合并点，含 7407cc0 修复），干净工作树构建（构建清单实记 "Built web, API and schema at 208ee6c… clean worktree; 0 changed paths"）。执行环境：本机 Edge（`C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe`），与专项测试默认浏览器一致。
+
+| 检查 | 结果 | 说明 |
+| --- | --- | --- |
+| `node tests/e2e/professional-focus.cjs` | PASS（退出 0） | 10/10 视口×主题组：语义标题进入、按服务商精确返回、迟到目录渲染、Tab/Shift+Tab、Escape、模拟触屏、隐藏目标回退、关闭重开与离页卸载。 |
+| `node tests/e2e/professional-quality.cjs` | PASS（退出 0） | 10 组全过：五岗、高级字段展开、50 弹窗/100 位置文字对比度失败 0、**焦点失败 0**（即 closeout 第 49 行断言与第 74 行汇总断言均通过）、固定操作栏与备案避让保持。 |
+
+证据归档：[D8-焦点复验](../2026-10-11/D8-焦点复验/)（`professional-focus.json` SHA-256 `5BB7456878EAC260262190E04BD7AAEE3E52CB2F1C7F7ABE708E07F4ED3362F5`；`professional-quality.json` SHA-256 `B75F584B8FC50B3CDC0FD75F03A90DB68883773176F9FBF3DEDC744208107D1F`）。
+
+边界：本节为桌面/模拟视口证据，不替代目标 iPhone/Harmony 实机键盘与触控验收，不替代作者本人 UI 签收；不回写、不修改上方水龙吟 closeout 历史记录（D8 的 FAIL 登记保留为 7407cc0 修复前的历史状态）。closeout 报告中"专业详情切换焦点仍 FAIL"自此节起在 main 现状上已被本复验取代为 PASS（实测范围）；Pro 台账如需把 D8 从"部分完成"改为"完成（实测范围）"，应由对应负责人按台账流程销账。
+
+——AI 代理执行（LYL 授权）+ Bird 复核代理，2026-10-11。

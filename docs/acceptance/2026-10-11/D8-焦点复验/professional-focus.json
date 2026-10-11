@@ -1,0 +1,235 @@
+{
+  "sourceHead": "208ee6c18a1979363f62d144331c9b7d4646e25f",
+  "build": {
+    "product": "jiuxiao",
+    "stage": "S6",
+    "kind": "web",
+    "commit": "208ee6c18a1979363f62d144331c9b7d4646e25f",
+    "sourceTree": "clean",
+    "dirtyPathCount": 0,
+    "saveSchemaVersion": 3,
+    "canonArtifactHash": "sha256:ee4237a75d64729cdfba08937dc40f81855e59c90bd5c88fc4eb24e29a2a4572"
+  },
+  "results": [
+    {
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "theme": "night",
+      "status": "PASS",
+      "entry": {
+        "tag": "H2",
+        "id": "ai-modal-title"
+      },
+      "keyboard": true,
+      "exactReturn": true,
+      "safeFallback": true,
+      "delayedInventory": true,
+      "nativeModal": true,
+      "touch": true,
+      "hiddenFocus": false,
+      "closeAndReopen": true,
+      "navigationUnmount": true,
+      "realDevice": false
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "theme": "day",
+      "status": "PASS",
+      "entry": {
+        "tag": "H2",
+        "id": "ai-modal-title"
+      },
+      "keyboard": true,
+      "exactReturn": true,
+      "safeFallback": true,
+      "delayedInventory": true,
+      "nativeModal": true,
+      "touch": true,
+      "hiddenFocus": false,
+      "closeAndReopen": true,
+      "navigationUnmount": true,
+      "realDevice": false
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "night",
+      "status": "PASS",
+      "entry": {
+        "tag": "H2",
+        "id": "ai-modal-title"
+      },
+      "keyboard": true,
+      "exactReturn": true,
+      "safeFallback": true,
+      "delayedInventory": true,
+      "nativeModal": true,
+      "touch": true,
+      "hiddenFocus": false,
+      "closeAndReopen": true,
+      "navigationUnmount": true,
+      "realDevice": false
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "day",
+      "status": "PASS",
+      "entry": {
+        "tag": "H2",
+        "id": "ai-modal-title"
+      },
+      "keyboard": true,
+      "exactReturn": true,
+      "safeFallback": true,
+      "delayedInventory": true,
+      "nativeModal": true,
+      "touch": true,
+      "hiddenFocus": false,
+      "closeAndReopen": true,
+      "navigationUnmount": true,
+      "realDevice": false
+    },
+    {
+      "viewport": {
+        "width": 430,
+        "height": 932
+      },
+      "theme": "night",
+      "status": "PASS",
+      "entry": {
+        "tag": "H2",
+        "id": "ai-modal-title"
+      },
+      "keyboard": true,
+      "exactReturn": true,
+      "safeFallback": true,
+      "delayedInventory": true,
+      "nativeModal": true,
+      "touch": true,
+      "hiddenFocus": false,
+      "closeAndReopen": true,
+      "navigationUnmount": true,
+      "realDevice": false
+    },
+    {
+      "viewport": {
+        "width": 430,
+        "height": 932
+      },
+      "theme": "day",
+      "status": "PASS",
+      "entry": {
+        "tag": "H2",
+        "id": "ai-modal-title"
+      },
+      "keyboard": true,
+      "exactReturn": true,
+      "safeFallback": true,
+      "delayedInventory": true,
+      "nativeModal": true,
+      "touch": true,
+      "hiddenFocus": false,
+      "closeAndReopen": true,
+      "navigationUnmount": true,
+      "realDevice": false
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "theme": "night",
+      "status": "PASS",
+      "entry": {
+        "tag": "H2",
+        "id": "ai-modal-title"
+      },
+      "keyboard": true,
+      "exactReturn": true,
+      "safeFallback": true,
+      "delayedInventory": true,
+      "nativeModal": true,
+      "touch": true,
+      "hiddenFocus": false,
+      "closeAndReopen": true,
+      "navigationUnmount": true,
+      "realDevice": false
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "theme": "day",
+      "status": "PASS",
+      "entry": {
+        "tag": "H2",
+        "id": "ai-modal-title"
+      },
+      "keyboard": true,
+      "exactReturn": true,
+      "safeFallback": true,
+      "delayedInventory": true,
+      "nativeModal": true,
+      "touch": true,
+      "hiddenFocus": false,
+      "closeAndReopen": true,
+      "navigationUnmount": true,
+      "realDevice": false
+    },
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "theme": "night",
+      "status": "PASS",
+      "entry": {
+        "tag": "H2",
+        "id": "ai-modal-title"
+      },
+      "keyboard": true,
+      "exactReturn": true,
+      "safeFallback": true,
+      "delayedInventory": true,
+      "nativeModal": true,
+      "touch": true,
+      "hiddenFocus": false,
+      "closeAndReopen": true,
+      "navigationUnmount": true,
+      "realDevice": false
+    },
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "theme": "day",
+      "status": "PASS",
+      "entry": {
+        "tag": "H2",
+        "id": "ai-modal-title"
+      },
+      "keyboard": true,
+      "exactReturn": true,
+      "safeFallback": true,
+      "delayedInventory": true,
+      "nativeModal": true,
+      "touch": true,
+      "hiddenFocus": false,
+      "closeAndReopen": true,
+      "navigationUnmount": true,
+      "realDevice": false
+    }
+  ]
+}

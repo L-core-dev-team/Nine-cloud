@@ -1,0 +1,126 @@
+{
+  "results": [
+    {
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "theme": "night",
+      "status": "PASS",
+      "expandedFields": true,
+      "dialogs": 5,
+      "dialogPositions": 2,
+      "realDevice": false
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "theme": "day",
+      "status": "PASS",
+      "expandedFields": true,
+      "dialogs": 5,
+      "dialogPositions": 2,
+      "realDevice": false
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "night",
+      "status": "PASS",
+      "expandedFields": true,
+      "dialogs": 5,
+      "dialogPositions": 2,
+      "realDevice": false
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "day",
+      "status": "PASS",
+      "expandedFields": true,
+      "dialogs": 5,
+      "dialogPositions": 2,
+      "realDevice": false
+    },
+    {
+      "viewport": {
+        "width": 430,
+        "height": 932
+      },
+      "theme": "night",
+      "status": "PASS",
+      "expandedFields": true,
+      "dialogs": 5,
+      "dialogPositions": 2,
+      "realDevice": false
+    },
+    {
+      "viewport": {
+        "width": 430,
+        "height": 932
+      },
+      "theme": "day",
+      "status": "PASS",
+      "expandedFields": true,
+      "dialogs": 5,
+      "dialogPositions": 2,
+      "realDevice": false
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "theme": "night",
+      "status": "PASS",
+      "expandedFields": true,
+      "dialogs": 5,
+      "dialogPositions": 2,
+      "realDevice": false
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "theme": "day",
+      "status": "PASS",
+      "expandedFields": true,
+      "dialogs": 5,
+      "dialogPositions": 2,
+      "realDevice": false
+    },
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "theme": "night",
+      "status": "PASS",
+      "expandedFields": true,
+      "dialogs": 5,
+      "dialogPositions": 2,
+      "realDevice": false
+    },
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "theme": "day",
+      "status": "PASS",
+      "expandedFields": true,
+      "dialogs": 5,
+      "dialogPositions": 2,
+      "realDevice": false
+    }
+  ],
+  "contrastFailures": [],
+  "focusFailures": []
+}
