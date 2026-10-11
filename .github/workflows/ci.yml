@@ -73,6 +73,8 @@ jobs:
             caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
       - run: pnpm typecheck
       - run: pnpm test
+      - name: Test the Pages API relay and Route A boundary
+        run: pnpm test:pages-relay
       - run: pnpm build
       - name: Scan web artifacts for scene packages
         # Defense in depth: the workspace build excludes the unapproved scene
