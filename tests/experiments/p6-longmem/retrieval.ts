@@ -56,7 +56,7 @@ export function serializeEvidence(source: Evidence): string {
 }
 
 /** Whole original sources only; never truncate an uncertainty marker to fit. */
-export function packEvidence(ranked: Evidence[], budget: number, maxSources = 8): { evidence: Evidence[]; context: string; omittedSourceIds: string[] } {
+export function packEvidence(ranked: Evidence[], budget: number, maxSources = Number.MAX_SAFE_INTEGER): { evidence: Evidence[]; context: string; omittedSourceIds: string[] } {
   if (!Number.isSafeInteger(budget) || budget < 1 || !Number.isSafeInteger(maxSources) || maxSources < 1) throw new RangeError('Invalid budget/limit');
   const evidence: Evidence[] = [];
   let context = '';
@@ -80,7 +80,7 @@ export class HistoryIndex {
         ...concepts.flatMap(c => c.tags).filter(tag => source.facts.some(f => f.predicate.includes(tag)))]),
     }));
   }
-  search(query: Query, budget = 1024, strategy: 'recent' | 'historical' = 'historical', maxSources = 8): Retrieval {
+  search(query: Query, budget = 1024, strategy: 'recent' | 'historical' = 'historical', maxSources = Number.MAX_SAFE_INTEGER): Retrieval {
     const started = performance.now();
     if (!query.text.trim() || !Number.isSafeInteger(query.asOfTurn) || query.asOfTurn < 1 || query.asOfTurn > this.data.turns.length
       || (query.turnRange && (!query.turnRange.every(Number.isSafeInteger) || query.turnRange[0] < 1 || query.turnRange[0] > query.turnRange[1]))

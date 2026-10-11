@@ -136,6 +136,11 @@ test('packer skips oversize sources without cutting a claim qualification', () =
   assert.deepEqual(packed.evidence.map(s => s.sourceId), ['s010']);
   assert.deepEqual(packed.omittedSourceIds, ['oversize']);
 });
+test('recent baseline uses the full available budget, rather than an arbitrary eight-source ceiling', () => {
+  const r = index.search({ text: '铜铃来源', asOfTurn: 200, audience: player }, 4096, 'recent');
+  assert.ok(r.evidence.length > 8);
+  assert.ok(r.estimatedTokens <= 4096);
+});
 test('evaluator detects missing evidence, wrong fact values/status, future and unauthorized sources', () => {
   const q = goldQuestions.find(q => q.questionId === 'Q38')!;
   const result = ask('事件 e010-gift');
