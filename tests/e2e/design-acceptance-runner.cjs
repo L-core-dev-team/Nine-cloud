@@ -31,7 +31,8 @@ async function ready(url) {
     (process.platform === 'win32' && existsSync(edge) ? edge : undefined);
   const browser = await chromium.launch(executablePath ? { executablePath } : {});
   try {
-    await runDesignAcceptance(browser, `http://127.0.0.1:${webPort}`, join(root, 'test-results/e2e'));
+    const targets = process.env.UI_DESIGN_TARGETS?.split(',').map(target => target.trim()).filter(Boolean);
+    await runDesignAcceptance(browser, `http://127.0.0.1:${webPort}`, join(root, 'test-results/e2e'), { targets });
   } finally {
     await browser.close();
   }

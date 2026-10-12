@@ -1,0 +1,397 @@
+.liquid-glass-filter-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.liquid-glass-surface {
+  --jx-glass-pointer-x: 50%;
+  --jx-glass-pointer-y: 0%;
+  position: relative;
+  isolation: isolate;
+}
+
+.liquid-glass-surface--regular {
+  -webkit-backdrop-filter: blur(var(--jx-glass-blur, 12px)) saturate(var(--jx-glass-saturate, 1.2));
+  backdrop-filter: blur(var(--jx-glass-blur, 12px)) saturate(var(--jx-glass-saturate, 1.2));
+}
+
+.liquid-glass-surface--clear {
+  -webkit-backdrop-filter: blur(var(--jx-glass-blur, 2px)) saturate(var(--jx-glass-saturate, 1.5));
+  backdrop-filter: blur(var(--jx-glass-blur, 2px)) saturate(var(--jx-glass-saturate, 1.5));
+}
+
+.liquid-glass-optics {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  isolation: isolate;
+  pointer-events: none;
+}
+
+.liquid-glass-optics::before,
+.liquid-glass-optics::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  content: '';
+}
+
+.liquid-glass-optics::before {
+  background:
+    radial-gradient(72% 126% at var(--jx-glass-pointer-x) var(--jx-glass-pointer-y), rgba(247, 252, 255, 0.2), transparent 58%),
+    linear-gradient(118deg, rgba(245, 251, 255, 0.2), transparent 31%, rgba(205, 230, 243, 0.055) 73%, rgba(243, 250, 255, 0.12));
+  mix-blend-mode: screen;
+  opacity: 0.76;
+  transition: opacity 180ms ease;
+}
+
+.liquid-glass-optics::after {
+  box-shadow:
+    inset 0 1px 0 rgba(250, 254, 255, 0.58),
+    inset 1px 0 0 rgba(226, 243, 251, 0.2),
+    inset 0 -1px 0 rgba(180, 212, 228, 0.24),
+    inset -1px 0 0 rgba(208, 230, 240, 0.13);
+  opacity: 0.74;
+}
+
+.liquid-glass-surface > :not(.liquid-glass-optics) {
+  position: relative;
+  z-index: 1;
+}
+
+.liquid-glass-surface:is(button, a):hover .liquid-glass-optics::before,
+.liquid-glass-surface:is(button, a):focus-visible .liquid-glass-optics::before {
+  opacity: 1;
+}
+
+.liquid-glass-surface:is(button, a):active {
+  transform: scale(0.985);
+}
+
+.jx-shell > header[data-liquid-glass='regular'] { --jx-glass-blur: 18px; --jx-glass-saturate: 1.28; }
+.jx-shell > aside[data-liquid-glass='regular'] { --jx-glass-blur: 20px; --jx-glass-saturate: 1.24; }
+.landing-shell .portal-enter[data-liquid-glass='clear'] { --jx-glass-blur: 3px; --jx-glass-saturate: 1.38; }
+.landing-shell .landing-read-save[data-liquid-glass='clear'] { --jx-glass-blur: 2px; --jx-glass-saturate: 1.5; }
+.jx-shell > header[data-liquid-glass='regular'] { position: sticky; z-index: 10; top: 0; }
+.world-return-bar { top: 72px; }
+
+/* SVG displacement runs only inside these glass bounds. Browsers that cannot
+   render an SVG reference backdrop filter retain the existing blur layer. */
+@supports (backdrop-filter: url(#jx-liquid-glass-refract)) or (-webkit-backdrop-filter: url(#jx-liquid-glass-refract)) {
+  .liquid-lab [data-liquid-glass],
+  .jx-shell > header[data-liquid-glass],
+  .jx-shell > aside[data-liquid-glass],
+  .landing-shell .portal-enter[data-liquid-glass],
+  .landing-shell .landing-read-save[data-liquid-glass] {
+    -webkit-backdrop-filter: url(#jx-liquid-glass-refract) blur(var(--jx-glass-blur, 12px)) saturate(var(--jx-glass-saturate, 1.2));
+    backdrop-filter: url(#jx-liquid-glass-refract) blur(var(--jx-glass-blur, 12px)) saturate(var(--jx-glass-saturate, 1.2));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .liquid-glass-surface:is(button, a):active { transform: none; }
+  .liquid-glass-optics::before { transition: none; }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .liquid-glass-surface { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+}
+
+@media (prefers-contrast: more) {
+  .liquid-glass-surface { border-width: 2px; }
+  .liquid-glass-optics::after { opacity: 0.95; }
+}
+
+@media (forced-colors: active) {
+  .liquid-glass-surface { color: CanvasText !important; background: Canvas !important; border: 1px solid CanvasText !important; box-shadow: none !important; }
+  .liquid-glass-optics { display: none; }
+}
+
+/* Avoid stacking separate glass pills on top of an already-glass toolbar or menu. */
+.jx-shell > header :is(.ambient-toggle, .theme-toggle, .menu) {
+  color: #bcc8d1;
+  background: rgba(226, 242, 250, 0.09);
+  border-color: rgba(226, 242, 250, 0.46);
+  box-shadow: none;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+.jx-shell > header :is(.ambient-toggle, .theme-toggle, .menu):is(:hover, :focus-visible) {
+  background: rgba(226, 242, 250, 0.18);
+  border-color: rgba(226, 242, 250, 0.62);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.26);
+}
+:root[data-theme='day'] .jx-shell > header :is(.ambient-toggle, .theme-toggle, .menu) {
+  color: #344a57;
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(38, 58, 71, 0.96);
+}
+:root[data-theme='day'] .jx-shell > header :is(.ambient-toggle, .theme-toggle, .menu):is(:hover, :focus-visible) {
+  background: rgba(255, 255, 255, 0.42);
+  border-color: rgba(38, 58, 71, 0.98);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.76);
+}
+.jx-shell > aside :is(button, label) {
+  background: rgba(220, 238, 247, 0.06);
+  border-color: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+.jx-shell > aside :is(button, label):is(:hover, :focus-visible, :focus-within) {
+  background: rgba(220, 238, 247, 0.14);
+  border-color: rgba(220, 238, 247, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+:root[data-theme='day'] .jx-shell > aside :is(button, label) { background: rgba(255, 255, 255, 0.28); }
+.menu-overlay { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+
+:root[data-theme='day'] .jx-shell > header nav button { color: #455862; }
+:root[data-theme='day'] body:not(:has(.ai-page)) .world-page .eyebrow { color: #261f17; }
+:root[data-theme='day'] .jx-shell :is(.game-rail, .game-tools) button { color: #263b46; }
+
+/* One parent material for grouped world navigation; its child items stay thin. */
+.worldbook-categories, .atlas-collections, .world-view-switch {
+  width: fit-content;
+  max-width: 100%;
+  padding: 5px;
+  border: 1px solid var(--jx-glass-rim);
+  border-radius: var(--jx-radius-card);
+  background: var(--jx-glass-overlay-fill);
+  box-shadow: inset 0 1px 0 var(--jx-glass-highlight), 0 6px 18px rgba(3, 10, 17, 0.12);
+  -webkit-backdrop-filter: blur(12px) saturate(1.2);
+  backdrop-filter: blur(12px) saturate(1.2);
+}
+.worldbook-categories button, .atlas-collections button, .world-view-switch button {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+.worldbook-categories button[aria-pressed='true'], .atlas-collections button[aria-pressed='true'], .world-view-switch button[aria-selected='true'] {
+  background: var(--jx-glass-selected-fill);
+  border-color: var(--jx-glass-rim-strong);
+  box-shadow: inset 0 1px 0 var(--jx-glass-highlight);
+}
+.world-return-bar .secondary, .dialog-actions {
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+.world-return-bar .secondary { border-color: var(--jx-glass-rim); }
+.dialog-actions { border-top-color: rgba(220, 236, 245, 0.18); }
+:root[data-theme='day'] .dialog-actions { border-top-color: rgba(46, 68, 80, 0.2); }
+
+.scene-choice {
+  background: rgba(11, 27, 41, 0.62);
+  box-shadow: none;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+.scene-choice[aria-pressed='true'] { background: var(--jx-glass-selected-fill); box-shadow: inset 0 1px 0 var(--jx-glass-highlight); }
+.scene-choice:is(:hover, :focus-visible) { background: rgba(223, 238, 247, 0.13); }
+:root[data-theme='day'] .scene-choice { color: #203541; background: rgba(248, 248, 242, 0.62); }
+:root[data-theme='day'] .scene-choice:is(:hover, :focus-visible) { background: rgba(255, 255, 255, 0.9); }
+
+@media (max-width: 900px) {
+  .game-rail button {
+    background: rgba(224, 240, 247, 0.07);
+    border-color: transparent;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .game-rail button[aria-pressed='true'] { background: var(--jx-glass-selected-fill); box-shadow: inset 0 1px 0 var(--jx-glass-highlight); }
+  :root[data-theme='day'] .game-rail button { background: rgba(255, 255, 255, 0.28); }
+}
+
+/* Text-heavy settings and reading panels stay opaque content surfaces; the
+   floating action bar around them remains the glass layer. */
+.ai-page .settings-card { background: #0b1b29; background-image: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.ai-page .role-panel { background: #0b1b29; background-image: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.ai-page .preset-card { background: #0b1b29; background-image: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.ai-page .preset-mark { color: #122737; background: #d5e0e6; }
+.ai-page .quiet-note { padding: 8px 11px; color: #d5dfe5; background: #0b1b29; border-left: 2px solid rgba(186, 204, 214, 0.42); border-radius: 8px; }
+:root[data-theme='day'] .ai-page .settings-card,
+:root[data-theme='day'] .ai-page .role-panel,
+:root[data-theme='day'] .ai-page .preset-card { color: #283c49; background: #faf9f4; background-image: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+:root[data-theme='day'] .ai-page .preset-mark { color: #172a36; background: #e3e9ec; }
+:root[data-theme='day'] .ai-page .quiet-note { color: #344b59; background: #faf9f4; border-left-color: #697f8c; }
+
+.landing-shell .portal-enter {
+  clip-path: none;
+  border-radius: 999px;
+}
+.landing-shell .portal-enter::before { display: none; }
+.landing-shell .portal-enter::after { animation: portal-glint 1.25s cubic-bezier(0.2, 0.7, 0.2, 1) 120ms 1 both; }
+
+/* Standalone prototype. Use /__liquid-glass to run it against live scrolling content. */
+html:has(.liquid-lab),
+body:has(.liquid-lab),
+#root:has(.liquid-lab) { min-height: 100%; margin: 0; }
+
+.liquid-lab {
+  --lab-ink: #f1f0ed;
+  --lab-muted: #e1e8ed;
+  --lab-line: rgba(227, 241, 248, 0.34);
+  --lab-regular-fill: linear-gradient(122deg, rgba(14, 32, 47, 0.58), rgba(12, 25, 38, 0.46) 56%, rgba(15, 32, 45, 0.56));
+  --lab-clear-fill: linear-gradient(128deg, rgba(22, 45, 63, 0.16), rgba(28, 51, 68, 0.075) 52%, rgba(11, 28, 42, 0.18));
+  min-height: 100vh;
+  color: var(--lab-ink);
+  background: #07121d;
+  font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif;
+}
+
+.liquid-lab--day {
+  --lab-ink: #203541;
+  --lab-muted: #263b46;
+  --lab-line: rgba(46, 68, 80, 0.4);
+  --lab-regular-fill: linear-gradient(122deg, rgba(250, 250, 245, 0.76), rgba(232, 239, 239, 0.64) 56%, rgba(248, 247, 239, 0.74));
+  --lab-clear-fill: linear-gradient(128deg, rgba(255, 255, 255, 0.2), rgba(230, 241, 244, 0.11) 52%, rgba(247, 238, 216, 0.18));
+  background: #e8e8df;
+}
+
+.liquid-lab :is(button, a) { color: inherit; font: inherit; }
+.liquid-lab button { cursor: pointer; }
+.liquid-lab button:focus-visible, .liquid-lab a:focus-visible { outline: 2px solid #ead69f; outline-offset: 3px; }
+.liquid-lab--day button:focus-visible, .liquid-lab--day a:focus-visible { outline-color: #58461e; }
+
+.liquid-lab-nav {
+  position: sticky;
+  z-index: 10;
+  top: 0;
+  display: flex;
+  min-height: 72px;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(12px, 2.5vw, 34px);
+  padding: 8px clamp(16px, 4.6vw, 68px);
+  border: 1px solid var(--lab-line);
+  border-top: 0;
+  border-radius: 0 0 27px 27px;
+  background: var(--lab-regular-fill);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.62), 0 12px 32px rgba(2, 9, 15, 0.2);
+  --jx-glass-blur: 16px;
+  --jx-glass-saturate: 1.3;
+}
+
+.liquid-lab-brand { display: inline-flex; align-items: baseline; gap: 10px; color: inherit; font-size: 20px; text-decoration: none; white-space: nowrap; }
+.liquid-lab-brand span { color: var(--lab-muted); font: 12px/1.2 system-ui, sans-serif; }
+.liquid-lab-tabs { display: flex; align-items: center; gap: 3px; padding: 4px; border: 1px solid rgba(222, 240, 249, 0.2); border-radius: 999px; background: rgba(255, 255, 255, 0.045); }
+.liquid-lab-tabs button { min-width: 64px; padding: 7px 12px; border: 0; border-radius: 999px; color: inherit; background: transparent; transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease; }
+.liquid-lab-tabs button[aria-pressed='true'] { background: rgba(219, 235, 244, 0.2); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.38), 0 2px 10px rgba(5, 14, 22, 0.16); }
+.liquid-lab--day .liquid-lab-tabs button[aria-pressed='true'] { background: rgba(255, 255, 255, 0.68); box-shadow: inset 0 1px 0 #fff, 0 2px 10px rgba(30, 47, 58, 0.12); }
+.liquid-lab-tabs button:active { transform: scale(0.96); }
+.liquid-lab-nav-actions { display: flex; align-items: center; gap: 9px; }
+.liquid-lab-nav-actions > button, .liquid-lab-menu-trigger { min-width: 42px; min-height: 42px; padding: 8px 14px; border: 1px solid rgba(226, 240, 248, 0.3); border-radius: 999px; color: inherit; background: rgba(225, 240, 247, 0.09); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3); transition: background 180ms ease, border-color 180ms ease, transform 180ms ease; }
+.liquid-lab--day .liquid-lab-nav-actions > button, .liquid-lab--day .liquid-lab-menu-trigger { border-color: rgba(46, 68, 80, 0.3); background: rgba(255, 255, 255, 0.38); }
+.liquid-lab-nav-actions > button:hover, .liquid-lab-menu-trigger:hover { background: rgba(231, 244, 250, 0.18); }
+.liquid-lab-nav-actions > button:active, .liquid-lab-menu-trigger:active { transform: scale(0.96); }
+.liquid-lab-menu-anchor { position: relative; }
+.liquid-lab-popover-wrap { position: absolute; z-index: 15; top: calc(100% + 8px); right: 0; width: min(292px, calc(100vw - 26px)); transform: translateY(-7px) scale(0.96); transform-origin: top right; opacity: 0; pointer-events: none; transition: opacity 180ms ease, transform 220ms cubic-bezier(0.2, 0.75, 0.25, 1); }
+.liquid-lab-popover-wrap[data-open='true'] { transform: translateY(0) scale(1); opacity: 1; pointer-events: auto; }
+.liquid-lab-popover { display: grid; gap: 9px; padding: 18px; border: 1px solid var(--lab-line); border-radius: 22px; color: var(--lab-ink); background: var(--lab-regular-fill); box-shadow: 0 22px 54px rgba(1, 8, 14, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.62); --jx-glass-blur: 20px; --jx-glass-saturate: 1.24; }
+.liquid-lab-popover button { min-height: 42px; padding: 8px 11px; border: 0; border-radius: 12px; color: inherit; text-align: left; background: rgba(224, 239, 247, 0.1); }
+.liquid-lab--day .liquid-lab-popover button { background: rgba(255, 255, 255, 0.52); }
+.liquid-lab-popover small { color: var(--lab-muted); font: 12px/1.5 system-ui, sans-serif; }
+
+.liquid-lab-content { min-height: 100vh; }
+.liquid-lab-hero { position: relative; display: flex; min-height: min(850px, 88svh); align-items: center; overflow: hidden; background-position: center 52%; background-size: cover; isolation: isolate; }
+.liquid-lab--night .liquid-lab-hero { background-image: linear-gradient(90deg, rgba(5, 15, 25, 0.79), rgba(7, 19, 30, 0.37) 53%, rgba(6, 16, 26, 0.1)), linear-gradient(0deg, rgba(4, 13, 22, 0.2), transparent 52%), url('/scenes/gate-moonlight.webp'); }
+.liquid-lab--day .liquid-lab-hero { background-image: linear-gradient(90deg, rgba(248, 248, 242, 0.72) 0%, rgba(248, 248, 242, 0.68) 42%, rgba(248, 248, 242, 0.64) 74%, rgba(248, 248, 242, 0.62) 84%, rgba(248, 248, 242, 0) 100%), url('/scenes/candidate/mountain-gate.desktop.webp'); }
+.liquid-lab-copy { position: relative; z-index: 1; width: min(700px, 100%); padding: clamp(40px, 9vw, 132px); }
+.liquid-lab-kicker { color: #e3d5ab; font-size: 13px; letter-spacing: 0.14em; }
+.liquid-lab--day .liquid-lab-kicker { color: #3d321b; }
+.liquid-lab-copy h1 { max-width: 650px; margin: 18px 0 12px; color: inherit; font-size: clamp(32px, 6vw, 66px); font-weight: 400; line-height: 1.25; letter-spacing: 0.08em; }
+.liquid-lab-copy > p { max-width: 570px; color: var(--lab-muted); font-size: 16px; line-height: 1.9; }
+.liquid-lab-primary { display: inline-flex; min-width: 245px; min-height: 72px; align-items: center; justify-content: center; gap: 13px; margin-top: 19px; padding: 12px 24px; border: 1px solid rgba(246, 252, 255, 0.76); border-radius: 999px; color: #fbfdff; text-align: left; background: var(--lab-clear-fill); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.76), inset 0 -1px 0 rgba(188, 219, 235, 0.32), 0 14px 35px rgba(3, 10, 17, 0.24), 0 0 28px rgba(197, 227, 241, 0.16); text-shadow: 0 1px 9px rgba(0, 0, 0, 0.8); --jx-glass-blur: 2px; --jx-glass-saturate: 1.5; transition: background 180ms ease, box-shadow 180ms ease, border-radius 220ms ease, transform 180ms ease; }
+.liquid-lab--day .liquid-lab-primary { color: #1c3542; border-color: rgba(255, 255, 255, 0.88); text-shadow: 0 1px 5px rgba(255, 255, 255, 0.52); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.94), inset 0 -1px 0 rgba(77, 109, 126, 0.24), 0 14px 34px rgba(28, 48, 60, 0.18), 0 0 28px rgba(255, 255, 255, 0.25); }
+.liquid-lab-primary:hover { border-radius: 25px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 17px 40px rgba(3, 10, 17, 0.3), 0 0 34px rgba(204, 231, 244, 0.24); }
+.liquid-lab-primary:active { transform: scale(0.975); }
+.liquid-lab-primary-icon { display: grid; width: 32px; height: 32px; place-items: center; border: 1px solid rgba(255, 255, 255, 0.54); border-radius: 50%; background: rgba(231, 246, 252, 0.14); }
+.liquid-lab-primary strong, .liquid-lab-primary small { display: block; }
+.liquid-lab-primary strong { font-size: 17px; font-weight: 500; letter-spacing: 0.12em; }
+.liquid-lab-primary small { margin-top: 4px; font: 12px/1.35 system-ui, sans-serif; opacity: 0.88; }
+.liquid-lab-segment { display: flex; gap: 6px; margin-top: 19px; padding: 5px; border: 1px solid rgba(230, 242, 248, 0.28); border-radius: 999px; background: rgba(6, 18, 29, 0.24); backdrop-filter: blur(5px) saturate(1.15); }
+.liquid-lab-segment button { min-height: 38px; padding: 7px 13px; border: 1px solid transparent; border-radius: 999px; color: inherit; background: transparent; transition: border-radius 220ms ease, background 180ms ease, transform 180ms ease; }
+.liquid-lab-segment button[aria-pressed='true'] { border-color: rgba(241, 248, 251, 0.42); background: rgba(222, 240, 248, 0.2); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35); }
+.liquid-lab--day .liquid-lab-segment { border-color: rgba(46, 68, 80, 0.48); background: rgba(248, 248, 242, 0.82); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88), 0 8px 24px rgba(28, 48, 60, 0.14); }
+.liquid-lab-segment button:active { transform: scale(0.96); }
+
+.liquid-lab-notes { max-width: 1180px; margin: 0 auto; padding: clamp(44px, 8vw, 100px) clamp(20px, 5vw, 64px) 42px; }
+.liquid-lab-notes h2 { margin: 12px 0; font-size: clamp(26px, 4vw, 40px); font-weight: 400; }
+.liquid-lab-notes > p { max-width: 740px; color: var(--lab-muted); line-height: 1.9; }
+.liquid-lab-scene-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 28px 0; }
+.liquid-lab-scene-grid figure { position: relative; height: clamp(140px, 24vw, 270px); margin: 0; overflow: hidden; border: 1px solid var(--lab-line); border-radius: 22px; background: #10202b; }
+.liquid-lab-scene-grid img { width: 100%; height: 100%; object-fit: cover; }
+.liquid-lab-scene-grid figcaption { position: absolute; right: 0; bottom: 0; left: 0; padding: 28px 16px 12px; color: #fff; background: linear-gradient(0deg, rgba(3, 10, 17, 0.72), transparent); }
+.liquid-lab-reading { display: grid; gap: 12px; }
+.liquid-lab-reading p { max-width: none; margin: 0; padding: 19px 0; color: var(--lab-muted); border-bottom: 1px solid var(--lab-line); line-height: 1.9; }
+.liquid-lab-float { position: fixed; z-index: 8; right: clamp(18px, 4vw, 56px); bottom: calc(20px + env(safe-area-inset-bottom)); display: grid; width: 58px; height: 58px; place-items: center; border: 1px solid rgba(246, 252, 255, 0.76); border-radius: 50%; color: #fff; font: 23px/1 system-ui, sans-serif; background: var(--lab-clear-fill); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.76), 0 12px 30px rgba(3, 10, 17, 0.3); --jx-glass-blur: 2px; --jx-glass-saturate: 1.5; transition: border-radius 200ms ease, transform 180ms ease, box-shadow 180ms ease; }
+.liquid-lab-float:hover { border-radius: 20px; }
+.liquid-lab-float:active { transform: scale(0.95); }
+.liquid-lab--day .liquid-lab-float { color: #1f3846; border-color: rgba(255, 255, 255, 0.9); }
+.liquid-lab-status { display: flex; flex-wrap: wrap; align-items: center; gap: 5px 16px; padding: 14px clamp(20px, 5vw, 64px) max(18px, env(safe-area-inset-bottom)); border-top: 1px solid var(--lab-line); color: var(--lab-muted); font: 11px/1.45 system-ui, sans-serif; }
+.liquid-lab-status a { pointer-events: auto; }
+
+.liquid-lab[data-glass-fallback='true'] [data-liquid-glass] {
+  background: rgba(11, 27, 41, 0.9);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.liquid-lab--day[data-glass-fallback='true'] [data-liquid-glass] { color: #203541; background: rgba(248, 248, 242, 0.94); }
+
+.liquid-lab[data-glass-force-blur='true'] [data-liquid-glass] {
+  -webkit-backdrop-filter: blur(var(--jx-glass-blur, 12px)) saturate(var(--jx-glass-saturate, 1.2));
+  backdrop-filter: blur(var(--jx-glass-blur, 12px)) saturate(var(--jx-glass-saturate, 1.2));
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .liquid-lab [data-liquid-glass] { background: rgba(11, 27, 41, 0.94); }
+  .liquid-lab--day [data-liquid-glass] { color: #203541; background: rgba(248, 248, 242, 0.96); }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .liquid-lab [data-liquid-glass] { color: #f1f0ed; background: #0b1b29 !important; box-shadow: none; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+  .liquid-lab--day [data-liquid-glass] { color: #203541; background: #f8f8f2 !important; }
+  .liquid-lab .liquid-glass-optics { display: none; }
+}
+
+@media (prefers-contrast: more) {
+  .liquid-lab [data-liquid-glass] { border-width: 2px; }
+}
+
+@media (forced-colors: active) {
+  .liquid-lab [data-liquid-glass] { color: CanvasText !important; background: Canvas !important; border: 1px solid CanvasText !important; }
+  .liquid-lab .liquid-glass-optics { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .liquid-lab :is(*, *::before, *::after) { scroll-behavior: auto !important; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  .liquid-lab :is(button, a):active { transform: none !important; }
+}
+
+@media (max-width: 700px) {
+  .liquid-lab-nav { min-height: 64px; padding: 8px 12px; gap: 8px; border-radius: 0 0 21px 21px; }
+  .liquid-lab-brand { gap: 0; font-size: 17px; }
+  .liquid-lab-brand span { display: none; }
+  .liquid-lab-tabs { display: none; }
+  .liquid-lab-nav-actions { gap: 6px; }
+  .liquid-lab-nav-actions > button, .liquid-lab-menu-trigger { min-width: 40px; min-height: 40px; padding: 7px 12px; }
+  .liquid-lab-hero { min-height: 82svh; background-position: 57% center; }
+  .liquid-lab-copy { width: min(320px, calc(100% - 28px)); padding: 30px 20px 38px; }
+  .liquid-lab-copy h1 { font-size: clamp(32px, 9vw, 43px); }
+  .liquid-lab-copy > p { max-width: 340px; font-size: 14px; }
+  .liquid-lab-primary { min-height: 64px; }
+  .liquid-lab-scene-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+  .liquid-lab-scene-grid figure:last-child { display: none; }
+  .liquid-lab-status { gap: 5px 12px; font-size: 10px; }
+  .liquid-lab-float { right: 17px; bottom: 52px; width: 54px; height: 54px; }
+}

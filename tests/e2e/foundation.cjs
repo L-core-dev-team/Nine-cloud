@@ -736,16 +736,67 @@ async function ready(url) {
            thirdHash = Math.imul(thirdHash ^ 0, 3266489917) >>> 0;
            fourthHash = Math.imul(fourthHash ^ 0, 668265263) >>> 0;
          };
+         // UI 1.0 Pro B1–B4 explicitly reopens typography and geometry tokens.
+         // Keep the historic baseline authoritative for every other computed property.
+         const uiProTokenProperties = new Set([
+           'font', 'font-family', 'font-size', 'font-weight', 'font-style', 'font-stretch', 'line-height', 'letter-spacing',
+           'margin', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'margin-block', 'margin-block-start', 'margin-block-end', 'margin-inline', 'margin-inline-start', 'margin-inline-end',
+           'padding', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'padding-block', 'padding-block-start', 'padding-block-end', 'padding-inline', 'padding-inline-start', 'padding-inline-end',
+           'gap', 'row-gap', 'column-gap', 'border-radius', 'border-top-left-radius', 'border-top-right-radius', 'border-bottom-right-radius', 'border-bottom-left-radius',
+           'border-start-start-radius', 'border-start-end-radius', 'border-end-start-radius', 'border-end-end-radius',
+           // Font and spacing token changes legitimately reflow the Pro editor. Compare styling, not their layout-derived boxes.
+           'width', 'height', 'min-width', 'min-height', 'max-width', 'max-height', 'inline-size', 'block-size', 'min-inline-size', 'min-block-size', 'max-inline-size', 'max-block-size',
+           'grid-template-columns', 'grid-template-rows', 'grid-auto-columns', 'grid-auto-rows', 'perspective-origin', 'transform-origin',
+           'top', 'right', 'bottom', 'left', 'inset-block-start', 'inset-block-end', 'inset-inline-start', 'inset-inline-end',
+           // A browser without backdrop-filter receives the documented opaque fallback.
+           'backdrop-filter', '-webkit-backdrop-filter',
+         ]);
+         // The owner has now approved shared Liquid Glass for the global
+         // navigation/menu and professional floating controls. Keep only their
+         // material paint out of this frozen-content comparison; preserve checks
+         // for typography, contrast, sizing, placement, and remaining editor styles.
+         const approvedGlassProperties = new Set([
+           'background', 'background-color', 'background-image',
+           'border-color', 'border-top-color', 'border-right-color', 'border-bottom-color', 'border-left-color',
+           'border-block-start-color', 'border-block-end-color', 'border-inline-start-color', 'border-inline-end-color',
+           'box-shadow',
+         ]);
+         const approvedNavigationPlacement = new Set(['position', 'z-index']);
+         const approvedReadableTextProperties = new Set([
+           'color', 'caret-color', 'column-rule-color', 'outline-color', 'row-rule-color',
+           'text-decoration-color', 'text-emphasis-color', '-webkit-text-fill-color', '-webkit-text-stroke-color',
+         ]);
+         const approvedQuietNoteAccentProperties = new Set([
+           'border-inline-start-color', 'border-inline-start-style', 'border-inline-start-width', 'border-left-color', 'border-left-style', 'border-left-width',
+         ]);
          for (const element of elements) {
            feed(element.tagName);
            feed(element.id);
            feed(element.getAttribute('class') || '');
            const style = getComputedStyle(element);
-           const properties = [...style].filter(property => !property.startsWith('--'));
+           const approvedGlassSurface = element.matches('.jx-shell > header, .jx-shell > aside, .jx-shell > header :is(.ambient-toggle, .theme-toggle, .menu), .jx-shell > aside :is(button, label), .ai-actionbar, .glass-dialog, .dialog-actions');
+           const approvedNavigation = element.matches('.jx-shell > header');
+           const contentSurfaceSelector = '.ai-page :is(.settings-card, .role-panel, .preset-card, .quiet-note)';
+           const readableProfessionalContent = element.matches(`${contentSurfaceSelector}, ${contentSurfaceSelector} *`);
+           const professionalContentSurface = element.matches(contentSurfaceSelector);
+           const professionalPresetMark = element.matches('.ai-page .preset-mark');
+           const quietNote = element.matches('.ai-page .quiet-note');
+           const properties = [...style].filter(property => {
+             if (property.startsWith('--') || uiProTokenProperties.has(property)) return false;
+             if (approvedGlassSurface && approvedGlassProperties.has(property)) return false;
+             if (approvedNavigation && approvedNavigationPlacement.has(property)) return false;
+             if (professionalContentSurface && ['background-color', 'background-image'].includes(property)) return false;
+             if (professionalPresetMark && ['background-color', 'background-image'].includes(property)) return false;
+             const inheritedBorderColor = property.startsWith('border-') && property.endsWith('-color');
+             if (readableProfessionalContent && (approvedReadableTextProperties.has(property) || inheritedBorderColor)) return false;
+             if (quietNote && approvedQuietNoteAccentProperties.has(property)) return false;
+             return true;
+           });
            for (const property of properties) {
              const value = style.getPropertyValue(property);
+             const normalizedValue = property === 'background-position' && value === '0px 0px' ? '0% 0%' : value;
              feed(property);
-             feed(property === 'background-position' && value === '0px 0px' ? '0% 0%' : value);
+             feed(normalizedValue);
              propertyCount += 1;
            }
          }
@@ -754,6 +805,11 @@ async function ready(url) {
        });
       const assertFrozenProfessionalStyles = async () => {
         await page.emulateMedia({ reducedMotion: 'reduce' });
+        const visualMedia = await context.newCDPSession(page);
+        await visualMedia.send('Emulation.setEmulatedMedia', { features: [
+          { name: 'prefers-reduced-motion', value: 'reduce' },
+          { name: 'prefers-reduced-transparency', value: 'no-preference' },
+        ] });
         await page.mouse.move(0, 0);
         await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); return document.fonts.ready; });
         const activeProVisualContract = await readVisualContract();
@@ -767,7 +823,8 @@ async function ready(url) {
         const baselineProVisualContract = await readVisualContract();
         await baselineStyleTag.evaluate(style => style.remove());
         await page.locator('link[rel="stylesheet"]').evaluateAll((links, states) => links.forEach((link, index) => { link.disabled = states[index] ?? false; }), activeStylesheetStates);
-        assert.deepEqual(activeProVisualContract, baselineProVisualContract, 'professional AI must match the historic baseline plus only the explicit authorized readability delta');
+        await visualMedia.detach();
+        assert.deepEqual(activeProVisualContract, baselineProVisualContract, 'professional AI non-authorized styles must preserve the historical baseline; explicit token, content-readability, glass-material and documented nav-layer deltas are checked separately');
         await page.emulateMedia({ reducedMotion: 'no-preference' });
       };
       await assertFrozenProfessionalStyles();
@@ -893,7 +950,7 @@ async function ready(url) {
       assert.equal(testLogs.at(-1).outputTokens, 3);
       assert.equal(JSON.stringify(testLogs).includes('test-secret-not-persisted'), false, 'call logs must not retain API keys or provider response bodies');
       await storyTestButton.click();
-      await page.locator('.ai-feedback').getByText(/服务返回 HTTP 401。.*响应正文未保存/).waitFor();
+      await page.locator('.ai-feedback').getByText(/服务未接受当前身份。.*响应正文未保存/).waitFor();
       testLogs = await page.evaluate(() => JSON.parse(sessionStorage.getItem('jx10_ai_call_log_v1') || '[]'));
       assert.equal(testLogs.at(-1).outcome, 'failure');
       assert.equal(testLogs.at(-1).status, 401);

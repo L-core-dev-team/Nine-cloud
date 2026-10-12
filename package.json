@@ -23,6 +23,7 @@
     "scan:artifacts": "node scripts/audit/artifact-scan.mjs apps/web/dist",
     "test:e2e:design": "node tests/e2e/design-audit-regression.cjs && node tests/e2e/design-acceptance-runner.cjs",
     "test:e2e:ui": "node tests/e2e/game-shell.cjs",
+    "test:e2e:liquid-glass": "node tests/e2e/liquid-glass.cjs",
     "worldbook:index:write": "node scripts/audit/build-worldbook-draft-index.mjs --write",
     "worldbook:index:check": "node scripts/audit/build-worldbook-draft-index.mjs --check",
     "worldbook:runtime:write": "node scripts/build-canon-runtime.mjs --write --allow-pending-receipts",
