@@ -11,7 +11,8 @@ import {ProseIndex} from '../p6-longmem-prose/retrieval.ts';
 import {LexicalIndex} from './retrieval.ts';
 import type {Dataset,GoldQuestion} from '../p6-longmem/types.ts';
 import type {ProseQuestion} from '../p6-longmem-prose/freeze.ts';
-const root=new URL('./',import.meta.url),out=new URL('evidence/regression/',root);
+const iteration=process.argv.includes('--delivery')?'regression-final':'regression';
+const root=new URL('./',import.meta.url),out=new URL(`evidence/${iteration}/`,root);
 const read=<T>(p:string):T=>JSON.parse(readFileSync(new URL(p,root),'utf8')) as T;
 for(const folder of ['../p6-longmem-hardening/','../p6-longmem-prose/']){
  const lock=read<{files:{name:string;sha256:string}[]}>(folder+'fixtures/freeze-manifest.json');
@@ -26,7 +27,8 @@ const sets:{name:string;data:Dataset;qs:(GoldQuestion|ProseQuestion)[]}[]=[
  {name:'p603-development100',data:prose,qs:read('../p6-longmem-prose/fixtures/development.json')},
  {name:'p603-public100',data:prose,qs:read('../p6-longmem-prose/fixtures/holdout.json')},
 ];
-mkdirSync(out,{recursive:true});const runs=[],six=[];let spanChecks=0,queries=0;
+mkdirSync(out,{recursive:true});const runs=[];
+const six:{engine:string;budget:number;id:string;text:string;pass:boolean;missing:string[];context:string}[]=[];let spanChecks=0,queries=0;
 for(const set of sets)for(const engine of ['p603','lexical'] as const){
  const start=performance.now(),index=engine==='p603'?new ProseIndex(set.data):new LexicalIndex(set.data),indexBuildMs=performance.now()-start;
  for(const budget of [512,1024,2048,4096]){
