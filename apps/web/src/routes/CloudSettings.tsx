@@ -1,3 +1,4 @@
+import { clearCloudGameAccount } from '../use-cloud-game-session';
 import { useEffect, useRef, useState } from 'react';
 import { CloudHttpError, CloudSync, IndexedCloudQueue, archiveFromEnvelope, cloudRequest, type CloudRecord } from '../cloud-sync';
 import type { LocalSave } from '../storage';
@@ -180,7 +181,7 @@ export function CloudSettings({ saves, onRestore }: { saves: LocalSave[]; onRest
       {providers.emailCaptcha && !turnstileSiteKey && <p className="auth-provider-note">邮箱登录尚未就绪：网站缺少 Turnstile 公钥配置。</p>}
     </>
       : <><p>{account.kind === 'guest' ? '游客会话' : account.email}</p>{account.kind === 'guest' && <p>游客会话有效期为 7 天。丢失或清除浏览器站点数据后，无法仅凭存档编号找回云档；连续 90 天无活动后，在线资料进入服务器获批的清理范围，冷备遵循独立政策。</p>}<div className="actions"><button disabled={busy} onClick={() => void act(async () => { await cloudRequest('/api/auth/refresh', 'POST', {}, account.id); return account.kind === 'guest' ? '会话已刷新，有效期延长 7 天。' : '会话已刷新。'; })}>刷新会话</button>
-        <button disabled={busy} onClick={() => { if (account.kind === 'guest' && !window.confirm('退出会撤销此游客会话。除非已升级邮箱，否则清除站点数据或丢失会话后无法找回云档。仍要退出吗？')) return; void act(async () => { await cloudRequest('/api/auth/logout', 'POST', {}, account.id); setAccount(null); setRemote([]); setQueue([]); setTrash([]); setPhoneLinked(null); setPhoneCode(''); setUnlinkCode(''); setPhoneCaptchaToken(''); return '已退出；本地存档及未完成队列保留。'; }); }}>退出</button>
+        <button disabled={busy} onClick={() => { if (account.kind === 'guest' && !window.confirm('退出会撤销此游客会话。除非已升级邮箱，否则清除站点数据或丢失会话后无法找回云档。仍要退出吗？')) return; void act(async () => { await clearCloudGameAccount(account.id); await cloudRequest('/api/auth/logout', 'POST', {}, account.id); setAccount(null); setRemote([]); setQueue([]); setTrash([]); setPhoneLinked(null); setPhoneCode(''); setUnlinkCode(''); setPhoneCaptchaToken(''); return '已退出；本地存档及未完成队列保留。'; }); }}>退出</button>
         <button disabled={busy} onClick={() => void act(async () => { const result = await sync.flush(account.id); await refresh(account.id); return `已上传 ${result.uploaded} 份；${result.failed} 份失败，${result.conflicted} 份需核对冲突。`; })}>重试待上传</button></div>
         {account.kind === 'guest' ? <section aria-label="游客账号升级"><h2>升级为邮箱账号</h2><p>升级会保留当前账号 ID 与云档。邮箱验证码证明你能收取该邮箱；当前游客会话与最终确认共同证明你要保留的游客账号。</p><p>清除浏览器站点数据会删除游客会话凭据。未活动游客在线资料在 90 天后进入经批准的数据清理；托管方冷备遵循独立政策。</p>
           <label>升级邮箱<input type="email" autoComplete="email" value={upgradeEmail} onChange={event => setUpgradeEmail(event.target.value)} disabled={busy} /></label>

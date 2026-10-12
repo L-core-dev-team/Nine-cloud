@@ -1,6 +1,6 @@
 import { createHmac, randomBytes, randomUUID } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
-import type { AuthSession, EmailAuthSession, EmailAuthService } from './email-auth.js';
+import type { AuthSession, EmailAuthSession, EmailAuthService, GuestUpgradeResult } from './email-auth.js';
 import { normalizeEmail, hashToken, SESSION_SECONDS } from './email-auth.js';
 import { AuthFailure } from './auth-failure.js';
 
@@ -159,6 +159,46 @@ export class SupabaseAuthService {
     return { phoneLinked: Boolean(result.rowCount) };
   }
 
+  // Guest sessions use the same application-owned cookie store as Supabase sessions.
+  createGuest(clientIp: string) { return this.sessions.createGuest(clientIp); }
+
+  async upgradeGuest(ownerId: string, token: string | null, emailValue: unknown, code: unknown,
+    confirmation: unknown, signal?: AbortSignal): Promise<GuestUpgradeResult> {
+    if (!this.config.enabledEmail || confirmation !== 'UPGRADE_GUEST_TO_EMAIL'
+      || typeof code !== 'string' || !/^\d{6}$/.test(code) || !token || signal?.aborted) return { status: 'unavailable' };
+    const current = await this.sessions.resolve(token);
+    if (current?.kind !== 'guest' || current.ownerId !== ownerId) return { status: 'unavailable' };
+    const email = normalizeEmail(emailValue);
+    const verified = await this.verifyOtp('email', email, code, signal);
+    if (!verified) return { status: 'invalid_code' };
+    const client = await this.pool.connect();
+    try {
+      await client.query('BEGIN');
+      // Revalidate the cookie under lock after the external verification request.
+      const guest = await client.query(`SELECT s.expires_at FROM auth_accounts a JOIN auth_sessions s ON s.owner_id=a.id
+        WHERE a.id=$1 AND a.is_guest=true AND a.email IS NULL AND a.closed_at IS NULL
+        AND s.token_hash=$2 AND s.expires_at>$3 FOR UPDATE OF a,s`, [ownerId, hashToken(token), this.now()]);
+      const occupied = await client.query('SELECT id FROM auth_accounts WHERE lower(email)=lower($1)', [email]);
+      const subject = String(verified.user.id);
+      const identities = await client.query('SELECT owner_id FROM auth_external_identities WHERE provider_subject=$1 FOR UPDATE', [subject]);
+      if (!guest.rowCount || occupied.rowCount || identities.rows.some(row => row.owner_id !== ownerId) || signal?.aborted) {
+        await client.query('ROLLBACK'); return { status: 'unavailable' };
+      }
+      const now = this.now();
+      const inserted = await client.query(`INSERT INTO auth_external_identities(provider_subject,identity_kind,identifier_digest,owner_id,verified_at)
+        VALUES($1,'email',$2,$3,$4) ON CONFLICT DO NOTHING RETURNING owner_id`, [subject, this.identityDigest('email', email), ownerId, now]);
+      if (!inserted.rowCount) { await client.query('ROLLBACK'); return { status: 'unavailable' }; }
+      await client.query('UPDATE auth_accounts SET email=$2,is_guest=false,last_seen_at=$3 WHERE id=$1', [ownerId, email, now]);
+      if (signal?.aborted) { await client.query('ROLLBACK'); return { status: 'unavailable' }; }
+      await client.query('COMMIT');
+      return { status: 'upgraded', session: { kind: 'email', ownerId, email, expiresAt: new Date(guest.rows[0].expires_at) } };
+    } catch (error) {
+      await client.query('ROLLBACK');
+      if (isUniqueConflict(error)) return { status: 'unavailable' };
+      throw new AuthFailure('UPGRADE_STORE_FAILED', 'verification_store');
+    } finally { client.release(); }
+  }
+
   resolve(token: string | null) { return this.sessions.resolve(token); }
   refresh(token: string | null) { return this.sessions.refresh(token); }
   logout(token: string | null) { return this.sessions.logout(token); }
@@ -176,10 +216,10 @@ export class SupabaseAuthService {
     return 'sent';
   }
 
-  private async verifyOtp(kind: IdentityKind, destination: string, code: string): Promise<{ user: SupabaseUser } | null> {
+  private async verifyOtp(kind: IdentityKind, destination: string, code: string, signal?: AbortSignal): Promise<{ user: SupabaseUser } | null> {
     const body = kind === 'email' ? { type: 'email', email: destination, token: code } : { type: 'sms', phone: destination, token: code };
     let response: Response;
-    try { response = await this.authFetch('/auth/v1/verify', body); }
+    try { response = await this.authFetch('/auth/v1/verify', body, signal); }
     catch { throw new AuthFailure('AUTH_PROVIDER_UNAVAILABLE', 'auth_verify'); }
     if (response.status === 400 || response.status === 401) return null;
     if (!response.ok) throw new AuthFailure('AUTH_PROVIDER_UNAVAILABLE', 'auth_verify');
@@ -190,11 +230,11 @@ export class SupabaseAuthService {
     return { user };
   }
 
-  private async authFetch(path: string, body: unknown): Promise<Response> {
+  private async authFetch(path: string, body: unknown, signal?: AbortSignal): Promise<Response> {
     try {
       return await fetch(new URL(path, this.baseUrl), { method: 'POST', headers: {
         apikey: this.config.publishableKey, 'content-type': 'application/json', accept: 'application/json',
-      }, body: JSON.stringify(body), signal: AbortSignal.timeout(10_000) });
+      }, body: JSON.stringify(body), signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(10_000)]) : AbortSignal.timeout(10_000) });
     } catch { throw new AuthFailure('AUTH_PROVIDER_UNAVAILABLE', 'auth_request'); }
   }
 

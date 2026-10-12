@@ -1,14 +1,38 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import './game-shell.css';
+import type { ReadingPosition } from '../cloud-game-cache';
 
 /** Presentation only: callers retain their own save, draft and turn handlers. */
-export function GameShell({ saveId, children, archive, readingReady = true }: { saveId: string; children: ReactNode; archive?: ReactNode; readingReady?: boolean }) {
+export function GameShell({ saveId, children, archive, readingReady = true, readingScope, readingPosition, onReadingPositionChange }: { saveId: string; children: ReactNode; archive?: ReactNode; readingReady?: boolean; readingScope?: string | undefined; readingPosition?: ReadingPosition | undefined; onReadingPositionChange?: ((position: ReadingPosition) => void) | undefined }) {
   const frame = useRef<HTMLElement>(null);
   const [showArchive, setShowArchive] = useState(false);
   useLayoutEffect(() => {
     if (!readingReady) return;
     const reading = frame.current?.querySelector<HTMLElement>('.story-reading');
     if (!reading) return;
+    if (onReadingPositionChange) {
+      // P3 uses a content anchor; the legacy local-save pixel store stays unchanged.
+      let userMoved = false;
+      const interacted = () => { userMoved = true; };
+      const restore = () => {
+        if (userMoved) return;
+        const item = Array.from(reading.querySelectorAll<HTMLElement>('[data-reading-id]')).find(el => el.dataset.readingId === readingPosition?.entryId);
+        if (item && readingPosition && Number.isFinite(readingPosition.fraction)) reading.scrollTop += item.getBoundingClientRect().top - reading.getBoundingClientRect().top + Math.max(0, Math.min(1, readingPosition.fraction)) * item.offsetHeight;
+        else reading.scrollTop = 0;
+      };
+      const remember = () => {
+        if (!userMoved) return;
+        const items = Array.from(reading.querySelectorAll<HTMLElement>('[data-reading-id]'));
+        const top = reading.getBoundingClientRect().top;
+        const item = items.find(el => el.getBoundingClientRect().bottom > top) ?? items.at(-1);
+        if (item?.dataset.readingId) onReadingPositionChange({ entryId: item.dataset.readingId, fraction: Math.max(0, Math.min(1, (top - item.getBoundingClientRect().top) / Math.max(1, item.offsetHeight))) });
+      };
+      for (const event of ['wheel', 'touchstart', 'pointerdown', 'keydown']) reading.addEventListener(event, interacted, { passive: true });
+      restore(); const animation = requestAnimationFrame(restore);
+      reading.addEventListener('scroll', remember, { passive: true });
+      return () => { cancelAnimationFrame(animation); reading.removeEventListener('scroll', remember);
+        for (const event of ['wheel', 'touchstart', 'pointerdown', 'keydown']) reading.removeEventListener(event, interacted); };
+    }
     const key = `jiuxiao_1_game_scroll_${saveId}`;
     let top = 0;
     try { const saved = Number(sessionStorage.getItem(key)); top = Number.isFinite(saved) ? Math.max(0, saved) : 0; } catch { /* Reading position is optional. */ }
@@ -18,7 +42,7 @@ export function GameShell({ saveId, children, archive, readingReady = true }: { 
     const animation = requestAnimationFrame(restore);
     reading.addEventListener('scroll', remember, { passive: true });
     return () => { cancelAnimationFrame(animation); reading.removeEventListener('scroll', remember); };
-  }, [saveId, readingReady]);
+  }, [saveId, readingReady, readingScope, onReadingPositionChange]);
   useLayoutEffect(() => {
     const shell = frame.current?.closest<HTMLElement>('.jx-shell');
     const viewport = window.visualViewport;
