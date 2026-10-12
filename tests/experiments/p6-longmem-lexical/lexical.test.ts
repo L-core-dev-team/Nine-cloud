@@ -2,7 +2,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {ProseIndex as LexicalIndex} from '../p6-longmem-prose/retrieval.ts';
+import {LexicalIndex} from './retrieval.ts';
 import type {Dataset,Query} from '../p6-longmem/types.ts';
 const data:Dataset={schemaVersion:1,synthetic:true,entities:[
  {id:'yao',name:'姚镜',aliases:[],kind:'person'},{id:'tao',name:'陶隽',aliases:[],kind:'person'},
