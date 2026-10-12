@@ -1,5 +1,6 @@
+import { validateGameReceipt } from './game-receipt-validation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { DecisionV2Schema, SaveEnvelopeSchema, TurnReceiptSchema, type SaveEnvelope } from '@jiuxiao/contracts';
+import { DecisionV2Schema, SaveEnvelopeSchema, type SaveEnvelope } from '@jiuxiao/contracts';
 import { apiRequestUrl } from './api-url';
 import { CloudHttpError, cloudRequest } from './cloud-sync';
 import { IndexedGameCache, beginGameAction, editGameDraft, finishGameAction, type GameCache, type GameCacheScope, type ReadingPosition } from './cloud-game-cache';
@@ -49,6 +50,9 @@ export function useCloudGameSession(saveId: string) {
     const result = await cloudRequest(`/api/games/${encodeURIComponent(saveId)}/receipts/${pending.idempotencyKey}`, 'GET', undefined, session.scope.ownerId, session.abort.signal);
     if (!isCurrent(session)) return;
     if (result.status === 'confirmed' && result.receipt) {
+      const authoritative = await loadSave(session);
+      await validateGameReceipt(session.scope, pending, authoritative, result.receipt);
+      if (!isCurrent(session)) return;
       const value = await store.change(session.scope, session.epoch, current => finishGameAction(current, session.scope, pending.idempotencyKey, result.receipt, '服务端已确认此行动；原叙述未保存在本机，可查看规则回执。'));
       if (!isCurrent(session)) return;
       publish(session, value); setText(value.draft);
@@ -120,7 +124,8 @@ export function useCloudGameSession(saveId: string) {
       const result = await cloudRequest(`/api/games/${encodeURIComponent(saveId)}/turns`, 'POST', body, session.scope.ownerId, session.abort.signal);
       if (!isCurrent(session)) return;
       const narrative = result.narrative as { text?: unknown; status?: string } | undefined;
-      const decision = TurnReceiptSchema.parse(result.receipt).decision;
+      const decision = (await validateGameReceipt(session.scope, pending, save, result.receipt)).decision;
+      if (!isCurrent(session)) return;
       const next = await store.change(session.scope, session.epoch, current => finishGameAction(current, session.scope, pending.idempotencyKey, result.receipt,
         typeof narrative?.text === 'string' ? narrative.text : decision.status === 'clarify' ? decision.question : decision.status === 'rejected' ? decision.message : '行动判定已保存，请查看规则回执。'));
       if (!isCurrent(session)) return;

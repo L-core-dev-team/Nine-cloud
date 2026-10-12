@@ -176,11 +176,25 @@ async function stop(child) {
     assert.equal(createRow.rows[0].memory_mode, 'forgetting');
     assert.equal(createRow.rows[0].revision, 0);
 
+    // Real parser evidence: unsigned pickup/reward text and missing targets never advance state.
+    for (const [text, expectedStatus] of [['捡起不存在的令牌', 'rejected'], ['领取奖励', 'rejected'], ['我看看', 'clarify']]) {
+      await page.getByTestId('p2-action-input').fill(text);
+      const response = page.waitForResponse(r => r.url().endsWith('/turns') && r.request().method() === 'POST');
+      await page.getByTestId('p2-submit-action').click();
+      const result = await (await response).json();
+      assert.equal(result.receipt.decision.status, expectedStatus);
+      expectedRequests++;
+      await page.waitForFunction(() => !document.querySelector('[data-testid="p2-submit-action"]')?.disabled);
+      const untouched = await pool.query('SELECT revision,snapshot FROM game_saves WHERE id=$1 AND owner_id=$2',[saveId,ownerId]);
+      assert.equal(untouched.rows[0].revision,0);
+      assert.deepEqual(untouched.rows[0].snapshot,createRow.rows[0].snapshot);
+      assert.equal((await pool.query('SELECT count(*)::int AS n FROM turn_events WHERE save_id=$1',[saveId])).rows[0].n,0);
+    }
     await page.getByTestId('p2-action-input').fill('观察渡船');
     await page.getByTestId('p2-submit-action').click();
     await page.waitForFunction(() => document.querySelector('[data-testid="p2-revision"]')?.textContent === '1', null, { timeout: 20_000 });
     await page.waitForFunction(() => document.querySelector('[data-testid="p2-narrative"]')?.textContent.includes('渡槽淤了半尺'), null, { timeout: 20_000 });
-    expectedRequests = 1;
+    expectedRequests = 4;
     expectedEvents = 1;
     assert.match(await page.getByTestId('p2-receipt').textContent(), /observe\.result/);
 

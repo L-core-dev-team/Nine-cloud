@@ -1,0 +1,3 @@
+const { createHash } = require('node:crypto');
+function canonical(v) { if(Array.isArray(v)) return '['+v.map(canonical).join(',')+']'; if(v && typeof v==='object')return '{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+canonical(v[k])).join(',')+'}';return JSON.stringify(v); }
+module.exports = (save, request) => 'sha256:v1:' + createHash('sha256').update(canonical({kind:'free_text',saveId:save.saveId,actorId:save.state.playerId,expectedRevision:request.expectedRevision,idempotencyKey:request.idempotencyKey,...(request.clarificationOf?{clarificationOf:request.clarificationOf}:{}),payload:{text:request.text}})).digest('hex');

@@ -36,7 +36,7 @@ let server, browser;
         assert.equal(request.expectedRevision, 0); assert.equal(request.requestNarrative, true);
         assert.equal(request.text, failNext ? '保留未确认行动' : '测试行动');
         if (failNext) { status = 503; body = { code: 'ENV_UNAVAILABLE' }; }
-        else body = { receipt: { idempotencyKey: request.idempotencyKey, saveId: save.saveId, requestFingerprint: `sha256:v1:${'0'.repeat(64)}`, decision: { status: 'rejected', code: 'INPUT_SYNTHETIC', message: '测试回执：行动未获接受。'.repeat(400), revision: 0 }, resultingRevision: 0 } };
+        else body = { receipt: { idempotencyKey: request.idempotencyKey, saveId: save.saveId, requestFingerprint: require('./game-receipt-fixture.cjs')(save, request), decision: { status: 'rejected', code: 'INPUT_SYNTHETIC', message: '测试回执：行动未获接受。'.repeat(400), revision: 0 }, resultingRevision: 0 } };
       } else if (pathname.endsWith('/' + save.saveId)) body = { save };
       else { status = 503; body = { code: 'AUTH_PROVIDER_UNAVAILABLE' }; }
       await route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) });
