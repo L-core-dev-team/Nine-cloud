@@ -34,6 +34,7 @@ function save(): SaveEnvelopeV3 {
 function digest(overrides: Partial<PlotDigestProvenance> = {}): PlotDigestProvenance {
   return {
     digestId: 'digest:approved-1', saveId: 'candidate-save', branchId: 'root',
+    memoryMode: 'continue',
     fromRevision: 1, throughRevision: 5, coveredEventIds: ['event-1'],
     generatorVersion: 'deterministic-summary-v1', promptVersion: 'none',
     inputHash: `sha256:${'1'.repeat(64)}`, outputHash: `sha256:${'2'.repeat(64)}`,
@@ -52,9 +53,15 @@ describe('candidate narrative source boundary', () => {
         { sourceId: 'profile:candidate:secret', sourceVersion: 'draft-v1', npcId: 'npc_cenjiu',
           field: 'secret', value: '候选内容', visibility: 'npc-visible', approvalStatus: 'candidate-only' },
       ],
-      digests: [digest(), digest({ digestId: 'digest:unapproved-event', coveredEventIds: ['event-unseen'] }),
-        digest({ digestId: 'digest:pending', approvalStatus: 'pending' }),
-        digest({ digestId: 'digest:stale', throughRevision: 6 })],
+      approvedPlotDigests: [
+        { provenance: digest(), summary: '已批准摘要。', sourceIds: ['receipt:5'], artifactHash: `sha256:${'3'.repeat(64)}` },
+        { provenance: digest({ digestId: 'digest:unapproved-event', coveredEventIds: ['event-unseen'] }),
+          summary: '未授权来源摘要。', sourceIds: ['receipt:6'], artifactHash: `sha256:${'4'.repeat(64)}` },
+        { provenance: digest({ digestId: 'digest:pending', approvalStatus: 'pending' }),
+          summary: '待审摘要。', sourceIds: ['receipt:7'], artifactHash: `sha256:${'5'.repeat(64)}` },
+        { provenance: digest({ digestId: 'digest:stale', throughRevision: 6 }),
+          summary: '过期摘要。', sourceIds: ['receipt:8'], artifactHash: `sha256:${'6'.repeat(64)}` },
+      ],
     });
     expect(context.approvedProfileFields.map(field => field.sourceId)).toEqual(['profile:npc-cenjiu:name']);
     expect(context.digestProvenance.map(item => item.digestId)).toEqual(['digest:approved-1']);
@@ -74,5 +81,21 @@ describe('candidate narrative source boundary', () => {
     expect(() => validateNarrativeSourceCandidates(context, ['forged:event'])).toThrow('NARRATIVE_ADAPTER_SOURCE_NOT_AUTHORIZED');
     expect(() => validateNarrativeSourceCandidates(context, ['profile:npc:name', 'profile:npc:name']))
       .toThrow('NARRATIVE_ADAPTER_CANDIDATE_LIST_INVALID');
+  });
+
+  it('includes only a reviewed, same-mode digest with authorized event coverage as player-visible context', () => {
+    const provenance = digest();
+    const approved = { provenance, summary: '摘要：岑九谈到渡口落石。', sourceIds: ['receipt:5'],
+      artifactHash: `sha256:${'3'.repeat(64)}` as const };
+    const context = buildP2CandidateNarrativeContext({ save: save(), receipt: null, memoryEvidence: null,
+      authorizedEventIds: ['event-1'], approvedPlotDigests: [approved,
+        { ...approved, provenance: digest({ memoryMode: 'forgetting', digestId: 'digest:other-mode' }) },
+        { ...approved, provenance: digest({ digestId: 'digest:unauthorized', coveredEventIds: ['event-private'] }) }] });
+    expect(context.approvedPlotDigests.map(item => item.provenance.digestId)).toEqual(['digest:approved-1']);
+    expect(context.approvedPlotDigests[0]?.summary).toBe('摘要：岑九谈到渡口落石。');
+    expect(context.sourceCatalog.filter(source => source.kind === 'plot-digest')).toEqual([
+      { sourceId: 'digest:approved-1', kind: 'plot-digest', revision: 5, visibility: 'player-visible' },
+    ]);
+    expect(context.sourceCatalog.some(source => source.visibility === 'npc-visible' && source.kind === 'plot-digest')).toBe(false);
   });
 });

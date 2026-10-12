@@ -3,8 +3,8 @@ import type { MemoryMode } from '@jiuxiao/contracts';
 import { P7_CANDIDATE_POLICY, p7CatchUpId, type P7OfflineCatchUpPlan } from './p2-candidate-offline.js';
 
 const DATABASE_NAMES: Readonly<Record<MemoryMode, string>> = {
-  continue: 'jiuxiao-offline-continue-candidate',
-  forgetting: 'jiuxiao-offline-forgetting-candidate',
+  continue: 'jiuxiao-offline-continue-v2-candidate',
+  forgetting: 'jiuxiao-offline-forgetting-v2-candidate',
 };
 const DATABASE_VERSION = 1;
 const PLAN_STORE = 'catchups';
@@ -108,6 +108,10 @@ function assertPlan(plan: P7OfflineCatchUpPlan): void {
     || !['continue', 'forgetting'].includes(plan.memoryMode) || !plan.checkpointId.trim() || !plan.catchUpId.trim()
     || plan.catchUpId !== p7CatchUpId(plan.saveId, plan.memoryMode, plan.checkpointId, plan.policyVersion)
     || !Number.isSafeInteger(plan.elapsedMinutes) || plan.elapsedMinutes < 0
+    || !Number.isSafeInteger(plan.checkpointRevision) || plan.checkpointRevision < 0
+    || !Number.isSafeInteger(plan.returnRevision) || plan.returnRevision !== plan.checkpointRevision
+    || !Number.isSafeInteger(plan.checkpointGameMinute) || plan.checkpointGameMinute < 0
+    || !Number.isSafeInteger(plan.returnGameMinute) || plan.returnGameMinute !== plan.checkpointGameMinute
     || !Array.isArray(plan.environmentSettlements) || !Array.isArray(plan.rejectedOccurrences)
     || !plan.causalReturn || !Array.isArray(plan.causalReturn.background)
     || !Array.isArray(plan.causalReturn.conservativeAutoReleases)) throw new Error('P7_CATCHUP_PLAN_INVALID');

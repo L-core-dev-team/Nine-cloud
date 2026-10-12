@@ -1,4 +1,5 @@
 import type { MemoryMode } from '@jiuxiao/contracts';
+import { recallAuthorizedObservations, type AuthorizedRecallObservation, type RecallSlot } from '@jiuxiao/domain';
 
 export type P7ResourceClass = 'renewable' | 'scarce';
 export type P7EventFrequency = 'normal' | 'low';
@@ -10,7 +11,7 @@ export type P7EventWeight = 'normal' | 'high';
  * independently reviewed, trusted-host allowlist is supplied.
  */
 export const P7_CANDIDATE_POLICY = deepFreeze({
-  version: 'p7-causal-offline-v1-candidate',
+  version: 'p7-causal-offline-v2-candidate',
   microWindowMinutes: 15,
   mainWindowEndMinutes: 12 * 60,
   opportunityWindowEndMinutes: 48 * 60,
@@ -29,6 +30,8 @@ export type P7TimeCapsuleTemplate = {
   text: string;
   perspective: 'npc' | 'object' | 'scene';
   sourceNpcId: string;
+  memoryClass: RecallSlot;
+  memoryCue: string;
   impressionPrompt: string;
 };
 
@@ -79,6 +82,8 @@ export type P7TimeCapsule = {
   perspective: P7TimeCapsuleTemplate['perspective'];
   sourceNpcId: string;
   sourceGrantId: string;
+  memoryClass: RecallSlot;
+  memoryCue: string;
   impressionPrompt: string;
   createdAtElapsedMinute: number;
 };
@@ -88,6 +93,10 @@ export type P7OfflineCatchUpPlan = {
   saveId: string;
   memoryMode: MemoryMode;
   checkpointId: string;
+  checkpointRevision: number;
+  returnRevision: number;
+  checkpointGameMinute: number;
+  returnGameMinute: number;
   catchUpId: string;
   elapsedMinutes: number;
   window: 'micro' | 'main' | 'long' | 'loss-only';
@@ -137,6 +146,10 @@ export function planP7OfflineCatchUp(input: {
   saveId: string;
   memoryMode: MemoryMode;
   checkpointId: string;
+  checkpointRevision: number;
+  returnRevision: number;
+  checkpointGameMinute: number;
+  returnGameMinute: number;
   startedAtMs: number;
   returnedAtMs: number;
   scheduledEvents: readonly P7ScheduledEnvironmentEvent[];
@@ -148,19 +161,25 @@ export function planP7OfflineCatchUp(input: {
   validateInput(input);
   const policy = input.policy ?? P7_CANDIDATE_POLICY;
   validatePolicy(policy);
-  const elapsedMs = Math.max(0, input.returnedAtMs - input.startedAtMs);
-  const elapsedMinutes = Math.floor(elapsedMs / 60_000);
+  if (input.checkpointRevision !== input.returnRevision || input.checkpointGameMinute !== input.returnGameMinute) {
+    throw new Error('P7_CHECKPOINT_WORLD_DRIFT');
+  }
+  const elapsedMinutes = p7ElapsedMinutes(input.startedAtMs, input.returnedAtMs);
   const window = offlineWindow(elapsedMinutes, policy);
   const multipliers = outputMultipliers(elapsedMinutes, policy);
   const allowlist = input.allowlist ?? P7_ENVIRONMENT_EVENT_ALLOWLIST;
   const selected = selectScheduledOccurrences(input.scheduledEvents, allowlist, elapsedMinutes, window, policy);
-  const causalReturn = planCausalReturn(input.ruptures, policy);
+  const causalReturn = window === 'micro' ? deferCausalReturn(input.ruptures) : planCausalReturn(input.ruptures, policy);
   const temperature = temperatureFor(elapsedMinutes, policy);
   return {
     policyVersion: policy.version,
     saveId: input.saveId,
     memoryMode: input.memoryMode,
     checkpointId: input.checkpointId,
+    checkpointRevision: input.checkpointRevision,
+    returnRevision: input.returnRevision,
+    checkpointGameMinute: input.checkpointGameMinute,
+    returnGameMinute: input.returnGameMinute,
     catchUpId: p7CatchUpId(input.saveId, input.memoryMode, input.checkpointId, policy.version),
     elapsedMinutes,
     window,
@@ -192,24 +211,44 @@ export function buildP7ReturnBrief(input: {
   saveId: string;
   capsules: readonly P7TimeCapsule[];
   memoryMode: MemoryMode;
-  accessibleGrantIds: readonly string[];
+  memoryProjection: {
+    saveId: string;
+    memoryMode: MemoryMode;
+    throughRevision: number;
+    observations: readonly AuthorizedRecallObservation[];
+  };
+  gameMinute: number;
   maxCards?: number;
 }): P7ReturnBrief {
   const maxCards = input.maxCards ?? P7_CANDIDATE_POLICY.maxReturnCards;
   if (!input.saveId.trim() || !['continue', 'forgetting'].includes(input.memoryMode)
-    || !Array.isArray(input.capsules) || !Array.isArray(input.accessibleGrantIds)
+    || !Array.isArray(input.capsules) || !input.memoryProjection
+    || input.memoryProjection.saveId !== input.saveId || input.memoryProjection.memoryMode !== input.memoryMode
+    || !Number.isSafeInteger(input.memoryProjection.throughRevision) || input.memoryProjection.throughRevision < 0
+    || !Array.isArray(input.memoryProjection.observations)
+    || !Number.isSafeInteger(input.gameMinute) || input.gameMinute < 0
     || !Number.isSafeInteger(maxCards) || maxCards < 1 || maxCards > 3) throw new Error('P7_RETURN_CARD_LIMIT_INVALID');
   if (new Set(input.capsules.map(capsule => capsule.capsuleId)).size !== input.capsules.length) {
     throw new Error('P7_CAPSULE_ID_DUPLICATE');
   }
   for (const capsule of input.capsules) validateStoredCapsule(capsule);
-  const grants = new Set(input.accessibleGrantIds);
   const inScope = input.capsules.filter(capsule => capsule.saveId === input.saveId && capsule.memoryMode === input.memoryMode);
-  const accessible = inScope.filter(capsule => grants.has(capsule.sourceGrantId))
+  const accessible = inScope.filter(capsule => {
+    const npcObservations = input.memoryProjection.observations.filter(row => row.saveId === input.saveId
+      && row.npcId === capsule.sourceNpcId);
+    const recall = recallAuthorizedObservations(npcObservations, {
+      query: capsule.memoryCue,
+      slot: capsule.memoryClass,
+      gameMinute: input.gameMinute,
+      throughRevision: input.memoryProjection.throughRevision,
+      forgetting: input.memoryMode === 'forgetting',
+    });
+    return recall.status === 'complete' && recall.grantId === capsule.sourceGrantId;
+  })
     .sort((left, right) => right.createdAtElapsedMinute - left.createdAtElapsedMinute
       || compareText(left.capsuleId, right.capsuleId));
-  const inaccessible = input.capsules.filter(capsule => capsule.saveId !== input.saveId || capsule.memoryMode !== input.memoryMode
-    || !grants.has(capsule.sourceGrantId)).map(capsule => capsule.capsuleId);
+  const accessibleIds = new Set(accessible.map(capsule => capsule.capsuleId));
+  const inaccessible = input.capsules.filter(capsule => !accessibleIds.has(capsule.capsuleId)).map(capsule => capsule.capsuleId);
   const cards = accessible.slice(0, maxCards);
   return {
     cards: structuredClone(cards),
@@ -225,7 +264,8 @@ export function recordP7MicroConfirmation(capsuleId: string, impression: 'affirm
   kind: 'micro-confirmation';
   writesWorldState: false;
 } {
-  if (!capsuleId.trim()) throw new Error('P7_CAPSULE_ID_INVALID');
+  if (typeof capsuleId !== 'string' || !capsuleId.trim()) throw new Error('P7_CAPSULE_ID_INVALID');
+  if (impression !== 'affirm' && impression !== 'deny') throw new Error('P7_IMPRESSION_INVALID');
   return { capsuleId, impression, kind: 'micro-confirmation', writesWorldState: false };
 }
 
@@ -252,6 +292,8 @@ export function materializeP7TimeCapsule(input: {
     perspective: input.template.perspective,
     sourceNpcId: input.template.sourceNpcId,
     sourceGrantId: input.authorizedGrant.grantId,
+    memoryClass: input.template.memoryClass,
+    memoryCue: input.template.memoryCue,
     impressionPrompt: input.template.impressionPrompt,
     createdAtElapsedMinute: input.elapsedMinute,
   };
@@ -260,6 +302,8 @@ export function materializeP7TimeCapsule(input: {
 export function validateP7TimeCapsuleTemplate(capsule: P7TimeCapsuleTemplate): void {
   if (typeof capsule.capsuleId !== 'string' || !capsule.capsuleId.trim()
     || typeof capsule.sourceNpcId !== 'string' || !capsule.sourceNpcId.trim()
+    || !['current-state', 'historical-event', 'subjective-belief'].includes(capsule.memoryClass)
+    || typeof capsule.memoryCue !== 'string' || !capsule.memoryCue.trim() || capsule.memoryCue.length > 160
     || typeof capsule.impressionPrompt !== 'string' || !capsule.impressionPrompt.trim()
     || typeof capsule.text !== 'string' || !['npc', 'object', 'scene'].includes(capsule.perspective)) {
     throw new Error('P7_CAPSULE_FIELDS_INVALID');
@@ -267,8 +311,7 @@ export function validateP7TimeCapsuleTemplate(capsule: P7TimeCapsuleTemplate): v
   const codepoints = [...capsule.text];
   const sentences = codepoints.join('').split(/[。！？!?]+/u).filter(sentence => sentence.trim().length > 0);
   if (codepoints.length > 40 || sentences.length < 1 || sentences.length > 2
-    || /[我你]/u.test(capsule.text)
-    || /主角(?:觉得|想|感到|回忆|记得|害怕|希望)/u.test(capsule.text)
+    || /(?:主角|玩家|你)(?:觉得|想起|想要|感到|回忆|记得|害怕|希望|认为|意识到)|(?:主角|玩家)(?:的内心|心里)/u.test(capsule.text)
     || [...capsule.impressionPrompt].length > 24) {
     throw new Error('P7_CAPSULE_CONTENT_INVALID');
   }
@@ -288,6 +331,10 @@ export function planCausalReturn(
     reason: sorted.length === policy.rupturePressureThreshold && index === 0
       ? 'pressure-threshold' as const : 'secondary' as const,
   }));
+  if (background.some(item => primary.choices.some(choice => {
+    const outcomeId = item.rupture.releaseByChoice[choice.choiceId];
+    return typeof outcomeId !== 'string' || !outcomeId.trim();
+  }))) throw new Error('P7_BACKGROUND_RELEASE_NOT_AUTHORED');
   const overflow = sorted.slice(policy.rupturePressureThreshold);
   const conservativeAutoReleases = overflow.map(rupture => {
     assertConservativeRelease(rupture);
@@ -297,7 +344,18 @@ export function planCausalReturn(
     primary,
     background,
     conservativeAutoReleases,
-    pendingIdsAfterPreview: [primary.ruptureId],
+    pendingIdsAfterPreview: [primary.ruptureId, ...background.map(item => item.rupture.ruptureId)],
+  };
+}
+
+/** Micro departures cannot surface or settle offline pressure; keep every item pending. */
+function deferCausalReturn(ruptures: readonly P7CausalRupture[]): P7CausalReturnPlan {
+  const sorted = validateAndSortRuptures(ruptures);
+  return {
+    primary: null,
+    background: [],
+    conservativeAutoReleases: [],
+    pendingIdsAfterPreview: sorted.map(rupture => rupture.ruptureId),
   };
 }
 
@@ -315,8 +373,8 @@ export function resolveP7CausalChoice(
     resolvedBy: 'player-choice',
   }];
   for (const item of plan.background) {
-    const outcomeId = item.rupture.releaseByChoice[choiceId] ?? item.rupture.conservativeOutcomeId;
-    if (!outcomeId.trim()) throw new Error('P7_BACKGROUND_RELEASE_NOT_AUTHORED');
+    const outcomeId = item.rupture.releaseByChoice[choiceId];
+    if (typeof outcomeId !== 'string' || !outcomeId.trim()) throw new Error('P7_BACKGROUND_RELEASE_NOT_AUTHORED');
     resolutions.push({ ruptureId: item.rupture.ruptureId, outcomeId, resolvedBy: 'player-choice' });
   }
   for (const item of plan.conservativeAutoReleases) {
@@ -372,33 +430,43 @@ function selectScheduledOccurrences(
   const rejected: { occurrenceId: string; reason: string }[] = [];
   const candidates: { schedule: P7ScheduledEnvironmentEvent; definition: P7EnvironmentEventDefinition }[] = [];
   const seenOccurrences = new Set<string>();
-  for (const schedule of scheduled) {
-    if (!schedule.occurrenceId.trim() || seenOccurrences.has(schedule.occurrenceId)) {
-      rejected.push({ occurrenceId: schedule.occurrenceId, reason: 'duplicate-or-invalid-occurrence' });
+  for (const candidateSchedule of scheduled as readonly unknown[]) {
+    if (!candidateSchedule || typeof candidateSchedule !== 'object') {
+      rejected.push({ occurrenceId: '<invalid>', reason: 'invalid-scheduled-occurrence' });
       continue;
     }
-    seenOccurrences.add(schedule.occurrenceId);
+    const schedule = candidateSchedule as P7ScheduledEnvironmentEvent;
+    const occurrenceId = typeof schedule.occurrenceId === 'string' ? schedule.occurrenceId : '';
+    if (!occurrenceId.trim() || seenOccurrences.has(occurrenceId)) {
+      rejected.push({ occurrenceId: occurrenceId || '<invalid>', reason: 'duplicate-or-invalid-occurrence' });
+      continue;
+    }
+    seenOccurrences.add(occurrenceId);
+    if (typeof schedule.eventId !== 'string' || !schedule.eventId.trim()) {
+      rejected.push({ occurrenceId, reason: 'invalid-scheduled-event-id' });
+      continue;
+    }
     if (!Number.isSafeInteger(schedule.elapsedMinute) || schedule.elapsedMinute <= policy.microWindowMinutes
       || !Number.isSafeInteger(schedule.repeatOrdinal) || schedule.repeatOrdinal < 1
       || schedule.elapsedMinute > elapsedMinutes) {
-      rejected.push({ occurrenceId: schedule.occurrenceId, reason: 'outside-settlement-window' });
+      rejected.push({ occurrenceId, reason: 'outside-settlement-window' });
       continue;
     }
     const definition = allowlist[schedule.eventId];
-    if (!definition) { rejected.push({ occurrenceId: schedule.occurrenceId, reason: 'event-not-allowlisted' }); continue; }
+    if (!definition) { rejected.push({ occurrenceId, reason: 'event-not-allowlisted' }); continue; }
     if (definition.eventId !== schedule.eventId) {
-      rejected.push({ occurrenceId: schedule.occurrenceId, reason: 'event-allowlist-key-mismatch' });
+      rejected.push({ occurrenceId, reason: 'event-allowlist-key-mismatch' });
       continue;
     }
     const admission = environmentEventAdmission(definition);
-    if (!admission.ok) { rejected.push({ occurrenceId: schedule.occurrenceId, reason: admission.reason }); continue; }
+    if (!admission.ok) { rejected.push({ occurrenceId, reason: admission.reason }); continue; }
     if (window === 'loss-only' || schedule.elapsedMinute > policy.opportunityWindowEndMinutes) {
-      rejected.push({ occurrenceId: schedule.occurrenceId, reason: 'opportunity-window-frozen' });
+      rejected.push({ occurrenceId, reason: 'opportunity-window-frozen' });
       continue;
     }
     if (schedule.elapsedMinute > policy.mainWindowEndMinutes
       && (definition.frequency !== 'low' || definition.weight !== 'high')) {
-      rejected.push({ occurrenceId: schedule.occurrenceId, reason: 'long-window-requires-low-frequency-high-weight' });
+      rejected.push({ occurrenceId, reason: 'long-window-requires-low-frequency-high-weight' });
       continue;
     }
     candidates.push({ schedule, definition });
@@ -439,21 +507,24 @@ function selectScheduledOccurrences(
 }
 
 function environmentEventAdmission(event: P7EnvironmentEventDefinition): { ok: true } | { ok: false; reason: string } {
-  if (event.eventClass !== 'environment' || !event.actorAbsent || event.protagonistInvolved || event.causedByProtagonist) {
+  if (!event || typeof event !== 'object' || event.eventClass !== 'environment' || event.actorAbsent !== true
+    || event.protagonistInvolved !== false || event.causedByProtagonist !== false) {
     return { ok: false, reason: 'character-event-or-protagonist-involved' };
   }
-  if (!event.reversible) return { ok: false, reason: 'environment-event-not-reversible' };
-  if (event.changesIdentity || event.changesRelationship || event.changesMoralStance) {
+  if (event.reversible !== true) return { ok: false, reason: 'environment-event-not-reversible' };
+  if (event.changesIdentity !== false || event.changesRelationship !== false || event.changesMoralStance !== false) {
     return { ok: false, reason: 'character-fact-change-forbidden' };
   }
-  if (event.exclusiveOutcomeCount !== 1 || event.requiresPlayerChoice) {
+  if (!Number.isSafeInteger(event.exclusiveOutcomeCount) || event.exclusiveOutcomeCount !== 1 || event.requiresPlayerChoice !== false) {
     return { ok: false, reason: 'branch-or-player-choice-required' };
   }
   if (!['normal', 'low'].includes(event.frequency) || !['normal', 'high'].includes(event.weight)) {
     return { ok: false, reason: 'environment-schedule-classification-invalid' };
   }
-  if (!event.eventId.trim() || !event.version.trim() || !Array.isArray(event.resourceOutputs)
-    || event.resourceOutputs.some(output => !output.resourceId.trim() || !Number.isSafeInteger(output.quantityMicrounits)
+  if (typeof event.eventId !== 'string' || !event.eventId.trim() || typeof event.version !== 'string' || !event.version.trim()
+    || !Array.isArray(event.resourceOutputs)
+    || event.resourceOutputs.some(output => !output || typeof output.resourceId !== 'string' || !output.resourceId.trim()
+      || !['renewable', 'scarce'].includes(output.resourceClass) || !Number.isSafeInteger(output.quantityMicrounits)
       || output.quantityMicrounits < 0)
     || new Set(event.resourceOutputs.map(output => output.resourceId)).size !== event.resourceOutputs.length) {
     return { ok: false, reason: 'environment-definition-invalid' };
@@ -466,15 +537,27 @@ function environmentEventAdmission(event: P7EnvironmentEventDefinition): { ok: t
 }
 
 function validateAndSortRuptures(ruptures: readonly P7CausalRupture[]): P7CausalRupture[] {
-  if (!Array.isArray(ruptures) || new Set(ruptures.map(item => item.ruptureId)).size !== ruptures.length) {
+  if (!Array.isArray(ruptures) || ruptures.some(item => !item || typeof item !== 'object')
+    || new Set(ruptures.map(item => item.ruptureId)).size !== ruptures.length) {
     throw new Error('P7_RUPTURE_LIST_INVALID');
   }
   for (const rupture of ruptures as readonly P7CausalRupture[]) {
-    if (!rupture.ruptureId.trim() || !Number.isSafeInteger(rupture.priority) || !Number.isSafeInteger(rupture.createdAtGameMinute)
-      || rupture.createdAtGameMinute < 0 || rupture.choices.length === 0
+    if (typeof rupture.ruptureId !== 'string' || !rupture.ruptureId.trim() || !Number.isSafeInteger(rupture.priority)
+      || !Number.isSafeInteger(rupture.createdAtGameMinute) || rupture.createdAtGameMinute < 0
+      || !Array.isArray(rupture.choices) || rupture.choices.length === 0
+      || rupture.choices.some(choice => !choice || typeof choice.choiceId !== 'string' || !choice.choiceId.trim()
+        || typeof choice.outcomeId !== 'string' || !choice.outcomeId.trim())
       || new Set(rupture.choices.map(choice => choice.choiceId)).size !== rupture.choices.length
-      || rupture.choices.some(choice => !choice.choiceId.trim() || !choice.outcomeId.trim())
-      || !rupture.conservativeOutcomeId.trim()) throw new Error('P7_RUPTURE_DEFINITION_INVALID');
+      || typeof rupture.conservativeOutcomeId !== 'string' || !rupture.conservativeOutcomeId.trim()
+      || typeof rupture.conservativeReleaseIsReversible !== 'boolean'
+      || typeof rupture.conservativeReleaseChangesCharacter !== 'boolean'
+      || typeof rupture.conservativeReleaseRequiresChoice !== 'boolean'
+      || !rupture.releaseByChoice || typeof rupture.releaseByChoice !== 'object'
+      || Object.entries(rupture.releaseByChoice).some(([choiceId, outcomeId]) => !choiceId.trim()
+        || typeof outcomeId !== 'string' || !outcomeId.trim())
+      || Object.entries(rupture.releaseByChoice).some(([choiceId]) => !rupture.choices.some(choice => choice.choiceId === choiceId))) {
+      throw new Error('P7_RUPTURE_DEFINITION_INVALID');
+    }
   }
   return [...ruptures].map(item => structuredClone(item)).sort((left, right) => right.priority - left.priority
     || left.createdAtGameMinute - right.createdAtGameMinute || compareText(left.ruptureId, right.ruptureId));
@@ -497,6 +580,8 @@ function validateStoredCapsule(capsule: P7TimeCapsule): void {
     text: capsule.text,
     perspective: capsule.perspective,
     sourceNpcId: capsule.sourceNpcId,
+    memoryClass: capsule.memoryClass,
+    memoryCue: capsule.memoryCue,
     impressionPrompt: capsule.impressionPrompt,
   });
   if (!capsule.saveId.trim() || !['continue', 'forgetting'].includes(capsule.memoryMode)
@@ -517,12 +602,20 @@ function validateInput(input: {
   saveId: string;
   memoryMode: MemoryMode;
   checkpointId: string;
+  checkpointRevision: number;
+  returnRevision: number;
+  checkpointGameMinute: number;
+  returnGameMinute: number;
   startedAtMs: number;
   returnedAtMs: number;
   scheduledEvents: readonly P7ScheduledEnvironmentEvent[];
   ruptures: readonly P7CausalRupture[];
 }): void {
   if (!input.saveId.trim() || !input.checkpointId.trim() || !['continue', 'forgetting'].includes(input.memoryMode)
+    || !Number.isSafeInteger(input.checkpointRevision) || input.checkpointRevision < 0
+    || !Number.isSafeInteger(input.returnRevision) || input.returnRevision < 0
+    || !Number.isSafeInteger(input.checkpointGameMinute) || input.checkpointGameMinute < 0
+    || !Number.isSafeInteger(input.returnGameMinute) || input.returnGameMinute < 0
     || !Number.isSafeInteger(input.startedAtMs) || input.startedAtMs < 0
     || !Number.isSafeInteger(input.returnedAtMs) || input.returnedAtMs < 0
     || !Array.isArray(input.scheduledEvents) || !Array.isArray(input.ruptures)) throw new Error('P7_INPUT_INVALID');

@@ -22,12 +22,20 @@ import { formatReceiptDelta, projectReceiptEvents } from '../receipt-event-view'
 import { loadP2ReviewGameplayRuntime, type P2ReviewGameplayRuntime } from '../p2-review-gameplay-runtime';
 import { syncP2CandidateMemoryProjection, type CandidateMemoryProjectionSnapshot } from '../p2-candidate-memory-store';
 import {
+  latestP2CandidateDigestReview,
+  readP2CandidateDigestReviewState,
+  recordP2CandidateDigestReview,
+  type P2CandidateDigestReviewRecord,
+} from '../p2-candidate-digest-review';
+import type { P2CandidateApprovedPlotDigest } from '../p2-candidate-narrative';
+import {
   buildP2CandidateDigestSourcesFromReceipts,
   createP2CandidateExtractiveDigestAdapter,
   enqueueP2CandidateDigestRebuild,
-  readP2CandidateDigestJobs,
   runP2CandidateDigestQueue,
   type P2CandidateDigestJob,
+  type P2CandidateDigestSource,
+  type P2CandidateDigestSourceRef,
 } from '../p2-candidate-digest-queue';
 
 type AuthoritySnapshot = {
@@ -52,6 +60,9 @@ function P2ReviewGame({ save, onBack }: { save: LocalSave | undefined; onBack: (
   const [memoryNpcId, setMemoryNpcId] = useState('');
   const [memoryRecall, setMemoryRecall] = useState<AuthorizedRecallResult | null>(null);
   const [digestJobs, setDigestJobs] = useState<readonly P2CandidateDigestJob[]>([]);
+  const [digestReviews, setDigestReviews] = useState<readonly P2CandidateDigestReviewRecord[]>([]);
+  const [approvedPlotDigests, setApprovedPlotDigests] = useState<readonly P2CandidateApprovedPlotDigest[]>([]);
+  const [staleApprovedDigestIds, setStaleApprovedDigestIds] = useState<readonly string[]>([]);
   const [digestBusy, setDigestBusy] = useState(false);
   const [digestNotice, setDigestNotice] = useState('');
   const [busy, setBusy] = useState(false);
@@ -141,8 +152,13 @@ function P2ReviewGame({ save, onBack }: { save: LocalSave | undefined; onBack: (
   useEffect(() => {
     if (!snapshot) return;
     let active = true;
-    void readP2CandidateDigestJobs(snapshot.save.saveId, snapshot.save.memoryMode).then(jobs => {
-      if (active) setDigestJobs(jobs);
+    void readP2CandidateDigestReviewState({ save: snapshot.save,
+      resolveSources: refs => resolveP6DigestSources(snapshot.save, snapshot.runtime, refs) }).then(state => {
+      if (!active) return;
+      setDigestJobs(state.jobs);
+      setDigestReviews(state.reviews);
+      setApprovedPlotDigests(state.approvedPlotDigests);
+      setStaleApprovedDigestIds(state.staleApprovedDigestIds);
     }).catch(() => {
       if (active) setDigestNotice('本机摘要队列不可用；行动、状态和双记忆检索不受影响。');
     });
@@ -183,34 +199,46 @@ function P2ReviewGame({ save, onBack }: { save: LocalSave | undefined; onBack: (
         maxCostMicros: 0,
         maxJobs: 3,
         maxConcurrency: 1,
-        resolveSources: async refs => {
-          const latestSave = await readLocalAuthoritativeSave(snapshot.save.saveId);
-          if (!latestSave || latestSave.memoryMode !== snapshot.save.memoryMode
-            || latestSave.memoryPolicy.policyArtifactHash !== snapshot.save.memoryPolicy.policyArtifactHash) {
-            throw new Error('P6_DIGEST_SOURCE_SAVE_CHANGED');
-          }
-          const latestArchive = await exportLocalAuthorityArchive(snapshot.save.saveId, snapshot.runtime.reduce);
-          if (!latestArchive) throw new Error('P6_DIGEST_SOURCE_ARCHIVE_MISSING');
-          const latestSources = buildP2CandidateDigestSourcesFromReceipts({
-            save: latestSave,
-            receipts: latestArchive.receipts.map(row => row.receipt),
-            narrate: snapshot.runtime.narrate,
-          });
-          const byId = new Map(latestSources.map(source => [source.sourceId, source]));
-          return refs.map(ref => {
-            const source = byId.get(ref.sourceId);
-            if (!source) throw new Error('P6_DIGEST_SOURCE_NO_LONGER_AUTHORIZED');
-            return source;
-          });
-        },
+        resolveSources: refs => resolveP6DigestSources(snapshot.save, snapshot.runtime, refs),
       });
-      const updatedJobs = await readP2CandidateDigestJobs(snapshot.save.saveId, snapshot.save.memoryMode);
-      setDigestJobs(updatedJobs);
+      const updatedState = await readP2CandidateDigestReviewState({ save: snapshot.save,
+        resolveSources: refs => resolveP6DigestSources(snapshot.save, snapshot.runtime, refs) });
+      setDigestJobs(updatedState.jobs);
+      setDigestReviews(updatedState.reviews);
+      setApprovedPlotDigests(updatedState.approvedPlotDigests);
+      setStaleApprovedDigestIds(updatedState.staleApprovedDigestIds);
       setDigestNotice(run.status === 'budget-limited'
         ? '摘要任务暂停：本次成本额度不足，没有调用生成服务。'
         : `摘要队列已处理：完成 ${run.completed} 项，失败 ${run.failed} 项，来源过期 ${run.stale} 项；本机摘句成本为 0。`);
     } catch (error) {
       setDigestNotice(error instanceof Error ? `摘要草稿未生成：${error.message}` : '摘要草稿未生成；原回执与记忆未改变。');
+    } finally { setDigestBusy(false); }
+  }
+
+  async function decideDigest(job: P2CandidateDigestJob, decision: 'approved' | 'rejected') {
+    if (!snapshot || digestBusy || !job.artifact || !job.artifactHash || !snapshot.chainValid || !snapshot.replayValid) return;
+    setDigestBusy(true);
+    setDigestNotice('正在重读来源回执、验证摘要哈希并保存本机审核记录……');
+    try {
+      const current = await refresh(snapshot.runtime);
+      if (!current || !current.chainValid || !current.replayValid) throw new Error('P6_DIGEST_REVIEW_AUTHORITY_UNAVAILABLE');
+      const result = await recordP2CandidateDigestReview({
+        save: current.save, jobId: job.jobId, expectedArtifactHash: job.artifactHash, decision, reviewedAt: Date.now(),
+        resolveSources: refs => resolveP6DigestSources(current.save, current.runtime, refs),
+      });
+      const state = await readP2CandidateDigestReviewState({ save: current.save,
+        resolveSources: refs => resolveP6DigestSources(current.save, current.runtime, refs) });
+      setDigestJobs(state.jobs);
+      setDigestReviews(state.reviews);
+      setApprovedPlotDigests(state.approvedPlotDigests);
+      setStaleApprovedDigestIds(state.staleApprovedDigestIds);
+      setDigestNotice(result.status === 'duplicate'
+        ? '相同审核决定已存在；未重复写入。'
+        : decision === 'approved'
+          ? '已记入本机候选审核记录；摘要仅进入本机候选叙事上下文，不写入 NPC 记忆、Canon 或权威存档。'
+          : '已记入本机拒绝记录；摘要不会进入候选叙事上下文。');
+    } catch (error) {
+      setDigestNotice(error instanceof Error ? `审核未保存：${error.message}` : '审核未保存；摘要和世界存档均未改变。');
     } finally { setDigestBusy(false); }
   }
 
@@ -309,7 +337,7 @@ function P2ReviewGame({ save, onBack }: { save: LocalSave | undefined; onBack: (
     snapshot.memoryProjection?.observations.map(observation => observation.npcId) ?? []) : [];
   const receipt = currentReceipt ?? snapshot?.latestReceipt ?? null;
   const narrativeContext = snapshot ? snapshot.runtime.narrativeContext(snapshot.save, receipt, memoryRecall,
-    snapshot.memoryProjection?.observations.map(observation => observation.eventId) ?? []) : null;
+    snapshot.memoryProjection?.observations.map(observation => observation.eventId) ?? [], approvedPlotDigests) : null;
   const narrative = presentationText || (receipt && snapshot ? snapshot.runtime.narrate(receipt) : '');
   const receiptEvents = projectReceiptEvents(receipt);
   const receiptRuleVersion = receipt && 'rulesVersion' in receipt && typeof receipt.rulesVersion === 'string'
@@ -384,21 +412,46 @@ function P2ReviewGame({ save, onBack }: { save: LocalSave | undefined; onBack: (
       </section>}
       {narrativeContext && <details className="card" aria-label="叙事来源上下文" data-testid="p2-narrative-context">
         <summary>查看叙事来源</summary>
-        <p>结构化上下文只引用当前状态、已接受回执和通过 NPC 授权的记忆。角色资料只接受作者批准字段；摘要还需通过来源修订与内容哈希校验。当前候选页关闭外部适配器和模型服务。</p>
+        <p>结构化上下文只引用当前状态、已接受回执、NPC 授权记忆和已复核摘要。摘要需重新核对当前来源修订与内容哈希；摘要只对玩家可见，不能增加 NPC 知识。当前 Canon 运行包没有结构化人物档案字段，候选页不从散文推造人物资料；外部适配器和模型服务保持关闭。</p>
         <ul>{narrativeContext.sourceCatalog.map(source => <li key={`${source.kind}-${source.sourceId}`}>{source.kind} · {source.sourceId} · {source.visibility} · 修订 {source.revision}</li>)}</ul>
+        {narrativeContext.approvedPlotDigests.map(digest => <article key={`digest-content-${digest.provenance.digestId}`} data-testid="p6-approved-digest-context">
+          <strong>玩家可见剧情摘要 · 修订 {digest.provenance.fromRevision}–{digest.provenance.throughRevision}</strong>
+          <p>{digest.summary}</p>
+          <small>来源：{digest.sourceIds.join('、')} · 输出哈希：{digest.provenance.outputHash}</small>
+        </article>)}
       </details>}
       <section className="card" aria-label="剧情摘要草稿" data-testid="p6-digest-panel">
         <h3>剧情回顾草稿</h3>
-        <p>只汇集已接受回执中玩家可见的句子，不读取 NPC 私有记忆，不调用模型。摘要是可丢弃的派生产物，待作者审核前不会进入叙事上下文。</p>
+        <p>只汇集已接受回执中玩家可见的句子，不读取 NPC 私有记忆，不调用模型。摘要是可丢弃的派生产物；由你在本机明确复核后，才进入本机候选叙事上下文。审核记录不代表 P6 阶段签收。</p>
         <button type="button" className="secondary" data-testid="p6-build-digest"
           disabled={digestBusy || actionDisabled || snapshot.eventCount === 0} onClick={() => void rebuildDigestDraft()}>
           {digestBusy ? '摘要任务处理中……' : '生成 / 恢复摘要草稿'}
         </button>
         {digestNotice && <p role="status" data-testid="p6-digest-status">{digestNotice}</p>}
-        {digestJobs.filter(job => job.artifact).map(job => <article key={job.jobId} data-testid="p6-digest-artifact">
-          <p>{job.artifact!.summary}</p>
-          <small>修订 {job.fromRevision}–{job.throughRevision} · {job.artifact!.sourceIds.length} 个来源 · 待审核 · 不会授权 NPC 记忆</small>
-        </article>)}
+        {staleApprovedDigestIds.length > 0 && <p role="status">有已批准摘要的来源范围已变化，已从候选上下文移除：{staleApprovedDigestIds.join('、')}</p>}
+        {digestJobs.filter(job => job.artifact).map(job => {
+          const review = latestP2CandidateDigestReview(digestReviews, job);
+          const reviewLabel = review?.decision === 'approved' ? '本机已复核：可用于候选上下文'
+            : review?.decision === 'rejected' ? '本机已拒绝：不进入候选上下文' : '待本机复核';
+          return <article key={job.jobId} data-testid="p6-digest-artifact">
+            <p>{job.artifact!.summary}</p>
+            <small>修订 {job.fromRevision}–{job.throughRevision} · {job.artifact!.sourceIds.length} 个来源 · {reviewLabel} · 不会授权 NPC 记忆</small>
+            <details><summary>核对来源与哈希</summary>
+              <ul>{job.artifact!.sourceIds.map(sourceId => <li key={sourceId}>{sourceId}</li>)}</ul>
+              <small>输入 {job.inputHash} · 输出 {job.artifact!.outputHash} · 制品 {job.artifactHash}</small>
+            </details>
+            <div className="actions" aria-label="摘要本机人工复核">
+              <button type="button" className="secondary" data-testid="p6-review-approve"
+                disabled={digestBusy || actionDisabled} onClick={() => void decideDigest(job, 'approved')}>
+                我已复核，纳入本机候选上下文
+              </button>
+              <button type="button" className="secondary" data-testid="p6-review-reject"
+                disabled={digestBusy || actionDisabled} onClick={() => void decideDigest(job, 'rejected')}>
+                拒绝并保留记录
+              </button>
+            </div>
+          </article>;
+        })}
         {digestJobs.some(job => job.status === 'queued' || job.status === 'running')
           && <p>未完成的摘要任务已保存在当前存档与记忆模式的本机队列中，可再次点击续跑。</p>}
       </section>
@@ -422,6 +475,32 @@ function P2ReviewGame({ save, onBack }: { save: LocalSave | undefined; onBack: (
 function intentIdentity(save: SaveEnvelopeV3, idempotencyKey: string) {
   return { saveId: save.saveId, actorId: save.state.playerId, branchId: 'root' as const,
     expectedRevision: save.revision, idempotencyKey };
+}
+
+async function resolveP6DigestSources(
+  expectedSave: SaveEnvelopeV3,
+  runtime: P2ReviewGameplayRuntime,
+  refs: readonly P2CandidateDigestSourceRef[],
+): Promise<readonly P2CandidateDigestSource[]> {
+  const latestSave = await readLocalAuthoritativeSave(expectedSave.saveId);
+  if (!latestSave || latestSave.memoryMode !== expectedSave.memoryMode
+    || latestSave.memoryPolicy.policyArtifactHash !== expectedSave.memoryPolicy.policyArtifactHash
+    || latestSave.branchId !== expectedSave.branchId) throw new Error('P6_DIGEST_SOURCE_SAVE_CHANGED');
+  const archive = await exportLocalAuthorityArchive(expectedSave.saveId, runtime.reduce);
+  if (!archive) throw new Error('P6_DIGEST_SOURCE_ARCHIVE_MISSING');
+  const sources = buildP2CandidateDigestSourcesFromReceipts({
+    save: latestSave, receipts: archive.receipts.map(row => row.receipt), narrate: runtime.narrate,
+  });
+  const byId = new Map(sources.map(source => [source.sourceId, source]));
+  return refs.map(ref => {
+    const source = byId.get(ref.sourceId);
+    if (!source || source.revision !== ref.revision
+      || source.eventIds.length !== ref.eventIds.length
+      || source.eventIds.some(eventId => !ref.eventIds.includes(eventId))) {
+      throw new Error('P6_DIGEST_SOURCE_NO_LONGER_AUTHORIZED');
+    }
+    return source;
+  });
 }
 
 function previousStopFromArchive(events: readonly { sequence: number; event: { type: string; payload: Record<string, unknown> } }[]): string | undefined {

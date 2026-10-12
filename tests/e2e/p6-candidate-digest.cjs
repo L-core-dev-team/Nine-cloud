@@ -65,6 +65,7 @@ async function stop(child) {
         import('/src/authoritative-turn-store.ts'),
         import('/src/p2-candidate-digest-queue.ts'),
       ]);
+      const reviewModule = await import('/src/p2-candidate-digest-review.ts');
       const runtime = await runtimeModule.loadP2ReviewGameplayRuntime();
       const mode = 'continue';
       const saveId = `p6-queue-${crypto.randomUUID()}`;
@@ -243,9 +244,50 @@ async function stop(child) {
       const context = runtime.narrativeContext(save, null, null, archive.observations.map(item => item.eventId));
       const { buildP2CandidateNarrativeContext } = await import('/src/p2-candidate-narrative.ts');
       const withDraft = buildP2CandidateNarrativeContext({ save, receipt: null, memoryEvidence: null,
-        authorizedEventIds: archive.observations.map(item => item.eventId), digests: [blockedProvenance] });
+        authorizedEventIds: archive.observations.map(item => item.eventId), approvedPlotDigests: [{
+          provenance: blockedProvenance, summary: ready.artifact.summary,
+          sourceIds: ready.artifact.sourceIds, artifactHash: ready.artifactHash,
+        }] });
       if (withDraft.digestProvenance.length !== 0 || withDraft.sourceCatalog.some(item => item.sourceId === blockedProvenance.digestId)) {
         throw new Error('P6_UNREVIEWED_DIGEST_ENTERED_NARRATIVE_CONTEXT');
+      }
+      const approveInput = { save, jobId: ready.jobId, expectedArtifactHash: ready.artifactHash,
+        decision: 'approved', reviewedAt: 50_000, resolveSources };
+      const approved = await reviewModule.recordP2CandidateDigestReview(approveInput);
+      const duplicateApproval = await reviewModule.recordP2CandidateDigestReview(approveInput);
+      const approvedState = await reviewModule.readP2CandidateDigestReviewState({ save, resolveSources });
+      const approvedContext = runtime.narrativeContext(save, null, null,
+        archive.observations.map(item => item.eventId), approvedState.approvedPlotDigests);
+      if (approved.status !== 'created' || duplicateApproval.status !== 'duplicate'
+        || approvedContext.approvedPlotDigests.length !== 1
+        || approvedContext.approvedPlotDigests[0].summary !== ready.artifact.summary
+        || approvedContext.sourceCatalog.some(item => item.kind === 'plot-digest' && item.visibility !== 'player-visible')) {
+        throw new Error('P6_APPROVED_DIGEST_CONTEXT_FAILED');
+      }
+      const staleApprovedState = await reviewModule.readP2CandidateDigestReviewState({ save,
+        resolveSources: async refs => refs.map(ref => ({ ...firstSources[0], text: `${firstSources[0].text} 已变化`,
+          sourceId: ref.sourceId, eventIds: [...ref.eventIds], revision: ref.revision })) });
+      if (staleApprovedState.approvedPlotDigests.length !== 0
+        || !staleApprovedState.staleApprovedDigestIds.includes(ready.artifact.digestId)) {
+        throw new Error('P6_STALE_APPROVAL_REMAINED_IN_CONTEXT');
+      }
+      const rejectedReview = await reviewModule.recordP2CandidateDigestReview({ ...approveInput,
+        decision: 'rejected', reviewedAt: 50_001 });
+      const rejectedState = await reviewModule.readP2CandidateDigestReviewState({ save, resolveSources });
+      if (rejectedReview.status !== 'created' || rejectedState.approvedPlotDigests.length !== 0
+        || rejectedState.reviews.filter(row => row.jobId === ready.jobId).map(row => row.decision).join(',') !== 'approved,rejected') {
+        throw new Error('P6_REVIEW_REJECTION_HISTORY_FAILED');
+      }
+      let staleApprovalRejected = false;
+      try {
+        await reviewModule.recordP2CandidateDigestReview({ ...approveInput, decision: 'approved', reviewedAt: 50_002,
+          resolveSources: async refs => refs.map(ref => ({ ...secondSources[0], sourceId: ref.sourceId })) });
+      } catch (error) { staleApprovalRejected = error.message === 'P6_DIGEST_SOURCE_STALE'; }
+      if (!staleApprovalRejected) throw new Error('P6_STALE_SOURCE_REVIEW_NOT_REJECTED');
+      const otherModeReviews = await reviewModule.readP2CandidateDigestReviewRecords(saveId, 'forgetting');
+      if (otherModeReviews.length !== 0
+        || reviewModule.p2CandidateDigestReviewDatabaseName('continue') === reviewModule.p2CandidateDigestReviewDatabaseName('forgetting')) {
+        throw new Error('P6_REVIEW_MODE_ISOLATION_FAILED');
       }
       return {
         mode,
@@ -257,6 +299,12 @@ async function stop(child) {
         inventedSourceRejectedAsStale: staleJob.status,
         modeIsolation: [queue.p2CandidateDigestDatabaseName('continue'), queue.p2CandidateDigestDatabaseName('forgetting')],
         unreviewedDigestExcluded: withDraft.digestProvenance.length === 0,
+        review: { first: approved.status, duplicate: duplicateApproval.status, approvedContextCount: approvedContext.approvedPlotDigests.length,
+          decisionHistory: rejectedState.reviews.filter(row => row.jobId === ready.jobId).map(row => row.decision),
+          rejectedContextCount: rejectedState.approvedPlotDigests.length,
+          staleApprovalRemovedFromContext: staleApprovedState.approvedPlotDigests.length === 0
+            && staleApprovedState.staleApprovedDigestIds.includes(ready.artifact.digestId),
+          staleSourceRejected: staleApprovalRejected },
         contextWithoutDigest: context.digestProvenance.length,
         forgedSourceResult: rejected.failed === 0 && rejected.stale === 1,
         transientRetry: { afterFailure: queuedRetry.status, attempts: queuedRetry.attempts,
@@ -278,10 +326,21 @@ async function stop(child) {
     await page.waitForFunction(() => document.querySelector('[data-testid="p2-revision"]')?.textContent === '1');
     await page.getByTestId('p6-build-digest').click();
     await page.getByTestId('p6-digest-artifact').waitFor({ state: 'visible' });
+    const pendingDigestPreview = await page.getByTestId('p6-digest-artifact').innerText();
+    await page.getByTestId('p6-review-approve').click();
+    await page.getByTestId('p6-digest-status').filter({ hasText: '已记入本机候选审核记录' }).waitFor({ state: 'visible' });
+    await page.getByTestId('p2-narrative-context').locator('summary').click();
+    await page.getByTestId('p6-approved-digest-context').waitFor({ state: 'visible' });
+    const approvedContextVisible = await page.getByTestId('p6-approved-digest-context').isVisible();
+    await page.getByTestId('p6-review-reject').click();
+    await page.getByTestId('p6-digest-status').filter({ hasText: '已记入本机拒绝记录' }).waitFor({ state: 'visible' });
+    await page.waitForFunction(() => document.querySelectorAll('[data-testid="p6-approved-digest-context"]').length === 0);
     const uiJourney = {
       revision: await page.getByTestId('p2-revision').textContent(),
       digestStatus: await page.getByTestId('p6-digest-status').textContent(),
-      digestPreview: await page.getByTestId('p6-digest-artifact').innerText(),
+      digestPreview: pendingDigestPreview,
+      approvedContextVisible,
+      reviewAfterReject: await page.getByTestId('p6-digest-artifact').innerText(),
       viewportWidth: 390,
       documentWidth: await page.evaluate(() => document.documentElement.scrollWidth),
     };
@@ -292,6 +351,13 @@ async function stop(child) {
     assert.equal(result.candidatePendingReview, 'pending');
     assert.equal(result.inventedSourceRejectedAsStale, 'stale');
     assert.equal(result.unreviewedDigestExcluded, true);
+    assert.equal(result.review.first, 'created');
+    assert.equal(result.review.duplicate, 'duplicate');
+    assert.equal(result.review.approvedContextCount, 1);
+    assert.deepEqual(result.review.decisionHistory, ['approved', 'rejected']);
+    assert.equal(result.review.rejectedContextCount, 0);
+    assert.equal(result.review.staleApprovalRemovedFromContext, true);
+    assert.equal(result.review.staleSourceRejected, true);
     assert.equal(result.forgedSourceResult, true);
     assert.equal(result.transientRetry.afterFailure, 'queued');
     assert.equal(result.transientRetry.attempts, 1);
@@ -299,7 +365,9 @@ async function stop(child) {
     assert.equal(result.concurrency.observedMaximum, 1);
     assert.equal(result.concurrency.jobsReady, true);
     assert.equal(uiJourney.revision, '1');
-    assert.match(uiJourney.digestPreview, /待审核/);
+    assert.match(uiJourney.digestPreview, /待本机复核/);
+    assert.equal(uiJourney.approvedContextVisible, true);
+    assert.match(uiJourney.reviewAfterReject, /本机已拒绝/);
     assert.ok(uiJourney.documentWidth <= uiJourney.viewportWidth, 'P6 panel must not create mobile horizontal overflow');
     assert.equal(pageErrors.length, 0, pageErrors.join('\n'));
     console.log(JSON.stringify({ acceptance: 'P6 local candidate queue; synthetic adapter only; no provider billed', ...result,

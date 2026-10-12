@@ -243,6 +243,60 @@ export async function readP2CandidateDigestJobs(saveId: string, memoryMode: Memo
   } finally { database.close(); }
 }
 
+/** Rechecks a ready draft against the current authoritative receipt range before human review. */
+export async function revalidateP2CandidateDigestForReview(input: {
+  save: SaveEnvelopeV3;
+  jobId: string;
+  expectedArtifactHash: `sha256:${string}`;
+  resolveSources: (refs: readonly P2CandidateDigestSourceRef[]) => Promise<readonly P2CandidateDigestSource[]>;
+}): Promise<{ job: P2CandidateDigestJob; artifact: P2CandidateDigestArtifact }> {
+  assertCandidateSave(input.save);
+  if (typeof input.jobId !== 'string' || !input.jobId.trim()
+    || !/^sha256:[0-9a-f]{64}$/i.test(input.expectedArtifactHash)
+    || typeof input.resolveSources !== 'function') throw new Error('P6_DIGEST_REVIEW_INPUT_INVALID');
+  const job = (await readP2CandidateDigestJobs(input.save.saveId, input.save.memoryMode))
+    .find(row => row.jobId === input.jobId);
+  if (!job || job.status !== 'ready' || !job.artifact || job.artifactHash !== input.expectedArtifactHash) {
+    throw new Error('P6_DIGEST_REVIEW_ARTIFACT_CHANGED');
+  }
+  if (job.policyArtifactHash !== input.save.memoryPolicy.policyArtifactHash) {
+    throw new Error('P6_DIGEST_REVIEW_POLICY_CHANGED');
+  }
+  let sources: P2CandidateDigestSource[];
+  try {
+    sources = canonicalSources(input.save, await input.resolveSources(job.sourceRefs), job.fromRevision, job.throughRevision);
+  } catch (error) {
+    if (error instanceof Error && error.message.startsWith('P6_DIGEST_SOURCE_')) throw new Error('P6_DIGEST_SOURCE_STALE');
+    throw error;
+  }
+  const currentInputHash = await digestHash({
+    saveId: job.saveId, branchId: job.branchId, memoryMode: job.memoryMode,
+    policyArtifactHash: job.policyArtifactHash, fromRevision: job.fromRevision,
+    throughRevision: job.throughRevision, generatorVersion: job.generatorVersion,
+    promptVersion: job.promptVersion, sources,
+  });
+  if (currentInputHash !== job.inputHash) throw new Error('P6_DIGEST_SOURCE_STALE');
+
+  const artifact = job.artifact;
+  if (artifact.digestId !== `digest:${job.jobId}` || artifact.saveId !== job.saveId
+    || artifact.branchId !== job.branchId || artifact.memoryMode !== job.memoryMode
+    || artifact.fromRevision !== job.fromRevision || artifact.throughRevision !== job.throughRevision
+    || artifact.inputHash !== job.inputHash || artifact.generatorVersion !== job.generatorVersion
+    || artifact.promptVersion !== job.promptVersion || artifact.approvalStatus !== 'pending'
+    || artifact.rebuildStatus !== 'ready') throw new Error('P6_DIGEST_REVIEW_ARTIFACT_SCOPE_INVALID');
+  const sourceById = new Map(sources.map(source => [source.sourceId, source]));
+  const selected = artifact.sourceIds.map(sourceId => sourceById.get(sourceId));
+  if (!selected.length || selected.some(source => !source)
+    || new Set(artifact.sourceIds).size !== artifact.sourceIds.length
+    || JSON.stringify([...new Set(selected.flatMap(source => source!.eventIds))]) !== JSON.stringify(artifact.coveredEventIds)) {
+    throw new Error('P6_DIGEST_REVIEW_ARTIFACT_SOURCES_INVALID');
+  }
+  if (await digestHash({ summary: artifact.summary, sourceIds: artifact.sourceIds }) !== artifact.outputHash) {
+    throw new Error('P6_DIGEST_REVIEW_OUTPUT_HASH_INVALID');
+  }
+  return { job: structuredClone(job), artifact: structuredClone(artifact) };
+}
+
 /**
  * Resumes durable jobs with bounded per-run cost, concurrency and job count.
  * A provider may be called at least once after a tab crash; it must honor jobId as its idempotency key.
@@ -350,6 +404,7 @@ export function toP2CandidatePlotDigestProvenance(artifact: P2CandidateDigestArt
   }
   return {
     digestId: artifact.digestId, saveId: artifact.saveId, branchId: artifact.branchId,
+    memoryMode: artifact.memoryMode,
     fromRevision: artifact.fromRevision, throughRevision: artifact.throughRevision,
     coveredEventIds: [...artifact.coveredEventIds], generatorVersion: artifact.generatorVersion,
     promptVersion: artifact.promptVersion, inputHash: artifact.inputHash, outputHash: artifact.outputHash,
@@ -630,7 +685,21 @@ async function validateJobHashes(job: P2CandidateDigestJob): Promise<P2Candidate
   if (job.artifact) {
     if (!job.artifactHash || await digestHash(job.artifact) !== job.artifactHash
       || job.artifact.approvalStatus !== 'pending' || job.artifact.saveId !== job.saveId
-      || job.artifact.memoryMode !== job.memoryMode || job.artifact.inputHash !== job.inputHash) {
+      || job.artifact.digestId !== `digest:${job.jobId}` || job.artifact.branchId !== job.branchId
+      || job.artifact.memoryMode !== job.memoryMode || job.artifact.inputHash !== job.inputHash
+      || job.artifact.fromRevision !== job.fromRevision || job.artifact.throughRevision !== job.throughRevision
+      || job.artifact.generatorVersion !== job.generatorVersion || job.artifact.promptVersion !== job.promptVersion
+      || job.artifact.rebuildStatus !== 'ready' || typeof job.artifact.summary !== 'string'
+      || !job.artifact.summary.trim() || job.artifact.summary.length > MAX_DIGEST_LENGTH
+      || !Array.isArray(job.artifact.sourceIds) || !job.artifact.sourceIds.length
+      || job.artifact.sourceIds.some(sourceId => typeof sourceId !== 'string' || !sourceId.trim()
+        || !job.sourceRefs.some(ref => ref.sourceId === sourceId))
+      || new Set(job.artifact.sourceIds).size !== job.artifact.sourceIds.length
+      || !Array.isArray(job.artifact.coveredEventIds) || !job.artifact.coveredEventIds.length
+      || job.artifact.coveredEventIds.some(eventId => typeof eventId !== 'string' || !eventId.trim())
+      || new Set(job.artifact.coveredEventIds).size !== job.artifact.coveredEventIds.length
+      || !/^sha256:[0-9a-f]{64}$/i.test(job.artifact.outputHash)
+      || await digestHash({ summary: job.artifact.summary, sourceIds: job.artifact.sourceIds }) !== job.artifact.outputHash) {
       throw new Error('P6_DIGEST_ARTIFACT_INTEGRITY_CONFLICT');
     }
   } else if (job.artifactHash !== null || job.status === 'ready') throw new Error('P6_DIGEST_ARTIFACT_MISSING');
@@ -642,6 +711,12 @@ function assertStoredJob(job: P2CandidateDigestJob, memoryMode: MemoryMode): voi
     || typeof job.saveId !== 'string' || !job.saveId.trim() || !job.policyArtifactHash
     || !['queued', 'running', 'ready', 'failed', 'stale'].includes(job.status)
     || !Array.isArray(job.sourceRefs) || job.sourceRefs.length < 1 || job.sourceRefs.length > MAX_SOURCE_COUNT
+    || job.sourceRefs.some(ref => !ref || typeof ref.sourceId !== 'string' || !ref.sourceId.trim()
+      || ref.sourceId.length > 300 || !Number.isSafeInteger(ref.revision) || ref.revision < 0
+      || !Array.isArray(ref.eventIds) || !ref.eventIds.length || ref.eventIds.length > 100
+      || ref.eventIds.some((eventId: unknown) => typeof eventId !== 'string' || !eventId.trim() || eventId.length > 300)
+      || new Set(ref.eventIds).size !== ref.eventIds.length)
+    || new Set(job.sourceRefs.map(ref => ref.sourceId)).size !== job.sourceRefs.length
     || !Number.isSafeInteger(job.fromRevision) || !Number.isSafeInteger(job.throughRevision)
     || job.fromRevision < 0 || job.throughRevision < job.fromRevision
     || !Number.isSafeInteger(job.attempts) || job.attempts < 0

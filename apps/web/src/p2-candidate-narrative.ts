@@ -15,6 +15,7 @@ export type PlotDigestProvenance = {
   digestId: string;
   saveId: string;
   branchId: 'root';
+  memoryMode: MemoryMode;
   fromRevision: number;
   throughRevision: number;
   coveredEventIds: readonly string[];
@@ -26,6 +27,14 @@ export type PlotDigestProvenance = {
   modelId: string | null;
   approvalStatus: 'pending' | 'approved' | 'rejected';
   rebuildStatus: 'ready' | 'stale' | 'interrupted';
+};
+
+/** Content becomes narrative input only after a current, hash-bound local review decision. */
+export type P2CandidateApprovedPlotDigest = {
+  provenance: PlotDigestProvenance;
+  summary: string;
+  sourceIds: readonly string[];
+  artifactHash: `sha256:${string}`;
 };
 
 export type NarrativeSourceRef = {
@@ -48,6 +57,7 @@ export type P2CandidateNarrativeContext = {
   stateFacts: Readonly<Record<string, unknown>>;
   approvedProfileFields: readonly CharacterProfileField[];
   digestProvenance: readonly PlotDigestProvenance[];
+  approvedPlotDigests: readonly P2CandidateApprovedPlotDigest[];
   receipt: { revision: number; eventIds: readonly string[]; eventTypes: readonly string[] } | null;
   memoryEvidence: { status: AuthorizedRecallResult['status']; sourceIds: readonly string[] } | null;
   sourceCatalog: readonly NarrativeSourceRef[];
@@ -77,7 +87,7 @@ export function buildP2CandidateNarrativeContext(input: {
   memoryEvidence: AuthorizedRecallResult | null;
   authorizedEventIds: readonly string[];
   profileFields?: readonly CharacterProfileField[];
-  digests?: readonly PlotDigestProvenance[];
+  approvedPlotDigests?: readonly P2CandidateApprovedPlotDigest[];
 }): P2CandidateNarrativeContext {
   const { save, receipt, memoryEvidence } = input;
   if (save.schemaVersion !== 3 || save.branchId !== 'root' || !Number.isSafeInteger(save.revision) || save.revision < 0) {
@@ -87,24 +97,36 @@ export function buildP2CandidateNarrativeContext(input: {
     || receipt.decision.status !== 'accepted' && receipt.decision.status !== 'rejected' && receipt.decision.status !== 'clarify')) {
     throw new Error('NARRATIVE_CONTEXT_RECEIPT_SCOPE_INVALID');
   }
-  const profileFields = (input.profileFields ?? []).filter(field => field.approvalStatus === 'approved'
-    && field.visibility !== 'internal' && field.sourceId.trim() && field.sourceVersion.trim());
+  const profileFields = (Array.isArray(input.profileFields) ? input.profileFields : []).filter(isApprovedProfileField);
   const authorizedEventIds = new Set(input.authorizedEventIds);
-  const digests = (input.digests ?? []).filter(digest => digest.approvalStatus === 'approved'
-    && digest.rebuildStatus === 'ready' && digest.saveId === save.saveId && digest.branchId === save.branchId
-    && Number.isSafeInteger(digest.fromRevision) && Number.isSafeInteger(digest.throughRevision)
-    && digest.fromRevision >= 0 && digest.throughRevision <= save.revision
-    && digest.fromRevision <= digest.throughRevision && /^sha256:[0-9a-f]{64}$/i.test(digest.inputHash)
-    && /^sha256:[0-9a-f]{64}$/i.test(digest.outputHash)
-    && digest.coveredEventIds.length > 0 && digest.coveredEventIds.every(eventId => authorizedEventIds.has(eventId)));
+  const approvedPlotDigests = (Array.isArray(input.approvedPlotDigests) ? input.approvedPlotDigests : [])
+    .filter(item => item?.provenance?.approvalStatus === 'approved' && item.provenance.rebuildStatus === 'ready'
+      && item.provenance.saveId === save.saveId && item.provenance.branchId === save.branchId
+      && item.provenance.memoryMode === save.memoryMode
+      && Number.isSafeInteger(item.provenance.fromRevision) && Number.isSafeInteger(item.provenance.throughRevision)
+      && item.provenance.fromRevision >= 0 && item.provenance.throughRevision <= save.revision
+      && item.provenance.fromRevision <= item.provenance.throughRevision
+      && /^sha256:[0-9a-f]{64}$/i.test(item.provenance.inputHash)
+      && /^sha256:[0-9a-f]{64}$/i.test(item.provenance.outputHash)
+      && /^sha256:[0-9a-f]{64}$/i.test(item.artifactHash)
+      && typeof item.summary === 'string' && item.summary.trim().length > 0 && item.summary.length <= 1800
+      && Array.isArray(item.sourceIds) && item.sourceIds.length > 0
+      && item.sourceIds.every((sourceId: unknown) => typeof sourceId === 'string' && !!sourceId.trim())
+      && new Set(item.sourceIds).size === item.sourceIds.length
+      && Array.isArray(item.provenance.coveredEventIds) && item.provenance.coveredEventIds.length > 0
+      && new Set(item.provenance.coveredEventIds).size === item.provenance.coveredEventIds.length
+      && item.provenance.coveredEventIds.every((eventId: unknown) => typeof eventId === 'string' && authorizedEventIds.has(eventId)));
+  if (new Set(approvedPlotDigests.map(item => item.provenance.digestId)).size !== approvedPlotDigests.length) {
+    throw new Error('NARRATIVE_CONTEXT_DIGEST_DUPLICATE');
+  }
   const stateFacts = safeStateFacts(save);
   const sourceCatalog: NarrativeSourceRef[] = [
     ...profileFields.map(field => ({ sourceId: field.sourceId, kind: 'profile-field' as const,
       revision: save.revision, visibility: field.visibility })),
     // Plot summaries are derived player-facing aids. They never become an NPC
     // memory source; NPC knowledge continues to come only from authorized grants.
-    ...digests.map(digest => ({ sourceId: digest.digestId, kind: 'plot-digest' as const,
-      revision: digest.throughRevision, visibility: 'player-visible' as const })),
+    ...approvedPlotDigests.map(item => ({ sourceId: item.provenance.digestId, kind: 'plot-digest' as const,
+      revision: item.provenance.throughRevision, visibility: 'player-visible' as const })),
     ...Object.keys(stateFacts).map(field => ({ sourceId: `state:${field}`, kind: 'state-fact' as const,
       revision: save.revision, visibility: 'player-visible' as const })),
     ...(receipt?.decision.status === 'accepted' ? receipt.decision.events.map(event => ({ sourceId: event.id,
@@ -120,7 +142,9 @@ export function buildP2CandidateNarrativeContext(input: {
     scene: { locationId: save.state.locationId, gameMinute: Number(stateFacts.gameMinute) },
     stateFacts,
     approvedProfileFields: profileFields,
-    digestProvenance: digests,
+    digestProvenance: approvedPlotDigests.map(item => ({ ...item.provenance })),
+    approvedPlotDigests: approvedPlotDigests.map(item => ({ ...item,
+      provenance: { ...item.provenance }, sourceIds: [...item.sourceIds] })),
     receipt: receipt?.decision.status === 'accepted' ? {
       revision: receipt.resultingRevision,
       eventIds: receipt.decision.events.map(event => event.id),
@@ -132,6 +156,16 @@ export function buildP2CandidateNarrativeContext(input: {
     sourceCatalog: sourceCatalog.sort((left, right) => left.sourceId < right.sourceId ? -1 : left.sourceId > right.sourceId ? 1 : 0),
     styleInstructions: CANDIDATE_STYLE_INSTRUCTIONS.map(instruction => ({ ...instruction })),
   };
+}
+
+function isApprovedProfileField(field: CharacterProfileField): boolean {
+  return !!field && field.approvalStatus === 'approved' && field.visibility !== 'internal'
+    && typeof field.sourceId === 'string' && !!field.sourceId.trim()
+    && typeof field.sourceVersion === 'string' && !!field.sourceVersion.trim()
+    && typeof field.npcId === 'string' && !!field.npcId.trim()
+    && typeof field.field === 'string' && !!field.field.trim()
+    && typeof field.value === 'string' && !!field.value.trim()
+    && ['player-visible', 'npc-visible'].includes(field.visibility);
 }
 
 /** Core re-reads only already-authorized sources and rejects adapter hallucinations. */

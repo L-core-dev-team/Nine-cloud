@@ -31,7 +31,8 @@ import {
 import { type ActionParseResult, type VisibleTarget } from '@jiuxiao/domain/nlu';
 import { PROLOGUE_V1_ACTION_TEMPLATES } from '@jiuxiao/domain/nlu/prologue-v1-fixtures';
 import canonRuntimeUrl from '../../../packages/content/src/canon-runtime.json?url';
-import { buildP2CandidateNarrativeContext, type P2CandidateNarrativeContext } from './p2-candidate-narrative';
+import { buildP2CandidateNarrativeContext, type P2CandidateApprovedPlotDigest,
+  type P2CandidateNarrativeContext } from './p2-candidate-narrative';
 import { parseP2CandidateActionText, type P2CandidateActionTemplate, type P2CandidateVisibleCatalog } from './p2-candidate-action-parser';
 
 const LEGACY_MEMORY_POLICY_VERSION = 'p1-memory-policy-v1';
@@ -89,7 +90,8 @@ export type P2ReviewGameplayRuntime = {
   readonly recallHistoricalMemory: (observations: readonly AuthorizedRecallObservation[], query: string,
     gameMinute: number, throughRevision: number, forgetting: boolean) => AuthorizedRecallResult;
   readonly narrativeContext: (save: SaveEnvelopeV3, receipt: TurnReceipt | null,
-    memoryEvidence: AuthorizedRecallResult | null, authorizedEventIds: readonly string[]) => P2CandidateNarrativeContext;
+    memoryEvidence: AuthorizedRecallResult | null, authorizedEventIds: readonly string[],
+    approvedPlotDigests?: readonly P2CandidateApprovedPlotDigest[]) => P2CandidateNarrativeContext;
   readonly parse: (input: {
     text: string;
     save: SaveEnvelopeV3;
@@ -183,8 +185,9 @@ async function createRuntime(): Promise<P2ReviewGameplayRuntime> {
     },
     recallHistoricalMemory: (observations, query, gameMinute, throughRevision, forgetting) => recallAuthorizedObservations(
       observations, { query, slot: 'historical-event', gameMinute, throughRevision, forgetting }),
-    narrativeContext: (save, receipt, memoryEvidence, authorizedEventIds) => buildP2CandidateNarrativeContext({
+    narrativeContext: (save, receipt, memoryEvidence, authorizedEventIds, approvedPlotDigests) => buildP2CandidateNarrativeContext({
       save, receipt, memoryEvidence, authorizedEventIds,
+      ...(approvedPlotDigests ? { approvedPlotDigests } : {}),
     }),
     parse: ({ text, save, idempotencyKey, clarificationOf }) => {
       const identity = {

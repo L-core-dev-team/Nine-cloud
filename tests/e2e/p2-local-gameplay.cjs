@@ -200,6 +200,7 @@ async function runP7CatchUpSimulation(browser, origin) {
       };
       const plan = offline.planP7OfflineCatchUp({
         saveId: 'p7-browser-simulation', memoryMode: 'continue', checkpointId: 'checkpoint-1',
+        checkpointRevision: 0, returnRevision: 0, checkpointGameMinute: 0, returnGameMinute: 0,
         startedAtMs: 1_000_000, returnedAtMs: 1_000_000 + 24 * 60 * 60_000,
         scheduledEvents: [{ eventId: event.eventId, occurrenceId: 'rain-1', elapsedMinute: 900, repeatOrdinal: 2 }],
         ruptures: [], allowlist: { [event.eventId]: event }, recentAuthorizedOnlineAction: false,
@@ -208,6 +209,7 @@ async function runP7CatchUpSimulation(browser, origin) {
       const duplicate = await store.storeP7CandidateOfflinePlan(plan);
       const laterRetry = offline.planP7OfflineCatchUp({
         saveId: 'p7-browser-simulation', memoryMode: 'continue', checkpointId: 'checkpoint-1',
+        checkpointRevision: 0, returnRevision: 0, checkpointGameMinute: 0, returnGameMinute: 0,
         startedAtMs: 1_000_000, returnedAtMs: 1_000_000 + 25 * 60 * 60_000,
         scheduledEvents: [{ eventId: event.eventId, occurrenceId: 'rain-1', elapsedMinute: 900, repeatOrdinal: 2 }],
         ruptures: [], allowlist: { [event.eventId]: event }, recentAuthorizedOnlineAction: false,
@@ -259,7 +261,7 @@ async function runP7CatchUpSimulation(browser, origin) {
       lossLayerElapsedMinutes: 1440, continueRows: 1, forgettingRows: 0,
       retryKeptFrozenPlan: true, laterRetryConflictRejected: true,
       conflictRejected: true, tamperRejected: true,
-      databaseNames: ['jiuxiao-offline-continue-candidate', 'jiuxiao-offline-forgetting-candidate'],
+      databaseNames: ['jiuxiao-offline-continue-v2-candidate', 'jiuxiao-offline-forgetting-v2-candidate'],
     });
     return result;
   } finally { await context.close(); }
