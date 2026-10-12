@@ -58,7 +58,7 @@ async function waitFor(url) {
         const footer = element.closest('footer').getBoundingClientRect();
         return {
           links: links.map(link => ({ label: link.innerText.trim(), href: link.getAttribute('href'), target: link.target, rel: link.rel })),
-          badge: { loaded: badge.complete && badge.naturalWidth > 0, naturalWidth: badge.naturalWidth, width: badge.getBoundingClientRect().width, height: badge.getBoundingClientRect().height, beforeLabel: badge.nextElementSibling?.textContent?.trim() },
+          badge: { loaded: badge.complete && badge.naturalWidth > 0, naturalWidth: badge.naturalWidth, naturalHeight: badge.naturalHeight, objectFit: getComputedStyle(badge).objectFit, width: badge.getBoundingClientRect().width, height: badge.getBoundingClientRect().height, beforeLabel: badge.nextElementSibling?.textContent?.trim() },
           centerOffset: Math.abs(box.left + box.width / 2 - innerWidth / 2),
           footerBottomGap: footer.bottom - box.bottom,
           viewportWidth: innerWidth,
@@ -69,6 +69,8 @@ async function waitFor(url) {
       assert.deepEqual(rendered.links.map(({ label, href }) => ({ label, href })), filingRecords, `Both approved filing records render at ${width}px`);
       assert.ok(rendered.links.every(link => link.target === '_blank' && link.rel.split(/\s+/).includes('noreferrer')), 'Both official query links open safely in a new tab');
       assert.ok(rendered.badge.loaded && rendered.badge.naturalWidth > 0, 'The approved public-security badge loads');
+      assert.deepEqual([rendered.badge.naturalWidth, rendered.badge.naturalHeight], [36, 40], 'The provided filing badge source is served unchanged');
+      assert.equal(rendered.badge.objectFit, 'contain', 'The portrait badge keeps its original proportions');
       assert.equal(rendered.badge.beforeLabel, filingRecords[1].label, 'The public-security badge precedes its exact filing label');
       assert.equal(rendered.badge.width, 20);
       assert.equal(rendered.badge.height, 20);
