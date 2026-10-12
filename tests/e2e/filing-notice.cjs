@@ -50,6 +50,7 @@ async function waitFor(url) {
       await page.goto(origin);
       const filingNav = page.locator('footer .footer-filings');
       await filingNav.waitFor({ state: 'visible' });
+      await filingNav.locator("img").evaluate(image => image.decode());
       const rendered = await filingNav.evaluate(element => {
         const links = [...element.querySelectorAll('a')];
         const badge = element.querySelector('img');
