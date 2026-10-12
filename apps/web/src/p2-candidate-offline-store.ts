@@ -3,8 +3,8 @@ import type { MemoryMode } from '@jiuxiao/contracts';
 import { P7_CANDIDATE_POLICY, p7CatchUpId, type P7OfflineCatchUpPlan } from './p2-candidate-offline.js';
 
 const DATABASE_NAMES: Readonly<Record<MemoryMode, string>> = {
-  continue: 'jiuxiao-offline-continue-v2-candidate',
-  forgetting: 'jiuxiao-offline-forgetting-v2-candidate',
+  continue: 'jiuxiao-offline-continue-v3-candidate',
+  forgetting: 'jiuxiao-offline-forgetting-v3-candidate',
 };
 const DATABASE_VERSION = 1;
 const PLAN_STORE = 'catchups';

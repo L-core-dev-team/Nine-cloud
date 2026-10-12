@@ -73,6 +73,7 @@ describe('P7 candidate offline evolution policy', () => {
   it('pins policy values and leaves the actual event allowlist closed pending trusted-host review', () => {
     expect(Object.isFrozen(P7_CANDIDATE_POLICY)).toBe(true);
     expect(P7_CANDIDATE_POLICY).toMatchObject({
+      version: 'p7-causal-offline-v3-candidate',
       microWindowMinutes: 15, mainWindowEndMinutes: 720, opportunityWindowEndMinutes: 2880,
       rupturePressureThreshold: 3, renewableFloorBasisPoints: 2500, scarceFloorBasisPoints: 0,
     });
@@ -80,7 +81,7 @@ describe('P7 candidate offline evolution policy', () => {
     const noCatalog = planP7OfflineCatchUp({ saveId: 'save', memoryMode: 'continue', checkpointId: 'c1',
       checkpointRevision: 0, returnRevision: 0, checkpointGameMinute: 0, returnGameMinute: 0,
       startedAtMs: 0, returnedAtMs: 16 * 60_000,
-      scheduledEvents: [{ eventId: rain.eventId, occurrenceId: 'occ-1', elapsedMinute: 16, repeatOrdinal: 1 }],
+      scheduledEvents: [{ eventId: rain.eventId, occurrenceId: 'occ-1', elapsedMinute: 16 }],
       ruptures: [], recentAuthorizedOnlineAction: false });
     expect(noCatalog.environmentSettlements).toEqual([]);
     expect(noCatalog.rejectedOccurrences).toEqual([{ occurrenceId: 'occ-1', reason: 'event-not-allowlisted' }]);
@@ -88,7 +89,7 @@ describe('P7 candidate offline evolution policy', () => {
 
   it('uses the four physical windows, keeps loss time moving after opportunity events stop, and ignores the first 15 minutes', () => {
     const event = (minute: number, occurrenceId = `occ-${minute}`): P7ScheduledEnvironmentEvent => ({
-      eventId: rain.eventId, occurrenceId, elapsedMinute: minute, repeatOrdinal: 1,
+      eventId: rain.eventId, occurrenceId, elapsedMinute: minute,
     });
     expect(plan(15, [event(15)], [rupture('micro-rupture', 1)])).toMatchObject({
       window: 'micro', lossLayerElapsedMinutes: 0, environmentSettlements: [],
@@ -96,7 +97,11 @@ describe('P7 candidate offline evolution policy', () => {
     });
     expect(plan(16, [event(16)]).window).toBe('main');
     expect(plan(720, [event(720)]).fullRateOpportunityMinutes).toBe(705);
+    expect(plan(720, [event(720)]).outputMultiplierBasisPoints)
+      .toEqual({ renewable: 10_000, scarce: 10_000, narrative: 10_000 });
     expect(plan(721, [event(721)]).window).toBe('long');
+    expect(plan(721, [event(721)]).outputMultiplierBasisPoints)
+      .toEqual({ renewable: 9_997, scarce: 9_996, narrative: 10_000 });
     expect(plan(2880, [event(2880)]).window).toBe('long');
     const pastOpportunityWindow = plan(2881, [event(2881)]);
     expect(pastOpportunityWindow.window).toBe('loss-only');
@@ -104,16 +109,20 @@ describe('P7 candidate offline evolution policy', () => {
     expect(pastOpportunityWindow.lossLayerElapsedMinutes).toBe(2881);
   });
 
-  it('linearly attenuates only repeatable resource outputs by category and never attenuates capsule opportunity weight', () => {
-    const repeat = (minute: number): P7ScheduledEnvironmentEvent => ({ eventId: rain.eventId,
-      occurrenceId: `repeat-${minute}`, elapsedMinute: minute, repeatOrdinal: 2 });
-    const atHalf = plan(1800, [repeat(1800)]);
+  it('attenuates every long-window resource output by category, independent of untrusted occurrence ordinals', () => {
+    const atHalf = plan(1800, [{ eventId: rain.eventId, occurrenceId: 'repeat-1800', elapsedMinute: 1800 }]);
     expect(atHalf.outputMultiplierBasisPoints).toEqual({ renewable: 6250, scarce: 5000, narrative: 10_000 });
     expect(atHalf.environmentSettlements[0]?.outputs.map(item => item.quantityMicrounits)).toEqual([625_000, 500_000]);
+    const ordinalOne = { eventId: rain.eventId, occurrenceId: 'ordinal-one', elapsedMinute: 1800, repeatOrdinal: 1 };
+    const ordinalTwo = { ...ordinalOne, occurrenceId: 'ordinal-two', repeatOrdinal: 2 };
+    const ordinalUntrusted = { ...ordinalOne, occurrenceId: 'ordinal-untrusted', repeatOrdinal: 9_999 };
+    const outputs = [ordinalOne, ordinalTwo, ordinalUntrusted].map(schedule =>
+      plan(1800, [schedule]).environmentSettlements[0]?.outputs.map(item => item.quantityMicrounits));
+    expect(outputs).toEqual([[625_000, 500_000], [625_000, 500_000], [625_000, 500_000]]);
     expect(plan(2880).outputMultiplierBasisPoints).toMatchObject({ renewable: 2500, scarce: 0, narrative: 10_000 });
     expect(plan(2881).outputMultiplierBasisPoints).toMatchObject({ renewable: 0, scarce: 0, narrative: 10_000 });
-    const firstRepeatAtFloor = plan(2880, [{ eventId: rain.eventId, occurrenceId: 'first', elapsedMinute: 2880, repeatOrdinal: 1 }]);
-    expect(firstRepeatAtFloor.environmentSettlements[0]?.outputs.map(item => item.quantityMicrounits)).toEqual([1_000_000, 1_000_000]);
+    const firstOccurrenceAtFloor = plan(2880, [{ eventId: rain.eventId, occurrenceId: 'first', elapsedMinute: 2880 }]);
+    expect(firstOccurrenceAtFloor.environmentSettlements[0]?.outputs.map(item => item.quantityMicrounits)).toEqual([250_000, 0]);
   });
 
   it('admits only listed reversible environment events without protagonist causality or branches', () => {
@@ -132,7 +141,7 @@ describe('P7 candidate offline evolution policy', () => {
       saveId: 'p7-test-save', memoryMode: 'continue', checkpointId: 'checkpoint-1',
       checkpointRevision: 7, returnRevision: 7, checkpointGameMinute: 300, returnGameMinute: 300,
       startedAtMs: 1_000_000, returnedAtMs: 1_000_000 + 60 * 60_000,
-      scheduledEvents: [{ eventId: definition.eventId, occurrenceId: `bad-${index}`, elapsedMinute: 30, repeatOrdinal: 1 }],
+      scheduledEvents: [{ eventId: definition.eventId, occurrenceId: `bad-${index}`, elapsedMinute: 30 }],
       ruptures: [], allowlist: { [definition.eventId]: definition }, recentAuthorizedOnlineAction: false,
     }).rejectedOccurrences[0]?.reason);
     expect(rejected).toHaveLength(badEvents.length);
@@ -141,10 +150,10 @@ describe('P7 candidate offline evolution policy', () => {
   it('keeps long absence opportunities low-frequency and high-weight, with a stable winner per 12-hour bucket', () => {
     const second = { ...rain, eventId: 'test:other-scene' };
     const scheduled = [
-      { eventId: rain.eventId, occurrenceId: 'long-1a', elapsedMinute: 800, repeatOrdinal: 2 },
-      { eventId: second.eventId, occurrenceId: 'long-1b', elapsedMinute: 900, repeatOrdinal: 2 },
-      { eventId: rain.eventId, occurrenceId: 'long-2', elapsedMinute: 1500, repeatOrdinal: 2 },
-      { eventId: 'test:normal', occurrenceId: 'long-normal', elapsedMinute: 2200, repeatOrdinal: 2 },
+      { eventId: rain.eventId, occurrenceId: 'long-1a', elapsedMinute: 800 },
+      { eventId: second.eventId, occurrenceId: 'long-1b', elapsedMinute: 900 },
+      { eventId: rain.eventId, occurrenceId: 'long-2', elapsedMinute: 1500 },
+      { eventId: 'test:normal', occurrenceId: 'long-normal', elapsedMinute: 2200 },
     ];
     const result = planP7OfflineCatchUp({ saveId: 'save', memoryMode: 'continue', checkpointId: 'c1',
       checkpointRevision: 0, returnRevision: 0, checkpointGameMinute: 0, returnGameMinute: 0,
@@ -202,6 +211,8 @@ describe('P7 candidate offline evolution policy', () => {
     expect(() => validateP7TimeCapsuleTemplate({ ...template, text: '主角觉得渡口很熟悉。' })).toThrow('P7_CAPSULE_CONTENT_INVALID');
     expect(() => validateP7TimeCapsuleTemplate({ ...template, text: '酒肆老板娘说，你走后的第三天，她拒绝赊账。' })).not.toThrow();
     expect(() => validateP7TimeCapsuleTemplate({ ...template, text: '甲。乙。丙。' })).toThrow('P7_CAPSULE_CONTENT_INVALID');
+    expect(() => validateP7TimeCapsuleTemplate({ ...template, text: `${'甲'.repeat(67)}。乙。` })).not.toThrow();
+    expect(() => validateP7TimeCapsuleTemplate({ ...template, text: `${'甲'.repeat(68)}。乙。` })).toThrow('P7_CAPSULE_CONTENT_INVALID');
     const capsule = materializeP7TimeCapsule({ saveId: 'save-1', memoryMode: 'continue', catchUpId: 'p7-c1',
       occurrenceId: 'occ-1', elapsedMinute: 60, template,
       authorizedGrant: { grantId: capsuleSourceGrantId, npcId: 'npc_cenjiu' } });
@@ -233,6 +244,7 @@ describe('P7 candidate offline evolution policy', () => {
     expect(p7ElapsedMinutes(100, 90)).toBe(0);
     const frozenId = p7CatchUpId('save', 'continue', 'c1');
     expect(p7CatchUpId('save', 'continue', 'c1')).toBe(frozenId);
+    expect(p7CatchUpId('save', 'continue', 'c1', 'p7-causal-offline-v2-candidate')).not.toBe(frozenId);
     expect(p7CatchUpId('save', 'continue', 'c2')).not.toBe(frozenId);
     expect(p7CatchUpId('save', 'forgetting', 'c1')).not.toBe(frozenId);
     const firstPlan = plan(24 * 60);

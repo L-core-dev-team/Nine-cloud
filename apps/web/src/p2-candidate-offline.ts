@@ -11,7 +11,7 @@ export type P7EventWeight = 'normal' | 'high';
  * independently reviewed, trusted-host allowlist is supplied.
  */
 export const P7_CANDIDATE_POLICY = deepFreeze({
-  version: 'p7-causal-offline-v2-candidate',
+  version: 'p7-causal-offline-v3-candidate',
   microWindowMinutes: 15,
   mainWindowEndMinutes: 12 * 60,
   opportunityWindowEndMinutes: 48 * 60,
@@ -59,7 +59,6 @@ export type P7ScheduledEnvironmentEvent = {
   eventId: string;
   occurrenceId: string;
   elapsedMinute: number;
-  repeatOrdinal: number;
 };
 
 export type P7CausalRupture = {
@@ -310,7 +309,7 @@ export function validateP7TimeCapsuleTemplate(capsule: P7TimeCapsuleTemplate): v
   }
   const codepoints = [...capsule.text];
   const sentences = codepoints.join('').split(/[。！？!?]+/u).filter(sentence => sentence.trim().length > 0);
-  if (codepoints.length > 40 || sentences.length < 1 || sentences.length > 2
+  if (codepoints.length > 70 || sentences.length < 1 || sentences.length > 2
     || /(?:主角|玩家|你)(?:觉得|想起|想要|感到|回忆|记得|害怕|希望|认为|意识到)|(?:主角|玩家)(?:的内心|心里)/u.test(capsule.text)
     || [...capsule.impressionPrompt].length > 24) {
     throw new Error('P7_CAPSULE_CONTENT_INVALID');
@@ -384,7 +383,7 @@ export function resolveP7CausalChoice(
 }
 
 export function p7CatchUpId(saveId: string, memoryMode: MemoryMode, checkpointId: string,
-  policyVersion = P7_CANDIDATE_POLICY.version): string {
+  policyVersion: string = P7_CANDIDATE_POLICY.version): string {
   if (!saveId.trim() || !checkpointId.trim() || !['continue', 'forgetting'].includes(memoryMode)) {
     throw new Error('P7_CATCHUP_SCOPE_INVALID');
   }
@@ -407,6 +406,8 @@ function outputMultipliers(minutes: number, policy: P7Policy): P7OfflineCatchUpP
     return { renewable: 0, scarce: 0, narrative: 10_000 };
   }
   if (minutes <= policy.mainWindowEndMinutes) {
+    // The authored main window stays full-rate for every resource class through
+    // exactly 12h. The long-window curve starts from that same 100% boundary.
     return { renewable: 10_000, scarce: 10_000, narrative: 10_000 };
   }
   const longSpan = policy.opportunityWindowEndMinutes - policy.mainWindowEndMinutes;
@@ -447,7 +448,6 @@ function selectScheduledOccurrences(
       continue;
     }
     if (!Number.isSafeInteger(schedule.elapsedMinute) || schedule.elapsedMinute <= policy.microWindowMinutes
-      || !Number.isSafeInteger(schedule.repeatOrdinal) || schedule.repeatOrdinal < 1
       || schedule.elapsedMinute > elapsedMinutes) {
       rejected.push({ occurrenceId, reason: 'outside-settlement-window' });
       continue;
@@ -490,15 +490,14 @@ function selectScheduledOccurrences(
     || compareText(left.schedule.occurrenceId, right.schedule.occurrenceId));
   const settlements = accepted.map(({ schedule, definition }) => {
     const multiplier = outputMultipliers(schedule.elapsedMinute, policy);
-    const appliesRepeatDecay = schedule.repeatOrdinal > 1;
     return {
       occurrenceId: schedule.occurrenceId,
       eventId: definition.eventId,
       elapsedMinute: schedule.elapsedMinute,
       outputs: definition.resourceOutputs.map(output => ({
         ...output,
-        quantityMicrounits: Math.floor(output.quantityMicrounits * (!appliesRepeatDecay ? 10_000
-          : output.resourceClass === 'renewable' ? multiplier.renewable : multiplier.scarce) / 10_000),
+        quantityMicrounits: Math.floor(output.quantityMicrounits
+          * (output.resourceClass === 'renewable' ? multiplier.renewable : multiplier.scarce) / 10_000),
       })),
       ...(definition.capsule ? { capsuleTemplate: structuredClone(definition.capsule) } : {}),
     };
