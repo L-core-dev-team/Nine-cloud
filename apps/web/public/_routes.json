@@ -1,9 +1,5 @@
 {
   "version": 1,
-  "include": ["/api/*"],
-  "exclude": ["/api/auth/callback", "/api/*/favicon.ico"],
-  "headers": {
-    "X-Content-Type-Options": "nosniff",
-    "Referrer-Policy": "strict-origin-when-cross-origin"
-  }
+  "include": ["/api/*", "/health", "/ready"],
+  "exclude": []
 }

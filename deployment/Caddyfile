@@ -26,6 +26,8 @@ api.jiuxiaogame.cn {
         header_up Host {host}
         header_up Origin {header.Origin}
         header_up Cookie {header.Cookie}
-        header_down Access-Control-Allow-Origin {header.Origin}
+        # Direct API CORS is restricted to the public frontend origin. The
+        # Pages same-origin relay does not depend on a reflected CORS header.
+        header_down Access-Control-Allow-Origin https://play.jiuxiaogame.cn
     }
 }
