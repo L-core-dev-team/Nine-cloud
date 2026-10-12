@@ -25,6 +25,9 @@ test('hair: 头发 finds 一缕发 and returns original bytes',()=>{
 test('retain request: 留下 matches 留住 only as a verbatim quote',()=>{
  const r=index.search(query('姚镜请求留下什么原话？'));assert.ok(r.context.includes('她说：“留住这张纸。”'));assert.ok(!r.context.includes('她说：“留下这张纸。”'));
 });
+test('a retain verb alone does not support an unknown requested object',()=>{
+ assert.equal(index.search(query('姚镜请求留下铜钱的原话是什么？')).ranked.length,0);
+});
 test('eyes are not an eye disease: unknown concrete condition abstains',()=>{
  assert.equal(index.search(query('姚镜眼疾的原文细节是什么？')).evidence.length,0);
 });
