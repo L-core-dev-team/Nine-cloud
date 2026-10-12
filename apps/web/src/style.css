@@ -88,18 +88,15 @@ aside strong, aside button, aside label { font: var(--jx-type-small) system-ui; 
 aside button, aside label { padding: var(--jx-space-3); text-align: left; background: #ffffff0f; border-radius: var(--jx-radius-control); }
 aside input { display: none; }
 main { flex: 1; width: min(1180px, calc(100% - 36px)); margin: 0 auto; }
-footer { display: flex; justify-content: space-between; padding: 18px clamp(18px, 5vw, 72px); color: #82909d; border-top: 1px solid var(--line); font: 0.7rem system-ui; }
+footer { display: flex; flex-wrap: wrap; justify-content: space-between; padding: 18px clamp(18px, 5vw, 72px); color: #82909d; border-top: 1px solid var(--line); font: 0.7rem system-ui; }
 footer .footer-legal { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; }
 footer .footer-legal a { color: inherit; text-decoration: none; border-bottom: 1px solid transparent; transition: color .18s ease, border-color .18s ease; }
 footer .footer-legal a:hover, footer .footer-legal a:focus-visible { color: #bdcad7; border-bottom-color: currentColor; }
-/* ICP 备案号：法规要求必须可点击跳转工信部查询页。样式随法律链接保持一致，
-   但用 flex-shrink:0 防止窄视口下被压到不可读——它是被监管要求的文本，不能被挤压。 */
-/* 备案信息：ICP 与公安备案并列。法规要求放在页面底部显著位置且可点击查询，
-   因此固定不被 flex 压缩，`flex-shrink: 0` 保证窄屏下第一个被挤掉的不是它。 */
-footer .footer-filings { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
+/* Keep both filing numbers together in a dedicated, centered row at the bottom of every page. */
+footer .footer-filings { flex: 0 0 100%; display: flex; justify-content: center; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
 footer .footer-filing { flex-shrink: 0; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; color: inherit; text-decoration: none; border-bottom: 1px solid transparent; transition: color .18s ease, border-color .18s ease; }
 footer .footer-filing:hover, footer .footer-filing:focus-visible { color: #bdcad7; border-bottom-color: currentColor; }
-/* 公安备案图标固定 20x20（官方标准尺寸），禁止被flex 或行高拉伸变形 */
+/* Keep the approved badge at its registered square dimensions. */
 footer .footer-filing--police img { width: 20px; height: 20px; flex-shrink: 0; object-fit: contain; }
 .notice { max-width: 1180px; margin: 12px auto 0; padding: 10px 14px; color: #dce8ef; background: #ffffff10; border: 1px solid var(--line); border-radius: 10px; font: 0.78rem system-ui; }
 .notice-action { margin-left: 8px; padding: 6px 10px; color: #142431; background: var(--accent); border-radius: 7px; font: 0.76rem system-ui; }
@@ -250,7 +247,8 @@ input:not([type='range']):not([type='checkbox']), select, textarea { font-size: 
   .scene-motion:not(.scene-motion-mobile) { display: none; }
   .scene-motion-mobile { display: block; }
   .form, .stats { grid-template-columns: 1fr; }
-  footer { flex-direction: column; gap: 10px; }
+  footer { flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+  footer .footer-filings { flex: none; width: 100%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1281,7 +1279,7 @@ input:not([type='range']):not([type='checkbox']):not([type='radio']), select, te
 .ai-actionbar .ai-feedback { color: #cbd5dc; }
 /* Legal links at the document end were hidden by the fixed operation bar. */
 body:has(.ai-page) .jx-shell > footer { color: #e0e6e8; font-size: var(--jx-type-caption); padding-bottom: calc(225px + env(safe-area-inset-bottom)); }
-body:has(.ai-page) .jx-shell > footer > :is(span, .footer-legal, .footer-filing) { background: #0b1b29; }
+body:has(.ai-page) .jx-shell > footer > :is(span, .footer-legal, .footer-filings, .footer-filing) { background: #0b1b29; }
 body:has(.ai-page) header :is(.ambient-toggle, .theme-toggle, .menu) { border-color: #b8c9d3; font-size: var(--jx-type-caption); }
 body:has(.ai-page) header :is(.ambient-toggle, .theme-toggle, .menu):focus-visible,
 .ai-page :is(button, input, select, textarea, summary):focus-visible,
@@ -1325,7 +1323,7 @@ body:has(.ai-page) header :is(.ambient-toggle, .theme-toggle, .menu):focus-visib
 :root[data-theme='day'] .ai-page .role-state.enabled { color: #245536; }
 :root[data-theme='day'] .ai-actionbar .ai-feedback { color: #344b59; }
 :root[data-theme='day'] body:has(.ai-page) .jx-shell > footer { color: #172a36; }
-:root[data-theme='day'] body:has(.ai-page) .jx-shell > footer > :is(span, .footer-legal, .footer-filing) { background: #faf9f4; }
+:root[data-theme='day'] body:has(.ai-page) .jx-shell > footer > :is(span, .footer-legal, .footer-filings, .footer-filing) { background: #faf9f4; }
 :root[data-theme='day'] body:has(.ai-page) header :is(.ambient-toggle, .theme-toggle, .menu) { border-color: #283c49; }
 :root[data-theme='day'] body:has(.ai-page) header :is(.ambient-toggle, .theme-toggle, .menu):focus-visible,
 :root[data-theme='day'] .ai-page :is(button, input, select, textarea, summary):focus-visible,
