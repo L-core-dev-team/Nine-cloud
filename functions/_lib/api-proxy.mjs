@@ -84,7 +84,12 @@ async function proxyRequest(context, route) {
     return jsonError(503, 'UPSTREAM_CONFIG_INVALID', '服务暂不可用。');
   }
 
-  const target = new URL(`${requestUrl.pathname}${requestUrl.search}`, upstreamOrigin);
+  const target = new URL(upstreamOrigin);
+  target.pathname = requestUrl.pathname;
+  target.search = requestUrl.search;
+  if (target.origin !== upstreamOrigin) {
+    return jsonError(400, 'INVALID_API_PATH', '请求路径无效。');
+  }
   const headers = new Headers();
   for (const name of REQUEST_HEADERS) {
     const value = request.headers.get(name);

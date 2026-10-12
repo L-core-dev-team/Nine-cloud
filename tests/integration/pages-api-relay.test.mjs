@@ -163,6 +163,21 @@ test('health and readiness routes are exact, GET/HEAD-only proxies', async () =>
   assert.equal(calls, 1);
 });
 
+test('scheme-relative health paths cannot retarget the approved upstream origin', async () => {
+  let observedUrl;
+  const response = await withFetch(async input => {
+    observedUrl = String(input);
+    return new Response(null, { status: 204 });
+  }, () => proxyHealthRequest({
+    request: new Request('https://play.jiuxiaogame.cn//health', {
+      headers: { authorization: 'Bearer synthetic-token', cookie: 'jx_session=synthetic-session' },
+    }),
+    env: {},
+  }, '/health'));
+
+  assert.equal(response.status, 204);
+  assert.equal(new URL(observedUrl).origin, 'https://api.jiuxiaogame.cn');
+});
 test('production relay uses only the approved API origin on a production site host', async () => {
   let observedUrl;
   const response = await withFetch(async input => {
