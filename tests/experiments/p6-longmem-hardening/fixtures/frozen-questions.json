@@ -1,0 +1,1322 @@
+[
+  {
+    "questionId": "F0-clue",
+    "text": "事件 e891-dispatch 揭晓的两枚潮印交织伏笔，需要哪些早期原文？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s021",
+      "s022",
+      "s891"
+    ],
+    "supportingSourceIds": [
+      "s021",
+      "s022",
+      "s891"
+    ],
+    "correctFacts": [
+      {
+        "id": "f891-刻痕含义",
+        "value": "报潮线路的两端",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F0-identity",
+    "text": "栖潮埠信使更名与身份传闻被澄清的前后原始来源有哪些？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s191",
+      "s341",
+      "s591"
+    ],
+    "supportingSourceIds": [
+      "s191",
+      "s341",
+      "s591"
+    ],
+    "correctFacts": [
+      {
+        "id": "f191-身份传闻",
+        "value": "逃亡盐商",
+        "status": "unverified"
+      },
+      {
+        "id": "f341-更名",
+        "value": "栖潮埠引潮人",
+        "status": "current"
+      },
+      {
+        "id": "f591-真实身份",
+        "value": "护潮员",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F0-prose",
+    "text": "栖潮埠潮印封签原文的温杉气味出现在哪里？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s141"
+    ],
+    "supportingSourceIds": [
+      "s141"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F0-past",
+    "text": "栖潮埠秘匣截至此时当前由谁保管？",
+    "asOfTurn": 441,
+    "expectedSourceIds": [
+      "s241"
+    ],
+    "supportingSourceIds": [
+      "s241"
+    ],
+    "correctFacts": [
+      {
+        "id": "f241-归属",
+        "value": "栖潮埠库守",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F0-unsupported",
+    "text": "栖潮埠潮印被烧毁的事件是否发生过？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F1-clue",
+    "text": "事件 e892-dispatch 揭晓的两枚潮印交织伏笔，需要哪些早期原文？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s022",
+      "s023",
+      "s892"
+    ],
+    "supportingSourceIds": [
+      "s022",
+      "s023",
+      "s892"
+    ],
+    "correctFacts": [
+      {
+        "id": "f892-刻痕含义",
+        "value": "报潮线路的两端",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F1-identity",
+    "text": "苔石院信使更名与身份传闻被澄清的前后原始来源有哪些？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s192",
+      "s342",
+      "s592"
+    ],
+    "supportingSourceIds": [
+      "s192",
+      "s342",
+      "s592"
+    ],
+    "correctFacts": [
+      {
+        "id": "f192-身份传闻",
+        "value": "逃亡盐商",
+        "status": "unverified"
+      },
+      {
+        "id": "f342-更名",
+        "value": "苔石院引潮人",
+        "status": "current"
+      },
+      {
+        "id": "f592-真实身份",
+        "value": "护潮员",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F1-prose",
+    "text": "苔石院潮印封签原文的温杉气味出现在哪里？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s142"
+    ],
+    "supportingSourceIds": [
+      "s142"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F1-past",
+    "text": "苔石院秘匣截至此时当前由谁保管？",
+    "asOfTurn": 442,
+    "expectedSourceIds": [
+      "s242"
+    ],
+    "supportingSourceIds": [
+      "s242"
+    ],
+    "correctFacts": [
+      {
+        "id": "f242-归属",
+        "value": "苔石院库守",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F1-unsupported",
+    "text": "苔石院潮印被烧毁的事件是否发生过？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F2-clue",
+    "text": "事件 e893-dispatch 揭晓的两枚潮印交织伏笔，需要哪些早期原文？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s023",
+      "s024",
+      "s893"
+    ],
+    "supportingSourceIds": [
+      "s023",
+      "s024",
+      "s893"
+    ],
+    "correctFacts": [
+      {
+        "id": "f893-刻痕含义",
+        "value": "报潮线路的两端",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F2-identity",
+    "text": "折柳台信使更名与身份传闻被澄清的前后原始来源有哪些？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s193",
+      "s343",
+      "s593"
+    ],
+    "supportingSourceIds": [
+      "s193",
+      "s343",
+      "s593"
+    ],
+    "correctFacts": [
+      {
+        "id": "f193-身份传闻",
+        "value": "逃亡盐商",
+        "status": "unverified"
+      },
+      {
+        "id": "f343-更名",
+        "value": "折柳台引潮人",
+        "status": "current"
+      },
+      {
+        "id": "f593-真实身份",
+        "value": "护潮员",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F2-prose",
+    "text": "折柳台潮印封签原文的温杉气味出现在哪里？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s143"
+    ],
+    "supportingSourceIds": [
+      "s143"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F2-past",
+    "text": "折柳台秘匣截至此时当前由谁保管？",
+    "asOfTurn": 443,
+    "expectedSourceIds": [
+      "s243"
+    ],
+    "supportingSourceIds": [
+      "s243"
+    ],
+    "correctFacts": [
+      {
+        "id": "f243-归属",
+        "value": "折柳台库守",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F2-unsupported",
+    "text": "折柳台潮印被烧毁的事件是否发生过？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F3-clue",
+    "text": "事件 e894-dispatch 揭晓的两枚潮印交织伏笔，需要哪些早期原文？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s024",
+      "s025",
+      "s894"
+    ],
+    "supportingSourceIds": [
+      "s024",
+      "s025",
+      "s894"
+    ],
+    "correctFacts": [
+      {
+        "id": "f894-刻痕含义",
+        "value": "报潮线路的两端",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F3-identity",
+    "text": "雾松亭信使更名与身份传闻被澄清的前后原始来源有哪些？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s194",
+      "s344",
+      "s594"
+    ],
+    "supportingSourceIds": [
+      "s194",
+      "s344",
+      "s594"
+    ],
+    "correctFacts": [
+      {
+        "id": "f194-身份传闻",
+        "value": "逃亡盐商",
+        "status": "unverified"
+      },
+      {
+        "id": "f344-更名",
+        "value": "雾松亭引潮人",
+        "status": "current"
+      },
+      {
+        "id": "f594-真实身份",
+        "value": "护潮员",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F3-prose",
+    "text": "雾松亭潮印封签原文的温杉气味出现在哪里？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s144"
+    ],
+    "supportingSourceIds": [
+      "s144"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F3-past",
+    "text": "雾松亭秘匣截至此时当前由谁保管？",
+    "asOfTurn": 444,
+    "expectedSourceIds": [
+      "s244"
+    ],
+    "supportingSourceIds": [
+      "s244"
+    ],
+    "correctFacts": [
+      {
+        "id": "f244-归属",
+        "value": "雾松亭库守",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F3-unsupported",
+    "text": "雾松亭潮印被烧毁的事件是否发生过？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F4-clue",
+    "text": "事件 e895-dispatch 揭晓的两枚潮印交织伏笔，需要哪些早期原文？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s025",
+      "s026",
+      "s895"
+    ],
+    "supportingSourceIds": [
+      "s025",
+      "s026",
+      "s895"
+    ],
+    "correctFacts": [
+      {
+        "id": "f895-刻痕含义",
+        "value": "报潮线路的两端",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F4-identity",
+    "text": "照雪驿信使更名与身份传闻被澄清的前后原始来源有哪些？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s195",
+      "s345",
+      "s595"
+    ],
+    "supportingSourceIds": [
+      "s195",
+      "s345",
+      "s595"
+    ],
+    "correctFacts": [
+      {
+        "id": "f195-身份传闻",
+        "value": "逃亡盐商",
+        "status": "unverified"
+      },
+      {
+        "id": "f345-更名",
+        "value": "照雪驿引潮人",
+        "status": "current"
+      },
+      {
+        "id": "f595-真实身份",
+        "value": "护潮员",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F4-prose",
+    "text": "照雪驿潮印封签原文的温杉气味出现在哪里？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s145"
+    ],
+    "supportingSourceIds": [
+      "s145"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F4-past",
+    "text": "照雪驿秘匣截至此时当前由谁保管？",
+    "asOfTurn": 445,
+    "expectedSourceIds": [
+      "s245"
+    ],
+    "supportingSourceIds": [
+      "s245"
+    ],
+    "correctFacts": [
+      {
+        "id": "f245-归属",
+        "value": "照雪驿库守",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F4-unsupported",
+    "text": "照雪驿潮印被烧毁的事件是否发生过？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F5-clue",
+    "text": "事件 e896-dispatch 揭晓的两枚潮印交织伏笔，需要哪些早期原文？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s026",
+      "s027",
+      "s896"
+    ],
+    "supportingSourceIds": [
+      "s026",
+      "s027",
+      "s896"
+    ],
+    "correctFacts": [
+      {
+        "id": "f896-刻痕含义",
+        "value": "报潮线路的两端",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F5-identity",
+    "text": "回沙湾信使更名与身份传闻被澄清的前后原始来源有哪些？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s196",
+      "s346",
+      "s596"
+    ],
+    "supportingSourceIds": [
+      "s196",
+      "s346",
+      "s596"
+    ],
+    "correctFacts": [
+      {
+        "id": "f196-身份传闻",
+        "value": "逃亡盐商",
+        "status": "unverified"
+      },
+      {
+        "id": "f346-更名",
+        "value": "回沙湾引潮人",
+        "status": "current"
+      },
+      {
+        "id": "f596-真实身份",
+        "value": "护潮员",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F5-prose",
+    "text": "回沙湾潮印封签原文的温杉气味出现在哪里？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s146"
+    ],
+    "supportingSourceIds": [
+      "s146"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F5-past",
+    "text": "回沙湾秘匣截至此时当前由谁保管？",
+    "asOfTurn": 446,
+    "expectedSourceIds": [
+      "s246"
+    ],
+    "supportingSourceIds": [
+      "s246"
+    ],
+    "correctFacts": [
+      {
+        "id": "f246-归属",
+        "value": "回沙湾库守",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F5-unsupported",
+    "text": "回沙湾潮印被烧毁的事件是否发生过？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F6-clue",
+    "text": "事件 e897-dispatch 揭晓的两枚潮印交织伏笔，需要哪些早期原文？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s027",
+      "s028",
+      "s897"
+    ],
+    "supportingSourceIds": [
+      "s027",
+      "s028",
+      "s897"
+    ],
+    "correctFacts": [
+      {
+        "id": "f897-刻痕含义",
+        "value": "报潮线路的两端",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F6-identity",
+    "text": "孤竹坊信使更名与身份传闻被澄清的前后原始来源有哪些？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s197",
+      "s347",
+      "s597"
+    ],
+    "supportingSourceIds": [
+      "s197",
+      "s347",
+      "s597"
+    ],
+    "correctFacts": [
+      {
+        "id": "f197-身份传闻",
+        "value": "逃亡盐商",
+        "status": "unverified"
+      },
+      {
+        "id": "f347-更名",
+        "value": "孤竹坊引潮人",
+        "status": "current"
+      },
+      {
+        "id": "f597-真实身份",
+        "value": "护潮员",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F6-prose",
+    "text": "孤竹坊潮印封签原文的温杉气味出现在哪里？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s147"
+    ],
+    "supportingSourceIds": [
+      "s147"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F6-past",
+    "text": "孤竹坊秘匣截至此时当前由谁保管？",
+    "asOfTurn": 447,
+    "expectedSourceIds": [
+      "s247"
+    ],
+    "supportingSourceIds": [
+      "s247"
+    ],
+    "correctFacts": [
+      {
+        "id": "f247-归属",
+        "value": "孤竹坊库守",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F6-unsupported",
+    "text": "孤竹坊潮印被烧毁的事件是否发生过？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F7-clue",
+    "text": "事件 e898-dispatch 揭晓的两枚潮印交织伏笔，需要哪些早期原文？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s028",
+      "s029",
+      "s898"
+    ],
+    "supportingSourceIds": [
+      "s028",
+      "s029",
+      "s898"
+    ],
+    "correctFacts": [
+      {
+        "id": "f898-刻痕含义",
+        "value": "报潮线路的两端",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F7-identity",
+    "text": "映汀阁信使更名与身份传闻被澄清的前后原始来源有哪些？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s198",
+      "s348",
+      "s598"
+    ],
+    "supportingSourceIds": [
+      "s198",
+      "s348",
+      "s598"
+    ],
+    "correctFacts": [
+      {
+        "id": "f198-身份传闻",
+        "value": "逃亡盐商",
+        "status": "unverified"
+      },
+      {
+        "id": "f348-更名",
+        "value": "映汀阁引潮人",
+        "status": "current"
+      },
+      {
+        "id": "f598-真实身份",
+        "value": "护潮员",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F7-prose",
+    "text": "映汀阁潮印封签原文的温杉气味出现在哪里？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s148"
+    ],
+    "supportingSourceIds": [
+      "s148"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F7-past",
+    "text": "映汀阁秘匣截至此时当前由谁保管？",
+    "asOfTurn": 448,
+    "expectedSourceIds": [
+      "s248"
+    ],
+    "supportingSourceIds": [
+      "s248"
+    ],
+    "correctFacts": [
+      {
+        "id": "f248-归属",
+        "value": "映汀阁库守",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F7-unsupported",
+    "text": "映汀阁潮印被烧毁的事件是否发生过？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F8-clue",
+    "text": "事件 e899-dispatch 揭晓的两枚潮印交织伏笔，需要哪些早期原文？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s029",
+      "s030",
+      "s899"
+    ],
+    "supportingSourceIds": [
+      "s029",
+      "s030",
+      "s899"
+    ],
+    "correctFacts": [
+      {
+        "id": "f899-刻痕含义",
+        "value": "报潮线路的两端",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F8-identity",
+    "text": "缄灯楼信使更名与身份传闻被澄清的前后原始来源有哪些？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s199",
+      "s349",
+      "s599"
+    ],
+    "supportingSourceIds": [
+      "s199",
+      "s349",
+      "s599"
+    ],
+    "correctFacts": [
+      {
+        "id": "f199-身份传闻",
+        "value": "逃亡盐商",
+        "status": "unverified"
+      },
+      {
+        "id": "f349-更名",
+        "value": "缄灯楼引潮人",
+        "status": "current"
+      },
+      {
+        "id": "f599-真实身份",
+        "value": "护潮员",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F8-prose",
+    "text": "缄灯楼潮印封签原文的温杉气味出现在哪里？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s149"
+    ],
+    "supportingSourceIds": [
+      "s149"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F8-past",
+    "text": "缄灯楼秘匣截至此时当前由谁保管？",
+    "asOfTurn": 449,
+    "expectedSourceIds": [
+      "s249"
+    ],
+    "supportingSourceIds": [
+      "s249"
+    ],
+    "correctFacts": [
+      {
+        "id": "f249-归属",
+        "value": "缄灯楼库守",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F8-unsupported",
+    "text": "缄灯楼潮印被烧毁的事件是否发生过？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F9-clue",
+    "text": "事件 e900-dispatch 揭晓的两枚潮印交织伏笔，需要哪些早期原文？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s030",
+      "s021",
+      "s900"
+    ],
+    "supportingSourceIds": [
+      "s030",
+      "s021",
+      "s900"
+    ],
+    "correctFacts": [
+      {
+        "id": "f900-刻痕含义",
+        "value": "报潮线路的两端",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F9-identity",
+    "text": "浅霜堡信使更名与身份传闻被澄清的前后原始来源有哪些？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s200",
+      "s350",
+      "s600"
+    ],
+    "supportingSourceIds": [
+      "s200",
+      "s350",
+      "s600"
+    ],
+    "correctFacts": [
+      {
+        "id": "f200-身份传闻",
+        "value": "逃亡盐商",
+        "status": "unverified"
+      },
+      {
+        "id": "f350-更名",
+        "value": "浅霜堡引潮人",
+        "status": "current"
+      },
+      {
+        "id": "f600-真实身份",
+        "value": "护潮员",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F9-prose",
+    "text": "浅霜堡潮印封签原文的温杉气味出现在哪里？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [
+      "s150"
+    ],
+    "supportingSourceIds": [
+      "s150"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F9-past",
+    "text": "浅霜堡秘匣截至此时当前由谁保管？",
+    "asOfTurn": 450,
+    "expectedSourceIds": [
+      "s250"
+    ],
+    "supportingSourceIds": [
+      "s250"
+    ],
+    "correctFacts": [
+      {
+        "id": "f250-归属",
+        "value": "浅霜堡库守",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "F9-unsupported",
+    "text": "浅霜堡潮印被烧毁的事件是否发生过？",
+    "asOfTurn": 1000,
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  }
+]

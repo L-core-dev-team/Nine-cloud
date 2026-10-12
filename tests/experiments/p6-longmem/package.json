@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test *.test.ts",
+    "benchmark": "node run.ts"
+  }
+}
