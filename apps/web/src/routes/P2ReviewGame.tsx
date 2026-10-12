@@ -21,6 +21,14 @@ import { createIdempotencyKey, type LocalSave } from '../storage';
 import { formatReceiptDelta, projectReceiptEvents } from '../receipt-event-view';
 import { loadP2ReviewGameplayRuntime, type P2ReviewGameplayRuntime } from '../p2-review-gameplay-runtime';
 import { syncP2CandidateMemoryProjection, type CandidateMemoryProjectionSnapshot } from '../p2-candidate-memory-store';
+import {
+  buildP2CandidateDigestSourcesFromReceipts,
+  createP2CandidateExtractiveDigestAdapter,
+  enqueueP2CandidateDigestRebuild,
+  readP2CandidateDigestJobs,
+  runP2CandidateDigestQueue,
+  type P2CandidateDigestJob,
+} from '../p2-candidate-digest-queue';
 
 type AuthoritySnapshot = {
   save: SaveEnvelopeV3;
@@ -43,6 +51,9 @@ function P2ReviewGame({ save, onBack }: { save: LocalSave | undefined; onBack: (
   const [actionText, setActionText] = useState('');
   const [memoryNpcId, setMemoryNpcId] = useState('');
   const [memoryRecall, setMemoryRecall] = useState<AuthorizedRecallResult | null>(null);
+  const [digestJobs, setDigestJobs] = useState<readonly P2CandidateDigestJob[]>([]);
+  const [digestBusy, setDigestBusy] = useState(false);
+  const [digestNotice, setDigestNotice] = useState('');
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState('正在读取本机权威存档……');
 
@@ -126,6 +137,82 @@ function P2ReviewGame({ save, onBack }: { save: LocalSave | undefined; onBack: (
     });
     return () => { active = false; };
   }, [refresh]);
+
+  useEffect(() => {
+    if (!snapshot) return;
+    let active = true;
+    void readP2CandidateDigestJobs(snapshot.save.saveId, snapshot.save.memoryMode).then(jobs => {
+      if (active) setDigestJobs(jobs);
+    }).catch(() => {
+      if (active) setDigestNotice('本机摘要队列不可用；行动、状态和双记忆检索不受影响。');
+    });
+    return () => { active = false; };
+  }, [snapshot?.save.saveId, snapshot?.save.memoryMode, snapshot?.save.revision]);
+
+  async function rebuildDigestDraft() {
+    if (!snapshot || digestBusy || !snapshot.chainValid || !snapshot.replayValid) return;
+    setDigestBusy(true);
+    setDigestNotice('正在从已提交、玩家可见的规则回执生成零模型摘要草稿……');
+    try {
+      const archive = await exportLocalAuthorityArchive(snapshot.save.saveId, snapshot.runtime.reduce);
+      if (!archive) throw new Error('P6_DIGEST_AUTHORITY_ARCHIVE_UNAVAILABLE');
+      const receipts = archive.receipts.map(row => row.receipt);
+      const sources = buildP2CandidateDigestSourcesFromReceipts({
+        save: snapshot.save,
+        receipts,
+        narrate: snapshot.runtime.narrate,
+      });
+      if (!sources.length) {
+        setDigestNotice('还没有可汇总的已接受回执。澄清、拒绝和未提交文本不会进入摘要。');
+        return;
+      }
+      const fromRevision = sources[0]!.revision;
+      const throughRevision = sources[sources.length - 1]!.revision;
+      await enqueueP2CandidateDigestRebuild({
+        save: snapshot.save,
+        sources,
+        fromRevision,
+        throughRevision,
+        generatorVersion: 'extractive-receipt-v1',
+        promptVersion: 'none',
+      });
+      const adapter = createP2CandidateExtractiveDigestAdapter();
+      const run = await runP2CandidateDigestQueue({
+        save: snapshot.save,
+        adapter,
+        maxCostMicros: 0,
+        maxJobs: 3,
+        maxConcurrency: 1,
+        resolveSources: async refs => {
+          const latestSave = await readLocalAuthoritativeSave(snapshot.save.saveId);
+          if (!latestSave || latestSave.memoryMode !== snapshot.save.memoryMode
+            || latestSave.memoryPolicy.policyArtifactHash !== snapshot.save.memoryPolicy.policyArtifactHash) {
+            throw new Error('P6_DIGEST_SOURCE_SAVE_CHANGED');
+          }
+          const latestArchive = await exportLocalAuthorityArchive(snapshot.save.saveId, snapshot.runtime.reduce);
+          if (!latestArchive) throw new Error('P6_DIGEST_SOURCE_ARCHIVE_MISSING');
+          const latestSources = buildP2CandidateDigestSourcesFromReceipts({
+            save: latestSave,
+            receipts: latestArchive.receipts.map(row => row.receipt),
+            narrate: snapshot.runtime.narrate,
+          });
+          const byId = new Map(latestSources.map(source => [source.sourceId, source]));
+          return refs.map(ref => {
+            const source = byId.get(ref.sourceId);
+            if (!source) throw new Error('P6_DIGEST_SOURCE_NO_LONGER_AUTHORIZED');
+            return source;
+          });
+        },
+      });
+      const updatedJobs = await readP2CandidateDigestJobs(snapshot.save.saveId, snapshot.save.memoryMode);
+      setDigestJobs(updatedJobs);
+      setDigestNotice(run.status === 'budget-limited'
+        ? '摘要任务暂停：本次成本额度不足，没有调用生成服务。'
+        : `摘要队列已处理：完成 ${run.completed} 项，失败 ${run.failed} 项，来源过期 ${run.stale} 项；本机摘句成本为 0。`);
+    } catch (error) {
+      setDigestNotice(error instanceof Error ? `摘要草稿未生成：${error.message}` : '摘要草稿未生成；原回执与记忆未改变。');
+    } finally { setDigestBusy(false); }
+  }
 
   async function submitAction(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -300,6 +387,21 @@ function P2ReviewGame({ save, onBack }: { save: LocalSave | undefined; onBack: (
         <p>结构化上下文只引用当前状态、已接受回执和通过 NPC 授权的记忆。角色资料只接受作者批准字段；摘要还需通过来源修订与内容哈希校验。当前候选页关闭外部适配器和模型服务。</p>
         <ul>{narrativeContext.sourceCatalog.map(source => <li key={`${source.kind}-${source.sourceId}`}>{source.kind} · {source.sourceId} · {source.visibility} · 修订 {source.revision}</li>)}</ul>
       </details>}
+      <section className="card" aria-label="剧情摘要草稿" data-testid="p6-digest-panel">
+        <h3>剧情回顾草稿</h3>
+        <p>只汇集已接受回执中玩家可见的句子，不读取 NPC 私有记忆，不调用模型。摘要是可丢弃的派生产物，待作者审核前不会进入叙事上下文。</p>
+        <button type="button" className="secondary" data-testid="p6-build-digest"
+          disabled={digestBusy || actionDisabled || snapshot.eventCount === 0} onClick={() => void rebuildDigestDraft()}>
+          {digestBusy ? '摘要任务处理中……' : '生成 / 恢复摘要草稿'}
+        </button>
+        {digestNotice && <p role="status" data-testid="p6-digest-status">{digestNotice}</p>}
+        {digestJobs.filter(job => job.artifact).map(job => <article key={job.jobId} data-testid="p6-digest-artifact">
+          <p>{job.artifact!.summary}</p>
+          <small>修订 {job.fromRevision}–{job.throughRevision} · {job.artifact!.sourceIds.length} 个来源 · 待审核 · 不会授权 NPC 记忆</small>
+        </article>)}
+        {digestJobs.some(job => job.status === 'queued' || job.status === 'running')
+          && <p>未完成的摘要任务已保存在当前存档与记忆模式的本机队列中，可再次点击续跑。</p>}
+      </section>
       {receipt && <section className="card" aria-label="状态回执" data-testid="p2-receipt">
         <h3>状态回执</h3>
         <p>结果：{receipt.decision.status}；修订：{receipt.resultingRevision}；规则：{receiptRuleVersion}</p>

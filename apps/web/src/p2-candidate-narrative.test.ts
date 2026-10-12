@@ -53,10 +53,12 @@ describe('candidate narrative source boundary', () => {
           field: 'secret', value: '候选内容', visibility: 'npc-visible', approvalStatus: 'candidate-only' },
       ],
       digests: [digest(), digest({ digestId: 'digest:unapproved-event', coveredEventIds: ['event-unseen'] }),
+        digest({ digestId: 'digest:pending', approvalStatus: 'pending' }),
         digest({ digestId: 'digest:stale', throughRevision: 6 })],
     });
     expect(context.approvedProfileFields.map(field => field.sourceId)).toEqual(['profile:npc-cenjiu:name']);
     expect(context.digestProvenance.map(item => item.digestId)).toEqual(['digest:approved-1']);
+    expect(context.sourceCatalog.find(source => source.kind === 'plot-digest')?.visibility).toBe('player-visible');
     expect(context.scope).toMatchObject({ saveId: 'candidate-save', branchId: 'root', memoryMode: 'continue', revision: 5 });
     expect(context.sourceCatalog.filter(source => source.kind === 'state-fact').every(source => source.visibility === 'player-visible')).toBe(true);
     expect(context.styleInstructions.map(item => item.id)).toEqual([

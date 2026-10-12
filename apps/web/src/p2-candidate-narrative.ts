@@ -101,8 +101,10 @@ export function buildP2CandidateNarrativeContext(input: {
   const sourceCatalog: NarrativeSourceRef[] = [
     ...profileFields.map(field => ({ sourceId: field.sourceId, kind: 'profile-field' as const,
       revision: save.revision, visibility: field.visibility })),
+    // Plot summaries are derived player-facing aids. They never become an NPC
+    // memory source; NPC knowledge continues to come only from authorized grants.
     ...digests.map(digest => ({ sourceId: digest.digestId, kind: 'plot-digest' as const,
-      revision: digest.throughRevision, visibility: 'npc-visible' as const })),
+      revision: digest.throughRevision, visibility: 'player-visible' as const })),
     ...Object.keys(stateFacts).map(field => ({ sourceId: `state:${field}`, kind: 'state-fact' as const,
       revision: save.revision, visibility: 'player-visible' as const })),
     ...(receipt?.decision.status === 'accepted' ? receipt.decision.events.map(event => ({ sourceId: event.id,
