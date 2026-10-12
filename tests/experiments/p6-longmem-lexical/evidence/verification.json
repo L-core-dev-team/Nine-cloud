@@ -1,0 +1,13 @@
+{
+  "main": "2647439e0cccc9a136606a81131519f53253f125",
+  "testedSourceSha": "394fd4f13dc5790a69e4125a29d196271b717a5c",
+  "newExpectationsFixedBeforeImplementation": true,
+  "priorPass": 1896,
+  "regressed": 0,
+  "improved": 12,
+  "queriesAddingUnsupportedSources": 0,
+  "queries": 3840,
+  "originalSpanChecks": 6340,
+  "oldArtifactsUnchanged": true,
+  "productionMatchesMain": true
+}
