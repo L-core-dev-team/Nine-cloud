@@ -41,11 +41,9 @@ const REGION_VISUAL_IDS: Record<string, string> = {
   '南疆万蛊域': 'region_nanjiang_wangu',
   '完全自定义': 'world_jiuxiao',
 };
-// 公安联网备案号。备案通过后把号码填在这里，页脚会自动显示「公安备案图标 + 编号」
-// 并链接到公安备案查询页；留空则整块不渲染 —— 不能在没有备案号时挂一个空图标，
-// 那等于对外宣称已备案而实际没有。公安备案是网站开通后 30 日内的法定义务，
-// 与 ICP 备案是两件事，两者都要在页脚呈现。
-const POLICE_FILING_NUMBER = '';
+// The public security filing code and label come from the approved record.
+const POLICE_FILING_CODE = '51012202002714';
+const POLICE_FILING_LABEL = '川公网安备51012202002714号';
 
 const CANON_CATEGORY_LABELS: Record<string, string> = {
   world_overview: '世界', region: '地域', faction: '势力', system: '体系',
@@ -140,7 +138,26 @@ function Shell({ children, saves, notice, noticeAction, theme, onThemeChange, on
     '--jx-gate-poster': `url("${mediaUrlForBrowser(gatePoster)}")`,
     '--jx-paper-texture': `url("${mediaUrlForBrowser(paperTexture)}")`,
   } as CSSProperties;
-  return <div className={isLanding ? 'jx-shell landing-shell' : 'jx-shell'} style={backgroundStyle}>{showSkipLink && <a className="skip-to-content" href="#main-content" onClick={event => { event.preventDefault(); document.getElementById("main-content")?.focus(); }}>跳到主要内容</a>}<SceneAtmosphere sceneId={sceneId} theme={theme} settings={graphicsSettings} /><header><button className="brand" onClick={() => go('/')}>踏月过山门，天地任君行。</button>{showNavigation && <nav><button onClick={() => go('/lobby')}>山门</button><button onClick={() => go('/world')}>世界设定</button><button onClick={() => go('/settings/ai')}>AI 设置</button><button onClick={() => go('/settings/graphics')}>画面与声音</button><button onClick={() => go('/settings/cloud')}>账号与云档</button></nav>}<div className="header-tools"><button className={`ambient-toggle${ambientAudioActive ? ' is-active' : ''}`} aria-pressed={ambientAudioActive} onClick={onToggleAmbientAudio}>{ambientAudioActive ? '水声已启' : '启水声'}</button><button className="theme-toggle" aria-label={`切换到${nextThemeLabel}配色`} onClick={onThemeChange}>{themeLabel}</button><button className="menu" aria-expanded={menu} onClick={() => setMenu(open => !open)}>菜单</button></div></header>{menu && <div className="menu-overlay" aria-hidden="true" onClick={() => setMenu(false)} />}{menu && <aside><strong>{saves.length ? `${saves.length} 份本地存档` : '暂无存档'}</strong>{showNavigation && <><button onClick={() => { setMenu(false); go('/lobby'); }}>回到山门</button><button onClick={() => { setMenu(false); go('/new'); }}>新开一局</button><button onClick={() => { setMenu(false); go('/world'); }}>阅读世界设定</button><button onClick={() => { setMenu(false); go('/settings/ai'); }}>AI 设置</button><button onClick={() => { setMenu(false); go('/settings/graphics'); }}>画面与声音</button><button onClick={() => { setMenu(false); go('/settings/cloud'); }}>账号与云档</button></>}<button onClick={() => { setMenu(false); onExport(); }}>导出存档</button><button onClick={themeAction}>切换到{nextThemeLabel}配色</button><label>导入旧档 / JSON<input type="file" accept=".json,.txt,.html,.htm" onChange={event => { const file = event.target.files?.[0]; if (file) { setMenu(false); onImport(file); } event.currentTarget.value = ''; }} /></label></aside>}{notice && <p className="notice" role="status">{notice} {noticeAction}</p>}<main id={showSkipLink ? "main-content" : undefined} tabIndex={showSkipLink ? -1 : undefined}>{children}</main><footer><span>本地优先 · API 密钥不写入存档</span><span>契约 v{SAVE_SCHEMA_VERSION}</span><nav className="footer-legal" aria-label="法律与反馈"><a href="/privacy">隐私政策</a><a href="/privacy-rights">隐私权利</a><a href="/terms">用户协议</a><a href="/feedback">问题反馈</a></nav><span className="footer-ai-note">部分视觉素材由 AI 生成（《人工智能生成合成内容标识办法》标识）</span><span className="footer-filings"><a className="footer-filing" href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer noopener">蜀ICP备2026059848号-1</a>{POLICE_FILING_NUMBER && <a className="footer-filing footer-filing--police" href={`https://beian.mps.gov.cn/#/query/webSearch?code=${POLICE_FILING_NUMBER}`} target="_blank" rel="noreferrer noopener"><img src={mediaUrlForBrowser('/compliance/beian-police.png')} alt="" width={20} height={20} />{POLICE_FILING_NUMBER}</a>}</span></footer></div>;}
+  return <div className={isLanding ? 'jx-shell landing-shell' : 'jx-shell'} style={backgroundStyle}>{showSkipLink && <a className="skip-to-content" href="#main-content" onClick={event => { event.preventDefault(); document.getElementById("main-content")?.focus(); }}>跳到主要内容</a>}<SceneAtmosphere sceneId={sceneId} theme={theme} settings={graphicsSettings} /><header><button className="brand" onClick={() => go('/')}>踏月过山门，天地任君行。</button>{showNavigation && <nav><button onClick={() => go('/lobby')}>山门</button><button onClick={() => go('/world')}>世界设定</button><button onClick={() => go('/settings/ai')}>AI 设置</button><button onClick={() => go('/settings/graphics')}>画面与声音</button><button onClick={() => go('/settings/cloud')}>账号与云档</button></nav>}<div className="header-tools"><button className={`ambient-toggle${ambientAudioActive ? ' is-active' : ''}`} aria-pressed={ambientAudioActive} onClick={onToggleAmbientAudio}>{ambientAudioActive ? '水声已启' : '启水声'}</button><button className="theme-toggle" aria-label={`切换到${nextThemeLabel}配色`} onClick={onThemeChange}>{themeLabel}</button><button className="menu" aria-expanded={menu} onClick={() => setMenu(open => !open)}>菜单</button></div></header>{menu && <div className="menu-overlay" aria-hidden="true" onClick={() => setMenu(false)} />}{menu && <aside><strong>{saves.length ? `${saves.length} 份本地存档` : '暂无存档'}</strong>{showNavigation && <><button onClick={() => { setMenu(false); go('/lobby'); }}>回到山门</button><button onClick={() => { setMenu(false); go('/new'); }}>新开一局</button><button onClick={() => { setMenu(false); go('/world'); }}>阅读世界设定</button><button onClick={() => { setMenu(false); go('/settings/ai'); }}>AI 设置</button><button onClick={() => { setMenu(false); go('/settings/graphics'); }}>画面与声音</button><button onClick={() => { setMenu(false); go('/settings/cloud'); }}>账号与云档</button></>}<button onClick={() => { setMenu(false); onExport(); }}>导出存档</button><button onClick={themeAction}>切换到{nextThemeLabel}配色</button><label>导入旧档 / JSON<input type="file" accept=".json,.txt,.html,.htm" onChange={event => { const file = event.target.files?.[0]; if (file) { setMenu(false); onImport(file); } event.currentTarget.value = ''; }} /></label></aside>}{notice && <p className="notice" role="status">{notice} {noticeAction}</p>}<main id={showSkipLink ? "main-content" : undefined} tabIndex={showSkipLink ? -1 : undefined}>{children}</main><footer><span>本地优先 · API 密钥不写入存档</span><span>契约 v{SAVE_SCHEMA_VERSION}</span><nav className="footer-legal" aria-label="法律与反馈"><a href="/privacy">隐私政策</a><a href="/privacy-rights">隐私权利</a><a href="/terms">用户协议</a><a href="/feedback">问题反馈</a></nav><span className="footer-ai-note">部分视觉素材由 AI 生成（《人工智能生成合成内容标识办法》标识）</span><FilingNotices /></footer></div>;}
+
+function FilingNotices() {
+  return (
+    <nav className="footer-filings" aria-label="备案信息">
+      <a className="footer-filing" href="https://beian.miit.gov.cn/" target="_blank" rel="noreferrer noopener">
+        蜀ICP备2026059848号-1
+      </a>
+      <a
+        className="footer-filing footer-filing--police"
+        href={`https://beian.mps.gov.cn/#/query/webSearch?code=${POLICE_FILING_CODE}`}
+        target="_blank"
+        rel="noreferrer noopener"
+      >
+        <img src="/compliance/beian-police.png" alt="" width={20} height={20} />
+        <span>{POLICE_FILING_LABEL}</span>
+      </a>
+    </nav>
+  );
+}
 
 function Landing() {
   return <section className="hero"><div className="landing-copy"><span className="eyebrow">月下山门</span><h1 className="hero-mark">九霄</h1><p className="hero-deck">修途自此启程。</p><button className="portal-enter" onClick={() => go('/lobby')}><span>进入世界</span></button></div><MountainGateScene /></section>;
