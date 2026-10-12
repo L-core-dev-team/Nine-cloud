@@ -28,6 +28,7 @@ async function withFetch(mock, run) {
 
 test('Pages Functions are in the project root and only configured routes invoke them', () => {
   const routes = JSON.parse(readFileSync(resolve(root, 'apps/web/public/_routes.json'), 'utf8'));
+  const caddyfile = readFileSync(resolve(root, 'deployment/Caddyfile'), 'utf8');
   assert.deepEqual(Object.keys(routes).sort(), ['exclude', 'include', 'version']);
   assert.equal(routes.version, 1);
   assert.deepEqual(routes.include, ['/api/*', '/health', '/ready']);
@@ -37,6 +38,9 @@ test('Pages Functions are in the project root and only configured routes invoke 
   assert.ok(existsSync(resolve(root, 'functions/ready.js')));
   assert.equal(existsSync(resolve(root, 'apps/web/public/functions/api/[[path]].js')), false);
   assert.ok(existsSync(resolve(root, 'apps/web/public/_headers')));
+  assert.match(caddyfile, /header_up Origin \{header\.Origin\}/);
+  assert.match(caddyfile, /header_down Access-Control-Allow-Origin https:\/\/play\.jiuxiaogame\.cn/);
+  assert.doesNotMatch(caddyfile, /header_down Access-Control-Allow-Origin \{header\.Origin\}/);
 });
 
 test('Route A blocks credential and account writes before any upstream request', async () => {
