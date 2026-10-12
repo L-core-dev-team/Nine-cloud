@@ -1,0 +1,25 @@
+{
+  "stage": "PRE_IMPLEMENTATION_FREEZE",
+  "synthetic": true,
+  "developmentCount": 100,
+  "holdoutCount": 100,
+  "split": "first ten scenes development; last ten scenes held out; no scene shared",
+  "policy": "Same AI authored, not human independent blind test. Holdout evaluated only after retrieval source freeze; no retuning after unseal.",
+  "files": [
+    {
+      "name": "history-1000.json",
+      "bytes": 411597,
+      "sha256": "2963dc2589b6f56a4de0fe3dee2ee01a70ae0c2a6a33325de88acd75ad302414"
+    },
+    {
+      "name": "development.json",
+      "bytes": 58997,
+      "sha256": "697ab2ab93385cfa971835f7cd33b5f1b0c2637375ea0c332c605d807bbfd95b"
+    },
+    {
+      "name": "holdout.json",
+      "bytes": 59206,
+      "sha256": "2c7e89694f28269cf9fbc92157db475a9c93a25aff6952612bab033d93cec033"
+    }
+  ]
+}
