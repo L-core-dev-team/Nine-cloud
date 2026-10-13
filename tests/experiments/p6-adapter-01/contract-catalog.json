@@ -1,0 +1,2003 @@
+{
+  "draft": true,
+  "version": "p6-reader-proposal-v1",
+  "cases": [
+    {
+      "id": "R01",
+      "title": "readonly asynchronous published Reader, no writer calls",
+      "fixture": {
+        "id": "R01",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1
+      }
+    },
+    {
+      "id": "R02",
+      "title": "old confirmed receipt without publication is unknown, no body lookup or retry action",
+      "fixture": {
+        "id": "R02",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "unknown",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1
+      }
+    },
+    {
+      "id": "R03",
+      "title": "revocation between asynchronous readAuthorizedEvidence and delivery",
+      "fixture": {
+        "id": "R03",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1
+      }
+    },
+    {
+      "id": "R04",
+      "title": "revocation between asynchronous readPublishedOriginal and delivery",
+      "fixture": {
+        "id": "R04",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1
+      }
+    },
+    {
+      "id": "R05",
+      "title": "revocation between asynchronous readConfirmedReceipt and delivery",
+      "fixture": {
+        "id": "R05",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1
+      }
+    },
+    {
+      "id": "R06",
+      "title": "finish snapshot must be bound to this request",
+      "fixture": {
+        "id": "R06",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1
+      }
+    },
+    {
+      "id": "R07",
+      "title": "finish reader failure never delivers assembled raw evidence",
+      "fixture": {
+        "id": "R07",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1
+      }
+    },
+    {
+      "id": "R08",
+      "title": "deadline discards a late asynchronous original and performs no delivery",
+      "fixture": {
+        "id": "R08",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1
+      }
+    },
+    {
+      "id": "R09",
+      "title": "caller AbortSignal cancels in-flight proof and no further original read",
+      "fixture": {
+        "id": "R09",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1
+      }
+    },
+    {
+      "id": "R10",
+      "title": "Reader mutating argument objects cannot change pinned private boundary",
+      "fixture": {
+        "id": "R10",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1
+      }
+    },
+    {
+      "id": "R11",
+      "title": "20 concurrent NPC requests share no authorization or output state",
+      "fixture": {
+        "id": "R11",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-0",
+          "npc-1",
+          "npc-2",
+          "npc-3",
+          "npc-4",
+          "npc-5",
+          "npc-6",
+          "npc-7",
+          "npc-8",
+          "npc-9"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1
+      }
+    },
+    {
+      "id": "R12",
+      "title": "same generation label but distinct publication attempts remains ambiguous",
+      "fixture": {
+        "id": "R12",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1,
+        "multiAttempt": true,
+        "sameVersion": true
+      }
+    },
+    {
+      "id": "R13",
+      "title": "explicit authorized source selects one immutable publication attempt",
+      "fixture": {
+        "id": "R13",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1,
+        "multiAttempt": true,
+        "sameVersion": true
+      }
+    },
+    {
+      "id": "R14",
+      "title": "original published later is not readable at an older receipt revision",
+      "fixture": {
+        "id": "R14",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 4
+      }
+    },
+    {
+      "id": "R15",
+      "title": "historical evidence must echo requested asOf rather than latest",
+      "fixture": {
+        "id": "R15",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1
+      }
+    },
+    {
+      "id": "R16",
+      "title": "P4 forgotten and P5 evidence are explicit distinct Reader decisions",
+      "fixture": {
+        "id": "R16",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 20160,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1,
+        "decisions": {
+          "p4-explicit-recall": "forgotten",
+          "p5-narrative": "evidence"
+        }
+      }
+    },
+    {
+      "id": "R17",
+      "title": "missing surface does not silently pick P4 or P5",
+      "fixture": {
+        "id": "R17",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1
+      }
+    },
+    {
+      "id": "R18",
+      "title": "Reader reporting a different policy surface fails closed",
+      "fixture": {
+        "id": "R18",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1
+      }
+    },
+    {
+      "id": "R19",
+      "title": "partial Reader projection cannot become empty or complete memory",
+      "fixture": {
+        "id": "R19",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1
+      }
+    },
+    {
+      "id": "R20",
+      "title": "snapshot id on Reader evidence cannot belong to another concurrent query",
+      "fixture": {
+        "id": "R20",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1
+      }
+    },
+    {
+      "id": "R21",
+      "title": "received but not published original is not admissible",
+      "fixture": {
+        "id": "R21",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1
+      }
+    },
+    {
+      "id": "R22",
+      "title": "confirmed receipt mismatching original publication cannot supply facts",
+      "fixture": {
+        "id": "R22",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1
+      }
+    },
+    {
+      "id": "R23",
+      "title": "Reader rule-fact assertion still needs actual RULES payload confirmation",
+      "fixture": {
+        "id": "R23",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1
+      }
+    },
+    {
+      "id": "R24",
+      "title": "finish reauthorizes even if epoch metadata did not change",
+      "fixture": {
+        "id": "R24",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1
+      }
+    },
+    {
+      "id": "R25",
+      "title": "next request after completed delivery and revocation cannot reuse prior result",
+      "fixture": {
+        "id": "R25",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1
+      }
+    },
+    {
+      "id": "R26",
+      "title": "caller mutation of returned evidence never corrupts next Reader request",
+      "fixture": {
+        "id": "R26",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1
+      }
+    },
+    {
+      "id": "R27",
+      "title": "unknown receipt blocks published prose without retrying or writing",
+      "fixture": {
+        "id": "R27",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1
+      }
+    },
+    {
+      "id": "R28",
+      "title": "missing original cannot trigger local persistence or prose generation",
+      "fixture": {
+        "id": "R28",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1
+      }
+    },
+    {
+      "id": "R29",
+      "title": "query end policy/time boundary change rejects preassembled evidence",
+      "fixture": {
+        "id": "R29",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1
+      }
+    },
+    {
+      "id": "R30",
+      "title": "unauthorized NPC guessing source/version does not trigger raw-body Reader lookup",
+      "fixture": {
+        "id": "R30",
+        "scope": {
+          "ownerId": "synthetic-owner",
+          "saveId": "synthetic-save",
+          "branchId": "root"
+        },
+        "revision": 4,
+        "asOfRevision": 4,
+        "gameMinute": 0,
+        "visibilityEpoch": "visibility-1",
+        "memoryPolicyHash": "draft-explicit-policy-hash",
+        "forgettingEpoch": "forgetting-1",
+        "allowedNpcIds": [
+          "npc-a"
+        ],
+        "decision": "evidence",
+        "text": "她说：“旧灯暂由你保管，不得转卖。”\n未被听见的私语：暗门口令是紫鹭三声。",
+        "publicText": "她说：“旧灯暂由你保管，不得转卖。”",
+        "receipt": {
+          "idempotencyKey": "00000000-0000-4000-8000-000000000002",
+          "saveId": "synthetic-save",
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "branchId": "root",
+          "rulesVersion": "synthetic-rules-v1",
+          "clockMinute": 0,
+          "rng": {
+            "seed": null,
+            "draws": 0
+          },
+          "decision": {
+            "status": "accepted",
+            "outcome": "success",
+            "nextRevision": 1,
+            "events": [
+              {
+                "id": "00000000-0000-4000-8000-000000000001",
+                "saveId": "synthetic-save",
+                "branchId": "root",
+                "type": "talk.occurred",
+                "beforeRevision": 0,
+                "afterRevision": 1,
+                "occurredAt": "2026-10-13T00:00:00.000Z",
+                "source": "RULES",
+                "ruleVersion": "synthetic-rules-v1",
+                "payload": {
+                  "npcId": "npc-a",
+                  "topicTag": "old_lamp",
+                  "outcome": "合成交流已结算"
+                }
+              }
+            ]
+          },
+          "resultingRevision": 1
+        },
+        "receiptKey": "00000000-0000-4000-8000-000000000002",
+        "sourceId": "source-v1",
+        "attemptId": "synthetic-attempt-1",
+        "generationVersion": "synthetic-generation-1",
+        "generatorSource": "deterministic",
+        "publishedAtRevision": 1
+      }
+    }
+  ]
+}

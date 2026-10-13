@@ -1,0 +1,798 @@
+[
+  {
+    "id": "R01",
+    "title": "readonly asynchronous published Reader, no writer calls",
+    "status": "PASS",
+    "metrics": {
+      "begin": 1,
+      "evidence": 1,
+      "receipt": 1,
+      "original": 1,
+      "finish": 1,
+      "writes": 0
+    },
+    "observed": {
+      "status": "evidence",
+      "reason": "authorized-reader-evidence",
+      "items": [
+        {
+          "sourceId": "source-v1",
+          "segmentId": "public-segment",
+          "sourceType": "original-narrative",
+          "revision": 1,
+          "asOfRevision": 4,
+          "startUtf16": 0,
+          "endUtf16": 18,
+          "text": "她说：“旧灯暂由你保管，不得转卖。”",
+          "sourceSha256": "eb1d604a97086cef70b686e219de71f3b63593bc8f4a424251c342af479ea1ed",
+          "receiptKey": "00000000-0000-4000-8000-000000000002",
+          "receiptSha256": "b5503485988b1f9fc31617a7cdaad8d9ed8963b2c78ea264e90c660efa18e2de",
+          "attemptId": "synthetic-attempt-1",
+          "generationVersion": "synthetic-generation-1",
+          "generatorSource": "deterministic",
+          "authority": {
+            "narrative": "original-prose-only",
+            "confirmedRuleFacts": [],
+            "unknownFields": []
+          },
+          "authorization": {
+            "status": "allowed",
+            "npcId": "npc-a",
+            "grantId": "synthetic-grant:npc-a",
+            "visibilityEpoch": "visibility-1",
+            "memoryPolicyHash": "draft-explicit-policy-hash",
+            "forgettingEpoch": "forgetting-1",
+            "policySurface": "p4-explicit-recall"
+          }
+        }
+      ],
+      "generatedAnswer": null,
+      "estimatedTokens": 27,
+      "authorityUnknown": false
+    }
+  },
+  {
+    "id": "R02",
+    "title": "old confirmed receipt without publication is unknown, no body lookup or retry action",
+    "status": "PASS",
+    "metrics": {
+      "begin": 1,
+      "evidence": 1,
+      "receipt": 0,
+      "original": 0,
+      "finish": 1,
+      "writes": 0
+    },
+    "observed": {
+      "status": "unknown",
+      "reason": "receipt-confirmed-without-publication",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "R03",
+    "title": "revocation between asynchronous readAuthorizedEvidence and delivery",
+    "status": "PASS",
+    "metrics": {
+      "begin": 1,
+      "evidence": 1,
+      "receipt": 1,
+      "original": 1,
+      "finish": 1,
+      "writes": 0
+    },
+    "observed": {
+      "status": "blocked",
+      "reason": "delivery-authorization-not-current",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "R04",
+    "title": "revocation between asynchronous readPublishedOriginal and delivery",
+    "status": "PASS",
+    "metrics": {
+      "begin": 1,
+      "evidence": 1,
+      "receipt": 1,
+      "original": 1,
+      "finish": 1,
+      "writes": 0
+    },
+    "observed": {
+      "status": "blocked",
+      "reason": "delivery-authorization-not-current",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "R05",
+    "title": "revocation between asynchronous readConfirmedReceipt and delivery",
+    "status": "PASS",
+    "metrics": {
+      "begin": 1,
+      "evidence": 1,
+      "receipt": 1,
+      "original": 1,
+      "finish": 1,
+      "writes": 0
+    },
+    "observed": {
+      "status": "blocked",
+      "reason": "delivery-authorization-not-current",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "R06",
+    "title": "finish snapshot must be bound to this request",
+    "status": "PASS",
+    "metrics": {
+      "begin": 1,
+      "evidence": 1,
+      "receipt": 1,
+      "original": 1,
+      "finish": 1,
+      "writes": 0
+    },
+    "observed": {
+      "status": "blocked",
+      "reason": "delivery-authorization-not-current",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "R07",
+    "title": "finish reader failure never delivers assembled raw evidence",
+    "status": "PASS",
+    "metrics": {
+      "begin": 1,
+      "evidence": 1,
+      "receipt": 1,
+      "original": 1,
+      "finish": 0,
+      "writes": 0
+    },
+    "observed": {
+      "status": "blocked",
+      "reason": "trusted-reader-failed",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "R08",
+    "title": "deadline discards a late asynchronous original and performs no delivery",
+    "status": "PASS",
+    "metrics": {
+      "begin": 1,
+      "evidence": 1,
+      "receipt": 0,
+      "original": 1,
+      "finish": 0,
+      "writes": 0
+    },
+    "observed": {
+      "status": "blocked",
+      "reason": "reader-timeout",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "R09",
+    "title": "caller AbortSignal cancels in-flight proof and no further original read",
+    "status": "PASS",
+    "metrics": {
+      "begin": 1,
+      "evidence": 1,
+      "receipt": 0,
+      "original": 0,
+      "finish": 0,
+      "writes": 0
+    },
+    "observed": {
+      "status": "blocked",
+      "reason": "query-cancelled",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "R10",
+    "title": "Reader mutating argument objects cannot change pinned private boundary",
+    "status": "PASS",
+    "metrics": {
+      "begin": 1,
+      "evidence": 1,
+      "receipt": 1,
+      "original": 1,
+      "finish": 1,
+      "writes": 0
+    },
+    "observed": {
+      "status": "evidence",
+      "reason": "authorized-reader-evidence",
+      "items": [
+        {
+          "sourceId": "source-v1",
+          "segmentId": "public-segment",
+          "sourceType": "original-narrative",
+          "revision": 1,
+          "asOfRevision": 4,
+          "startUtf16": 0,
+          "endUtf16": 18,
+          "text": "她说：“旧灯暂由你保管，不得转卖。”",
+          "sourceSha256": "eb1d604a97086cef70b686e219de71f3b63593bc8f4a424251c342af479ea1ed",
+          "receiptKey": "00000000-0000-4000-8000-000000000002",
+          "receiptSha256": "b5503485988b1f9fc31617a7cdaad8d9ed8963b2c78ea264e90c660efa18e2de",
+          "attemptId": "synthetic-attempt-1",
+          "generationVersion": "synthetic-generation-1",
+          "generatorSource": "deterministic",
+          "authority": {
+            "narrative": "original-prose-only",
+            "confirmedRuleFacts": [],
+            "unknownFields": []
+          },
+          "authorization": {
+            "status": "allowed",
+            "npcId": "npc-a",
+            "grantId": "synthetic-grant:npc-a",
+            "visibilityEpoch": "visibility-1",
+            "memoryPolicyHash": "draft-explicit-policy-hash",
+            "forgettingEpoch": "forgetting-1",
+            "policySurface": "p4-explicit-recall"
+          }
+        }
+      ],
+      "generatedAnswer": null,
+      "estimatedTokens": 27,
+      "authorityUnknown": false
+    }
+  },
+  {
+    "id": "R11",
+    "title": "20 concurrent NPC requests share no authorization or output state",
+    "status": "PASS",
+    "metrics": {
+      "begin": 20,
+      "evidence": 20,
+      "receipt": 10,
+      "original": 10,
+      "finish": 20,
+      "writes": 0
+    },
+    "observed": {
+      "NPCs": 20,
+      "allowed": 10,
+      "denied": 10,
+      "finish": 20
+    }
+  },
+  {
+    "id": "R12",
+    "title": "same generation label but distinct publication attempts remains ambiguous",
+    "status": "PASS",
+    "metrics": {
+      "begin": 1,
+      "evidence": 1,
+      "receipt": 2,
+      "original": 2,
+      "finish": 0,
+      "writes": 0
+    },
+    "observed": {
+      "status": "conflict",
+      "reason": "publication-choice-ambiguous",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "R13",
+    "title": "explicit authorized source selects one immutable publication attempt",
+    "status": "PASS",
+    "metrics": {
+      "begin": 1,
+      "evidence": 1,
+      "receipt": 1,
+      "original": 1,
+      "finish": 1,
+      "writes": 0
+    },
+    "observed": {
+      "status": "evidence",
+      "reason": "authorized-reader-evidence",
+      "items": [
+        {
+          "sourceId": "source-v2",
+          "segmentId": "public-segment",
+          "sourceType": "original-narrative",
+          "revision": 1,
+          "asOfRevision": 4,
+          "startUtf16": 0,
+          "endUtf16": 18,
+          "text": "她说：“旧灯暂由你保管，不得转卖。”",
+          "sourceSha256": "eb1d604a97086cef70b686e219de71f3b63593bc8f4a424251c342af479ea1ed",
+          "receiptKey": "00000000-0000-4000-8000-000000000002",
+          "receiptSha256": "b5503485988b1f9fc31617a7cdaad8d9ed8963b2c78ea264e90c660efa18e2de",
+          "attemptId": "attempt-2",
+          "generationVersion": "synthetic-generation-1",
+          "generatorSource": "deterministic",
+          "authority": {
+            "narrative": "original-prose-only",
+            "confirmedRuleFacts": [],
+            "unknownFields": []
+          },
+          "authorization": {
+            "status": "allowed",
+            "npcId": "npc-a",
+            "grantId": "synthetic-grant:npc-a",
+            "visibilityEpoch": "visibility-1",
+            "memoryPolicyHash": "draft-explicit-policy-hash",
+            "forgettingEpoch": "forgetting-1",
+            "policySurface": "p4-explicit-recall"
+          }
+        }
+      ],
+      "generatedAnswer": null,
+      "estimatedTokens": 27,
+      "authorityUnknown": false
+    }
+  },
+  {
+    "id": "R14",
+    "title": "original published later is not readable at an older receipt revision",
+    "status": "PASS",
+    "metrics": {
+      "begin": 1,
+      "evidence": 1,
+      "receipt": 0,
+      "original": 1,
+      "finish": 0,
+      "writes": 0
+    },
+    "observed": {
+      "status": "unknown",
+      "reason": "publication-not-visible-at-time",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "R15",
+    "title": "historical evidence must echo requested asOf rather than latest",
+    "status": "PASS",
+    "metrics": {
+      "begin": 1,
+      "evidence": 1,
+      "receipt": 0,
+      "original": 0,
+      "finish": 0,
+      "writes": 0
+    },
+    "observed": {
+      "status": "blocked",
+      "reason": "evidence-snapshot-mismatch",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "R16",
+    "title": "P4 forgotten and P5 evidence are explicit distinct Reader decisions",
+    "status": "PASS",
+    "metrics": {
+      "begin": 2,
+      "evidence": 2,
+      "receipt": 1,
+      "original": 1,
+      "finish": 2,
+      "writes": 0
+    },
+    "observed": {
+      "p4": {
+        "status": "forgotten",
+        "reason": "synthetic-reader-forgotten",
+        "items": [],
+        "generatedAnswer": null,
+        "estimatedTokens": 0,
+        "authorityUnknown": true
+      },
+      "p5": {
+        "status": "evidence",
+        "reason": "authorized-reader-evidence",
+        "items": [
+          {
+            "sourceId": "source-v1",
+            "segmentId": "public-segment",
+            "sourceType": "original-narrative",
+            "revision": 1,
+            "asOfRevision": 4,
+            "startUtf16": 0,
+            "endUtf16": 18,
+            "text": "她说：“旧灯暂由你保管，不得转卖。”",
+            "sourceSha256": "eb1d604a97086cef70b686e219de71f3b63593bc8f4a424251c342af479ea1ed",
+            "receiptKey": "00000000-0000-4000-8000-000000000002",
+            "receiptSha256": "b5503485988b1f9fc31617a7cdaad8d9ed8963b2c78ea264e90c660efa18e2de",
+            "attemptId": "synthetic-attempt-1",
+            "generationVersion": "synthetic-generation-1",
+            "generatorSource": "deterministic",
+            "authority": {
+              "narrative": "original-prose-only",
+              "confirmedRuleFacts": [],
+              "unknownFields": []
+            },
+            "authorization": {
+              "status": "allowed",
+              "npcId": "npc-a",
+              "grantId": "synthetic-grant:npc-a",
+              "visibilityEpoch": "visibility-1",
+              "memoryPolicyHash": "draft-explicit-policy-hash",
+              "forgettingEpoch": "forgetting-1",
+              "policySurface": "p5-narrative"
+            }
+          }
+        ],
+        "generatedAnswer": null,
+        "estimatedTokens": 27,
+        "authorityUnknown": false
+      }
+    }
+  },
+  {
+    "id": "R17",
+    "title": "missing surface does not silently pick P4 or P5",
+    "status": "PASS",
+    "metrics": {
+      "begin": 0,
+      "evidence": 0,
+      "receipt": 0,
+      "original": 0,
+      "finish": 0,
+      "writes": 0
+    },
+    "observed": {
+      "status": "blocked",
+      "reason": "query-contract-invalid",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "R18",
+    "title": "Reader reporting a different policy surface fails closed",
+    "status": "PASS",
+    "metrics": {
+      "begin": 1,
+      "evidence": 0,
+      "receipt": 0,
+      "original": 0,
+      "finish": 0,
+      "writes": 0
+    },
+    "observed": {
+      "status": "blocked",
+      "reason": "snapshot-contract-invalid",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "R19",
+    "title": "partial Reader projection cannot become empty or complete memory",
+    "status": "PASS",
+    "metrics": {
+      "begin": 1,
+      "evidence": 1,
+      "receipt": 0,
+      "original": 0,
+      "finish": 0,
+      "writes": 0
+    },
+    "observed": {
+      "status": "blocked",
+      "reason": "incomplete-or-unbound-evidence",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "R20",
+    "title": "snapshot id on Reader evidence cannot belong to another concurrent query",
+    "status": "PASS",
+    "metrics": {
+      "begin": 1,
+      "evidence": 1,
+      "receipt": 0,
+      "original": 0,
+      "finish": 0,
+      "writes": 0
+    },
+    "observed": {
+      "status": "blocked",
+      "reason": "incomplete-or-unbound-evidence",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "R21",
+    "title": "received but not published original is not admissible",
+    "status": "PASS",
+    "metrics": {
+      "begin": 1,
+      "evidence": 1,
+      "receipt": 0,
+      "original": 1,
+      "finish": 0,
+      "writes": 0
+    },
+    "observed": {
+      "status": "conflict",
+      "reason": "publication-provenance-mismatch",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "R22",
+    "title": "confirmed receipt mismatching original publication cannot supply facts",
+    "status": "PASS",
+    "metrics": {
+      "begin": 1,
+      "evidence": 1,
+      "receipt": 1,
+      "original": 1,
+      "finish": 0,
+      "writes": 0
+    },
+    "observed": {
+      "status": "conflict",
+      "reason": "authoritative-receipt-mismatch",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "R23",
+    "title": "Reader rule-fact assertion still needs actual RULES payload confirmation",
+    "status": "PASS",
+    "metrics": {
+      "begin": 1,
+      "evidence": 1,
+      "receipt": 1,
+      "original": 1,
+      "finish": 0,
+      "writes": 0
+    },
+    "observed": {
+      "status": "conflict",
+      "reason": "rule-fact-not-confirmed",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "R24",
+    "title": "finish reauthorizes even if epoch metadata did not change",
+    "status": "PASS",
+    "metrics": {
+      "begin": 1,
+      "evidence": 1,
+      "receipt": 1,
+      "original": 1,
+      "finish": 1,
+      "writes": 0
+    },
+    "observed": {
+      "status": "blocked",
+      "reason": "delivery-authorization-not-current",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "R25",
+    "title": "next request after completed delivery and revocation cannot reuse prior result",
+    "status": "PASS",
+    "metrics": {
+      "begin": 2,
+      "evidence": 1,
+      "receipt": 1,
+      "original": 1,
+      "finish": 1,
+      "writes": 0
+    },
+    "observed": {
+      "previousDelivered": true,
+      "next": {
+        "status": "blocked",
+        "reason": "reader-not-ready",
+        "items": [],
+        "generatedAnswer": null,
+        "estimatedTokens": 0,
+        "authorityUnknown": true
+      }
+    }
+  },
+  {
+    "id": "R26",
+    "title": "caller mutation of returned evidence never corrupts next Reader request",
+    "status": "PASS",
+    "metrics": {
+      "begin": 2,
+      "evidence": 2,
+      "receipt": 2,
+      "original": 2,
+      "finish": 2,
+      "writes": 0
+    },
+    "observed": {
+      "status": "evidence",
+      "reason": "authorized-reader-evidence",
+      "items": [
+        {
+          "sourceId": "source-v1",
+          "segmentId": "public-segment",
+          "sourceType": "original-narrative",
+          "revision": 1,
+          "asOfRevision": 4,
+          "startUtf16": 0,
+          "endUtf16": 18,
+          "text": "她说：“旧灯暂由你保管，不得转卖。”",
+          "sourceSha256": "eb1d604a97086cef70b686e219de71f3b63593bc8f4a424251c342af479ea1ed",
+          "receiptKey": "00000000-0000-4000-8000-000000000002",
+          "receiptSha256": "b5503485988b1f9fc31617a7cdaad8d9ed8963b2c78ea264e90c660efa18e2de",
+          "attemptId": "synthetic-attempt-1",
+          "generationVersion": "synthetic-generation-1",
+          "generatorSource": "deterministic",
+          "authority": {
+            "narrative": "original-prose-only",
+            "confirmedRuleFacts": [],
+            "unknownFields": []
+          },
+          "authorization": {
+            "status": "allowed",
+            "npcId": "npc-a",
+            "grantId": "synthetic-grant:npc-a",
+            "visibilityEpoch": "visibility-1",
+            "memoryPolicyHash": "draft-explicit-policy-hash",
+            "forgettingEpoch": "forgetting-1",
+            "policySurface": "p4-explicit-recall"
+          }
+        }
+      ],
+      "generatedAnswer": null,
+      "estimatedTokens": 27,
+      "authorityUnknown": false
+    }
+  },
+  {
+    "id": "R27",
+    "title": "unknown receipt blocks published prose without retrying or writing",
+    "status": "PASS",
+    "metrics": {
+      "begin": 1,
+      "evidence": 1,
+      "receipt": 1,
+      "original": 1,
+      "finish": 0,
+      "writes": 0
+    },
+    "observed": {
+      "status": "unknown",
+      "reason": "receipt-unconfirmed",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "R28",
+    "title": "missing original cannot trigger local persistence or prose generation",
+    "status": "PASS",
+    "metrics": {
+      "begin": 1,
+      "evidence": 1,
+      "receipt": 0,
+      "original": 1,
+      "finish": 0,
+      "writes": 0
+    },
+    "observed": {
+      "status": "unknown",
+      "reason": "published-original-unavailable",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "R29",
+    "title": "query end policy/time boundary change rejects preassembled evidence",
+    "status": "PASS",
+    "metrics": {
+      "begin": 1,
+      "evidence": 1,
+      "receipt": 1,
+      "original": 1,
+      "finish": 1,
+      "writes": 0
+    },
+    "observed": {
+      "status": "blocked",
+      "reason": "delivery-authorization-not-current",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "R30",
+    "title": "unauthorized NPC guessing source/version does not trigger raw-body Reader lookup",
+    "status": "PASS",
+    "metrics": {
+      "begin": 1,
+      "evidence": 1,
+      "receipt": 0,
+      "original": 0,
+      "finish": 1,
+      "writes": 0
+    },
+    "observed": {
+      "status": "insufficient",
+      "reason": "synthetic-reader-insufficient",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  }
+]

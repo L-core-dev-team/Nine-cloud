@@ -1,0 +1,341 @@
+{
+  "node": "v24.19.0",
+  "synthetic": true,
+  "oldDataReadOnly": true,
+  "sameDataQuestionsBudgets": true,
+  "legacy42Rerun": false,
+  "modelCalls": 0,
+  "corpora": [
+    {
+      "kind": "complex",
+      "count": 10000,
+      "questionsSha256": "a9d6f614872ae314442b6bba64472dec327dda8a4ff29907eea26a8b92bd5bac",
+      "modes": [
+        {
+          "mode": "baseline",
+          "kind": "complex",
+          "count": 10000,
+          "queries": 400,
+          "unchangedEvidence": true,
+          "restoreMs": 473.968,
+          "viewBuildCount": 101,
+          "viewBuildTotalMs": 20015.85069999998,
+          "maxSampledHeapBytes": 1245483752,
+          "runs": [
+            {
+              "budget": 512,
+              "queries": 100,
+              "pass": 100,
+              "fail": 0,
+              "p50Ms": 10.464500000000044,
+              "p95Ms": 317.15089999999964,
+              "maxMs": 542.8800999999994,
+              "queryMs": 5573.0974,
+              "totalIncludingVerificationMs": 5841.159500000001,
+              "byteChecks": 270,
+              "npcLeaks": 0,
+              "futureLeaks": 0
+            },
+            {
+              "budget": 1024,
+              "queries": 100,
+              "pass": 100,
+              "fail": 0,
+              "p50Ms": 12.579800000000432,
+              "p95Ms": 539.6592,
+              "maxMs": 631.3888999999999,
+              "queryMs": 6775.541799999993,
+              "totalIncludingVerificationMs": 7013.975699999999,
+              "byteChecks": 270,
+              "npcLeaks": 0,
+              "futureLeaks": 0
+            },
+            {
+              "budget": 2048,
+              "queries": 100,
+              "pass": 100,
+              "fail": 0,
+              "p50Ms": 11.560100000000602,
+              "p95Ms": 500.1133000000009,
+              "maxMs": 659.6172999999981,
+              "queryMs": 6173.687800000007,
+              "totalIncludingVerificationMs": 6409.148000000001,
+              "byteChecks": 270,
+              "npcLeaks": 0,
+              "futureLeaks": 0
+            },
+            {
+              "budget": 4096,
+              "queries": 100,
+              "pass": 100,
+              "fail": 0,
+              "p50Ms": 9.915199999999459,
+              "p95Ms": 393.47580000000016,
+              "maxMs": 512.4971000000005,
+              "queryMs": 5179.946200000024,
+              "totalIncludingVerificationMs": 5378.095400000002,
+              "byteChecks": 270,
+              "npcLeaks": 0,
+              "futureLeaks": 0
+            }
+          ],
+          "retention": null
+        },
+        {
+          "mode": "retained",
+          "kind": "complex",
+          "count": 10000,
+          "queries": 400,
+          "unchangedEvidence": true,
+          "restoreMs": 612.812,
+          "viewBuildCount": 21,
+          "viewBuildTotalMs": 2102.6824999999994,
+          "maxSampledHeapBytes": 737672248,
+          "runs": [
+            {
+              "budget": 512,
+              "queries": 100,
+              "pass": 100,
+              "fail": 0,
+              "p50Ms": 12.898200000000543,
+              "p95Ms": 208.63459999999986,
+              "maxMs": 333.8301999999999,
+              "queryMs": 3640.9449999999983,
+              "totalIncludingVerificationMs": 3809.204,
+              "byteChecks": 270,
+              "npcLeaks": 0,
+              "futureLeaks": 0
+            },
+            {
+              "budget": 1024,
+              "queries": 100,
+              "pass": 100,
+              "fail": 0,
+              "p50Ms": 14.689400000000205,
+              "p95Ms": 19.285100000000057,
+              "maxMs": 236.30849999999919,
+              "queryMs": 1507.1182999999974,
+              "totalIncludingVerificationMs": 1694.9830000000002,
+              "byteChecks": 270,
+              "npcLeaks": 0,
+              "futureLeaks": 0
+            },
+            {
+              "budget": 2048,
+              "queries": 100,
+              "pass": 100,
+              "fail": 0,
+              "p50Ms": 14.959700000000339,
+              "p95Ms": 21.489800000000287,
+              "maxMs": 25.09940000000006,
+              "queryMs": 1351.689199999997,
+              "totalIncludingVerificationMs": 1532.3661000000002,
+              "byteChecks": 270,
+              "npcLeaks": 0,
+              "futureLeaks": 0
+            },
+            {
+              "budget": 4096,
+              "queries": 100,
+              "pass": 100,
+              "fail": 0,
+              "p50Ms": 14.616400000000795,
+              "p95Ms": 17.989299999999275,
+              "maxMs": 23.49579999999878,
+              "queryMs": 1247.971599999999,
+              "totalIncludingVerificationMs": 1421.3968999999997,
+              "byteChecks": 270,
+              "npcLeaks": 0,
+              "futureLeaks": 0
+            }
+          ],
+          "retention": {
+            "hits": 1459,
+            "misses": 21,
+            "evictions": 0,
+            "maxEntries": 21,
+            "maxEstimatedBytes": 72738945,
+            "currentEntries": 21,
+            "currentEstimatedBytes": 72738945,
+            "entryLimit": 32,
+            "estimatedByteLimit": 100663296,
+            "limitation": "Estimated serialized payload bound is not a heap bound; scopes and snapshot are frozen. No dynamic production authorization is claimed."
+          }
+        }
+      ],
+      "change": {
+        "viewBuildsAvoided": 80,
+        "querySpeedup": 3.059256227257763,
+        "sameAccuracy": true,
+        "sameEvidence": true,
+        "heapRatio": 0.5922776967707886
+      }
+    },
+    {
+      "kind": "prose",
+      "count": 10000,
+      "questionsSha256": "58640216c9589287905806437ea1035c504e337ae88acea87b85e7631c50fc31",
+      "modes": [
+        {
+          "mode": "baseline",
+          "kind": "prose",
+          "count": 10000,
+          "queries": 800,
+          "unchangedEvidence": true,
+          "restoreMs": 440.33950000000004,
+          "viewBuildCount": 134,
+          "viewBuildTotalMs": 13712.994699999977,
+          "maxSampledHeapBytes": 881049800,
+          "runs": [
+            {
+              "budget": 512,
+              "queries": 200,
+              "pass": 197,
+              "fail": 3,
+              "p50Ms": 7.826599999999871,
+              "p95Ms": 82.58040000000074,
+              "maxMs": 420.8366000000001,
+              "queryMs": 4835.224600000005,
+              "totalIncludingVerificationMs": 5042.4308,
+              "byteChecks": 149,
+              "npcLeaks": 0,
+              "futureLeaks": 0
+            },
+            {
+              "budget": 1024,
+              "queries": 200,
+              "pass": 197,
+              "fail": 3,
+              "p50Ms": 7.389600000000428,
+              "p95Ms": 67.98180000000139,
+              "maxMs": 452.4998999999989,
+              "queryMs": 5222.288300000006,
+              "totalIncludingVerificationMs": 5456.7498000000005,
+              "byteChecks": 149,
+              "npcLeaks": 0,
+              "futureLeaks": 0
+            },
+            {
+              "budget": 2048,
+              "queries": 200,
+              "pass": 197,
+              "fail": 3,
+              "p50Ms": 7.286099999999351,
+              "p95Ms": 66.630799999999,
+              "maxMs": 481.08090000000084,
+              "queryMs": 5196.045699999981,
+              "totalIncludingVerificationMs": 5397.701000000001,
+              "byteChecks": 149,
+              "npcLeaks": 0,
+              "futureLeaks": 0
+            },
+            {
+              "budget": 4096,
+              "queries": 200,
+              "pass": 197,
+              "fail": 3,
+              "p50Ms": 6.61449999999968,
+              "p95Ms": 62.25209999999788,
+              "maxMs": 446.009399999999,
+              "queryMs": 4694.68169999999,
+              "totalIncludingVerificationMs": 4924.3361,
+              "byteChecks": 149,
+              "npcLeaks": 0,
+              "futureLeaks": 0
+            }
+          ],
+          "retention": null
+        },
+        {
+          "mode": "retained",
+          "kind": "prose",
+          "count": 10000,
+          "queries": 800,
+          "unchangedEvidence": true,
+          "restoreMs": 538.6706,
+          "viewBuildCount": 22,
+          "viewBuildTotalMs": 1011.475899999999,
+          "maxSampledHeapBytes": 705709072,
+          "runs": [
+            {
+              "budget": 512,
+              "queries": 200,
+              "pass": 197,
+              "fail": 3,
+              "p50Ms": 5.561099999999897,
+              "p95Ms": 44.4366,
+              "maxMs": 310.3034,
+              "queryMs": 2501.4799000000003,
+              "totalIncludingVerificationMs": 2712.3853,
+              "byteChecks": 149,
+              "npcLeaks": 0,
+              "futureLeaks": 0
+            },
+            {
+              "budget": 1024,
+              "queries": 200,
+              "pass": 197,
+              "fail": 3,
+              "p50Ms": 5.848399999999856,
+              "p95Ms": 14.460399999999936,
+              "maxMs": 24.514400000000023,
+              "queryMs": 1322.268600000004,
+              "totalIncludingVerificationMs": 1530.3368000000005,
+              "byteChecks": 149,
+              "npcLeaks": 0,
+              "futureLeaks": 0
+            },
+            {
+              "budget": 2048,
+              "queries": 200,
+              "pass": 197,
+              "fail": 3,
+              "p50Ms": 5.868099999999686,
+              "p95Ms": 14.089799999999741,
+              "maxMs": 21.395700000000033,
+              "queryMs": 1339.6361000000015,
+              "totalIncludingVerificationMs": 1545.1313,
+              "byteChecks": 149,
+              "npcLeaks": 0,
+              "futureLeaks": 0
+            },
+            {
+              "budget": 4096,
+              "queries": 200,
+              "pass": 197,
+              "fail": 3,
+              "p50Ms": 5.823699999999917,
+              "p95Ms": 14.423300000000381,
+              "maxMs": 20.426300000000992,
+              "queryMs": 1294.2847000000165,
+              "totalIncludingVerificationMs": 1494.9472000000005,
+              "byteChecks": 149,
+              "npcLeaks": 0,
+              "futureLeaks": 0
+            }
+          ],
+          "retention": {
+            "hits": 1374,
+            "misses": 22,
+            "evictions": 0,
+            "maxEntries": 22,
+            "maxEstimatedBytes": 60694872,
+            "currentEntries": 22,
+            "currentEstimatedBytes": 60694872,
+            "entryLimit": 32,
+            "estimatedByteLimit": 100663296,
+            "limitation": "Estimated serialized payload bound is not a heap bound; scopes and snapshot are frozen. No dynamic production authorization is claimed."
+          }
+        }
+      ],
+      "change": {
+        "viewBuildsAvoided": 112,
+        "querySpeedup": 3.0890774013466307,
+        "sameAccuracy": true,
+        "sameEvidence": true,
+        "heapRatio": 0.8009865866832954
+      }
+    }
+  ],
+  "method": "Sequential fresh processes, identical frozen 10000-source snapshots and all 1200 questions at four budgets. Compared every output with prior evidence. Timings are local samples, not production SLO."
+}

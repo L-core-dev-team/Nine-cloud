@@ -1,0 +1,2 @@
+import type {TrustedReader,ReaderQuery} from './reader.js';import type {EvidenceResult} from '../p6-integration-ready/contracts.js';
+export class ReadOnlyAdapter {constructor(reader:TrustedReader,options:{receiptSchema:{safeParse:(value:unknown)=>unknown};evidenceSchema:{safeParse:(value:unknown)=>unknown};timeoutMs?:number});search(session:unknown,query:ReaderQuery,options?:{signal?:AbortSignal}):Promise<EvidenceResult>}

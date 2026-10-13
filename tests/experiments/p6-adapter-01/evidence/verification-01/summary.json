@@ -1,0 +1,36 @@
+{
+  "profile": "performance-04",
+  "verified": true,
+  "corpora": [
+    {
+      "kind": "complex",
+      "sources": 10000,
+      "queries": 400,
+      "spans": 1080,
+      "identicalAllNonTimingFields": true,
+      "pass": 400,
+      "fail": 0,
+      "failedQuestionIds": [],
+      "sourceRootPreserved": "5dccdbe15429e9bf1e3df3afcf4cb5d1c73115b636c3a616f4ed5f9a2f28f6bb"
+    },
+    {
+      "kind": "prose",
+      "sources": 10000,
+      "queries": 800,
+      "spans": 596,
+      "identicalAllNonTimingFields": true,
+      "pass": 788,
+      "fail": 12,
+      "failedQuestionIds": [
+        "H-10-0",
+        "H-14-2",
+        "H-16-1"
+      ],
+      "sourceRootPreserved": "3420d422f48560ad1c8cf7c677725f3c9ad09308609f55c79ed39aac00c37114"
+    }
+  ],
+  "sources": 20000,
+  "queries": 1200,
+  "spans": 1676,
+  "limitation": "Frozen whole-source simulation only, not production auth, P4/P5 policies or PostgreSQL correctness."
+}

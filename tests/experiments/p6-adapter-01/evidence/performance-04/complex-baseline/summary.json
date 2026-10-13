@@ -1,0 +1,70 @@
+{
+  "mode": "baseline",
+  "kind": "complex",
+  "count": 10000,
+  "queries": 400,
+  "unchangedEvidence": true,
+  "restoreMs": 473.968,
+  "viewBuildCount": 101,
+  "viewBuildTotalMs": 20015.85069999998,
+  "maxSampledHeapBytes": 1245483752,
+  "runs": [
+    {
+      "budget": 512,
+      "queries": 100,
+      "pass": 100,
+      "fail": 0,
+      "p50Ms": 10.464500000000044,
+      "p95Ms": 317.15089999999964,
+      "maxMs": 542.8800999999994,
+      "queryMs": 5573.0974,
+      "totalIncludingVerificationMs": 5841.159500000001,
+      "byteChecks": 270,
+      "npcLeaks": 0,
+      "futureLeaks": 0
+    },
+    {
+      "budget": 1024,
+      "queries": 100,
+      "pass": 100,
+      "fail": 0,
+      "p50Ms": 12.579800000000432,
+      "p95Ms": 539.6592,
+      "maxMs": 631.3888999999999,
+      "queryMs": 6775.541799999993,
+      "totalIncludingVerificationMs": 7013.975699999999,
+      "byteChecks": 270,
+      "npcLeaks": 0,
+      "futureLeaks": 0
+    },
+    {
+      "budget": 2048,
+      "queries": 100,
+      "pass": 100,
+      "fail": 0,
+      "p50Ms": 11.560100000000602,
+      "p95Ms": 500.1133000000009,
+      "maxMs": 659.6172999999981,
+      "queryMs": 6173.687800000007,
+      "totalIncludingVerificationMs": 6409.148000000001,
+      "byteChecks": 270,
+      "npcLeaks": 0,
+      "futureLeaks": 0
+    },
+    {
+      "budget": 4096,
+      "queries": 100,
+      "pass": 100,
+      "fail": 0,
+      "p50Ms": 9.915199999999459,
+      "p95Ms": 393.47580000000016,
+      "maxMs": 512.4971000000005,
+      "queryMs": 5179.946200000024,
+      "totalIncludingVerificationMs": 5378.095400000002,
+      "byteChecks": 270,
+      "npcLeaks": 0,
+      "futureLeaks": 0
+    }
+  ],
+  "retention": null
+}

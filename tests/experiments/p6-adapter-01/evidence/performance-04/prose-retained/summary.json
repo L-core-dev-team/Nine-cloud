@@ -1,0 +1,81 @@
+{
+  "mode": "retained",
+  "kind": "prose",
+  "count": 10000,
+  "queries": 800,
+  "unchangedEvidence": true,
+  "restoreMs": 538.6706,
+  "viewBuildCount": 22,
+  "viewBuildTotalMs": 1011.475899999999,
+  "maxSampledHeapBytes": 705709072,
+  "runs": [
+    {
+      "budget": 512,
+      "queries": 200,
+      "pass": 197,
+      "fail": 3,
+      "p50Ms": 5.561099999999897,
+      "p95Ms": 44.4366,
+      "maxMs": 310.3034,
+      "queryMs": 2501.4799000000003,
+      "totalIncludingVerificationMs": 2712.3853,
+      "byteChecks": 149,
+      "npcLeaks": 0,
+      "futureLeaks": 0
+    },
+    {
+      "budget": 1024,
+      "queries": 200,
+      "pass": 197,
+      "fail": 3,
+      "p50Ms": 5.848399999999856,
+      "p95Ms": 14.460399999999936,
+      "maxMs": 24.514400000000023,
+      "queryMs": 1322.268600000004,
+      "totalIncludingVerificationMs": 1530.3368000000005,
+      "byteChecks": 149,
+      "npcLeaks": 0,
+      "futureLeaks": 0
+    },
+    {
+      "budget": 2048,
+      "queries": 200,
+      "pass": 197,
+      "fail": 3,
+      "p50Ms": 5.868099999999686,
+      "p95Ms": 14.089799999999741,
+      "maxMs": 21.395700000000033,
+      "queryMs": 1339.6361000000015,
+      "totalIncludingVerificationMs": 1545.1313,
+      "byteChecks": 149,
+      "npcLeaks": 0,
+      "futureLeaks": 0
+    },
+    {
+      "budget": 4096,
+      "queries": 200,
+      "pass": 197,
+      "fail": 3,
+      "p50Ms": 5.823699999999917,
+      "p95Ms": 14.423300000000381,
+      "maxMs": 20.426300000000992,
+      "queryMs": 1294.2847000000165,
+      "totalIncludingVerificationMs": 1494.9472000000005,
+      "byteChecks": 149,
+      "npcLeaks": 0,
+      "futureLeaks": 0
+    }
+  ],
+  "retention": {
+    "hits": 1374,
+    "misses": 22,
+    "evictions": 0,
+    "maxEntries": 22,
+    "maxEstimatedBytes": 60694872,
+    "currentEntries": 22,
+    "currentEstimatedBytes": 60694872,
+    "entryLimit": 32,
+    "estimatedByteLimit": 100663296,
+    "limitation": "Estimated serialized payload bound is not a heap bound; scopes and snapshot are frozen. No dynamic production authorization is claimed."
+  }
+}
