@@ -228,4 +228,40 @@
   border-radius: var(--jx-radius-pill);
 }
 .landing-shell .portal-enter::before { display: none; }
-.landing-shell .portal-enter::after { animation: portal-glint 1.25s cubic-bezier(0.2, 0.7, 0.2, 1) 120ms 1 both; }
+
+/* Clear functional material: a low-haze center and restrained curved rim.
+   Actual background displacement remains gated to the proven SVG surfaces. */
+:root .liquid-glass-surface.liquid-glass--crystal[data-liquid-glass='clear'] {
+  --jx-glass-blur: 1px;
+  --jx-glass-saturate: 1.18;
+  color: var(--jx-crystal-text);
+  background: var(--jx-crystal-fill);
+  border: 1px solid var(--jx-crystal-edge);
+  border-radius: var(--jx-radius-pill);
+  box-shadow: inset 0 1px 0 var(--jx-crystal-reflection), inset 0 -1px 0 rgba(120, 171, 197, 0.15), 0 8px 22px var(--jx-crystal-shade);
+  transition: background var(--jx-motion-feedback) ease, border-color var(--jx-motion-feedback) ease, border-radius var(--jx-motion-settle) var(--jx-motion-ease), box-shadow var(--jx-motion-settle) var(--jx-motion-ease), transform var(--jx-motion-feedback) var(--jx-motion-ease);
+}
+.liquid-glass--crystal > .liquid-glass-optics::before {
+  background: radial-gradient(58% 115% at var(--jx-glass-pointer-x) var(--jx-glass-pointer-y), var(--jx-crystal-reflection), transparent 65%), linear-gradient(115deg, rgba(235, 250, 255, 0.12), transparent 30%, transparent 72%, rgba(227, 245, 253, 0.075));
+  opacity: 0.6;
+}
+.liquid-glass--crystal > .liquid-glass-optics::after {
+  box-shadow: inset 0 1px 0 var(--jx-crystal-reflection), inset 1px 0 1px rgba(223, 245, 255, 0.12), inset 0 -1px 1px rgba(149, 196, 220, 0.18);
+  opacity: 0.65;
+}
+:root .liquid-glass-surface.liquid-glass--crystal[data-liquid-glass='clear']:is(:hover, :focus-visible) {
+  border-radius: var(--jx-radius-liquid-active);
+  box-shadow: inset 0 1px 0 var(--jx-crystal-reflection), 0 10px 26px var(--jx-crystal-shade);
+}
+@media (prefers-reduced-motion: reduce) {
+  :root .liquid-glass-surface.liquid-glass--crystal { transition: none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  :root .liquid-glass-surface.liquid-glass--crystal[data-liquid-glass='clear'] { background: var(--jx-surface-opaque); }
+}
+@supports not (backdrop-filter: blur(1px)) {
+  :root .liquid-glass-surface.liquid-glass--crystal[data-liquid-glass='clear'] { background: var(--jx-surface-opaque); }
+}
+@media (prefers-contrast: more) {
+  :root .liquid-glass-surface.liquid-glass--crystal[data-liquid-glass='clear'] { border-width: 2px; }
+}

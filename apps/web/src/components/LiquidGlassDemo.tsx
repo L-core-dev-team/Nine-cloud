@@ -11,6 +11,7 @@ export function LiquidGlassDemo() {
   const [scrollHint, setScrollHint] = useState('背景可透射');
   const params = new URLSearchParams(window.location.search);
   const forceBlurBaseline = params.get('glass') === 'blur';
+  const crystal = params.get('material') === 'crystal';
   const hasSvgBackdropFilterSyntax = typeof CSS !== 'undefined'
     && (CSS.supports('backdrop-filter', filterReference) || CSS.supports('-webkit-backdrop-filter', filterReference));
   const hasSvgElementFilterSyntax = typeof CSS !== 'undefined' && CSS.supports('filter', filterReference);
@@ -53,7 +54,7 @@ export function LiquidGlassDemo() {
           <span className="liquid-lab-kicker">月下山门 · 实时环境材质</span>
           <h1 id="liquid-lab-title">光过其上，境仍在下</h1>
           <p>这是一张独立可运行的浏览器样板。滚动内容、切换明暗、移动指针或按下控件，观察材质如何回应。</p>
-          <LiquidGlass as="button" type="button" variant="clear" className="liquid-lab-primary" onClick={() => setScrollHint('已触发：按钮按压反馈完成')}>
+          <LiquidGlass as="button" type="button" variant="clear" className={`liquid-lab-primary${crystal ? ' liquid-glass--crystal' : ''}`} onClick={() => setScrollHint('已触发：按钮按压反馈完成')}>
             <span className="liquid-lab-primary-icon" aria-hidden="true">✦</span>
             <span><strong>进入山门</strong><small>{scrollHint}</small></span>
           </LiquidGlass>
@@ -79,6 +80,6 @@ export function LiquidGlassDemo() {
     </main>
 
     <LiquidGlass as="button" type="button" variant="clear" className="liquid-lab-float" aria-label="浮动操作按钮" onClick={() => setScrollHint('浮动控件已响应')}>↗</LiquidGlass>
-    <footer className="liquid-lab-status"><span>原生 Apple Glass：网页不具备</span><span>背景 SVG URL：{hasSvgBackdropFilterSyntax ? '可用' : '当前浏览器不支持'}</span><span>SVG 图像滤镜：{hasSvgElementFilterSyntax ? '可用，受限背景克隆样板' : '当前浏览器不支持'}</span><a href="/">回到九霄</a></footer>
+    <footer className="liquid-lab-status"><span>原生 Apple Glass：网页不具备</span><span>背景 SVG URL：{hasSvgBackdropFilterSyntax ? '支持语法，实际效果须测量' : '当前浏览器不支持'}</span><span>SVG 元素滤镜：{hasSvgElementFilterSyntax ? '支持语法' : '当前浏览器不支持'}</span><a href="/">回到九霄</a></footer>
   </div>;
 }

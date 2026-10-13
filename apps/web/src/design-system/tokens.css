@@ -45,6 +45,7 @@
   --jx-radius-card: 12px;
   --jx-radius-panel: 16px;
   --jx-radius-pill: 999px;
+  --jx-radius-liquid-active: 28px;
   --jx-type-caption: 0.75rem;
   --jx-type-small: 0.875rem;
   --jx-type-body: 1rem;
@@ -80,9 +81,23 @@
   --jx-reading-paragraph-gap: var(--jx-space-4);
   --jx-reading-block-radius: var(--jx-radius-panel);
   --jx-touch-target-min: 44px;
+  --jx-landing-top-clearance: calc(var(--jx-space-8) + var(--jx-space-7));
+  --jx-crystal-fill: linear-gradient(130deg, rgba(10, 28, 43, 0.2), rgba(82, 120, 139, 0.055) 48%, rgba(10, 28, 43, 0.12));
+  --jx-crystal-edge: rgba(216, 236, 246, 0.55);
+  --jx-crystal-reflection: rgba(242, 251, 255, 0.26);
+  --jx-crystal-shade: rgba(2, 10, 18, 0.26);
+  --jx-crystal-text: #f2eee5;
+  --jx-motion-feedback: 160ms;
+  --jx-motion-settle: 280ms;
+  --jx-motion-ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 :root[data-theme='day'] {
+  --jx-crystal-fill: linear-gradient(130deg, rgba(255, 255, 255, 0.25), rgba(243, 248, 245, 0.08) 48%, rgba(255, 255, 255, 0.2));
+  --jx-crystal-edge: rgba(43, 66, 80, 0.5);
+  --jx-crystal-reflection: rgba(255, 255, 255, 0.72);
+  --jx-crystal-shade: rgba(44, 61, 73, 0.12);
+  --jx-crystal-text: #182b37;
   color-scheme: light;
   color: #27323c;
   background: #f2efe8;

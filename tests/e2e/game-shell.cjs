@@ -83,13 +83,14 @@ async function emulateVisualPreferences(page, { reducedMotion, reducedTransparen
           if (theme === 'day') await page.getByRole('button', { name: '切换到晴昼配色' }).click();
           const headerGlassFilter = await page.locator('.jx-shell > header').evaluate(element => getComputedStyle(element).backdropFilter);
           const headerControlGlassFilter = await page.locator('.jx-shell > header .theme-toggle').evaluate(element => getComputedStyle(element).backdropFilter);
-          assert.match(headerGlassFilter, /blur\(18px\)/, `The ${theme} global navigation keeps its glass material: ${headerGlassFilter}`);
+          assert.match(headerGlassFilter, /blur\(12px\)/, `The ${theme} global navigation keeps its glass material: ${headerGlassFilter}`);
           assert.equal(headerControlGlassFilter, 'none', `The ${theme} navigation labels do not stack a second glass surface: ${headerControlGlassFilter}`);
           const saveGlassFilter = await page.locator('.landing-read-save').evaluate(element => getComputedStyle(element).backdropFilter);
-          assert.match(saveGlassFilter, /blur\(2px\).*saturate\(1\.5\)/, `The ${theme} landing keeps its clear, saturated glass save action: ${saveGlassFilter}`);
+          assert.match(saveGlassFilter, /blur\(1px\).*saturate\(1\.18\)/, `The ${theme} landing keeps its clear, saturated glass save action: ${saveGlassFilter}`);
+          const toolbarTop = (await page.locator('.jx-shell > header').boundingBox()).y;
           await page.evaluate(() => window.scrollTo(0, 360));
           await page.waitForTimeout(80);
-          assert.ok(Math.abs((await page.locator('.jx-shell > header').boundingBox()).y) < 2, 'primary navigation stays floating while the scene scrolls underneath');
+          assert.ok(Math.abs((await page.locator('.jx-shell > header').boundingBox()).y - toolbarTop) < 2, 'primary navigation stays floating while the scene scrolls underneath');
           await page.evaluate(() => window.scrollTo(0, 0));
           await shot('home');
           await page.getByRole('button', { name: '菜单', exact: true }).click();
@@ -249,7 +250,7 @@ async function emulateVisualPreferences(page, { reducedMotion, reducedTransparen
         }
         if (viewport.width < 500) {
           const mobileHeroMinHeight = await page.locator('.hero').evaluate(element => parseFloat(getComputedStyle(element).minHeight));
-          assert.ok(Math.abs(mobileHeroMinHeight - viewport.height * 0.78) <= 1, `The no-blur mobile hero keeps the 78dvh contract: ${mobileHeroMinHeight}px`);
+          assert.ok(Math.abs(mobileHeroMinHeight - Math.max(620, viewport.height - 96)) <= 1, `The floating-toolbar homepage reserves its first-viewport content area in the no-blur path: ${mobileHeroMinHeight}px`);
         }
         await page.screenshot({ path: join(output, `no-blur-${theme}-${viewport.width}.png`), fullPage: false });
         await page.getByRole('button', { name: '读取存档', exact: true }).click();

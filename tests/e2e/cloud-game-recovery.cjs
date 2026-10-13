@@ -9,7 +9,7 @@ const { chromium } = require('playwright');
 
 const root = resolve(__dirname, '../..');
 const saveId = 'ui-recovery-contract';
-const evidence = join(root, 'docs/acceptance/2026-10-12/evidence/390-night-cloud-recovery.png');
+const evidence = join(root, 'test-results/ui-final/390-night-cloud-recovery.png');
 let server;
 
 async function startDevServer() {
@@ -109,7 +109,7 @@ async function startDevServer() {
     assert.doesNotMatch(visibleText, /TURN_UNAVAILABLE|CLOUD_503|INVALID_CLOUD_RESPONSE/);
     assert.deepEqual(pageErrors, [], `the recovery route must have no browser errors: ${pageErrors.join('; ')}`);
 
-    mkdirSync(join(root, 'docs/acceptance/2026-10-12/evidence'), { recursive: true });
+    mkdirSync(join(root, 'test-results/ui-final'), { recursive: true });
     const screenshot = await page.screenshot({ path: evidence, fullPage: true, animations: 'disabled' });
     const guardedCases = [];
     for (const scenario of ['refresh-failure', 'foreign-save', 'foreign-key', 'version-mismatch', 'recovery-gate', 'missing-after-refresh']) {

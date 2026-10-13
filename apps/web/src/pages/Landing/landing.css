@@ -1,0 +1,87 @@
+/* Entrance-only layout. Reading routes retain the existing sticky toolbar. */
+.landing-shell > header[data-liquid-glass] {
+  position: fixed;
+  top: max(var(--jx-space-4), env(safe-area-inset-top));
+  left: var(--jx-space-5);
+  right: var(--jx-space-5);
+  height: 64px;
+  padding: 0 var(--jx-space-5);
+  border: 1px solid var(--jx-glass-rim);
+  border-radius: var(--jx-radius-pill);
+  --jx-glass-blur: 12px;
+  background: var(--jx-glass-header-fill);
+  box-shadow: inset 0 1px 0 var(--jx-glass-highlight), 0 8px 24px rgba(2, 9, 16, 0.18);
+}
+.landing-shell .hero { min-height: max(640px, calc(100svh - 96px)); }
+.landing-shell .landing-copy { padding-top: var(--jx-space-8); }
+.landing-shell > aside { position: fixed; top: 92px; }
+.landing-shell > header .brand { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+.landing-shell .header-tools { flex: none; }
+.landing-shell > header .header-tools button { min-width: var(--jx-touch-target-min); min-height: var(--jx-touch-target-min); }
+:root .landing-shell > header[data-liquid-glass] {
+  -webkit-backdrop-filter: blur(var(--jx-glass-blur)) saturate(var(--jx-glass-saturate));
+  backdrop-filter: blur(var(--jx-glass-blur)) saturate(var(--jx-glass-saturate));
+}
+.landing-shell .landing-read-save.liquid-glass--crystal { border-radius: var(--jx-radius-panel); }
+:root .landing-shell .portal-enter.liquid-glass--crystal {
+  -webkit-backdrop-filter: blur(var(--jx-glass-blur)) saturate(var(--jx-glass-saturate));
+  backdrop-filter: blur(var(--jx-glass-blur)) saturate(var(--jx-glass-saturate));
+}
+:root .landing-shell .landing-read-save.liquid-glass--crystal {
+  -webkit-backdrop-filter: blur(var(--jx-glass-blur)) saturate(var(--jx-glass-saturate));
+  backdrop-filter: blur(var(--jx-glass-blur)) saturate(var(--jx-glass-saturate));
+}
+@supports (backdrop-filter: url(#jx-liquid-glass-refract)) or (-webkit-backdrop-filter: url(#jx-liquid-glass-refract)) {
+  :root .landing-shell > header[data-liquid-glass] {
+    -webkit-backdrop-filter: url(#jx-liquid-glass-refract) blur(var(--jx-glass-blur)) saturate(var(--jx-glass-saturate));
+    backdrop-filter: url(#jx-liquid-glass-refract) blur(var(--jx-glass-blur)) saturate(var(--jx-glass-saturate));
+  }
+  :root .landing-shell .landing-read-save.liquid-glass--crystal {
+    -webkit-backdrop-filter: url(#jx-liquid-glass-refract) blur(var(--jx-glass-blur)) saturate(var(--jx-glass-saturate));
+    backdrop-filter: url(#jx-liquid-glass-refract) blur(var(--jx-glass-blur)) saturate(var(--jx-glass-saturate));
+  }
+}
+.landing-shell .landing-read-save > small {
+  background: rgba(5, 18, 29, 0.44);
+  border: 0;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+:root[data-theme='day'] .landing-shell .landing-read-save > small { background: rgba(255, 255, 255, 0.66); border: 0; box-shadow: none; }
+.landing-shell .portal-enter::before { display: none; }
+.landing-shell .portal-enter::after { animation: none; }
+.landing-shell .landing-read-save::before, .landing-shell .landing-read-save::after { display: none; }
+.landing-shell .scene-motion .waterfall-traces { opacity: 0.16; }
+
+/* The scene's existing CSS overlays obey the same settings as the renderer. */
+.jx-shell:is([data-jx-motion='reduced'], [data-jx-data-saver='true']) .scene :is(.waterfall-traces, .lake-reflections, .scene-petals, .scene-mist, .scene-cloud-drift) { animation: none; }
+.jx-shell[data-jx-motion='reduced'] .liquid-glass-surface { transition: none; }
+.jx-shell[data-jx-motion='reduced'] .liquid-glass-surface:active { transform: none; }
+
+@media (max-width: 720px) {
+  .landing-shell > header[data-liquid-glass] {
+    top: max(var(--jx-space-3), env(safe-area-inset-top));
+    left: var(--jx-space-3);
+    right: var(--jx-space-3);
+    height: auto;
+    min-height: 64px;
+    gap: var(--jx-space-2);
+    padding: var(--jx-space-2) var(--jx-space-4);
+    border-radius: var(--jx-radius-panel);
+  }
+  .landing-shell > header .brand { max-width: none; font-size: var(--jx-type-small); white-space: normal; line-height: 1.65; }
+  .landing-shell > header .brand span { display: block; }
+  .landing-shell > header .header-tools { gap: var(--jx-space-2); }
+  .landing-shell > header .header-tools button { min-width: var(--jx-touch-target-min); min-height: var(--jx-touch-target-min); padding: var(--jx-space-2); white-space: nowrap; }
+  .landing-shell .hero { min-height: max(620px, calc(100svh - 96px)); }
+  .landing-shell .hero > .landing-copy { padding-top: var(--jx-landing-top-clearance); padding-bottom: var(--jx-space-7); }
+  .landing-shell > aside { top: 100px; right: var(--jx-space-3); max-width: calc(100% - var(--jx-space-5)); }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .landing-shell > header[data-liquid-glass], .landing-shell .landing-read-save > small { background: var(--jx-surface-opaque); }
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .landing-shell > header[data-liquid-glass], .landing-shell .landing-read-save > small { background: var(--jx-surface-opaque); }
+}

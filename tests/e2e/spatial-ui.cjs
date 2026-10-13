@@ -41,6 +41,7 @@ async function selectedMaterial(button) {
   const executablePath = process.env.PLAYWRIGHT_BROWSER_EXECUTABLE || (existsSync(edge) ? edge : undefined);
   const browser = await chromium.launch(executablePath ? { executablePath } : {});
   const records = [];
+  const homeRecords = [];
   try {
     for (const theme of ['night', 'day']) for (const touch of [false, true]) {
       const context = await browser.newContext({ viewport: { width: touch ? 390 : 1366, height: 844 }, hasTouch: touch, isMobile: touch, reducedMotion: 'reduce' });
@@ -73,7 +74,80 @@ async function selectedMaterial(button) {
       records.push({ theme, touch, selectedMaterial: active, errors });
       await context.close();
     }
-    writeFileSync(join(output, 'audit.json'), JSON.stringify({ status: 'PASS', browser: browser.version(), records }, null, 2));
-    console.log(`Spatial UI: PASS ${records.length} world selection cases`);
+    for (const theme of ['night', 'day']) for (const width of [320, 390, 720, 1366, 1440, 1920]) {
+      const context = await browser.newContext({ viewport: { width, height: width < 800 ? 844 : 900 }, reducedMotion: 'reduce' });
+      const page = await context.newPage();
+      await page.goto(base, { waitUntil: 'networkidle' });
+      const media = await context.newCDPSession(page);
+      await media.send('Emulation.setEmulatedMedia', { features: [
+        { name: 'prefers-reduced-motion', value: 'reduce' },
+        { name: 'prefers-reduced-transparency', value: 'no-preference' },
+      ] });
+      await page.evaluate(theme => { document.documentElement.dataset.theme = theme; }, theme);
+      await page.evaluate(() => document.fonts.ready);
+      const geometry = await page.evaluate(() => {
+        const box = element => { const r = element.getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height, bottom: r.bottom }; };
+        return {
+          overflow: document.documentElement.scrollWidth - innerWidth,
+          header: box(document.querySelector('.landing-shell > header')),
+          title: box(document.querySelector('.hero-mark')),
+          entry: box(document.querySelector('.portal-enter')),
+          tools: [...document.querySelectorAll('.header-tools button')].map(box),
+          text: document.querySelector('.hero-mark').textContent,
+        };
+      });
+      assert.ok(geometry.overflow <= 1, `no horizontal overflow: ${JSON.stringify({ width, geometry })}`);
+      assert.equal(geometry.text, '九霄');
+      assert.ok(geometry.title.y > geometry.header.bottom, 'floating toolbar must not obscure the brand title');
+      assert.ok(geometry.entry.y > geometry.title.bottom && geometry.entry.bottom < (width < 800 ? 844 : 900), 'entry remains visible in the first viewport');
+      for (const tool of geometry.tools) assert.ok(tool.width >= 44 && tool.height >= 44, 'toolbar tools retain touch targets');
+      await page.screenshot({ path: join(output, `home-${theme}-${width}.png`) });
+      homeRecords.push({ width, theme, geometry });
+      await page.locator('.portal-enter').click();
+      await page.waitForURL('**/lobby');
+      await context.close();
+    }
+    const context = await browser.newContext({ viewport: { width: 1366, height: 900 }, reducedMotion: 'no-preference' });
+    const page = await context.newPage();
+    const media = await context.newCDPSession(page);
+    await media.send('Emulation.setEmulatedMedia', { features: [
+      { name: 'prefers-reduced-motion', value: 'no-preference' },
+      { name: 'prefers-reduced-transparency', value: 'no-preference' },
+    ] });
+    await page.goto(base, { waitUntil: 'networkidle' });
+    const entry = page.locator('.portal-enter');
+    const bounds = await entry.boundingBox();
+    await page.mouse.move(bounds.x + bounds.width * 0.25, bounds.y + bounds.height * 0.25);
+    await page.waitForFunction(() => document.querySelector('.portal-enter').style.getPropertyValue('--jx-glass-pointer-x') !== '');
+    const point = await entry.evaluate(element => element.style.getPropertyValue('--jx-glass-pointer-x'));
+    assert.ok(parseFloat(point) < 35, 'local light coordinates follow the real pointer');
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.waitForFunction(() => document.querySelector('.portal-enter').style.getPropertyValue('--jx-glass-pointer-x') === '');
+    await page.mouse.move(bounds.x + bounds.width * 0.75, bounds.y + bounds.height * 0.25);
+    await page.evaluate(() => new Promise(resolveFrame => requestAnimationFrame(() => requestAnimationFrame(resolveFrame))));
+    assert.equal(await entry.evaluate(element => element.style.getPropertyValue('--jx-glass-pointer-x')), '', 'reduced motion stops pointer light');
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.evaluate(() => document.querySelector('.jx-shell').dataset.jxDataSaver = 'true');
+    assert.equal(await page.locator('.scene-mist').first().evaluate(element => getComputedStyle(element).animationName), 'none', 'data saver also stops the existing CSS scene motion');
+    await page.mouse.move(bounds.x + bounds.width * 0.2, bounds.y + bounds.height * 0.75);
+    await page.evaluate(() => new Promise(resolveFrame => requestAnimationFrame(() => requestAnimationFrame(resolveFrame))));
+    assert.equal(await entry.evaluate(element => element.style.getPropertyValue('--jx-glass-pointer-x')), '', 'data saver stops pointer light');
+    await page.evaluate(() => delete document.querySelector('.jx-shell').dataset.jxDataSaver);
+    await page.mouse.move(bounds.x + bounds.width * 0.4, bounds.y + bounds.height * 0.75);
+    await page.waitForFunction(() => document.querySelector('.portal-enter').style.getPropertyValue('--jx-glass-pointer-x') !== '');
+    await page.evaluate(() => window.dispatchEvent(new Event('blur')));
+    assert.equal(await entry.evaluate(element => element.style.getPropertyValue('--jx-glass-pointer-x')), '', 'losing window focus clears light');
+    await context.close();
+    const faultContext = await browser.newContext();
+    const faultPage = await faultContext.newPage();
+    await faultPage.route('**/assets/GraphicsSettings-*.js', route => route.abort());
+    await faultPage.goto(`${base}/settings/graphics`, { waitUntil: 'networkidle' });
+    await faultPage.getByRole('heading', { name: '页面暂时无法打开' }).waitFor();
+    assert.ok(await faultPage.locator('.jx-shell > header').isVisible(), 'a failed route module retains navigation');
+    await faultPage.getByRole('button', { name: '返回山门', exact: true }).click();
+    await faultPage.waitForURL('**/lobby');
+    await faultContext.close();
+    writeFileSync(join(output, 'audit.json'), JSON.stringify({ status: 'PASS', browser: browser.version(), records, homeRecords, pointerLight: 'motion/data-saver/window-focus guards passed', moduleFailure: 'header and return navigation preserved' }, null, 2));
+    console.log(`Spatial UI: PASS ${records.length} world selection cases, ${homeRecords.length} homepage frames, pointer-light guards`);
   } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; }).finally(() => { server?.kill(); });

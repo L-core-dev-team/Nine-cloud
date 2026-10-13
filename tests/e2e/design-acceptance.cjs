@@ -438,8 +438,8 @@ async function runDesignAcceptance(browser, origin, outputDir, options = {}) {
           actionBottom: document.querySelector('.portal-enter')?.getBoundingClientRect().bottom ?? Infinity,
           saveActionBottom: document.querySelector('.landing-read-save')?.getBoundingClientRect().bottom ?? Infinity,
         }));
-        const expectedMinHeight = await page.evaluate(() => window.innerHeight * 0.78);
-        assert.ok(Math.abs(mobileHero.minHeight - expectedMinHeight) <= 1, `Mobile landing hero must follow the 78dvh design contract (${mobileHero.minHeight}px vs ${expectedMinHeight}px)`);
+        const expectedMinHeight = await page.evaluate(() => Math.max(620, window.innerHeight - 96));
+        assert.ok(Math.abs(mobileHero.minHeight - expectedMinHeight) <= 1, `Mobile entrance must reserve its first-viewport area below the floating toolbar (${mobileHero.minHeight}px vs ${expectedMinHeight}px)`);
         assert.ok(mobileHero.actionBottom <= expectedMinHeight, 'The primary enter action must remain inside the mobile first-screen hero');
         assert.ok(mobileHero.saveActionBottom <= expectedMinHeight, 'The save-reading action must remain inside the mobile first-screen hero');
         await page.getByText('当前没有旧档', { exact: true }).waitFor();

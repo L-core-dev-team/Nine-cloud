@@ -1,0 +1,674 @@
+{
+  "status": "PASS",
+  "browser": "155.0.4283.45",
+  "records": [
+    {
+      "theme": "night",
+      "touch": false,
+      "selectedMaterial": {
+        "background": "none",
+        "fill": "rgb(11, 27, 41)",
+        "border": "rgb(226, 233, 237)"
+      },
+      "errors": []
+    },
+    {
+      "theme": "night",
+      "touch": true,
+      "selectedMaterial": {
+        "background": "none",
+        "fill": "rgb(11, 27, 41)",
+        "border": "rgb(226, 233, 237)"
+      },
+      "errors": []
+    },
+    {
+      "theme": "day",
+      "touch": false,
+      "selectedMaterial": {
+        "background": "none",
+        "fill": "rgb(255, 253, 248)",
+        "border": "rgb(40, 60, 73)"
+      },
+      "errors": []
+    },
+    {
+      "theme": "day",
+      "touch": true,
+      "selectedMaterial": {
+        "background": "none",
+        "fill": "rgb(255, 253, 248)",
+        "border": "rgb(40, 60, 73)"
+      },
+      "errors": []
+    }
+  ],
+  "homeRecords": [
+    {
+      "width": 320,
+      "theme": "night",
+      "geometry": {
+        "overflow": 0,
+        "header": {
+          "x": 12,
+          "y": 12,
+          "width": 296,
+          "height": 64.1875,
+          "bottom": 76.1875
+        },
+        "title": {
+          "x": 24,
+          "y": 271.109375,
+          "width": 192,
+          "height": 80,
+          "bottom": 351.109375
+        },
+        "entry": {
+          "x": 24,
+          "y": 410.296875,
+          "width": 236,
+          "height": 60,
+          "bottom": 470.296875
+        },
+        "tools": [
+          {
+            "x": 131,
+            "y": 22.09375,
+            "width": 54,
+            "height": 44,
+            "bottom": 66.09375
+          },
+          {
+            "x": 193,
+            "y": 22.09375,
+            "width": 44,
+            "height": 44,
+            "bottom": 66.09375
+          },
+          {
+            "x": 245,
+            "y": 22.09375,
+            "width": 46,
+            "height": 44,
+            "bottom": 66.09375
+          }
+        ],
+        "text": "九霄"
+      }
+    },
+    {
+      "width": 390,
+      "theme": "night",
+      "geometry": {
+        "overflow": 0,
+        "header": {
+          "x": 12,
+          "y": 12,
+          "width": 366,
+          "height": 64.1875,
+          "bottom": 76.1875
+        },
+        "title": {
+          "x": 24,
+          "y": 270.15625,
+          "width": 196.5625,
+          "height": 81.90625,
+          "bottom": 352.0625
+        },
+        "entry": {
+          "x": 24,
+          "y": 411.25,
+          "width": 236,
+          "height": 60,
+          "bottom": 471.25
+        },
+        "tools": [
+          {
+            "x": 201,
+            "y": 22.09375,
+            "width": 54,
+            "height": 44,
+            "bottom": 66.09375
+          },
+          {
+            "x": 263,
+            "y": 22.09375,
+            "width": 44,
+            "height": 44,
+            "bottom": 66.09375
+          },
+          {
+            "x": 315,
+            "y": 22.09375,
+            "width": 46,
+            "height": 44,
+            "bottom": 66.09375
+          }
+        ],
+        "text": "九霄"
+      }
+    },
+    {
+      "width": 720,
+      "theme": "night",
+      "geometry": {
+        "overflow": 0,
+        "header": {
+          "x": 12,
+          "y": 12,
+          "width": 696,
+          "height": 64.1875,
+          "bottom": 76.1875
+        },
+        "title": {
+          "x": 24,
+          "y": 255.109375,
+          "width": 268.8125,
+          "height": 112,
+          "bottom": 367.109375
+        },
+        "entry": {
+          "x": 24,
+          "y": 426.296875,
+          "width": 236,
+          "height": 60,
+          "bottom": 486.296875
+        },
+        "tools": [
+          {
+            "x": 531,
+            "y": 22.09375,
+            "width": 54,
+            "height": 44,
+            "bottom": 66.09375
+          },
+          {
+            "x": 593,
+            "y": 22.09375,
+            "width": 44,
+            "height": 44,
+            "bottom": 66.09375
+          },
+          {
+            "x": 645,
+            "y": 22.09375,
+            "width": 46,
+            "height": 44,
+            "bottom": 66.09375
+          }
+        ],
+        "text": "九霄"
+      }
+    },
+    {
+      "width": 1366,
+      "theme": "night",
+      "geometry": {
+        "overflow": 0,
+        "header": {
+          "x": 24,
+          "y": 16,
+          "width": 1318,
+          "height": 64,
+          "bottom": 80
+        },
+        "title": {
+          "x": 157,
+          "y": 231.109375,
+          "width": 364.8125,
+          "height": 152,
+          "bottom": 383.109375
+        },
+        "entry": {
+          "x": 157,
+          "y": 446.296875,
+          "width": 236,
+          "height": 60,
+          "bottom": 506.296875
+        },
+        "tools": [
+          {
+            "x": 1123,
+            "y": 26,
+            "width": 62,
+            "height": 44,
+            "bottom": 70
+          },
+          {
+            "x": 1193,
+            "y": 26,
+            "width": 54,
+            "height": 44,
+            "bottom": 70
+          },
+          {
+            "x": 1255,
+            "y": 26,
+            "width": 62,
+            "height": 44,
+            "bottom": 70
+          }
+        ],
+        "text": "九霄"
+      }
+    },
+    {
+      "width": 1440,
+      "theme": "night",
+      "geometry": {
+        "overflow": 0,
+        "header": {
+          "x": 24,
+          "y": 16,
+          "width": 1392,
+          "height": 64,
+          "bottom": 80
+        },
+        "title": {
+          "x": 194,
+          "y": 231.109375,
+          "width": 364.8125,
+          "height": 152,
+          "bottom": 383.109375
+        },
+        "entry": {
+          "x": 194,
+          "y": 446.296875,
+          "width": 236,
+          "height": 60,
+          "bottom": 506.296875
+        },
+        "tools": [
+          {
+            "x": 1197,
+            "y": 26,
+            "width": 62,
+            "height": 44,
+            "bottom": 70
+          },
+          {
+            "x": 1267,
+            "y": 26,
+            "width": 54,
+            "height": 44,
+            "bottom": 70
+          },
+          {
+            "x": 1329,
+            "y": 26,
+            "width": 62,
+            "height": 44,
+            "bottom": 70
+          }
+        ],
+        "text": "九霄"
+      }
+    },
+    {
+      "width": 1920,
+      "theme": "night",
+      "geometry": {
+        "overflow": 0,
+        "header": {
+          "x": 24,
+          "y": 16,
+          "width": 1872,
+          "height": 64,
+          "bottom": 80
+        },
+        "title": {
+          "x": 434,
+          "y": 231.109375,
+          "width": 364.8125,
+          "height": 152,
+          "bottom": 383.109375
+        },
+        "entry": {
+          "x": 434,
+          "y": 446.296875,
+          "width": 236,
+          "height": 60,
+          "bottom": 506.296875
+        },
+        "tools": [
+          {
+            "x": 1677,
+            "y": 26,
+            "width": 62,
+            "height": 44,
+            "bottom": 70
+          },
+          {
+            "x": 1747,
+            "y": 26,
+            "width": 54,
+            "height": 44,
+            "bottom": 70
+          },
+          {
+            "x": 1809,
+            "y": 26,
+            "width": 62,
+            "height": 44,
+            "bottom": 70
+          }
+        ],
+        "text": "九霄"
+      }
+    },
+    {
+      "width": 320,
+      "theme": "day",
+      "geometry": {
+        "overflow": 0,
+        "header": {
+          "x": 12,
+          "y": 12,
+          "width": 296,
+          "height": 64.1875,
+          "bottom": 76.1875
+        },
+        "title": {
+          "x": 24,
+          "y": 271.109375,
+          "width": 192,
+          "height": 80,
+          "bottom": 351.109375
+        },
+        "entry": {
+          "x": 24,
+          "y": 410.296875,
+          "width": 236,
+          "height": 60,
+          "bottom": 470.296875
+        },
+        "tools": [
+          {
+            "x": 131,
+            "y": 22.09375,
+            "width": 54,
+            "height": 44,
+            "bottom": 66.09375
+          },
+          {
+            "x": 193,
+            "y": 22.09375,
+            "width": 44,
+            "height": 44,
+            "bottom": 66.09375
+          },
+          {
+            "x": 245,
+            "y": 22.09375,
+            "width": 46,
+            "height": 44,
+            "bottom": 66.09375
+          }
+        ],
+        "text": "九霄"
+      }
+    },
+    {
+      "width": 390,
+      "theme": "day",
+      "geometry": {
+        "overflow": 0,
+        "header": {
+          "x": 12,
+          "y": 12,
+          "width": 366,
+          "height": 64.1875,
+          "bottom": 76.1875
+        },
+        "title": {
+          "x": 24,
+          "y": 270.15625,
+          "width": 196.5625,
+          "height": 81.90625,
+          "bottom": 352.0625
+        },
+        "entry": {
+          "x": 24,
+          "y": 411.25,
+          "width": 236,
+          "height": 60,
+          "bottom": 471.25
+        },
+        "tools": [
+          {
+            "x": 201,
+            "y": 22.09375,
+            "width": 54,
+            "height": 44,
+            "bottom": 66.09375
+          },
+          {
+            "x": 263,
+            "y": 22.09375,
+            "width": 44,
+            "height": 44,
+            "bottom": 66.09375
+          },
+          {
+            "x": 315,
+            "y": 22.09375,
+            "width": 46,
+            "height": 44,
+            "bottom": 66.09375
+          }
+        ],
+        "text": "九霄"
+      }
+    },
+    {
+      "width": 720,
+      "theme": "day",
+      "geometry": {
+        "overflow": 0,
+        "header": {
+          "x": 12,
+          "y": 12,
+          "width": 696,
+          "height": 64.1875,
+          "bottom": 76.1875
+        },
+        "title": {
+          "x": 24,
+          "y": 255.109375,
+          "width": 268.8125,
+          "height": 112,
+          "bottom": 367.109375
+        },
+        "entry": {
+          "x": 24,
+          "y": 426.296875,
+          "width": 236,
+          "height": 60,
+          "bottom": 486.296875
+        },
+        "tools": [
+          {
+            "x": 531,
+            "y": 22.09375,
+            "width": 54,
+            "height": 44,
+            "bottom": 66.09375
+          },
+          {
+            "x": 593,
+            "y": 22.09375,
+            "width": 44,
+            "height": 44,
+            "bottom": 66.09375
+          },
+          {
+            "x": 645,
+            "y": 22.09375,
+            "width": 46,
+            "height": 44,
+            "bottom": 66.09375
+          }
+        ],
+        "text": "九霄"
+      }
+    },
+    {
+      "width": 1366,
+      "theme": "day",
+      "geometry": {
+        "overflow": 0,
+        "header": {
+          "x": 24,
+          "y": 16,
+          "width": 1318,
+          "height": 64,
+          "bottom": 80
+        },
+        "title": {
+          "x": 157,
+          "y": 231.109375,
+          "width": 364.8125,
+          "height": 152,
+          "bottom": 383.109375
+        },
+        "entry": {
+          "x": 157,
+          "y": 446.296875,
+          "width": 236,
+          "height": 60,
+          "bottom": 506.296875
+        },
+        "tools": [
+          {
+            "x": 1123,
+            "y": 26,
+            "width": 62,
+            "height": 44,
+            "bottom": 70
+          },
+          {
+            "x": 1193,
+            "y": 26,
+            "width": 54,
+            "height": 44,
+            "bottom": 70
+          },
+          {
+            "x": 1255,
+            "y": 26,
+            "width": 62,
+            "height": 44,
+            "bottom": 70
+          }
+        ],
+        "text": "九霄"
+      }
+    },
+    {
+      "width": 1440,
+      "theme": "day",
+      "geometry": {
+        "overflow": 0,
+        "header": {
+          "x": 24,
+          "y": 16,
+          "width": 1392,
+          "height": 64,
+          "bottom": 80
+        },
+        "title": {
+          "x": 194,
+          "y": 231.109375,
+          "width": 364.8125,
+          "height": 152,
+          "bottom": 383.109375
+        },
+        "entry": {
+          "x": 194,
+          "y": 446.296875,
+          "width": 236,
+          "height": 60,
+          "bottom": 506.296875
+        },
+        "tools": [
+          {
+            "x": 1197,
+            "y": 26,
+            "width": 62,
+            "height": 44,
+            "bottom": 70
+          },
+          {
+            "x": 1267,
+            "y": 26,
+            "width": 54,
+            "height": 44,
+            "bottom": 70
+          },
+          {
+            "x": 1329,
+            "y": 26,
+            "width": 62,
+            "height": 44,
+            "bottom": 70
+          }
+        ],
+        "text": "九霄"
+      }
+    },
+    {
+      "width": 1920,
+      "theme": "day",
+      "geometry": {
+        "overflow": 0,
+        "header": {
+          "x": 24,
+          "y": 16,
+          "width": 1872,
+          "height": 64,
+          "bottom": 80
+        },
+        "title": {
+          "x": 434,
+          "y": 231.109375,
+          "width": 364.8125,
+          "height": 152,
+          "bottom": 383.109375
+        },
+        "entry": {
+          "x": 434,
+          "y": 446.296875,
+          "width": 236,
+          "height": 60,
+          "bottom": 506.296875
+        },
+        "tools": [
+          {
+            "x": 1677,
+            "y": 26,
+            "width": 62,
+            "height": 44,
+            "bottom": 70
+          },
+          {
+            "x": 1747,
+            "y": 26,
+            "width": 54,
+            "height": 44,
+            "bottom": 70
+          },
+          {
+            "x": 1809,
+            "y": 26,
+            "width": 62,
+            "height": 44,
+            "bottom": 70
+          }
+        ],
+        "text": "九霄"
+      }
+    }
+  ],
+  "pointerLight": "motion/data-saver/window-focus guards passed",
+  "moduleFailure": "header and return navigation preserved"
+}

@@ -11,6 +11,7 @@ const { decodePng, getTextRuns, maskText, textAudit } = require('./design-accept
 const root = resolve(__dirname, '../..');
 const output = join(root, 'test-results/ui-final');
 let server;
+const crystal = process.env.UI_GLASS_MATERIAL === 'crystal';
 
 async function startDevServer() {
   if (process.env.UI_BASE_URL) return process.env.UI_BASE_URL;
@@ -107,7 +108,7 @@ async function emulatePreferences(page, reducedTransparency = 'no-preference') {
       const page = await context.newPage();
       await emulatePreferences(page);
       page.on('pageerror', error => errors.push(error.message));
-      await page.goto(`${base}/__liquid-glass`, { waitUntil: 'networkidle' });
+      await page.goto(`${base}/__liquid-glass${crystal ? '?material=crystal' : ''}`, { waitUntil: 'networkidle' });
       await page.evaluate(async () => {
         await document.fonts.ready;
         await Promise.all([...document.images].map(image => image.decode().catch(() => undefined)));
@@ -175,14 +176,14 @@ async function emulatePreferences(page, reducedTransparency = 'no-preference') {
     await emulatePreferences(lensPage);
     const lensErrors = [];
     lensPage.on('pageerror', error => lensErrors.push(error.message));
-    await lensPage.goto(`${base}/__liquid-glass`, { waitUntil: 'networkidle' });
+    await lensPage.goto(`${base}/__liquid-glass${crystal ? '?material=crystal' : ''}`, { waitUntil: 'networkidle' });
     await lensPage.evaluate(async () => { await document.fonts.ready; await Promise.all([...document.images].map(image => image.decode().catch(() => undefined))); });
     const lensBounds = await lensPage.locator('.liquid-lab-primary').boundingBox();
     assert.ok(lensBounds, 'clear-glass comparison target is visible');
     const lensBytes = await lensPage.screenshot({ path: join(output, '390-night-liquid-glass-lens-check.png') });
     const blurPage = await comparisonContext.newPage();
     await emulatePreferences(blurPage);
-    await blurPage.goto(`${base}/__liquid-glass?glass=blur`, { waitUntil: 'networkidle' });
+    await blurPage.goto(`${base}/__liquid-glass?glass=blur${crystal ? '&material=crystal' : ''}`, { waitUntil: 'networkidle' });
     await blurPage.evaluate(async () => { await document.fonts.ready; await Promise.all([...document.images].map(image => image.decode().catch(() => undefined))); });
     const blurBounds = await blurPage.locator('.liquid-lab-primary').boundingBox();
     assert.ok(blurBounds, 'blur-only comparison target is visible');
@@ -201,7 +202,7 @@ async function emulatePreferences(page, reducedTransparency = 'no-preference') {
       { name: 'prefers-reduced-motion', value: 'reduce' },
       { name: 'prefers-reduced-transparency', value: 'reduce' },
     ] });
-    await reducePage.goto(`${base}/__liquid-glass`, { waitUntil: 'networkidle' });
+    await reducePage.goto(`${base}/__liquid-glass${crystal ? '?material=crystal' : ''}`, { waitUntil: 'networkidle' });
     const reduced = await reducePage.locator('.liquid-lab-primary').evaluate(element => ({
       filter: getComputedStyle(element).backdropFilter,
       background: getComputedStyle(element).backgroundColor,
@@ -221,7 +222,7 @@ async function emulatePreferences(page, reducedTransparency = 'no-preference') {
       { name: 'prefers-contrast', value: 'more' },
       { name: 'forced-colors', value: 'none' },
     ] });
-    await contrastPage.goto(`${base}/__liquid-glass`, { waitUntil: 'networkidle' });
+    await contrastPage.goto(`${base}/__liquid-glass${crystal ? '?material=crystal' : ''}`, { waitUntil: 'networkidle' });
     const highContrast = await contrastPage.locator('.liquid-lab-primary').evaluate(element => ({
       preference: matchMedia('(prefers-contrast: more)').matches,
       borderWidth: getComputedStyle(element).borderTopWidth,

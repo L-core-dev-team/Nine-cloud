@@ -16,7 +16,7 @@ export function GlassHeader({ showNavigation, theme, menuOpen, ambientAudioActiv
   const themeLabel = theme === 'night' ? '夜色' : '晴昼';
   const nextThemeLabel = theme === 'night' ? '晴昼' : '夜色';
   return <LiquidGlass as="header" variant="regular">
-    <button className="brand" onClick={() => onNavigate('/')}>踏月过山门，天地任君行。</button>
+    <button className="brand" onClick={() => onNavigate('/')}><span>踏月过山门，</span><span>天地任君行。</span></button>
     {showNavigation && <nav>
       <button onClick={() => onNavigate('/lobby')}>山门</button>
       <button onClick={() => onNavigate('/world')}>世界设定</button>

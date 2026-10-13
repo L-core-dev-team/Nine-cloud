@@ -4,6 +4,7 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '../..');
 const files = [
   'apps/web/src/design-system/tokens.css',
+  'apps/web/src/pages/Landing/landing.css',
   'apps/web/src/style.css',
   'apps/web/src/components/liquid-glass.css',
   'apps/web/src/components/game-shell.css',

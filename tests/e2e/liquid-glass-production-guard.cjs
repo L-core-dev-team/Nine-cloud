@@ -10,8 +10,8 @@ const { chromium } = require('playwright');
 const root = resolve(__dirname, '../..');
 const dist = join(root, 'apps/web/dist');
 const assets = join(dist, 'assets');
-const evidence = join(root, 'docs/acceptance/2026-10-12/evidence/390-night-production-route.png');
-const reducedEvidence = join(root, 'docs/acceptance/2026-10-12/evidence/390-night-reduced-transparency-route.png');
+const evidence = join(root, 'test-results/ui-final/390-night-production-route.png');
+const reducedEvidence = join(root, 'test-results/ui-final/390-night-reduced-transparency-route.png');
 let server;
 
 async function sampleScrollScheduling(page) {
@@ -109,7 +109,7 @@ async function startPreview() {
     assert.notEqual(visualAudit.entryBackdrop, 'none', 'the primary formal action must transmit its background');
     assert.notEqual(visualAudit.saveBackdrop, 'none', 'the save action must transmit its background');
     assert.ok(visualAudit.title && visualAudit.title.rect.height > 0 && visualAudit.title.opacity !== '0', 'the formal homepage brand title must render in the production screenshot');
-    mkdirSync(join(root, 'docs/acceptance/2026-10-12/evidence'), { recursive: true });
+    mkdirSync(join(root, 'test-results/ui-final'), { recursive: true });
     const image = await page.screenshot({ path: evidence, animations: 'disabled' });
     assert.deepEqual(errors, [], `Production route must have no browser errors: ${errors.join('; ')}`);
 

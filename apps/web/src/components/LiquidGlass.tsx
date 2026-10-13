@@ -1,4 +1,5 @@
-import type { ComponentPropsWithoutRef, ElementType, PointerEvent, ReactNode } from 'react';
+import { useEffect, useRef, type ComponentPropsWithoutRef, type ElementType, type ReactNode } from 'react';
+import { registerLightSurface } from '../design-system/light-controller';
 
 export type LiquidGlassVariant = 'regular' | 'clear';
 
@@ -20,32 +21,20 @@ export function LiquidGlass<T extends ElementType = 'div'>({
   variant = 'regular',
   className,
   children,
-  onPointerMove,
-  onPointerLeave,
   ...props
 }: LiquidGlassProps<T>) {
   const Component = (as ?? 'div') as ElementType;
-
-  const handlePointerMove = (event: PointerEvent<HTMLElement>) => {
-    const bounds = event.currentTarget.getBoundingClientRect();
-    const x = Math.max(0, Math.min(100, ((event.clientX - bounds.left) / bounds.width) * 100));
-    const y = Math.max(0, Math.min(100, ((event.clientY - bounds.top) / bounds.height) * 100));
-    event.currentTarget.style.setProperty('--jx-glass-pointer-x', `${x}%`);
-    event.currentTarget.style.setProperty('--jx-glass-pointer-y', `${y}%`);
-    onPointerMove?.(event as never);
-  };
-  const handlePointerLeave = (event: PointerEvent<HTMLElement>) => {
-    event.currentTarget.style.setProperty('--jx-glass-pointer-x', '50%');
-    event.currentTarget.style.setProperty('--jx-glass-pointer-y', '0%');
-    onPointerLeave?.(event as never);
-  };
+  const surfaceRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const surface = surfaceRef.current;
+    if (surface) return registerLightSurface(surface);
+  }, [as]);
 
   return <Component
     {...props}
+    ref={surfaceRef}
     className={['liquid-glass-surface', `liquid-glass-surface--${variant}`, className].filter(Boolean).join(' ')}
     data-liquid-glass={variant}
-    onPointerMove={handlePointerMove}
-    onPointerLeave={handlePointerLeave}
   >
     <span className="liquid-glass-optics" aria-hidden="true" />
     {children}
