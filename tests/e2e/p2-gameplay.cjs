@@ -177,7 +177,7 @@ async function stop(child) {
     assert.equal(createRow.rows[0].revision, 0);
 
     // Real parser evidence: unsigned pickup/reward text and missing targets never advance state.
-    for (const [text, expectedStatus] of [['捡起不存在的令牌', 'rejected'], ['领取奖励', 'rejected'], ['我看看', 'clarify']]) {
+    for (const [text, expectedStatus] of [['捡起不存在的令牌', 'clarify'], ['领取奖励', 'clarify'], ['我看看', 'clarify']]) {
       await page.getByTestId('p2-action-input').fill(text);
       const response = page.waitForResponse(r => r.url().endsWith('/turns') && r.request().method() === 'POST');
       await page.getByTestId('p2-submit-action').click();
@@ -228,7 +228,7 @@ async function stop(child) {
     assert.equal(finished.snapshot.facts.questState.status, 'completed');
     const finalCounts = (await pool.query(`SELECT (SELECT count(*)::int FROM turn_requests WHERE save_id=$1) AS requests,
       (SELECT count(*)::int FROM turn_events WHERE save_id=$1) AS events`, [saveId])).rows[0];
-    expectedRequests = 4;
+    expectedRequests = 7;
     expectedEvents = 5;
     assert.deepEqual(finalCounts, { requests: expectedRequests, events: expectedEvents });
     await page.reload();

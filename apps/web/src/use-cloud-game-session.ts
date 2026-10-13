@@ -58,7 +58,11 @@ export function useCloudGameSession(saveId: string) {
       publish(session, value); setText(value.draft);
       await loadSave(session);
       if (isCurrent(session)) setNotice('已从服务端恢复回执；没有重新结算。');
-    } else setNotice('尚未查询到回执，结果仍待核实。可以再次查询，或明确选择使用原请求标识重试。');
+      return 'confirmed';
+    }
+    if (result.status !== 'unknown' || result.receipt !== null) throw Error('INVALID_RECEIPT_LOOKUP');
+    setNotice('尚未查询到回执，结果仍待核实。可以再次查询，或明确选择使用原请求标识重试。');
+    return 'unknown';
   }
   useEffect(() => {
     const abort = new AbortController(); let disposed = false;
@@ -104,12 +108,13 @@ export function useCloudGameSession(saveId: string) {
     const session = active.current; if (!session || !save || busy || session.working) return;
     session.working = true;
     setBusy(true);
+    let attempted: string | undefined;
     try {
       await draftWrites.current;
       if (!isCurrent(session) || draftFailed.current) return;
       if (!retry) {
         const lastDecision = DecisionV2Schema.safeParse(session.cache.history.at(-1)?.receipt.decision);
-        const clarificationOf = lastDecision.success && lastDecision.data.status === 'clarify' ? lastDecision.data.interactionId : undefined;
+        const clarificationOf = lastDecision.success && lastDecision.data.status === 'clarify' && lastDecision.data.revision === save.revision ? lastDecision.data.interactionId : undefined;
         publish(session, await store.change(session.scope, session.epoch, current => beginGameAction(current, {
           text: current.draft.trim(), expectedRevision: save.revision, idempotencyKey: crypto.randomUUID(), requestNarrative: true,
           draftVersion: current.draftVersion, delivery: 'prepared',
@@ -119,6 +124,7 @@ export function useCloudGameSession(saveId: string) {
       if (!isCurrent(session) || !session.cache.pending) return;
       publish(session, await store.change(session.scope, session.epoch, current => ({ ...current, pending: current.pending ? { ...current.pending, delivery: 'sent' } : null })));
       const pending = session.cache.pending!;
+      attempted = pending.idempotencyKey;
       const { draftVersion: _draft, delivery: _delivery, ...body } = pending;
       setNotice('正在判定；等待服务端规则回执。');
       const result = await cloudRequest(`/api/games/${encodeURIComponent(saveId)}/turns`, 'POST', body, session.scope.ownerId, session.abort.signal);
@@ -134,7 +140,28 @@ export function useCloudGameSession(saveId: string) {
       if (isCurrent(session)) setNotice(next.history.at(-1)?.receipt.decision.status === 'accepted'
         ? narrative?.status === 'failed' ? '规则已结算，叙事失败；权威结果已保存，不需重新行动。' : '规则结算已保存。'
         : next.history.at(-1)?.receipt.decision.status === 'clarify' ? '需要补充信息，世界未推进。' : '服务端明确拒绝，世界未推进；原文保留。');
-    } catch { if (isCurrent(session)) setNotice('请求未确认或本机保存失败，原请求已保留。请先查询服务端结果，不能另起一次行动。'); }
+    } catch (error) {
+      let released = false;
+      if (isCurrent(session) && attempted && error instanceof CloudHttpError && error.status === 409 && error.code === 'REVISION_CONFLICT') {
+        try {
+          // A definitive version rejection is not an unknown network result. Check for a winning duplicate first.
+          const pending = session.cache.pending;
+          const recovery = await lookup(session);
+          if (recovery === 'unknown' && isCurrent(session) && pending && session.cache.pending?.idempotencyKey === attempted) {
+            const currentSave = await loadSave(session);
+            if (isCurrent(session) && currentSave.revision > pending.expectedRevision) {
+              const next = await store.change(session.scope, session.epoch, current => {
+                if (current.pending?.idempotencyKey !== attempted) throw Error('GAME_ACTION_CHANGED');
+                return { ...current, pending: null };
+              });
+              if (isCurrent(session)) { publish(session, next); setText(next.draft); released = true;
+                setNotice('服务端已拒绝旧版本行动，最新存档已读取；草稿保留。请核对后自行提交，未自动重试。'); }
+            }
+          } else if (isCurrent(session) && !session.cache.pending) released = true;
+        } catch { /* Failed lookup, mismatched receipt or logout keeps the original request unresolved. */ }
+      }
+      if (isCurrent(session) && !released) setNotice('请求未确认或本机保存失败，原请求已保留。请先查询服务端结果，不能另起一次行动。');
+    }
     finally { session.working = false; if (isCurrent(session)) setBusy(false); }
   }
   async function queryPending() {
