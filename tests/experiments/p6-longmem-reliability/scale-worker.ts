@@ -56,5 +56,5 @@ if(mode==='write'||mode==='crash-write'){
   assert.deepEqual(recall.store.check(),['ok']);const heapUsed=process.memoryUsage().heapUsed,viewBuilds=recall.measurements();recall.close();
   fs.writeFileSync(path.join(cfg.output,'queries.json.gz'),gzipSync(JSON.stringify(rows)+'\n'));
   fs.writeFileSync(path.join(cfg.output,'failures.json'),JSON.stringify(rows.filter(r=>!r.pass),null,2)+'\n');
-  process.stdout.write(JSON.stringify({pid:process.pid,restoreMs,restoredRoot:cfg.writer.root,restoredCount:cfg.count,heapUsed,builds,viewBuildCount:viewBuilds.length,viewBuildTotalMs:viewBuilds.reduce((n,b)=>n+b.buildMs,0),runs,processResource:process.resourceUsage()})+'\n');
+  process.stdout.write(JSON.stringify({pid:process.pid,restoreMs,restoredRoot:cfg.writer.root,restoredCount:cfg.count,unboundWorldLabelsExcluded:recall.sources.reduce((n,s)=>n+s.facts.filter(f=>f.kind==='world-event'&&(!f.confirmedBy||!s.eventIds.includes(f.confirmedBy))).length,0),heapUsed,builds,viewBuildCount:viewBuilds.length,viewBuildTotalMs:viewBuilds.reduce((n,b)=>n+b.buildMs,0),runs,processResource:process.resourceUsage()})+'\n');
 }else throw Error('Unknown mode');

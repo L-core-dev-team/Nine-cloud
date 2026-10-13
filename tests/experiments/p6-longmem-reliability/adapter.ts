@@ -33,8 +33,8 @@ function validateSource(entry:any):Source {
     for(const k of ['id','subject','predicate','value'])assert.equal(typeof f[k],'string');
     assert.ok(['world-event','narrative-detail','character-claim'].includes(f.kind));assert.equal(f.validFrom,s.turnId);
     if(f.validUntil!==undefined)assert.ok(Number.isSafeInteger(f.validUntil)&&f.validUntil>f.validFrom);
-    if(f.kind==='world-event')assert.ok(s.eventIds.includes(f.confirmedBy),'World event requires a confirmed rule event');
-    else assert.equal(f.confirmedBy,undefined,'Prose or claim cannot become a confirmed world fact');
+    // Legacy synthetic labels can be stored verbatim; only explicitly bound rule events enter the fact view.
+    if(f.kind!=='world-event')assert.equal(f.confirmedBy,undefined,'Prose or claim cannot become a confirmed world fact');
   }
   assert.deepEqual(Object.keys(a.visibility).sort(),['authorizedNpcIds','snapshotId']);
   assert.equal(typeof r.visibilitySnapshotId,'string','Null snapshot cannot grant source access');
@@ -78,10 +78,11 @@ export class DiskRecall {
     // Filter before index construction, not after scoring. Dense empty slots only satisfy the unchanged old engine's turn-count validation.
     const start=performance.now();const turns=Array.from({length:this.revision},(_,i)=>placeholder(i+1));
     const visible=this.sources.filter(s=>this.readable(s,q));
-    const visibleIds=new Set(visible.map(s=>s.sourceId)),factIds=new Set(visible.flatMap(s=>s.facts.map(f=>f.id)));
-    const successor=new Set(visible.flatMap(s=>s.facts.flatMap(f=>f.supersedes?[f.supersedes]:[])));
+    const admitted=(s:Source)=>s.facts.filter(f=>f.kind!=='world-event'||!!f.confirmedBy&&s.eventIds.includes(f.confirmedBy));
+    const visibleIds=new Set(visible.map(s=>s.sourceId)),factIds=new Set(visible.flatMap(s=>admitted(s).map(f=>f.id)));
+    const successor=new Set(visible.flatMap(s=>admitted(s).flatMap(f=>f.supersedes?[f.supersedes]:[])));
     for(const s of visible){
-      const copy=structuredClone(s);copy.historicalSources=copy.historicalSources.filter(id=>visibleIds.has(id));
+      const copy=structuredClone(s);copy.facts=structuredClone(admitted(s));copy.historicalSources=copy.historicalSources.filter(id=>visibleIds.has(id));
       for(const f of copy.facts){if(f.validUntil!==undefined&&(f.validUntil>q.asOfTurn||!successor.has(f.id)))delete f.validUntil;if(f.supersedes&&!factIds.has(f.supersedes))delete f.supersedes;}
       if(q.audience.kind==='npc')copy.authorizedNpcIds=[q.audience.npcId];turns[s.turnId-1]=copy;
     }

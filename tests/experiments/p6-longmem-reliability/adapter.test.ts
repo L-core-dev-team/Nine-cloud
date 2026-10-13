@@ -55,3 +55,9 @@ test('corpus checksum preserves exact text but is independent of metadata key in
  assert.equal(corpusDigest(data.turns),corpusDigest(reordered));reordered[0].narrative+=' ';
  assert.notEqual(corpusDigest(data.turns),corpusDigest(reordered));
 });
+test('legacy world-event labels without confirmed rule events remain raw provenance, never authoritative facts',()=>{
+ const file=make('unbound',({a})=>{if(a.source.sourceId==='s1')a.source.facts=[{id:'fake-rule',subject:'yao',predicate:'抵达',value:'庭院',kind:'world-event',validFrom:1}];});
+ const recall=new DiskRecall(file,scope,3);assert.equal(recall.sources[0]!.facts[0]!.kind,'world-event');
+ const original=recall.original('s1',q('姚镜'));assert.equal(original?.facts.length,0);
+ const r=recall.search(q('姚镜最早的衣着'));assert.ok(r.context.includes('三颗白扣'));assert.ok(r.evidence.every(s=>s.facts.length===0));assert.ok(r.originalSpans.every(s=>s.authority==='original-prose-only'));recall.close();
+});

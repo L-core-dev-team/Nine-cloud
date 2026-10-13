@@ -12,6 +12,11 @@ fs.mkdirSync(path.dirname(output),{recursive:true});fs.mkdirSync(output,{recursi
 const hash=(b:Buffer)=>createHash('sha256').update(b).digest('hex');
 const summary:any={name,createdAt:new Date().toISOString(),node:process.version,platform:process.platform,arch:process.arch,testedSourceSha:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),corpora:[],tokenMethod:'ESTIMATE ceil(UTF-8 context bytes/2), not actual tokenizer or billing; excludes system/query/output',latencyMethod:'Sequential local subprocesses. End-to-end search includes disk verification and first view construction; independent cold-build samples listed separately. Not a production SLO.',modelCalls:0,paidServices:0};
 for(const kind of ['complex','prose'] as const)for(const count of [1000,3000,10000]){
+ if(process.argv[3]==='resume-scale-02'){
+   const previous=JSON.parse(fs.readFileSync(path.join(root,'evidence/scale-02/summary.json'),'utf8'));
+   const completed=previous.corpora.find((c:any)=>c.kind===kind&&c.count===count);
+   if(completed){summary.corpora.push({...completed,evidenceRun:'scale-02',testedSourceSha:previous.testedSourceSha});fs.writeFileSync(path.join(output,'summary.json'),JSON.stringify(summary,null,2)+'\n');console.log(JSON.stringify({reusedCompleted:true,kind,count,evidenceRun:'scale-02'}));continue;}
+ }
  const folder=path.join(output,`${kind}-${count}`);fs.mkdirSync(folder);const queries=path.join(folder,'questions.json');
  fs.writeFileSync(queries,JSON.stringify(questionsFor(kind,count))+'\n');
  const cfg:any={kind,count,file:path.join(runtime,`${kind}-${count}.sqlite`),questions:queries,questionsSha256:hash(fs.readFileSync(queries)),output:folder};
@@ -30,7 +35,9 @@ for(const kind of ['complex','prose'] as const)for(const count of [1000,3000,100
    });
  }
  let reusedWriter=false;
- if(kind==='complex'&&count===1000&&process.argv[3]==='reuse-scale-01'){
+ if(kind==='prose'&&count===1000&&process.argv[3]==='resume-scale-02'){
+   const old=JSON.parse(fs.readFileSync(path.join(root,'.runs/scale-02/prose-1000.json'),'utf8'));cfg.file=old.file;cfg.writer=old.writer;reusedWriter=true;
+ }else if(kind==='complex'&&count===1000&&process.argv[3]==='reuse-scale-01'){
    const old=JSON.parse(fs.readFileSync(path.join(root,'.runs/scale-01/complex-1000.json'),'utf8'));
    cfg.file=old.file;cfg.writer={...old.writer,legacyUnsortedDigest:old.writer.root,root:corpusDigest(dataFor('complex',1000).turns)};reusedWriter=true;
  }else cfg.writer=call('write');
