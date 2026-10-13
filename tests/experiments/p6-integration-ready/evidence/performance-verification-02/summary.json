@@ -1,0 +1,38 @@
+{
+  "PASS": true,
+  "synthetic": true,
+  "corpora": [
+    {
+      "kind": "complex",
+      "sources": 10000,
+      "queries": 400,
+      "spans": 1080,
+      "pass": 400,
+      "fail": 0,
+      "existingFailedQuestionIds": [],
+      "identicalPriorEvidence": true,
+      "npcLeaks": 0,
+      "futureLeaks": 0
+    },
+    {
+      "kind": "prose",
+      "sources": 10000,
+      "queries": 800,
+      "spans": 596,
+      "pass": 788,
+      "fail": 12,
+      "existingFailedQuestionIds": [
+        "H-10-0",
+        "H-14-2",
+        "H-16-1"
+      ],
+      "identicalPriorEvidence": true,
+      "npcLeaks": 0,
+      "futureLeaks": 0
+    }
+  ],
+  "sourceChecks": 20000,
+  "queryChecks": 1200,
+  "spanChecks": 1676,
+  "limitation": "The scale test reuses the old whole-source ACL simulation; it is not a formal production segment-grant authorization proof."
+}

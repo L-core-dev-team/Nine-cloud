@@ -1,0 +1,1 @@
+tests/experiments/p6-integration-ready/benchmark.ts(3,28): error TS5097: An import path can only end with a '.ts' extension when 'allowImportingTsExtensions' is enabled.

@@ -1,0 +1,27 @@
+{
+  "synthetic": true,
+  "existingP6": {
+    "PASS": 5,
+    "FAIL": 8,
+    "total": 13
+  },
+  "formalPolicyConflict": {
+    "status": "BLOCKED",
+    "issue": "Need cross-system policy-surface adjudication; do not rewrite either production policy",
+    "sameInput": {
+      "elapsedGameMinutes": 20160,
+      "laterObservations": 0,
+      "query": "旧灯"
+    },
+    "p4": {
+      "status": "forgotten",
+      "computedAccessibility": 0.25
+    },
+    "p5": {
+      "retained": 1,
+      "accessibility": 0.35
+    },
+    "countDifference": "P4 counts strictly larger eventRevision; P5 counts later observations in stable journal order, including same revision"
+  },
+  "interpretation": "FAIL identifies unimplemented integration requirements under synthetic adversarial inputs, not deployed production exploit claims."
+}

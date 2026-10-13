@@ -1,0 +1,128 @@
+[
+  {
+    "id": "L01",
+    "title": "部分知情不能扩大为完整来源",
+    "status": "FAIL",
+    "layer": "existing P6-04 only",
+    "details": {
+      "unauthorizedPrivateTextReturned": true
+    }
+  },
+  {
+    "id": "L02",
+    "title": "在场但未听见私语不得读私语",
+    "status": "FAIL",
+    "layer": "existing P6-04 only",
+    "details": {
+      "limitation": "whole-source ACL has no heard/segment distinction"
+    }
+  },
+  {
+    "id": "L03",
+    "title": "后来 reported grant 可建立新的知识入口",
+    "status": "FAIL",
+    "layer": "existing P6-04 only",
+    "details": {
+      "limitation": "source ACL frozen at publication; no new grant binding input"
+    }
+  },
+  {
+    "id": "L04",
+    "title": "当前撤权必须失效已授权原文视图",
+    "status": "FAIL",
+    "layer": "existing P6-04 only",
+    "details": {
+      "limitation": "no live authorization epoch in P6-04 query contract"
+    }
+  },
+  {
+    "id": "L05",
+    "title": "正式遗忘后不应从旧原文路径绕回全文",
+    "status": "FAIL",
+    "layer": "existing P6-04 only",
+    "details": {
+      "limitation": "no memory mode/game clock/forgetting policy input"
+    }
+  },
+  {
+    "id": "L06",
+    "title": "同名不同稳定 NPC 身份隔离",
+    "status": "PASS",
+    "layer": "existing P6-04 only",
+    "details": {
+      "stableIds": true
+    }
+  },
+  {
+    "id": "L07",
+    "title": "存档或分支物理分区不交叉读取",
+    "status": "PASS",
+    "layer": "existing P6-04 only",
+    "details": {
+      "saveId": "other"
+    }
+  },
+  {
+    "id": "L08",
+    "title": "存档或分支物理分区不交叉读取",
+    "status": "PASS",
+    "layer": "existing P6-04 only",
+    "details": {
+      "branchId": "fork"
+    }
+  },
+  {
+    "id": "L09",
+    "title": "未认证调用方不能仅凭已知 ownerId 读取玩家原文",
+    "status": "FAIL",
+    "layer": "existing P6-04 only",
+    "details": {
+      "limitation": "constructor accepts trusted owner/save/branch; no real session port"
+    }
+  },
+  {
+    "id": "L10",
+    "title": "未来回合来源不进入旧时点原文",
+    "status": "PASS",
+    "layer": "existing P6-04 only",
+    "details": {
+      "asOfTurn": 2
+    }
+  },
+  {
+    "id": "L11",
+    "title": "主观说法保持未证实状态",
+    "status": "PASS",
+    "layer": "existing P6-04 only",
+    "details": {
+      "states": [
+        {
+          "factId": "claim",
+          "kind": "character-claim",
+          "status": "unverified",
+          "validity": "unverified"
+        }
+      ]
+    }
+  },
+  {
+    "id": "L12",
+    "title": "隐藏同名实体不影响未授权查询的诊断",
+    "status": "FAIL",
+    "layer": "existing P6-04 only",
+    "details": {
+      "knownDiagnosis": "ambiguous-entity",
+      "unknownDiagnosis": "no-readable-support",
+      "limitation": "global entity registry is consulted before audience-specific naming projection"
+    }
+  },
+  {
+    "id": "L13",
+    "title": "同一权威 revision 支持多个不可变叙事版本",
+    "status": "FAIL",
+    "layer": "existing P6-04 only",
+    "details": {
+      "limitation": "P6-04 DiskRecall rejects duplicate turnId across distinct sourceIds"
+    }
+  }
+]
