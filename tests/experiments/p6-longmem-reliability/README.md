@@ -11,12 +11,16 @@
 在独立工作区根目录运行，每次换一个未使用的输出名称：
 
 ```powershell
-node tests/experiments/p6-longmem-reliability/checks.cjs review-01
-node tests/experiments/p6-longmem-reliability/benchmark.ts review-01
+node tests/experiments/p6-longmem-reliability/checks.cjs review-check-01
+node tests/experiments/p6-longmem-reliability/benchmark.ts review-scale-01
 ```
 
 检查器只跑本轮新增存储/整合测试和相关 TypeScript 检查，编译器只读使用圈内 main-sync 的现有依赖。缺失时应明确报告，不自动安装或修改依赖。
 
 benchmark 输出按新名称独占创建，拒绝覆盖。写入、读取在不同新进程完成；读取进程不加载原始剧情文件，核对恢复全文/来源根摘要后运行 512/1024/2048/4096 四预算公开兼容题。complex-10000 在第 5000 回合提交后硬杀写进程，再从头幂等恢复，必须恰好保留 5000 个重复和补齐 5000 个新提交。所有查询/偏移核验和失败无损保存于 evidence。性能区分事务写入、磁盘恢复、首次索引和查询；Token 仅 ceil(UTF-8 context bytes/2) 估算，不是实际账单。
+
+本轮最终证据入口为 `evidence/scale-03/summary.json`，其中 complex 三组引用 `scale-02` 的已完成记录，prose 三组在 scale-03 续做；没有重复旧的成功运行。`evidence/verification-01` 独立核验 3600 查询、5028 个原文片段及 28000 个来源。`verify.ts` 只重新打开磁盘核验已有记录，不重跑检索；已存在输出时拒绝覆盖。诊断脚本同样保护首次失败记录。
+
+原文旧语料有 7 个缺少 confirmedBy/事件绑定的 world-event 标签。保存端原样保留供溯源，检索视图排除其权威资格；不补造规则事件。源数据的其他原句仍可检索。最终 21 项边界测试和 TypeScript 检查通过；复杂题每档 100/100，原文题每档 197/200，三道既有词法失败不因本任务偷偷调参修复。详情和正式接入门槛以报告为准。
 
 数据库、WAL/SHM、运行配置位于本实验 `.runs/`，忽略不提交；测试只清理经过真实路径校验的本轮 `.scratch-*`，旧证据不改写、不删除。完整状态、缺陷和生产接入设计见 2026-10-13 验收报告。

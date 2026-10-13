@@ -5,6 +5,7 @@ import {createRequire} from 'node:module';
 import {DiskRecall} from './adapter.ts';
 import {dataFor,scope,corpusDigest} from './workload.ts';
 const require=createRequire(import.meta.url),{canonical,digest}=require('./store.cjs');
+if(fs.existsSync(new URL('./evidence/scale-01/diagnosis.json',import.meta.url)))throw Error('Historical diagnosis already saved; refuse to overwrite it.');
 const cfg=JSON.parse(fs.readFileSync(new URL('./.runs/scale-01/complex-1000.json',import.meta.url),'utf8'));
 const original=dataFor('complex',1000),recall=new DiskRecall(cfg.file,scope,1000);
 const restored=[...recall.sources].sort((a,b)=>a.turnId-b.turnId);
