@@ -1,0 +1,21 @@
+{
+  "kind": "ephemeral-postgres-backup-restore",
+  "sourceUnchanged": true,
+  "restoredCounts": {
+    "account_operations": 1,
+    "auth_accounts": 11,
+    "auth_challenges": 4,
+    "auth_mail_limits": 3,
+    "auth_sessions": 3,
+    "cloud_archive_trash": 0,
+    "game_saves": 6,
+    "turn_requests": 0,
+    "turn_events": 3,
+    "npc_memory_journals": 0,
+    "entitlement_balances": 0,
+    "entitlement_ledger_entries": 0
+  },
+  "restoredSha256": "e84952a9f77c3cf8abdd559d2b00ddb6615d3695ab289cb4d2b7602bdba194e6",
+  "dumpSha256": "98d9f452757d8c419ce05b88a3036e3359befe7a4abe45a37f2d31f88cb12b00",
+  "productionAcceptance": false
+}
