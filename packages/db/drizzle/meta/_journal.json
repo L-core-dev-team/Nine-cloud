@@ -148,6 +148,20 @@
       "when": 1791178800000,
       "tag": "0020_npc_memory_recall_semantics",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1791849600000,
+      "tag": "0021_p4_recall_upgrade_catchup",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1791849600001,
+      "tag": "0022_function_scope_hardening",
+      "breakpoints": true
     }
   ]
 }

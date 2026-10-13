@@ -47,13 +47,15 @@ export class CloudHttpError extends Error { constructor(readonly status: number,
 export async function cloudRequest(path: string, method = 'GET', body?: unknown, expectedOwner?: string, cancellation?: AbortSignal, maximumBytes = 1_000_000): Promise<Record<string, unknown>> {
   if (!Number.isSafeInteger(maximumBytes) || maximumBytes < 1 || maximumBytes > 32_000_000) throw new Error('INVALID_RESPONSE_BOUND');
   const deadline = AbortSignal.timeout(20000);
-  const response = await fetch(apiRequestUrl(path), { method, credentials: 'include', cache: 'no-store', signal: cancellation ? AbortSignal.any([deadline, cancellation]) : deadline,
+  const response = await fetch(apiRequestUrl(path), { method, credentials: 'include', redirect: 'error', cache: 'no-store', signal: cancellation ? AbortSignal.any([deadline, cancellation]) : deadline,
     headers: { ...(expectedOwner ? { 'x-jiuxiao-account': expectedOwner } : {}), ...(body === undefined ? {} : { 'content-type': 'application/json' }) },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
   if (!response.ok) {
     // Bound and whitelist error metadata. Never retain raw server/provider messages.
     const reader=response.body?.getReader();let text='';let size=0;
-    if(reader)try{const decoder=new TextDecoder();while(true){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>4096){await reader.cancel();text='';break;}text+=decoder.decode(value,{stream:true});}text+=decoder.decode();}finally{reader.releaseLock();}
+    if(reader)try{const decoder=new TextDecoder();while(true){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>4096){await reader.cancel();text='';break;}text+=decoder.decode(value,{stream:true});}text+=decoder.decode();}
+    catch { text=''; /* Once received, HTTP status remains authoritative even if its optional diagnostic body fails. */ }
+    finally{reader.releaseLock();}
     let data:Record<string,unknown>={};try{const value=JSON.parse(text);if(value&&typeof value==='object'&&!Array.isArray(value))data=value;}catch{/* Non-JSON proxy failures still preserve HTTP status. */}
     const code=typeof data.code==='string'&&/^[A-Z_]{1,60}$/.test(data.code)?data.code:undefined;
     const requestId=typeof data.requestId==='string'&&/^[a-f0-9-]{36}$/i.test(data.requestId)?data.requestId:undefined;
@@ -67,7 +69,9 @@ export async function cloudRequest(path: string, method = 'GET', body?: unknown,
       size += value.byteLength; if (size > maximumBytes) { await reader.cancel(); throw new Error('INVALID_CLOUD_RESPONSE'); } chunks.push(value); }
   } finally { reader.releaseLock(); }
   const bytes = new Uint8Array(size); let offset = 0; for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.length; }
-  const value: unknown = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
+  let value: unknown;
+  try { value = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes)); }
+  catch { throw new Error('INVALID_CLOUD_RESPONSE'); }
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('INVALID_CLOUD_RESPONSE');
   return value as Record<string, unknown>;
 }

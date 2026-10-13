@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { requireReleasedMedia } from '../../scripts/audit/media-release-check.mjs';
+import { resolveWebBuildTarget } from '../../scripts/build/build-target.mjs';
 
 const webRoot = fileURLToPath(new URL('./', import.meta.url));
 const pagesApprovedFont: Plugin = { name: 'pages-approved-font', apply: 'build', generateBundle() {
@@ -21,14 +22,11 @@ const pagesApprovedFont: Plugin = { name: 'pages-approved-font', apply: 'build',
 // to behave exactly like `test`, skipping the audit with no signal. Recognise the
 // intended targets explicitly and reject anything else, so a misspelling is a
 // build error rather than an unlicensed bundle.
-const BUILD_TARGET = process.env.JIUXIAO_BUILD_TARGET ?? 'test';
+const BUILD_TARGET = resolveWebBuildTarget();
 // `release` audits the media receipts; `cloudflare-preview` packages via its own
 // approval-gated copier; `test` is the workspace/e2e bundle. Anything else — a
 // typo, an unknown CI variable — must fail rather than silently skip the gate.
-const KNOWN_TARGETS = new Set(['release', 'cloudflare-preview', 'test']);
-if (!KNOWN_TARGETS.has(BUILD_TARGET)) {
-  throw new Error(`Unknown JIUXIAO_BUILD_TARGET "${BUILD_TARGET}"; expected one of ${[...KNOWN_TARGETS].join(', ')}. Refusing to build without a recognised media-licence posture.`);
-}
+// Unknown targets and Pages test builds are rejected by the shared resolver.
 
 function requirePublicPreviewApi(raw: string | undefined) {
   // A frontend-only preview is allowed without a backend. The transport rejects
