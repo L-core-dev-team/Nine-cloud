@@ -26,7 +26,8 @@ export class SupabaseAuthService {
   constructor(private readonly pool: Pool, private readonly sessions: EmailAuthService,
     private readonly config: SupabaseAuthConfig, private readonly now = () => new Date()) {
     this.baseUrl = new URL(config.url);
-    if (this.baseUrl.protocol !== 'https:' || this.baseUrl.pathname !== '/' || this.baseUrl.search || this.baseUrl.hash) throw new Error('SUPABASE_URL must be an HTTPS project origin');
+    if (this.baseUrl.protocol !== 'https:' || this.baseUrl.username || this.baseUrl.password
+      || this.baseUrl.pathname !== '/' || this.baseUrl.search || this.baseUrl.hash) throw new Error('SUPABASE_URL must be an HTTPS project origin');
     if (!config.publishableKey.trim()) throw new Error('SUPABASE_PUBLISHABLE_KEY is required');
     if (!/^sb_secret_[A-Za-z0-9_-]{20,}$/.test(config.adminKey) && !/^eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(config.adminKey)) {
       throw new Error('SUPABASE_SECRET_KEY must be a Supabase secret key or legacy service_role JWT');
@@ -184,7 +185,11 @@ export class SupabaseAuthService {
     if (response.status === 400 || response.status === 401) return null;
     if (!response.ok) throw new AuthFailure('AUTH_PROVIDER_UNAVAILABLE', 'auth_verify');
     let result: VerifiedAuthResponse;
-    try { result = await response.json() as VerifiedAuthResponse; } catch { throw new AuthFailure('AUTH_PROVIDER_UNAVAILABLE', 'auth_verify'); }
+    try {
+      const value: unknown = await response.json();
+      if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Invalid verification response');
+      result = value as VerifiedAuthResponse;
+    } catch { throw new AuthFailure('AUTH_PROVIDER_UNAVAILABLE', 'auth_verify'); }
     const user = result.user;
     if (!user || typeof user.id !== 'string' || !/^[0-9a-f-]{36}$/i.test(user.id) || !isVerified(user, kind, destination)) return null;
     return { user };
@@ -194,7 +199,7 @@ export class SupabaseAuthService {
     try {
       return await fetch(new URL(path, this.baseUrl), { method: 'POST', headers: {
         apikey: this.config.publishableKey, 'content-type': 'application/json', accept: 'application/json',
-      }, body: JSON.stringify(body), signal: AbortSignal.timeout(10_000) });
+      }, body: JSON.stringify(body), redirect: 'error', signal: AbortSignal.timeout(10_000) });
     } catch { throw new AuthFailure('AUTH_PROVIDER_UNAVAILABLE', 'auth_request'); }
   }
 
@@ -206,7 +211,7 @@ export class SupabaseAuthService {
       return await fetch(new URL(path, this.baseUrl), { method, headers: {
         ...headers,
         ...(body === undefined ? {} : { 'content-type': 'application/json' }),
-      }, ...(body === undefined ? {} : { body: JSON.stringify(body) }), signal: AbortSignal.timeout(5_000) });
+      }, ...(body === undefined ? {} : { body: JSON.stringify(body) }), redirect: 'error', signal: AbortSignal.timeout(5_000) });
     } catch { throw new Error('SUPABASE_ADMIN_UNAVAILABLE'); }
   }
 
