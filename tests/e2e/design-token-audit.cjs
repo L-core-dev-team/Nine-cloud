@@ -3,6 +3,7 @@ const path = require('node:path');
 
 const root = path.resolve(__dirname, '../..');
 const files = [
+  'apps/web/src/design-system/tokens.css',
   'apps/web/src/style.css',
   'apps/web/src/components/liquid-glass.css',
   'apps/web/src/components/game-shell.css',
@@ -73,10 +74,10 @@ function lineAt(css, offset) {
 const problems = [];
 let checkedDeclarations = 0;
 
-const tokenSource = fs.readFileSync(path.join(root, 'apps/web/src/style.css'), 'utf8');
+const tokenSource = fs.readFileSync(path.join(root, 'apps/web/src/design-system/tokens.css'), 'utf8');
 for (const [name, expected] of requiredTokens) {
   const found = tokenSource.match(new RegExp(`${name}\\s*:\\s*([^;]+)`));
-  if (!found || found[1].trim() !== expected) problems.push(`apps/web/src/style.css root token ${name} must equal ${expected}`);
+  if (!found || found[1].trim() !== expected) problems.push(`apps/web/src/design-system/tokens.css root token ${name} must equal ${expected}`);
 }
 
 for (const relative of files) {
@@ -121,5 +122,5 @@ if (problems.length) {
   process.exitCode = 1;
 } else {
   console.log(`Design token audit passed: ${checkedDeclarations} product CSS declarations checked (typography, radii, spacing).`);
-  console.log('Scope: style.css, liquid-glass.css, game-shell.css. The isolated liquid-glass demo has its own scene-local tokens and is excluded.');
+  console.log(`Scope: ${files.join(', ')}. The isolated liquid-glass demo has its own scene-local tokens and is excluded.`);
 }

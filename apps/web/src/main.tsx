@@ -11,7 +11,8 @@ import { CHARACTER_OPTIONS } from './character-options';
 import { CloudSettings } from './routes/CloudSettings';
 import { TurnWorkspace } from './routes/TurnWorkspace';
 import { INTERNAL_TURN_WORKSPACE_ENABLED } from './internal-turn-workspace';
-import { MountainGateScene } from './scene';
+import { Landing } from './pages/Landing/Landing';
+import { GlassHeader } from './components/GlassHeader';
 import { startSyntheticWaterAmbience, type AmbientAudioHandle } from './ambient-audio';
 import { DEFAULT_GRAPHICS_SETTINGS, loadGraphicsSettings, saveGraphicsSettings, type GraphicsSettings } from './graphics-settings';
 import { GraphicsSettingsPage } from './routes/GraphicsSettings';
@@ -24,6 +25,7 @@ import type { SaveCommitResult } from './idb';
 import { mediaUrlForBrowser } from './media-compat';
 import { CloudHttpError, cloudRequest } from './cloud-sync';
 import { CloudGame } from './routes/CloudGame';
+import './design-system/tokens.css';
 import './style.css';
 import './components/liquid-glass.css';
 import { LiquidGlass, LiquidGlassFilters } from './components/LiquidGlass';
@@ -123,7 +125,6 @@ function Shell({ children, saves, notice, noticeAction, theme, onThemeChange, on
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [menu]);
-  const themeLabel = theme === 'night' ? '夜色' : '晴昼';
   const nextThemeLabel = theme === 'night' ? '晴昼' : '夜色';
   const themeAction = () => { onThemeChange(); setMenu(false); };
   const isLanding = route() === '/';
@@ -140,7 +141,7 @@ function Shell({ children, saves, notice, noticeAction, theme, onThemeChange, on
     '--jx-gate-poster': `url("${mediaUrlForBrowser(gatePoster)}")`,
     '--jx-paper-texture': `url("${mediaUrlForBrowser(paperTexture)}")`,
   } as CSSProperties;
-  return <><LiquidGlassFilters /><div className={isLanding ? 'jx-shell landing-shell' : 'jx-shell'} style={backgroundStyle}>{showSkipLink && <a className="skip-to-content" href="#main-content" onClick={event => { event.preventDefault(); document.getElementById("main-content")?.focus(); }}>跳到主要内容</a>}<SceneAtmosphere sceneId={sceneId} theme={theme} settings={graphicsSettings} /><LiquidGlass as="header" variant="regular"><button className="brand" onClick={() => go('/')}>踏月过山门，天地任君行。</button>{showNavigation && <nav><button onClick={() => go('/lobby')}>山门</button><button onClick={() => go('/world')}>世界设定</button><button onClick={() => go('/settings/ai')}>AI 设置</button><button onClick={() => go('/settings/graphics')}>画面与声音</button><button onClick={() => go('/settings/cloud')}>账号与云档</button></nav>}<div className="header-tools"><button className={`ambient-toggle${ambientAudioActive ? ' is-active' : ''}`} aria-pressed={ambientAudioActive} onClick={onToggleAmbientAudio}>{ambientAudioActive ? '水声已启' : '启水声'}</button><button className="theme-toggle" aria-label={`切换到${nextThemeLabel}配色`} onClick={onThemeChange}>{themeLabel}</button><button className="menu" aria-expanded={menu} onClick={() => setMenu(open => !open)}>菜单</button></div></LiquidGlass>{menu && <div className="menu-overlay" aria-hidden="true" onClick={() => setMenu(false)} />}{menu && <LiquidGlass as="aside" variant="regular"><strong>{saves.length ? `${saves.length} 份本地存档` : '暂无存档'}</strong>{showNavigation && <><button onClick={() => { setMenu(false); go('/lobby'); }}>回到山门</button><button onClick={() => { setMenu(false); go('/new'); }}>新开一局</button><button onClick={() => { setMenu(false); go('/world'); }}>阅读世界设定</button><button onClick={() => { setMenu(false); go('/settings/ai'); }}>AI 设置</button><button onClick={() => { setMenu(false); go('/settings/graphics'); }}>画面与声音</button><button onClick={() => { setMenu(false); go('/settings/cloud'); }}>账号与云档</button></>}<button onClick={() => { setMenu(false); onExport(); }}>导出存档</button><button onClick={themeAction}>切换到{nextThemeLabel}配色</button><label>导入旧档 / JSON<input type="file" accept=".json,.txt,.html,.htm" onChange={event => { const file = event.target.files?.[0]; if (file) { setMenu(false); onImport(file); } event.currentTarget.value = ''; }} /></label></LiquidGlass>}{notice && <p className="notice" role="status">{notice} {noticeAction}</p>}<main id={showSkipLink ? "main-content" : undefined} tabIndex={showSkipLink ? -1 : undefined}>{children}</main><footer><span>本地优先 · API 密钥不写入存档</span><span>契约 v{SAVE_SCHEMA_VERSION}</span><nav className="footer-legal" aria-label="法律与反馈"><a href="/privacy">隐私政策</a><a href="/privacy-rights">隐私权利</a><a href="/terms">用户协议</a><a href="/feedback">问题反馈</a></nav><span className="footer-ai-note">部分视觉素材由 AI 生成（《人工智能生成合成内容标识办法》标识）</span><FilingNotices /></footer></div></>;}
+  return <><LiquidGlassFilters /><div className={isLanding ? 'jx-shell landing-shell' : 'jx-shell'} style={backgroundStyle}>{showSkipLink && <a className="skip-to-content" href="#main-content" onClick={event => { event.preventDefault(); document.getElementById("main-content")?.focus(); }}>跳到主要内容</a>}<SceneAtmosphere sceneId={sceneId} theme={theme} settings={graphicsSettings} /><GlassHeader showNavigation={showNavigation} theme={theme} menuOpen={menu} ambientAudioActive={ambientAudioActive} onNavigate={go} onThemeChange={onThemeChange} onToggleMenu={() => setMenu(open => !open)} onToggleAmbientAudio={onToggleAmbientAudio} />{menu && <div className="menu-overlay" aria-hidden="true" onClick={() => setMenu(false)} />}{menu && <LiquidGlass as="aside" variant="regular"><strong>{saves.length ? `${saves.length} 份本地存档` : '暂无存档'}</strong>{showNavigation && <><button onClick={() => { setMenu(false); go('/lobby'); }}>回到山门</button><button onClick={() => { setMenu(false); go('/new'); }}>新开一局</button><button onClick={() => { setMenu(false); go('/world'); }}>阅读世界设定</button><button onClick={() => { setMenu(false); go('/settings/ai'); }}>AI 设置</button><button onClick={() => { setMenu(false); go('/settings/graphics'); }}>画面与声音</button><button onClick={() => { setMenu(false); go('/settings/cloud'); }}>账号与云档</button></>}<button onClick={() => { setMenu(false); onExport(); }}>导出存档</button><button onClick={themeAction}>切换到{nextThemeLabel}配色</button><label>导入旧档 / JSON<input type="file" accept=".json,.txt,.html,.htm" onChange={event => { const file = event.target.files?.[0]; if (file) { setMenu(false); onImport(file); } event.currentTarget.value = ''; }} /></label></LiquidGlass>}{notice && <p className="notice" role="status">{notice} {noticeAction}</p>}<main id={showSkipLink ? "main-content" : undefined} tabIndex={showSkipLink ? -1 : undefined}>{children}</main><footer><span>本地优先 · API 密钥不写入存档</span><span>契约 v{SAVE_SCHEMA_VERSION}</span><nav className="footer-legal" aria-label="法律与反馈"><a href="/privacy">隐私政策</a><a href="/privacy-rights">隐私权利</a><a href="/terms">用户协议</a><a href="/feedback">问题反馈</a></nav><span className="footer-ai-note">部分视觉素材由 AI 生成（《人工智能生成合成内容标识办法》标识）</span><FilingNotices /></footer></div></>;}
 
 function FilingNotices() {
   return (
@@ -159,10 +160,6 @@ function FilingNotices() {
       </a>
     </nav>
   );
-}
-
-function Landing({ saves }: { saves: LocalSave[] }) {
-  return <section className="hero"><div className="landing-copy"><span className="eyebrow">月下山门</span><h1 className="hero-mark">九霄</h1><p className="hero-deck">修途自此启程。</p><LiquidGlass as="button" type="button" variant="clear" className="portal-enter" onClick={() => go('/lobby')}><span>进入世界</span></LiquidGlass><LiquidGlass as="button" type="button" variant="clear" className="landing-read-save secondary" aria-label="读取存档" aria-describedby="landing-save-status" onClick={() => go('/saves')}><span>读取存档</span><small id="landing-save-status">{saves.length ? `已有 ${saves.length} 份本地存档` : '当前没有旧档'}</small></LiquidGlass></div><MountainGateScene /></section>;
 }
 
 function WorldHub({ saves }: { saves: LocalSave[] }) {
@@ -835,7 +832,7 @@ function App() {
       const branch = { ...stale, saveId: createSaveId(), name: `${stale.name}（冲突分支）`, createdAt: now, updatedAt: now };
       const result = await commitSaves(saves, [branch, ...saves]);
       setSaves(result.saves); if (result.ok && result.warning) setNotice(commitSuccessMessage(result, '冲突内容已另存为独立分支；原存档保持不变。')); return result.ok;
-    }} /> : <CloudGame saveId={decodeURIComponent(currentRoute.slice('/game/'.length))} onBack={() => go('/lobby')} onHome={() => go('/')} onLogin={() => go('/settings/cloud')} onWorld={() => go('/world')} /> : <Landing saves={saves} />;
+    }} /> : <CloudGame saveId={decodeURIComponent(currentRoute.slice('/game/'.length))} onBack={() => go('/lobby')} onHome={() => go('/')} onLogin={() => go('/settings/cloud')} onWorld={() => go('/world')} /> : <Landing saves={saves} onEnter={() => go('/lobby')} onReadSave={() => go('/saves')} />;
   const migrationAction = legacyText ? <button className="notice-action" onClick={migrateLegacyLibrary}>下载原文备份并迁移</button> : undefined;
   const storageNotice = indexedDbReady ? notice : `${notice} IndexedDB 回退模式。`;
   const activeScene = scenePreview ?? (game ? sceneForLocation(game.location) : 'mountain-gate');

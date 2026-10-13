@@ -1,0 +1,105 @@
+/* Shared primitives, semantic materials, and component aliases. */
+:root {
+  color-scheme: dark;
+  font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Noto Serif CJK SC', 'Songti SC', serif;
+  color: #eee8df;
+  background: #07121e;
+  --line: rgba(224, 213, 204, 0.2);
+  --muted: #a4afba;
+  --accent: #bdcad7;
+  --panel: rgba(9, 24, 38, 0.86);
+  --jx-surface-opaque: #0b1b29;
+  --jx-glass-clear-fill: linear-gradient(135deg, rgba(16, 39, 57, 0.085), rgba(48, 83, 105, 0.035) 52%, rgba(13, 29, 44, 0.075));
+  --jx-glass-control-fill: linear-gradient(135deg, rgba(193, 222, 239, 0.15), rgba(21, 48, 68, 0.1) 54%, rgba(6, 20, 32, 0.22));
+  --jx-glass-control-hover-fill: linear-gradient(135deg, rgba(222, 240, 249, 0.24), rgba(46, 82, 104, 0.16) 54%, rgba(13, 32, 47, 0.25));
+  --jx-glass-overlay-fill: linear-gradient(138deg, rgba(12, 29, 43, 0.86), rgba(5, 15, 25, 0.82) 58%, rgba(11, 24, 37, 0.86));
+  --jx-glass-header-fill: linear-gradient(112deg, rgba(16, 34, 49, 0.68), rgba(5, 14, 23, 0.58) 52%, rgba(11, 24, 37, 0.66));
+  --jx-glass-selected-fill: linear-gradient(128deg, rgba(214, 199, 147, 0.2), rgba(145, 160, 148, 0.1) 55%, rgba(186, 205, 214, 0.08));
+  --jx-glass-rim: rgba(218, 235, 244, 0.36);
+  --jx-glass-rim-strong: rgba(238, 247, 251, 0.68);
+  --jx-glass-highlight: rgba(255, 255, 255, 0.42);
+  --jx-glass-shadow: 0 10px 28px rgba(3, 10, 17, 0.2);
+  --jx-glass-glow: rgba(177, 214, 234, 0.2);
+  /* Primitive tokens. */
+  --jx-space-1: 4px;
+  --jx-space-2: 8px;
+  --jx-space-3: 12px;
+  --jx-space-4: 16px;
+  --jx-space-5: 24px;
+  --jx-space-6: 32px;
+  --jx-space-7: 48px;
+  --jx-space-8: 64px;
+  --jx-space-optical-1: 1px;
+  --jx-space-optical-2: 2px;
+  --jx-space-dialog-close-clearance: calc(var(--jx-space-8) + var(--jx-space-2));
+  --jx-dialog-safe-area-tail: calc(var(--jx-space-3) + var(--jx-space-optical-1));
+  --jx-page-wide-inset: max(18px, calc((100vw - 1180px) / 2));
+  --jx-reading-list-indent: 1.2em;
+  --jx-dialog-close-overlap: 50px;
+  --jx-atlas-dialog-close-overlap: 46px;
+  --jx-ai-actionbar-clearance: 225px;
+  --jx-worldbook-anchor-offset: 84px;
+  --jx-space-page-tail: var(--jx-space-8);
+  --jx-radius-small: 4px;
+  --jx-radius-control: 8px;
+  --jx-radius-card: 12px;
+  --jx-radius-panel: 16px;
+  --jx-radius-pill: 999px;
+  --jx-type-caption: 0.75rem;
+  --jx-type-small: 0.875rem;
+  --jx-type-body: 1rem;
+  /* Keep touch inputs at Safari's no-auto-zoom floor while scaling with larger root text. */
+  --jx-type-input-min: max(1rem, 16px);
+  --jx-type-lead: 1.125rem;
+  --jx-type-subhead: 1.25rem;
+  --jx-type-section: 1.5rem;
+  --jx-type-page: 2rem;
+  --jx-type-display: 2.5rem;
+  --jx-type-dialog-title-fluid: clamp(1.35rem, 3vw, 1.85rem);
+  --jx-type-ai-title-fluid: clamp(2.25rem, 4.4vw, 3.25rem);
+  --jx-type-hero-fluid: clamp(3rem, 6vw, 6rem);
+  --jx-type-hero-mobile: clamp(2.5rem, 12vw, 4rem);
+  --jx-type-brand-fluid: clamp(6rem, 12vw, 9.5rem);
+  --jx-type-brand-mobile: clamp(5rem, 21vw, 7rem);
+  --jx-type-display-fluid: clamp(2rem, 5vw, 4rem);
+  --jx-type-display-compact: clamp(2.5rem, 5vw, 4rem);
+  --jx-type-story-fluid: clamp(1.5rem, 3vw, 2rem);
+  --jx-type-page-fluid: clamp(2rem, 4vw, 2.5rem);
+  --jx-type-mode-fluid: clamp(2rem, 4.5vw, 2.5rem);
+  --jx-type-reading-fluid: clamp(2rem, 5vw, 3rem);
+  --jx-type-section-fluid: clamp(1.25rem, 3vw, 2rem);
+  --jx-type-entry-fluid: clamp(1.25rem, 3vw, 2rem);
+  --jx-leading-ui: 1.5;
+  --jx-leading-reading: 1.9;
+  --jx-text-body: #dfe6e8;
+  --jx-text-secondary: #bac6cd;
+  --jx-text-muted: #aebbc3;
+  --jx-text-accent: #d8cda8;
+  /* Semantic and component aliases for player reading surfaces. */
+  --jx-reading-line-length: 38em;
+  --jx-reading-paragraph-gap: var(--jx-space-4);
+  --jx-reading-block-radius: var(--jx-radius-panel);
+  --jx-touch-target-min: 44px;
+}
+
+:root[data-theme='day'] {
+  color-scheme: light;
+  color: #27323c;
+  background: #f2efe8;
+  --line: rgba(56, 65, 72, 0.2);
+  --muted: #65727c;
+  --accent: #637e93;
+  --panel: rgba(255, 253, 248, 0.92);
+  --jx-surface-opaque: #fffdf8;
+  --jx-glass-clear-fill: linear-gradient(135deg, rgba(255,255,255,0.13), rgba(222,237,245,0.06) 52%, rgba(255,255,255,0.11));
+  --jx-glass-control-fill: linear-gradient(135deg, rgba(255,255,255,0.42), rgba(232,239,240,0.25) 54%, rgba(210,225,231,0.23));
+  --jx-glass-control-hover-fill: linear-gradient(135deg, rgba(255,255,255,0.62), rgba(222,234,238,0.36) 54%, rgba(198,216,224,0.32));
+  --jx-glass-overlay-fill: linear-gradient(138deg, rgba(250,249,244,0.88), rgba(233,238,237,0.82) 58%, rgba(247,245,237,0.88));
+  --jx-glass-header-fill: linear-gradient(112deg, rgba(250,248,242,0.8), rgba(239,239,232,0.7) 52%, rgba(249,247,241,0.78));
+  --jx-glass-selected-fill: linear-gradient(128deg, rgba(178, 158, 104, 0.2), rgba(215, 222, 217, 0.38) 55%, rgba(255, 255, 255, 0.36));
+  --jx-glass-rim: rgba(57, 78, 91, 0.3);
+  --jx-glass-rim-strong: rgba(42, 64, 78, 0.58);
+  --jx-glass-highlight: rgba(255, 255, 255, 0.78);
+  --jx-glass-shadow: 0 10px 28px rgba(38, 55, 69, 0.16);
+  --jx-glass-glow: rgba(109, 143, 160, 0.2);
+}
