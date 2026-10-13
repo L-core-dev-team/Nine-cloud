@@ -773,6 +773,9 @@ async function ready(url) {
       await assertFrozenProfessionalStyles();
       if (width === 390) {
         await page.setViewportSize({ width: 360, height: 800 });
+        // The preceding visual contract restores stylesheet links and motion
+        // preferences. Wait for the resized layout before measuring overflow.
+        await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), await page.evaluate(() => document.documentElement.clientWidth), 'the narrow phone AI settings must not overflow horizontally');
         assert.equal(await page.locator('.ai-title').isVisible(), true);
         assert.equal(await page.locator('.provider-open').isVisible(), true);

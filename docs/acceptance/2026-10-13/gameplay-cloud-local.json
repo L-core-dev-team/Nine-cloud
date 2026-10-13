@@ -1,0 +1,32 @@
+{
+  "kind": "isolated-smtp-postgres-browser",
+  "viewports": [
+    [
+      390,
+      844
+    ],
+    [
+      430,
+      932
+    ],
+    [
+      393,
+      852
+    ]
+  ],
+  "checks": [
+    "SMTP login",
+    "offline queue survives reload",
+    "redacted archive roundtrip",
+    "two-account read refusal",
+    "two-device CAS conflict",
+    "restore preserves local original",
+    "redacted cloud download",
+    "soft deletion preserves local saves",
+    "verified backup restoration",
+    "full account export excludes credentials",
+    "old then new email proof",
+    "email change revokes other device session",
+    "new email login keeps same owner"
+  ]
+}

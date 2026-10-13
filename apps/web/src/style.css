@@ -1306,6 +1306,7 @@ body:has(.ai-page) header :is(.ambient-toggle, .theme-toggle, .menu):focus-visib
   .migration-consent small, .migration-footer > span, .comparison-link span,
   .provider-open small, .active-recipe small) { color: #283c49; }
 :root[data-theme='day'] .ai-page :is(.eyebrow, .role-index, .migration-seal) { color: #4c3d20; }
+:root[data-theme='day'] .ai-page .eyebrow { color: #403024; }
 :root[data-theme='day'] .ai-page .provider-open > span:first-child,
 :root[data-theme='day'] .ai-page .provider-open b { color: #283c49; background-color: #e4e9ec; }
 :root[data-theme='day'] .ai-page .preset-mark { color: #172a36; background: #e3e9ec; }
