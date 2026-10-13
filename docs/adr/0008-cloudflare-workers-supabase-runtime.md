@@ -46,3 +46,7 @@
 5. Supabase. “Send Emails with Custom SMTP.” *Supabase Docs*, [supabase.com/docs/guides/auth/auth-smtp](https://supabase.com/docs/guides/auth/auth-smtp). Accessed 6 Oct. 2026.
 6. Nodemailer. “SMTP Transport.” *Nodemailer*, [nodemailer.com/smtp](https://nodemailer.com/smtp). Accessed 6 Oct. 2026.
 7. Cloudflare. “Supabase.” *Cloudflare Workers Docs*, [developers.cloudflare.com/workers/databases/third-party-integrations/supabase](https://developers.cloudflare.com/workers/databases/third-party-integrations/supabase/). Accessed 6 Oct. 2026.
+
+## 2026-10-13 后续运行路线说明
+
+本 ADR 保留 2026-10-06 的实现决策与身份安全边界。后续 [2026-10-11 现场裁决](../acceptance/2026-10-11/部署路线A-B裁决材料.md)记录 LYL 选择 Pages + 境内 Node API，先 A 后 B；Bird 总路线复核仍待记录。当前部署执行说明以该后续裁决及 deployment/README.md 为准，Worker 仍是未接管完整玩法的候选实现。本文不新增批准、不代签、不代表任何生产切换已执行。

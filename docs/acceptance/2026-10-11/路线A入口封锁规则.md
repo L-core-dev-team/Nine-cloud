@@ -23,16 +23,41 @@
 [Caddyfile](../../../deployment/Caddyfile) 在 `reverse_proxy` 之前追加（**v2 名单**，修订原因见 §7）：
 
 ```caddyfile
+# 自动 HTTPS（Let's Encrypt），反代 API 并保留认证所需头
 api.jiuxiaogame.cn {
     encode zstd gzip
+
+    # 回合请求体较大，放宽上限。
+    # 注意：Caddyfile 的块起始 `{` 必须是该行最后一个 token，
+    # 单行写法 `request_body { max_size 8MB }` 会被适配器拒绝：
+    #   ERROR adapt/caddyfile: Unexpected next token after '{' on same line
+    # 那个错误让 Caddy 启动即退出（exit 1）并反复重启，
+    # 于是连 ACME 证书申请都不会开始，日志里只看得到 "Using config from file"。
     request_body {
         max_size 8MB
     }
 
-    # 路线 A 入口封锁 v2：账号写入/凭据签发端点显式 404；只读诊断不封锁。
-    # 升级路线 B 时删除本 @blocked 段并保留本文件历史记录。
+    # Keep edge-generated errors and proxy responses private.
+    header {
+        >Cache-Control no-store
+        X-Content-Type-Options nosniff
+        Referrer-Policy strict-origin-when-cross-origin
+        X-Frame-Options SAMEORIGIN
+        Strict-Transport-Security max-age=31536000
+    }
+
+    # After one URI decode, a remaining percent or backslash is ambiguous to
+    # downstream routers. Reject it rather than permitting nested decoding.
+    @ambiguous path_regexp [%\\]
+    respond @ambiguous 400
+
+    # 路线 A 入口封锁 v2（2026-10-11 裁决，docs/acceptance/2026-10-11/路线A入口封锁规则.md）：
+    # 账号写入/凭据签发端点在边缘显式 404（双防御第二层；第一层是 API 本身 AUTH_ENABLED=false）。
+    # v2 修订：只读诊断端点 /api/auth/session（auth 未挂载时 API 自身 404）与 /api/auth/providers
+    # 不封锁——保留 api-production-smoke 的 fail-closed 契约与状态诊断。
+    # 升级路线 B 时删除本 @blocked 段并按文档 §5 走解除流程。
     @blocked {
-        path /api/auth/guest /api/auth/guest/upgrade /api/auth/code /api/auth/refresh /api/auth/logout /api/auth/phone/* /api/account/*
+        path /api/auth/guest /api/auth/guest/* /api/auth/code /api/auth/code/* /api/auth/refresh /api/auth/refresh/* /api/auth/logout /api/auth/logout/* /api/auth/phone /api/auth/phone/* /api/account /api/account/*
     }
     respond @blocked 404
 
@@ -40,8 +65,25 @@ api.jiuxiaogame.cn {
         header_up Host {host}
         header_up Origin {header.Origin}
         header_up Cookie {header.Cookie}
-        header_down Access-Control-Allow-Origin {header.Origin}
+        # Direct API CORS is restricted to the public frontend origin. The
+        # Pages same-origin relay does not depend on a reflected CORS header.
+        header_down Access-Control-Allow-Origin https://play.jiuxiaogame.cn
+        transport http {
+            dial_timeout 5s
+            response_header_timeout 180s
+        }
     }
+    handle_errors {
+        header {
+            Cache-Control no-store
+            X-Content-Type-Options nosniff
+            Referrer-Policy strict-origin-when-cross-origin
+            X-Frame-Options SAMEORIGIN
+            Strict-Transport-Security max-age=31536000
+        }
+        respond "" {http.error.status_code}
+    }
+
 }
 ```
 
@@ -90,3 +132,7 @@ api.jiuxiaogame.cn {
 **配套代码变更**：Caddyfile、Pages Function 名单同步 v2；`api-production-smoke.mjs` 增加 `SMOKE_ROUTE_A=1` 变体（session 期望 404 + 封锁端点 404 断言），默认行为不变（CI 不受影响）。
 
 ——AI 代理执行（LYL 授权）+ Bird 复核代理，2026-10-11。
+
+## 2026-10-13 工程加固记录
+
+普通 Route A 被封锁路径继续为 404；存在残余编码或反斜杠的歧义路径可直接 400，两者均不转发。根 Pages middleware 覆盖未匹配到具体函数的 API 路径，_routes.json 同时包含 /api 与 /api/*。Caddy 固定允许 play origin、禁止缓存并覆盖上游故障。实际源码与 42 项本地运行验证见[恢复验收](../2026-10-13/环境方案恢复与模拟验收.md)。本记录不新增批准、不代表生产已应用修复。

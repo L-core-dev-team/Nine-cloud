@@ -1,5 +1,10 @@
 {
   "version": 1,
-  "include": ["/api/*", "/health", "/ready"],
+  "include": [
+    "/api",
+    "/api/*",
+    "/health",
+    "/ready"
+  ],
   "exclude": []
 }

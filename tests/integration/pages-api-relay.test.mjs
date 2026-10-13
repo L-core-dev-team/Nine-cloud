@@ -4,6 +4,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { proxyApiRequest, proxyHealthRequest } from '../../functions/_lib/api-proxy.mjs';
+import { onRequest as guardApiNamespace } from '../../functions/_middleware.js';
 
 const root = resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const simulationEnv = {
@@ -31,7 +32,8 @@ test('Pages Functions are in the project root and only configured routes invoke 
   const caddyfile = readFileSync(resolve(root, 'deployment/Caddyfile'), 'utf8');
   assert.deepEqual(Object.keys(routes).sort(), ['exclude', 'include', 'version']);
   assert.equal(routes.version, 1);
-  assert.deepEqual(routes.include, ['/api/*', '/health', '/ready']);
+  assert.deepEqual(routes.include, ['/api', '/api/*', '/health', '/ready']);
+  assert.ok(existsSync(resolve(root, 'functions/_middleware.js')));
   assert.deepEqual(routes.exclude, []);
   assert.ok(existsSync(resolve(root, 'functions/api/[[path]].js')));
   assert.ok(existsSync(resolve(root, 'functions/health.js')));
@@ -219,4 +221,47 @@ test('unreachable upstreams, previews, and unapproved origins fail closed withou
   assert.equal(nonLoopbackSimulation.status, 503);
   assert.equal((await nonLoopbackSimulation.json()).code, 'UPSTREAM_CONFIG_INVALID');
   assert.equal(calls, 1);
+});
+
+test('root middleware owns unmatched API paths instead of invoking the SPA fallback', async () => {
+  let calls = 0;
+  const next = () => { throw new Error('API request reached static fallback'); };
+  await withFetch(async () => {
+    calls += 1;
+    return Response.json({ code: 'NOT_FOUND' }, { status: 404 });
+  }, async () => {
+    for (const path of ['/api//auth/guest', '/api//account', '/api/auth//phone', '/api/%2Fauth/guest']) {
+      const response = await guardApiNamespace({ ...context(path), next });
+      assert.equal(response.status, 404, path);
+      assert.equal((await response.json()).code, 'ROUTE_A_BLOCKED', path);
+    }
+    assert.equal(calls, 0);
+    const root = await guardApiNamespace({ ...context('/api'), next });
+    assert.equal(root.status, 404);
+    assert.equal((await root.json()).code, 'NOT_FOUND');
+    assert.equal(calls, 1);
+  });
+});
+
+test('root middleware leaves static pages to their normal handler', async () => {
+  let calls = 0;
+  const fallback = new Response('synthetic static page');
+  for (const path of ['/', '/lobby', '/assets/app.js', '/apiculture']) {
+    const response = await guardApiNamespace({
+      ...context(path),
+      next: () => { calls += 1; return fallback; },
+    });
+    assert.equal(response, fallback);
+  }
+  assert.equal(calls, 4);
+});
+
+test('alternate ports on the API hostname are not approved production origins', async () => {
+  await withFetch(() => { throw new Error('unapproved origin was contacted'); }, async () => {
+    const response = await proxyApiRequest(context('/api/auth/session', {}, {
+      API_UPSTREAM_ORIGIN: 'https://api.jiuxiaogame.cn:8443',
+    }));
+    assert.equal(response.status, 503);
+    assert.equal((await response.json()).code, 'UPSTREAM_CONFIG_INVALID');
+  });
 });

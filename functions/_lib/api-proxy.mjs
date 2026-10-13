@@ -156,7 +156,7 @@ function resolveApiOrigin(env, requestHostname) {
     return url.origin;
   }
 
-  if (url.protocol !== 'https:' || url.hostname.toLowerCase() !== 'api.jiuxiaogame.cn') {
+  if (url.origin !== DEFAULT_API_ORIGIN) {
     throw new Error('UNAPPROVED_UPSTREAM_ORIGIN');
   }
   return url.origin;
