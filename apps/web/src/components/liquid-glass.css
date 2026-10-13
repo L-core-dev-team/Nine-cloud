@@ -172,7 +172,7 @@
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
 }
-.worldbook-categories button[aria-pressed='true'], .atlas-collections button[aria-pressed='true'], .world-view-switch button[aria-selected='true'] {
+.worldbook-categories button[aria-pressed='true'], .atlas-collections button[aria-pressed='true'], .world-view-switch button[aria-pressed='true'] {
   background: var(--jx-glass-selected-fill);
   border-color: var(--jx-glass-rim-strong);
   box-shadow: inset 0 1px 0 var(--jx-glass-highlight);

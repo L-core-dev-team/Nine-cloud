@@ -836,7 +836,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 .world-import { width: fit-content; margin: var(--jx-space-4) 0; }
 .world-view-switch { display: flex; gap: var(--jx-space-2); margin: var(--jx-space-5) 0 var(--jx-space-2); padding-bottom: var(--jx-space-3); border-bottom: 1px solid var(--line); }
 .world-view-switch button { display: inline-flex; align-items: center; gap: var(--jx-space-3); min-height: 48px; padding: var(--jx-space-2) var(--jx-space-4); color: #c3ccd3; background: transparent; border: 1px solid transparent; border-radius: var(--jx-radius-control); font: var(--jx-type-small) 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', serif; }
-.world-view-switch button[aria-selected='true'] { color: #f0e8df; background: #b9c8d112; border-color: #bdcad744; }
+.world-view-switch button[aria-pressed='true'] { color: #f0e8df; background: #b9c8d112; border-color: #bdcad744; }
 .world-view-switch small, .atlas-collections small { color: var(--muted); font: var(--jx-type-caption) system-ui; }
 .atlas-intro { display: grid; grid-template-columns: minmax(150px, 270px) 1fr; align-items: center; gap: clamp(16px, 3vw, 30px); max-width: 920px; margin: var(--jx-space-5) 0; overflow: hidden; color: #e6e2dc; background: linear-gradient(110deg, #0b1824df, #0b182477); border: 1px solid var(--line); border-radius: var(--jx-radius-panel); }
 .atlas-intro img { display: block; width: 100%; height: 112px; object-fit: cover; object-position: 43% 50%; }
@@ -877,7 +877,7 @@ button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visibl
 }
 :root[data-theme='day'] .jx-shell::after { opacity: 0.13; mix-blend-mode: multiply; }
 :root[data-theme='day'] .world-view-switch button { color: #526573; }
-:root[data-theme='day'] .world-view-switch button[aria-selected='true'] { color: #344550; background: #fffdf4a8; }
+:root[data-theme='day'] .world-view-switch button[aria-pressed='true'] { color: #344550; background: #fffdf4a8; }
 :root[data-theme='day'] .atlas-intro { color: #344550; background: linear-gradient(110deg, #f1ece5e8, #f1ece58c); }
 :root[data-theme='day'] .atlas-intro p, :root[data-theme='day'] .atlas-boundary { color: #596c77; }
 :root[data-theme='day'] .atlas-collections button { color: #394c58; background: #fffdf0ad; }
@@ -1291,7 +1291,7 @@ body:not(:has(.ai-page)) .menu, body:not(:has(.ai-page)) .ambient-toggle { borde
   background: #0b1b29;
   border-color: #b8c9d3;
 }
-.world-page .world-view-switch button[aria-selected='true'],
+.world-page .world-view-switch button[aria-pressed='true'],
 .world-page .worldbook-categories button[aria-pressed='true'],
 .world-page .atlas-collections button[aria-pressed='true'] {
   background: #284350;
@@ -1306,7 +1306,7 @@ body:not(:has(.ai-page)) .menu, body:not(:has(.ai-page)) .ambient-toggle { borde
   background: #faf9f4;
   border-color: #283c49;
 }
-:root[data-theme='day'] .world-page .world-view-switch button[aria-selected='true'],
+:root[data-theme='day'] .world-page .world-view-switch button[aria-pressed='true'],
 :root[data-theme='day'] .world-page .worldbook-categories button[aria-pressed='true'],
 :root[data-theme='day'] .world-page .atlas-collections button[aria-pressed='true'] {
   background: #dbe3e9;
@@ -1536,8 +1536,8 @@ body:has(.ai-page) header :is(.ambient-toggle, .theme-toggle, .menu):focus-visib
   border-color: var(--jx-glass-rim-strong);
   box-shadow: inset 0 1px 0 var(--jx-glass-highlight), 0 0 18px var(--jx-glass-glow);
 }
-.world-view-switch button[aria-selected='true'],
-:root[data-theme='day'] .world-view-switch button[aria-selected='true'] {
+.world-view-switch button[aria-pressed='true'],
+:root[data-theme='day'] .world-view-switch button[aria-pressed='true'] {
   background: var(--jx-glass-selected-fill);
   border-color: var(--jx-glass-rim);
   box-shadow: inset 0 1px 0 var(--jx-glass-highlight), 0 3px 12px rgba(3, 10, 17, 0.1);
@@ -1593,7 +1593,7 @@ body:has(.ai-page) header :is(.ambient-toggle, .theme-toggle, .menu):focus-visib
 /* Unsupported or reduced transparency switches every floating material to a
    dependable solid surface; no effect is required to operate any control. */
 @supports not (backdrop-filter: blur(1px)) {
-  :is(.jx-shell > header, .jx-shell > aside, .jx-shell > .notice, .ai-actionbar, .world-return-bar, .atlas-dialog, .dialog-actions, .glass-dialog, .scene-choice, .game-rail button, .game-tools button, .game-tools label, .worldbook-categories button, .world-view-switch button[aria-selected='true'], .atlas-collections button, .world-page .world-return-bar .secondary, .landing-shell .portal-enter, .landing-shell .landing-read-save, .jx-shell > header .ambient-toggle, .jx-shell > header .theme-toggle, .jx-shell > header .menu) {
+  :is(.jx-shell > header, .jx-shell > aside, .jx-shell > .notice, .ai-actionbar, .world-return-bar, .atlas-dialog, .dialog-actions, .glass-dialog, .scene-choice, .game-rail button, .game-tools button, .game-tools label, .worldbook-categories button, .world-view-switch button[aria-pressed='true'], .atlas-collections button, .world-page .world-return-bar .secondary, .landing-shell .portal-enter, .landing-shell .landing-read-save, .jx-shell > header .ambient-toggle, .jx-shell > header .theme-toggle, .jx-shell > header .menu) {
     background: var(--jx-surface-opaque) !important;
     border-color: var(--jx-glass-rim-strong);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
@@ -1606,7 +1606,7 @@ body:has(.ai-page) header :is(.ambient-toggle, .theme-toggle, .menu):focus-visib
   @media (max-width: 900px) { .game-rail { background: var(--jx-surface-opaque) !important; -webkit-backdrop-filter: none; backdrop-filter: none; } }
 }
 @media (prefers-reduced-transparency: reduce) {
-  :is(.jx-shell > header, .jx-shell > aside, .jx-shell > .notice, .ai-actionbar, .world-return-bar, .atlas-dialog, .dialog-actions, .glass-dialog, .scene-choice, .game-rail button, .game-tools button, .game-tools label, .worldbook-categories button, .world-view-switch button[aria-selected='true'], .atlas-collections button, .world-page .world-return-bar .secondary, .landing-shell .portal-enter, .landing-shell .landing-read-save, .jx-shell > header .ambient-toggle, .jx-shell > header .theme-toggle, .jx-shell > header .menu) {
+  :is(.jx-shell > header, .jx-shell > aside, .jx-shell > .notice, .ai-actionbar, .world-return-bar, .atlas-dialog, .dialog-actions, .glass-dialog, .scene-choice, .game-rail button, .game-tools button, .game-tools label, .worldbook-categories button, .world-view-switch button[aria-pressed='true'], .atlas-collections button, .world-page .world-return-bar .secondary, .landing-shell .portal-enter, .landing-shell .landing-read-save, .jx-shell > header .ambient-toggle, .jx-shell > header .theme-toggle, .jx-shell > header .menu) {
     background: var(--jx-surface-opaque) !important;
     border-color: var(--jx-glass-rim-strong);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
