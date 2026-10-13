@@ -261,7 +261,7 @@ async function runP7CatchUpSimulation(browser, origin) {
       lossLayerElapsedMinutes: 1440, continueRows: 1, forgettingRows: 0,
       retryKeptFrozenPlan: true, laterRetryConflictRejected: true,
       conflictRejected: true, tamperRejected: true,
-      databaseNames: ['jiuxiao-offline-continue-v3-candidate', 'jiuxiao-offline-forgetting-v3-candidate'],
+      databaseNames: ['jiuxiao-offline-continue-v4-candidate', 'jiuxiao-offline-forgetting-v4-candidate'],
     });
     return result;
   } finally { await context.close(); }

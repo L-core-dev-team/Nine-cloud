@@ -73,7 +73,7 @@ describe('P7 candidate offline evolution policy', () => {
   it('pins policy values and leaves the actual event allowlist closed pending trusted-host review', () => {
     expect(Object.isFrozen(P7_CANDIDATE_POLICY)).toBe(true);
     expect(P7_CANDIDATE_POLICY).toMatchObject({
-      version: 'p7-causal-offline-v3-candidate',
+      version: 'p7-causal-offline-v4-candidate',
       microWindowMinutes: 15, mainWindowEndMinutes: 720, opportunityWindowEndMinutes: 2880,
       rupturePressureThreshold: 3, renewableFloorBasisPoints: 2500, scarceFloorBasisPoints: 0,
     });
@@ -125,6 +125,23 @@ describe('P7 candidate offline evolution policy', () => {
     expect(firstOccurrenceAtFloor.environmentSettlements[0]?.outputs.map(item => item.quantityMicrounits)).toEqual([250_000, 0]);
   });
 
+  it('preserves exact microunits at the maximum accepted resource quantity', () => {
+    const maximum = { ...rain, resourceOutputs: rain.resourceOutputs.map(output => ({
+      ...output, quantityMicrounits: Number.MAX_SAFE_INTEGER,
+    })) };
+    const run = (minutes: number) => planP7OfflineCatchUp({
+      saveId: 'save', memoryMode: 'continue', checkpointId: 'c1',
+      checkpointRevision: 0, returnRevision: 0, checkpointGameMinute: 0, returnGameMinute: 0,
+      startedAtMs: 0, returnedAtMs: minutes * 60_000,
+      scheduledEvents: [{ eventId: maximum.eventId, occurrenceId: 'maximum', elapsedMinute: minutes }],
+      ruptures: [], allowlist: { [maximum.eventId]: maximum }, recentAuthorizedOnlineAction: false,
+    });
+    expect(run(30).environmentSettlements[0]?.outputs.map(output => output.quantityMicrounits))
+      .toEqual([Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]);
+    expect(run(2880).environmentSettlements[0]?.outputs.map(output => output.quantityMicrounits))
+      .toEqual([2_251_799_813_685_247, 0]);
+  });
+
   it('admits only listed reversible environment events without protagonist causality or branches', () => {
     const badEvents: P7EnvironmentEventDefinition[] = [
       { ...rain, eventClass: 'character' },
@@ -163,6 +180,30 @@ describe('P7 candidate offline evolution policy', () => {
     expect(result.environmentSettlements.map(item => item.occurrenceId)).toEqual(['long-1a', 'long-2']);
     expect(result.rejectedOccurrences.map(item => item.reason)).toContain('long-window-frequency-budget');
     expect(result.rejectedOccurrences.map(item => item.reason)).toContain('long-window-requires-low-frequency-high-weight');
+  });
+
+  it('accounts for every long-window occurrence when a later representative replaces an earlier one', () => {
+    const definitions = ['test:z-scene', 'test:m-scene', 'test:a-scene'].map(eventId => ({ ...rain, eventId }));
+    const scheduled = definitions.map((definition, index) => ({
+      eventId: definition.eventId, occurrenceId: `long-replaced-${index}`, elapsedMinute: 800 + index * 100,
+    }));
+    const run = (events: typeof scheduled) => planP7OfflineCatchUp({
+      saveId: 'save', memoryMode: 'continue', checkpointId: 'c1',
+      checkpointRevision: 0, returnRevision: 0, checkpointGameMinute: 0, returnGameMinute: 0,
+      startedAtMs: 0, returnedAtMs: 1200 * 60_000, scheduledEvents: events, ruptures: [],
+      allowlist: Object.fromEntries(definitions.map(definition => [definition.eventId, definition])),
+      recentAuthorizedOnlineAction: false,
+    });
+    for (const events of [scheduled, [...scheduled].reverse()]) {
+      const result = run(events);
+      expect(result.environmentSettlements.map(item => item.occurrenceId)).toEqual(['long-replaced-2']);
+      expect(result.rejectedOccurrences).toEqual([
+        { occurrenceId: 'long-replaced-0', reason: 'long-window-frequency-budget' },
+        { occurrenceId: 'long-replaced-1', reason: 'long-window-frequency-budget' },
+      ]);
+      const accounted = [...result.environmentSettlements, ...result.rejectedOccurrences].map(item => item.occurrenceId);
+      expect(accounted.sort()).toEqual(scheduled.map(item => item.occurrenceId).sort());
+    }
   });
 
   it('shows at most one critical rupture and applies N=3 pressure downgrade plus conservative overflow release', () => {
@@ -245,6 +286,7 @@ describe('P7 candidate offline evolution policy', () => {
     const frozenId = p7CatchUpId('save', 'continue', 'c1');
     expect(p7CatchUpId('save', 'continue', 'c1')).toBe(frozenId);
     expect(p7CatchUpId('save', 'continue', 'c1', 'p7-causal-offline-v2-candidate')).not.toBe(frozenId);
+    expect(p7CatchUpId('save', 'continue', 'c1', 'p7-causal-offline-v3-candidate')).not.toBe(frozenId);
     expect(p7CatchUpId('save', 'continue', 'c2')).not.toBe(frozenId);
     expect(p7CatchUpId('save', 'forgetting', 'c1')).not.toBe(frozenId);
     const firstPlan = plan(24 * 60);

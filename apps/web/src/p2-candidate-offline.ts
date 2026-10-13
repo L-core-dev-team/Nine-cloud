@@ -11,7 +11,7 @@ export type P7EventWeight = 'normal' | 'high';
  * independently reviewed, trusted-host allowlist is supplied.
  */
 export const P7_CANDIDATE_POLICY = deepFreeze({
-  version: 'p7-causal-offline-v3-candidate',
+  version: 'p7-causal-offline-v4-candidate',
   microWindowMinutes: 15,
   mainWindowEndMinutes: 12 * 60,
   opportunityWindowEndMinutes: 48 * 60,
@@ -483,8 +483,10 @@ function selectScheduledOccurrences(
     const current = bucketWinners.get(bucket);
     if (!current || compareText(candidate.definition.eventId, current.definition.eventId) < 0
       || (candidate.definition.eventId === current.definition.eventId
-        && compareText(candidate.schedule.occurrenceId, current.schedule.occurrenceId) < 0)) bucketWinners.set(bucket, candidate);
-    else rejected.push({ occurrenceId: candidate.schedule.occurrenceId, reason: 'long-window-frequency-budget' });
+        && compareText(candidate.schedule.occurrenceId, current.schedule.occurrenceId) < 0)) {
+      if (current) rejected.push({ occurrenceId: current.schedule.occurrenceId, reason: 'long-window-frequency-budget' });
+      bucketWinners.set(bucket, candidate);
+    } else rejected.push({ occurrenceId: candidate.schedule.occurrenceId, reason: 'long-window-frequency-budget' });
   }
   const accepted = [...main, ...bucketWinners.values()].sort((left, right) => left.schedule.elapsedMinute - right.schedule.elapsedMinute
     || compareText(left.schedule.occurrenceId, right.schedule.occurrenceId));
@@ -496,8 +498,10 @@ function selectScheduledOccurrences(
       elapsedMinute: schedule.elapsedMinute,
       outputs: definition.resourceOutputs.map(output => ({
         ...output,
-        quantityMicrounits: Math.floor(output.quantityMicrounits
-          * (output.resourceClass === 'renewable' ? multiplier.renewable : multiplier.scarce) / 10_000),
+        // Accepted quantities are safe integers, but multiplying them by a
+        // basis-point multiplier can leave that range before division.
+        quantityMicrounits: Number(BigInt(output.quantityMicrounits)
+          * BigInt(output.resourceClass === 'renewable' ? multiplier.renewable : multiplier.scarce) / 10_000n),
       })),
       ...(definition.capsule ? { capsuleTemplate: structuredClone(definition.capsule) } : {}),
     };
