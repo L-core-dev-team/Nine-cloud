@@ -12,16 +12,15 @@ const root = resolve(__dirname, '../..');
 const output = join(root, 'test-results/ui-final');
 let server;
 
-async function startPreview() {
+async function startDevServer() {
   if (process.env.UI_BASE_URL) return process.env.UI_BASE_URL;
-  assert.ok(existsSync(join(root, 'apps/web/dist/index.html')), 'Run pnpm build first');
   const port = await new Promise(resolvePort => {
     const socket = net.createServer().listen(0, '127.0.0.1', () => {
       const port = socket.address().port;
       socket.close(() => resolvePort(port));
     });
   });
-  server = spawn(process.execPath, [join(root, 'apps/web/node_modules/vite/bin/vite.js'), 'preview', '--host', '127.0.0.1', '--port', String(port), '--strictPort'], {
+  server = spawn(process.execPath, [join(root, 'apps/web/node_modules/vite/bin/vite.js'), 'dev', '--host', '127.0.0.1', '--port', String(port), '--strictPort'], {
     cwd: join(root, 'apps/web'), windowsHide: true, stdio: 'pipe',
   });
   server.stderr.on('data', chunk => process.stderr.write(chunk));
@@ -30,7 +29,7 @@ async function startPreview() {
     try { if ((await fetch(url)).ok) return url; } catch {}
     await new Promise(resolveWait => setTimeout(resolveWait, 100));
   }
-  throw new Error('Liquid Glass preview did not start');
+  throw new Error('Liquid Glass development server did not start');
 }
 
 function hash(bytes) { return createHash('sha256').update(bytes).digest('hex'); }
@@ -91,7 +90,7 @@ async function emulatePreferences(page, reducedTransparency = 'no-preference') {
 
 (async () => {
   mkdirSync(output, { recursive: true });
-  const base = await startPreview();
+  const base = await startDevServer();
   const edge = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
   const executablePath = process.env.PLAYWRIGHT_BROWSER_EXECUTABLE || (existsSync(edge) ? edge : undefined);
   const browser = await chromium.launch(executablePath ? { executablePath } : {});

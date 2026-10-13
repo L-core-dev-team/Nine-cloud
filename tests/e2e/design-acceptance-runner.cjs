@@ -1,15 +1,27 @@
 #!/usr/bin/env node
 const { spawn } = require('node:child_process');
 const { existsSync } = require('node:fs');
+const net = require('node:net');
 const { join, resolve } = require('node:path');
 const { chromium } = require('playwright');
 const { runDesignAcceptance } = require('./design-acceptance.cjs');
 
 const root = resolve(__dirname, '../..');
 const webRoot = join(root, 'apps/web');
-const webPort = 15174;
 const viteFile = join(webRoot, 'node_modules/vite/bin/vite.js');
 const children = [];
+
+function findAvailablePort() {
+  return new Promise((resolvePort, reject) => {
+    const probe = net.createServer();
+    probe.unref();
+    probe.once('error', reject);
+    probe.listen(0, '127.0.0.1', () => {
+      const address = probe.address();
+      probe.close(error => error ? reject(error) : resolvePort(address.port));
+    });
+  });
+}
 
 async function ready(url) {
   for (let attempt = 0; attempt < 100; attempt++) {
@@ -21,6 +33,7 @@ async function ready(url) {
 
 (async () => {
   assertBuild();
+  const webPort = await findAvailablePort();
   const server = spawn(process.execPath, [viteFile, 'preview', '--host', '127.0.0.1', '--port', String(webPort), '--strictPort'], {
     cwd: webRoot, stdio: 'inherit', windowsHide: true,
   });

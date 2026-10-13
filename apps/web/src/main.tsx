@@ -27,7 +27,6 @@ import { CloudGame } from './routes/CloudGame';
 import './style.css';
 import './components/liquid-glass.css';
 import { LiquidGlass, LiquidGlassFilters } from './components/LiquidGlass';
-import { LiquidGlassDemo } from './components/LiquidGlassDemo';
 
 const fields = [
   ['name', '姓名', '可留空，由你在提交前确认'], ['age', '年龄', '例如：18 或未知'],
@@ -846,4 +845,11 @@ function App() {
 
 const root = document.getElementById('root');
 if (!root) throw new Error('Missing root');
-createRoot(root).render(route() === '/__liquid-glass' ? <LiquidGlassDemo /> : <App />);
+const initialRoute = route();
+if (import.meta.env.DEV && initialRoute === '/__liquid-glass') {
+  const LiquidGlassDemo = lazy(() => import('./components/LiquidGlassDemo').then(module => ({ default: module.LiquidGlassDemo })));
+  createRoot(root).render(<Suspense fallback={null}><LiquidGlassDemo /></Suspense>);
+} else {
+  if (initialRoute === '/__liquid-glass') history.replaceState(history.state, '', '/');
+  createRoot(root).render(<App />);
+}

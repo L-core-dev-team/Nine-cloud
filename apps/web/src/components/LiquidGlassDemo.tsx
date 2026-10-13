@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { LiquidGlass, LiquidGlassFilters } from './LiquidGlass';
+import './liquid-glass-demo.css';
 
 const filterReference = 'url(#jx-liquid-glass-refract)';
 
