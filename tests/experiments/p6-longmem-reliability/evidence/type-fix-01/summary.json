@@ -1,0 +1,10 @@
+{
+  "node": "v24.19.0",
+  "results": [
+    {
+      "label": "typescript",
+      "status": 0,
+      "error": null
+    }
+  ]
+}
