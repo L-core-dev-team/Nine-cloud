@@ -23,7 +23,11 @@ export function supports(c:Conditions,text:string):boolean {
  if(c.landing){
   // Bind object and positive physical landing to the same local clause.
   const clauses=canonical.split(/[。！？；，,;:\n]/u);
-  return clauses.some(p=>hasGroundLanding(p)&&c.objects.every(o=>p.includes(o)));
+  return clauses.some(p=>hasGroundLanding(p)&&c.objects.every(o=>{
+   // A second object in the same punctuation-free clause is not the landing subject.
+   const prefixes=p.split('落地').slice(0,-1);
+   return prefixes.some(prefix=>{const local=prefix.split(/而|但是|却|不过|至于/u).at(-1)!.replace(/(?:忽然|突然|轻轻|缓缓|意外|终于|一起|一同|同时|失手|猛然)+$/u,'');return local.split(/和|与|及/u).some(subject=>subject.endsWith(o));});
+  }));
  }
  return c.objects.every(o=>canonical.includes(lexicalForm(o)));
 }

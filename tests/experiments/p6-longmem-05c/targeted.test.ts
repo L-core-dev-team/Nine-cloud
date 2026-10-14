@@ -21,6 +21,8 @@ const cases:[string,string,string,boolean][]=[
  ['physical landing','测试阁里，棋子落在地上弹了两下。','测试阁落地棋子的声音出现在哪里？',true],
  ['other object landing','测试阁里，木珠掉到地上弹了一下。','测试阁落地木珠的声音出现在哪里？',true],
  ['same sentence other object','测试阁里，棋子留在桌上，木珠落在地上发出声响。','测试阁落地棋子的声音出现在哪里？',false],
+ ['unpunctuated other object','测试阁里棋子在桌上而木珠落在地上发出声响。','测试阁落地棋子的声音出现在哪里？',false],
+ ['coordinated real objects','测试阁里棋子和木珠一起落在地上弹了一下。','测试阁落地棋子的声音出现在哪里？',true],
  ['negation and other object','测试阁里，棋子没有落地，木珠落地发出声响。','测试阁落地棋子的声音出现在哪里？',false],
  ['metaphor','测试阁里，棋子的清点计划终于落地，讨论声很低。','测试阁落地棋子的声音出现在哪里？',false],
  ['simile','测试阁里，棋子仿佛落地发出声响，实际上始终捏在手中。','测试阁落地棋子的声音出现在哪里？',false],

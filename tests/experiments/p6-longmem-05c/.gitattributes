@@ -4,3 +4,5 @@
 *.md text eol=lf
 evidence/**/*.log -text -whitespace
 fixtures/*.gz -text
+# Freeze manifest records raw working bytes, including the inherited CRLF copy.
+retrieval.ts -text
