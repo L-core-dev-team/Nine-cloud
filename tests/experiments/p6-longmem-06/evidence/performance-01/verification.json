@@ -1,0 +1,5 @@
+{
+  "abBaOutputsUnchanged": true,
+  "measurements": 8,
+  "method": "Fresh sequential processes; query includes same offline policy projection for every mode; OS/CPU/GC not pinned; samples are not a production SLO."
+}

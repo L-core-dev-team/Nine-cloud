@@ -1,0 +1,61 @@
+diff --git a/tests/experiments/p6-longmem-05c/retrieval.ts b/tests/experiments/p6-longmem-06/retrieval.ts
+index 4b21ab2..5314f05 100644
+--- a/tests/experiments/p6-longmem-05c/retrieval.ts
++++ b/tests/experiments/p6-longmem-06/retrieval.ts
+@@ -1,12 +1,14 @@
+ import {performance} from 'node:perf_hooks';
+ import {createHash} from 'node:crypto';
+-import {HardenedIndex,type ProofResult} from '../p6-longmem-hardening/retrieval.ts';
++import {HardenedIndex} from './typed.ts';
++import type {ProofResult} from '../p6-longmem-hardening/retrieval.ts';
+ import {estimateTokens,tokenMethod} from '../p6-longmem/retrieval.ts';
+ import type {Dataset,Query,Evidence,Source} from '../p6-longmem/types.ts';
+ import {facets,grams,normalize,words,proseIntent,temporalIntent} from '../p6-longmem-prose/intent.ts';
+-import {lexicalForm,concreteForm,hasGroundLanding} from './lexical.ts';
+-import {conditions,supports} from './conditions.ts';
+-export type Mode='fixed'|'conditions'|'event-time'|'evidence';
++import {lexicalForm,concreteForm,hasGroundLanding} from '../p6-longmem-05c/lexical.ts';
++import {conditions,supports} from '../p6-longmem-05c/conditions.ts';
++import {units,speakers} from './evidence.ts';
++export type Mode='fixed'|'conditions'|'event-time'|'evidence'|'boundary'|'sufficient';
+ 
+ export type OriginalSpan={sourceId:string;turnId:number;start:number;end:number;text:string;originalSha256:string;kind:'narrative-detail'|'character-claim';authority:'original-prose-only'|'unverified';factIds:string[]};
+ export type ProseResult=ProofResult & {originalSpans:OriginalSpan[];intent:{mode:'typed'|'prose';temporal:ReturnType<typeof temporalIntent>}};
+@@ -18,12 +20,14 @@ export class LexicalIndex {
+  readonly data:Dataset;
+  readonly typed:HardenedIndex;
+  readonly sentenceIndex:Map<string,{start:number;end:number;text:string;grams:Set<string>}[]>;
++ readonly dialogueIndex:Map<string,{start:number;end:number;text:string;grams:Set<string>}[]>;
+  readonly mode:Mode;
+- constructor(data:Dataset,mode:Mode='evidence',sentenceCache?:Map<string,{start:number;end:number;text:string;grams:Set<string>}[]>){
++ constructor(data:Dataset,mode:Mode='sufficient',sentenceCache?:Map<string,{start:number;end:number;text:string;grams:Set<string>}[]>){
+   this.mode=mode;
+   this.data=data;
+-  this.typed=new HardenedIndex(data);
++  this.typed=new HardenedIndex(data,mode==='boundary'?'boundary':'sufficient');
+   this.sentenceIndex=new Map(data.turns.map(s=>{const key=s.sourceId+':'+hash(s.narrative);let pieces=sentenceCache?.get(key);if(!pieces){pieces=[...s.narrative.matchAll(/[^。！？]+(?:[。！？][”」]?|$)/gu)].map(m=>({start:m.index!,end:m.index!+m[0].length,text:m[0],grams:grams(lexicalForm(m[0]))}));sentenceCache?.set(key,pieces);}return [s.sourceId,pieces];}));
++  this.dialogueIndex=new Map();
+  }
+  original(sourceId:string,q:Query){const s=this.typed.byId.get(sourceId);return s&&this.typed.visible(s,q)?structuredClone(this.typed.materialize(s,q,0)):undefined;}
+  search(q:Query,budget=1024,strategy:'historical'|'recent'='historical'):ProseResult{
+@@ -58,7 +62,10 @@ export class LexicalIndex {
+    if(!this.typed.visible(s,q))continue;
+    // Explicit identities are conjunctive; a known place/person is not sufficient evidence alone.
+    if(entities.length&&!entities.every(e=>e.kind==='person'?s.participants.includes(e.id):e.kind==='item'?s.items.includes(e.id):s.location===e.id||s.location===e.name||s.narrative.includes(e.name)))continue;
+-   const pieces=(this.sentenceIndex.get(s.sourceId)??[]).flatMap(p=>{
++   let sourcePieces=this.sentenceIndex.get(s.sourceId)??[];
++   if(requested.some(f=>f.name==='dialogue')){let saved=this.dialogueIndex.get(s.sourceId);if(!saved){saved=units(s.narrative).filter(p=>p.closed).map(p=>({start:p.start,end:p.end,text:p.text,grams:grams(lexicalForm(p.text))}));this.dialogueIndex.set(s.sourceId,saved);}sourcePieces=saved;}
++   const pieces=sourcePieces.flatMap(p=>{
++    if(requested.some(f=>f.name==='dialogue')&&entities.some(e=>e.kind==='person')){const actor=speakers(p.text,this.data),wanted=entities.filter(e=>e.kind==='person').map(e=>e.id);if(actor.length?!actor.some(id=>wanted.includes(id)):s.participants.length!==1)return [];}
+     const scoped=landingRequired||constraints.locations.length>0||constraints.weather!==null;
+     const active=this.mode==='fixed'?{...constraints,objects:landingRequired?constraints.objects:[],unsupported:false}:{...constraints,objects:scoped?constraints.objects:[]};
+     if(!supports(active,p.text))return [];
+@@ -93,7 +100,7 @@ export class LexicalIndex {
+    const prefix=`[${c.source.sourceId} turn=${c.source.turnId} type=${kind}; ${kind==='character-claim'?'unverified':'original-prose-only'}]`;
+    let full=context+(context?'\n\n':'')+prefix+'\n'+pieces.map(p=>p.text).join('');
+    // Retain the strongest whole sentence if optional neighboring evidence cannot fit.
+-   if(this.mode==='evidence'&&estimateTokens(full)>budget&&pieces.length>1){pieces=[c.pieces[0]!];full=context+(context?'\n\n':'')+prefix+'\n'+pieces[0]!.text;}
++   if(['evidence','boundary','sufficient'].includes(this.mode)&&estimateTokens(full)>budget&&pieces.length>1){pieces=[c.pieces[0]!];full=context+(context?'\n\n':'')+prefix+'\n'+pieces[0]!.text;}
+    if(estimateTokens(full)>budget){omittedSourceIds.push(c.source.sourceId);continue;}
+    context=full;roles[c.source.sourceId]='direct';evidence.push({...c.source,facts:[],factStates:[]});
+    for(const p of pieces)spans.push({sourceId:c.source.sourceId,turnId:c.source.turnId,start:p.start,end:p.end,text:p.text,originalSha256:hash(c.source.narrative),kind,authority:kind==='character-claim'?'unverified':'original-prose-only',factIds:[]});
