@@ -1,0 +1,25 @@
+{
+  "baseline": "cb4fb64bd82ae13e892df35c24cacb6a53bf2536",
+  "protectedInputs": [
+    {
+      "path": "tests/experiments/p6-longmem-lexical/lexical.ts",
+      "sha256": "906fe66311eefe5b39344a4b3f8d6a09bd7296600b777717503b8591cd980af1"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/retrieval.ts",
+      "sha256": "448889d700786480396bf17abcc1720e421e30d505dfd61d949fa526d95df8a9"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/compatibility.test.ts",
+      "sha256": "d50aaa557f915346b54dbb5edfee85ca885fc063400b903fbab345a84aed1f10"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-prose/fixtures/history-1000.json",
+      "sha256": "2963dc2589b6f56a4de0fe3dee2ee01a70ae0c2a6a33325de88acd75ad302414"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-prose/fixtures/holdout.json",
+      "sha256": "2c7e89694f28269cf9fbc92157db475a9c93a25aff6952612bab033d93cec033"
+    }
+  ]
+}
