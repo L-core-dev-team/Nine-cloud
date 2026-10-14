@@ -1,0 +1,37 @@
+(node:30940) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/Users/11954/Desktop/%E6%B0%B4%E9%BE%99%E5%90%9F%E4%B8%93%E7%94%A8/%E9%A1%B9%E7%9B%AE/Nine-cloud-P6-longmem-06-20261014/tests/experiments/p6-longmem-06/legacy-targeted.test.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-P6-longmem-06-20261014\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ ear flower (10.7258ms)
+✔ waist flower is not ear (0.8193ms)
+✔ collar ornament is not ear (0.625ms)
+✔ waist location (0.7387ms)
+✔ collar location (0.6588ms)
+✔ absent ornament (0.4515ms)
+✔ unknown ornament (0.6521ms)
+✔ rain smell (0.8652ms)
+✔ rain synonym (0.7135ms)
+✔ sunny smell (1.1571ms)
+✔ sunny not rain (0.4407ms)
+✔ no smell (1.194ms)
+✔ weather and smell separate sentences (0.4174ms)
+✔ two weather conditions (0.5501ms)
+✔ physical landing (1.0411ms)
+✔ other object landing (0.6418ms)
+✔ same sentence other object (0.4895ms)
+✔ unpunctuated other object (0.4469ms)
+✔ coordinated real objects (0.7198ms)
+✔ negation and other object (0.9428ms)
+✔ metaphor (0.4621ms)
+✔ simile (0.4679ms)
+✔ explicit negative query abstains (0.3749ms)
+✔ historical three failures at all budgets, using frozen gold only in evaluator (62.4461ms)
+✔ same original and search permission, future boundary and intact budget refusal (0.6063ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 248.7614

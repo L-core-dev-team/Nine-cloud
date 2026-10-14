@@ -4,7 +4,7 @@ const sha=(s:string)=>createHash('sha256').update(s).digest('hex');
 export function scenarioWorld(count:number,suite:'development'|'blind',seed:string){
  if(![1000,3000,10000].includes(count))throw Error('Staged sizes');let rng=parseInt(sha(seed).slice(0,8),16)>>>0;const next=()=>rng=(Math.imul(rng,1664525)+1013904223)>>>0;
  const data:Dataset&{aliasSince:Record<string,Record<string,number>>;evidenceBindings:Record<string,any>;knowledgeWindows:Record<string,Record<string,any>>}={schemaVersion:1,synthetic:true,entities:[],turns:[],aliasSince:{},evidenceBindings:{},knowledgeWindows:{}};
- const ledger:any[]=[],questions:any[]=[],anchors=new Map<number,Source>();const roots=suite==='blind'?['薛枫','彭芸','姚柯','孔芷']:['林桐','陆荷','岑棠','苏芩'];const bg=['抄录者逐页核对账册，提醒旧记录必须保留前后语境，不应只摘相似的字眼。','旅人讨论修补屋檐的顺序，交还借用的灯，守门人检查了榫眼和尺寸。','学徒各自整理长途行路札记，标注岔路与补给，决定翌日实地查验。','坐席重排之后，来客描述沿途水位，书记把未核实的捷径单独记下。'];
+ const ledger:any[]=[],questions:any[]=[],anchors=new Map<number,Source>();const roots=suite==='blind'?Array.from({length:4},()=>{const family='赵钱孙李周吴郑王冯陈褚卫蒋沈韩杨',given='枫芸柯芷槐榆汀芦苓蕙霜苇';return family[next()%family.length]!+given[next()%given.length]!+given[next()%given.length]!;}):['林桐','陆荷','岑棠','苏芩'];const bg=['抄录者逐页核对账册，提醒旧记录必须保留前后语境，不应只摘相似的字眼。','旅人讨论修补屋檐的顺序，交还借用的灯，守门人检查了榫眼和尺寸。','学徒各自整理长途行路札记，标注岔路与补给，决定翌日实地查验。','坐席重排之后，来客描述沿途水位，书记把未核实的捷径单独记下。'];
  const background=(t:number)=>Array.from({length:7},(_,j)=>`合成${t}回${j}记：${bg[next()%bg.length]}验点${next()%997}、簿页${t*19+j}。`).join('');
  const turn=(i:number,p:number)=>Math.floor((p*8+i+1)*(count-1)/90)+1;
  function fact(id:string,subject:string,predicate:string,value:string,kind:Fact['kind']='world-event',supersedes?:string):Fact{return {id,subject,predicate,value,kind,validFrom:1,...(supersedes?{supersedes}:{})};}
@@ -15,7 +15,7 @@ export function scenarioWorld(count:number,suite:'development'|'blind',seed:stri
  for(let i=0;i<8;i++){
   const base=roots[Math.floor(i/2)]!,a=`${i%2?'南院':'北院'}${i+1}${base}`,b=`${i%2?'北院':'南院'}${i+1}${base}`,v=`${suite==='blind'?'望潮':'观苇'}守卫${i+1}`,x=`${suite==='blind'?'听霜':'观芦'}客${i+1}`,item=`${suite==='blind'?'玄纹':'青纹'}法器${i+1}`;
   data.entities.push({id:`a${i}`,name:base,aliases:[a,`掌箓${a}`],kind:'person'},{id:`b${i}`,name:base,aliases:[b],kind:'person'},{id:`v${i}`,name:v,aliases:[],kind:'person'},{id:`x${i}`,name:x,aliases:[],kind:'person'},{id:`item${i}`,name:item,aliases:[],kind:'item'},{id:`loc${i}`,name:`合成渡口${i+1}`,aliases:[],kind:'place'});
-  const relation=suite==='blind'?`${a}说：“你称我‘同行者’，我仍戒备。”他停了停，又道：“先查旧账，再谈信任。”`:`${a}说：“我仍戒备。先查旧账。”`;
+  const relation=suite==='blind'?`${a}说道：「你称我『同行者』，我仍戒备。」他停了停，继而补充：‘先查旧账；再谈信任。’`:`${a}说：“我仍戒备。先查旧账。”`;
   const other=`${b}说：“我愿与你合作。”`;const s0=add(i,0,relation+other,[fact(`r${i}`,`a${i}`,'关系','戒备'),fact(`other${i}`,`b${i}`,'关系','合作')],[`a${i}`,`b${i}`],[{factId:`r${i}`,text:relation,speakerId:`a${i}`},{factId:`other${i}`,text:other,speakerId:`b${i}`}]);
   const issue=suite==='blind'?`${a}说：「我答应在三日内归还${item}。『三日』从收到法器时起算；若道路封闭则延期，不得转交第三人。」`:`${a}答应：“三日内归还${item}，道路封闭则延期，不得转交。”`;
   const s1=add(i,1,issue,[fact(`p${i}`,`a${i}`,'约定','待履行')],[`a${i}`],[{factId:`p${i}`,text:issue,speakerId:`a${i}`}]);

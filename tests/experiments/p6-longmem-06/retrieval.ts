@@ -20,12 +20,14 @@ export class LexicalIndex {
  readonly data:Dataset;
  readonly typed:HardenedIndex;
  readonly sentenceIndex:Map<string,{start:number;end:number;text:string;grams:Set<string>}[]>;
+ readonly dialogueIndex:Map<string,{start:number;end:number;text:string;grams:Set<string>}[]>;
  readonly mode:Mode;
  constructor(data:Dataset,mode:Mode='sufficient',sentenceCache?:Map<string,{start:number;end:number;text:string;grams:Set<string>}[]>){
   this.mode=mode;
   this.data=data;
   this.typed=new HardenedIndex(data,mode==='boundary'?'boundary':'sufficient');
-  this.sentenceIndex=new Map(data.turns.map(s=>{const key=s.sourceId+':'+hash(s.narrative);let pieces=sentenceCache?.get(key);if(!pieces){pieces=units(s.narrative).filter(p=>p.closed).map(p=>({start:p.start,end:p.end,text:p.text,grams:grams(lexicalForm(p.text))}));sentenceCache?.set(key,pieces);}return [s.sourceId,pieces];}));
+  this.sentenceIndex=new Map(data.turns.map(s=>{const key=s.sourceId+':'+hash(s.narrative);let pieces=sentenceCache?.get(key);if(!pieces){pieces=[...s.narrative.matchAll(/[^。！？]+(?:[。！？][”」]?|$)/gu)].map(m=>({start:m.index!,end:m.index!+m[0].length,text:m[0],grams:grams(lexicalForm(m[0]))}));sentenceCache?.set(key,pieces);}return [s.sourceId,pieces];}));
+  this.dialogueIndex=new Map();
  }
  original(sourceId:string,q:Query){const s=this.typed.byId.get(sourceId);return s&&this.typed.visible(s,q)?structuredClone(this.typed.materialize(s,q,0)):undefined;}
  search(q:Query,budget=1024,strategy:'historical'|'recent'='historical'):ProseResult{
@@ -60,7 +62,9 @@ export class LexicalIndex {
    if(!this.typed.visible(s,q))continue;
    // Explicit identities are conjunctive; a known place/person is not sufficient evidence alone.
    if(entities.length&&!entities.every(e=>e.kind==='person'?s.participants.includes(e.id):e.kind==='item'?s.items.includes(e.id):s.location===e.id||s.location===e.name||s.narrative.includes(e.name)))continue;
-   const pieces=(this.sentenceIndex.get(s.sourceId)??[]).flatMap(p=>{
+   let sourcePieces=this.sentenceIndex.get(s.sourceId)??[];
+   if(requested.some(f=>f.name==='dialogue')){let saved=this.dialogueIndex.get(s.sourceId);if(!saved){saved=units(s.narrative).filter(p=>p.closed).map(p=>({start:p.start,end:p.end,text:p.text,grams:grams(lexicalForm(p.text))}));this.dialogueIndex.set(s.sourceId,saved);}sourcePieces=saved;}
+   const pieces=sourcePieces.flatMap(p=>{
     if(requested.some(f=>f.name==='dialogue')&&entities.some(e=>e.kind==='person')){const actor=speakers(p.text,this.data),wanted=entities.filter(e=>e.kind==='person').map(e=>e.id);if(actor.length?!actor.some(id=>wanted.includes(id)):s.participants.length!==1)return [];}
     const scoped=landingRequired||constraints.locations.length>0||constraints.weather!==null;
     const active=this.mode==='fixed'?{...constraints,objects:landingRequired?constraints.objects:[],unsupported:false}:{...constraints,objects:scoped?constraints.objects:[]};

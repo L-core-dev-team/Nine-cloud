@@ -1,11 +1,11 @@
 import { performance } from 'node:perf_hooks';
 import type { Dataset, Evidence, Query, Retrieval, Source } from '../p6-longmem/types.ts';
 import { HistoryIndex, estimateTokens, tokenMethod } from '../p6-longmem/retrieval.ts';
-import {selectProof,type BoundDataset} from './evidence.ts';
+import {selectProof,type BoundDataset,sha} from './evidence.ts';
 
 export type ProofRole = 'direct' | 'necessary-background' | 'weak' | 'irrelevant';
 export type Span = { sourceId: string; start: number; end: number; text: string };
-export type ProofResult = Retrieval & { roles: Record<string, ProofRole>; spans: Span[]; diagnosis: string; candidateAudit: {sourceId:string;role:ProofRole;reason:string}[];supportAudit?:{sourceId:string;sourceExists:boolean;speakerIds:string[];reporterIds:string[];factIds:string[];supported:boolean;delivered:boolean;reason:string;confirmation:'unverified'|'offline-event-bound'|'original-only';npcAuthorized:boolean;asOfTurn:number;spans:{start:number;end:number}[]}[] };
+export type ProofResult = Retrieval & { roles: Record<string, ProofRole>; spans: Span[]; diagnosis: string; candidateAudit: {sourceId:string;role:ProofRole;reason:string}[];supportAudit?:{sourceId:string;sourceExists:boolean;originalSha256:string;informationType:'offline-bound-rule-event'|'character-speech'|'rumor-or-speculation'|'original-prose';speakerIds:string[];reporterIds:string[];factIds:string[];supported:boolean;delivered:boolean;reason:string;confirmation:'unverified'|'offline-event-bound'|'original-only';npcAuthorized:boolean;asOfTurn:number;spans:{start:number;end:number}[]}[] };
 const intents: [RegExp, RegExp][] = [
   [/初遇|初次|见面.*地点/, /初遇/], [/赠|交给|来源/, /来源/],
   [/归属|持有|归谁|保管|转手|转交|购买|买下/, /归属/],
@@ -136,7 +136,7 @@ export class HardenedIndex {
         const wrongObject=entities.filter(e=>e.kind==='item').some(e=>!facts.some(f=>f.subject===e.id&&f.kind==='world-event'&&!!f.confirmedBy&&s.eventIds.includes(f.confirmedBy))&&![e.name,...e.aliases].some(a=>body.includes(a)));
         if(wrongObject||topic&&!body.normalize('NFKC').includes(topic.normalize('NFKC'))){proof.supported=false;proof.reason='query-object-or-topic-not-in-proof';proof.pieces=[];}
       }
-      const detail:NonNullable<ProofResult['supportAudit']>[number]={sourceId:s.sourceId,sourceExists:true,speakerIds:proof.speakerIds,reporterIds:proof.bindings.flatMap(b=>b.reporterId?[b.reporterId]:[]),factIds:facts.map(f=>f.id),supported:proof.supported,delivered:false,reason:proof.reason,confirmation:facts.some(f=>f.kind==='character-claim')?'unverified':facts.length&&facts.every(f=>f.kind==='world-event'&&!!f.confirmedBy&&s.eventIds.includes(f.confirmedBy))?'offline-event-bound':'original-only',npcAuthorized:this.visible(s,q),asOfTurn:q.asOfTurn,spans:proof.pieces.map(p=>({start:p.start,end:p.end}))};supportAudit.push(detail);
+      const detail:NonNullable<ProofResult['supportAudit']>[number]={sourceId:s.sourceId,sourceExists:true,originalSha256:sha(s.narrative),informationType:facts.some(f=>f.kind==='character-claim')?(/听说|据说|传闻|谣言|转述|猜测|怀疑/u.test(proof.pieces.map(p=>p.text).join(''))?'rumor-or-speculation':'character-speech'):facts.length&&facts.every(f=>f.kind==='world-event'&&!!f.confirmedBy&&s.eventIds.includes(f.confirmedBy))?'offline-bound-rule-event':'original-prose',speakerIds:proof.speakerIds,reporterIds:proof.bindings.flatMap(b=>b.reporterId?[b.reporterId]:[]),factIds:facts.map(f=>f.id),supported:proof.supported,delivered:false,reason:proof.reason,confirmation:facts.some(f=>f.kind==='character-claim')?'unverified':facts.length&&facts.every(f=>f.kind==='world-event'&&!!f.confirmedBy&&s.eventIds.includes(f.confirmedBy))?'offline-event-bound':'original-only',npcAuthorized:this.visible(s,q),asOfTurn:q.asOfTurn,spans:proof.pieces.map(p=>({start:p.start,end:p.end}))};supportAudit.push(detail);
       if(!proof.supported){omittedSourceIds.push(s.sourceId);const audit=candidateAudit.find(c=>c.sourceId===s.sourceId);if(audit)audit.reason=proof.reason;continue;}
       const partSpans=proof.pieces.map(p=>({sourceId:s.sourceId,start:p.start,end:p.end,text:p.text}));
       const factLines=facts.map(f=>`${f.id} ${f.subject}/${f.predicate}=${f.value} [${s.factStates.find(x=>x.factId===f.id)!.status};${f.kind}]`).join('\n');
