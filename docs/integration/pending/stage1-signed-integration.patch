@@ -1,0 +1,48 @@
+diff --git a/apps/api/src/services/npc-memory-turn-transaction.ts b/apps/api/src/services/npc-memory-turn-transaction.ts
+index c9609a7..6a59bdc 100644
+--- a/apps/api/src/services/npc-memory-turn-transaction.ts
++++ b/apps/api/src/services/npc-memory-turn-transaction.ts
+@@ -124,7 +124,7 @@ type NormalizedCommit = Omit<AcceptedTurnCommitInput, 'ownerId' | 'receipt' | 's
+  * and journal on the server; this repository never decides gameplay or visibility.
+  */
+ export class PostgresNpcMemoryTurnRepository {
+-  constructor(private readonly database: Database, private readonly requiresLiveAccount = false,private readonly guard?: (client:PoolClient,commit:AcceptedTurnCommitInput)=>Promise<void>) {}
++  constructor(private readonly database: Database, private readonly requiresLiveAccount = false,private readonly guard?: (client:PoolClient,commit:AcceptedTurnCommitInput)=>Promise<void>, private readonly seedAcceptedTurn?: (client:PoolClient,commit:AcceptedTurnCommitInput)=>Promise<void>) {}
+ 
+   async getReceiptForOwner(ownerId: string, saveId: string, requestId: string): Promise<TurnReceipt | null> {
+     const owner = normalizeOwnerId(ownerId);
+@@ -430,6 +430,8 @@ export class PostgresNpcMemoryTurnRepository {
+         [commit.save.saveId, commit.nextJournal.revision, serializeNpcMemoryJournal(commit.nextJournal)],
+       );
+ 
++      // Register presentation work inside this accepted transaction; no rule changes.
++      await this.seedAcceptedTurn?.(client, commit);
+       await client.query('COMMIT');
+       inTransaction = false;
+       return { kind: 'committed', receipt: commit.receipt, save: commit.save, journal: commit.nextJournal };
+diff --git a/apps/api/src/services/server-turn.ts b/apps/api/src/services/server-turn.ts
+index 93fa4a8..79a36ac 100644
+--- a/apps/api/src/services/server-turn.ts
++++ b/apps/api/src/services/server-turn.ts
+@@ -58,6 +58,7 @@ export class ServerTurnService {
+     private readonly narrator?: Narrator,
+     private readonly narrativeTimeoutMs = 20_000,
+     private readonly deterministicNarrative?: DeterministicNarrative,
++    private readonly managedNarrative?: (ownerId: string, receipt: TurnReceipt) => Promise<NarrativeResult>,
+   ) {
+     if (!Number.isInteger(narrativeTimeoutMs) || narrativeTimeoutMs < 1 || narrativeTimeoutMs > 120_000) {
+       throw new TypeError('Invalid narrative timeout');
+@@ -141,6 +142,13 @@ export class ServerTurnService {
+   private async completed(ownerId:string, raw: TurnReceipt, duplicate: boolean, requestNarrative: boolean, cancellation?: AbortSignal, save?: SaveEnvelope): Promise<ServerTurnResult> {
+     const receipt = TurnReceiptSchema.parse(raw);
+     if (receipt.decision.status !== 'accepted') return { status: 'decision', receipt };
++    // A registered managed receipt must never reach legacy generation, even on duplicates.
++    if (this.managedNarrative) {
++      let managed: NarrativeResult;
++      try { managed = await this.managedNarrative(ownerId, receipt); }
++      catch { managed = { status: 'failed', code: 'NARRATIVE_UNAVAILABLE' }; }
++      return { status: 'accepted', duplicate, receipt, narrative: managed };
++    }
+     let narrative: NarrativeResult = { status: 'not_requested' };
+     if (requestNarrative) {
+       const attemptId=randomUUID();

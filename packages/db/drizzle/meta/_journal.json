@@ -155,6 +155,13 @@
       "when": 1791763200000,
       "tag": "0021_recall_upgrade_compatibility",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1791849600000,
+      "tag": "0022_narrative_publication",
+      "breakpoints": true
     }
   ]
 }

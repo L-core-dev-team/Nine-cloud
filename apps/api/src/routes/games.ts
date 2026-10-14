@@ -17,6 +17,7 @@ export function mountGames(
   turns?: ServerTurnService,
   memoryRecall?: { reader: AuthorizedRecallPageReader },
   readReceipt?: (owner: string, saveId: string, key: string) => Promise<TurnReceipt | null>,
+  publicationsAvailable = false,
 ) {
   // Recovery is read-only. Absence is NOT proof that an in-flight turn was never sent.
   if (readReceipt) app.get('/api/games/:saveId/receipts/:key', async c => {
@@ -38,7 +39,7 @@ export function mountGames(
     try {
       const result = await service.read(owner, c.req.param('saveId'));
       if (result.status === 'not_found') return c.json({ code: 'NOT_FOUND' }, 404);
-      return c.json({ save: result.save });
+      return c.json({ save: result.save, ...(publicationsAvailable ? {publicationsAvailable:true} : {}) });
     } catch (error) {
       if (error instanceof SaveSchemaNotReadyError) return c.json({ code: 'SAVE_SCHEMA_NOT_READY' }, 503);
       return c.json({ code: 'GAME_UNAVAILABLE' }, 503);

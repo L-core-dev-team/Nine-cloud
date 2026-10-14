@@ -1,3 +1,4 @@
+import { NarrativePublicationRepository } from './services/narrative-publication-repository.js';
 import {configureAccountQuota} from './services/account-rate-limit.js';
 import {loadDataPolicy} from './services/data-policy-node.js';
 import {PolicyCloudSaveRepository} from './services/policy-cloud-save-repository.js';
@@ -46,6 +47,9 @@ const app = createApp({ query: sql => pool.query(sql) }, emailAuth ? {
   games: new AuthoritativeGameService(cloudRepository,runtime),
   auth: { resolveOwnerId: async request => (await emailAuth.service.resolve(sessionToken(request)))?.ownerId || null },
   memoryRecall: turnRepository.recallObservationPage ? { reader: turnRepository.recallObservationPage } : undefined,
+} : undefined, emailAuth && process.env.NARRATIVE_PUBLICATION_READS_ENABLED==='true' ? {
+  auth:{resolveOwnerId:async request=>(await emailAuth.service.resolve(sessionToken(request)))?.ownerId||null},
+  repository:new NarrativePublicationRepository(pool),
 } : undefined);
 
 const server = serve({ fetch: app.fetch, port, hostname });

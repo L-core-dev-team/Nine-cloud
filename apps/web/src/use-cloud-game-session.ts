@@ -1,4 +1,5 @@
 import { validateGameReceipt } from './game-receipt-validation';
+import { readPublishedGameHistory } from './game-publications';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { DecisionV2Schema, SaveEnvelopeSchema, type SaveEnvelope } from '@jiuxiao/contracts';
 import { apiRequestUrl } from './api-url';
@@ -42,6 +43,22 @@ export function useCloudGameSession(saveId: string) {
     const available = await cloudRequest(`/api/games/${encodeURIComponent(saveId)}/action-suggestions`, 'GET', undefined, session.scope.ownerId, session.abort.signal).catch(() => ({ actions: [] }));
     if (!isCurrent(session)) return value;
     setSuggestions(Array.isArray(available.actions) ? available.actions.filter((a): a is GameActionSuggestion => !!a && typeof a === 'object' && ['id', 'kind', 'label', 'text'].every(k => typeof (a as Record<string, unknown>)[k] === 'string')) : []);
+    const published = result.publicationsAvailable === true ? await readPublishedGameHistory(session.scope, session.abort.signal) : null;
+    if (published && isCurrent(session)) {
+      const restored = await store.change(session.scope, session.epoch, current => {
+        const history = new Map(current.history.map(row => [row.id, row]));
+        for (const row of published) {
+          // Pending actions still require the existing request-fingerprint recovery path.
+          if (row.id === current.pending?.idempotencyKey || row.revision > value.revision) continue;
+          const previous = history.get(row.id);
+          if (previous && previous.receipt.requestFingerprint !== row.receipt.requestFingerprint) throw Error('INVALID_PUBLICATION_RECEIPT');
+          history.set(row.id, row);
+        }
+        return { ...current, history: [...history.values()].sort((a,b) => a.revision-b.revision
+          || Number(a.receipt.decision.status!=='accepted')-Number(b.receipt.decision.status!=='accepted')).slice(-1000) };
+      });
+      if (isCurrent(session)) publish(session, restored);
+    }
     return value;
   }
   async function lookup(session: NonNullable<typeof active.current>) {
