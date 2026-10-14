@@ -1,0 +1,31 @@
+{
+  "kind": "cloudflare-pages-deployment-read-only-recheck",
+  "observedAtUtcDate": "2026-10-13",
+  "readOnly": true,
+  "project": "jiuxiaogame-public-demo",
+  "productionBranch": "main",
+  "domains": [
+    "jiuxiaogame.cn",
+    "play.jiuxiaogame.cn",
+    "www.jiuxiaogame.cn"
+  ],
+  "production": {
+    "deploymentId": "6940587d-f647-4704-9eda-a127ce1b164e",
+    "commit": "2647439e0cccc9a136606a81131519f53253f125",
+    "createdAtUtc": "2026-10-12T10:01:03.69292Z",
+    "status": "success",
+    "usesFunctions": false
+  },
+  "environmentBranchPreview": {
+    "branch": "codex/environment-plan-simulations",
+    "commit": "6cfa3b5f71a6a9b9f23012d615d47baea3b8be76",
+    "deploymentId": "d9009ea3-e2f8-4951-a610-a9545411d95f",
+    "url": "https://d9009ea3.jiuxiaogame-public-demo.pages.dev",
+    "createdAtUtc": "2026-10-12T11:01:56.201658Z",
+    "status": "success",
+    "usesFunctions": true,
+    "includesCurrentUncommittedCandidate": false
+  },
+  "deploymentPerformedDuringCheck": false,
+  "source": "Cloudflare Pages API read-only project and deployment queries"
+}

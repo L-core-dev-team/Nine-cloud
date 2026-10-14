@@ -1,15 +1,3 @@
-# Cloudflare Pages 路由声明（public/ 会被 Vite 原样复制进 dist）
-#
-# SPA 兜底：前端是单页应用，/lobby、/world、/settings/* 等都不是真实文件，
-# 必须交回 index.html 由前端路由接手。
-/* /index.html 200
-
-# ⚠️ 不要再为 /api/* 加代理规则。
-# 1. Cloudflare 官方明确不支持代理外部域名：
-#    "Proxying will only support relative URLs on your site. You cannot proxy
-#    external domains." —— pages/configuration/redirects/#proxying
-#    写在这里的 /api 规则永远不会被匹配。
-# 2. 而且重定向优先级高于 Pages Functions。加了这条规则会先于
-#    /functions/api/[[path]].js 拦截请求，把 API 请求重新打回上面的 SPA 兜底 ——
-#    登录、云档、验证码会再次全部失效。
-# /api/* 的正确中转由 apps/web/public/functions/api/[[path]].js 承担。
+# Cloudflare Pages supplies SPA fallback to index.html when there is no top-level 404.html.
+# Keep API, health, and readiness routing in the repository-root `functions/` directory.
+# Do not add catch-all rewrites here: Wrangler rejects `/* /index.html 200` as an infinite loop.

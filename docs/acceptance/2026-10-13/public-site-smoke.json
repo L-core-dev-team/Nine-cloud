@@ -1,0 +1,59 @@
+{
+  "capturedAt": "2026-10-13T10:52:57.7395817Z",
+  "mode": "read-only GET",
+  "apiHost": "api.jiuxiaogame.cn",
+  "apiPaths": [
+    "/health",
+    "/ready",
+    "/api/auth/session",
+    "/api/auth/guest",
+    "/api/account/capabilities"
+  ],
+  "siteHost": "play.jiuxiaogame.cn",
+  "sitePaths": [
+    "/health",
+    "/ready",
+    "/api/auth/session"
+  ],
+  "exitCode": 1,
+  "result": {
+    "status": "PUBLIC_API_SMOKE_FAILED",
+    "code": "SITE_RELAY_FAILED",
+    "codes": [
+      "SITE_RELAY_FAILED",
+      "CORS_ORIGIN_FAILED"
+    ],
+    "siteRelay": "FAIL",
+    "siteRelayFailedPaths": [
+      "/health",
+      "/ready",
+      "/api/auth/session"
+    ],
+    "cors": "FAIL",
+    "emailDelivery": "NOT_TESTED",
+    "authenticatedCloud": "NOT_TESTED"
+  },
+  "productionAcceptance": false,
+  "latestRerun": {
+    "observedAtUtcDate": "2026-10-13",
+    "mode": "read-only GET",
+    "exitCode": 1,
+    "result": {
+      "status": "PUBLIC_API_SMOKE_FAILED",
+      "code": "SITE_RELAY_FAILED",
+      "codes": [
+        "SITE_RELAY_FAILED",
+        "CORS_ORIGIN_FAILED"
+      ],
+      "siteRelay": "FAIL",
+      "siteRelayFailedPaths": [
+        "/health",
+        "/ready",
+        "/api/auth/session"
+      ],
+      "cors": "FAIL",
+      "emailDelivery": "NOT_TESTED",
+      "authenticatedCloud": "NOT_TESTED"
+    }
+  }
+}
