@@ -162,6 +162,13 @@
       "when": 1791849600001,
       "tag": "0022_function_scope_hardening",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1791974639605,
+      "tag": "0023_legacy_0017_0019_catchup",
+      "breakpoints": true
     }
   ]
 }
