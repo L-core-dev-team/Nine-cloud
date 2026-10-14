@@ -63,7 +63,9 @@ async function proxyRequest(context, route) {
     if (normalizedPath !== '/api' && !normalizedPath.startsWith('/api/')) {
       return jsonError(404, 'NOT_FOUND', '接口不存在。');
     }
-    if (isRouteABlocked(normalizedPath)) {
+    const emailEnabled = context.env?.JIUXIAO_EMAIL_AUTH_ENABLED === 'true';
+    const phonePath = normalizedPath === '/api/auth/phone' || normalizedPath.startsWith('/api/auth/phone/');
+    if (isRouteABlocked(normalizedPath) && (!emailEnabled || phonePath)) {
       return jsonError(404, 'ROUTE_A_BLOCKED', '该入口在当前部署阶段未开放。');
     }
   } else if (normalizedPath !== route.endpoint) {
@@ -94,6 +96,20 @@ async function proxyRequest(context, route) {
   for (const name of REQUEST_HEADERS) {
     const value = request.headers.get(name);
     if (value !== null) headers.set(name, value);
+  }
+  // The three owner-controlled website origins share one API. Only requests
+  // whose original Origin exactly matches the requesting website can be
+  // canonicalized; an untrusted Origin is forwarded unchanged and rejected.
+  const canonicalOrigin = context.env?.API_AUTH_CANONICAL_ORIGIN;
+  if (canonicalOrigin && request.headers.get('origin') === requestUrl.origin
+    && PRODUCTION_SITE_HOSTS.has(requestUrl.hostname.toLowerCase())) {
+    let canonical;
+    try { canonical = new URL(canonicalOrigin); } catch { return jsonError(503, 'UPSTREAM_CONFIG_INVALID', '服务暂不可用。'); }
+    if (canonical.origin !== canonicalOrigin || canonical.protocol !== 'https:'
+      || !PRODUCTION_SITE_HOSTS.has(canonical.hostname.toLowerCase())) {
+      return jsonError(503, 'UPSTREAM_CONFIG_INVALID', '服务暂不可用。');
+    }
+    headers.set('origin', canonicalOrigin);
   }
 
   const init = { method: request.method, headers, redirect: 'manual', signal: request.signal };

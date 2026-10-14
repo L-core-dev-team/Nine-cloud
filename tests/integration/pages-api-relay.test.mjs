@@ -17,6 +17,26 @@ function context(path, init = {}, env = simulationEnv) {
   return { request, env };
 }
 
+test('explicit preview email enablement opens email routes and keeps phone routes closed', async () => {
+  const env = { ...simulationEnv, JIUXIAO_EMAIL_AUTH_ENABLED: 'true' };
+  await withFetch(async () => Response.json({status:'sent'}, {status:202}), async () => {
+    const sent = await proxyApiRequest(context('/api/auth/code', {method:'POST',body:'{}'}, env));
+    assert.equal(sent.status,202);
+    const blocked = await proxyApiRequest(context('/api/auth/phone/code', {method:'POST',body:'{}'}, env));
+    assert.equal(blocked.status,404);
+  });
+});
+
+test('only a matching owned website Origin can be canonicalized for the shared API', async () => {
+  const env = { ...simulationEnv, JIUXIAO_EMAIL_AUTH_ENABLED:'true', API_AUTH_CANONICAL_ORIGIN:'https://play.jiuxiaogame.cn' };
+  const forwarded=[];
+  await withFetch(async (_url,init) => { forwarded.push(init.headers.get('origin')); return Response.json({status:'sent'},{status:202}); }, async () => {
+    await proxyApiRequest({request:new Request('https://jiuxiaogame.cn/api/auth/code',{method:'POST',headers:{Origin:'https://jiuxiaogame.cn'},body:'{}'}),env});
+    await proxyApiRequest({request:new Request('https://jiuxiaogame.cn/api/auth/code',{method:'POST',headers:{Origin:'https://evil.invalid'},body:'{}'}),env});
+    assert.deepEqual(forwarded,['https://play.jiuxiaogame.cn','https://evil.invalid']);
+  });
+});
+
 async function withFetch(mock, run) {
   const original = globalThis.fetch;
   globalThis.fetch = mock;

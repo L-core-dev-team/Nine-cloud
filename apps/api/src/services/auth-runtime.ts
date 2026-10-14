@@ -4,7 +4,7 @@ import nodemailer from 'nodemailer';
 import { isIP } from 'node:net';
 import { createHash,randomUUID } from 'node:crypto';
 import { AuthFailure,classifyMailFailure } from './auth-failure.js';
-import { SesApiError, normalizeSesCredential, sendEmailViaSesApi } from './tencent-ses-api.js';
+import { SesApiError, normalizeSesCredential, sendEmailViaSesApi, readSesTemplate } from './tencent-ses-api.js';
 import type { Pool } from 'pg';
 import { EmailAuthService, normalizeEmail } from './email-auth.js';
 import { PostgresEmailAuthRepository } from './postgres-email-auth.js';
@@ -45,6 +45,9 @@ export function createEmailAuthRuntime(pool: Pool, env: NodeJS.ProcessEnv) {
   const mailer = (env.AUTH_MAILER || 'ses-api').trim().toLowerCase();
   if (!['ses-api', 'smtp'].includes(mailer)) throw new Error('AUTH_MAILER must be ses-api or smtp');
   const sesCredential = mailer === 'ses-api' ? normalizeSesCredential(env) : undefined;
+  const templateId = env.AUTH_SES_TEMPLATE_ID ? Number(env.AUTH_SES_TEMPLATE_ID) : undefined;
+  const templateVariable = env.AUTH_SES_TEMPLATE_VARIABLE || 'code';
+  if (templateId !== undefined && (!Number.isSafeInteger(templateId) || templateId < 1 || !/^[\w.-]{1,64}$/.test(templateVariable))) throw new Error('INVALID_SES_TEMPLATE_CONFIG');
 
   let smtpTransport: import('nodemailer').Transporter | undefined;
   if (mailer === 'smtp') {
@@ -61,7 +64,7 @@ export function createEmailAuthRuntime(pool: Pool, env: NodeJS.ProcessEnv) {
     });
   }
 
-  const send = async (email: string, subject: string, text: string) => {
+  const send = async (email: string, subject: string, text: string, code: string) => {
     try {
       const messageId = mailer === 'smtp'
         ? await (async () => {
@@ -73,6 +76,7 @@ export function createEmailAuthRuntime(pool: Pool, env: NodeJS.ProcessEnv) {
           })()
         : (await sendEmailViaSesApi(sesCredential!, {
             fromEmail: from, toEmail: email, subject, text, triggerType: 1,
+            ...(templateId ? { template: { id: templateId, data: { [templateVariable]: code } } } : {}),
           })).messageId;
       console.info(JSON.stringify({ event: 'auth_mail', stage: 'mail_send', code: 'PROVIDER_ACCEPTED',
         mailer, requestId: randomUUID(), messageIdHash: createHash('sha256').update(messageId).digest('hex') }));
@@ -88,7 +92,7 @@ export function createEmailAuthRuntime(pool: Pool, env: NodeJS.ProcessEnv) {
     }
   };
   const service = new EmailAuthService(new PostgresEmailAuthRepository(pool, secret), async (email, code) => {
-    await send(email,'九霄登录验证码',`登录验证码：${code}\n10 分钟内有效。若非本人操作，请忽略。`);
+    await send(email,'九霄登录验证码',`登录验证码：${code}\n10 分钟内有效。若非本人操作，请忽略。`, code);
   }, secret);
   let supabaseAuth: SupabaseAuthService | undefined;
   if (supabaseAuthEnabled) {
@@ -132,7 +136,7 @@ export function createEmailAuthRuntime(pool: Pool, env: NodeJS.ProcessEnv) {
   const policyVersion = env.NODE_ENV==='production'?(productionPolicy?.version??null):(env.ACCOUNT_DATA_POLICY_VERSION?.trim() || null);
   if (policyVersion && !/^[a-zA-Z0-9._:-]{1,200}$/.test(policyVersion)) throw new Error('Invalid ACCOUNT_DATA_POLICY_VERSION');
   const lifecycle = new AccountLifecycle(pool, async (email, code) => {
-    await send(email,'九霄账号操作验证',`账号操作验证码：${code}\n仅用于您刚刚发起的邮箱变更、关闭或删除操作。10 分钟内完成验证；不要把验证码交给他人。`);
+    await send(email,'九霄账号操作验证',`账号操作验证码：${code}\n仅用于您刚刚发起的邮箱变更、关闭或删除操作。10 分钟内完成验证；不要把验证码交给他人。`, code);
   }, secret, policyVersion, env.ACCOUNT_DELETE_ENABLED === 'true',()=>{if(env.NODE_ENV!=='production')return true;try{assertDataPolicy(productionPolicy);return true;}catch{return false;}},
     supabaseAuthEnabled ? async (client, ownerId, newEmail) => {
       await supabaseAuth!.changeEmailIdentity(client, ownerId, newEmail);
@@ -144,7 +148,14 @@ export function createEmailAuthRuntime(pool: Pool, env: NodeJS.ProcessEnv) {
   // 因此预检返回 MAIL_CHANNEL_CONFIGURED，delivery 仍为 NOT_TESTED。
   const verifyMail = mailer === 'smtp'
     ? async () => { try { await smtpTransport!.verify(); return { status: 'SMTP_CONNECTION_VERIFIED', delivery: 'NOT_TESTED' }; } catch (error) { throw classifyMailFailure(error); } }
-    : async () => ({ status: 'MAIL_CHANNEL_CONFIGURED', delivery: 'NOT_TESTED' });
+    : async () => {
+        if (templateId) {
+          const template = await readSesTemplate(sesCredential!, templateId);
+          if (template.status !== 0 || !template.variables.includes(templateVariable) || template.variables.some(name => name !== templateVariable)) throw new AuthFailure('MAIL_REJECTED', 'auth_config');
+          return { status: 'SES_TEMPLATE_APPROVED', delivery: 'NOT_TESTED' };
+        }
+        return { status: 'MAIL_CHANNEL_CONFIGURED', delivery: 'NOT_TESTED' };
+      };
   // Optional Turnstile gate for anonymous login challenge requests. Unset key
   // keeps the previous behaviour; a set key makes an invalid/unverifiable
   // token fail closed (CAPTCHA_* responses on POST /api/auth/code).

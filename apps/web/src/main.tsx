@@ -464,10 +464,13 @@ function visibleLegacyText(value: unknown): string | null {
 
 type GameProps = { save: LocalSave | undefined; onExport: (save?: LocalSave) => void; onImportSupplement: (file: File, save: LocalSave) => void; onUpdate: (save: LocalSave) => Promise<SaveCommitResult>; onBranch: (save: LocalSave) => Promise<boolean>; onReload: () => Promise<void>; onBack?: () => void };
 
-const P2ReviewGame = import.meta.env.DEV ? lazy(() => import('./routes/P2ReviewGame')) : null;
+// The owners authorized the complete local gameplay loop for the 1.0 preview.
+// Stable builds retain their prior boundary; the preview still runs the release media gate.
+const LOCAL_GAMEPLAY_ENABLED = import.meta.env.DEV || import.meta.env.JIUXIAO_PREVIEW_1 === true;
+const P2ReviewGame = LOCAL_GAMEPLAY_ENABLED ? lazy(() => import('./routes/P2ReviewGame')) : null;
 
 function Game(props: GameProps) {
-  if (import.meta.env.DEV && props.save?.p2ReviewCandidate && P2ReviewGame) {
+  if (LOCAL_GAMEPLAY_ENABLED && props.save?.p2ReviewCandidate && P2ReviewGame) {
     return <Suspense fallback={<section className="page" role="status">正在恢复本地审阅候选存档……</section>}><P2ReviewGame save={props.save} onBack={props.onBack ?? (() => go('/lobby'))} /></Suspense>;
   }
   return <LegacyGame {...props} />;
@@ -743,7 +746,7 @@ function App() {
     && (worldReturnTarget === `/game/${activeSave?.saveId}` || !saves.some(item => worldReturnTarget === `/game/${item.saveId}`));
   const page = currentRoute === '/new' ? <NewCharacter onSaved={async (save, memoryMode) => {
     let persisted = save;
-    if (import.meta.env.DEV) {
+    if (LOCAL_GAMEPLAY_ENABLED) {
       try {
         const [{ loadP2ReviewGameplayRuntime }, { createLocalAuthoritativeSave, readLocalAuthoritativeSave }] = await Promise.all([
           import('./p2-review-gameplay-runtime'),

@@ -36,6 +36,7 @@ export type SesSendRequest = {
   text: string;
   /** 1 = 事务类（验证码）走即时投递通道；0 = 普通 */
   triggerType: 0 | 1;
+  template?: { id: number; data: Readonly<Record<string, string>> };
 };
 
 export type SesSendResult = {
@@ -74,22 +75,22 @@ const hmac = (key: string | Buffer, data: string): Buffer =>
   createHmac('sha256', key).update(data, 'utf8').digest();
 
 /** 构造 TC3-HMAC-SHA256 签名，返回 Authorization 头的完整值。 */
-function buildAuthorization(credential: SesCredential, payload: string, timestamp: number): string {
+function buildAuthorization(credential: SesCredential, payload: string, timestamp: number, action = ACTION): string {
   const date = new Date(timestamp * 1000).toISOString().slice(0, 10);
   const credentialScope = `${date}/${SERVICE}/tc3_request`;
 
   const canonicalHeaders = [
     `content-type:${CONTENT_TYPE}`,
     `host:${HOST}`,
-    `x-tc-action:${ACTION.toLowerCase()}`,
-  ].join(';') + ';';
+    `x-tc-action:${action.toLowerCase()}`,
+  ].join('\n') + '\n';
 
   const canonicalRequest = [
     'POST',
     '/',
     '',
     canonicalHeaders,
-    '',
+    SIGNED_HEADERS,
     sha256Hex(payload),
   ].join('\n');
 
@@ -107,8 +108,8 @@ function buildAuthorization(credential: SesCredential, payload: string, timestam
 /**
  * 发送一封纯文本事务邮件。
  *
- * 腾讯云默认仅支持模板发送；本项目走 Simple.Text 分支（官方 Example3）
- * 以避免为纯验证码邮件引入模板 ID 依赖。仅在返回有 MessageId 时视为成功。
+ * Use the approved template for ordinary SES accounts. Simple.Text is retained
+ * only for an explicitly configured legacy account. Never send both formats.
  */
 export async function sendEmailViaSesApi(
   credential: SesCredential,
@@ -121,7 +122,8 @@ export async function sendEmailViaSesApi(
     FromEmailAddress: request.fromEmail,
     Destination: [request.toEmail],
     Subject: request.subject,
-    Simple: { Text: Buffer.from(request.text, 'utf8').toString('base64') },
+    ...(request.template ? { Template: { TemplateID: request.template.id, TemplateData: JSON.stringify(request.template.data) } }
+      : { Simple: { Text: Buffer.from(request.text, 'utf8').toString('base64') } }),
     TriggerType: request.triggerType,
   });
 
@@ -135,6 +137,7 @@ export async function sendEmailViaSesApi(
         Host: HOST,
         'X-TC-Action': ACTION,
         'X-TC-Version': SERVICE_VERSION,
+        'X-TC-Region': credential.region,
         'X-TC-Timestamp': String(timestamp),
       },
       body: payload,
@@ -163,4 +166,22 @@ export async function sendEmailViaSesApi(
     );
   }
   return { messageId: body.MessageId, requestId: body.RequestId ?? '' };
+}
+
+/** Read-only provider preflight: template approval and variables, not delivery. */
+export async function readSesTemplate(credential: SesCredential, id: number): Promise<{ status: number; variables: readonly string[] }> {
+  if (!Number.isSafeInteger(id) || id < 1) throw new Error('INVALID_SES_TEMPLATE_ID');
+  const action = 'GetEmailTemplate', payload = JSON.stringify({ TemplateID: id }), timestamp = Math.floor(Date.now() / 1000);
+  const response = await fetch(`https://${HOST}`, { method: 'POST',
+    headers: { Authorization: buildAuthorization(credential, payload, timestamp, action),
+      'Content-Type': CONTENT_TYPE, Host: HOST, 'X-TC-Action': action,
+      'X-TC-Version': SERVICE_VERSION, 'X-TC-Timestamp': String(timestamp), 'X-TC-Region': credential.region },
+    body: payload, signal: AbortSignal.timeout(10000) });
+  const parsed = await response.json() as { Response?: { Error?: { Code?: string }; TemplateStatus?: number; TemplateContent?: { Html?: string; Text?: string } } };
+  const result = parsed.Response;
+  if (!response.ok || result?.Error || !result?.TemplateContent || typeof result.TemplateStatus !== 'number') {
+    throw new SesApiError(result?.Error?.Code ?? 'MAIL_REJECTED', 'SES template preflight failed');
+  }
+  const content = [result.TemplateContent.Html, result.TemplateContent.Text].filter(Boolean).map(value => Buffer.from(value!, 'base64').toString('utf8')).join('\n');
+  return { status: result.TemplateStatus, variables: [...new Set([...content.matchAll(/\{\{\s*([\w.-]+)\s*\}\}/g)].map(match => match[1]!))] };
 }
