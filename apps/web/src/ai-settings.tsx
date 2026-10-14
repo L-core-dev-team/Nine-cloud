@@ -8,6 +8,7 @@ import { buildProbeRequest, parseProbeResponse, protocolLabels, type ProtocolId 
 import { filterRouterModels, normalizeRouterModels, type RouterModel } from './ai-model-inventory';
 import { modelSamplingPolicy } from './ai-model-compatibility';
 import { sanitizeCallLogs, type CallLog } from './ai-call-logs';
+import { modelDirectoryFailureMessage, ProviderHttpError, providerNetworkFailureMessage } from './ai-provider-errors';
 import { estimateModelCost, MODEL_RATE_SNAPSHOT_DATE, MODEL_RATE_VALID_UNTIL, modelRateSnapshotStatus } from './ai-model-pricing';
 
 const CONFIG_KEY = 'jx10_ai_config_v2';
@@ -298,9 +299,14 @@ function ProfessionalAiSettings({ onClose }: { onClose: () => void }) {
     const controller = new AbortController();
     setInventoryLoading(true); setInventoryError(''); setRouterModels([]);
     fetch('https://openrouter.ai/api/v1/models?output_modalities=text', { signal: controller.signal })
-      .then(response => { if (!response.ok) throw new Error(`型号目录请求失败（HTTP ${response.status}）。`); return response.json(); })
+      .then(response => {
+        if (!response.ok) throw new Error(response.status === 429 || response.status >= 500
+          ? '公开型号目录暂时不可用。请稍后重试，或打开服务商官方型号页。'
+          : '公开型号目录未能返回可用列表。请检查服务商资料，或打开官方型号页。');
+        return response.json();
+      })
       .then(payload => setRouterModels(normalizeRouterModels(payload)))
-      .catch(reason => { if (!controller.signal.aborted) setInventoryError(reason instanceof Error ? reason.message : '无法读取公开型号目录。'); })
+      .catch(reason => { if (!controller.signal.aborted) setInventoryError(modelDirectoryFailureMessage(reason)); })
       .finally(() => { if (!controller.signal.aborted) setInventoryLoading(false); });
     return () => controller.abort();
   }, [modal?.kind]);
@@ -401,9 +407,11 @@ function ProfessionalAiSettings({ onClose }: { onClose: () => void }) {
         const elapsedMs = Math.round(performance.now() - start);
         const entry: CallLog = { at: new Date().toISOString(), role: roleTitle, model: active.model.trim(), elapsedMs, outcome: 'failure', status: response.status, errorCode: `HTTP_${response.status}` };
         setLogs(addLog(entry, config.logRetentionDays));
-        throw new Error(`服务返回 HTTP ${response.status}。请检查 Base URL、Key、Model ID 和账号权限；响应正文未保存。`);
+        throw new ProviderHttpError(response.status);
       }
-      const data: unknown = await response.json();
+      let data: unknown;
+      try { data = await response.json(); }
+      catch { throw new Error('服务已响应，但内容不是有效 JSON。请核对所选接口协议与服务商返回格式。'); }
       if (probeRef.current !== controller) return;
       const parsed = parseProbeResponse(active.adapter, data);
       if (!parsed.text.trim()) throw new Error(`服务已响应，但返回格式无法由 ${protocolLabels[active.adapter]} 适配器识别。`);
@@ -417,11 +425,14 @@ function ProfessionalAiSettings({ onClose }: { onClose: () => void }) {
     } catch (reason) {
       if (probeRef.current !== controller) return;
       const messageText = reason instanceof Error ? reason.message : '网络请求失败。';
-      if (!messageText.startsWith('服务返回 HTTP')) {
+      if (!(reason instanceof ProviderHttpError)) {
         const entry: CallLog = { at: new Date().toISOString(), role: roleTitle, model: active.model.trim(), elapsedMs: Math.round(performance.now() - start), outcome: 'failure', errorCode: controller.signal.aborted ? controller.signal.reason === 'cancel' ? 'CANCELLED' : 'TIMEOUT' : 'NETWORK_OR_FORMAT' };
         setLogs(addLog(entry, config.logRetentionDays));
       }
-      report(controller.signal.aborted ? controller.signal.reason === 'cancel' ? '测试已取消。未自动重试。' : `超过 ${active.timeoutSeconds} 秒，连接已中止。可核对超时与服务商状态后重试。` : messageText.startsWith('服务') ? messageText : '连接未完成。请核对地址、密钥、型号与浏览器跨域策略。', true);
+      report(controller.signal.aborted ? controller.signal.reason === 'cancel' ? '测试已取消。未自动重试。' : `超过 ${active.timeoutSeconds} 秒，连接已中止。可核对超时与服务商状态后重试。`
+        : reason instanceof ProviderHttpError ? reason.message
+          : reason instanceof TypeError ? providerNetworkFailureMessage()
+            : messageText.startsWith('服务') ? messageText : '服务已响应，但内容不符合当前接口协议。请核对协议选项与服务商返回格式。', true);
     } finally { window.clearTimeout(timer); if (probeRef.current === controller) { probeRef.current = null; setTesting(false); setTestingRole(null); } }
   }
 
@@ -525,7 +536,7 @@ function ProfessionalAiSettings({ onClose }: { onClose: () => void }) {
       <label className="setting-field">失败后重试次数<input type="number" min="0" max="3" value={config.retryCount} onChange={event => setConfig(current => ({ ...current, retryCount: clampNumber(event.target.value, 0, 3, config.retryCount, true) }))} /><small>仅供后续回合调度使用；当前设置页不会自动重试连接测试。</small></label>
       <label className="setting-field">重试间隔（秒）<input type="number" min="1" max="30" value={config.retryDelaySeconds} onChange={event => setConfig(current => ({ ...current, retryDelaySeconds: clampNumber(event.target.value, 1, 30, config.retryDelaySeconds, true) }))} /><small>后续将用有上限的退避；超时或结算后不会盲目重放。</small></label>
     </div><p className="quiet-note">调用记录仅包含岗位、Model ID、时间、耗时、HTTP 状态和服务商返回的 token 统计。不记录 API Key、提示词、剧情正文或响应正文。重试、上下文预算与采样字段尚未接入游戏回合。</p></section>
-    <section className="card settings-card legacy-migration-card"><div className="migration-heading"><span aria-hidden="true" className="migration-seal">迁</span><div><h3>旧配置迁移</h3><p>只从当前浏览器会话读取旧 AI 配置。旧 HTML 文件与本网站来源隔离，旧存档 JSON 也不包含 API 设置。</p></div></div><div className={migrationPossible ? 'migration-status found' : 'migration-status'}><span className="migration-status-dot"/><div><strong>{migrationPossible ? '发现可读取的旧配置' : '当前浏览器未发现旧配置'}</strong><small>{migrationPossible ? '载入后先核对，再自行保存。原配置会保留。' : '如果旧配置只存在于 file:// 页面，请手动录入服务商地址、Model ID 与密钥。'}</small></div></div><label className="toggle-line migration-consent"><input type="checkbox" checked={config.allowLegacyMigration} onChange={event => setConfig(current => ({ ...current, allowLegacyMigration: event.target.checked }))} /><span><strong>允许读取并迁入表单</strong><small>读取前需要明确开启；密钥仅放入当前页面内存，不会写入新设置或存档。</small></span><span className="switch-visual" aria-hidden="true"/></label><div className="migration-footer"><button className="secondary" onClick={importLegacy} disabled={!config.allowLegacyMigration || !migrationPossible}>读取旧配置到表单</button><span>不会删除旧配置，也不会自动发起连接测试。</span></div></section>
+    <section className="card settings-card legacy-migration-card"><div className="migration-heading"><span aria-hidden="true" className="migration-seal"/><div><h3>旧配置迁移</h3><p>只从当前浏览器会话读取旧 AI 配置。旧 HTML 文件与本网站来源隔离，旧存档 JSON 也不包含 API 设置。</p></div></div><div className={migrationPossible ? 'migration-status found' : 'migration-status'}><span className="migration-status-dot"/><div><strong>{migrationPossible ? '发现可读取的旧配置' : '当前浏览器未发现旧配置'}</strong><small>{migrationPossible ? '载入后先核对，再自行保存。原配置会保留。' : '如果旧配置只存在于 file:// 页面，请手动录入服务商地址、Model ID 与密钥。'}</small></div></div><label className="toggle-line migration-consent"><input type="checkbox" checked={config.allowLegacyMigration} onChange={event => setConfig(current => ({ ...current, allowLegacyMigration: event.target.checked }))} /><span><strong>允许读取并迁入表单</strong><small>读取前需要明确开启；密钥仅放入当前页面内存，不会写入新设置或存档。</small></span><span className="switch-visual" aria-hidden="true"/></label><div className="migration-footer"><button className="secondary" onClick={importLegacy} disabled={!config.allowLegacyMigration || !migrationPossible}>读取旧配置到表单</button><span>不会删除旧配置，也不会自动发起连接测试。</span></div></section>
     {createPortal(<div className="ai-actionbar" aria-label="AI 设置操作"><div className="ai-feedback">{error ? <p className="error" role="alert">{error}</p> : message ? <p className={saved ? 'success' : 'status-message'} role="status">{message}</p> : <span>密钥只在本页临时使用</span>}</div><button className="primary" onClick={save}>保存配置</button><button className="secondary" onClick={() => setModal({ kind: 'logs' })}>调用记录</button><button className="secondary" onClick={onClose}>关闭</button></div>, document.body)}
     <dialog ref={dialogRef} className="glass-dialog" onClose={() => setModal(null)} aria-labelledby="ai-modal-title">
       <button className="dialog-close" onClick={closeDialog} aria-label="关闭窗口">×</button>

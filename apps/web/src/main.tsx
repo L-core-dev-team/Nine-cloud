@@ -4,17 +4,16 @@ import { createRoot } from 'react-dom/client';
 import { SAVE_SCHEMA_VERSION, SaveEnvelopeSchema, type MemoryMode } from '@jiuxiao/contracts';
 import { SCENE_MANIFEST, sceneForLocation, type SceneId } from '@jiuxiao/content/scenes';
 import type { CanonRuntimeEntry } from '@jiuxiao/content/worldbook';
-import { AiSettings } from './ai-settings';
 import { ReadableData } from './components/ReadableData';
 import { GameShell, GameInfoDialog } from './components/GameShell';
 import { CHARACTER_OPTIONS } from './character-options';
-import { CloudSettings } from './routes/CloudSettings';
 import { TurnWorkspace } from './routes/TurnWorkspace';
 import { INTERNAL_TURN_WORKSPACE_ENABLED } from './internal-turn-workspace';
-import { MountainGateScene } from './scene';
+import { Landing } from './pages/Landing/Landing';
+import { GlassHeader } from './components/GlassHeader';
+import { RouteModuleBoundary } from './components/RouteModuleBoundary';
 import { startSyntheticWaterAmbience, type AmbientAudioHandle } from './ambient-audio';
 import { DEFAULT_GRAPHICS_SETTINGS, loadGraphicsSettings, saveGraphicsSettings, type GraphicsSettings } from './graphics-settings';
-import { GraphicsSettingsPage } from './routes/GraphicsSettings';
 import { CANDIDATE_ILLUSTRATIONS, type CandidateIllustration, type CandidateIllustrationCollection } from './candidate-atlas';
 import { SceneAtmosphere, type SceneRenderStatus } from './scenes/SceneAtmosphere';
 import { MAX_IMPORT_BYTES, migrateLegacyLibraryText, parseLegacySave } from './legacy';
@@ -24,7 +23,15 @@ import type { SaveCommitResult } from './idb';
 import { mediaUrlForBrowser } from './media-compat';
 import { CloudHttpError, cloudRequest } from './cloud-sync';
 import { CloudGame } from './routes/CloudGame';
+import './design-system/tokens.css';
 import './style.css';
+import './components/liquid-glass.css';
+import './pages/Landing/landing.css';
+import { LiquidGlass, LiquidGlassFilters } from './components/LiquidGlass';
+
+const AiSettings = lazy(() => import('./ai-settings').then(module => ({ default: module.AiSettings })));
+const CloudSettings = lazy(() => import('./routes/CloudSettings').then(module => ({ default: module.CloudSettings })));
+const GraphicsSettingsPage = lazy(() => import('./routes/GraphicsSettings').then(module => ({ default: module.GraphicsSettingsPage })));
 
 const fields = [
   ['name', '姓名', '可留空，由你在提交前确认'], ['age', '年龄', '例如：18 或未知'],
@@ -121,7 +128,6 @@ function Shell({ children, saves, notice, noticeAction, theme, onThemeChange, on
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [menu]);
-  const themeLabel = theme === 'night' ? '夜色' : '晴昼';
   const nextThemeLabel = theme === 'night' ? '晴昼' : '夜色';
   const themeAction = () => { onThemeChange(); setMenu(false); };
   const isLanding = route() === '/';
@@ -138,7 +144,7 @@ function Shell({ children, saves, notice, noticeAction, theme, onThemeChange, on
     '--jx-gate-poster': `url("${mediaUrlForBrowser(gatePoster)}")`,
     '--jx-paper-texture': `url("${mediaUrlForBrowser(paperTexture)}")`,
   } as CSSProperties;
-  return <div className={isLanding ? 'jx-shell landing-shell' : 'jx-shell'} style={backgroundStyle}>{showSkipLink && <a className="skip-to-content" href="#main-content" onClick={event => { event.preventDefault(); document.getElementById("main-content")?.focus(); }}>跳到主要内容</a>}<SceneAtmosphere sceneId={sceneId} theme={theme} settings={graphicsSettings} /><header><button className="brand" onClick={() => go('/')}>踏月过山门，天地任君行。</button>{showNavigation && <nav><button onClick={() => go('/lobby')}>山门</button><button onClick={() => go('/world')}>世界设定</button><button onClick={() => go('/settings/ai')}>AI 设置</button><button onClick={() => go('/settings/graphics')}>画面与声音</button><button onClick={() => go('/settings/cloud')}>账号与云档</button></nav>}<div className="header-tools"><button className={`ambient-toggle${ambientAudioActive ? ' is-active' : ''}`} aria-pressed={ambientAudioActive} onClick={onToggleAmbientAudio}>{ambientAudioActive ? '水声已启' : '启水声'}</button><button className="theme-toggle" aria-label={`切换到${nextThemeLabel}配色`} onClick={onThemeChange}>{themeLabel}</button><button className="menu" aria-expanded={menu} onClick={() => setMenu(open => !open)}>菜单</button></div></header>{menu && <div className="menu-overlay" aria-hidden="true" onClick={() => setMenu(false)} />}{menu && <aside><strong>{saves.length ? `${saves.length} 份本地存档` : '暂无存档'}</strong>{showNavigation && <><button onClick={() => { setMenu(false); go('/lobby'); }}>回到山门</button><button onClick={() => { setMenu(false); go('/new'); }}>新开一局</button><button onClick={() => { setMenu(false); go('/world'); }}>阅读世界设定</button><button onClick={() => { setMenu(false); go('/settings/ai'); }}>AI 设置</button><button onClick={() => { setMenu(false); go('/settings/graphics'); }}>画面与声音</button><button onClick={() => { setMenu(false); go('/settings/cloud'); }}>账号与云档</button></>}<button onClick={() => { setMenu(false); onExport(); }}>导出存档</button><button onClick={themeAction}>切换到{nextThemeLabel}配色</button><label>导入旧档 / JSON<input type="file" accept=".json,.txt,.html,.htm" onChange={event => { const file = event.target.files?.[0]; if (file) { setMenu(false); onImport(file); } event.currentTarget.value = ''; }} /></label></aside>}{notice && <p className="notice" role="status">{notice} {noticeAction}</p>}<main id={showSkipLink ? "main-content" : undefined} tabIndex={showSkipLink ? -1 : undefined}>{children}</main><footer><span>本地优先 · API 密钥不写入存档</span><span>契约 v{SAVE_SCHEMA_VERSION}</span><nav className="footer-legal" aria-label="法律与反馈"><a href="/privacy">隐私政策</a><a href="/privacy-rights">隐私权利</a><a href="/terms">用户协议</a><a href="/feedback">问题反馈</a></nav><span className="footer-ai-note">部分视觉素材由 AI 生成（《人工智能生成合成内容标识办法》标识）</span><FilingNotices /></footer></div>;}
+  return <><LiquidGlassFilters /><div className={isLanding ? 'jx-shell landing-shell' : 'jx-shell'} style={backgroundStyle} data-jx-motion={graphicsSettings.reducedMotion ? 'reduced' : undefined} data-jx-data-saver={graphicsSettings.dataSaver || undefined}>{showSkipLink && <a className="skip-to-content" href="#main-content" onClick={event => { event.preventDefault(); document.getElementById("main-content")?.focus(); }}>跳到主要内容</a>}<SceneAtmosphere sceneId={sceneId} theme={theme} settings={graphicsSettings} /><GlassHeader showNavigation={showNavigation} theme={theme} menuOpen={menu} ambientAudioActive={ambientAudioActive} onNavigate={go} onThemeChange={onThemeChange} onToggleMenu={() => setMenu(open => !open)} onToggleAmbientAudio={onToggleAmbientAudio} />{menu && <div className="menu-overlay" aria-hidden="true" onClick={() => setMenu(false)} />}{menu && <LiquidGlass as="aside" variant="regular"><strong>{saves.length ? `${saves.length} 份本地存档` : '暂无存档'}</strong>{showNavigation && <><button onClick={() => { setMenu(false); go('/lobby'); }}>回到山门</button><button onClick={() => { setMenu(false); go('/new'); }}>新开一局</button><button onClick={() => { setMenu(false); go('/world'); }}>阅读世界设定</button><button onClick={() => { setMenu(false); go('/settings/ai'); }}>AI 设置</button><button onClick={() => { setMenu(false); go('/settings/graphics'); }}>画面与声音</button><button onClick={() => { setMenu(false); go('/settings/cloud'); }}>账号与云档</button></>}<button onClick={() => { setMenu(false); onExport(); }}>导出存档</button><button onClick={themeAction}>切换到{nextThemeLabel}配色</button><label>导入旧档 / JSON<input type="file" accept=".json,.txt,.html,.htm" onChange={event => { const file = event.target.files?.[0]; if (file) { setMenu(false); onImport(file); } event.currentTarget.value = ''; }} /></label></LiquidGlass>}{notice && <p className="notice" role="status">{notice} {noticeAction}</p>}<main id={showSkipLink ? "main-content" : undefined} tabIndex={showSkipLink ? -1 : undefined}>{children}</main><footer><span>本地优先 · API 密钥不写入存档</span><span>契约 v{SAVE_SCHEMA_VERSION}</span><nav className="footer-legal" aria-label="法律与反馈"><a href="/privacy">隐私政策</a><a href="/privacy-rights">隐私权利</a><a href="/terms">用户协议</a><a href="/feedback">问题反馈</a></nav><span className="footer-ai-note">部分视觉素材由 AI 生成（《人工智能生成合成内容标识办法》标识）</span><FilingNotices /></footer></div></>;}
 
 function FilingNotices() {
   return (
@@ -157,10 +163,6 @@ function FilingNotices() {
       </a>
     </nav>
   );
-}
-
-function Landing() {
-  return <section className="hero"><div className="landing-copy"><span className="eyebrow">月下山门</span><h1 className="hero-mark">九霄</h1><p className="hero-deck">修途自此启程。</p><button className="portal-enter" onClick={() => go('/lobby')}><span>进入世界</span></button></div><MountainGateScene /></section>;
 }
 
 function WorldHub({ saves }: { saves: LocalSave[] }) {
@@ -833,14 +835,21 @@ function App() {
       const branch = { ...stale, saveId: createSaveId(), name: `${stale.name}（冲突分支）`, createdAt: now, updatedAt: now };
       const result = await commitSaves(saves, [branch, ...saves]);
       setSaves(result.saves); if (result.ok && result.warning) setNotice(commitSuccessMessage(result, '冲突内容已另存为独立分支；原存档保持不变。')); return result.ok;
-    }} /> : <CloudGame saveId={decodeURIComponent(currentRoute.slice('/game/'.length))} onBack={() => go('/lobby')} onHome={() => go('/')} onLogin={() => go('/settings/cloud')} onWorld={() => go('/world')} /> : <Landing />;
+    }} /> : <CloudGame saveId={decodeURIComponent(currentRoute.slice('/game/'.length))} onBack={() => go('/lobby')} onHome={() => go('/')} onLogin={() => go('/settings/cloud')} onWorld={() => go('/world')} /> : <Landing saves={saves} onEnter={() => go('/lobby')} onReadSave={() => go('/saves')} />;
   const migrationAction = legacyText ? <button className="notice-action" onClick={migrateLegacyLibrary}>下载原文备份并迁移</button> : undefined;
   const storageNotice = indexedDbReady ? notice : `${notice} IndexedDB 回退模式。`;
   const activeScene = scenePreview ?? (game ? sceneForLocation(game.location) : 'mountain-gate');
   const importCollision = saves.find(item => item.saveId === importPreview?.save.saveId);
-  return <Shell saves={saves} theme={theme} onThemeChange={() => setTheme(current => current === 'night' ? 'day' : 'night')} graphicsSettings={graphicsSettings} ambientAudioActive={ambientAudioActive} onToggleAmbientAudio={() => { void toggleAmbientAudio(); }} sceneId={activeScene} notice={legacyText ? '检测到旧版 localStorage 存档。请先备份原文，再开始迁移。' : storageNotice} noticeAction={migrationAction} onImport={importFile} onExport={() => exportFile()}>{importPreview && <section className="import-preview card" role="dialog" aria-labelledby="import-preview-title" aria-modal="false" aria-busy={importBusy}><span className="eyebrow">旧档导入 / 提交前核对</span><h2 id="import-preview-title">{importPreview.save.name}</h2><p>来源：{importPreview.sourceName}。原始文件已先下载为备份。核对数量与回合，再选择导入方式；所有顶层字段均会原样保存在该存档的历史资料区。</p><div className="stats"><div><small>回合</small><strong>{importPreview.save.revision}</strong></div><div><small>消息</small><strong>{importPreview.save.messages.length}</strong></div><div><small>人物 / 物品</small><strong>{Array.isArray(importPreview.save.legacyArchive?.payload.npcs) ? importPreview.save.legacyArchive.payload.npcs.length : 0} / {Array.isArray(importPreview.save.legacyArchive?.payload.items) ? importPreview.save.legacyArchive.payload.items.length : 0}</strong></div></div><div className="legacy-groups">{Object.entries(importPreview.save.legacyArchive?.payload || {}).map(([key, value]) => <div className="import-field" key={key}><strong>{key}</strong><span>{Array.isArray(value) ? `${value.length} 项` : value !== null && typeof value === 'object' ? `${Object.keys(value).length} 个字段` : typeof value === 'string' ? `${value.length} 字符` : '已保留'}</span></div>)}</div>{importCollision && <label className="replace-save-confirm">覆盖前核对：输入现有存档名称「{importCollision.name}」<input value={replaceConfirmation} onChange={event => setReplaceConfirmation(event.target.value)} disabled={importBusy} autoComplete="off" /></label>}<div className="actions">{!importCollision && <button className="primary" disabled={importBusy} onClick={() => void commitImport('keep')}>{importBusy ? '正在导入…' : '导入此档'}</button>}{importCollision && <><button className="secondary" disabled={importBusy} onClick={() => void commitImport('copy')}>另存为副本</button><button className="primary" disabled={importBusy || replaceConfirmation !== importCollision.name} onClick={() => void commitImport('replace')}>{importBusy ? '正在替换…' : '确认替换现有存档'}</button></>}<button className="secondary" disabled={importBusy} onClick={() => { setImportPreview(null); setReplaceConfirmation(''); setNotice('已取消导入。原存档未修改，原始备份仍保留。'); }}>取消</button></div></section>}{page}</Shell>;
+  return <Shell saves={saves} theme={theme} onThemeChange={() => setTheme(current => current === 'night' ? 'day' : 'night')} graphicsSettings={graphicsSettings} ambientAudioActive={ambientAudioActive} onToggleAmbientAudio={() => { void toggleAmbientAudio(); }} sceneId={activeScene} notice={legacyText ? '检测到旧版 localStorage 存档。请先备份原文，再开始迁移。' : storageNotice} noticeAction={migrationAction} onImport={importFile} onExport={() => exportFile()}>{importPreview && <section className="import-preview card" role="dialog" aria-labelledby="import-preview-title" aria-modal="false" aria-busy={importBusy}><span className="eyebrow">旧档导入 / 提交前核对</span><h2 id="import-preview-title">{importPreview.save.name}</h2><p>来源：{importPreview.sourceName}。原始文件已先下载为备份。核对数量与回合，再选择导入方式；所有顶层字段均会原样保存在该存档的历史资料区。</p><div className="stats"><div><small>回合</small><strong>{importPreview.save.revision}</strong></div><div><small>消息</small><strong>{importPreview.save.messages.length}</strong></div><div><small>人物 / 物品</small><strong>{Array.isArray(importPreview.save.legacyArchive?.payload.npcs) ? importPreview.save.legacyArchive.payload.npcs.length : 0} / {Array.isArray(importPreview.save.legacyArchive?.payload.items) ? importPreview.save.legacyArchive.payload.items.length : 0}</strong></div></div><div className="legacy-groups">{Object.entries(importPreview.save.legacyArchive?.payload || {}).map(([key, value]) => <div className="import-field" key={key}><strong>{key}</strong><span>{Array.isArray(value) ? `${value.length} 项` : value !== null && typeof value === 'object' ? `${Object.keys(value).length} 个字段` : typeof value === 'string' ? `${value.length} 字符` : '已保留'}</span></div>)}</div>{importCollision && <label className="replace-save-confirm">覆盖前核对：输入现有存档名称「{importCollision.name}」<input value={replaceConfirmation} onChange={event => setReplaceConfirmation(event.target.value)} disabled={importBusy} autoComplete="off" /></label>}<div className="actions">{!importCollision && <button className="primary" disabled={importBusy} onClick={() => void commitImport('keep')}>{importBusy ? '正在导入…' : '导入此档'}</button>}{importCollision && <><button className="secondary" disabled={importBusy} onClick={() => void commitImport('copy')}>另存为副本</button><button className="primary" disabled={importBusy || replaceConfirmation !== importCollision.name} onClick={() => void commitImport('replace')}>{importBusy ? '正在替换…' : '确认替换现有存档'}</button></>}<button className="secondary" disabled={importBusy} onClick={() => { setImportPreview(null); setReplaceConfirmation(''); setNotice('已取消导入。原存档未修改，原始备份仍保留。'); }}>取消</button></div></section>}<RouteModuleBoundary key={currentRoute} onBack={() => go('/lobby')}><Suspense fallback={<section className="page" role="status">正在载入页面…</section>}>{page}</Suspense></RouteModuleBoundary></Shell>;
 }
 
 const root = document.getElementById('root');
 if (!root) throw new Error('Missing root');
-createRoot(root).render(<App />);
+const initialRoute = route();
+if (import.meta.env.DEV && initialRoute === '/__liquid-glass') {
+  const LiquidGlassDemo = lazy(() => import('./components/LiquidGlassDemo').then(module => ({ default: module.LiquidGlassDemo })));
+  createRoot(root).render(<Suspense fallback={null}><LiquidGlassDemo /></Suspense>);
+} else {
+  if (initialRoute === '/__liquid-glass') history.replaceState(history.state, '', '/');
+  createRoot(root).render(<App />);
+}

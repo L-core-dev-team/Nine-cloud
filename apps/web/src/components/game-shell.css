@@ -17,8 +17,13 @@ body:has(.game-frame) { overflow: hidden; }
 .game-frame .game-rail { position: static; align-content: start; }
 .game-frame .story-column { min-height: 0; grid-template-rows: minmax(0, 1fr) auto auto; gap: var(--jx-space-2); }
 .game-frame .story-reading { min-height: 0; overflow-y: auto; overscroll-behavior-y: contain; scrollbar-gutter: stable; padding: var(--jx-space-4); }
-.game-frame .cloud-game-state { display: flex; flex-wrap: wrap; gap: var(--jx-space-2) var(--jx-space-4); }
-.game-frame .cloud-game-state p { margin: 0; }
+.game-frame .cloud-game-state { display: flex; flex-wrap: wrap; gap: var(--jx-space-2) var(--jx-space-4); color: var(--jx-text-secondary); font: var(--jx-type-small)/var(--jx-leading-ui) system-ui, sans-serif; }
+.game-frame .cloud-game-state p { margin: 0; color: inherit; }
+.game-frame :is(.cloud-game-narrative, .cloud-game-receipt) { display: grid; gap: var(--jx-space-2); }
+.game-frame :is(.cloud-game-narrative, .cloud-game-receipt) h3 { margin: 0; font-size: var(--jx-type-subhead); font-weight: 500; }
+.game-frame :is(.cloud-game-narrative, .cloud-game-receipt) p { margin: 0; }
+.game-frame .cloud-game-receipt { padding-top: var(--jx-space-3); border-top: 1px solid var(--line); }
+.game-frame .cloud-game-receipt ul { margin: 0; padding-left: var(--jx-reading-list-indent); }
 .game-frame .cloud-game code { overflow-wrap: anywhere; }
 .game-frame .cloud-game-suggestions { max-height: 120px; overflow-y: auto; color: var(--jx-text-body); background: #0b1b29; border-radius: var(--jx-radius-control); padding: var(--jx-space-2); }
 :root[data-theme='day'] .game-frame .cloud-game-suggestions { color: #283c49; background: #faf9f4; }
@@ -31,7 +36,7 @@ body:has(.game-frame) { overflow: hidden; }
 .game-frame .game-tools button, .game-frame .game-tools label { min-height: 44px; padding: var(--jx-space-2) var(--jx-space-3); }
 .game-frame .intent-composer { min-height: 0; max-height: min(200px, 50dvh); overflow-y: auto; padding: var(--jx-space-2) var(--jx-space-3); gap: var(--jx-space-2); }
 .game-frame .intent-composer > label { font-size: var(--jx-type-body); }
-.game-frame .intent-composer textarea { height: 60px; min-height: 44px; max-height: 110px; resize: none; padding: var(--jx-space-2); font-size: 16px; line-height: 1.5; }
+.game-frame .intent-composer textarea { height: 60px; min-height: 44px; max-height: 110px; resize: none; padding: var(--jx-space-2); font-size: var(--jx-type-input-min); line-height: 1.5; }
 .game-frame .intent-composer small { color: #bac6cd; line-height: 1.4; }
 .game-frame .intent-composer .primary { min-height: 44px; padding: var(--jx-space-2) var(--jx-space-3); }
 .game-frame .game-statusline { flex: none; flex-wrap: wrap; gap: var(--jx-space-1) var(--jx-space-3); padding: var(--jx-space-1); color: #dfe6e8; background: #07121ef5; border-radius: var(--jx-radius-control); line-height: 1.5; }

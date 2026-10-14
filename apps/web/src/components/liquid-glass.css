@@ -1,0 +1,267 @@
+.liquid-glass-filter-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.liquid-glass-surface {
+  --jx-glass-pointer-x: 50%;
+  --jx-glass-pointer-y: 0%;
+  position: relative;
+  isolation: isolate;
+}
+
+.liquid-glass-surface--regular {
+  -webkit-backdrop-filter: blur(var(--jx-glass-blur, 12px)) saturate(var(--jx-glass-saturate, 1.2));
+  backdrop-filter: blur(var(--jx-glass-blur, 12px)) saturate(var(--jx-glass-saturate, 1.2));
+}
+
+.liquid-glass-surface--clear {
+  -webkit-backdrop-filter: blur(var(--jx-glass-blur, 2px)) saturate(var(--jx-glass-saturate, 1.5));
+  backdrop-filter: blur(var(--jx-glass-blur, 2px)) saturate(var(--jx-glass-saturate, 1.5));
+}
+
+.liquid-glass-optics {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  isolation: isolate;
+  pointer-events: none;
+}
+
+.liquid-glass-optics::before,
+.liquid-glass-optics::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  content: '';
+}
+
+.liquid-glass-optics::before {
+  background:
+    radial-gradient(72% 126% at var(--jx-glass-pointer-x) var(--jx-glass-pointer-y), rgba(247, 252, 255, 0.2), transparent 58%),
+    linear-gradient(118deg, rgba(245, 251, 255, 0.2), transparent 31%, rgba(205, 230, 243, 0.055) 73%, rgba(243, 250, 255, 0.12));
+  mix-blend-mode: screen;
+  opacity: 0.76;
+  transition: opacity 180ms ease;
+}
+
+.liquid-glass-optics::after {
+  box-shadow:
+    inset 0 1px 0 rgba(250, 254, 255, 0.58),
+    inset 1px 0 0 rgba(226, 243, 251, 0.2),
+    inset 0 -1px 0 rgba(180, 212, 228, 0.24),
+    inset -1px 0 0 rgba(208, 230, 240, 0.13);
+  opacity: 0.74;
+}
+
+.liquid-glass-surface > :not(.liquid-glass-optics) {
+  position: relative;
+  z-index: 1;
+}
+
+.liquid-glass-surface:is(button, a):hover .liquid-glass-optics::before,
+.liquid-glass-surface:is(button, a):focus-visible .liquid-glass-optics::before {
+  opacity: 1;
+}
+
+.liquid-glass-surface:is(button, a):active {
+  transform: scale(0.985);
+}
+
+.jx-shell > header[data-liquid-glass='regular'] { --jx-glass-blur: 18px; --jx-glass-saturate: 1.28; }
+.jx-shell > aside[data-liquid-glass='regular'] { --jx-glass-blur: 20px; --jx-glass-saturate: 1.24; }
+.landing-shell .portal-enter[data-liquid-glass='clear'] { --jx-glass-blur: 3px; --jx-glass-saturate: 1.38; }
+.landing-shell .landing-read-save[data-liquid-glass='clear'] { --jx-glass-blur: 2px; --jx-glass-saturate: 1.5; }
+.jx-shell > header[data-liquid-glass='regular'] { position: sticky; z-index: 10; top: 0; }
+.world-return-bar { top: 72px; }
+
+/* SVG displacement runs only inside these glass bounds. Browsers that cannot
+   render an SVG reference backdrop filter retain the existing blur layer. */
+@supports (backdrop-filter: url(#jx-liquid-glass-refract)) or (-webkit-backdrop-filter: url(#jx-liquid-glass-refract)) {
+  .jx-shell > header[data-liquid-glass],
+  .jx-shell > aside[data-liquid-glass],
+  .landing-shell .landing-read-save[data-liquid-glass] {
+    -webkit-backdrop-filter: url(#jx-liquid-glass-refract) blur(var(--jx-glass-blur, 12px)) saturate(var(--jx-glass-saturate, 1.2));
+    backdrop-filter: url(#jx-liquid-glass-refract) blur(var(--jx-glass-blur, 12px)) saturate(var(--jx-glass-saturate, 1.2));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .liquid-glass-surface:is(button, a):active { transform: none; }
+  .liquid-glass-optics::before { transition: none; }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .liquid-glass-surface { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+}
+
+@media (prefers-contrast: more) {
+  .liquid-glass-surface { border-width: 2px; }
+  .liquid-glass-optics::after { opacity: 0.95; }
+}
+
+@media (forced-colors: active) {
+  .liquid-glass-surface { color: CanvasText !important; background: Canvas !important; border: 1px solid CanvasText !important; box-shadow: none !important; }
+  .liquid-glass-optics { display: none; }
+}
+
+/* Avoid stacking separate glass pills on top of an already-glass toolbar or menu. */
+.jx-shell > header :is(.ambient-toggle, .theme-toggle, .menu) {
+  color: #bcc8d1;
+  background: rgba(226, 242, 250, 0.09);
+  border-color: rgba(226, 242, 250, 0.46);
+  box-shadow: none;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+.jx-shell > header :is(.ambient-toggle, .theme-toggle, .menu):is(:hover, :focus-visible) {
+  background: rgba(226, 242, 250, 0.18);
+  border-color: rgba(226, 242, 250, 0.62);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.26);
+}
+:root[data-theme='day'] .jx-shell > header :is(.ambient-toggle, .theme-toggle, .menu) {
+  color: #344a57;
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(38, 58, 71, 0.96);
+}
+:root[data-theme='day'] .jx-shell > header :is(.ambient-toggle, .theme-toggle, .menu):is(:hover, :focus-visible) {
+  background: rgba(255, 255, 255, 0.42);
+  border-color: rgba(38, 58, 71, 0.98);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.76);
+}
+.jx-shell > aside :is(button, label) {
+  background: rgba(220, 238, 247, 0.06);
+  border-color: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+.jx-shell > aside :is(button, label):is(:hover, :focus-visible, :focus-within) {
+  background: rgba(220, 238, 247, 0.14);
+  border-color: rgba(220, 238, 247, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+:root[data-theme='day'] .jx-shell > aside :is(button, label) { background: rgba(255, 255, 255, 0.28); }
+.menu-overlay { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+
+:root[data-theme='day'] .jx-shell > header nav button { color: #455862; }
+:root[data-theme='day'] body:not(:has(.ai-page)) .world-page .eyebrow { color: #261f17; }
+:root[data-theme='day'] .jx-shell :is(.game-rail, .game-tools) button { color: #263b46; }
+
+/* One parent material for grouped world navigation; its child items stay thin. */
+.worldbook-categories, .atlas-collections, .world-view-switch {
+  width: fit-content;
+  max-width: 100%;
+  padding: var(--jx-space-2);
+  border: 1px solid var(--jx-glass-rim);
+  border-radius: var(--jx-radius-card);
+  background: var(--jx-glass-overlay-fill);
+  box-shadow: inset 0 1px 0 var(--jx-glass-highlight), 0 6px 18px rgba(3, 10, 17, 0.12);
+  -webkit-backdrop-filter: blur(12px) saturate(1.2);
+  backdrop-filter: blur(12px) saturate(1.2);
+}
+.worldbook-categories button, .atlas-collections button, .world-view-switch button {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+.worldbook-categories button[aria-pressed='true'], .atlas-collections button[aria-pressed='true'], .world-view-switch button[aria-pressed='true'] {
+  background: var(--jx-glass-selected-fill);
+  border-color: var(--jx-glass-rim-strong);
+  box-shadow: inset 0 1px 0 var(--jx-glass-highlight);
+}
+.world-return-bar .secondary, .dialog-actions {
+  background: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+.world-return-bar .secondary { border-color: var(--jx-glass-rim); }
+.dialog-actions { border-top-color: rgba(220, 236, 245, 0.18); }
+:root[data-theme='day'] .dialog-actions { border-top-color: rgba(46, 68, 80, 0.2); }
+
+.scene-choice {
+  background: rgba(11, 27, 41, 0.62);
+  box-shadow: none;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+.scene-choice[aria-pressed='true'] { background: var(--jx-glass-selected-fill); box-shadow: inset 0 1px 0 var(--jx-glass-highlight); }
+.scene-choice:is(:hover, :focus-visible) { background: rgba(223, 238, 247, 0.13); }
+:root[data-theme='day'] .scene-choice { color: #203541; background: rgba(248, 248, 242, 0.62); }
+:root[data-theme='day'] .scene-choice:is(:hover, :focus-visible) { background: rgba(255, 255, 255, 0.9); }
+
+@media (max-width: 900px) {
+  .game-rail button {
+    background: rgba(224, 240, 247, 0.07);
+    border-color: transparent;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .game-rail button[aria-pressed='true'] { background: var(--jx-glass-selected-fill); box-shadow: inset 0 1px 0 var(--jx-glass-highlight); }
+  :root[data-theme='day'] .game-rail button { background: rgba(255, 255, 255, 0.28); }
+}
+
+/* Text-heavy settings and reading panels stay opaque content surfaces; the
+   floating action bar around them remains the glass layer. */
+.ai-page .settings-card { background: #0b1b29; background-image: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.ai-page .role-panel { background: #0b1b29; background-image: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.ai-page .preset-card { background: #0b1b29; background-image: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.ai-page .preset-mark { color: #122737; background: #d5e0e6; }
+.ai-page .quiet-note { padding: var(--jx-space-2) var(--jx-space-3); color: #d5dfe5; background: #0b1b29; border-left: 2px solid rgba(186, 204, 214, 0.42); border-radius: var(--jx-radius-control); }
+:root[data-theme='day'] .ai-page .settings-card,
+:root[data-theme='day'] .ai-page .role-panel,
+:root[data-theme='day'] .ai-page .preset-card { color: #283c49; background: #faf9f4; background-image: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+:root[data-theme='day'] .ai-page .preset-mark { color: #172a36; background: #e3e9ec; }
+:root[data-theme='day'] .ai-page .quiet-note { color: #344b59; background: #faf9f4; border-left-color: #697f8c; }
+
+.landing-shell .portal-enter {
+  clip-path: none;
+  border-radius: var(--jx-radius-pill);
+}
+.landing-shell .portal-enter::before { display: none; }
+
+/* Clear functional material: a low-haze center and restrained curved rim.
+   Actual background displacement remains gated to the proven SVG surfaces. */
+:root .liquid-glass-surface.liquid-glass--crystal[data-liquid-glass='clear'] {
+  --jx-glass-blur: 1px;
+  --jx-glass-saturate: 1.18;
+  color: var(--jx-crystal-text);
+  background: var(--jx-crystal-fill);
+  border: 1px solid var(--jx-crystal-edge);
+  border-radius: var(--jx-radius-pill);
+  box-shadow: inset 0 1px 0 var(--jx-crystal-reflection), inset 0 -1px 0 rgba(120, 171, 197, 0.15), 0 8px 22px var(--jx-crystal-shade);
+  transition: background var(--jx-motion-feedback) ease, border-color var(--jx-motion-feedback) ease, border-radius var(--jx-motion-settle) var(--jx-motion-ease), box-shadow var(--jx-motion-settle) var(--jx-motion-ease), transform var(--jx-motion-feedback) var(--jx-motion-ease);
+}
+.liquid-glass--crystal > .liquid-glass-optics::before {
+  background: radial-gradient(58% 115% at var(--jx-glass-pointer-x) var(--jx-glass-pointer-y), var(--jx-crystal-reflection), transparent 65%), linear-gradient(115deg, rgba(235, 250, 255, 0.12), transparent 30%, transparent 72%, rgba(227, 245, 253, 0.075));
+  opacity: 0.6;
+}
+.liquid-glass--crystal > .liquid-glass-optics::after {
+  box-shadow: inset 0 1px 0 var(--jx-crystal-reflection), inset 1px 0 1px rgba(223, 245, 255, 0.12), inset 0 -1px 1px rgba(149, 196, 220, 0.18);
+  opacity: 0.65;
+}
+:root .liquid-glass-surface.liquid-glass--crystal[data-liquid-glass='clear']:is(:hover, :focus-visible) {
+  border-radius: var(--jx-radius-liquid-active);
+  box-shadow: inset 0 1px 0 var(--jx-crystal-reflection), 0 10px 26px var(--jx-crystal-shade);
+}
+@media (prefers-reduced-motion: reduce) {
+  :root .liquid-glass-surface.liquid-glass--crystal { transition: none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  :root .liquid-glass-surface.liquid-glass--crystal[data-liquid-glass='clear'] { background: var(--jx-surface-opaque); }
+}
+@supports not (backdrop-filter: blur(1px)) {
+  :root .liquid-glass-surface.liquid-glass--crystal[data-liquid-glass='clear'] { background: var(--jx-surface-opaque); }
+}
+@media (prefers-contrast: more) {
+  :root .liquid-glass-surface.liquid-glass--crystal[data-liquid-glass='clear'] { border-width: 2px; }
+}

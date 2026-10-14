@@ -74,6 +74,16 @@ function composite(foreground, background) {
   return [0, 1, 2].map(index => Math.round(foreground[index] * alpha + background[index] * (1 - alpha)));
 }
 
+const mediaSessions = new WeakMap();
+async function emulateVisualPreferences(page, reducedMotion) {
+  let session = mediaSessions.get(page);
+  if (!session) { session = await page.context().newCDPSession(page); mediaSessions.set(page, session); }
+  await session.send('Emulation.setEmulatedMedia', { features: [
+    { name: 'prefers-reduced-motion', value: reducedMotion },
+    { name: 'prefers-reduced-transparency', value: 'no-preference' },
+  ] });
+}
+
 function opaquePixel(png, x, y) {
   const offset = (y * png.width + x) * png.channels;
   return [png.pixels[offset], png.pixels[offset + 1], png.pixels[offset + 2]];
@@ -246,7 +256,7 @@ async function getTextRuns(page, rootSelector = 'body') {
         opacity *= Number(getComputedStyle(ancestor).opacity || 1);
       }
       const selector = `${element.tagName.toLowerCase()}${element.id ? `#${element.id}` : ''}${[...element.classList].slice(0, 2).map(name => `.${name}`).join('')}`;
-      runs.push({ runId: runId++, fixedBar: !!element.closest('.ai-actionbar'), text: text.trim().slice(0, 48), selector, color: style.color, opacity, fontSize: parseFloat(style.fontSize), fontWeight: Number(style.fontWeight) || 400, textShadowColor: style.textShadow && style.textShadow !== 'none' ? style.textShadow : null, rects });
+      runs.push({ runId: runId++, fixedBar: !!element.closest('.ai-actionbar'), stickyHeader: !!element.closest('.jx-shell > header, .liquid-lab-nav'), text: text.trim().slice(0, 48), selector, color: style.color, opacity, fontSize: parseFloat(style.fontSize), fontWeight: Number(style.fontWeight) || 400, textShadowColor: style.textShadow && style.textShadow !== 'none' ? style.textShadow : null, rects });
     }
     return runs.map(run => ({ ...run, large: run.fontSize >= 24 || (run.fontSize >= 18.67 && run.fontWeight >= 700) }));
   }, rootSelector);
@@ -355,13 +365,17 @@ async function auditProfessionalViewports(page, outputDir, label) {
   };
   for (const [tile, offset] of offsets.entries()) {
     await page.evaluate(y => window.scrollTo(0, y), offset);
-    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await emulateVisualPreferences(page, 'reduce');
     await page.evaluate(() => { document.documentElement.dataset.jxAtmosphere = 'off'; });
     const clip = async () => {
-      const geometry = await page.evaluate(() => ({ scrollY, barTop: document.querySelector('.ai-actionbar').getBoundingClientRect().top }));
+      const geometry = await page.evaluate(() => ({
+        scrollY,
+        barTop: document.querySelector('.ai-actionbar').getBoundingClientRect().top,
+        headerBottom: document.querySelector('.jx-shell > header')?.getBoundingClientRect().bottom ?? 0,
+      }));
       const runs = (await getTextRuns(page)).map(run => ({ ...run, rects: run.rects.map(r => {
         const y = r.y - geometry.scrollY;
-        const left = Math.max(0, r.x), top = Math.max(0, y);
+        const left = Math.max(0, r.x), top = Math.max(0, y, run.stickyHeader ? 0 : geometry.headerBottom);
         const right = Math.min(viewport.width, r.x + r.width);
         const bottom = Math.min(run.fixedBar ? viewport.height : geometry.barTop, y + r.height);
         return { x: left, y: top, width: right-left, height: bottom-top };
@@ -380,7 +394,7 @@ async function auditProfessionalViewports(page, outputDir, label) {
     await mask.evaluate(e => e.remove());
     merge(staticResult, textAudit(source,[background],sampled.runs,`${label}/${tile}/static `), tile);
     merge(controlsResult,borderAudit(background,sampled.controls),tile);
-    await page.emulateMedia({reducedMotion:'no-preference'});
+    await emulateVisualPreferences(page, 'no-preference');
     await page.evaluate(()=>{document.documentElement.dataset.jxAtmosphere='on';});
     await page.waitForTimeout(320);
     const dynamicSampled = await clip();
@@ -414,9 +428,28 @@ async function runDesignAcceptance(browser, origin, outputDir, options = {}) {
     for (const theme of ['night', 'day']) for (const target of targets.filter(target => !options.targets || options.targets.includes(target.key))) {
       const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: 1, reducedMotion: 'reduce' });
       const page = await context.newPage();
+      await emulateVisualPreferences(page, 'reduce');
       await page.addInitScript(themeName => localStorage.setItem('jx10_appearance', themeName), theme);
       await page.route('**/api/**', route => route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ error: 'offline acceptance fixture' }) }));
       await page.goto(new URL(target.path, origin).toString());
+      if (target.key === 'home' && width === 390) {
+        const mobileHero = await page.locator('.hero').evaluate(element => ({
+          minHeight: parseFloat(getComputedStyle(element).minHeight),
+          actionBottom: document.querySelector('.portal-enter')?.getBoundingClientRect().bottom ?? Infinity,
+          saveActionBottom: document.querySelector('.landing-read-save')?.getBoundingClientRect().bottom ?? Infinity,
+        }));
+        const expectedMinHeight = await page.evaluate(() => Math.max(620, window.innerHeight - 96));
+        assert.ok(Math.abs(mobileHero.minHeight - expectedMinHeight) <= 1, `Mobile entrance must reserve its first-viewport area below the floating toolbar (${mobileHero.minHeight}px vs ${expectedMinHeight}px)`);
+        assert.ok(mobileHero.actionBottom <= expectedMinHeight, 'The primary enter action must remain inside the mobile first-screen hero');
+        assert.ok(mobileHero.saveActionBottom <= expectedMinHeight, 'The save-reading action must remain inside the mobile first-screen hero');
+        await page.getByText('当前没有旧档', { exact: true }).waitFor();
+        const readSave = page.getByRole('button', { name: '读取存档', exact: true });
+        await readSave.waitFor({ state: 'visible' });
+        await readSave.click();
+        await page.getByRole('heading', { name: '存档管理', exact: true }).waitFor();
+        await page.goto(new URL('/', origin).toString());
+        await page.locator('.landing-read-save').waitFor({ state: 'visible' });
+      }
       if (target.prepare) await target.prepare(page);
       else if (target.key === 'ai-mode') await page.getByRole('button', { name: '开始新手设置', exact: true }).waitFor();
       else if (target.professional) await page.getByRole('button', { name: '进入专业模式', exact: true }).click();
@@ -464,7 +497,7 @@ async function runDesignAcceptance(browser, origin, outputDir, options = {}) {
       await settleHeight(page);
       const staticBackground = await page.screenshot({ fullPage: true, animations: 'disabled' });
       await textMask.evaluate(style => style.remove());
-      await page.emulateMedia({ reducedMotion: 'no-preference' });
+      await emulateVisualPreferences(page, 'no-preference');
       await page.evaluate(() => { document.documentElement.dataset.jxAtmosphere = 'on'; return document.fonts.ready; });
       await page.waitForTimeout(900);
       const dynamicRuns = await getTextRuns(page);
@@ -496,7 +529,7 @@ async function runDesignAcceptance(browser, origin, outputDir, options = {}) {
   }
   writeFileSync(join(outputDir, 'ui-baseline-manifest.json'), `${JSON.stringify({
     generatedAt: new Date().toISOString(),
-    criteria: 'Five baseline pages: home, lobby, game, world, and AI mode; two themes and 390/1366px viewports. Contrast additionally covers graphics and professional AI with no protected-scope exemptions. Professional text uses overlapping real viewport tiles with complete rendered-run coverage, preserving the fixed operation bar. Static backgrounds and three atmosphere-on frames use unchanged WCAG AA 4.5:1 normal / 3:1 large thresholds and effective opacity. Control boundaries use 3:1 fill or border against adjacent pixels; native checkbox/radio/range and clipped shapes remain outside rectangular sampling. Closed disclosures and clipped-off glyphs are not rendered text; expanded professional fields and dialog states are checked separately.',
+    criteria: 'Five baseline pages: home, lobby, game, world, and AI mode; two themes and 390/1366px viewports. Contrast additionally covers graphics and professional AI with no protected-scope exemptions. Professional text uses overlapping real viewport tiles with complete rendered-run coverage, excluding glyphs obscured by the sticky header or fixed operation bar. Static backgrounds and three atmosphere-on frames use unchanged WCAG AA 4.5:1 normal / 3:1 large thresholds and effective opacity. Control boundaries use 3:1 fill or border against adjacent pixels; native checkbox/radio/range and clipped shapes remain outside rectangular sampling. Closed disclosures and clipped-off glyphs are not rendered text; expanded professional fields and dialog states are checked separately.',
     screenshots: manifest,
     contrast: contrastResults,
   }, null, 2)}\n`);
@@ -516,4 +549,4 @@ async function runDesignAcceptance(browser, origin, outputDir, options = {}) {
   console.log(`Design acceptance: ${manifest.length} five-page baselines; ${checkedRuns} text runs including professional AI and ${checkedEdges} control-boundary samples passed across night/day and mobile/desktop. Contrast failures: professional AI ${frozenProExceptions}; worldbook controls ${protectedWorldbookExceptions}.`);
 }
 
-module.exports = { runDesignAcceptance, textAudit, getTextRuns, maskText };
+module.exports = { runDesignAcceptance, textAudit, getTextRuns, maskText, decodePng };

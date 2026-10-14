@@ -1,0 +1,37 @@
+[
+  {
+    "path": "home-day-1366.png",
+    "bytes": 1477359,
+    "sha256": "629ffc5603c70dd3cebc3e7d9f2cb0acb432171c4a63a13a7743ec212d1832df"
+  },
+  {
+    "path": "home-night-390.png",
+    "bytes": 431078,
+    "sha256": "bc96f6812e1bf0068582a4949d6d017ed915a552b25565c398c0bedcb9d9d033"
+  },
+  {
+    "path": "home-reduced-390.png",
+    "bytes": 392500,
+    "sha256": "0966752f95a4cdc575bc8b493bd2fcc4b46d401af727b5b8eeb9e80c2fc4f646"
+  },
+  {
+    "path": "performance.json",
+    "bytes": 2862,
+    "sha256": "3a18b255204c2b5c6f36275b0e825fe6327386810aeabb84b210663f5016a81b"
+  },
+  {
+    "path": "source-snapshot.json",
+    "bytes": 18323,
+    "sha256": "165c4be31cc7cda8e23ab0df42d514ecc1bc6503797fc08d96dc9a44c07e30da"
+  },
+  {
+    "path": "spatial-audit.json",
+    "bytes": 13973,
+    "sha256": "f886d5e20ffa08bd18d0f42f75f18d237df74c958af0a4d4de97815a10ee4925"
+  },
+  {
+    "path": "world-night-touch.png",
+    "bytes": 288737,
+    "sha256": "86e54c35718c6d527df598aafde9eb817ebe3acd5ac40a5f3c4c608ec10b95a1"
+  }
+]
