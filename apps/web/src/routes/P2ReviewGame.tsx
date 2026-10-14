@@ -345,9 +345,11 @@ function P2ReviewGame({ save, onBack }: { save: LocalSave | undefined; onBack: (
   const actionDisabled = busy || !snapshot?.chainValid || !snapshot.replayValid;
 
   return <section className="page p2-review-game" data-testid="p2-review-gameplay">
-    <span className="eyebrow">九霄 · 本机玩法审阅</span>
+    <span className="eyebrow">{import.meta.env.JIUXIAO_PREVIEW_1 ? '九霄 · 1.0 预览版' : '九霄 · 本机玩法审阅'}</span>
     <h2>世界已记下你做的事。</h2>
-    <p className="quiet-note">仅限开发环境的候选玩法。使用本地规则、IndexedDB 与零模型叙事；不启用生产回合 API，不代表 P1、Canon 或发布验收完成。</p>
+    <p className="quiet-note">{import.meta.env.JIUXIAO_PREVIEW_1
+      ? '这段行旅保存在当前设备。输入你想做的事，或选择下方行动建议；世界会记下已经发生的事。'
+      : '仅限开发环境的候选玩法。使用本地规则、IndexedDB 与零模型叙事；不启用生产回合 API，不代表 P1、Canon 或发布验收完成。'}</p>
     {snapshot && <>
       <section className="card" aria-label="世界简报">
         <h3>世界简报</h3>

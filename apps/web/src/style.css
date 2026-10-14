@@ -151,9 +151,55 @@ input:not([type='range']):not([type='checkbox']), select, textarea { font-size: 
 .error { color: #ffadb1; }
 .success { color: #a9e7c0; }
 .card { max-width: 720px; padding: var(--jx-space-5); background: var(--panel); border: 1px solid var(--line); border-radius: var(--jx-radius-panel); }
-.cloud-page { width: 100%; overflow-wrap: anywhere; }
+.cloud-page.card { width: 100%; max-width: 960px; margin: var(--jx-space-6) auto var(--jx-space-7); padding: var(--jx-space-6); overflow-wrap: anywhere; background: var(--panel); box-shadow: 0 20px 60px #0002; }
+.cloud-page { font-family: system-ui, 'Noto Sans SC', sans-serif; font-size: var(--jx-type-small); line-height: var(--jx-leading-ui); }
+.cloud-page .cloud-page-heading { display: flex; align-items: center; justify-content: space-between; gap: var(--jx-space-4); margin-bottom: var(--jx-space-5); }
+.cloud-page h1 { margin: var(--jx-space-2) 0; font-family: 'Noto Serif SC', 'Songti SC', serif; font-size: var(--jx-type-page); font-weight: 500; line-height: 1.3; letter-spacing: 0.06em; }
+.cloud-page h2 { margin: 0; font-family: 'Noto Serif SC', 'Songti SC', serif; font-size: var(--jx-type-lead); font-weight: 500; line-height: var(--jx-leading-ui); letter-spacing: 0.02em; }
+.cloud-page p { max-width: none; margin: var(--jx-space-3) 0; font-size: var(--jx-type-small); line-height: 1.75; }
+.cloud-page-heading p { margin: 0; color: var(--muted); }
+.cloud-page .cloud-session-badge { flex-shrink: 0; padding: var(--jx-space-2) var(--jx-space-3); border: 1px solid var(--line); border-radius: var(--jx-radius-pill); color: var(--jx-text-accent); font-size: var(--jx-type-caption); }
+.cloud-page .cloud-status { padding: var(--jx-space-3) var(--jx-space-4); margin: 0 0 var(--jx-space-5); border-left: 2px solid var(--accent); border-radius: var(--jx-radius-small); background: var(--jx-glass-control-fill); }
+.cloud-page .cloud-account-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--jx-space-4); margin-bottom: var(--jx-space-5); }
+.cloud-account-identity { display: flex; align-items: center; gap: var(--jx-space-3); min-width: 0; }
+.cloud-account-identity > div { min-width: 0; }
+.cloud-page .cloud-account-identity p { margin: var(--jx-space-1) 0 0; color: inherit; font-size: var(--jx-type-body); }
+.cloud-avatar { display: grid; place-items: center; flex-shrink: 0; width: 48px; height: 48px; border: 1px solid var(--line); border-radius: var(--jx-radius-card); background: var(--jx-glass-selected-fill); font-family: 'Noto Serif SC', serif; font-size: var(--jx-type-subhead); }
+.cloud-field-caption { color: var(--muted); font-size: var(--jx-type-caption); }
+.cloud-page button { display: inline-flex; align-items: center; justify-content: center; min-height: var(--jx-touch-target-min); padding: var(--jx-space-2) var(--jx-space-4); margin: var(--jx-space-1) var(--jx-space-2) var(--jx-space-1) 0; color: inherit; background: var(--jx-glass-control-fill); border: 1px solid var(--line); border-radius: var(--jx-radius-control); font-family: inherit; font-size: var(--jx-type-small); line-height: var(--jx-leading-ui); transition: background var(--jx-motion-feedback), border-color var(--jx-motion-feedback); }
+.cloud-page button:hover:not(:disabled) { background: var(--jx-glass-control-hover-fill); border-color: var(--accent); }
+.cloud-page .actions { gap: var(--jx-space-2); margin: var(--jx-space-3) 0; }
+.cloud-page .actions button { margin: 0; }
+.cloud-page label { display: grid; gap: var(--jx-space-2); margin: var(--jx-space-4) 0; font-size: var(--jx-type-small); }
+.cloud-page :is(input, select) { width: 100%; min-width: 0; }
+.cloud-page .cloud-block { padding: var(--jx-space-5); margin: var(--jx-space-4) 0 0; border: 1px solid var(--line); border-radius: var(--jx-radius-card); background: var(--jx-glass-clear-fill); }
+.cloud-page .cloud-section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: var(--jx-space-3); }
+.cloud-page .cloud-section-heading > span { flex-shrink: 0; color: var(--muted); font-size: var(--jx-type-caption); }
+.cloud-page .cloud-section-description { color: var(--muted); margin: var(--jx-space-2) 0 var(--jx-space-4); }
+.cloud-page .cloud-empty { margin: 0; padding: var(--jx-space-4); color: var(--muted); border: 1px dashed var(--line); border-radius: var(--jx-radius-control); }
+.cloud-storage-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--jx-space-4); margin-top: var(--jx-space-5); }
+.cloud-page .cloud-storage-grid > .cloud-block { margin: 0; min-width: 0; }
+.cloud-backups { grid-column: 1 / -1; }
+.cloud-save-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--jx-space-2); padding: var(--jx-space-3) 0; border-top: 1px solid var(--line); }
+.cloud-save-row > span { flex: 1 1 180px; }
+.cloud-conflict-row { display: block; }
+.cloud-page details.cloud-block { padding: 0; }
+.cloud-page summary { min-height: 56px; padding: var(--jx-space-4) var(--jx-space-5); cursor: pointer; font-size: var(--jx-type-small); }
+.cloud-page summary > span { float: right; color: var(--muted); font-size: var(--jx-type-caption); margin-left: var(--jx-space-3); }
+.cloud-page summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: var(--jx-radius-card); }
+.cloud-details-body { padding: 0 var(--jx-space-5) var(--jx-space-5); }
+@media (max-width: 640px) {
+  .cloud-page.card { margin-top: var(--jx-space-4); padding: var(--jx-space-4); }
+  .cloud-page .cloud-page-heading { align-items: flex-start; }
+  .cloud-storage-grid { grid-template-columns: minmax(0, 1fr); }
+  .cloud-page .cloud-block { padding: var(--jx-space-4); }
+  .cloud-page summary { padding: var(--jx-space-4); }
+  .cloud-page summary > span { float: none; display: block; margin: var(--jx-space-1) 0 0 var(--jx-space-4); }
+  .cloud-details-body { padding: 0 var(--jx-space-4) var(--jx-space-4); }
+  .cloud-page .cloud-account-bar > .actions { width: 100%; }
+  .cloud-page .cloud-account-bar > .actions button { flex: 1; padding-inline: var(--jx-space-2); }
+}
 .cloud-page input { font-size: var(--jx-type-input-min); min-height: 44px; }
-.cloud-page button { min-height: 44px; margin: var(--jx-space-1) var(--jx-space-2) var(--jx-space-1) 0; }
 .cloud-page > label { display: block; margin: var(--jx-space-4) 0; }
 .auth-method-switch { display: flex; flex-wrap: wrap; gap: var(--jx-space-2); margin-block: var(--jx-space-4); }
 .auth-method-switch button[aria-pressed='true'] { border-color: var(--accent); box-shadow: inset 0 -2px var(--accent); }

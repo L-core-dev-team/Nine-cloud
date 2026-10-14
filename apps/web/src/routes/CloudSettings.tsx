@@ -137,7 +137,10 @@ export function CloudSettings({ saves, onRestore }: { saves: LocalSave[]; onRest
       else if (account) { try { setQueue(await sync.list(account.id)); } catch { /* Keep visible previous queue. */ } }
     } finally { busyRef.current = false; setBusy(false); }
   };
-  return <section className="card cloud-page" aria-busy={busy}><span className="eyebrow">账号与云端备份</span><h1>云档</h1><p role="status">{notice}</p>
+  const pendingCount = queue.filter(record => record.pending || record.conflict).length;
+  return <section className="card cloud-page" aria-busy={busy}>
+    <div className="cloud-page-heading"><div><span className="eyebrow">账号与云端备份</span><h1>云档</h1><p>让每一段行旅，都有归处。</p></div><span className="cloud-session-badge">{account ? account.kind === 'guest' ? '游客会话' : '邮箱已登录' : '本地优先'}</span></div>
+    <p className="cloud-status" role="status">{notice}</p>
     {!account ? <>
       <div className="auth-method-switch" role="group" aria-label="登录方式">
         <button type="button" aria-pressed={loginMethod === 'email'} disabled={busy || !providers.email} onClick={() => setLoginMethod('email')}>邮箱验证码</button>
@@ -179,9 +182,10 @@ export function CloudSettings({ saves, onRestore }: { saves: LocalSave[]; onRest
       {providers.phone && !turnstileSiteKey && <p className="auth-provider-note">手机号登录尚未就绪：网站缺少 Turnstile 公钥配置。</p>}
       {providers.emailCaptcha && !turnstileSiteKey && <p className="auth-provider-note">邮箱登录尚未就绪：网站缺少 Turnstile 公钥配置。</p>}
     </>
-      : <><p>{account.kind === 'guest' ? '游客会话' : account.email}</p>{account.kind === 'guest' && <p>游客会话有效期为 7 天。丢失或清除浏览器站点数据后，无法仅凭存档编号找回云档；连续 90 天无活动后，在线资料进入服务器获批的清理范围，冷备遵循独立政策。</p>}<div className="actions"><button disabled={busy} onClick={() => void act(async () => { await cloudRequest('/api/auth/refresh', 'POST', {}, account.id); return account.kind === 'guest' ? '会话已刷新，有效期延长 7 天。' : '会话已刷新。'; })}>刷新会话</button>
+      : <><div className="cloud-account-bar"><div className="cloud-account-identity"><span className="cloud-avatar" aria-hidden="true">云</span><div><span className="cloud-field-caption">{account.kind === 'guest' ? '当前会话' : '当前账号'}</span><p>{account.kind === 'guest' ? '游客会话' : account.email}</p></div></div><div className="actions"><button disabled={busy} onClick={() => void act(async () => { await cloudRequest('/api/auth/refresh', 'POST', {}, account.id); return account.kind === 'guest' ? '会话已刷新，有效期延长 7 天。' : '会话已刷新。'; })}>刷新会话</button>
         <button disabled={busy} onClick={() => { if (account.kind === 'guest' && !window.confirm('退出会撤销此游客会话。除非已升级邮箱，否则清除站点数据或丢失会话后无法找回云档。仍要退出吗？')) return; void act(async () => { await cloudRequest('/api/auth/logout', 'POST', {}, account.id); setAccount(null); setRemote([]); setQueue([]); setTrash([]); setPhoneLinked(null); setPhoneCode(''); setUnlinkCode(''); setPhoneCaptchaToken(''); return '已退出；本地存档及未完成队列保留。'; }); }}>退出</button>
-        <button disabled={busy} onClick={() => void act(async () => { const result = await sync.flush(account.id); await refresh(account.id); return `已上传 ${result.uploaded} 份；${result.failed} 份失败，${result.conflicted} 份需核对冲突。`; })}>重试待上传</button></div>
+        <button disabled={busy || pendingCount === 0} onClick={() => void act(async () => { const result = await sync.flush(account.id); await refresh(account.id); return `已上传 ${result.uploaded} 份；${result.failed} 份失败，${result.conflicted} 份需核对冲突。`; })}>重试待上传</button></div></div>
+        {account.kind === 'guest' && <p>游客会话有效期为 7 天。丢失或清除浏览器站点数据后，无法仅凭存档编号找回云档；连续 90 天无活动后，在线资料进入服务器获批的清理范围，冷备遵循独立政策。</p>}
         {account.kind === 'guest' ? <section aria-label="游客账号升级"><h2>升级为邮箱账号</h2><p>升级会保留当前账号 ID 与云档。邮箱验证码证明你能收取该邮箱；当前游客会话与最终确认共同证明你要保留的游客账号。</p><p>清除浏览器站点数据会删除游客会话凭据。未活动游客在线资料在 90 天后进入经批准的数据清理；托管方冷备遵循独立政策。</p>
           <label>升级邮箱<input type="email" autoComplete="email" value={upgradeEmail} onChange={event => setUpgradeEmail(event.target.value)} disabled={busy} /></label>
           <button disabled={busy} onClick={() => void act(async () => { await cloudRequest('/api/auth/code', 'POST', { email: upgradeEmail }); return '验证码已发送。请在当前游客会话中完成核验。'; })}>发送升级验证码</button>
@@ -189,7 +193,7 @@ export function CloudSettings({ saves, onRestore }: { saves: LocalSave[]; onRest
           <button disabled={busy} onClick={() => { if (!window.confirm('确认把当前游客账号升级为此已验证邮箱？账号 ID 和云存档归属保持不变。')) return; void act(async () => { const result = await cloudRequest('/api/auth/guest/upgrade', 'POST', { email: upgradeEmail, code: upgradeCode, confirmation: 'UPGRADE_GUEST_TO_EMAIL' }, account.id); const user = readAccount(result.account); if (user.kind !== 'email') throw new Error('INVALID_ACCOUNT'); setAccount(user); setUpgradeCode(''); await refresh(user.id, 0); return '邮箱升级完成；账号 ID 与云档归属保持不变。'; }); }}>核验并升级</button>
         </section>
         : <><AccountLifecyclePanel account={account} saves={saves} externalBusy={busy} acquire={() => { if (busyRef.current) return false; busyRef.current=true;setBusy(true);return true; }} release={() => {busyRef.current=false;setBusy(false);}} onSignedOut={() => { setAccount(null); setRemote([]); setQueue([]); setTrash([]); setPhoneLinked(null); setPhoneCode(''); setUnlinkCode(''); setPhoneCaptchaToken(''); setNotice('账户操作完成，所有会话已退出。本机独立存档保留。'); }} />
-        <h2>登录方式</h2>
+        <details className="cloud-block cloud-login-methods"><summary>登录方式<span>邮箱验证码</span></summary><div className="cloud-details-body">
         <p>邮箱：{account.email}</p>
         {phoneLinked === true ? <>
           <p>手机号：已绑定（号码不在此页面保存或展示）。解绑需要重新验证当前邮箱。</p>
@@ -208,14 +212,14 @@ export function CloudSettings({ saves, onRestore }: { saves: LocalSave[]; onRest
           <label>短信验证码<input inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={phoneCode} onChange={e => setPhoneCode(e.target.value)} /></label>
           <button disabled={busy} onClick={() => void act(async () => { await cloudRequest('/api/auth/phone/link', 'POST', { phone, code: phoneCode }, account.id); setPhoneLinked(true); setPhone(''); setPhoneCode(''); return '手机号已绑定到当前账户。'; })}>确认绑定手机号</button>
         </> : phoneLinked === false ? <p>手机号未绑定。当前短信登录未启用；邮件登录仍可使用。</p>
-          : <p>本次部署未提供手机号绑定状态接口；请先完成后端接入再更改绑定。</p>}</>}
-        <h2>本地存档</h2>{saves.map(save => <div key={save.saveId}><span>{save.name}</span><button disabled={busy} onClick={() => void act(async () => { await sync.enqueue(account.id, save); const result = await sync.flush(account.id); await refresh(account.id); return result.failed ? `有 ${result.failed} 份未上传；请查看下方对应存档。` : result.conflicted ? '云端版本有变化，请核对冲突。' : '云端备份已更新。'; })}>备份到云端</button></div>)}
-        <h2>待上传与冲突</h2>{queue.filter(r => r.pending || r.conflict).map(record => <div key={record.key}><p>{record.localSaveId}：{record.conflict ? '云端已变化，上传暂停' : record.failure ? `上传失败（${({AUTH_REQUIRED:'请重新登录',RATE_LIMITED:'请求过多，请稍后重试',SERVER_ERROR:'服务暂不可用',NETWORK_ERROR:'网络中断',INVALID_RESPONSE:'云端响应异常',UPLOAD_FAILED:'本次上传未完成'} as Record<string,string>)[record.failure]}）` : '待重试'}</p>
+          : <p>{phoneAvailable ? '暂时无法读取手机号绑定状态，请稍后重试。' : '当前使用邮箱验证码登录。'}</p>}</div></details></>}
+        <div className="cloud-storage-grid"><section className="cloud-block"><div className="cloud-section-heading"><h2>本地存档</h2><span>{saves.length} 份</span></div><p className="cloud-section-description">保存在当前设备，可手动备份到云端。</p>{saves.length === 0 && <p className="cloud-empty">还没有本地存档。开始一段新的行旅后，会在这里出现。</p>}{saves.map(save => <div className="cloud-save-row" key={save.saveId}><span>{save.name}</span><button disabled={busy} onClick={() => void act(async () => { await sync.enqueue(account.id, save); const result = await sync.flush(account.id); await refresh(account.id); return result.failed ? `有 ${result.failed} 份未上传；请查看下方对应存档。` : result.conflicted ? '云端版本有变化，请核对冲突。' : '云端备份已更新。'; })}>备份到云端</button></div>)}</section>
+        <section className="cloud-block"><div className="cloud-section-heading"><h2>待上传与冲突</h2><span>{pendingCount} 份</span></div><p className="cloud-section-description">上传中断或版本变化时，在这里继续处理。</p>{pendingCount === 0 && <p className="cloud-empty">没有待处理的上传。</p>}{queue.filter(r => r.pending || r.conflict).map(record => <div className="cloud-save-row cloud-conflict-row" key={record.key}><p>{record.localSaveId}：{record.conflict ? '云端已变化，上传暂停' : record.failure ? `上传失败（${({AUTH_REQUIRED:'请重新登录',RATE_LIMITED:'请求过多，请稍后重试',SERVER_ERROR:'服务暂不可用',NETWORK_ERROR:'网络中断',INVALID_RESPONSE:'云端响应异常',UPLOAD_FAILED:'本次上传未完成'} as Record<string,string>)[record.failure]}）` : '待重试'}</p>
           {record.conflict && <><p>本地回合：{record.pending ? archiveFromEnvelope(record.pending).revision : '无'}；云端回合：{archiveFromEnvelope(record.conflict).revision}</p>
             <button disabled={busy} onClick={() => void act(async () => { await sync.keepLocal(record); await sync.flush(account.id); await refresh(account.id); return '按已核对的云端版本重试；后续变化仍会触发冲突。'; })}>确认用本地更新云端</button>
             <button disabled={busy} onClick={() => void act(async () => { const copy = await onRestore(archiveFromEnvelope(record.conflict)); if (!copy) throw new Error('LOCAL_WRITE_FAILED'); await sync.trackRestored(account.id, copy.saveId, record.conflict); await sync.discardUpload(record); await refresh(account.id); return '云端版本已另存本地副本，原档保留。'; })}>云端另存本地副本</button></>}
           <button disabled={busy} onClick={() => void act(async () => { await sync.discardUpload(record); await refresh(account.id); return '已取消这次上传，本地存档保留。'; })}>取消待上传</button>
-        </div>)}<h2>云端备份</h2>{remote.map((save, index) => <div key={`${save.saveId}-${index}`}><span>{save.name} · 云端版本 {save.revision}</span>
+        </div>)}</section><section className="cloud-block cloud-backups"><div className="cloud-section-heading"><h2>云端备份</h2><span>{remote.length} 份{hasMore ? ' · 还有下一页' : ''}</span></div><p className="cloud-section-description">属于当前账号。恢复时另存为本地副本。</p>{remote.length === 0 && <p className="cloud-empty">当前页没有云端备份。可从上方本地存档手动上传。</p>}{remote.map((save, index) => <div className="cloud-save-row" key={`${save.saveId}-${index}`}><span>{save.name} · 云端版本 {save.revision}</span>
           <button disabled={busy} onClick={() => void act(async () => { const cloud = await cloudRequest(`/api/saves/${encodeURIComponent(save.saveId)}`, 'GET', undefined, account.id); const copy = await onRestore(archiveFromEnvelope(cloud.save)); if (!copy) throw new Error('LOCAL_WRITE_FAILED'); await sync.trackRestored(account.id, copy.saveId, cloud.save); return '已恢复为本地新副本，原档保留；后续备份仍绑定此云档。'; })}>恢复为本地副本</button>
           <button disabled={busy} onClick={() => void act(async () => {
             const cloud = await cloudRequest(`/api/saves/${encodeURIComponent(save.saveId)}`, 'GET', undefined, account.id); const archive = archiveFromEnvelope(cloud.save);
@@ -226,13 +230,13 @@ export function CloudSettings({ saves, onRestore }: { saves: LocalSave[]; onRest
           <button disabled={busy} onClick={() => { if (window.confirm(`将「${save.name}」移至云端回收区？本地档保留，云端可恢复。`)) void act(async () => {
             await cloudRequest(`/api/saves/${encodeURIComponent(save.saveId)}`, 'DELETE', { expectedRevision: save.revision }, account.id); await refresh(account.id); return '云档已移至回收区，本地档与待上传队列保留。';
           }); }}>删除云档</button></div>)}
-        <div className="actions"><button disabled={busy || offset === 0} onClick={() => void act(async () => { await refresh(account.id, Math.max(0, offset - 20)); return '已读取上一页。'; })}>上一页</button>
-          <button disabled={busy || !hasMore} onClick={() => void act(async () => { await refresh(account.id, offset + 20); return '已读取下一页。'; })}>下一页</button></div>
-        <h2>云端回收区</h2>{trash.map(save => <div key={save.saveId}><span>{save.name}</span><button disabled={busy} onClick={() => void act(async () => {
+        {(offset > 0 || hasMore) && <div className="actions"><button disabled={busy || offset === 0} onClick={() => void act(async () => { await refresh(account.id, Math.max(0, offset - 20)); return '已读取上一页。'; })}>上一页</button>
+          <button disabled={busy || !hasMore} onClick={() => void act(async () => { await refresh(account.id, offset + 20); return '已读取下一页。'; })}>下一页</button></div>}</section></div>
+        <details className="cloud-block cloud-trash"><summary>云端回收区<span>{trash.length} 份{trashMore ? ' · 还有下一页' : ''}</span></summary><div className="cloud-details-body">{trash.length === 0 && <p className="cloud-empty">当前页回收区为空。</p>}{trash.map(save => <div className="cloud-save-row" key={save.saveId}><span>{save.name}</span><button disabled={busy} onClick={() => void act(async () => {
           await cloudRequest(`/api/save-trash/${encodeURIComponent(save.saveId)}/restore`, 'POST', { expectedRevision: save.revision }, account.id); await refresh(account.id); return '完整性校验通过，云档已恢复。';
         })}>恢复删除的云档</button></div>)}
-        <div className="actions"><button disabled={busy || trashOffset === 0} onClick={() => void act(async () => { await refreshTrash(account.id, Math.max(0, trashOffset - 20)); return '已读取回收区上一页。'; })}>回收区上一页</button>
-          <button disabled={busy || !trashMore} onClick={() => void act(async () => { await refreshTrash(account.id, trashOffset + 20); return '已读取回收区下一页。'; })}>回收区下一页</button></div></>}
+        {(trashOffset > 0 || trashMore) && <div className="actions"><button disabled={busy || trashOffset === 0} onClick={() => void act(async () => { await refreshTrash(account.id, Math.max(0, trashOffset - 20)); return '已读取回收区上一页。'; })}>回收区上一页</button>
+          <button disabled={busy || !trashMore} onClick={() => void act(async () => { await refreshTrash(account.id, trashOffset + 20); return '已读取回收区下一页。'; })}>回收区下一页</button></div>}</div></details></>}
     {!account && <button className="secondary" disabled={busy} onClick={() => void act(async () => { const result = await cloudRequest('/api/auth/guest', 'POST', {}); const user = readAccount(result.account); setAccount(user); await refresh(user.id, 0); return '游客会话已创建，7 天内有效。云存档绑定此浏览器会话；请在到期前刷新或升级邮箱。'; })}>以游客身份继续</button>}
   </section>;
 }
