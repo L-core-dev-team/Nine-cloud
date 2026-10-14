@@ -1,0 +1,329 @@
+{
+  "status": "PASS",
+  "server": "18.6",
+  "sourceDatabase": "jiuxiao_test_handover-03",
+  "restoredDatabase": "jiuxiao_test_handover-restore-1791981614070",
+  "snapshotAt": "2026-10-14T12:40:13.619Z",
+  "snapshot": "00000009-00000013-1",
+  "dumpMs": 263.93770000000006,
+  "restoreMs": 338.1421,
+  "rtoIncludingCreateRestoreAndVerifyMs": 645.2478999999998,
+  "rpo": {
+    "method": "exported consistent snapshot; no WAL/PITR",
+    "allPreSnapshotRowsRestored": true,
+    "postSnapshotPublicationsIntentionallyExcluded": 1,
+    "continuousProductionRpoNotEstablished": true
+  },
+  "tables": 30,
+  "sourceShaChecks": 2,
+  "defaultPublicationReceiptChecks": 2,
+  "closedOwnerSourceRetained": "4a16d809-02c4-4ab4-959d-20b6493bec70",
+  "deletedOwnerAbsent": true,
+  "postSnapshotSourceExcluded": "aef7a2a3-b5f5-4274-932d-5c53455fedc5",
+  "dumpBytes": 112723,
+  "dumpSha256": "577bf06cf7f27204fdef2d03b204d68364ff930ee6391b9e343f95445e53acd3",
+  "expected": [
+    {
+      "table": "drizzle.__drizzle_migrations",
+      "count": 23,
+      "sha256": "09c0a3aa5cfba0d5148ae54cc47a02001648ea312f6f2494dbb61b0560c12388"
+    },
+    {
+      "table": "public.account_lifecycle_audit",
+      "count": 1,
+      "sha256": "a5f091a421159004401309662ac1ce2840481dd7f99f75a01e44f26cb91f75bc"
+    },
+    {
+      "table": "public.account_operations",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.account_rate_limits",
+      "count": 3,
+      "sha256": "8c9e37f21422b7e868d028f50cd002f260fc0396069a4b3b8ed2f3bf13033a51"
+    },
+    {
+      "table": "public.archive_retention_purge_receipts",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_accounts",
+      "count": 2,
+      "sha256": "c6365d89e67f576d243a5ff212f62fd5a690f324710582a28151542e0d474dc1"
+    },
+    {
+      "table": "public.auth_challenges",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_external_identities",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_ip_mail_limits",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_mail_limits",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_provider_account_limits",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_provider_ip_limits",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_sessions",
+      "count": 2,
+      "sha256": "9baf2e38a56f6033f0f662dc8575585b025fc40208de29e5eacd8ab8d505f530"
+    },
+    {
+      "table": "public.cloud_archive_trash",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.entitlement_balances",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.entitlement_ledger_entries",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.game_saves",
+      "count": 2,
+      "sha256": "b37010ee9fa3f98f4803b9ace133554fd718c0fa3d6afaa6171ad0cf606d2e37"
+    },
+    {
+      "table": "public.narrative_attempts",
+      "count": 2,
+      "sha256": "1868087e462cedd91a0e609de987efb29150c2a5fa9293a684541b9beaaea91c"
+    },
+    {
+      "table": "public.narrative_context_snapshots",
+      "count": 2,
+      "sha256": "0a638523bb8f55cc92934e3e860677671fd0e8fb6ea71a298cb6d16ef74dde33"
+    },
+    {
+      "table": "public.narrative_generation_requests",
+      "count": 2,
+      "sha256": "d45febe330b6bc4562f4bd11920d867226bf00d0daf79c86b2dc25b7626d3774"
+    },
+    {
+      "table": "public.narrative_outbox",
+      "count": 4,
+      "sha256": "143062b13d802a4a1eed6ce38dd53ef2085e9aa7d4014851fc3d36443dc0ecaf"
+    },
+    {
+      "table": "public.narrative_publications",
+      "count": 2,
+      "sha256": "53dc638c129ddda332f839ebed9d4aa044b781119a8c86446d0a136cd3f778bf"
+    },
+    {
+      "table": "public.narrative_segments",
+      "count": 2,
+      "sha256": "916560bdf24ab6aecf4f93c609b281a8c9e3432e96ae037e85d12eda540a8ba4"
+    },
+    {
+      "table": "public.narrative_sources",
+      "count": 2,
+      "sha256": "b6262c8f1715c3bb96fa15e0d38b19089bb9ca77d1ed98a2af8052b79818f16f"
+    },
+    {
+      "table": "public.npc_authorized_observation_outbox",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.npc_memory_journals",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.npc_memory_observation_supersessions",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.source_event_links",
+      "count": 2,
+      "sha256": "6a68e39cb93f976130d485407988db91eb3cfaa3274e0e0f7a27a1c369128211"
+    },
+    {
+      "table": "public.turn_events",
+      "count": 2,
+      "sha256": "d3070f9fcc386cbaf6ef3e09ab0fbcdfd92b6aca74b873c8d7fb5692f995de41"
+    },
+    {
+      "table": "public.turn_requests",
+      "count": 2,
+      "sha256": "c6d98215ad39fd2438043edfb8e2ad68ed33a5f266de47ee853bb2691a365698"
+    }
+  ],
+  "actual": [
+    {
+      "table": "drizzle.__drizzle_migrations",
+      "count": 23,
+      "sha256": "09c0a3aa5cfba0d5148ae54cc47a02001648ea312f6f2494dbb61b0560c12388"
+    },
+    {
+      "table": "public.account_lifecycle_audit",
+      "count": 1,
+      "sha256": "a5f091a421159004401309662ac1ce2840481dd7f99f75a01e44f26cb91f75bc"
+    },
+    {
+      "table": "public.account_operations",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.account_rate_limits",
+      "count": 3,
+      "sha256": "8c9e37f21422b7e868d028f50cd002f260fc0396069a4b3b8ed2f3bf13033a51"
+    },
+    {
+      "table": "public.archive_retention_purge_receipts",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_accounts",
+      "count": 2,
+      "sha256": "c6365d89e67f576d243a5ff212f62fd5a690f324710582a28151542e0d474dc1"
+    },
+    {
+      "table": "public.auth_challenges",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_external_identities",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_ip_mail_limits",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_mail_limits",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_provider_account_limits",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_provider_ip_limits",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_sessions",
+      "count": 2,
+      "sha256": "9baf2e38a56f6033f0f662dc8575585b025fc40208de29e5eacd8ab8d505f530"
+    },
+    {
+      "table": "public.cloud_archive_trash",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.entitlement_balances",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.entitlement_ledger_entries",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.game_saves",
+      "count": 2,
+      "sha256": "b37010ee9fa3f98f4803b9ace133554fd718c0fa3d6afaa6171ad0cf606d2e37"
+    },
+    {
+      "table": "public.narrative_attempts",
+      "count": 2,
+      "sha256": "1868087e462cedd91a0e609de987efb29150c2a5fa9293a684541b9beaaea91c"
+    },
+    {
+      "table": "public.narrative_context_snapshots",
+      "count": 2,
+      "sha256": "0a638523bb8f55cc92934e3e860677671fd0e8fb6ea71a298cb6d16ef74dde33"
+    },
+    {
+      "table": "public.narrative_generation_requests",
+      "count": 2,
+      "sha256": "d45febe330b6bc4562f4bd11920d867226bf00d0daf79c86b2dc25b7626d3774"
+    },
+    {
+      "table": "public.narrative_outbox",
+      "count": 4,
+      "sha256": "143062b13d802a4a1eed6ce38dd53ef2085e9aa7d4014851fc3d36443dc0ecaf"
+    },
+    {
+      "table": "public.narrative_publications",
+      "count": 2,
+      "sha256": "53dc638c129ddda332f839ebed9d4aa044b781119a8c86446d0a136cd3f778bf"
+    },
+    {
+      "table": "public.narrative_segments",
+      "count": 2,
+      "sha256": "916560bdf24ab6aecf4f93c609b281a8c9e3432e96ae037e85d12eda540a8ba4"
+    },
+    {
+      "table": "public.narrative_sources",
+      "count": 2,
+      "sha256": "b6262c8f1715c3bb96fa15e0d38b19089bb9ca77d1ed98a2af8052b79818f16f"
+    },
+    {
+      "table": "public.npc_authorized_observation_outbox",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.npc_memory_journals",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.npc_memory_observation_supersessions",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.source_event_links",
+      "count": 2,
+      "sha256": "6a68e39cb93f976130d485407988db91eb3cfaa3274e0e0f7a27a1c369128211"
+    },
+    {
+      "table": "public.turn_events",
+      "count": 2,
+      "sha256": "d3070f9fcc386cbaf6ef3e09ab0fbcdfd92b6aca74b873c8d7fb5692f995de41"
+    },
+    {
+      "table": "public.turn_requests",
+      "count": 2,
+      "sha256": "c6d98215ad39fd2438043edfb8e2ad68ed33a5f266de47ee853bb2691a365698"
+    }
+  ]
+}

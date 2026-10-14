@@ -1,0 +1,124 @@
+$ node tests/e2e/auth-login-ui.cjs && node tests/e2e/filing-notice.cjs && node tests/e2e/foundation.cjs && node tests/e2e/prologue.cjs && node tests/e2e/p1-authenticated-candidate.cjs && node tests/e2e/p1-action-suggestions-ui.cjs && node tests/e2e/p2-authoritative-idb.cjs && node tests/e2e/p2-gameplay.cjs && node tests/e2e/cloud-game-cache.cjs && node tests/e2e/cloud-game-recovery.cjs && node tests/e2e/cloud-game-shell.cjs
+Mocked login browser flow passed: Turnstile token, SMS request, phone OTP login, and fail-closed provider UI. No real provider behavior claimed.
+Filing notice browser check: [{"width":320,"status":"PASS","centerOffset":0,"badgeLoaded":true,"documentWidth":320},{"width":390,"status":"PASS","centerOffset":0,"badgeLoaded":true,"documentWidth":390},{"width":1366,"status":"PASS","centerOffset":0,"badgeLoaded":true,"documentWidth":1366}]
+18:54:38 [vite] http proxy error: /api/auth/session
+Error: connect ECONNREFUSED 127.0.0.1:8787
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16)
+Invalid import regression: 390px empty.json
+18:54:41 [vite] http proxy error: /api/auth/session
+Error: connect ECONNREFUSED 127.0.0.1:8787
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16)
+Invalid import regression: 390px object.json
+18:54:41 [vite] http proxy error: /api/auth/session
+Error: connect ECONNREFUSED 127.0.0.1:8787
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16)
+Invalid import regression: 390px null.json
+18:54:42 [vite] http proxy error: /api/auth/session
+Error: connect ECONNREFUSED 127.0.0.1:8787
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16)
+Invalid import regression: 390px array.json
+18:54:42 [vite] http proxy error: /api/auth/session
+Error: connect ECONNREFUSED 127.0.0.1:8787
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16)
+Invalid import regression: 390px scalar.json
+18:54:42 [vite] http proxy error: /api/auth/session
+Error: connect ECONNREFUSED 127.0.0.1:8787
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16)
+Invalid import regression: 390px messages-type.json
+18:54:43 [vite] http proxy error: /api/auth/session
+Error: connect ECONNREFUSED 127.0.0.1:8787
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16)
+Invalid import regression: 390px negative-turn.json
+18:54:43 [vite] http proxy error: /api/auth/session
+Error: connect ECONNREFUSED 127.0.0.1:8787
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16)
+Invalid import regression: 390px fractional-turn.json
+18:54:43 [vite] http proxy error: /api/auth/session
+Error: connect ECONNREFUSED 127.0.0.1:8787
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16)
+Invalid import regression: 390px revision-type.json
+18:54:44 [vite] http proxy error: /api/auth/session
+Error: connect ECONNREFUSED 127.0.0.1:8787
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16)
+Invalid import regression: 390px player-type.json
+18:54:44 [vite] http proxy error: /api/auth/session
+Error: connect ECONNREFUSED 127.0.0.1:8787
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16)
+Invalid import regression: 390px world-type.json
+18:54:44 [vite] http proxy error: /api/auth/session
+Error: connect ECONNREFUSED 127.0.0.1:8787
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16)
+Invalid import regression: 390px unrecognized.json
+18:54:45 [vite] http proxy error: /api/auth/session
+Error: connect ECONNREFUSED 127.0.0.1:8787
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16)
+Invalid import regression: 390px bad-envelope.json
+18:54:45 [vite] http proxy error: /api/auth/session
+Error: connect ECONNREFUSED 127.0.0.1:8787
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16)
+Invalid import regression: 390px blank.txt
+18:54:45 [vite] http proxy error: /api/auth/session
+Error: connect ECONNREFUSED 127.0.0.1:8787
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16)
+Invalid import regression: 390px script-only.html
+18:54:46 [vite] http proxy error: /api/auth/session
+Error: connect ECONNREFUSED 127.0.0.1:8787
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16)
+18:54:46 [vite] http proxy error: /api/auth/session
+Error: connect ECONNREFUSED 127.0.0.1:8787
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16)
+18:54:46 [vite] http proxy error: /api/auth/session
+Error: connect ECONNREFUSED 127.0.0.1:8787
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16)
+18:54:49 [vite] http proxy error: /api/auth/session
+Error: connect ECONNREFUSED 127.0.0.1:8787
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16)
+18:54:49 [vite] http proxy error: /api/auth/session
+Error: connect ECONNREFUSED 127.0.0.1:8787
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16)
+acceptance feedback F-01..F-05 / S-01..S-03: 390 passed
+Invalid import regression: 1366px empty.json
+Invalid import regression: 1366px object.json
+Invalid import regression: 1366px null.json
+Invalid import regression: 1366px array.json
+Invalid import regression: 1366px scalar.json
+Invalid import regression: 1366px messages-type.json
+Invalid import regression: 1366px negative-turn.json
+Invalid import regression: 1366px fractional-turn.json
+Invalid import regression: 1366px revision-type.json
+Invalid import regression: 1366px player-type.json
+Invalid import regression: 1366px world-type.json
+Invalid import regression: 1366px unrecognized.json
+Invalid import regression: 1366px bad-envelope.json
+Invalid import regression: 1366px blank.txt
+Invalid import regression: 1366px script-only.html
+18:55:33 [vite] http proxy error: /api/auth/session
+Error: connect ECONNREFUSED 127.0.0.1:8787
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16)
+18:55:34 [vite] http proxy error: /api/auth/session
+Error: connect ECONNREFUSED 127.0.0.1:8787
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16)
+acceptance feedback F-01..F-05 / S-01..S-03: 1366 passed
+Design acceptance: 20 five-page baselines; 4508 text runs including professional AI and 572 control-boundary samples passed across night/day and mobile/desktop. Contrast failures: professional AI 0; worldbook controls 0.
+Runtime renderer: 390px 当前后端：WebGL 2; 1366px 当前后端：WebGL 2
+Fallbacks: 390px WebGL context loss → Canvas 2D; 390px 着色器编译失败 → Canvas 2D; 390px WebGL 缓冲区分配失败 → Canvas 2D; 390px WebGL 2 禁用 → WebGL 1; 390px WebGL 禁用 → Canvas 2D; 390px Canvas 不可用 → 静态回退; 1366px WebGL context loss → Canvas 2D; 1366px 着色器编译失败 → Canvas 2D; 1366px WebGL 缓冲区分配失败 → Canvas 2D; 1366px WebGL 2 禁用 → WebGL 1; 1366px WebGL 禁用 → Canvas 2D; 1366px Canvas 不可用 → 静态回退
+Audio consent: 390px 音频手势/静音已验证; 1366px 音频手势/静音已验证
+Local UI regression, reviewed worldbook search, save conflict and mirror recovery, and API smoke passed at mobile and desktop viewports
+AssertionError [ERR_ASSERTION]: Set TEST_DATABASE_URL to a disposable jiuxiao_test database
+    at C:\Users\11954\Documents\Codex\Nine-cloud-p3-p6-stage1-20261013\tests\e2e\prologue.cjs:65:10
+    at Object.<anonymous> (C:\Users\11954\Documents\Codex\Nine-cloud-p3-p6-stage1-20261013\tests\e2e\prologue.cjs:270:3)
+    at Module._compile (node:internal/modules/cjs/loader:1872:14)
+    at Object..js (node:internal/modules/cjs/loader:2003:10)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: undefined,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+[ELIFECYCLE] Command failed with exit code 1.

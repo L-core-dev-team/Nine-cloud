@@ -1,0 +1,19 @@
+{
+  "mockedApi": true,
+  "checks": [
+    "definitive revision conflict preserves draft without resubmit",
+    "reject different-action receipt",
+    "8000 draft refresh",
+    "stale-tab conflict",
+    "refresh GET only",
+    "explicit identical retry",
+    "reading anchor restore",
+    "confirmed receipt recovery",
+    "save isolation",
+    "owner isolation",
+    "logout clears only owner",
+    "corrupt cache fails closed",
+    "unavailable storage fails closed"
+  ],
+  "status": "PASS"
+}

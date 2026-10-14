@@ -1,0 +1,15 @@
+C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-p3-p6-handover-01-20261014\scripts\narrative-publication-migration-check.cjs:6
+if (!['127.0.0.1','localhost'].includes(url.hostname) || !/^\/jiuxiao_test(?:_[a-z0-9-]+)?$/.test(url.pathname)) throw Error('LOCAL_ISOLATED_DATABASE_REQUIRED');
+                                                                                                                 ^
+
+Error: LOCAL_ISOLATED_DATABASE_REQUIRED
+    at Object.<anonymous> (C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-p3-p6-handover-01-20261014\scripts\narrative-publication-migration-check.cjs:6:120)
+    at Module._compile (node:internal/modules/cjs/loader:1872:14)
+    at Object..js (node:internal/modules/cjs/loader:2003:10)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47
+
+Node.js v24.19.0

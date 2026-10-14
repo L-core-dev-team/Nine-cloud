@@ -1,0 +1,34 @@
+{
+  "results": [
+    {
+      "mode": "fresh",
+      "database": "jiuxiao_test_narrative-fresh-1791975799042",
+      "status": "PASS",
+      "schema": "0022",
+      "oldSaveRowsPreserved": 0,
+      "pgVersion": "18.4"
+    },
+    {
+      "mode": "upgrade0021",
+      "database": "jiuxiao_test_narrative-upgrade0021-1791975800576",
+      "status": "PASS",
+      "schema": "0022",
+      "oldSaveRowsPreserved": 2,
+      "pgVersion": "18.4"
+    },
+    {
+      "mode": "interrupted",
+      "database": "jiuxiao_test_narrative-interrupted-1791975801355",
+      "status": "PASS",
+      "schema": "0022",
+      "oldSaveRowsPreserved": 2,
+      "pgVersion": "18.4"
+    },
+    {
+      "mode": "collision",
+      "database": "jiuxiao_test_narrative-collision-1791975802196",
+      "status": "PASS",
+      "atomicRejection": true
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "scope": "local candidate; signed integration not applied",
+  "timestamp": "2026-10-14T19:06:06.7103965+08:00",
+  "sha": "dbae068d86e5f9cd188d6196e403ce6dd701a1de",
+  "results": [
+    {
+      "exitCode": 0,
+      "command": "pnpm typecheck"
+    },
+    {
+      "exitCode": 0,
+      "command": "pnpm build"
+    },
+    {
+      "exitCode": 0,
+      "command": "pnpm test"
+    },
+    {
+      "exitCode": 0,
+      "command": "pnpm test:integration"
+    },
+    {
+      "exitCode": 0,
+      "command": "node tests/e2e/cloud-game-publication.cjs"
+    }
+  ]
+}

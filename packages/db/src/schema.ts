@@ -1,5 +1,6 @@
 import { sql } from 'drizzle-orm';
-import { bigint, boolean, check, date, foreignKey, index, integer, jsonb, pgTable, primaryKey, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
+import type { Buffer } from 'node:buffer';
+import { bigint, boolean, check, customType, date, foreignKey, index, integer, jsonb, pgTable, primaryKey, text, timestamp, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
 
 export const authAccounts = pgTable('auth_accounts', {
   id: text('id').primaryKey(), email: text('email'), isGuest: boolean('is_guest').notNull().default(false),
@@ -279,3 +280,92 @@ export const npcMemoryObservationSupersessions = pgTable('npc_memory_observation
 
 export const accountRateLimits=pgTable('account_rate_limits',{key:text('key').primaryKey(),expiresAt:timestamp('expires_at',{withTimezone:true}).notNull(),hits:integer('hits').notNull()});
 export const accountLifecycleAudit=pgTable('account_lifecycle_audit',{id:text('id').primaryKey(),ownerDigest:text('owner_digest').notNull(),operation:text('operation').notNull(),policyVersion:text('policy_version').notNull(),occurredAt:timestamp('occurred_at',{withTimezone:true}).notNull().defaultNow()});
+
+// Mirrors 0022 only. SQL triggers remain authoritative; do not regenerate migration history.
+const narrativeBytea = customType<{ data: Buffer; driverData: Buffer }>({ dataType: () => 'bytea' });
+export const narrativeContextSnapshots = pgTable('narrative_context_snapshots', {
+  id: uuid('id').primaryKey(), saveId: text('save_id').notNull(), requestKey: text('request_key').notNull(),
+  ownerId: text('owner_id').notNull().references(() => authAccounts.id), branchId: text('branch_id').notNull(),
+  receiptSha: text('receipt_sha').notNull(), context: jsonb('context').notNull(), contextSha: text('context_sha').notNull(),
+}, t => [
+  uniqueIndex('narrative_context_snapshots_save_id_request_key_key').on(t.saveId,t.requestKey),
+  uniqueIndex('narrative_context_snapshots_id_save_id_request_key_key').on(t.id,t.saveId,t.requestKey),
+  foreignKey({columns:[t.saveId,t.requestKey],foreignColumns:[turnRequests.saveId,turnRequests.idempotencyKey]}),
+  check('narrative_context_branch',sql`${t.branchId}='root'`),
+  check('narrative_context_receipt_sha',sql`${t.receiptSha} ~ '^[a-f0-9]{64}$'`),
+  check('narrative_context_sha',sql`${t.contextSha} ~ '^[a-f0-9]{64}$'`),
+  check('narrative_context_format',sql`${t.context}->>'format'='authority-context-v1'`),
+  check('narrative_context_policy',sql`${t.context}->>'policySurface'='p5-narrative'`),
+  check('narrative_context_fields',sql`${t.context}-ARRAY['format','policySurface','receipt','hints','rendererVersion']::text[]='{}'::jsonb`),
+]);
+export const narrativeGenerationRequests = pgTable('narrative_generation_requests', {
+  id: uuid('id').primaryKey(), contextId: uuid('context_id').notNull(), saveId: text('save_id').notNull(), requestKey: text('request_key').notNull(),
+  generationKey: text('generation_key').notNull(), publicationKey: text('publication_key').notNull(),
+  state: text('state').notNull().default('pending'), leaseEpoch: integer('lease_epoch').notNull().default(0),
+  createdAt: timestamp('created_at',{withTimezone:true}).notNull().defaultNow(),
+},t=>[
+  uniqueIndex('narrative_generation_save_generation').on(t.saveId,t.requestKey,t.generationKey),
+  uniqueIndex('narrative_generation_save_publication').on(t.saveId,t.requestKey,t.publicationKey),
+  uniqueIndex('narrative_generation_identity').on(t.id,t.saveId,t.requestKey),
+  uniqueIndex('narrative_generation_publication_identity').on(t.id,t.publicationKey),
+  foreignKey({columns:[t.contextId,t.saveId,t.requestKey],foreignColumns:[narrativeContextSnapshots.id,narrativeContextSnapshots.saveId,narrativeContextSnapshots.requestKey]}),
+  check('narrative_generation_key',sql`${t.generationKey}='initial-v1'`),check('narrative_publication_key',sql`${t.publicationKey}='initial-v1'`),
+  check('narrative_generation_state',sql`${t.state} IN ('pending','running','failed','published')`),check('narrative_generation_epoch',sql`${t.leaseEpoch}>=0`),
+]);
+export const narrativeAttempts = pgTable('narrative_attempts', {
+  id:uuid('id').primaryKey(),generationId:uuid('generation_id').notNull().references(()=>narrativeGenerationRequests.id),
+  leaseEpoch:integer('lease_epoch').notNull(),leaseUntil:timestamp('lease_until',{withTimezone:true}).notNull(),state:text('state').notNull(),
+},t=>[
+  uniqueIndex('narrative_attempt_epoch').on(t.generationId,t.leaseEpoch),uniqueIndex('narrative_attempt_identity').on(t.id,t.generationId),
+  uniqueIndex('narrative_one_running').on(t.generationId).where(sql`${t.state}='running'`),
+  check('narrative_attempt_epoch_positive',sql`${t.leaseEpoch}>0`),check('narrative_attempt_state',sql`${t.state} IN ('running','expired','failed','published')`),
+]);
+export const narrativeSources=pgTable('narrative_sources',{
+  id:uuid('id').primaryKey(),generationId:uuid('generation_id').notNull().references(()=>narrativeGenerationRequests.id),
+  attemptId:uuid('attempt_id').notNull().unique(),body:narrativeBytea('body').notNull(),bodySha:text('body_sha').notNull(),
+  utf16Length:integer('utf16_length').notNull(),utf8Length:integer('utf8_length').notNull(),generatorSource:text('generator_source').notNull(),
+  createdAt:timestamp('created_at',{withTimezone:true}).notNull().defaultNow(),
+},t=>[
+  uniqueIndex('narrative_source_identity').on(t.id,t.generationId),
+  foreignKey({columns:[t.attemptId,t.generationId],foreignColumns:[narrativeAttempts.id,narrativeAttempts.generationId]}),
+  check('narrative_source_utf16',sql`${t.utf16Length}>0`),check('narrative_source_utf8',sql`${t.utf8Length}>0`),
+  check('narrative_source_generator',sql`${t.generatorSource}='deterministic'`),check('narrative_source_length',sql`${t.utf8Length}=octet_length(${t.body})`),
+  check('narrative_source_hash',sql`${t.bodySha}=encode(sha256(${t.body}),'hex')`),
+]);
+export const narrativePublications=pgTable('narrative_publications',{
+  id:uuid('id').primaryKey(),generationId:uuid('generation_id').notNull().unique(),sourceId:uuid('source_id').notNull().unique(),
+  saveId:text('save_id').notNull(),requestKey:text('request_key').notNull(),publicationKey:text('publication_key').notNull(),
+  version:integer('version').notNull(),isDefault:boolean('is_default').notNull(),createdAt:timestamp('created_at',{withTimezone:true}).notNull().defaultNow(),
+},t=>[
+  uniqueIndex('narrative_publication_key_identity').on(t.saveId,t.requestKey,t.publicationKey),uniqueIndex('narrative_publication_version').on(t.saveId,t.requestKey,t.version),
+  uniqueIndex('narrative_one_default').on(t.saveId,t.requestKey).where(sql`${t.isDefault}`),
+  foreignKey({columns:[t.generationId,t.saveId,t.requestKey],foreignColumns:[narrativeGenerationRequests.id,narrativeGenerationRequests.saveId,narrativeGenerationRequests.requestKey]}),
+  foreignKey({columns:[t.generationId,t.publicationKey],foreignColumns:[narrativeGenerationRequests.id,narrativeGenerationRequests.publicationKey]}),
+  foreignKey({columns:[t.sourceId,t.generationId],foreignColumns:[narrativeSources.id,narrativeSources.generationId]}),
+  check('narrative_publication_version_one',sql`${t.version}=1`),check('narrative_publication_default',sql`${t.isDefault}`),
+]);
+export const narrativeSegments=pgTable('narrative_segments',{
+  sourceId:uuid('source_id').notNull().references(()=>narrativeSources.id),segmentId:integer('segment_id').notNull(),
+  startUtf16:integer('start_utf16').notNull(),endUtf16:integer('end_utf16').notNull(),segmentSha:text('segment_sha').notNull(),audience:text('audience').notNull(),
+},t=>[
+  primaryKey({columns:[t.sourceId,t.segmentId]}),check('narrative_segment_id',sql`${t.segmentId}>=0`),
+  check('narrative_segment_start',sql`${t.startUtf16}>=0`),check('narrative_segment_end',sql`${t.endUtf16}>${t.startUtf16}`),
+  check('narrative_segment_sha',sql`${t.segmentSha} ~ '^[a-f0-9]{64}$'`),check('narrative_segment_player',sql`${t.audience}='player_only'`),
+]);
+export const sourceEventLinks=pgTable('source_event_links',{
+  id:uuid('id').primaryKey(),sourceId:uuid('source_id').notNull(),segmentId:integer('segment_id').notNull(),
+  saveId:text('save_id').notNull(),eventId:text('event_id').notNull(),kind:text('kind').notNull(),
+},t=>[
+  uniqueIndex('source_event_identity').on(t.sourceId,t.segmentId,t.eventId),
+  foreignKey({columns:[t.sourceId,t.segmentId],foreignColumns:[narrativeSegments.sourceId,narrativeSegments.segmentId]}),
+  foreignKey({columns:[t.saveId,t.eventId],foreignColumns:[turnEvents.saveId,turnEvents.id]}),check('source_event_provenance',sql`${t.kind}='provenance_only'`),
+]);
+export const narrativeOutbox=pgTable('narrative_outbox',{
+  id:uuid('id').primaryKey(),generationId:uuid('generation_id').notNull().references(()=>narrativeGenerationRequests.id),
+  sourceId:uuid('source_id'),kind:text('kind').notNull(),state:text('state').notNull().default('pending'),
+},t=>[
+  uniqueIndex('narrative_outbox_identity').on(t.generationId,t.kind),
+  foreignKey({columns:[t.sourceId,t.generationId],foreignColumns:[narrativeSources.id,narrativeSources.generationId]}),
+  check('narrative_outbox_kind',sql`${t.kind} IN ('generate','index')`),check('narrative_outbox_state',sql`${t.state} IN ('pending','done')`),
+  check('narrative_outbox_source',sql`(${t.kind}='generate' AND ${t.sourceId} IS NULL) OR (${t.kind}='index' AND ${t.sourceId} IS NOT NULL)`),
+]);

@@ -1,0 +1,11 @@
+{
+  "name": "typecheck-03",
+  "baselineOrCandidate": "dbae068d86e5f9cd188d6196e403ce6dd701a1de",
+  "command": [
+    "pnpm",
+    "typecheck"
+  ],
+  "started": "2026-10-14T12:30:46.885Z",
+  "finished": "2026-10-14T12:30:51.805Z",
+  "exitCode": 0
+}

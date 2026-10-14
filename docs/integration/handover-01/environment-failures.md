@@ -1,0 +1,4 @@
+# 环境准备失败记录
+
+1. EDB下载页首次Invoke-WebRequest触发PowerShell默认HTML解析NullReferenceException。改用-UseBasicParsing后读取官方链接；未修改系统配置。
+2. handover-protect首次报CLONE_MISMATCH narrative-memory-context.ts。只读确认原件106个LF、独立Git检出106个CRLF，两边core.autocrlf=true，Git基线一致。校验程序保留原件SHA和候选SHA两份，要求字节一致或严格只有CRLF/LF检出差异；不改原文件、不忽略任何其他内容差异。后续保护检查使用候选原始SHA，并另外核验原临江仙文件SHA与AST摘要。此处是克隆换行口径修正，不是放宽签署规则。

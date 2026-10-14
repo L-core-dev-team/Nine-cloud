@@ -1,0 +1,148 @@
+$ pnpm --filter @jiuxiao/domain build && node work/core-regression.cjs && pnpm -r --filter=!@jiuxiao/scene-studio --filter=!@jiuxiao/scene-gate test
+$ tsc -p tsconfig.json
+PASS 预先取消时零请求、零草稿写入
+PASS 草稿保存期间取消不返回可提交状态
+PASS 刷新后复用已整理回复，零额外请求
+PASS 整理响应保存失败仍保留原文和待行动
+PASS 十回合模拟推进，每轮导出导入，六轮记忆归档
+PASS 原始回复随待处理存档完整导入导出
+PASS NPC部分关系更新保留其余关系及人物资料
+PASS 拒绝越界关系后保留旧值且不改写原始提案
+PASS 关系更新经过存档导入导出保持一致
+PASS 无效存档库不能覆盖原存档
+PASS 导入拒绝重复事件及已提交的待处理行动
+PASS 三十回合持久化、刷新、导入、跨档案周期
+PASS 损坏配置字段不再导致首页状态检查崩溃
+PASS 错误配置结构显示可识别错误
+PASS 个人预设使用作者确认的主模型名称
+PASS 中文死亡标记不能通过英文属性绕过
+PASS 英文死亡标记不能通过中文属性绕过
+PASS 导入拒绝字符串 GM 标记但兼容旧版缺省值
+PASS 模型不得把主角保留 ID 当作新 NPC
+PASS 旧标签页不能覆盖另一标签页刚保存的进度
+PASS 本标签页连续保存及原始格式存档可正常续写
+PASS 真实临江仙旧HTML迁移角色、人物、物品和记忆
+PASS 旧HTML正文提取不混入面板与行动建议
+PASS 旧HTML注释和脚本不能伪造迁移分区
+PASS 空文件和畸形旧JSON不会伪装成成功导入
+PASS 原生JSON拒绝空白ID、保留ID人物及畸形扩展字段
+PASS 合法补充资料与档案审阅可完整往返
+PASS 冲突后只载入磁盘最新版且不合并旧标签页内容
+28/28 core regressions passed
+PASS Base URL与完整地址兼容
+PASS 拒绝URL携带密钥与非HTTP协议
+PASS 普通回合仅调用剧情和状态岗位
+PASS 重要剧情导演失败回退主剧情
+PASS 高级导演失败后普通导演接管
+PASS 状态模型失败由主模型提取状态
+PASS 双重状态失败保留正文且不推进世界
+PASS 重试未结算正文不重新生成剧情
+PASS 单AI模式一次返回完整回合且存档通用
+PASS 模式切换后仍可恢复未结算正文
+PASS 主模型失败不会创建正文或状态
+PASS 取消不会触发辅助模型回退
+PASS 拒绝非法字段同时保留正文与合法地点
+PASS 越界关系和未经授权复活不写入
+PASS 世界事件去重，伏笔更新可兼容导入
+PASS 档案只在周期调用，建议不删除记忆
+PASS 档案失败不抛错也不更改已结算回合
+PASS 调用器读取真实usage并隐藏认证头
+PASS HTTP错误可区分且服务端回显密钥脱敏
+PASS 缺少usage不伪造零tokens
+PASS 被截断响应拒绝提交
+PASS 非法状态JSON触发备用结算
+PASS 导演方案格式异常时不阻止正文
+PASS 未结算正文及待行动可导出再导入
+PASS 每岗位使用独立提示词
+PASS 无AI配置不可发出调用
+PASS 提供商超时有明确错误并停止请求
+PASS 未知上下文用量不会变成价格或估算费用
+PASS 未知人物引用只拒绝对应条目
+PASS 允许事件引用本轮合法新增NPC
+PASS 已拒绝的NPC不能被伏笔引用
+PASS 旧世界事件不能通过同ID被改写
+PASS 被截断回复仍统计提供商报告的usage
+PASS 提供商负数用量按未知处理
+PASS JSON BOM和标准文本保持原值
+PASS 围栏前后说明文字
+PASS 说明文字包裹嵌套JSON
+PASS 修复字符串内真实换行和制表符
+PASS 修复对象数组尾逗号且不改变正文
+PASS 拒绝多个不同根对象
+PASS 拒绝截断根对象而不提取内部状态
+PASS 拒绝根数组且不提取其子对象
+PASS 拒绝嵌套危险键
+PASS 拒绝JS执行表达式
+PASS 普通文本中的键名引用不误判
+PASS 单模型兼容响应完成提交且只调用一次
+PASS 纯文本回复只整理一次并保留原文
+PASS 整理失败不提交状态且保留两次响应
+PASS 重试复用已保存原文不重写场景
+PASS 单模型正文有效但缺状态时独立结算
+PASS 原文保存失败停止后续模型调用
+PASS 截断文本保留但不整理不结算
+PASS content文本块兼容
+PASS 原文脱敏不截断正文
+
+54/54 通过
+Scope: 6 of 9 workspace projects
+packages/content test$ vitest run src
+packages/contracts test$ vitest run
+packages/content test:  RUN  v5.0.3 C:/Users/11954/Documents/Codex/Nine-cloud-p3-p6-stage1-20261013/packages/content
+packages/contracts test:  RUN  v5.0.3 C:/Users/11954/Documents/Codex/Nine-cloud-p3-p6-stage1-20261013/packages/contracts
+packages/contracts test:  Test Files  2 passed (2)
+packages/contracts test:       Tests  17 passed (17)
+packages/contracts test:    Start at  18:51:53
+packages/contracts test:    Duration  534ms (import 51%, transform 38%, tests 8%, worker 3%)
+packages/contracts test: Done
+packages/domain test$ vitest run
+packages/content test:  Test Files  6 passed (6)
+packages/content test:       Tests  25 passed (25)
+packages/content test:    Start at  18:51:53
+packages/content test:    Duration  638ms (transform 51%, tests 26%, import 19%, worker 3%)
+packages/content test: Done
+packages/domain test:  RUN  v5.0.3 C:/Users/11954/Documents/Codex/Nine-cloud-p3-p6-stage1-20261013/packages/domain
+packages/domain test:  Test Files  11 passed (11)
+packages/domain test:       Tests  133 passed (133)
+packages/domain test:    Start at  18:51:54
+packages/domain test:    Duration  857ms (transform 46%, import 41%, tests 11%, worker 2%)
+packages/domain test:   Transform  transforming modules took 2.04s · 46% of tracked time, re-done on every run
+packages/domain test:              persist transforms across runs with fsModuleCache: true
+packages/domain test:              learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns
+packages/domain test: Done
+apps/api test$ node --test ../../scripts/assert-test-database.test.mjs && vitest run
+apps/web test$ vitest run
+apps/web test:  RUN  v5.0.3 C:/Users/11954/Documents/Codex/Nine-cloud-p3-p6-stage1-20261013/apps/web
+apps/api test: ▶ requires a PostgreSQL integration database and rejects other protocols
+apps/api test:   ✔ missing URL fails with a non-secret diagnostic (52.7747ms)
+apps/api test:   ✔ non-PostgreSQL URL is rejected (49.1656ms)
+apps/api test:   ✔ PostgreSQL URL without a database is rejected (49.1268ms)
+apps/api test:   ✔ database without the project test prefix is rejected (46.8346ms)
+apps/api test:   ✔ encoded path separators cannot smuggle a different database name (49.51ms)
+apps/api test:   ✔ valid PostgreSQL URL passes without printing credentials (45.2487ms)
+apps/api test: ✔ requires a PostgreSQL integration database and rejects other protocols (294.6052ms)
+apps/api test: ℹ tests 7
+apps/api test: ℹ suites 0
+apps/api test: ℹ pass 7
+apps/api test: ℹ fail 0
+apps/api test: ℹ cancelled 0
+apps/api test: ℹ skipped 0
+apps/api test: ℹ todo 0
+apps/api test: ℹ duration_ms 377.3903
+apps/api test:  RUN  v5.0.3 C:/Users/11954/Documents/Codex/Nine-cloud-p3-p6-stage1-20261013/apps/api
+apps/web test:  Test Files  29 passed (29)
+apps/web test:       Tests  199 passed (199)
+apps/web test:    Start at  18:51:55
+apps/web test:    Duration  1.96s (transform 48%, import 37%, tests 13%, worker 2%)
+apps/web test:   Transform  transforming modules took 6.49s · 48% of tracked time, re-done on every run
+apps/web test:              persist transforms across runs with fsModuleCache: true
+apps/web test:              learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns
+apps/web test: Done
+apps/api test:  Test Files  34 passed | 11 skipped (45)
+apps/api test:       Tests  331 passed | 52 skipped (383)
+apps/api test:    Start at  18:51:56
+apps/api test:    Duration  4.83s (import 48%, transform 33%, tests 18%, worker 1%)
+apps/api test:   Transform  transforming modules took 10.87s · 33% of tracked time, re-done on every run
+apps/api test:              persist transforms across runs with fsModuleCache: true
+apps/api test:              learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns
+apps/api test: Done
