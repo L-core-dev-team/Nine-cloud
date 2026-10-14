@@ -1,0 +1,26 @@
+[
+  {
+    "label": "boundary",
+    "status": 1
+  },
+  {
+    "label": "historical-targeted",
+    "status": 0
+  },
+  {
+    "label": "compatibility",
+    "status": 0
+  },
+  {
+    "label": "adversarial",
+    "status": 0
+  },
+  {
+    "label": "safety-continuity",
+    "status": 0
+  },
+  {
+    "label": "typescript",
+    "status": 0
+  }
+]
