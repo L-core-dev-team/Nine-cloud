@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "frozenFiles": 24,
+  "sourceChecks": 28000,
+  "ledgerChecks": 384,
+  "spanChecks": 49564,
+  "queryChecks": 17280,
+  "fullResults": 576,
+  "factChecks": 145,
+  "statusChecks": 145,
+  "protectedInputs": 5,
+  "independence": "Artifact verifier imports neither retriever nor world generator; fact truth comes from frozen authored ledger and event bindings; wrong candidates remain reported."
+}

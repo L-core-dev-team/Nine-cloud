@@ -14,6 +14,8 @@ node tests/experiments/p6-longmem-05c/quality.cjs review-dev-01 all development
 node tests/experiments/p6-longmem-05c/quality.cjs review-holdout-01 all holdout
 node tests/experiments/p6-longmem-05c/old-performance.cjs review-old-perf-01
 node tests/experiments/p6-longmem-05c/performance.cjs review-long-perf-01
+node tests/experiments/p6-longmem-05c/concurrency.cjs review-concurrency-01
+node tests/experiments/p6-longmem-05c/io.cjs review-io-01
 node tests/experiments/p6-longmem-05c/export-evidence.ts review-export-01
 node tests/experiments/p6-longmem-05c/verify.cjs review-verify-01
 ```
@@ -23,3 +25,5 @@ fixtures/ 已冻结，勿重跑 freeze.ts 覆盖；该生成器仅供新的独�
 baseline 是旧原版词法；fixed 是有限位置/天气/物理事件修复；conditions 加入有限条件识别和未知逻辑拒绝；event-time 加入绑定物理事件加分，并保持既有历史/当前排序；evidence 尝试预算不足时选择最强完整句。实验没有证明后两者额外提升，应优先审查最小修复及条件机制。
 
 SnapshotRecall 是版本化整体来源授权模拟，仅用于缓存边界研究；策略参数不是正式 P4/P5 授权裁定。序列化缓存尺寸不是 heap 硬上限，Promise 调度不是并行 CPU 吞吐，partial incremental 只复用句子匹配表示，未实现增量 RULES/数据库视图。所有真实接线需要正式 Reader。
+
+最终无逗号多物体主语修正来自额外公开反例。原 freeze-manifest 代码 SHA 留作历史，algorithm-review.json 记录当前 SHA；replay-01 对四候选全部旧题及新开发/保留分层输出逐条证明一致。verification-02 是追加修正后的独立核验。正式并发来自 concurrency.cjs 的两个真实子进程。

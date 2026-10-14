@@ -1,0 +1,45 @@
+(node:38680) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/Users/11954/Desktop/%E6%B0%B4%E9%BE%99%E5%90%9F%E4%B8%93%E7%94%A8/%E9%A1%B9%E7%9B%AE/Nine-cloud-P6-longmem-05c-20261014/tests/experiments/p6-longmem-05c/targeted.test.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-P6-longmem-05c-20261014\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-P6-longmem-05c-20261014\tests\experiments\p6-longmem-05c\retrieval.ts:21
+ readonly sentenceIndex:Map<string,{start:number;end:number;text:string;grams:Set<string>}[]>;
+ constructor(data:Dataset,readonly mode:Mode='evidence'){
+                                   ^^^^^^^^^^^^^^^^^^^^
+  this.data=data;
+
+
+SyntaxError [ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX]: TypeScript parameter property is not supported in strip-only mode
+    at parseTypeScript (node:internal/modules/typescript:68:40)
+    at processTypeScriptCode (node:internal/modules/typescript:146:42)
+    at stripTypeScriptModuleTypes (node:internal/modules/typescript:215:22)
+    at Object.getFileProtocolModuleFormat [as file:] (node:internal/modules/esm/get_format:206:26)
+    at defaultGetFormat (node:internal/modules/esm/get_format:283:36)
+    at defaultLoadSync (node:internal/modules/esm/load:161:16)
+    at #loadAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:802:12)
+    at #loadSync (node:internal/modules/esm/loader:834:53)
+    at ModuleLoader.load (node:internal/modules/esm/loader:783:26)
+    at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:494:31) {
+  code: 'ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX'
+}
+
+Node.js v24.19.0
+✖ C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-P6-longmem-05c-20261014\tests\experiments\p6-longmem-05c\targeted.test.ts (161.3783ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 178.017
+
+✖ failing tests:
+
+test at tests\experiments\p6-longmem-05c\targeted.test.ts:1:1
+✖ C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-P6-longmem-05c-20261014\tests\experiments\p6-longmem-05c\targeted.test.ts (161.3783ms)
+  'test failed'

@@ -1,0 +1,16 @@
+{
+  "results": [
+    {
+      "label": "targeted",
+      "status": 0
+    },
+    {
+      "label": "compatibility",
+      "status": 0
+    },
+    {
+      "label": "typescript",
+      "status": 0
+    }
+  ]
+}

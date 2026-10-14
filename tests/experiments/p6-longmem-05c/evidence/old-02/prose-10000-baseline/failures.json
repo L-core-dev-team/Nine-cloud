@@ -1,0 +1,338 @@
+[
+  {
+    "questionId": "H-10-0",
+    "split": "public-compatibility",
+    "category": "appearance",
+    "budget": 512,
+    "pass": false,
+    "expected": [
+      "p0101"
+    ],
+    "actual": [],
+    "missing": [
+      "p0101"
+    ],
+    "extras": [],
+    "expectedSpans": 1,
+    "matched": 0,
+    "leaks": [],
+    "future": [],
+    "byteErrors": 0,
+    "oracleFacts": true,
+    "ms": 3.6393000000000484,
+    "diagnosis": "no-readable-support",
+    "enoughEvidence": false,
+    "estimatedTokens": 0,
+    "context": "",
+    "originalSpans": [],
+    "ranked": []
+  },
+  {
+    "questionId": "H-14-2",
+    "split": "public-compatibility",
+    "category": "sound",
+    "budget": 512,
+    "pass": false,
+    "expected": [
+      "p0137"
+    ],
+    "actual": [],
+    "missing": [
+      "p0137"
+    ],
+    "extras": [],
+    "expectedSpans": 1,
+    "matched": 0,
+    "leaks": [],
+    "future": [],
+    "byteErrors": 0,
+    "oracleFacts": true,
+    "ms": 11.461500000000115,
+    "diagnosis": "no-readable-support",
+    "enoughEvidence": false,
+    "estimatedTokens": 0,
+    "context": "",
+    "originalSpans": [],
+    "ranked": []
+  },
+  {
+    "questionId": "H-16-1",
+    "split": "public-compatibility",
+    "category": "smell",
+    "budget": 512,
+    "pass": false,
+    "expected": [
+      "p0155"
+    ],
+    "actual": [],
+    "missing": [
+      "p0155"
+    ],
+    "extras": [],
+    "expectedSpans": 1,
+    "matched": 0,
+    "leaks": [],
+    "future": [],
+    "byteErrors": 0,
+    "oracleFacts": true,
+    "ms": 12.088400000000092,
+    "diagnosis": "no-readable-support",
+    "enoughEvidence": false,
+    "estimatedTokens": 0,
+    "context": "",
+    "originalSpans": [],
+    "ranked": []
+  },
+  {
+    "questionId": "H-10-0",
+    "split": "public-compatibility",
+    "category": "appearance",
+    "budget": 1024,
+    "pass": false,
+    "expected": [
+      "p0101"
+    ],
+    "actual": [],
+    "missing": [
+      "p0101"
+    ],
+    "extras": [],
+    "expectedSpans": 1,
+    "matched": 0,
+    "leaks": [],
+    "future": [],
+    "byteErrors": 0,
+    "oracleFacts": true,
+    "ms": 3.179300000000012,
+    "diagnosis": "no-readable-support",
+    "enoughEvidence": false,
+    "estimatedTokens": 0,
+    "context": "",
+    "originalSpans": [],
+    "ranked": []
+  },
+  {
+    "questionId": "H-14-2",
+    "split": "public-compatibility",
+    "category": "sound",
+    "budget": 1024,
+    "pass": false,
+    "expected": [
+      "p0137"
+    ],
+    "actual": [],
+    "missing": [
+      "p0137"
+    ],
+    "extras": [],
+    "expectedSpans": 1,
+    "matched": 0,
+    "leaks": [],
+    "future": [],
+    "byteErrors": 0,
+    "oracleFacts": true,
+    "ms": 11.250400000000354,
+    "diagnosis": "no-readable-support",
+    "enoughEvidence": false,
+    "estimatedTokens": 0,
+    "context": "",
+    "originalSpans": [],
+    "ranked": []
+  },
+  {
+    "questionId": "H-16-1",
+    "split": "public-compatibility",
+    "category": "smell",
+    "budget": 1024,
+    "pass": false,
+    "expected": [
+      "p0155"
+    ],
+    "actual": [],
+    "missing": [
+      "p0155"
+    ],
+    "extras": [],
+    "expectedSpans": 1,
+    "matched": 0,
+    "leaks": [],
+    "future": [],
+    "byteErrors": 0,
+    "oracleFacts": true,
+    "ms": 11.273799999999937,
+    "diagnosis": "no-readable-support",
+    "enoughEvidence": false,
+    "estimatedTokens": 0,
+    "context": "",
+    "originalSpans": [],
+    "ranked": []
+  },
+  {
+    "questionId": "H-10-0",
+    "split": "public-compatibility",
+    "category": "appearance",
+    "budget": 2048,
+    "pass": false,
+    "expected": [
+      "p0101"
+    ],
+    "actual": [],
+    "missing": [
+      "p0101"
+    ],
+    "extras": [],
+    "expectedSpans": 1,
+    "matched": 0,
+    "leaks": [],
+    "future": [],
+    "byteErrors": 0,
+    "oracleFacts": true,
+    "ms": 4.6590000000001055,
+    "diagnosis": "no-readable-support",
+    "enoughEvidence": false,
+    "estimatedTokens": 0,
+    "context": "",
+    "originalSpans": [],
+    "ranked": []
+  },
+  {
+    "questionId": "H-14-2",
+    "split": "public-compatibility",
+    "category": "sound",
+    "budget": 2048,
+    "pass": false,
+    "expected": [
+      "p0137"
+    ],
+    "actual": [],
+    "missing": [
+      "p0137"
+    ],
+    "extras": [],
+    "expectedSpans": 1,
+    "matched": 0,
+    "leaks": [],
+    "future": [],
+    "byteErrors": 0,
+    "oracleFacts": true,
+    "ms": 27.523200000000088,
+    "diagnosis": "no-readable-support",
+    "enoughEvidence": false,
+    "estimatedTokens": 0,
+    "context": "",
+    "originalSpans": [],
+    "ranked": []
+  },
+  {
+    "questionId": "H-16-1",
+    "split": "public-compatibility",
+    "category": "smell",
+    "budget": 2048,
+    "pass": false,
+    "expected": [
+      "p0155"
+    ],
+    "actual": [],
+    "missing": [
+      "p0155"
+    ],
+    "extras": [],
+    "expectedSpans": 1,
+    "matched": 0,
+    "leaks": [],
+    "future": [],
+    "byteErrors": 0,
+    "oracleFacts": true,
+    "ms": 17.487099999999828,
+    "diagnosis": "no-readable-support",
+    "enoughEvidence": false,
+    "estimatedTokens": 0,
+    "context": "",
+    "originalSpans": [],
+    "ranked": []
+  },
+  {
+    "questionId": "H-10-0",
+    "split": "public-compatibility",
+    "category": "appearance",
+    "budget": 4096,
+    "pass": false,
+    "expected": [
+      "p0101"
+    ],
+    "actual": [],
+    "missing": [
+      "p0101"
+    ],
+    "extras": [],
+    "expectedSpans": 1,
+    "matched": 0,
+    "leaks": [],
+    "future": [],
+    "byteErrors": 0,
+    "oracleFacts": true,
+    "ms": 5.196800000000621,
+    "diagnosis": "no-readable-support",
+    "enoughEvidence": false,
+    "estimatedTokens": 0,
+    "context": "",
+    "originalSpans": [],
+    "ranked": []
+  },
+  {
+    "questionId": "H-14-2",
+    "split": "public-compatibility",
+    "category": "sound",
+    "budget": 4096,
+    "pass": false,
+    "expected": [
+      "p0137"
+    ],
+    "actual": [],
+    "missing": [
+      "p0137"
+    ],
+    "extras": [],
+    "expectedSpans": 1,
+    "matched": 0,
+    "leaks": [],
+    "future": [],
+    "byteErrors": 0,
+    "oracleFacts": true,
+    "ms": 20.630599999999504,
+    "diagnosis": "no-readable-support",
+    "enoughEvidence": false,
+    "estimatedTokens": 0,
+    "context": "",
+    "originalSpans": [],
+    "ranked": []
+  },
+  {
+    "questionId": "H-16-1",
+    "split": "public-compatibility",
+    "category": "smell",
+    "budget": 4096,
+    "pass": false,
+    "expected": [
+      "p0155"
+    ],
+    "actual": [],
+    "missing": [
+      "p0155"
+    ],
+    "extras": [],
+    "expectedSpans": 1,
+    "matched": 0,
+    "leaks": [],
+    "future": [],
+    "byteErrors": 0,
+    "oracleFacts": true,
+    "ms": 19.232899999999972,
+    "diagnosis": "no-readable-support",
+    "enoughEvidence": false,
+    "estimatedTokens": 0,
+    "context": "",
+    "originalSpans": [],
+    "ranked": []
+  }
+]

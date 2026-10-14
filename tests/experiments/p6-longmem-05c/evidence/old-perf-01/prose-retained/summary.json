@@ -1,0 +1,82 @@
+{
+  "mode": "retained",
+  "kind": "prose",
+  "count": 10000,
+  "queries": 800,
+  "unchangedEvidence": true,
+  "restoreMs": 542.5425,
+  "viewBuildCount": 22,
+  "viewBuildTotalMs": 1313.299100000001,
+  "maxSampledHeapBytes": 706622816,
+  "maxSampledRssBytes": 866123776,
+  "runs": [
+    {
+      "budget": 512,
+      "queries": 200,
+      "pass": 197,
+      "fail": 3,
+      "p50Ms": 7.38590000000022,
+      "p95Ms": 46.41620000000012,
+      "maxMs": 316.11360000000013,
+      "queryMs": 3069.843799999998,
+      "totalIncludingVerificationMs": 3335.3689000000004,
+      "byteChecks": 149,
+      "npcLeaks": 0,
+      "futureLeaks": 0
+    },
+    {
+      "budget": 1024,
+      "queries": 200,
+      "pass": 197,
+      "fail": 3,
+      "p50Ms": 8.986100000000079,
+      "p95Ms": 25.09320000000025,
+      "maxMs": 31.16529999999966,
+      "queryMs": 2037.721300000001,
+      "totalIncludingVerificationMs": 2308.5838000000003,
+      "byteChecks": 149,
+      "npcLeaks": 0,
+      "futureLeaks": 0
+    },
+    {
+      "budget": 2048,
+      "queries": 200,
+      "pass": 197,
+      "fail": 3,
+      "p50Ms": 8.601399999999558,
+      "p95Ms": 25.04489999999987,
+      "maxMs": 30.086499999999432,
+      "queryMs": 2001.1576999999943,
+      "totalIncludingVerificationMs": 2277.7812000000004,
+      "byteChecks": 149,
+      "npcLeaks": 0,
+      "futureLeaks": 0
+    },
+    {
+      "budget": 4096,
+      "queries": 200,
+      "pass": 197,
+      "fail": 3,
+      "p50Ms": 9.729499999999462,
+      "p95Ms": 25.834199999999328,
+      "maxMs": 29.176400000000285,
+      "queryMs": 2115.3065000000006,
+      "totalIncludingVerificationMs": 2400.9001000000007,
+      "byteChecks": 149,
+      "npcLeaks": 0,
+      "futureLeaks": 0
+    }
+  ],
+  "retention": {
+    "hits": 1374,
+    "misses": 22,
+    "evictions": 0,
+    "maxEntries": 22,
+    "maxEstimatedBytes": 60694872,
+    "currentEntries": 22,
+    "currentEstimatedBytes": 60694872,
+    "entryLimit": 32,
+    "estimatedByteLimit": 100663296,
+    "limitation": "Estimated serialized payload bound is not a heap bound; scopes and snapshot are frozen. No dynamic production authorization is claimed."
+  }
+}
