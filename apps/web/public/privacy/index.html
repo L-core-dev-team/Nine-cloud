@@ -100,7 +100,7 @@ a { color: #bdcad7; }
 <p>本应用<strong>未集成任何</strong>第三方统计、广告或行为追踪 SDK。</p>
 
 <h3>模型服务</h3>
-<p>如果你在设置中使用 AI 功能，<strong>需要你自己提供模型服务的 API 密钥</strong>。我们<strong>不内置、不代理、不转发</strong>任何模型服务调用。该密钥保存在你设备的本机安全存储中，<strong>不写入游戏存档</strong>，<strong>不会传输到除你指定模型服务商之外的任何服务器</strong>。</p>
+<p>如果你在设置中使用 AI 功能，<strong>需要你自己提供模型服务的 API 密钥</strong>。该密钥保存在当前浏览器的本地或会话存储中，并非操作系统密钥库；<strong>不写入游戏存档</strong>。浏览器直接调用你指定的模型服务；预览版云端首段可使用规则对应的确定性叙事。</p>
 
 <h2>三、我们如何使用信息</h2>
 <ul>
@@ -169,8 +169,8 @@ a { color: #bdcad7; }
 <ul>
   <li>会话凭据使用 <code>HttpOnly; Secure; SameSite=Strict</code> Cookie，<strong>不写入浏览器本地存储</strong></li>
   <li>验证码摘要使用 HMAC-SHA256，<strong>不保存明文</strong></li>
-  <li>API 密钥保存在设备安全存储，<strong>不写入存档、不传输到我们的服务器</strong></li>
-  <li>服务端日志<strong>不记录</strong>验证码、完整邮箱、完整手机号、Cookie 与密钥</li>
+  <li>玩家提供的 API 密钥保存在浏览器存储中，<strong>存档与资料导出会移除密钥字段</strong></li>
+  <li>应用按最小化原则处理认证诊断；验证码、Cookie 与密钥不应进入日志。我们没有独立核验所有托管服务的日志设置。</li>
   <li>写请求校验来源，<strong>不接受客户端自行提交的账号标识作为授权依据</strong></li>
 </ul>
 
