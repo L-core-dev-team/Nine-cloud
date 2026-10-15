@@ -1,0 +1,8 @@
+{
+  "ownClusterStopped": true,
+  "port55461Listening": false,
+  "mappingRemoved": true,
+  "databaseFilesPreserved": true,
+  "oldClustersUntouched": true,
+  "productionAccess": false
+}

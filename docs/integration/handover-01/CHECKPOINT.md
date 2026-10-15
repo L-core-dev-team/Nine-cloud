@@ -1,5 +1,19 @@
 # INTEGRATION-HANDOVER-01 恢复断点
 
+## 最新断点：INTEGRATION-HANDOVER-01-BYTEFIX完成并停止（2026-10-15）
+
+道主已单独明确批准原审计列出的44文件原始字节恢复。恢复前HEAD为9587d05da09171e3bc75de309a8f65b8d601b8a6且干净；全部44项先预检、备份并记录SHA，再仅恢复dbae068原blob字节。只改独立副本`.git/config`的core.autocrlf=false/core.eol=lf，不改共享签署策略。44文件后续检出模拟全部保持目标字节。
+
+47文件精确基线审计通过；原8项失败pin及全部10项显式pin匹配；bundle为468a26ad…；35文件AST语义摘要仍73580596…。其他1601个原已跟踪文件在回归后字节未变；原临江仙工作区仍干净且为dbae068，迁移及历史证据未改。44恢复目标等于Git已有对象，源码树无新diff，本地提交只记录报告、审计和日志等交付证据。
+
+此前失败的content25项、API387项+7守卫全部通过；完整pnpm test通过（93文件765项Vitest+7守卫及旧core回归），typecheck/build通过，无新增失败。旧6项字节门禁失败已消除，不能继续报告为当前阻塞。详情见`BYTEFIX-验收报告.md`，证据`bytefix-01/`与`runs/bytefix-*/`。
+
+专属PG已正常停止，55461无监听，J:映射已移除，所有数据库文件保留。最终本地提交SHA与干净状态见`C:/Users/11954/Desktop/水龙吟专用/交接/INTEGRATION-HANDOVER-01/BYTEFIX-20261015-01/最终回执.json`。44文件恢复前原字节备份在同目录before-bytes，before-manifest完整记录from/to和1645文件原始SHA。
+
+本次任务到此停止，不继续扩展功能。T1补丁未应用，签署摘要未改，正式入口未接线，不推送/PR/合并/部署/生产DB。P01–P06保留原生产阻塞状态，P6-05C/06/06A不动。旧保护脚本中的候选CRLF哈希仅对本次明确44路径由原blob目标SHA取代；用新bytefix审计验证该授权例外，不覆盖或放宽其他历史保护。
+
+以下旧状态完整保留作历史，不能覆盖本段最新BYTEFIX结论。
+
 状态（2026-10-15恢复更新）：PHASE1_NON_SIGNED_WORK_SAVED / FULL_ACCEPTANCE_BLOCKED_BY_BYTE_GATES / T1_NOT_APPLIED。
 
 本轮从实际HEAD `500a85c458e4428ea9b8747f05ceac7d05bc527f`及18个未提交文件恢复，未重新克隆或覆盖。逐文件保护快照在圈内交接`INTEGRATION-HANDOVER-01/resume-20261015-01`。桌面聊天交接停在开工前，已过时，不能据其要求重新申请普通工程批准。

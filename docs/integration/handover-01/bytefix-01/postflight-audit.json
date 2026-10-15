@@ -1,0 +1,496 @@
+{
+  "status": "PASS",
+  "baseline": "dbae068d86e5f9cd188d6196e403ce6dd701a1de",
+  "head": "9587d05da09171e3bc75de309a8f65b8d601b8a6",
+  "exactBaselineFiles": 47,
+  "records": [
+    {
+      "path": "docs/acceptance/2026-10-03/九霄1.0-P0玩法双记忆验收记录表-2026-10-03.xlsx",
+      "sha256": "6f75e27850ba7aa574441f5f8f17a0cc96197be4b341d52375af6c7c83804db3",
+      "matchesBaseline": true,
+      "pinMatches": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-03/九霄1.0-P1-玩法规则与序章-签署表-2026-10-03.xlsx",
+      "sha256": "33b6c8f6708d76f3420df12eb29f1439c5059f67f4cb7320ffe7810ed071c1bd",
+      "matchesBaseline": true,
+      "pinMatches": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/P1-MAP-作者可执行映射.md",
+      "sha256": "5869f3a3518156c2ac166388cc9f652aebc7bd5e36f071172030665f3d0a9e53",
+      "matchesBaseline": true,
+      "pinMatches": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/P1-NLU-双作者盲标表.md",
+      "sha256": "8d03539dfa2865f3d276c5c63346484e0637ae4a67529b919798c0fc2e50f0b9",
+      "matchesBaseline": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/P1-PR51-技术审阅依据.md",
+      "sha256": "859d84db16b6cba3cd1421f208601f7f1f93fec871951a6873b4c9a5288aa3d1",
+      "matchesBaseline": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/P1-作者共同认可与PR-4验收裁决-2026-10-05.md",
+      "sha256": "ab79734f1758c24942bfbb55a7912c2babd9bbcd9b7aaeb57ead4f8c9ebfd194",
+      "matchesBaseline": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/P1-审阅结论-代签.md",
+      "sha256": "fb24c6631cbe0f549b65e1b09441915ec5c30e37d66918c34728a3169563a386",
+      "matchesBaseline": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/PR-4-执行规格对照与边界裁定.md",
+      "sha256": "461e0bbf8f9a1ec6dc512985da29322f5928012bbd57a23ea10aad59be442789",
+      "matchesBaseline": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/archived-candidates/P1-EXEC-SPEC-v3.1.0-20261004.md",
+      "sha256": "3edba2136ef1a783a701327c16208bab289908f83db0084dc748bdc612fa526f",
+      "matchesBaseline": true,
+      "pinMatches": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/archived-candidates/prologue-v1-20261004.ts",
+      "sha256": "66c7557c74263813d7a7ea832de4961c612a12fa48a6f15ecdf6c53a7a1a571f",
+      "matchesBaseline": true,
+      "pinMatches": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-signed-evidence/G03-行动规则表.md",
+      "sha256": "c4d06467515c865b3a9abad0980e812af4151c5ac58868d9af7db4d74741e879",
+      "matchesBaseline": true
+    },
+    {
+      "path": "docs/sources/worldbook-draft-index.json",
+      "sha256": "fc43f4714957a2f51da76ce4a85d4f23d918f096ff64eccc0b653f3f42d05d0b",
+      "matchesBaseline": true
+    },
+    {
+      "path": "docs/sources/世界书_保守补全版.md",
+      "sha256": "1d871057163f7f0b439c135b3af943e948b2401bb284ab077622ed95450d35d2",
+      "matchesBaseline": true
+    },
+    {
+      "path": "docs/九霄1.0-P1-执行规格-GPT交付版-2026-10-03.md",
+      "sha256": "7677776d40825889694abeff4cb51c33d4fcd4a91e70eafcf8baae491635259e",
+      "matchesBaseline": true,
+      "pinMatches": true
+    },
+    {
+      "path": "docs/九霄P1序章作者原创输入登记-2026-10-03.md",
+      "sha256": "6c390226f731f71c19c7c29d246ffff59d1a971c28c8da807bace6e613bcc052",
+      "matchesBaseline": true,
+      "pinMatches": true
+    },
+    {
+      "path": "packages/content/src/canon.registry.json",
+      "sha256": "2fbaab0609bf51edae91996be32e8a6c76a1b496b2a6d80bb926dcef8b391943",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/content/src/index.ts",
+      "sha256": "b46be0f4e70c868ea0910abc2904270d614403c4929e800547429f16e8a8c277",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/content/src/prologue/prologue-v1.rulebook-candidate.ts",
+      "sha256": "e45ede3035770bc4dcc56c85daddfd567314eea9ac8bfbc3821edda89f6a53c4",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/content/src/prologue/prologue-v1.test.ts",
+      "sha256": "cc3231e3ee26a0138485ad21a7769dbca5156461295dc044a04e0b106941771e",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/content/src/prologue/prologue-v1.ts",
+      "sha256": "5a73149978919112d2ec2e29064a0c82e5c487c68b46444d9b5699b00fb49d7a",
+      "matchesBaseline": true,
+      "pinMatches": true
+    },
+    {
+      "path": "packages/content/src/rules/prologue-v1.constants.ts",
+      "sha256": "f759db23414c2987e61d9c45d712686be0a56b2ccf71fb9c8f54881909533e3d",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/contracts/src/action.ts",
+      "sha256": "45f1654eaddc532d4b6cc707ce4860254d125b9813b1ce85ca80991b87ac5e2e",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/contracts/src/decision.ts",
+      "sha256": "a7c61da21a856423791d9758ece67be467ceb099f41b34b14d4581a9b100876a",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/contracts/src/errors.ts",
+      "sha256": "695eb0dbe55c92e97b23e96e7b948f898c1950c99c3951666d9bf12428dcba9d",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/contracts/src/event.ts",
+      "sha256": "8f536702ce7c3deb998916f08882391646e73b38a1962a6441290fee519750ba",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/contracts/src/index.ts",
+      "sha256": "bf509bebd85acb0498ec9f18a86a2107e29ce3438758b499a14b6be5198b5651",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/contracts/src/json-bounds.ts",
+      "sha256": "38bcd46b149da54edfd614349f7c2233c720bbe4b3af58d2eb3eb7851c24a9c7",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/contracts/src/prologue.ts",
+      "sha256": "901dd80e74c81ea68d942312816bcf84dc7fd69283fa65ee1aa1d2747ad07273",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/contracts/src/save.ts",
+      "sha256": "cd7a76f0d4e26e6d3dcb078498b035e0e1828b54365bebe18e565af70780e0ed",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/contracts/src/state-delta.ts",
+      "sha256": "f73404acf344cb5f2d009df1d19aa621dad09ef3bee5ff46ede9e7852258ae59",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/contracts/src/turn.ts",
+      "sha256": "56e2735bda9adcee5fa3e59324abed9215ce4fae077793c8e6f3aea59c8556a9",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/contracts/src/world.ts",
+      "sha256": "285db04f009dc0f27e24427350ed8ce75c70c69dd89da7adfff42febb9c1252a",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/domain/src/event-log.ts",
+      "sha256": "b96484753d0459c469d3691be8d37620b76ed2dc9ed35ede7e2fb60f6283da9c",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/domain/src/index.ts",
+      "sha256": "47a9ce089fb471c37bdc66f8680fb37ad4efb7f7d817a0b66f908e9694b138df",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/domain/src/memory/p4-recall-cues-v1.json",
+      "sha256": "d3dcd20c850741d5095b960488310007a163b03b53cb40aaa60b57dae9031e31",
+      "matchesBaseline": true,
+      "pinMatches": true
+    },
+    {
+      "path": "packages/domain/src/memory/p4-recall-policy-v2.json",
+      "sha256": "5da8bd8e61e4859e5492b5393e3f458b12ded9cc36025858415fbe51c27261de",
+      "matchesBaseline": true,
+      "pinMatches": true
+    },
+    {
+      "path": "packages/domain/src/nlu/action-parser.test.ts",
+      "sha256": "8b5c129d1901791387b5c2be70e0b30ab7402665c44418ede3fe709076b70b7f",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/domain/src/nlu/action-parser.ts",
+      "sha256": "fb7374c307998b2a384bfad385e6a5ce19bd9501bc1982b29aade0e2bdd72e70",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/domain/src/nlu/index.ts",
+      "sha256": "38391f5c8ae965779fff766fa95e4164cc745b7d5225a97f27041c4c14ba566e",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/domain/src/nlu/prologue-v1-nlu-fixtures.test.ts",
+      "sha256": "084a049a40f609ddd5415b1f7213485789b8f69affebe7f3dd41f9eb1f53a8da",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/domain/src/nlu/prologue-v1-nlu-fixtures.ts",
+      "sha256": "53ed4f2b9204cd0ae2220537b32238a1d9bb644eb25285b13da6f90df41b62b5",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/domain/src/prologue-v1-candidate.test.ts",
+      "sha256": "cca17d0435e6b8332126b8b948c69e3554633f1adb82db5cb9e9733ce9fe23d7",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/domain/src/prologue-v1-rules.test.ts",
+      "sha256": "0f4de380601c9a212602e57730c3241f53ad37d720471bb9f835076abe67a555",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/domain/src/prologue-v1-rules.ts",
+      "sha256": "c8b68595c1c3f38da660c6781edbdde77eb1111a8be0a684440167a8c929319f",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/domain/src/prologue-v1-time.ts",
+      "sha256": "480171d4e2117024b593bacbd93521149c3e972ade693083f5c2813095d06ffe",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/domain/src/rules.ts",
+      "sha256": "62d09f33ee9a14a7bdaf9f29c064319d723dd51422fbd19104f33da37bcbcc06",
+      "matchesBaseline": true
+    },
+    {
+      "path": "packages/domain/src/state-delta.ts",
+      "sha256": "f7e8d143f125a06300d73154a17073697b91bccff0a2f8c2772b77f6a33ad142",
+      "matchesBaseline": true
+    }
+  ],
+  "previouslyFailingPinsNowPass": 8,
+  "allExplicitPins": 10,
+  "bundleSha256": "sha256:468a26ad109c64c6cf2a7224b0e895fd7614241e15c5b468842295d91dcddbce",
+  "semanticSha256": "sha256:73580596f25c530d9ad33170282955187eb281e5927872607feef9e2aae83f42",
+  "signedAstFiles": 35,
+  "onlyAllowed44BytesRestored": true,
+  "nonTargetTrackedFilesUnchanged": 1601,
+  "originalHead": "dbae068d86e5f9cd188d6196e403ce6dd701a1de",
+  "originalClean": true,
+  "originalFilesUnchanged": 61,
+  "protectedFilesVerifiedWithExplicit44PathException": 35,
+  "migrationsUnchanged": 23,
+  "historicalLogsUnchanged": 42,
+  "T1PatchRawSha256": "a517f0249e12d44b003cf29255e26002489a270c049f8d713c3bc6323912b01e",
+  "T1PatchUnchanged": true,
+  "T1Applied": false,
+  "sourceTreeDiffEmpty": true,
+  "checkoutSimulation": [
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/P1-MAP-作者可执行映射.md",
+      "sha256": "5869f3a3518156c2ac166388cc9f652aebc7bd5e36f071172030665f3d0a9e53",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/P1-NLU-双作者盲标表.md",
+      "sha256": "8d03539dfa2865f3d276c5c63346484e0637ae4a67529b919798c0fc2e50f0b9",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/P1-PR51-技术审阅依据.md",
+      "sha256": "859d84db16b6cba3cd1421f208601f7f1f93fec871951a6873b4c9a5288aa3d1",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/P1-作者共同认可与PR-4验收裁决-2026-10-05.md",
+      "sha256": "ab79734f1758c24942bfbb55a7912c2babd9bbcd9b7aaeb57ead4f8c9ebfd194",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/P1-审阅结论-代签.md",
+      "sha256": "fb24c6631cbe0f549b65e1b09441915ec5c30e37d66918c34728a3169563a386",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/PR-4-执行规格对照与边界裁定.md",
+      "sha256": "461e0bbf8f9a1ec6dc512985da29322f5928012bbd57a23ea10aad59be442789",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/archived-candidates/P1-EXEC-SPEC-v3.1.0-20261004.md",
+      "sha256": "3edba2136ef1a783a701327c16208bab289908f83db0084dc748bdc612fa526f",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/archived-candidates/prologue-v1-20261004.ts",
+      "sha256": "66c7557c74263813d7a7ea832de4961c612a12fa48a6f15ecdf6c53a7a1a571f",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-signed-evidence/G03-行动规则表.md",
+      "sha256": "c4d06467515c865b3a9abad0980e812af4151c5ac58868d9af7db4d74741e879",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "docs/sources/worldbook-draft-index.json",
+      "sha256": "fc43f4714957a2f51da76ce4a85d4f23d918f096ff64eccc0b653f3f42d05d0b",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "docs/九霄1.0-P1-执行规格-GPT交付版-2026-10-03.md",
+      "sha256": "7677776d40825889694abeff4cb51c33d4fcd4a91e70eafcf8baae491635259e",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "docs/九霄P1序章作者原创输入登记-2026-10-03.md",
+      "sha256": "6c390226f731f71c19c7c29d246ffff59d1a971c28c8da807bace6e613bcc052",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/content/src/canon.registry.json",
+      "sha256": "2fbaab0609bf51edae91996be32e8a6c76a1b496b2a6d80bb926dcef8b391943",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/content/src/index.ts",
+      "sha256": "b46be0f4e70c868ea0910abc2904270d614403c4929e800547429f16e8a8c277",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/content/src/prologue/prologue-v1.rulebook-candidate.ts",
+      "sha256": "e45ede3035770bc4dcc56c85daddfd567314eea9ac8bfbc3821edda89f6a53c4",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/content/src/prologue/prologue-v1.test.ts",
+      "sha256": "cc3231e3ee26a0138485ad21a7769dbca5156461295dc044a04e0b106941771e",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/content/src/prologue/prologue-v1.ts",
+      "sha256": "5a73149978919112d2ec2e29064a0c82e5c487c68b46444d9b5699b00fb49d7a",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/content/src/rules/prologue-v1.constants.ts",
+      "sha256": "f759db23414c2987e61d9c45d712686be0a56b2ccf71fb9c8f54881909533e3d",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/contracts/src/action.ts",
+      "sha256": "45f1654eaddc532d4b6cc707ce4860254d125b9813b1ce85ca80991b87ac5e2e",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/contracts/src/decision.ts",
+      "sha256": "a7c61da21a856423791d9758ece67be467ceb099f41b34b14d4581a9b100876a",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/contracts/src/errors.ts",
+      "sha256": "695eb0dbe55c92e97b23e96e7b948f898c1950c99c3951666d9bf12428dcba9d",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/contracts/src/event.ts",
+      "sha256": "8f536702ce7c3deb998916f08882391646e73b38a1962a6441290fee519750ba",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/contracts/src/index.ts",
+      "sha256": "bf509bebd85acb0498ec9f18a86a2107e29ce3438758b499a14b6be5198b5651",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/contracts/src/json-bounds.ts",
+      "sha256": "38bcd46b149da54edfd614349f7c2233c720bbe4b3af58d2eb3eb7851c24a9c7",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/contracts/src/prologue.ts",
+      "sha256": "901dd80e74c81ea68d942312816bcf84dc7fd69283fa65ee1aa1d2747ad07273",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/contracts/src/save.ts",
+      "sha256": "cd7a76f0d4e26e6d3dcb078498b035e0e1828b54365bebe18e565af70780e0ed",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/contracts/src/state-delta.ts",
+      "sha256": "f73404acf344cb5f2d009df1d19aa621dad09ef3bee5ff46ede9e7852258ae59",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/contracts/src/turn.ts",
+      "sha256": "56e2735bda9adcee5fa3e59324abed9215ce4fae077793c8e6f3aea59c8556a9",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/contracts/src/world.ts",
+      "sha256": "285db04f009dc0f27e24427350ed8ce75c70c69dd89da7adfff42febb9c1252a",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/domain/src/event-log.ts",
+      "sha256": "b96484753d0459c469d3691be8d37620b76ed2dc9ed35ede7e2fb60f6283da9c",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/domain/src/index.ts",
+      "sha256": "47a9ce089fb471c37bdc66f8680fb37ad4efb7f7d817a0b66f908e9694b138df",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/domain/src/memory/p4-recall-cues-v1.json",
+      "sha256": "d3dcd20c850741d5095b960488310007a163b03b53cb40aaa60b57dae9031e31",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/domain/src/memory/p4-recall-policy-v2.json",
+      "sha256": "5da8bd8e61e4859e5492b5393e3f458b12ded9cc36025858415fbe51c27261de",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/domain/src/nlu/action-parser.test.ts",
+      "sha256": "8b5c129d1901791387b5c2be70e0b30ab7402665c44418ede3fe709076b70b7f",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/domain/src/nlu/action-parser.ts",
+      "sha256": "fb7374c307998b2a384bfad385e6a5ce19bd9501bc1982b29aade0e2bdd72e70",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/domain/src/nlu/index.ts",
+      "sha256": "38391f5c8ae965779fff766fa95e4164cc745b7d5225a97f27041c4c14ba566e",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/domain/src/nlu/prologue-v1-nlu-fixtures.test.ts",
+      "sha256": "084a049a40f609ddd5415b1f7213485789b8f69affebe7f3dd41f9eb1f53a8da",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/domain/src/nlu/prologue-v1-nlu-fixtures.ts",
+      "sha256": "53ed4f2b9204cd0ae2220537b32238a1d9bb644eb25285b13da6f90df41b62b5",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/domain/src/prologue-v1-candidate.test.ts",
+      "sha256": "cca17d0435e6b8332126b8b948c69e3554633f1adb82db5cb9e9733ce9fe23d7",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/domain/src/prologue-v1-rules.test.ts",
+      "sha256": "0f4de380601c9a212602e57730c3241f53ad37d720471bb9f835076abe67a555",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/domain/src/prologue-v1-rules.ts",
+      "sha256": "c8b68595c1c3f38da660c6781edbdde77eb1111a8be0a684440167a8c929319f",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/domain/src/prologue-v1-time.ts",
+      "sha256": "480171d4e2117024b593bacbd93521149c3e972ade693083f5c2813095d06ffe",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/domain/src/rules.ts",
+      "sha256": "62d09f33ee9a14a7bdaf9f29c064319d723dd51422fbd19104f33da37bcbcc06",
+      "checkoutWouldPreserveOriginalBytes": true
+    },
+    {
+      "path": "packages/domain/src/state-delta.ts",
+      "sha256": "f7e8d143f125a06300d73154a17073697b91bccff0a2f8c2772b77f6a33ad142",
+      "checkoutWouldPreserveOriginalBytes": true
+    }
+  ],
+  "localConfig": {
+    "autocrlf": "false",
+    "eol": "lf"
+  }
+}

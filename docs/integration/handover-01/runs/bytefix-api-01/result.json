@@ -1,0 +1,13 @@
+{
+  "name": "bytefix-api-01",
+  "baselineOrCandidate": "9587d05da09171e3bc75de309a8f65b8d601b8a6",
+  "command": [
+    "pnpm",
+    "--filter",
+    "@jiuxiao/api",
+    "test"
+  ],
+  "started": "2026-10-15T04:39:55.502Z",
+  "finished": "2026-10-15T04:40:02.122Z",
+  "exitCode": 0
+}
