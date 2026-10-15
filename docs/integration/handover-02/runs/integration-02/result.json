@@ -1,0 +1,11 @@
+{
+  "name": "integration-02",
+  "head": "0268d905647d06838db73dd609795e4d5544f8e8",
+  "command": [
+    "pnpm",
+    "test:integration"
+  ],
+  "started": "2026-10-15T14:00:19.086Z",
+  "finished": "2026-10-15T14:00:20.337Z",
+  "exitCode": 1
+}

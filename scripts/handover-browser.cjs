@@ -5,11 +5,19 @@ const {join}=require('node:path'),{pathToFileURL}=require('node:url'),fs=require
 const {root,isolatedPool,services,fixture}=require('./handover-test-support.cjs');
 const req=createRequire(join(root,'apps/api/package.json')),{serve}=req('@hono/node-server'),{serveStatic}=req('@hono/node-server/serve-static');
 const {chromium}=require('playwright');let pool,server,browser;
+const runName=process.argv[2];
+if(!/^[a-z0-9-]+$/.test(runName??''))throw Error('New unique browser run name required');
+const browserOut=join(root,'docs/integration/handover-02',runName);
+if(fs.existsSync(browserOut))throw Error('NO_OVERWRITE');
 async function cache(page,update){return page.evaluate(async update=>{
  const db=await new Promise((ok,no)=>{const r=indexedDB.open('jiuxiao_cloud_game_ui_v1',1);r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error);});
  try{return await new Promise((ok,no)=>{const tx=db.transaction('scopes',update?'readwrite':'readonly'),s=tx.objectStore('scopes'),r=s.getAll();let value;
  r.onsuccess=()=>{value=r.result[0];if(update){value.pending=update;s.put(value);}};tx.oncomplete=()=>ok(value);tx.onabort=tx.onerror=()=>no(tx.error);});}finally{db.close();}
 },update??null);}
+async function waitForHistory(page,length){
+ for(let i=0;i<250;i++){if((await cache(page))?.history.length===length)return;await page.waitForTimeout(20);}
+ assert.equal((await cache(page))?.history.length,length,'Expected complete persisted history');
+}
 (async()=>{
  pool=await isolatedPool();const s=await services(),repo=new s.NarrativePublicationRepository(pool,s.TEST_BODY_LIMITS);
  let f=await fixture(pool),published=[];const token=f.token;for(let revision=1;revision<=23;revision++){
@@ -35,9 +43,9 @@ async function cache(page,update){return page.evaluate(async update=>{
  await page.reload();await page.getByRole('button',{name:'查询行动结果',exact:true}).waitFor();await page.getByRole('button',{name:'读取更早正文',exact:true}).waitFor({state:'visible'});
  await page.waitForFunction(()=>document.querySelector('[data-testid="p2-action-input"]')?.disabled===false);
  const latest=await page.getByTestId('p2-narrative').innerText();await page.getByRole('button',{name:'读取更早正文',exact:true}).click();
- await page.waitForFunction(()=>document.querySelectorAll('[data-reading-id]').length>23);
+ await waitForHistory(page,20);
  assert.equal((await cache(page)).history.length,20);await page.getByRole('button',{name:'读取更早正文',exact:true}).click();
- await page.getByRole('button',{name:'读取更早正文',exact:true}).waitFor({state:'hidden'});const restored=await cache(page);
+ await waitForHistory(page,23);await page.getByRole('button',{name:'读取更早正文',exact:true}).waitFor({state:'hidden'});const restored=await cache(page);
  assert.deepEqual(restored.pending,pending);assert.equal(restored.draft,before.draft);assert.equal(restored.draftVersion,before.draftVersion);
  assert.equal(restored.history.length,23);assert.deepEqual(restored.history.map(r=>r.revision),Array.from({length:23},(_,i)=>i+1));assert.equal(new Set(restored.history.map(r=>r.id)).size,23);
  assert.equal(await page.getByTestId('p2-narrative').innerText(),latest);assert.deepEqual(restored.history.map(r=>r.text),published.map(p=>p.text));
@@ -56,7 +64,7 @@ async function cache(page,update){return page.evaluate(async update=>{
  assert.equal(await page.getByTestId('p2-narrative').count(),0);assert.equal(await page.getByRole('button',{name:'读取更早正文',exact:true}).count(),0);
  const other=await fixture(pool);await context.clearCookies();await context.addCookies([{name:'jx_session',value:other.token,url:origin,httpOnly:true,sameSite:'Strict'}]);
  await page.unroute('**/presentations?beforeRevision=*');await page.reload();await page.getByText('找不到这份存档',{exact:true}).waitFor();assert.equal(await page.getByTestId('p2-narrative').count(),0);
- assert.equal(actionPosts,0);const out=join(root,'docs/integration/handover-01/browser-resume-01');fs.mkdirSync(out);
+ assert.equal(actionPosts,0);const out=browserOut;fs.mkdirSync(out);
  await page.screenshot({path:join(out,'account-isolation.png')});
  fs.writeFileSync(join(out,'summary.json'),JSON.stringify({status:'PASS',realPostgres:true,realSession:true,realHttp:true,builtMobileUI:true,syntheticReceipts:true,T1Applied:false,actionPosts,
   checks:['23-revisions-three-pages','exact-unicode-source','no-duplicate-history','current-body-preserved','pending-draft-version-preserved','refresh-recovery','mobile-width','page-failure-retry','late-logout-response-discarded','cross-account-denied']},null,2));console.log('PASS built mobile UI: three history pages, preserved pending/draft/current body, refresh, failure and late logout isolation. Synthetic receipts; T1 BLOCKED.');

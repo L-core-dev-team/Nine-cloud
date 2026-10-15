@@ -1,0 +1,12 @@
+{
+  "name": "database-01",
+  "head": "0268d905647d06838db73dd609795e4d5544f8e8",
+  "command": [
+    "node",
+    "scripts/handover-database.cjs",
+    "jiuxiao_test_handover-02-20261015"
+  ],
+  "started": "2026-10-15T13:59:38.133Z",
+  "finished": "2026-10-15T13:59:38.747Z",
+  "exitCode": 0
+}

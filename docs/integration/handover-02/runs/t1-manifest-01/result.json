@@ -1,0 +1,11 @@
+{
+  "name": "t1-manifest-01",
+  "head": "0268d905647d06838db73dd609795e4d5544f8e8",
+  "command": [
+    "node",
+    "scripts/handover-02-t1-contract.cjs"
+  ],
+  "started": "2026-10-15T14:13:30.719Z",
+  "finished": "2026-10-15T14:13:30.824Z",
+  "exitCode": 0
+}

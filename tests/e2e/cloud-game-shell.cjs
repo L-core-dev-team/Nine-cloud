@@ -6,10 +6,12 @@ const { join, resolve } = require('node:path');
 const net = require('node:net');
 const { chromium } = require('playwright');
 const root = resolve(__dirname, '../..');
-const output = join(root, 'test-results/cloud-game-shell');
+const runName = process.argv[2];
+if(runName !== undefined && !/^[a-z0-9-]+$/.test(runName))throw Error('Invalid unique run name');
+const output = runName ? join(root, 'docs/integration/handover-02', runName) : join(root, 'test-results/cloud-game-shell');
 let server, browser;
 (async () => {
-  mkdirSync(output, { recursive: true });
+  mkdirSync(output, { recursive: !runName });
   const port = await new Promise(resolve => {
     const socket = net.createServer().listen(0, '127.0.0.1', () => { const port = socket.address().port; socket.close(() => resolve(port)); });
   });

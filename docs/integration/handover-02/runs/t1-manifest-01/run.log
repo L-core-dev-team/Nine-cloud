@@ -1,0 +1,137 @@
+{
+  "status": "PENDING",
+  "executed": 0,
+  "pass": 0,
+  "skip": 0,
+  "officialMatrixMatched": false,
+  "cases": [
+    {
+      "id": "PREP01",
+      "title": "accepted atomic registration",
+      "reference": "F01/I01",
+      "status": "PENDING",
+      "officialMatrixId": null,
+      "reason": "Requires approved real T1 adapter; official 16-row source not located"
+    },
+    {
+      "id": "PREP02",
+      "title": "registration failure rolls back entire turn",
+      "reference": "F01",
+      "status": "PENDING",
+      "officialMatrixId": null,
+      "reason": "Requires approved real T1 adapter; official 16-row source not located"
+    },
+    {
+      "id": "PREP03",
+      "title": "rejected and clarify have no generation",
+      "reference": "F03",
+      "status": "PENDING",
+      "officialMatrixId": null,
+      "reason": "Requires approved real T1 adapter; official 16-row source not located"
+    },
+    {
+      "id": "PREP04",
+      "title": "same key concurrency and retransmission",
+      "reference": "I01/I02/I03",
+      "status": "PENDING",
+      "officialMatrixId": null,
+      "reason": "Requires approved real T1 adapter; official 16-row source not located"
+    },
+    {
+      "id": "PREP05",
+      "title": "different key conflict from same revision",
+      "reference": "F11",
+      "status": "PENDING",
+      "officialMatrixId": null,
+      "reason": "Requires approved real T1 adapter; official 16-row source not located"
+    },
+    {
+      "id": "PREP06",
+      "title": "legacy accepted without generation",
+      "reference": "F16",
+      "status": "PENDING",
+      "officialMatrixId": null,
+      "reason": "Requires approved real T1 adapter; official 16-row source not located"
+    },
+    {
+      "id": "PREP07",
+      "title": "requestNarrative false under approved semantics",
+      "reference": "request flag",
+      "status": "PENDING",
+      "officialMatrixId": null,
+      "reason": "Requires approved real T1 adapter; official 16-row source not located"
+    },
+    {
+      "id": "PREP08",
+      "title": "cancel before transport submission",
+      "reference": "cancel pre-submit",
+      "status": "PENDING",
+      "officialMatrixId": null,
+      "reason": "Requires approved real T1 adapter; official 16-row source not located"
+    },
+    {
+      "id": "PREP09",
+      "title": "cancel after accepted commit",
+      "reference": "cancel post-commit",
+      "status": "PENDING",
+      "officialMatrixId": null,
+      "reason": "Requires approved real T1 adapter; official 16-row source not located"
+    },
+    {
+      "id": "PREP10",
+      "title": "navigate away with late response",
+      "reference": "F13",
+      "status": "PENDING",
+      "officialMatrixId": null,
+      "reason": "Requires approved real T1 adapter; official 16-row source not located"
+    },
+    {
+      "id": "PREP11",
+      "title": "expired session and account switch",
+      "reference": "F12/F13",
+      "status": "PENDING",
+      "officialMatrixId": null,
+      "reason": "Requires approved real T1 adapter; official 16-row source not located"
+    },
+    {
+      "id": "PREP12",
+      "title": "fresh device exact original and paged history",
+      "reference": "F02/F09",
+      "status": "PENDING",
+      "officialMatrixId": null,
+      "reason": "Requires approved real T1 adapter; official 16-row source not located"
+    },
+    {
+      "id": "PREP13",
+      "title": "timeout and original idempotency retry",
+      "reference": "F02/I01",
+      "status": "PENDING",
+      "officialMatrixId": null,
+      "reason": "Requires approved real T1 adapter; official 16-row source not located"
+    },
+    {
+      "id": "PREP14",
+      "title": "managed renderer fails without old fallback",
+      "reference": "F05/F18",
+      "status": "PENDING",
+      "officialMatrixId": null,
+      "reason": "Requires approved real T1 adapter; official 16-row source not located"
+    },
+    {
+      "id": "PREP15",
+      "title": "expired lease and late worker default protection",
+      "reference": "I04",
+      "status": "PENDING",
+      "officialMatrixId": null,
+      "reason": "Requires approved real T1 adapter; official 16-row source not located"
+    },
+    {
+      "id": "PREP16",
+      "title": "closed account races late publication",
+      "reference": "F14",
+      "status": "PENDING",
+      "officialMatrixId": null,
+      "reason": "Requires approved real T1 adapter; official 16-row source not located"
+    }
+  ]
+}
