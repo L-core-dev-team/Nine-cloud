@@ -1,0 +1,11 @@
+{
+  "name": "shell-resume-01",
+  "baselineOrCandidate": "500a85c458e4428ea9b8747f05ceac7d05bc527f",
+  "command": [
+    "node",
+    "tests/e2e/cloud-game-shell.cjs"
+  ],
+  "started": "2026-10-15T04:26:55.072Z",
+  "finished": "2026-10-15T04:27:03.953Z",
+  "exitCode": 0
+}

@@ -1,0 +1,11 @@
+{
+  "name": "build-resume-01",
+  "baselineOrCandidate": "500a85c458e4428ea9b8747f05ceac7d05bc527f",
+  "command": [
+    "pnpm",
+    "build"
+  ],
+  "started": "2026-10-15T04:24:16.509Z",
+  "finished": "2026-10-15T04:24:20.204Z",
+  "exitCode": 0
+}

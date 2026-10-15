@@ -1,5 +1,5 @@
 import { useCloudGameSession } from '../use-cloud-game-session';
-import { useState, type FormEvent } from 'react';
+import { useLayoutEffect, useRef, useState, type FormEvent } from 'react';
 import { formatReceiptDelta, projectReceiptEvents } from '../receipt-event-view';
 import { GameShell, GameInfoDialog } from '../components/GameShell';
 import { DecisionV2Schema } from '@jiuxiao/contracts';
@@ -17,6 +17,20 @@ export function CloudGame({ saveId, onBack, onHome, onLogin, onWorld }: { saveId
   const brief = save ? buildGameplayBrief(save, receipt, suggestions) : null;
   const parsed = DecisionV2Schema.safeParse(receipt?.decision);
   const clarification = parsed.success && parsed.data.status === 'clarify' ? parsed.data : null;
+  const historyAnchor = useRef<{ element: HTMLElement; top: number; reading: HTMLElement; scrollTop: number } | null>(null);
+  useLayoutEffect(() => {
+    if (game.historyBusy) return;
+    const anchor = historyAnchor.current; historyAnchor.current = null;
+    if (anchor?.element.isConnected && anchor.reading.scrollTop === anchor.scrollTop)
+      anchor.reading.scrollTop += anchor.element.getBoundingClientRect().top - anchor.top;
+  }, [cache?.history, game.historyBusy]);
+  const loadOlder = (button: HTMLButtonElement) => {
+    const reading = button.closest<HTMLElement>('.story-reading');
+    const element = reading && Array.from(reading.querySelectorAll<HTMLElement>('[data-reading-id]'))
+      .find(item => item.getBoundingClientRect().bottom > reading.getBoundingClientRect().top);
+    if (reading && element) historyAnchor.current = { element, reading, top: element.getBoundingClientRect().top, scrollTop: reading.scrollTop };
+    void game.loadOlderHistory();
+  };
   return <GameShell saveId={saveId} readingReady={!!save && !!cache} readingPosition={cache?.position} onReadingPositionChange={game.rememberPosition} readingScope={cache?.key}>
     <header className="game-topline"><div><span className="eyebrow">服务端规则存档</span><h2>行旅</h2></div><button className="secondary" onClick={onBack}>返回山门</button></header>
     <div className="game-workspace cloud-game" data-testid="p2-cloud-game">
@@ -42,6 +56,8 @@ export function CloudGame({ saveId, onBack, onHome, onLogin, onWorld }: { saveId
         {clarification.candidates?.map((candidate, index) => <button className="secondary" key={index} disabled={busy} onClick={() => setText(textForClarificationCandidate(candidate, suggestions))}>{candidate.label}</button>)}
         <p>选择只填写行动；请核对或编辑后提交。确认前世界不会推进。</p>
       </section>}
+      {game.historyCursor !== null && <button className="secondary" disabled={busy || game.historyBusy} onClick={event => loadOlder(event.currentTarget)}>{game.historyBusy ? '正在读取更早正文…' : '读取更早正文'}</button>}
+      {game.historyNotice && <p role="status">{game.historyNotice}</p>}
       {(cache?.history.slice(0, -1) ?? []).map(row => <section className="card" key={row.id} data-reading-id={row.id}><p>{row.text}</p></section>)}
       {!!narrative && <section data-reading-id={receipt?.idempotencyKey} className="card" aria-label="行动叙述"><h3>发生了什么</h3><p data-testid="p2-narrative">{narrative}</p></section>}
       {!!receipt && <section className="card" data-reading-id="game-receipt" data-testid="p2-receipt" aria-label="状态回执">

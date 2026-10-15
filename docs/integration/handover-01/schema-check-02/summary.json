@@ -1,0 +1,113 @@
+{
+  "status": "PASS",
+  "tables": [
+    {
+      "table": "narrative_context_snapshots",
+      "columns": 8,
+      "foreignKeys": 2,
+      "uniqueIndexes": 2,
+      "checks": 6
+    },
+    {
+      "table": "narrative_generation_requests",
+      "columns": 9,
+      "foreignKeys": 1,
+      "uniqueIndexes": 4,
+      "checks": 4
+    },
+    {
+      "table": "narrative_attempts",
+      "columns": 5,
+      "foreignKeys": 1,
+      "uniqueIndexes": 3,
+      "checks": 2
+    },
+    {
+      "table": "narrative_sources",
+      "columns": 9,
+      "foreignKeys": 2,
+      "uniqueIndexes": 2,
+      "checks": 5
+    },
+    {
+      "table": "narrative_publications",
+      "columns": 9,
+      "foreignKeys": 3,
+      "uniqueIndexes": 5,
+      "checks": 2
+    },
+    {
+      "table": "narrative_segments",
+      "columns": 6,
+      "foreignKeys": 1,
+      "uniqueIndexes": 0,
+      "checks": 5
+    },
+    {
+      "table": "source_event_links",
+      "columns": 6,
+      "foreignKeys": 2,
+      "uniqueIndexes": 1,
+      "checks": 1
+    },
+    {
+      "table": "narrative_outbox",
+      "columns": 5,
+      "foreignKeys": 2,
+      "uniqueIndexes": 1,
+      "checks": 3
+    }
+  ],
+  "triggers": [
+    {
+      "tgname": "narrative_attempt_identity",
+      "proname": "protect_narrative_identity"
+    },
+    {
+      "tgname": "narrative_context_immutable",
+      "proname": "protect_narrative_immutable"
+    },
+    {
+      "tgname": "narrative_context_scope",
+      "proname": "validate_narrative_context"
+    },
+    {
+      "tgname": "narrative_generation_identity",
+      "proname": "protect_narrative_identity"
+    },
+    {
+      "tgname": "narrative_link_immutable",
+      "proname": "protect_narrative_immutable"
+    },
+    {
+      "tgname": "narrative_link_scope",
+      "proname": "validate_narrative_link"
+    },
+    {
+      "tgname": "narrative_outbox_identity",
+      "proname": "protect_narrative_identity"
+    },
+    {
+      "tgname": "narrative_publication_immutable",
+      "proname": "protect_narrative_immutable"
+    },
+    {
+      "tgname": "narrative_segment_immutable",
+      "proname": "protect_narrative_immutable"
+    },
+    {
+      "tgname": "narrative_segment_valid",
+      "proname": "validate_narrative_segment"
+    },
+    {
+      "tgname": "narrative_source_immutable",
+      "proname": "protect_narrative_immutable"
+    },
+    {
+      "tgname": "narrative_source_valid",
+      "proname": "validate_narrative_source"
+    }
+  ],
+  "checksParsedByPostgres": 28,
+  "migrationsNotRegenerated": true
+}

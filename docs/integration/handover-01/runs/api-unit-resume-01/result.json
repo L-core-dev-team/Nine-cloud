@@ -1,0 +1,13 @@
+{
+  "name": "api-unit-resume-01",
+  "baselineOrCandidate": "500a85c458e4428ea9b8747f05ceac7d05bc527f",
+  "command": [
+    "pnpm",
+    "--filter",
+    "@jiuxiao/api",
+    "test"
+  ],
+  "started": "2026-10-15T04:25:27.242Z",
+  "finished": "2026-10-15T04:25:33.764Z",
+  "exitCode": 1
+}

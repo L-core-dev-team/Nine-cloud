@@ -1,0 +1,55 @@
+✔ real worker process killed after lease, restarted process publishes one source without new settlement (1518.2391ms)
+✔ queued task theft and concurrent repeated workers publish only once (214.3471ms)
+✔ account closes while late publisher waits on the real account lock (27.193ms)
+✖ verified policy erasure wins a race with an already leased late publisher (1562.5156ms)
+✔ missing sealed context is an explicit terminal failure rather than a forever pending hidden task (30.1197ms)
+✔ hash corruption is explicitly failed and cannot invoke a renderer (15.7818ms)
+✔ failed index-outbox SQL transaction and row lock do not block exact body reads (30.973ms)
+✖ history pagination has stable revision ordering, owner scope, versions and deletion checks (29.291ms)
+﹣ formal new/old writer mutual exclusion needs separately approved T1 wiring (0.4683ms) # T1 signed patch remains unapplied; no synthetic PASS replaces real gameplay
+ℹ tests 9
+ℹ suites 0
+ℹ pass 6
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 171073.1354
+
+✖ failing tests:
+
+test at scripts\handover-concurrency.cjs:20:1
+✖ verified policy erasure wins a race with an already leased late publisher (1562.5156ms)
+  Error: EXPECTED_REAL_ACCOUNT_LOCK_WAIT
+      at lockWaiting (C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-p3-p6-handover-01-20261014\scripts\handover-concurrency.cjs:5:297)
+      at async TestContext.<anonymous> (C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-p3-p6-handover-01-20261014\scripts\handover-concurrency.cjs:21:295)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at scripts\handover-concurrency.cjs:33:1
+✖ history pagination has stable revision ordering, owner scope, versions and deletion checks (29.291ms)
+  error: EVENT_SEQUENCE_INVALID
+      at C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-p3-p6-handover-01-20261014\node_modules\.pnpm\pg@8.23.1\node_modules\pg\lib\client.js:694:17
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async fixture (C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-p3-p6-handover-01-20261014\scripts\handover-test-support.cjs:13:2)
+      at async TestContext.<anonymous> (C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-p3-p6-handover-01-20261014\scripts\handover-concurrency.cjs:33:209)
+      at async Test.run (node:internal/test_runner/test:1389:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    length: 144,
+    severity: 'ERROR',
+    code: 'P0001',
+    detail: undefined,
+    hint: undefined,
+    position: undefined,
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: 'PL/pgSQL function append_turn_event_hash() line 6 at RAISE',
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'pl_exec.c',
+    line: '3923',
+    routine: 'exec_stmt_raise'
+  }

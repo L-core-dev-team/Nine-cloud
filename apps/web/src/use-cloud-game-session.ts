@@ -1,5 +1,5 @@
 import { validateGameReceipt } from './game-receipt-validation';
-import { readPublishedGameHistory } from './game-publications';
+import { readPublishedGameHistoryPage } from './game-publications';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { DecisionV2Schema, SaveEnvelopeSchema, type SaveEnvelope } from '@jiuxiao/contracts';
 import { apiRequestUrl } from './api-url';
@@ -27,7 +27,10 @@ export function useCloudGameSession(saveId: string) {
   const [suggestions, setSuggestions] = useState<GameActionSuggestion[]>([]);
   const [busy, setBusy] = useState(true);
   const [notice, setNotice] = useState('正在读取存档与本机阅读记录……');
-  const active = useRef<{ scope: GameCacheScope; epoch: number; cache: GameCache; abort: AbortController; working: boolean } | null>(null);
+  const [historyCursor, setHistoryCursor] = useState<number | null>(null);
+  const [historyBusy, setHistoryBusy] = useState(false);
+  const [historyNotice, setHistoryNotice] = useState('');
+  const active = useRef<{ scope: GameCacheScope; epoch: number; cache: GameCache; abort: AbortController; working: boolean; historyLoading: boolean; cursor: number | null } | null>(null);
   const draftWrites = useRef<Promise<void>>(Promise.resolve());
   const draftFailed = useRef(false);
   const isCurrent = (session: NonNullable<typeof active.current>) => active.current === session && !session.abort.signal.aborted;
@@ -43,11 +46,12 @@ export function useCloudGameSession(saveId: string) {
     const available = await cloudRequest(`/api/games/${encodeURIComponent(saveId)}/action-suggestions`, 'GET', undefined, session.scope.ownerId, session.abort.signal).catch(() => ({ actions: [] }));
     if (!isCurrent(session)) return value;
     setSuggestions(Array.isArray(available.actions) ? available.actions.filter((a): a is GameActionSuggestion => !!a && typeof a === 'object' && ['id', 'kind', 'label', 'text'].every(k => typeof (a as Record<string, unknown>)[k] === 'string')) : []);
-    const published = result.publicationsAvailable === true ? await readPublishedGameHistory(session.scope, session.abort.signal) : null;
+    const published = result.publicationsAvailable === true ? await readPublishedGameHistoryPage(session.scope, session.abort.signal) : null;
     if (published && isCurrent(session)) {
       const restored = await store.change(session.scope, session.epoch, current => {
+        if (!isCurrent(session)) throw Error('GAME_CACHE_SESSION_EXPIRED');
         const history = new Map(current.history.map(row => [row.id, row]));
-        for (const row of published) {
+        for (const row of published.items) {
           // Pending actions still require the existing request-fingerprint recovery path.
           if (row.id === current.pending?.idempotencyKey || row.revision > value.revision) continue;
           const previous = history.get(row.id);
@@ -57,7 +61,9 @@ export function useCloudGameSession(saveId: string) {
         return { ...current, history: [...history.values()].sort((a,b) => a.revision-b.revision
           || Number(a.receipt.decision.status!=='accepted')-Number(b.receipt.decision.status!=='accepted')).slice(-1000) };
       });
-      if (isCurrent(session)) publish(session, restored);
+      if (isCurrent(session)) {
+        publish(session, restored); session.cursor = published.nextBeforeRevision; setHistoryCursor(session.cursor);
+      }
     }
     return value;
   }
@@ -83,7 +89,7 @@ export function useCloudGameSession(saveId: string) {
   }
   useEffect(() => {
     const abort = new AbortController(); let disposed = false;
-    const invalidate = () => { if (disposed) return; active.current = null; abort.abort(); setSave(null); setCache(null); setText(''); setSuggestions([]); setBusy(false); setNotice('账号已改变，请重新进入这份存档。'); };
+    const invalidate = () => { if (disposed) return; active.current = null; abort.abort(); setSave(null); setCache(null); setText(''); setSuggestions([]); setBusy(false); setHistoryCursor(null); setHistoryBusy(false); setHistoryNotice(''); setNotice('账号已改变，请重新进入这份存档。'); };
     const checkSession = () => {
       const session = active.current; if (!session || document.visibilityState === 'hidden') return;
       void cloudRequest('/api/auth/session').then(result => {
@@ -95,6 +101,7 @@ export function useCloudGameSession(saveId: string) {
       if (session && event.data?.ownerId === session.scope.ownerId && event.data?.apiBase === session.scope.apiBase) invalidate(); };
     window.addEventListener('focus', checkSession); document.addEventListener('visibilitychange', checkSession);
     setSave(null); setCache(null); setText(''); setSuggestions([]); setBusy(true); setNotFound(false); draftFailed.current = false;
+    setHistoryCursor(null); setHistoryBusy(false); setHistoryNotice('');
     draftWrites.current = Promise.resolve();
     void (async () => {
       const response = await cloudRequest('/api/auth/session', 'GET', undefined, undefined, abort.signal);
@@ -102,16 +109,45 @@ export function useCloudGameSession(saveId: string) {
       if (typeof account?.id !== 'string') throw Error('INVALID_SESSION');
       const scope = gameCacheScope(account.id, saveId);
       const cached = await store.read(scope);
-      if (disposed) return;
-      const session = { scope, epoch: cached.epoch, cache: cached, abort, working: false };
+      if (disposed || abort.signal.aborted) return;
+      const session = { scope, epoch: cached.epoch, cache: cached, abort, working: false, historyLoading: false, cursor: null as number | null };
       active.current = session; publish(session, cached); setText(cached.draft);
       await loadSave(session);
+      if (!isCurrent(session)) return;
       setNotice('存档已恢复。行动由服务端规则判定。');
       if (cached.pending) await lookup(session); // GET only: never automatically re-submit on mount.
-    })().catch(error => { if (!disposed && error instanceof CloudHttpError && error.status === 404) setNotFound(true); if (!disposed) setNotice('存档或本机记录读取失败，请确认账号、网络及浏览器存储后重新进入。未自动提交任何行动。'); })
-      .finally(() => { if (!disposed) setBusy(false); });
+    })().catch(error => { if (!disposed && !abort.signal.aborted && error instanceof CloudHttpError && error.status === 404) setNotFound(true); if (!disposed && !abort.signal.aborted) setNotice('存档或本机记录读取失败，请确认账号、网络及浏览器存储后重新进入。未自动提交任何行动。'); })
+      .finally(() => { if (!disposed && !abort.signal.aborted) setBusy(false); });
     return () => { disposed = true; abort.abort(); channel?.close(); window.removeEventListener('focus', checkSession); document.removeEventListener('visibilitychange', checkSession); if (active.current?.abort === abort) active.current = null; };
   }, [saveId]);
+  async function loadOlderHistory() {
+    const session = active.current;
+    if (!session || !save || busy || session.working || session.historyLoading || session.cursor === null) return;
+    const cursor = session.cursor;
+    session.historyLoading = true; setHistoryBusy(true); setHistoryNotice('');
+    try {
+      const page = await readPublishedGameHistoryPage(session.scope, session.abort.signal, cursor);
+      if (!isCurrent(session)) return;
+      if (!page) throw Error('PUBLICATION_HISTORY_UNAVAILABLE');
+      const restored = await store.change(session.scope, session.epoch, current => {
+        if (!isCurrent(session)) throw Error('GAME_CACHE_SESSION_EXPIRED');
+        const history = new Map(current.history.map(row => [row.id, row]));
+        for (const row of page.items) {
+          if (row.id === current.pending?.idempotencyKey || row.revision > save.revision) continue;
+          const previous = history.get(row.id);
+          if (previous && previous.receipt.requestFingerprint !== row.receipt.requestFingerprint) throw Error('INVALID_PUBLICATION_RECEIPT');
+          history.set(row.id, row);
+        }
+        // Keep current text, drafts, pending actions and reading position in the same transaction.
+        return { ...current, history: [...history.values()].sort((a,b) => a.revision-b.revision
+          || Number(a.receipt.decision.status!=='accepted')-Number(b.receipt.decision.status!=='accepted')) };
+      });
+      if (!isCurrent(session)) return;
+      publish(session, restored); session.cursor = page.nextBeforeRevision; setHistoryCursor(session.cursor);
+    } catch {
+      if (isCurrent(session)) setHistoryNotice('更早正文读取失败或本机空间不足，请重试；当前正文与草稿已保留。');
+    } finally { session.historyLoading = false; if (isCurrent(session)) setHistoryBusy(false); }
+  }
   function edit(value: string) {
     const session = active.current; if (!session || value.length > 8000) return;
     setText(value);
@@ -192,5 +228,6 @@ export function useCloudGameSession(saveId: string) {
       if (isCurrent(session)) setNotice('阅读位置未能保存在此设备；服务端存档不受影响。');
     });
   }, []);
-  return { save, notFound, cache, text, edit, busy, notice, suggestions, submit, queryPending, rememberPosition };
+  return { save, notFound, cache, text, edit, busy, notice, suggestions, submit, queryPending, rememberPosition,
+    historyCursor, historyBusy, historyNotice, loadOlderHistory };
 }

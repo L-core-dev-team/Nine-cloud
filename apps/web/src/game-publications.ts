@@ -3,9 +3,12 @@ import type { GameCacheScope, ReadingTurn } from './cloud-game-cache';
 import { CloudHttpError, cloudRequest } from './cloud-sync';
 
 /** Server-published history is presentation only, never a state-recovery substitute. */
-export async function readPublishedGameHistory(scope:GameCacheScope,signal:AbortSignal):Promise<ReadingTurn[]|null> {
+export type PublishedHistoryPage = { items: ReadingTurn[]; nextBeforeRevision: number | null };
+export async function readPublishedGameHistoryPage(scope:GameCacheScope,signal:AbortSignal,beforeRevision?:number):Promise<PublishedHistoryPage|null> {
+  if(beforeRevision!==undefined&&(!Number.isSafeInteger(beforeRevision)||beforeRevision<1))throw Error('INVALID_PUBLICATION_CURSOR');
+  const query=beforeRevision===undefined?'':`?beforeRevision=${beforeRevision}`;
   let result:Record<string,unknown>;
-  try {result=await cloudRequest(`/api/games/${encodeURIComponent(scope.saveId)}/presentations`,'GET',undefined,scope.ownerId,signal);}
+  try {result=await cloudRequest(`/api/games/${encodeURIComponent(scope.saveId)}/presentations${query}`,'GET',undefined,scope.ownerId,signal);}
   catch(error){if(error instanceof CloudHttpError&&error.status===404)return null;throw error;}
   if(!Array.isArray(result.items)||result.items.length>10)throw Error('INVALID_PUBLICATION_HISTORY');
   const rows:ReadingTurn[]=[];
@@ -32,5 +35,13 @@ export async function readPublishedGameHistory(scope:GameCacheScope,signal:Abort
     else throw Error('INVALID_PUBLICATION_STATE');
     rows.push({id:receipt.idempotencyKey,revision:receipt.resultingRevision,receipt,text});
   }
-  return rows;
+  if(rows.some((row,i)=>row.revision<1||(beforeRevision!==undefined&&row.revision>=beforeRevision)
+    ||(i>0&&row.revision<=rows[i-1]!.revision))||new Set(rows.map(row=>row.id)).size!==rows.length)throw Error('INVALID_PUBLICATION_HISTORY');
+  const cursor=result.nextBeforeRevision??null;
+  if(cursor!==null&&(!Number.isSafeInteger(cursor)||cursor!==rows[0]?.revision||rows.length!==10))throw Error('INVALID_PUBLICATION_CURSOR');
+  if(signal.aborted)throw Error('PUBLICATION_READ_ABORTED');
+  return {items:rows,nextBeforeRevision:cursor as number|null};
+}
+export async function readPublishedGameHistory(scope:GameCacheScope,signal:AbortSignal):Promise<ReadingTurn[]|null> {
+  return (await readPublishedGameHistoryPage(scope,signal))?.items??null;
 }

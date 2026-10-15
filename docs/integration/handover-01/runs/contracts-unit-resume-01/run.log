@@ -1,0 +1,10 @@
+
+ RUN  v5.0.3 C:/Users/11954/Desktop/水龙吟专用/项目/Nine-cloud-p3-p6-handover-01-20261014/packages/contracts
+
+
+ Test Files  2 passed (2)
+      Tests  17 passed (17)
+   Start at  12:27:04
+   Duration  399ms (import 48%, transform 40%, tests 10%, worker 2%)
+
+$ vitest run

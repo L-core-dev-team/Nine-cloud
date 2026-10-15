@@ -66,16 +66,27 @@ export class NarrativePublicationRepository {
   }
   async claim(owner: string, save: string, key: string, leaseMs = 30_000): Promise<NarrativeLease | null> {
     if (!Number.isInteger(leaseMs) || leaseMs < 1 || leaseMs > 120_000) throw Error('INVALID_LEASE');
-    return this.transaction(async c => {
+    const outcome = await this.transaction<NarrativeLease | null | { failure: string }>(async c => {
       if (!await this.lockOwner(c, owner, save)) return null;
       const g = (await c.query(`SELECT g.*,c.context,
         c.context_sha=encode(sha256(convert_to(c.context::text,'UTF8')),'hex')
         AND c.receipt_sha=encode(sha256(convert_to(r.result::text,'UTF8')),'hex') AS intact
-        FROM narrative_generation_requests g JOIN narrative_context_snapshots c ON c.id=g.context_id
-        JOIN turn_requests r ON r.save_id=g.save_id AND r.idempotency_key=g.request_key
+        FROM narrative_generation_requests g LEFT JOIN narrative_context_snapshots c ON c.id=g.context_id
+        LEFT JOIN turn_requests r ON r.save_id=g.save_id AND r.idempotency_key=g.request_key
         WHERE g.save_id=$1 AND g.request_key=$2 FOR UPDATE OF g`, [save, key])).rows[0];
       if (!g || g.state === 'published') return null;
-      if (!g.intact || g.context.ownerId || g.context.format !== 'authority-context-v1') throw Error('NARRATIVE_CONTEXT_CORRUPT');
+      let failure: string | undefined;
+      if (!g.context) failure = 'NARRATIVE_CONTEXT_MISSING';
+      else if (!g.intact || g.context.ownerId || g.context.format !== 'authority-context-v1'
+        || g.context.policySurface !== 'p5-narrative' || typeof g.context.rendererVersion !== 'string'
+        || !g.context.rendererVersion.trim() || !g.context.hints || typeof g.context.hints !== 'object'
+        || Array.isArray(g.context.hints) || !TurnReceiptSchema.safeParse(g.context.receipt).success) failure = 'NARRATIVE_CONTEXT_CORRUPT';
+      if (failure) {
+        // Commit a safe terminal state before raising; throwing inside the transaction would undo it.
+        await c.query("UPDATE narrative_generation_requests SET state='failed' WHERE id=$1", [g.id]);
+        await c.query("UPDATE narrative_outbox SET state='done' WHERE generation_id=$1 AND kind='generate' AND state='pending'", [g.id]);
+        return { failure };
+      }
       const live = await c.query(`SELECT id FROM narrative_attempts WHERE generation_id=$1 AND state='running' AND lease_until>clock_timestamp()`, [g.id]);
       if (live.rowCount) return null;
       await c.query(`UPDATE narrative_attempts SET state='expired' WHERE generation_id=$1 AND state='running'`, [g.id]);
@@ -86,6 +97,8 @@ export class NarrativePublicationRepository {
       const context = g.context as NarrativeSeed; TurnReceiptSchema.parse(context.receipt);
       return { generationId: g.id, attemptId: attempt, leaseEpoch: epoch, ownerId: owner, saveId: save, requestKey: key, context };
     });
+    if (outcome && 'failure' in outcome) throw Error(outcome.failure);
+    return outcome;
   }
   async publish(lease: NarrativeLease, text: string): Promise<Publication> {
     if (!this.limits) throw Error('NARRATIVE_LIMITS_REQUIRED');
@@ -193,9 +206,9 @@ export class NarrativePublicationRepository {
   /** Internal dispatch hint only; claim() is the actual lease authority. Failed tasks require internal review. */
   async queued(limit=20):Promise<{ownerId:string;saveId:string;requestKey:string}[]> {
     if(!Number.isInteger(limit)||limit<1||limit>100)throw Error('INVALID_BATCH');
-    const rows=(await this.pool.query(`SELECT c.owner_id,g.save_id,g.request_key FROM narrative_outbox o
-      JOIN narrative_generation_requests g ON g.id=o.generation_id JOIN narrative_context_snapshots c ON c.id=g.context_id
-      JOIN auth_accounts a ON a.id=c.owner_id AND a.closed_at IS NULL
+    const rows=(await this.pool.query(`SELECT s.owner_id,g.save_id,g.request_key FROM narrative_outbox o
+      JOIN narrative_generation_requests g ON g.id=o.generation_id JOIN game_saves s ON s.id=g.save_id
+      JOIN auth_accounts a ON a.id=s.owner_id AND a.closed_at IS NULL
       WHERE o.kind='generate' AND o.state='pending' AND g.state IN ('pending','running')
       AND NOT EXISTS(SELECT 1 FROM cloud_archive_trash t WHERE t.save_id=g.save_id)
       AND NOT EXISTS(SELECT 1 FROM narrative_attempts active WHERE active.generation_id=g.id

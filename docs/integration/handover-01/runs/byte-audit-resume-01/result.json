@@ -1,0 +1,11 @@
+{
+  "name": "byte-audit-resume-01",
+  "baselineOrCandidate": "500a85c458e4428ea9b8747f05ceac7d05bc527f",
+  "command": [
+    "node",
+    "scripts/handover-byte-audit.cjs"
+  ],
+  "started": "2026-10-15T04:26:30.224Z",
+  "finished": "2026-10-15T04:26:32.254Z",
+  "exitCode": 0
+}

@@ -1,0 +1,17 @@
+✔ real worker process killed after lease, restarted process publishes one source without new settlement (1415.9056ms)
+✔ queued task theft and concurrent repeated workers publish only once (117.1254ms)
+✔ account closes while late publisher waits on the real account lock (21.9884ms)
+✔ verified policy erasure wins a race with an already leased late publisher (33.5492ms)
+✔ missing sealed context is an explicit terminal failure rather than a forever pending hidden task (24.4712ms)
+✔ hash corruption is explicitly failed and cannot invoke a renderer (15.5527ms)
+✔ failed index-outbox SQL transaction and row lock do not block exact body reads (27.6889ms)
+✔ history pagination has stable revision ordering, owner scope, versions and deletion checks (179.229ms)
+﹣ formal new/old writer mutual exclusion needs separately approved T1 wiring (0.4491ms) # T1 signed patch remains unapplied; no synthetic PASS replaces real gameplay
+ℹ tests 9
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 1966.2965
