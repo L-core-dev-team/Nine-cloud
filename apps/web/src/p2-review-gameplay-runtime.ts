@@ -1,4 +1,4 @@
-import { PROLOGUE_V1 } from '@jiuxiao/content';
+import { PROLOGUE_V1, PROLOGUE_V1_ERROR_MESSAGES } from '@jiuxiao/content';
 import { formatCanonArtifactHash } from '@jiuxiao/content/canon-artifact';
 import { PROLOGUE_V1_CONTENT_PACK, PROLOGUE_V1_RULEBOOK_CANDIDATE } from '@jiuxiao/content/p1-review-candidate';
 import {
@@ -70,7 +70,9 @@ const contentPack = PROLOGUE_V1_CONTENT_PACK;
 const dependencies = {
   rulebook,
   mechanics,
-  messages: (await import('@jiuxiao/content')).PROLOGUE_V1_ERROR_MESSAGES,
+  // Keep this dependency static. A top-level dynamic import of the content
+  // barrel can await a production chunk that imports this runtime itself.
+  messages: PROLOGUE_V1_ERROR_MESSAGES,
 };
 const ruleModule = createPrologueV1RuleModule(dependencies);
 const reduceCandidate = createPrologueV1EventReducer(dependencies);
