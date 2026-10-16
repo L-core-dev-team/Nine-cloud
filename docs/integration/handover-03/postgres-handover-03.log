@@ -1,0 +1,333 @@
+2026-10-16 18:16:26.137 CST [28416] LOG:  starting PostgreSQL 18.6 on x86_64-windows, compiled by msvc-19.44.35229, 64-bit
+2026-10-16 18:16:26.138 CST [28416] LOG:  listening on IPv4 address "127.0.0.1", port 55461
+2026-10-16 18:16:26.219 CST [26028] LOG:  database system was interrupted; last known up at 2026-10-15 22:14:52 CST
+2026-10-16 18:16:28.093 CST [26028] LOG:  database system was not properly shut down; automatic recovery in progress
+2026-10-16 18:16:28.103 CST [26028] LOG:  redo starts at 0/59720A8
+2026-10-16 18:16:28.104 CST [26028] LOG:  invalid record length at 0/59721E8: expected at least 24, got 0
+2026-10-16 18:16:28.105 CST [26028] LOG:  redo done at 0/59721B0 system usage: CPU: user: 0.00 s, system: 0.00 s, elapsed: 0.00 s
+2026-10-16 18:16:28.122 CST [36028] LOG:  checkpoint starting: end-of-recovery immediate wait
+2026-10-16 18:16:28.147 CST [36028] LOG:  checkpoint complete: wrote 0 buffers (0.0%), wrote 2 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.006 s, total=0.028 s; sync files=3, longest=0.003 s, average=0.002 s; distance=0 kB, estimate=0 kB; lsn=0/59721E8, redo lsn=0/59721E8
+2026-10-16 18:16:28.154 CST [28416] LOG:  database system is ready to accept connections
+2026-10-16 18:16:38.943 CST [26692] ERROR:  insert or update on table "game_saves" violates foreign key constraint "game_saves_account_fk"
+2026-10-16 18:16:38.943 CST [26692] DETAIL:  Key (owner_id)=(1019b0f9-51b2-40af-9934-eaba1eacf4ea) is not present in table "auth_accounts".
+2026-10-16 18:16:38.943 CST [26692] STATEMENT:  INSERT INTO game_saves(id,owner_id,schema_version,canon_version,rule_version,memory_policy_version,snapshot) VALUES($1,$2,1,'test','test','test','{}')
+2026-10-16 18:16:38.975 CST [21636] ERROR:  duplicate key value violates unique constraint "auth_external_identity_digest_idx"
+2026-10-16 18:16:38.975 CST [21636] DETAIL:  Key (identity_kind, identifier_digest)=(phone, d6e1aa9c8ced9287571149ffa4fdb076407a01189e1651f6d9f75de4db230f97) already exists.
+2026-10-16 18:16:38.975 CST [21636] STATEMENT:  INSERT INTO auth_external_identities(provider_subject,identity_kind,identifier_digest,owner_id,verified_at)
+	        VALUES($1,$2,$3,$4,$5) ON CONFLICT(provider_subject,identity_kind) DO UPDATE SET
+	        identifier_digest=EXCLUDED.identifier_digest,owner_id=EXCLUDED.owner_id,verified_at=EXCLUDED.verified_at,
+	        revoked_at=NULL,last_used_at=now() WHERE auth_external_identities.revoked_at IS NOT NULL
+	        OR (auth_external_identities.owner_id=EXCLUDED.owner_id AND auth_external_identities.identity_kind=EXCLUDED.identity_kind)
+2026-10-16 18:16:39.205 CST [37228] ERROR:  entitlement ledger is append-only
+2026-10-16 18:16:39.205 CST [37228] CONTEXT:  PL/pgSQL function reject_entitlement_ledger_mutation() line 3 at RAISE
+2026-10-16 18:16:39.205 CST [37228] STATEMENT:  UPDATE entitlement_ledger_entries SET delta_units = 5 WHERE id = $1
+2026-10-16 18:16:39.209 CST [16636] ERROR:  entitlement ledger is append-only
+2026-10-16 18:16:39.209 CST [16636] CONTEXT:  PL/pgSQL function reject_entitlement_ledger_mutation() line 3 at RAISE
+2026-10-16 18:16:39.209 CST [16636] STATEMENT:  DELETE FROM entitlement_ledger_entries WHERE id = $1
+2026-10-16 18:16:39.445 CST [36904] ERROR:  new row for relation "game_saves" violates check constraint "game_saves_memory_policy_check"
+2026-10-16 18:16:39.445 CST [36904] DETAIL:  Failing row contains (s6-v2-incomplete-d1cf7fda-0137-4211-91c9-bb4b248dc4f0, s6-a-27fdfe98-650d-4a9d-9beb-300faacc186c, 0, 2, canon-test, rules-test, forgetting-v1, {}, 2026-10-16 18:16:39.444869+08, 2026-10-16 18:16:39.444869+08, forgetting, null, null, null, null, null, null, null).
+2026-10-16 18:16:39.445 CST [36904] STATEMENT:  INSERT INTO game_saves (id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,memory_mode,memory_policy,snapshot)
+	       VALUES ($1,$2,0,2,'canon-test','rules-test','forgetting-v1','forgetting',NULL,'{}'::jsonb)
+2026-10-16 18:16:39.450 CST [36868] ERROR:  new row for relation "game_saves" violates check constraint "game_saves_memory_policy_check"
+2026-10-16 18:16:39.450 CST [36868] DETAIL:  Failing row contains (s6-v2-null-field-ec7de6a7-3dd3-4910-98c2-f4236a4def41, s6-a-27fdfe98-650d-4a9d-9beb-300faacc186c, 0, 2, canon-test, rules-test, forgetting-v1, {}, 2026-10-16 18:16:39.449032+08, 2026-10-16 18:16:39.449032+08, forgetting, {"mode": "forgetting", "clockBasis": "game-minute+npc-grant-sequ..., null, null, null, null, null, null).
+2026-10-16 18:16:39.450 CST [36868] STATEMENT:  INSERT INTO game_saves (id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,memory_mode,memory_policy,snapshot)
+	       VALUES ($1,$2,0,2,'canon-test','rules-test','forgetting-v1','forgetting',$3::jsonb,'{}'::jsonb)
+2026-10-16 18:16:39.588 CST [2324] ERROR:  SAVE_MEMORY_POLICY_PINNED
+2026-10-16 18:16:39.588 CST [2324] CONTEXT:  PL/pgSQL function protect_game_save_memory_policy() line 11 at RAISE
+2026-10-16 18:16:39.588 CST [2324] STATEMENT:  UPDATE game_saves SET memory_mode='continue' WHERE id=$1
+2026-10-16 18:16:39.638 CST [3296] ERROR:  SAVE_MEMORY_POLICY_PINNED
+2026-10-16 18:16:39.638 CST [3296] CONTEXT:  PL/pgSQL function protect_game_save_memory_policy() line 11 at RAISE
+2026-10-16 18:16:39.638 CST [3296] STATEMENT:  UPDATE game_saves SET memory_policy = jsonb_set(memory_policy, '{retrievalVersion}', '"recall-decay-v2"') WHERE id=$1
+2026-10-16 18:16:39.662 CST [36876] ERROR:  new row for relation "turn_events" violates check constraint "turn_events_branch_id_check"
+2026-10-16 18:16:39.662 CST [36876] DETAIL:  Failing row contains (invalid-branch-f65e5b97-eb4f-4f22-bc7a-28059eae10ee, s4-save-2b5df850-c4a8-495c-85f0-9d0485d90354, 13fc2739-27fb-4420-b45d-7152682901bc-invalid-branch, 1, travel.completed, 0, 1, {"destinationId": "gate-1"}, 2026-10-16 18:16:39.607+08, RULES, rules-test-v1, 8e98427ba9c398139bf5682675e1ebf8be7e2abf4853b1e7952aa01aea3340c7, 5d2d0ecc45339b7aa4c9d7e26bdde39a98b1954cb27b6ebf4f14634e04da786f, branch-preview).
+2026-10-16 18:16:39.662 CST [36876] STATEMENT:  INSERT INTO turn_events (id,save_id,idempotency_key,sequence,event_type,source,rule_version,before_revision,after_revision,payload,occurred_at,branch_id)
+	       SELECT $1,save_id,idempotency_key || '-invalid-branch',sequence+1,event_type,source,rule_version,before_revision,after_revision,payload,occurred_at,'branch-preview'
+	       FROM turn_events WHERE save_id=$2 LIMIT 1
+2026-10-16 18:16:39.737 CST [21588] ERROR:  AUTHORIZED_OBSERVATION_IMMUTABLE
+2026-10-16 18:16:39.737 CST [21588] CONTEXT:  PL/pgSQL function protect_npc_authorized_observation_outbox() line 4 at RAISE
+2026-10-16 18:16:39.737 CST [21588] STATEMENT:  UPDATE npc_authorized_observation_outbox SET summary=$2 WHERE grant_id=$1
+2026-10-16 18:16:39.775 CST [37376] ERROR:  SAVE_SCHEMA_VERSION_IMMUTABLE
+2026-10-16 18:16:39.775 CST [37376] CONTEXT:  PL/pgSQL function protect_game_save_memory_policy() line 4 at RAISE
+2026-10-16 18:16:39.775 CST [37376] STATEMENT:  UPDATE game_saves SET schema_version=1 WHERE id=$1
+2026-10-16 18:16:39.842 CST [36596] ERROR:  game_saves rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-16 18:16:39.842 CST [36596] CONTEXT:  PL/pgSQL function reject_protected_archive_delete() line 34 at RAISE
+2026-10-16 18:16:39.842 CST [36596] STATEMENT:  DELETE FROM game_saves WHERE id=$1 AND owner_id=$2
+2026-10-16 18:16:39.897 CST [37260] ERROR:  AUTHORIZED_OBSERVATION_ERASURE_REQUIRED
+2026-10-16 18:16:39.897 CST [37260] CONTEXT:  PL/pgSQL function protect_npc_authorized_observation_outbox() line 16 at RAISE
+2026-10-16 18:16:39.897 CST [37260] STATEMENT:  DELETE FROM npc_authorized_observation_outbox WHERE grant_id=$1
+2026-10-16 18:16:39.936 CST [16348] ERROR:  SAVE_LINEAGE_IMMUTABLE
+2026-10-16 18:16:39.936 CST [16348] CONTEXT:  PL/pgSQL function protect_game_save_memory_policy() line 20 at RAISE
+2026-10-16 18:16:39.936 CST [16348] STATEMENT:  UPDATE game_saves SET created_policy_version='changed' WHERE id=$1
+2026-10-16 18:16:39.947 CST [10648] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-16 18:16:39.947 CST [10648] CONTEXT:  PL/pgSQL function protect_narrative_immutable() line 4 at RAISE
+2026-10-16 18:16:39.947 CST [10648] STATEMENT:  UPDATE narrative_sources SET body=$2 WHERE id=$1
+2026-10-16 18:16:39.955 CST [31372] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-16 18:16:39.955 CST [31372] CONTEXT:  PL/pgSQL function protect_narrative_immutable() line 4 at RAISE
+2026-10-16 18:16:39.955 CST [31372] STATEMENT:  DELETE FROM narrative_segments WHERE source_id=$1
+2026-10-16 18:16:39.957 CST [31372] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-16 18:16:39.957 CST [31372] CONTEXT:  PL/pgSQL function protect_narrative_identity() line 9 at RAISE
+2026-10-16 18:16:39.957 CST [31372] STATEMENT:  UPDATE narrative_generation_requests SET request_key=$2 WHERE id=$1
+2026-10-16 18:16:39.961 CST [26048] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-16 18:16:39.961 CST [26048] CONTEXT:  PL/pgSQL function protect_narrative_identity() line 11 at RAISE
+2026-10-16 18:16:39.961 CST [26048] STATEMENT:  UPDATE narrative_outbox SET generation_id=$2 WHERE generation_id=$1
+2026-10-16 18:16:39.966 CST [17796] ERROR:  NARRATIVE_EVENT_SCOPE_INVALID
+2026-10-16 18:16:39.966 CST [17796] CONTEXT:  PL/pgSQL function validate_narrative_link() line 6 at RAISE
+2026-10-16 18:16:39.966 CST [17796] STATEMENT:  INSERT INTO source_event_links(id,source_id,segment_id,save_id,event_id,kind) VALUES($1,$2,0,$3,$4,'provenance_only')
+2026-10-16 18:16:39.991 CST [25616] ERROR:  SAVE_CANON_ARTIFACT_PINNED
+2026-10-16 18:16:39.991 CST [25616] CONTEXT:  PL/pgSQL function protect_game_save_memory_policy() line 23 at RAISE
+2026-10-16 18:16:39.991 CST [25616] STATEMENT:  UPDATE game_saves SET canon_artifact_hash=$2 WHERE id=$1
+2026-10-16 18:16:40.041 CST [25612] ERROR:  AUTHORIZED_OBSERVATION_ERASURE_REQUIRED
+2026-10-16 18:16:40.041 CST [25612] CONTEXT:  PL/pgSQL function protect_npc_authorized_observation_outbox() line 16 at RAISE
+2026-10-16 18:16:40.041 CST [25612] STATEMENT:  DELETE FROM npc_authorized_observation_outbox WHERE grant_id=$1
+2026-10-16 18:16:40.073 CST [25612] ERROR:  forced journal failure
+2026-10-16 18:16:40.073 CST [25612] CONTEXT:  PL/pgSQL function jiuxiao_test_reject_memory_write() line 1 at RAISE
+2026-10-16 18:16:40.073 CST [25612] STATEMENT:  INSERT INTO npc_memory_journals (save_id, schema_version, revision, payload, updated_at) VALUES ($1, 1, $2, $3::jsonb, now()) ON CONFLICT (save_id) DO UPDATE SET schema_version = EXCLUDED.schema_version, revision = EXCLUDED.revision, payload = EXCLUDED.payload, updated_at = now()
+2026-10-16 18:16:40.091 CST [26220] ERROR:  entitlement ledger is append-only
+2026-10-16 18:16:40.091 CST [26220] CONTEXT:  PL/pgSQL function reject_entitlement_ledger_mutation() line 11 at RAISE
+2026-10-16 18:16:40.091 CST [26220] STATEMENT:  DELETE FROM entitlement_ledger_entries WHERE owner_id=$1
+2026-10-16 18:16:40.253 CST [32632] ERROR:  turn events are append-only
+2026-10-16 18:16:40.253 CST [32632] CONTEXT:  PL/pgSQL function reject_turn_event_update() line 3 at RAISE
+2026-10-16 18:16:40.253 CST [32632] STATEMENT:  UPDATE turn_events SET payload=$1::jsonb WHERE save_id=$2
+2026-10-16 18:16:40.292 CST [35712] ERROR:  INJECTED_PUBLICATION_FAILURE
+2026-10-16 18:16:40.292 CST [35712] CONTEXT:  PL/pgSQL function narrative_test_failpoint() line 2 at RAISE
+2026-10-16 18:16:40.292 CST [35712] STATEMENT:  INSERT INTO narrative_outbox(id,generation_id,source_id,kind) VALUES($1,$2,$3,'index')
+2026-10-16 18:16:40.315 CST [35892] ERROR:  update or delete on table "game_saves" violates foreign key constraint "turn_events_save_id_game_saves_id_fk" on table "turn_events"
+2026-10-16 18:16:40.315 CST [35892] DETAIL:  Key (id)=(s4-save-f7ab20dd-87ac-42c7-9fc6-511463ac13aa) is still referenced from table "turn_events".
+2026-10-16 18:16:40.315 CST [35892] STATEMENT:  DELETE FROM game_saves WHERE id=$1 AND owner_id=$2
+2026-10-16 18:16:40.437 CST [34440] ERROR:  turn_events rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-16 18:16:40.437 CST [34440] CONTEXT:  PL/pgSQL function reject_protected_archive_delete() line 34 at RAISE
+2026-10-16 18:16:40.437 CST [34440] STATEMENT:  DELETE FROM turn_events WHERE save_id=$1
+2026-10-16 18:16:40.506 CST [35340] ERROR:  game_saves rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-16 18:16:40.506 CST [35340] CONTEXT:  PL/pgSQL function reject_protected_archive_delete() line 34 at RAISE
+2026-10-16 18:16:40.506 CST [35340] STATEMENT:  DELETE FROM game_saves WHERE id=$1
+2026-10-16 18:16:40.610 CST [11320] ERROR:  turn_events rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-16 18:16:40.610 CST [11320] CONTEXT:  PL/pgSQL function reject_protected_archive_delete() line 34 at RAISE
+2026-10-16 18:16:40.610 CST [11320] STATEMENT:  DELETE FROM turn_events WHERE save_id=$1
+2026-10-16 18:16:40.613 CST [11320] ERROR:  game_saves identity is immutable and revision must be monotonic
+2026-10-16 18:16:40.613 CST [11320] CONTEXT:  PL/pgSQL function guard_game_saves_update() line 6 at RAISE
+2026-10-16 18:16:40.613 CST [11320] STATEMENT:  UPDATE game_saves SET owner_id=$2 WHERE id=$1
+2026-10-16 18:16:40.695 CST [8268] ERROR:  game_saves identity is immutable and revision must be monotonic
+2026-10-16 18:16:40.695 CST [8268] CONTEXT:  PL/pgSQL function guard_game_saves_update() line 6 at RAISE
+2026-10-16 18:16:40.695 CST [8268] STATEMENT:  UPDATE game_saves SET revision=0 WHERE id=$1
+2026-10-16 18:16:46.913 CST [13868] LOG:  could not receive data from client: An existing connection was forcibly closed by the remote host.
+	
+2026-10-16 18:16:48.140 CST [14392] WARNING:  there is no transaction in progress
+2026-10-16 18:16:48.254 CST [22044] ERROR:  division by zero
+2026-10-16 18:16:48.254 CST [22044] STATEMENT:  SELECT 1/0
+2026-10-16 18:16:48.263 CST [22044] WARNING:  there is no transaction in progress
+2026-10-16 18:17:33.826 CST [26740] ERROR:  insert or update on table "game_saves" violates foreign key constraint "game_saves_account_fk"
+2026-10-16 18:17:33.826 CST [26740] DETAIL:  Key (owner_id)=(55048fc7-4b64-4ec1-856e-2eb0fe427407) is not present in table "auth_accounts".
+2026-10-16 18:17:33.826 CST [26740] STATEMENT:  INSERT INTO game_saves(id,owner_id,schema_version,canon_version,rule_version,memory_policy_version,snapshot) VALUES($1,$2,1,'test','test','test','{}')
+2026-10-16 18:17:34.027 CST [28588] ERROR:  game_saves rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-16 18:17:34.027 CST [28588] CONTEXT:  PL/pgSQL function reject_protected_archive_delete() line 34 at RAISE
+2026-10-16 18:17:34.027 CST [28588] STATEMENT:  DELETE FROM game_saves WHERE id=$1 AND owner_id=$2
+2026-10-16 18:17:34.033 CST [26164] ERROR:  entitlement ledger is append-only
+2026-10-16 18:17:34.033 CST [26164] CONTEXT:  PL/pgSQL function reject_entitlement_ledger_mutation() line 3 at RAISE
+2026-10-16 18:17:34.033 CST [26164] STATEMENT:  UPDATE entitlement_ledger_entries SET delta_units = 5 WHERE id = $1
+2026-10-16 18:17:34.038 CST [27072] ERROR:  entitlement ledger is append-only
+2026-10-16 18:17:34.038 CST [27072] CONTEXT:  PL/pgSQL function reject_entitlement_ledger_mutation() line 3 at RAISE
+2026-10-16 18:17:34.038 CST [27072] STATEMENT:  DELETE FROM entitlement_ledger_entries WHERE id = $1
+2026-10-16 18:17:34.117 CST [37700] ERROR:  new row for relation "game_saves" violates check constraint "game_saves_memory_policy_check"
+2026-10-16 18:17:34.117 CST [37700] DETAIL:  Failing row contains (s6-v2-incomplete-9694e619-4f00-476e-b168-3075808af84e, s6-a-cb4169c8-0d4a-4092-8175-90bf3da57593, 0, 2, canon-test, rules-test, forgetting-v1, {}, 2026-10-16 18:17:34.116444+08, 2026-10-16 18:17:34.116444+08, forgetting, null, null, null, null, null, null, null).
+2026-10-16 18:17:34.117 CST [37700] STATEMENT:  INSERT INTO game_saves (id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,memory_mode,memory_policy,snapshot)
+	       VALUES ($1,$2,0,2,'canon-test','rules-test','forgetting-v1','forgetting',NULL,'{}'::jsonb)
+2026-10-16 18:17:34.121 CST [35588] ERROR:  new row for relation "game_saves" violates check constraint "game_saves_memory_policy_check"
+2026-10-16 18:17:34.121 CST [35588] DETAIL:  Failing row contains (s6-v2-null-field-86ae8844-37bb-4eba-91eb-f0523f5b393c, s6-a-cb4169c8-0d4a-4092-8175-90bf3da57593, 0, 2, canon-test, rules-test, forgetting-v1, {}, 2026-10-16 18:17:34.120607+08, 2026-10-16 18:17:34.120607+08, forgetting, {"mode": "forgetting", "clockBasis": "game-minute+npc-grant-sequ..., null, null, null, null, null, null).
+2026-10-16 18:17:34.121 CST [35588] STATEMENT:  INSERT INTO game_saves (id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,memory_mode,memory_policy,snapshot)
+	       VALUES ($1,$2,0,2,'canon-test','rules-test','forgetting-v1','forgetting',$3::jsonb,'{}'::jsonb)
+2026-10-16 18:17:34.237 CST [21936] ERROR:  SAVE_MEMORY_POLICY_PINNED
+2026-10-16 18:17:34.237 CST [21936] CONTEXT:  PL/pgSQL function protect_game_save_memory_policy() line 11 at RAISE
+2026-10-16 18:17:34.237 CST [21936] STATEMENT:  UPDATE game_saves SET memory_mode='continue' WHERE id=$1
+2026-10-16 18:17:34.290 CST [33676] ERROR:  SAVE_MEMORY_POLICY_PINNED
+2026-10-16 18:17:34.290 CST [33676] CONTEXT:  PL/pgSQL function protect_game_save_memory_policy() line 11 at RAISE
+2026-10-16 18:17:34.290 CST [33676] STATEMENT:  UPDATE game_saves SET memory_policy = jsonb_set(memory_policy, '{retrievalVersion}', '"recall-decay-v2"') WHERE id=$1
+2026-10-16 18:17:34.334 CST [16636] ERROR:  SAVE_SCHEMA_VERSION_IMMUTABLE
+2026-10-16 18:17:34.334 CST [16636] CONTEXT:  PL/pgSQL function protect_game_save_memory_policy() line 4 at RAISE
+2026-10-16 18:17:34.334 CST [16636] STATEMENT:  UPDATE game_saves SET schema_version=1 WHERE id=$1
+2026-10-16 18:17:34.402 CST [2668] ERROR:  duplicate key value violates unique constraint "auth_external_identity_digest_idx"
+2026-10-16 18:17:34.402 CST [2668] DETAIL:  Key (identity_kind, identifier_digest)=(phone, d6e1aa9c8ced9287571149ffa4fdb076407a01189e1651f6d9f75de4db230f97) already exists.
+2026-10-16 18:17:34.402 CST [2668] STATEMENT:  INSERT INTO auth_external_identities(provider_subject,identity_kind,identifier_digest,owner_id,verified_at)
+	        VALUES($1,$2,$3,$4,$5) ON CONFLICT(provider_subject,identity_kind) DO UPDATE SET
+	        identifier_digest=EXCLUDED.identifier_digest,owner_id=EXCLUDED.owner_id,verified_at=EXCLUDED.verified_at,
+	        revoked_at=NULL,last_used_at=now() WHERE auth_external_identities.revoked_at IS NOT NULL
+	        OR (auth_external_identities.owner_id=EXCLUDED.owner_id AND auth_external_identities.identity_kind=EXCLUDED.identity_kind)
+2026-10-16 18:17:34.433 CST [37532] ERROR:  SAVE_LINEAGE_IMMUTABLE
+2026-10-16 18:17:34.433 CST [37532] CONTEXT:  PL/pgSQL function protect_game_save_memory_policy() line 20 at RAISE
+2026-10-16 18:17:34.433 CST [37532] STATEMENT:  UPDATE game_saves SET created_policy_version='changed' WHERE id=$1
+2026-10-16 18:17:34.444 CST [34484] ERROR:  new row for relation "turn_events" violates check constraint "turn_events_branch_id_check"
+2026-10-16 18:17:34.444 CST [34484] DETAIL:  Failing row contains (invalid-branch-6980ddf2-2af0-4b6a-b198-63849b72ecda, s4-save-2af81f9b-a50c-489d-a398-9ce6a753d909, 1fc3125c-9a3b-4ce1-8087-3809f5c98634-invalid-branch, 1, travel.completed, 0, 1, {"destinationId": "gate-1"}, 2026-10-16 18:17:34.393+08, RULES, rules-test-v1, bb2fb0f9ed3bcf03b941b0aada4a36ab3e77e3e21c152be0edeff0f1ec6c5bf8, 2265849694865d5c408c739a9bbbaf320c4efef0a4334c1176c60d5687c644e2, branch-preview).
+2026-10-16 18:17:34.444 CST [34484] STATEMENT:  INSERT INTO turn_events (id,save_id,idempotency_key,sequence,event_type,source,rule_version,before_revision,after_revision,payload,occurred_at,branch_id)
+	       SELECT $1,save_id,idempotency_key || '-invalid-branch',sequence+1,event_type,source,rule_version,before_revision,after_revision,payload,occurred_at,'branch-preview'
+	       FROM turn_events WHERE save_id=$2 LIMIT 1
+2026-10-16 18:17:34.502 CST [6248] ERROR:  SAVE_CANON_ARTIFACT_PINNED
+2026-10-16 18:17:34.502 CST [6248] CONTEXT:  PL/pgSQL function protect_game_save_memory_policy() line 23 at RAISE
+2026-10-16 18:17:34.502 CST [6248] STATEMENT:  UPDATE game_saves SET canon_artifact_hash=$2 WHERE id=$1
+2026-10-16 18:17:34.560 CST [27776] ERROR:  AUTHORIZED_OBSERVATION_IMMUTABLE
+2026-10-16 18:17:34.560 CST [27776] CONTEXT:  PL/pgSQL function protect_npc_authorized_observation_outbox() line 4 at RAISE
+2026-10-16 18:17:34.560 CST [27776] STATEMENT:  UPDATE npc_authorized_observation_outbox SET summary=$2 WHERE grant_id=$1
+2026-10-16 18:17:34.635 CST [36136] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-16 18:17:34.635 CST [36136] CONTEXT:  PL/pgSQL function protect_narrative_immutable() line 4 at RAISE
+2026-10-16 18:17:34.635 CST [36136] STATEMENT:  UPDATE narrative_sources SET body=$2 WHERE id=$1
+2026-10-16 18:17:34.644 CST [11312] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-16 18:17:34.644 CST [11312] CONTEXT:  PL/pgSQL function protect_narrative_immutable() line 4 at RAISE
+2026-10-16 18:17:34.644 CST [11312] STATEMENT:  DELETE FROM narrative_segments WHERE source_id=$1
+2026-10-16 18:17:34.647 CST [11312] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-16 18:17:34.647 CST [11312] CONTEXT:  PL/pgSQL function protect_narrative_identity() line 9 at RAISE
+2026-10-16 18:17:34.647 CST [11312] STATEMENT:  UPDATE narrative_generation_requests SET request_key=$2 WHERE id=$1
+2026-10-16 18:17:34.651 CST [35892] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-16 18:17:34.651 CST [35892] CONTEXT:  PL/pgSQL function protect_narrative_identity() line 11 at RAISE
+2026-10-16 18:17:34.651 CST [35892] STATEMENT:  UPDATE narrative_outbox SET generation_id=$2 WHERE generation_id=$1
+2026-10-16 18:17:34.657 CST [15788] ERROR:  NARRATIVE_EVENT_SCOPE_INVALID
+2026-10-16 18:17:34.657 CST [15788] CONTEXT:  PL/pgSQL function validate_narrative_link() line 6 at RAISE
+2026-10-16 18:17:34.657 CST [15788] STATEMENT:  INSERT INTO source_event_links(id,source_id,segment_id,save_id,event_id,kind) VALUES($1,$2,0,$3,$4,'provenance_only')
+2026-10-16 18:17:34.666 CST [25820] ERROR:  AUTHORIZED_OBSERVATION_ERASURE_REQUIRED
+2026-10-16 18:17:34.666 CST [25820] CONTEXT:  PL/pgSQL function protect_npc_authorized_observation_outbox() line 16 at RAISE
+2026-10-16 18:17:34.666 CST [25820] STATEMENT:  DELETE FROM npc_authorized_observation_outbox WHERE grant_id=$1
+2026-10-16 18:17:34.730 CST [7148] ERROR:  AUTHORIZED_OBSERVATION_ERASURE_REQUIRED
+2026-10-16 18:17:34.730 CST [7148] CONTEXT:  PL/pgSQL function protect_npc_authorized_observation_outbox() line 16 at RAISE
+2026-10-16 18:17:34.730 CST [7148] STATEMENT:  DELETE FROM npc_authorized_observation_outbox WHERE grant_id=$1
+2026-10-16 18:17:34.758 CST [7148] ERROR:  forced journal failure
+2026-10-16 18:17:34.758 CST [7148] CONTEXT:  PL/pgSQL function jiuxiao_test_reject_memory_write() line 1 at RAISE
+2026-10-16 18:17:34.758 CST [7148] STATEMENT:  INSERT INTO npc_memory_journals (save_id, schema_version, revision, payload, updated_at) VALUES ($1, 1, $2, $3::jsonb, now()) ON CONFLICT (save_id) DO UPDATE SET schema_version = EXCLUDED.schema_version, revision = EXCLUDED.revision, payload = EXCLUDED.payload, updated_at = now()
+2026-10-16 18:17:34.875 CST [25728] ERROR:  entitlement ledger is append-only
+2026-10-16 18:17:34.875 CST [25728] CONTEXT:  PL/pgSQL function reject_entitlement_ledger_mutation() line 11 at RAISE
+2026-10-16 18:17:34.875 CST [25728] STATEMENT:  DELETE FROM entitlement_ledger_entries WHERE owner_id=$1
+2026-10-16 18:17:34.976 CST [28512] ERROR:  INJECTED_PUBLICATION_FAILURE
+2026-10-16 18:17:34.976 CST [28512] CONTEXT:  PL/pgSQL function narrative_test_failpoint() line 2 at RAISE
+2026-10-16 18:17:34.976 CST [28512] STATEMENT:  INSERT INTO narrative_outbox(id,generation_id,source_id,kind) VALUES($1,$2,$3,'index')
+2026-10-16 18:17:35.011 CST [30064] ERROR:  update or delete on table "game_saves" violates foreign key constraint "turn_events_save_id_game_saves_id_fk" on table "turn_events"
+2026-10-16 18:17:35.011 CST [30064] DETAIL:  Key (id)=(s4-save-ea9dbc22-65f2-4aa9-95d0-182e931b5d5a) is still referenced from table "turn_events".
+2026-10-16 18:17:35.011 CST [30064] STATEMENT:  DELETE FROM game_saves WHERE id=$1 AND owner_id=$2
+2026-10-16 18:17:35.039 CST [26208] ERROR:  turn events are append-only
+2026-10-16 18:17:35.039 CST [26208] CONTEXT:  PL/pgSQL function reject_turn_event_update() line 3 at RAISE
+2026-10-16 18:17:35.039 CST [26208] STATEMENT:  UPDATE turn_events SET payload=$1::jsonb WHERE save_id=$2
+2026-10-16 18:17:35.100 CST [18464] ERROR:  turn_events rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-16 18:17:35.100 CST [18464] CONTEXT:  PL/pgSQL function reject_protected_archive_delete() line 34 at RAISE
+2026-10-16 18:17:35.100 CST [18464] STATEMENT:  DELETE FROM turn_events WHERE save_id=$1
+2026-10-16 18:17:35.207 CST [34572] ERROR:  game_saves rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-16 18:17:35.207 CST [34572] CONTEXT:  PL/pgSQL function reject_protected_archive_delete() line 34 at RAISE
+2026-10-16 18:17:35.207 CST [34572] STATEMENT:  DELETE FROM game_saves WHERE id=$1
+2026-10-16 18:17:35.274 CST [2824] ERROR:  turn_events rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-16 18:17:35.274 CST [2824] CONTEXT:  PL/pgSQL function reject_protected_archive_delete() line 34 at RAISE
+2026-10-16 18:17:35.274 CST [2824] STATEMENT:  DELETE FROM turn_events WHERE save_id=$1
+2026-10-16 18:17:35.276 CST [2824] ERROR:  game_saves identity is immutable and revision must be monotonic
+2026-10-16 18:17:35.276 CST [2824] CONTEXT:  PL/pgSQL function guard_game_saves_update() line 6 at RAISE
+2026-10-16 18:17:35.276 CST [2824] STATEMENT:  UPDATE game_saves SET owner_id=$2 WHERE id=$1
+2026-10-16 18:17:35.471 CST [34276] ERROR:  game_saves identity is immutable and revision must be monotonic
+2026-10-16 18:17:35.471 CST [34276] CONTEXT:  PL/pgSQL function guard_game_saves_update() line 6 at RAISE
+2026-10-16 18:17:35.471 CST [34276] STATEMENT:  UPDATE game_saves SET revision=0 WHERE id=$1
+2026-10-16 18:17:49.860 CST [13464] ERROR:  insert or update on table "game_saves" violates foreign key constraint "game_saves_account_fk"
+2026-10-16 18:17:49.860 CST [13464] DETAIL:  Key (owner_id)=(9c94a301-cc15-4ede-a482-ecce694ad0dd) is not present in table "auth_accounts".
+2026-10-16 18:17:49.860 CST [13464] STATEMENT:  INSERT INTO game_saves(id,owner_id,schema_version,canon_version,rule_version,memory_policy_version,snapshot) VALUES($1,$2,1,'test','test','test','{}')
+2026-10-16 18:17:49.905 CST [22844] ERROR:  duplicate key value violates unique constraint "auth_external_identity_digest_idx"
+2026-10-16 18:17:49.905 CST [22844] DETAIL:  Key (identity_kind, identifier_digest)=(phone, d6e1aa9c8ced9287571149ffa4fdb076407a01189e1651f6d9f75de4db230f97) already exists.
+2026-10-16 18:17:49.905 CST [22844] STATEMENT:  INSERT INTO auth_external_identities(provider_subject,identity_kind,identifier_digest,owner_id,verified_at)
+	        VALUES($1,$2,$3,$4,$5) ON CONFLICT(provider_subject,identity_kind) DO UPDATE SET
+	        identifier_digest=EXCLUDED.identifier_digest,owner_id=EXCLUDED.owner_id,verified_at=EXCLUDED.verified_at,
+	        revoked_at=NULL,last_used_at=now() WHERE auth_external_identities.revoked_at IS NOT NULL
+	        OR (auth_external_identities.owner_id=EXCLUDED.owner_id AND auth_external_identities.identity_kind=EXCLUDED.identity_kind)
+2026-10-16 18:17:49.945 CST [22916] ERROR:  entitlement ledger is append-only
+2026-10-16 18:17:49.945 CST [22916] CONTEXT:  PL/pgSQL function reject_entitlement_ledger_mutation() line 3 at RAISE
+2026-10-16 18:17:49.945 CST [22916] STATEMENT:  UPDATE entitlement_ledger_entries SET delta_units = 5 WHERE id = $1
+2026-10-16 18:17:49.949 CST [29280] ERROR:  entitlement ledger is append-only
+2026-10-16 18:17:49.949 CST [29280] CONTEXT:  PL/pgSQL function reject_entitlement_ledger_mutation() line 3 at RAISE
+2026-10-16 18:17:49.949 CST [29280] STATEMENT:  DELETE FROM entitlement_ledger_entries WHERE id = $1
+2026-10-16 18:17:50.058 CST [34444] ERROR:  game_saves rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-16 18:17:50.058 CST [34444] CONTEXT:  PL/pgSQL function reject_protected_archive_delete() line 34 at RAISE
+2026-10-16 18:17:50.058 CST [34444] STATEMENT:  DELETE FROM game_saves WHERE id=$1 AND owner_id=$2
+2026-10-16 18:17:50.106 CST [13868] ERROR:  new row for relation "game_saves" violates check constraint "game_saves_memory_policy_check"
+2026-10-16 18:17:50.106 CST [13868] DETAIL:  Failing row contains (s6-v2-incomplete-43042219-7a14-451e-8ff7-030b3a869b9c, s6-a-be1c272c-956e-4a8d-9931-235df2f0c9be, 0, 2, canon-test, rules-test, forgetting-v1, {}, 2026-10-16 18:17:50.10569+08, 2026-10-16 18:17:50.10569+08, forgetting, null, null, null, null, null, null, null).
+2026-10-16 18:17:50.106 CST [13868] STATEMENT:  INSERT INTO game_saves (id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,memory_mode,memory_policy,snapshot)
+	       VALUES ($1,$2,0,2,'canon-test','rules-test','forgetting-v1','forgetting',NULL,'{}'::jsonb)
+2026-10-16 18:17:50.110 CST [2324] ERROR:  new row for relation "game_saves" violates check constraint "game_saves_memory_policy_check"
+2026-10-16 18:17:50.110 CST [2324] DETAIL:  Failing row contains (s6-v2-null-field-e4238319-e00b-407d-902a-295f7a9e7f3f, s6-a-be1c272c-956e-4a8d-9931-235df2f0c9be, 0, 2, canon-test, rules-test, forgetting-v1, {}, 2026-10-16 18:17:50.109884+08, 2026-10-16 18:17:50.109884+08, forgetting, {"mode": "forgetting", "clockBasis": "game-minute+npc-grant-sequ..., null, null, null, null, null, null).
+2026-10-16 18:17:50.110 CST [2324] STATEMENT:  INSERT INTO game_saves (id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,memory_mode,memory_policy,snapshot)
+	       VALUES ($1,$2,0,2,'canon-test','rules-test','forgetting-v1','forgetting',$3::jsonb,'{}'::jsonb)
+2026-10-16 18:17:50.153 CST [18136] ERROR:  SAVE_MEMORY_POLICY_PINNED
+2026-10-16 18:17:50.153 CST [18136] CONTEXT:  PL/pgSQL function protect_game_save_memory_policy() line 11 at RAISE
+2026-10-16 18:17:50.153 CST [18136] STATEMENT:  UPDATE game_saves SET memory_mode='continue' WHERE id=$1
+2026-10-16 18:17:50.202 CST [32704] ERROR:  SAVE_MEMORY_POLICY_PINNED
+2026-10-16 18:17:50.202 CST [32704] CONTEXT:  PL/pgSQL function protect_game_save_memory_policy() line 11 at RAISE
+2026-10-16 18:17:50.202 CST [32704] STATEMENT:  UPDATE game_saves SET memory_policy = jsonb_set(memory_policy, '{retrievalVersion}', '"recall-decay-v2"') WHERE id=$1
+2026-10-16 18:17:50.372 CST [1080] ERROR:  SAVE_SCHEMA_VERSION_IMMUTABLE
+2026-10-16 18:17:50.372 CST [1080] CONTEXT:  PL/pgSQL function protect_game_save_memory_policy() line 4 at RAISE
+2026-10-16 18:17:50.372 CST [1080] STATEMENT:  UPDATE game_saves SET schema_version=1 WHERE id=$1
+2026-10-16 18:17:50.424 CST [35980] ERROR:  new row for relation "turn_events" violates check constraint "turn_events_branch_id_check"
+2026-10-16 18:17:50.424 CST [35980] DETAIL:  Failing row contains (invalid-branch-e103456c-a8ac-4d37-a545-a1b398ce932e, s4-save-4806a962-fce1-4e2b-837b-05557b7ef272, f1424a5a-a2ef-449b-9c4e-45df61605544-invalid-branch, 1, travel.completed, 0, 1, {"destinationId": "gate-1"}, 2026-10-16 18:17:50.37+08, RULES, rules-test-v1, 0fff6e1a829fafb59a8bd163ff7d49bae8363ceb0245db202c9596df0608d2e0, 3684da11b8f4a65e6b98229e1b3868334903896d1b7c277301c27caf41316aa4, branch-preview).
+2026-10-16 18:17:50.424 CST [35980] STATEMENT:  INSERT INTO turn_events (id,save_id,idempotency_key,sequence,event_type,source,rule_version,before_revision,after_revision,payload,occurred_at,branch_id)
+	       SELECT $1,save_id,idempotency_key || '-invalid-branch',sequence+1,event_type,source,rule_version,before_revision,after_revision,payload,occurred_at,'branch-preview'
+	       FROM turn_events WHERE save_id=$2 LIMIT 1
+2026-10-16 18:17:50.461 CST [32092] ERROR:  SAVE_LINEAGE_IMMUTABLE
+2026-10-16 18:17:50.461 CST [32092] CONTEXT:  PL/pgSQL function protect_game_save_memory_policy() line 20 at RAISE
+2026-10-16 18:17:50.461 CST [32092] STATEMENT:  UPDATE game_saves SET created_policy_version='changed' WHERE id=$1
+2026-10-16 18:17:50.543 CST [35316] ERROR:  SAVE_CANON_ARTIFACT_PINNED
+2026-10-16 18:17:50.543 CST [35316] CONTEXT:  PL/pgSQL function protect_game_save_memory_policy() line 23 at RAISE
+2026-10-16 18:17:50.543 CST [35316] STATEMENT:  UPDATE game_saves SET canon_artifact_hash=$2 WHERE id=$1
+2026-10-16 18:17:50.568 CST [23508] ERROR:  AUTHORIZED_OBSERVATION_IMMUTABLE
+2026-10-16 18:17:50.568 CST [23508] CONTEXT:  PL/pgSQL function protect_npc_authorized_observation_outbox() line 4 at RAISE
+2026-10-16 18:17:50.568 CST [23508] STATEMENT:  UPDATE npc_authorized_observation_outbox SET summary=$2 WHERE grant_id=$1
+2026-10-16 18:17:50.612 CST [25012] ERROR:  AUTHORIZED_OBSERVATION_ERASURE_REQUIRED
+2026-10-16 18:17:50.612 CST [25012] CONTEXT:  PL/pgSQL function protect_npc_authorized_observation_outbox() line 16 at RAISE
+2026-10-16 18:17:50.612 CST [25012] STATEMENT:  DELETE FROM npc_authorized_observation_outbox WHERE grant_id=$1
+2026-10-16 18:17:50.635 CST [13596] ERROR:  entitlement ledger is append-only
+2026-10-16 18:17:50.635 CST [13596] CONTEXT:  PL/pgSQL function reject_entitlement_ledger_mutation() line 11 at RAISE
+2026-10-16 18:17:50.635 CST [13596] STATEMENT:  DELETE FROM entitlement_ledger_entries WHERE owner_id=$1
+2026-10-16 18:17:50.653 CST [37156] ERROR:  AUTHORIZED_OBSERVATION_ERASURE_REQUIRED
+2026-10-16 18:17:50.653 CST [37156] CONTEXT:  PL/pgSQL function protect_npc_authorized_observation_outbox() line 16 at RAISE
+2026-10-16 18:17:50.653 CST [37156] STATEMENT:  DELETE FROM npc_authorized_observation_outbox WHERE grant_id=$1
+2026-10-16 18:17:50.674 CST [37156] ERROR:  forced journal failure
+2026-10-16 18:17:50.674 CST [37156] CONTEXT:  PL/pgSQL function jiuxiao_test_reject_memory_write() line 1 at RAISE
+2026-10-16 18:17:50.674 CST [37156] STATEMENT:  INSERT INTO npc_memory_journals (save_id, schema_version, revision, payload, updated_at) VALUES ($1, 1, $2, $3::jsonb, now()) ON CONFLICT (save_id) DO UPDATE SET schema_version = EXCLUDED.schema_version, revision = EXCLUDED.revision, payload = EXCLUDED.payload, updated_at = now()
+2026-10-16 18:17:50.689 CST [22304] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-16 18:17:50.689 CST [22304] CONTEXT:  PL/pgSQL function protect_narrative_immutable() line 4 at RAISE
+2026-10-16 18:17:50.689 CST [22304] STATEMENT:  UPDATE narrative_sources SET body=$2 WHERE id=$1
+2026-10-16 18:17:50.697 CST [32604] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-16 18:17:50.697 CST [32604] CONTEXT:  PL/pgSQL function protect_narrative_immutable() line 4 at RAISE
+2026-10-16 18:17:50.697 CST [32604] STATEMENT:  DELETE FROM narrative_segments WHERE source_id=$1
+2026-10-16 18:17:50.699 CST [32604] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-16 18:17:50.699 CST [32604] CONTEXT:  PL/pgSQL function protect_narrative_identity() line 9 at RAISE
+2026-10-16 18:17:50.699 CST [32604] STATEMENT:  UPDATE narrative_generation_requests SET request_key=$2 WHERE id=$1
+2026-10-16 18:17:50.703 CST [30456] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-16 18:17:50.703 CST [30456] CONTEXT:  PL/pgSQL function protect_narrative_identity() line 11 at RAISE
+2026-10-16 18:17:50.703 CST [30456] STATEMENT:  UPDATE narrative_outbox SET generation_id=$2 WHERE generation_id=$1
+2026-10-16 18:17:50.707 CST [27172] ERROR:  NARRATIVE_EVENT_SCOPE_INVALID
+2026-10-16 18:17:50.707 CST [27172] CONTEXT:  PL/pgSQL function validate_narrative_link() line 6 at RAISE
+2026-10-16 18:17:50.707 CST [27172] STATEMENT:  INSERT INTO source_event_links(id,source_id,segment_id,save_id,event_id,kind) VALUES($1,$2,0,$3,$4,'provenance_only')
+2026-10-16 18:17:50.734 CST [35384] ERROR:  turn events are append-only
+2026-10-16 18:17:50.734 CST [35384] CONTEXT:  PL/pgSQL function reject_turn_event_update() line 3 at RAISE
+2026-10-16 18:17:50.734 CST [35384] STATEMENT:  UPDATE turn_events SET payload=$1::jsonb WHERE save_id=$2
+2026-10-16 18:17:50.771 CST [3796] ERROR:  turn_events rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-16 18:17:50.771 CST [3796] CONTEXT:  PL/pgSQL function reject_protected_archive_delete() line 34 at RAISE
+2026-10-16 18:17:50.771 CST [3796] STATEMENT:  DELETE FROM turn_events WHERE save_id=$1
+2026-10-16 18:17:50.810 CST [37036] ERROR:  game_saves rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-16 18:17:50.810 CST [37036] CONTEXT:  PL/pgSQL function reject_protected_archive_delete() line 34 at RAISE
+2026-10-16 18:17:50.810 CST [37036] STATEMENT:  DELETE FROM game_saves WHERE id=$1
+2026-10-16 18:17:50.820 CST [15776] ERROR:  update or delete on table "game_saves" violates foreign key constraint "turn_events_save_id_game_saves_id_fk" on table "turn_events"
+2026-10-16 18:17:50.820 CST [15776] DETAIL:  Key (id)=(s4-save-7ea65dbe-0c6e-488d-b98c-667b1b0ff79a) is still referenced from table "turn_events".
+2026-10-16 18:17:50.820 CST [15776] STATEMENT:  DELETE FROM game_saves WHERE id=$1 AND owner_id=$2
+2026-10-16 18:17:50.848 CST [37372] ERROR:  turn_events rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-16 18:17:50.848 CST [37372] CONTEXT:  PL/pgSQL function reject_protected_archive_delete() line 34 at RAISE
+2026-10-16 18:17:50.848 CST [37372] STATEMENT:  DELETE FROM turn_events WHERE save_id=$1
+2026-10-16 18:17:50.849 CST [37372] ERROR:  game_saves identity is immutable and revision must be monotonic
+2026-10-16 18:17:50.849 CST [37372] CONTEXT:  PL/pgSQL function guard_game_saves_update() line 6 at RAISE
+2026-10-16 18:17:50.849 CST [37372] STATEMENT:  UPDATE game_saves SET owner_id=$2 WHERE id=$1
+2026-10-16 18:17:50.877 CST [13068] ERROR:  game_saves identity is immutable and revision must be monotonic
+2026-10-16 18:17:50.877 CST [13068] CONTEXT:  PL/pgSQL function guard_game_saves_update() line 6 at RAISE
+2026-10-16 18:17:50.877 CST [13068] STATEMENT:  UPDATE game_saves SET revision=0 WHERE id=$1
+2026-10-16 18:17:50.912 CST [33672] ERROR:  INJECTED_PUBLICATION_FAILURE
+2026-10-16 18:17:50.912 CST [33672] CONTEXT:  PL/pgSQL function narrative_test_failpoint() line 2 at RAISE
+2026-10-16 18:17:50.912 CST [33672] STATEMENT:  INSERT INTO narrative_outbox(id,generation_id,source_id,kind) VALUES($1,$2,$3,'index')
+2026-10-16 18:18:02.539 CST [33732] ERROR:  insert or update on table "narrative_generation_requests" violates foreign key constraint "narrative_generation_requests_context_id_save_id_request_k_fkey"
+2026-10-16 18:18:02.539 CST [33732] DETAIL:  Key (context_id, save_id, request_key)=(e8b87176-cb89-437c-aa44-8d05b7fd7ddd, handover-8c5ae328-aa8a-40fa-ad54-174d5be69ec6, 35da402a-eb89-4916-b0a8-29416fb8cd33) is not present in table "narrative_context_snapshots".
+2026-10-16 18:18:02.539 CST [33732] STATEMENT:  ALTER TABLE ONLY public.narrative_generation_requests
+	    ADD CONSTRAINT narrative_generation_requests_context_id_save_id_request_k_fkey FOREIGN KEY (context_id, save_id, request_key) REFERENCES public.narrative_context_snapshots(id, save_id, request_key);
+	
+	
+	
+2026-10-16 18:18:31.389 CST [28416] LOG:  received fast shutdown request
+2026-10-16 18:18:31.395 CST [28416] LOG:  aborting any active transactions
+2026-10-16 18:18:31.414 CST [28416] LOG:  background worker "logical replication launcher" (PID 18096) exited with exit code 1
+2026-10-16 18:18:31.414 CST [36028] LOG:  shutting down
+2026-10-16 18:18:31.416 CST [36028] LOG:  checkpoint starting: shutdown immediate
+2026-10-16 18:18:34.201 CST [36028] LOG:  checkpoint complete: wrote 4015 buffers (24.5%), wrote 4 SLRU buffers; 0 WAL file(s) added, 0 removed, 2 recycled; write=0.126 s, sync=2.608 s, total=2.787 s; sync files=1562, longest=0.010 s, average=0.002 s; distance=26456 kB, estimate=26456 kB; lsn=0/7348550, redo lsn=0/7348550
+2026-10-16 18:18:34.414 CST [28416] LOG:  database system is shut down

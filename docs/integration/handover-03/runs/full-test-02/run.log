@@ -1,0 +1,4 @@
+[ELIFECYCLE] Test failed. See above for more details.
+$ pnpm --filter @jiuxiao/domain build && node work/core-regression.cjs && pnpm -r --filter=!@jiuxiao/scene-studio --filter=!@jiuxiao/scene-gate test
+'pnpm' �����ڲ����ⲿ���Ҳ���ǿ����еĳ���
+���������ļ���

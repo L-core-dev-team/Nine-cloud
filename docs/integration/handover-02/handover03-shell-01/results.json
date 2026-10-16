@@ -1,0 +1,238 @@
+{
+  "mockedApi": true,
+  "realRules": false,
+  "results": [
+    {
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "theme": "night",
+      "geometry": {
+        "document": 568,
+        "height": 568,
+        "overflow": 0,
+        "reading": {
+          "top": 118,
+          "bottom": 362,
+          "height": 244
+        },
+        "input": {
+          "top": 507,
+          "bottom": 551,
+          "height": 44
+        },
+        "button": {
+          "top": 507,
+          "bottom": 551,
+          "height": 44
+        },
+        "clickable": true
+      },
+      "status": "PASS"
+    },
+    {
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "theme": "day",
+      "geometry": {
+        "document": 568,
+        "height": 568,
+        "overflow": 0,
+        "reading": {
+          "top": 118,
+          "bottom": 362,
+          "height": 244
+        },
+        "input": {
+          "top": 507,
+          "bottom": 551,
+          "height": 44
+        },
+        "button": {
+          "top": 507,
+          "bottom": 551,
+          "height": 44
+        },
+        "clickable": true
+      },
+      "status": "PASS"
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "night",
+      "geometry": {
+        "document": 844,
+        "height": 844,
+        "overflow": 0,
+        "reading": {
+          "top": 248,
+          "bottom": 365,
+          "height": 117
+        },
+        "input": {
+          "top": 541,
+          "bottom": 601,
+          "height": 60
+        },
+        "button": {
+          "top": 609,
+          "bottom": 653,
+          "height": 44
+        },
+        "clickable": true
+      },
+      "status": "PASS"
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "day",
+      "geometry": {
+        "document": 844,
+        "height": 844,
+        "overflow": 0,
+        "reading": {
+          "top": 248,
+          "bottom": 365,
+          "height": 117
+        },
+        "input": {
+          "top": 541,
+          "bottom": 601,
+          "height": 60
+        },
+        "button": {
+          "top": 609,
+          "bottom": 653,
+          "height": 44
+        },
+        "clickable": true
+      },
+      "status": "PASS"
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "theme": "night",
+      "geometry": {
+        "document": 390,
+        "height": 390,
+        "overflow": 0,
+        "reading": {
+          "top": 118,
+          "bottom": 184,
+          "height": 66
+        },
+        "input": {
+          "top": 329,
+          "bottom": 373,
+          "height": 44
+        },
+        "button": {
+          "top": 329,
+          "bottom": 373,
+          "height": 44
+        },
+        "clickable": true
+      },
+      "status": "PASS"
+    },
+    {
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "theme": "day",
+      "geometry": {
+        "document": 390,
+        "height": 390,
+        "overflow": 0,
+        "reading": {
+          "top": 118,
+          "bottom": 184,
+          "height": 66
+        },
+        "input": {
+          "top": 329,
+          "bottom": 373,
+          "height": 44
+        },
+        "button": {
+          "top": 329,
+          "bottom": 373,
+          "height": 44
+        },
+        "clickable": true
+      },
+      "status": "PASS"
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "theme": "night",
+      "geometry": {
+        "document": 900,
+        "height": 900,
+        "overflow": 0,
+        "reading": {
+          "top": 228,
+          "bottom": 521,
+          "height": 293
+        },
+        "input": {
+          "top": 697,
+          "bottom": 757,
+          "height": 60
+        },
+        "button": {
+          "top": 765,
+          "bottom": 809,
+          "height": 44
+        },
+        "clickable": true
+      },
+      "status": "PASS"
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 900
+      },
+      "theme": "day",
+      "geometry": {
+        "document": 900,
+        "height": 900,
+        "overflow": 0,
+        "reading": {
+          "top": 228,
+          "bottom": 521,
+          "height": 293
+        },
+        "input": {
+          "top": 697,
+          "bottom": 757,
+          "height": 60
+        },
+        "button": {
+          "top": 765,
+          "bottom": 809,
+          "height": 44
+        },
+        "clickable": true
+      },
+      "status": "PASS"
+    }
+  ]
+}

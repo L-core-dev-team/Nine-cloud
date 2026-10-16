@@ -1,0 +1,4 @@
+[ELIFECYCLE] Command failed with exit code 1.
+$ pnpm worldbook:runtime:check && pnpm -r --filter=!@jiuxiao/scene-studio --filter=!@jiuxiao/scene-gate build && node scripts/build/write-manifest.mjs --stage S6
+'pnpm' �����ڲ����ⲿ���Ҳ���ǿ����еĳ���
+���������ļ���

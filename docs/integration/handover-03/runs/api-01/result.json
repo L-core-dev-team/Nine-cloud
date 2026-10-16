@@ -1,0 +1,13 @@
+{
+  "name": "api-01",
+  "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+  "command": [
+    "pnpm",
+    "--filter",
+    "@jiuxiao/api",
+    "test"
+  ],
+  "started": "2026-10-16T10:16:36.843Z",
+  "finished": "2026-10-16T10:16:43.760Z",
+  "exitCode": 0
+}
