@@ -1,0 +1,21 @@
+{
+  "baseline": "d8ea49a8a74beb79233b100db71bbc4295db47c3",
+  "minimalSha256": "2e43821722dcc72b693756de2ca6a50fb5af6146ccac7fc9bdbdf17b71588393",
+  "codeAndTestsSha256": "a8a2b289e266fc35f28f5112c20122788f8a408c149663a535dfe5a91c9e8cb8",
+  "minimalFiles": [
+    "apps/api/src/index.ts",
+    "apps/api/src/routes/games.ts",
+    "apps/api/src/routes/turns.ts",
+    "apps/api/src/services/account-export.ts",
+    "apps/api/src/services/narrative-outbox-worker.ts",
+    "apps/api/src/services/narrative-ownership-v2.ts",
+    "apps/api/src/services/narrative-publication-repository.ts",
+    "apps/api/src/services/narrative-v2-runtime-draft.ts",
+    "apps/api/src/services/npc-memory-turn-transaction.ts",
+    "apps/api/src/services/postgres-server-turn.ts",
+    "apps/api/src/services/server-turn.ts",
+    "apps/web/src/game-publications.ts",
+    "apps/web/src/use-cloud-game-session.ts",
+    "docs/integration/pending/0023_narrative_ownership_v2.sql"
+  ]
+}

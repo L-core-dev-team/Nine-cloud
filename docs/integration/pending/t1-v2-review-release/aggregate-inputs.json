@@ -1,0 +1,816 @@
+{
+  "oldInputs": {
+    "format": "jiuxiao-p1-rule-semantic-input-v1",
+    "rulebook": {
+      "candidateOnly": true,
+      "ruleVersion": "prologue-v1-candidate-20261005",
+      "canonVersion": "prologue-canon-candidate-20261005",
+      "locationIds": [
+        "loc_luhuadu",
+        "loc_wangqitai",
+        "loc_zheguiping"
+      ],
+      "initialKnownLocationIds": [
+        "loc_luhuadu",
+        "loc_wangqitai"
+      ],
+      "npcPresenceIds": [
+        "npc_cenjiu",
+        "npc_shuiyuya"
+      ],
+      "initialNpcPresenceIds": [
+        "npc_cenjiu",
+        "npc_shuiyuya"
+      ],
+      "sublocations": [
+        {
+          "id": "subloc_ferry_berm",
+          "locationId": "loc_luhuadu"
+        },
+        {
+          "id": "subloc_reef_ledge",
+          "locationId": "loc_wangqitai"
+        }
+      ],
+      "itemIds": [
+        "item_bishuifu",
+        "item_jiuyifu"
+      ],
+      "clueIds": [
+        "clue_ferry_stuck",
+        "clue_ferry_scrubbed",
+        "clue_wrong_way",
+        "clue_rockslide",
+        "clue_crow_nest"
+      ],
+      "effectFlagIds": [
+        "effect_ward_water"
+      ],
+      "injuryFlagIds": [
+        "shoulder_scrape",
+        "crow_scratch",
+        "crowding_bite",
+        "retreated"
+      ],
+      "targetIds": [
+        "loc_luhuadu",
+        "loc_wangqitai",
+        "loc_zheguiping",
+        "npc_cenjiu",
+        "npc_shuiyuya",
+        "obj_ferry",
+        "obj_ferry_gear",
+        "obstacle_rockslide",
+        "subloc_ferry_berm",
+        "subloc_reef_ledge"
+      ],
+      "initialLocationGraph": [
+        {
+          "from": "loc_luhuadu",
+          "to": "loc_wangqitai",
+          "state": "open"
+        },
+        {
+          "from": "loc_wangqitai",
+          "to": "loc_luhuadu",
+          "state": "blocked"
+        },
+        {
+          "from": "loc_wangqitai",
+          "to": "loc_zheguiping",
+          "state": "locked"
+        },
+        {
+          "from": "loc_zheguiping",
+          "to": "loc_wangqitai",
+          "state": "locked"
+        }
+      ],
+      "obstacleRoute": {
+        "from": "loc_wangqitai",
+        "to": "loc_luhuadu"
+      },
+      "unexploredEdges": [],
+      "bypassRoutes": [
+        {
+          "from": "loc_wangqitai",
+          "to": "loc_luhuadu",
+          "routeId": "route_reef_ledge",
+          "via": "subloc_reef_ledge",
+          "requiredClueId": "clue_rockslide",
+          "clearsObstacle": true
+        }
+      ],
+      "cultivationTechniqueIds": [
+        "tech_breath_basic"
+      ],
+      "combatTechniqueIds": [],
+      "acquisitionSources": [
+        {
+          "sourceId": "src_ferry_shore",
+          "locationId": "loc_luhuadu",
+          "itemId": "item_bishuifu",
+          "source": "field",
+          "quantity": 1
+        }
+      ],
+      "itemUses": [
+        {
+          "itemId": "item_bishuifu",
+          "targetIds": [
+            "subloc_reef_ledge",
+            "subloc_ferry_berm"
+          ],
+          "effectFlags": [
+            "effect_ward_water"
+          ]
+        }
+      ],
+      "npcs": [
+        {
+          "npcId": "npc_cenjiu",
+          "locationId": "loc_luhuadu",
+          "topics": [
+            {
+              "topicTag": "obstacle_rockslide",
+              "utterances": [
+                "这石头怎么办",
+                "怎么过去",
+                "有别的路吗",
+                "能动吗"
+              ],
+              "outcome": "refuse"
+            },
+            {
+              "topicTag": "player_warning",
+              "utterances": [
+                "不要去望气台"
+              ],
+              "outcome": "refuse"
+            }
+          ]
+        },
+        {
+          "npcId": "npc_shuiyuya",
+          "locationId": "loc_luhuadu",
+          "topics": []
+        }
+      ],
+      "observations": [
+        {
+          "targetId": "obj_ferry",
+          "locationId": "loc_luhuadu",
+          "scanClueId": "clue_ferry_stuck",
+          "studyClueId": "clue_ferry_scrubbed"
+        },
+        {
+          "targetId": "obj_ferry_gear",
+          "locationId": "loc_luhuadu",
+          "studyClueId": "clue_wrong_way"
+        },
+        {
+          "targetId": "obstacle_rockslide",
+          "locationId": "loc_wangqitai",
+          "scanClueId": "clue_rockslide",
+          "studyClueId": "clue_crow_nest",
+          "blocked": {
+            "when": "dark",
+            "reason": "too_dark"
+          }
+        }
+      ],
+      "combatTargets": [
+        {
+          "targetId": "npc_shuiyuya",
+          "locationId": "loc_luhuadu",
+          "clearsObstacle": true,
+          "protectionItemId": "item_bishuifu",
+          "retreatLocationId": "loc_luhuadu",
+          "accessibleFromSublocationIds": [
+            "subloc_ferry_berm",
+            "subloc_reef_ledge"
+          ],
+          "workSiteSublocationId": "subloc_ferry_berm",
+          "daytimeInjuryFlag": "crow_scratch",
+          "darkInjuryFlag": "crowding_bite",
+          "retreatInjuryFlag": "retreated"
+        }
+      ],
+      "quest": {
+        "questId": "quest_first_clearance",
+        "rewardItemId": "item_jiuyifu",
+        "rewardSourceId": "src_quest_clearance",
+        "unlockEdge": {
+          "from": "loc_wangqitai",
+          "to": "loc_zheguiping",
+          "state": "open"
+        },
+        "unlockEdges": [
+          {
+            "from": "loc_zheguiping",
+            "to": "loc_wangqitai",
+            "state": "open"
+          }
+        ]
+      },
+      "injuryFlags": {
+        "shoulderScrape": "shoulder_scrape"
+      }
+    },
+    "mechanics": {
+      "GAME_MINUTES_PER_KEC": 15,
+      "DAY_KEC_COUNT": 96,
+      "SAVE_START_GAME_MINUTE": 300,
+      "DUSK_START_KEC": 48,
+      "STAMINA_MAX": 100,
+      "SPIRIT_MAX": 100,
+      "CULTIVATION_MAX": 10000,
+      "CULTIVATION_PER_KE": 800,
+      "CULTIVATION_FATIGUE": 200,
+      "FATIGUE_THRESHOLD": 20,
+      "SLOT_MAX": 8,
+      "MOVE_COST": 5,
+      "MOVE_BLOCKED_COST": 10,
+      "MOVE_BYPASS_COST": 15,
+      "OBSERVE_SCAN_COST": 3,
+      "OBSERVE_STUDY_COST": 6,
+      "CULTIVATE_COST_PER_KE": 20,
+      "TALK_COST": 0,
+      "USE_ITEM_COST": 0,
+      "COMBAT_COST": 25,
+      "CLEAR_THRESHOLD": 25,
+      "RETREAT_SPIRIT": 5
+    },
+    "externalRuleConstants": {
+      "maxCultivationKesPerAction": 8,
+      "locationLimit": 3
+    },
+    "actionTemplates": [
+      {
+        "id": "move-go",
+        "kind": "move",
+        "prefix": "去",
+        "entitySource": "knownLocations"
+      },
+      {
+        "id": "move-walk-to",
+        "kind": "move",
+        "prefix": "走到",
+        "entitySource": "knownLocations"
+      },
+      {
+        "id": "observe-target",
+        "kind": "observe",
+        "prefix": "观察",
+        "entitySource": "observationTargets",
+        "fixedPayload": {
+          "method": "scan"
+        },
+        "labelPrefix": "观察"
+      },
+      {
+        "id": "observe-unspecified-target",
+        "kind": "observe",
+        "prefix": "我看看",
+        "entitySource": "observationTargets",
+        "fixedPayload": {
+          "method": "scan"
+        },
+        "labelPrefix": "观察"
+      },
+      {
+        "id": "study-target",
+        "kind": "observe",
+        "prefix": "细察",
+        "entitySource": "observationTargets",
+        "fixedPayload": {
+          "method": "study"
+        },
+        "labelPrefix": "细察"
+      },
+      {
+        "id": "talk-to",
+        "kind": "talk",
+        "prefix": "对",
+        "entitySource": "npcPresence",
+        "capture": {
+          "separator": "说：",
+          "slot": "utterance"
+        }
+      },
+      {
+        "id": "use-owned-item",
+        "kind": "use_item",
+        "prefix": "使用",
+        "entitySource": "inventory"
+      }
+    ],
+    "visibleTargetLabels": [
+      {
+        "id": "loc_luhuadu",
+        "label": "芦花渡"
+      },
+      {
+        "id": "loc_wangqitai",
+        "label": "望气台"
+      },
+      {
+        "id": "loc_zheguiping",
+        "label": "折桂坪"
+      },
+      {
+        "id": "subloc_ferry_berm",
+        "label": "渡口作业位"
+      },
+      {
+        "id": "subloc_reef_ledge",
+        "label": "礁石小径"
+      },
+      {
+        "id": "npc_cenjiu",
+        "label": "岑九"
+      },
+      {
+        "id": "npc_shuiyuya",
+        "label": "灰羽鸦"
+      },
+      {
+        "id": "obj_ferry",
+        "label": "渡船"
+      },
+      {
+        "id": "obj_ferry_gear",
+        "label": "舟具"
+      },
+      {
+        "id": "obstacle_rockslide",
+        "label": "落石堵渡"
+      },
+      {
+        "id": "clue_ferry_stuck",
+        "label": "环视"
+      },
+      {
+        "id": "clue_ferry_scrubbed",
+        "label": "细察船底"
+      },
+      {
+        "id": "clue_wrong_way",
+        "label": "细察舟具"
+      },
+      {
+        "id": "clue_rockslide",
+        "label": "环视"
+      },
+      {
+        "id": "clue_crow_nest",
+        "label": "细察落石"
+      },
+      {
+        "id": "item_bishuifu",
+        "label": "避水符"
+      },
+      {
+        "id": "item_jiuyifu",
+        "label": "旧驿符"
+      }
+    ],
+    "memoryPolicyArtifacts": {
+      "version": "p1-memory-policy-v1",
+      "continue": {
+        "mode": "continue",
+        "policyVersion": "p1-memory-policy-v1",
+        "schemaVersion": 1,
+        "clockBasis": "game-minute+npc-grant-sequence-v1",
+        "policyArtifactHash": "sha256:5da8bd8e61e4859e5492b5393e3f458b12ded9cc36025858415fbe51c27261de",
+        "cueDictionaryHash": "sha256:d3dcd20c850741d5095b960488310007a163b03b53cb40aaa60b57dae9031e31",
+        "normalizerVersion": "NFKC-lowercase-space-v1",
+        "retrievalVersion": "authorized-cue-recall-v2",
+        "visibilityPolicyVersion": "p1-direct-npc-participant-v1",
+        "visibilityPolicyHash": "sha256:52b0274b0c90344d47c2337ffc0a092ad0b3e7c8112e16c14843eb78d1d4a4c3",
+        "createdAtRevision": 0
+      },
+      "forgetting": {
+        "mode": "forgetting",
+        "policyVersion": "p1-memory-policy-v1",
+        "schemaVersion": 1,
+        "clockBasis": "game-minute+npc-grant-sequence-v1",
+        "policyArtifactHash": "sha256:5da8bd8e61e4859e5492b5393e3f458b12ded9cc36025858415fbe51c27261de",
+        "cueDictionaryHash": "sha256:d3dcd20c850741d5095b960488310007a163b03b53cb40aaa60b57dae9031e31",
+        "normalizerVersion": "NFKC-lowercase-space-v1",
+        "retrievalVersion": "authorized-cue-recall-v2",
+        "visibilityPolicyVersion": "p1-direct-npc-participant-v1",
+        "visibilityPolicyHash": "sha256:52b0274b0c90344d47c2337ffc0a092ad0b3e7c8112e16c14843eb78d1d4a4c3",
+        "createdAtRevision": 0
+      }
+    },
+    "implementationFingerprint": "sha256:73580596f25c530d9ad33170282955187eb281e5927872607feef9e2aae83f42"
+  },
+  "newInputs": {
+    "format": "jiuxiao-p1-rule-semantic-input-v1",
+    "rulebook": {
+      "candidateOnly": true,
+      "ruleVersion": "prologue-v1-candidate-20261005",
+      "canonVersion": "prologue-canon-candidate-20261005",
+      "locationIds": [
+        "loc_luhuadu",
+        "loc_wangqitai",
+        "loc_zheguiping"
+      ],
+      "initialKnownLocationIds": [
+        "loc_luhuadu",
+        "loc_wangqitai"
+      ],
+      "npcPresenceIds": [
+        "npc_cenjiu",
+        "npc_shuiyuya"
+      ],
+      "initialNpcPresenceIds": [
+        "npc_cenjiu",
+        "npc_shuiyuya"
+      ],
+      "sublocations": [
+        {
+          "id": "subloc_ferry_berm",
+          "locationId": "loc_luhuadu"
+        },
+        {
+          "id": "subloc_reef_ledge",
+          "locationId": "loc_wangqitai"
+        }
+      ],
+      "itemIds": [
+        "item_bishuifu",
+        "item_jiuyifu"
+      ],
+      "clueIds": [
+        "clue_ferry_stuck",
+        "clue_ferry_scrubbed",
+        "clue_wrong_way",
+        "clue_rockslide",
+        "clue_crow_nest"
+      ],
+      "effectFlagIds": [
+        "effect_ward_water"
+      ],
+      "injuryFlagIds": [
+        "shoulder_scrape",
+        "crow_scratch",
+        "crowding_bite",
+        "retreated"
+      ],
+      "targetIds": [
+        "loc_luhuadu",
+        "loc_wangqitai",
+        "loc_zheguiping",
+        "npc_cenjiu",
+        "npc_shuiyuya",
+        "obj_ferry",
+        "obj_ferry_gear",
+        "obstacle_rockslide",
+        "subloc_ferry_berm",
+        "subloc_reef_ledge"
+      ],
+      "initialLocationGraph": [
+        {
+          "from": "loc_luhuadu",
+          "to": "loc_wangqitai",
+          "state": "open"
+        },
+        {
+          "from": "loc_wangqitai",
+          "to": "loc_luhuadu",
+          "state": "blocked"
+        },
+        {
+          "from": "loc_wangqitai",
+          "to": "loc_zheguiping",
+          "state": "locked"
+        },
+        {
+          "from": "loc_zheguiping",
+          "to": "loc_wangqitai",
+          "state": "locked"
+        }
+      ],
+      "obstacleRoute": {
+        "from": "loc_wangqitai",
+        "to": "loc_luhuadu"
+      },
+      "unexploredEdges": [],
+      "bypassRoutes": [
+        {
+          "from": "loc_wangqitai",
+          "to": "loc_luhuadu",
+          "routeId": "route_reef_ledge",
+          "via": "subloc_reef_ledge",
+          "requiredClueId": "clue_rockslide",
+          "clearsObstacle": true
+        }
+      ],
+      "cultivationTechniqueIds": [
+        "tech_breath_basic"
+      ],
+      "combatTechniqueIds": [],
+      "acquisitionSources": [
+        {
+          "sourceId": "src_ferry_shore",
+          "locationId": "loc_luhuadu",
+          "itemId": "item_bishuifu",
+          "source": "field",
+          "quantity": 1
+        }
+      ],
+      "itemUses": [
+        {
+          "itemId": "item_bishuifu",
+          "targetIds": [
+            "subloc_reef_ledge",
+            "subloc_ferry_berm"
+          ],
+          "effectFlags": [
+            "effect_ward_water"
+          ]
+        }
+      ],
+      "npcs": [
+        {
+          "npcId": "npc_cenjiu",
+          "locationId": "loc_luhuadu",
+          "topics": [
+            {
+              "topicTag": "obstacle_rockslide",
+              "utterances": [
+                "这石头怎么办",
+                "怎么过去",
+                "有别的路吗",
+                "能动吗"
+              ],
+              "outcome": "refuse"
+            },
+            {
+              "topicTag": "player_warning",
+              "utterances": [
+                "不要去望气台"
+              ],
+              "outcome": "refuse"
+            }
+          ]
+        },
+        {
+          "npcId": "npc_shuiyuya",
+          "locationId": "loc_luhuadu",
+          "topics": []
+        }
+      ],
+      "observations": [
+        {
+          "targetId": "obj_ferry",
+          "locationId": "loc_luhuadu",
+          "scanClueId": "clue_ferry_stuck",
+          "studyClueId": "clue_ferry_scrubbed"
+        },
+        {
+          "targetId": "obj_ferry_gear",
+          "locationId": "loc_luhuadu",
+          "studyClueId": "clue_wrong_way"
+        },
+        {
+          "targetId": "obstacle_rockslide",
+          "locationId": "loc_wangqitai",
+          "scanClueId": "clue_rockslide",
+          "studyClueId": "clue_crow_nest",
+          "blocked": {
+            "when": "dark",
+            "reason": "too_dark"
+          }
+        }
+      ],
+      "combatTargets": [
+        {
+          "targetId": "npc_shuiyuya",
+          "locationId": "loc_luhuadu",
+          "clearsObstacle": true,
+          "protectionItemId": "item_bishuifu",
+          "retreatLocationId": "loc_luhuadu",
+          "accessibleFromSublocationIds": [
+            "subloc_ferry_berm",
+            "subloc_reef_ledge"
+          ],
+          "workSiteSublocationId": "subloc_ferry_berm",
+          "daytimeInjuryFlag": "crow_scratch",
+          "darkInjuryFlag": "crowding_bite",
+          "retreatInjuryFlag": "retreated"
+        }
+      ],
+      "quest": {
+        "questId": "quest_first_clearance",
+        "rewardItemId": "item_jiuyifu",
+        "rewardSourceId": "src_quest_clearance",
+        "unlockEdge": {
+          "from": "loc_wangqitai",
+          "to": "loc_zheguiping",
+          "state": "open"
+        },
+        "unlockEdges": [
+          {
+            "from": "loc_zheguiping",
+            "to": "loc_wangqitai",
+            "state": "open"
+          }
+        ]
+      },
+      "injuryFlags": {
+        "shoulderScrape": "shoulder_scrape"
+      }
+    },
+    "mechanics": {
+      "GAME_MINUTES_PER_KEC": 15,
+      "DAY_KEC_COUNT": 96,
+      "SAVE_START_GAME_MINUTE": 300,
+      "DUSK_START_KEC": 48,
+      "STAMINA_MAX": 100,
+      "SPIRIT_MAX": 100,
+      "CULTIVATION_MAX": 10000,
+      "CULTIVATION_PER_KE": 800,
+      "CULTIVATION_FATIGUE": 200,
+      "FATIGUE_THRESHOLD": 20,
+      "SLOT_MAX": 8,
+      "MOVE_COST": 5,
+      "MOVE_BLOCKED_COST": 10,
+      "MOVE_BYPASS_COST": 15,
+      "OBSERVE_SCAN_COST": 3,
+      "OBSERVE_STUDY_COST": 6,
+      "CULTIVATE_COST_PER_KE": 20,
+      "TALK_COST": 0,
+      "USE_ITEM_COST": 0,
+      "COMBAT_COST": 25,
+      "CLEAR_THRESHOLD": 25,
+      "RETREAT_SPIRIT": 5
+    },
+    "externalRuleConstants": {
+      "maxCultivationKesPerAction": 8,
+      "locationLimit": 3
+    },
+    "actionTemplates": [
+      {
+        "id": "move-go",
+        "kind": "move",
+        "prefix": "去",
+        "entitySource": "knownLocations"
+      },
+      {
+        "id": "move-walk-to",
+        "kind": "move",
+        "prefix": "走到",
+        "entitySource": "knownLocations"
+      },
+      {
+        "id": "observe-target",
+        "kind": "observe",
+        "prefix": "观察",
+        "entitySource": "observationTargets",
+        "fixedPayload": {
+          "method": "scan"
+        },
+        "labelPrefix": "观察"
+      },
+      {
+        "id": "observe-unspecified-target",
+        "kind": "observe",
+        "prefix": "我看看",
+        "entitySource": "observationTargets",
+        "fixedPayload": {
+          "method": "scan"
+        },
+        "labelPrefix": "观察"
+      },
+      {
+        "id": "study-target",
+        "kind": "observe",
+        "prefix": "细察",
+        "entitySource": "observationTargets",
+        "fixedPayload": {
+          "method": "study"
+        },
+        "labelPrefix": "细察"
+      },
+      {
+        "id": "talk-to",
+        "kind": "talk",
+        "prefix": "对",
+        "entitySource": "npcPresence",
+        "capture": {
+          "separator": "说：",
+          "slot": "utterance"
+        }
+      },
+      {
+        "id": "use-owned-item",
+        "kind": "use_item",
+        "prefix": "使用",
+        "entitySource": "inventory"
+      }
+    ],
+    "visibleTargetLabels": [
+      {
+        "id": "loc_luhuadu",
+        "label": "芦花渡"
+      },
+      {
+        "id": "loc_wangqitai",
+        "label": "望气台"
+      },
+      {
+        "id": "loc_zheguiping",
+        "label": "折桂坪"
+      },
+      {
+        "id": "subloc_ferry_berm",
+        "label": "渡口作业位"
+      },
+      {
+        "id": "subloc_reef_ledge",
+        "label": "礁石小径"
+      },
+      {
+        "id": "npc_cenjiu",
+        "label": "岑九"
+      },
+      {
+        "id": "npc_shuiyuya",
+        "label": "灰羽鸦"
+      },
+      {
+        "id": "obj_ferry",
+        "label": "渡船"
+      },
+      {
+        "id": "obj_ferry_gear",
+        "label": "舟具"
+      },
+      {
+        "id": "obstacle_rockslide",
+        "label": "落石堵渡"
+      },
+      {
+        "id": "clue_ferry_stuck",
+        "label": "环视"
+      },
+      {
+        "id": "clue_ferry_scrubbed",
+        "label": "细察船底"
+      },
+      {
+        "id": "clue_wrong_way",
+        "label": "细察舟具"
+      },
+      {
+        "id": "clue_rockslide",
+        "label": "环视"
+      },
+      {
+        "id": "clue_crow_nest",
+        "label": "细察落石"
+      },
+      {
+        "id": "item_bishuifu",
+        "label": "避水符"
+      },
+      {
+        "id": "item_jiuyifu",
+        "label": "旧驿符"
+      }
+    ],
+    "memoryPolicyArtifacts": {
+      "version": "p1-memory-policy-v1",
+      "continue": {
+        "mode": "continue",
+        "policyVersion": "p1-memory-policy-v1",
+        "schemaVersion": 1,
+        "clockBasis": "game-minute+npc-grant-sequence-v1",
+        "policyArtifactHash": "sha256:5da8bd8e61e4859e5492b5393e3f458b12ded9cc36025858415fbe51c27261de",
+        "cueDictionaryHash": "sha256:d3dcd20c850741d5095b960488310007a163b03b53cb40aaa60b57dae9031e31",
+        "normalizerVersion": "NFKC-lowercase-space-v1",
+        "retrievalVersion": "authorized-cue-recall-v2",
+        "visibilityPolicyVersion": "p1-direct-npc-participant-v1",
+        "visibilityPolicyHash": "sha256:52b0274b0c90344d47c2337ffc0a092ad0b3e7c8112e16c14843eb78d1d4a4c3",
+        "createdAtRevision": 0
+      },
+      "forgetting": {
+        "mode": "forgetting",
+        "policyVersion": "p1-memory-policy-v1",
+        "schemaVersion": 1,
+        "clockBasis": "game-minute+npc-grant-sequence-v1",
+        "policyArtifactHash": "sha256:5da8bd8e61e4859e5492b5393e3f458b12ded9cc36025858415fbe51c27261de",
+        "cueDictionaryHash": "sha256:d3dcd20c850741d5095b960488310007a163b03b53cb40aaa60b57dae9031e31",
+        "normalizerVersion": "NFKC-lowercase-space-v1",
+        "retrievalVersion": "authorized-cue-recall-v2",
+        "visibilityPolicyVersion": "p1-direct-npc-participant-v1",
+        "visibilityPolicyHash": "sha256:52b0274b0c90344d47c2337ffc0a092ad0b3e7c8112e16c14843eb78d1d4a4c3",
+        "createdAtRevision": 0
+      }
+    },
+    "implementationFingerprint": "sha256:9c7dc0c061e3467962c7436bab0e1e1c11c6c8b3b7eea8ab3f8252db0c1a9bd3"
+  }
+}

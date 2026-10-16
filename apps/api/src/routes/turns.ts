@@ -1,3 +1,4 @@
+import { TurnCommitOutcomeUnknown } from '../services/npc-memory-turn-transaction.js';
 import type { Hono } from 'hono';
 import { ActionIntentSchema } from '@jiuxiao/contracts';
 import { readJson, type CloudSaveRouteAuth } from './saves.js';
@@ -31,6 +32,8 @@ export function mountServerTurnRoutes(app: Hono, { service, auth }: ServerTurnRo
       const response = serverTurnHttpResponse(result);
       return c.json(response.body, response.status);
     } catch (error) {
+      if (error instanceof TurnCommitOutcomeUnknown) return c.json({code:'TURN_COMMIT_OUTCOME_UNKNOWN',
+        saveId:error.saveId,requestKey:error.requestKey,recovery:'query_original_receipt'},503);
       if (error instanceof SaveSchemaNotReadyError) return c.json({ code: 'SAVE_SCHEMA_NOT_READY' }, 503);
       return c.json({ code: 'TURN_UNAVAILABLE' }, 503);
     }

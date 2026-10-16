@@ -191,7 +191,12 @@ export function useCloudGameSession(saveId: string) {
       publish(session, next); setText(next.draft);
       await loadSave(session);
       if (isCurrent(session)) setNotice(next.history.at(-1)?.receipt.decision.status === 'accepted'
-        ? narrative?.status === 'failed' ? '规则已结算，叙事失败；权威结果已保存，不需重新行动。' : '规则结算已保存。'
+        ? narrative?.status === 'failed' ? '规则已结算，叙事失败；权威结果已保存，不需重新行动。'
+          : narrative?.status === 'pending' || narrative?.status === 'running' ? '规则已结算；正文仍在处理中，可稍后读取原文。'
+          : narrative?.status === 'not_requested' ? '规则已结算；本回合首次选择不请求正文。'
+          : narrative?.status === 'integrity_failure' ? '规则已结算；正文完整性校验未通过，原回执已保留。'
+          : narrative?.status === 'ownership_unknown' || narrative?.status === 'status_unavailable' ? '规则已结算；正文状态暂无法确认，原回执已保留。'
+          : narrative?.status === 'legacy_body_unavailable' ? '规则已结算；历史回合没有可恢复的服务端原文。' : '规则结算已保存。'
         : next.history.at(-1)?.receipt.decision.status === 'clarify' ? '需要补充信息，世界未推进。' : '服务端明确拒绝，世界未推进；原文保留。');
     } catch (error) {
       let released = false;

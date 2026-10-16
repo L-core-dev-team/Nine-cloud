@@ -1,0 +1,44 @@
+[
+  {
+    "name": "compile-final",
+    "command": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "node_modules/typescript/bin/tsc",
+      "-p",
+      "apps/api/tsconfig.json"
+    ],
+    "started": "2026-10-16T10:30:58.779Z",
+    "finished": "2026-10-16T10:30:59.138Z",
+    "exitCode": 0,
+    "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "kind": "isolated-draft-unit-not-official-gameplay"
+  },
+  {
+    "name": "web-typecheck",
+    "command": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "node_modules/typescript/bin/tsc",
+      "-p",
+      "apps/web/tsconfig.json",
+      "--noEmit"
+    ],
+    "started": "2026-10-16T10:30:59.138Z",
+    "finished": "2026-10-16T10:30:59.682Z",
+    "exitCode": 0,
+    "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "kind": "isolated-draft-unit-not-official-gameplay"
+  },
+  {
+    "name": "unit-final",
+    "command": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "--test",
+      "scripts/t1-v2-draft-tests.cjs"
+    ],
+    "started": "2026-10-16T10:30:59.682Z",
+    "finished": "2026-10-16T10:30:59.948Z",
+    "exitCode": 0,
+    "logSha256": "ceb17af9e6235cdd4d5cae2afe63f856ffe085885636b957b61b1a4ad8bbbb97",
+    "kind": "isolated-draft-unit-not-official-gameplay"
+  }
+]

@@ -1,3 +1,4 @@
+import { TurnCommitOutcomeUnknown } from '../services/npc-memory-turn-transaction.js';
 import type { Hono } from 'hono';
 import { ActionIntentSchema, TurnReceiptSchema, type TurnReceipt } from '@jiuxiao/contracts';
 import { readGameMinute } from '@jiuxiao/domain';
@@ -41,6 +42,8 @@ export function mountGames(
       if (result.status === 'not_found') return c.json({ code: 'NOT_FOUND' }, 404);
       return c.json({ save: result.save, ...(publicationsAvailable ? {publicationsAvailable:true} : {}) });
     } catch (error) {
+      if (error instanceof TurnCommitOutcomeUnknown) return c.json({code:'TURN_COMMIT_OUTCOME_UNKNOWN',
+        saveId:error.saveId,requestKey:error.requestKey,recovery:'query_original_receipt'},503);
       if (error instanceof SaveSchemaNotReadyError) return c.json({ code: 'SAVE_SCHEMA_NOT_READY' }, 503);
       return c.json({ code: 'GAME_UNAVAILABLE' }, 503);
     }
@@ -88,6 +91,8 @@ export function mountGames(
       const recall = await resolveNpcMemoryRecall({ reader: memoryRecall.reader, ownerId: owner, save, receipt, npcId, utterance });
       return c.json({ recall });
     } catch (error) {
+      if (error instanceof TurnCommitOutcomeUnknown) return c.json({code:'TURN_COMMIT_OUTCOME_UNKNOWN',
+        saveId:error.saveId,requestKey:error.requestKey,recovery:'query_original_receipt'},503);
       if (error instanceof SaveSchemaNotReadyError) return c.json({ code: 'SAVE_SCHEMA_NOT_READY' }, 503);
       return c.json({ code: 'GAME_UNAVAILABLE' }, 503);
     }
@@ -128,6 +133,8 @@ export function mountGames(
       const response = serverTurnHttpResponse(result);
       return c.json(response.body, response.status);
     } catch (error) {
+      if (error instanceof TurnCommitOutcomeUnknown) return c.json({code:'TURN_COMMIT_OUTCOME_UNKNOWN',
+        saveId:error.saveId,requestKey:error.requestKey,recovery:'query_original_receipt'},503);
       if (error instanceof SaveSchemaNotReadyError) return c.json({ code: 'SAVE_SCHEMA_NOT_READY' }, 503);
       return c.json({ code: 'TURN_UNAVAILABLE' }, 503);
     }
@@ -152,6 +159,8 @@ export function mountGames(
       if (result.status === 'conflict') return c.json({ code: 'IDEMPOTENCY_CONFLICT' }, 409);
       return c.json(result, result.duplicate ? 200 : 201);
     } catch (error) {
+      if (error instanceof TurnCommitOutcomeUnknown) return c.json({code:'TURN_COMMIT_OUTCOME_UNKNOWN',
+        saveId:error.saveId,requestKey:error.requestKey,recovery:'query_original_receipt'},503);
       if (error instanceof CloudCapacityError) return c.json({ code: 'CAPACITY_EXCEEDED' }, 413);
       if (error instanceof Error && error.message === 'DATA_POLICY_NOT_READY') return c.json({ code: 'DATA_POLICY_NOT_READY' }, 503);
       if (error instanceof SaveSchemaNotReadyError) return c.json({ code: 'SAVE_SCHEMA_NOT_READY' }, 503);

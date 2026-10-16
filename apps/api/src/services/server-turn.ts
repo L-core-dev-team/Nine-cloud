@@ -1,3 +1,4 @@
+import type { NarrativeV2Port } from './narrative-ownership-v2.js';
 import { randomUUID } from 'node:crypto';
 import {
   ActionIntentSchema, DomainEventSchema, SaveEnvelopeSchema, TurnReceiptSchema,
@@ -40,6 +41,8 @@ export interface ServerTurnRepository {
 }
 export type NarrativeResult =
   | { status: 'not_requested' }
+  | { status: 'pending' | 'running'; wait?: 'cancelled' | 'timeout' }
+  | { status: 'ownership_unknown' | 'legacy_body_unavailable' | 'integrity_failure' | 'status_unavailable' }
   | { status: 'received'; text: string; source: 'model' | 'deterministic' }
   | { status: 'failed'; code: 'NARRATIVE_UNAVAILABLE' | 'NARRATIVE_TIMEOUT' | 'NARRATIVE_CANCELLED' };
 export type ServerTurnResult =
@@ -58,6 +61,7 @@ export class ServerTurnService {
     private readonly narrator?: Narrator,
     private readonly narrativeTimeoutMs = 20_000,
     private readonly deterministicNarrative?: DeterministicNarrative,
+    private readonly narrativeV2?: NarrativeV2Port,
   ) {
     if (!Number.isInteger(narrativeTimeoutMs) || narrativeTimeoutMs < 1 || narrativeTimeoutMs > 120_000) {
       throw new TypeError('Invalid narrative timeout');
@@ -129,7 +133,8 @@ export class ServerTurnService {
     const committed = await this.repository.commitAcceptedTurn({ ownerId, expectedRevision: save.revision,
       receipt: prepared.receipt, save: prepared.save,
       events: committedEvents,
-      previousJournal: journal, nextJournal: next.journal, authorizedObservations: next.authorizedObservations });
+      previousJournal: journal, nextJournal: next.journal, authorizedObservations: next.authorizedObservations,
+      requestNarrative, ...(cancellation ? {cancellation} : {}) });
     if (committed.kind === 'not_found') return { status: 'not_found' };
     if (committed.kind === 'idempotency_conflict') return { status: 'idempotency_conflict' };
     if (committed.kind === 'conflict' || committed.kind === 'memory_conflict') {
@@ -141,6 +146,17 @@ export class ServerTurnService {
   private async completed(ownerId:string, raw: TurnReceipt, duplicate: boolean, requestNarrative: boolean, cancellation?: AbortSignal, save?: SaveEnvelope): Promise<ServerTurnResult> {
     const receipt = TurnReceiptSchema.parse(raw);
     if (receipt.decision.status !== 'accepted') return { status: 'decision', receipt };
+    if (this.narrativeV2) {
+      // Deployment adapter selects the protocol; persistent metadata decides each receipt's owner.
+      // Reads never start workers or re-claim failed work, including duplicate requests.
+      let narrative: NarrativeResult;
+      try { narrative = await this.narrativeV2.read(ownerId,receipt,cancellation); }
+      catch(error) {
+        narrative = {status:error instanceof Error && /CORRUPT|INTEGRITY|MISMATCH/.test(error.message)
+          ? 'integrity_failure' : 'status_unavailable'};
+      }
+      return {status:'accepted',duplicate,receipt,narrative};
+    }
     let narrative: NarrativeResult = { status: 'not_requested' };
     if (requestNarrative) {
       const attemptId=randomUUID();

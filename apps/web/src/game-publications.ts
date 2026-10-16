@@ -21,6 +21,15 @@ export async function readPublishedGameHistoryPage(scope:GameCacheScope,signal:A
     let text:string;
     if(p.publication==='published'){
       const s=p.source;
+      if(!s && p.legacyBody) {
+        const legacy=p.legacyBody;
+        if(typeof legacy.text!=='string'||legacy.text.length>100000||!/^[a-f0-9]{64}$/.test(legacy.bodySha))throw Error('INVALID_LEGACY_SOURCE');
+        const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(legacy.text));
+        const sha=Array.from(new Uint8Array(digest),v=>v.toString(16).padStart(2,'0')).join('');
+        if(sha!==legacy.bodySha)throw Error('NARRATIVE_BODY_CORRUPT');
+        rows.push({id:receipt.idempotencyKey,revision:receipt.resultingRevision,receipt,text:legacy.text});
+        continue;
+      }
       if(!s||typeof s.text!=='string'||s.text.length>100000||s.requestKey!==receipt.idempotencyKey
         ||s.revision!==receipt.resultingRevision||s.version!==1||typeof s.sourceId!=='string'
         ||typeof s.publicationId!=='string'||s.generatorSource!=='deterministic'||!/^[a-f0-9]{64}$/.test(s.bodySha))throw Error('INVALID_PUBLICATION_SOURCE');
@@ -32,6 +41,8 @@ export async function readPublishedGameHistoryPage(scope:GameCacheScope,signal:A
     }else if(p.publication==='legacy-body-unavailable')text='规则已结算；此历史回合没有服务端正文，无法恢复原文。';
     else if(p.publication==='pending')text='规则已结算；正文仍在处理中。';
     else if(p.publication==='failed')text='规则已结算；正文生成失败，权威结果已保留。';
+    else if(p.publication==='not_requested')text='规则已结算；本回合首次选择不请求正文。';
+    else if(p.publication==='ownership_unknown')text='规则已结算；正文归属尚未确认，暂不提供原文。';
     else throw Error('INVALID_PUBLICATION_STATE');
     rows.push({id:receipt.idempotencyKey,revision:receipt.resultingRevision,receipt,text});
   }

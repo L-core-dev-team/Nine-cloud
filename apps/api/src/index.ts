@@ -1,4 +1,5 @@
 import { NarrativePublicationRepository } from './services/narrative-publication-repository.js';
+import {prepareNarrativeV2RuntimeDraft} from './services/narrative-v2-runtime-draft.js';
 import {configureAccountQuota} from './services/account-rate-limit.js';
 import {loadDataPolicy} from './services/data-policy-node.js';
 import {PolicyCloudSaveRepository} from './services/policy-cloud-save-repository.js';
@@ -35,26 +36,45 @@ const preparedRuntime=plugin?prepareTurnRuntime(plugin,await loadNarrativeSlots(
 const runtime=preparedRuntime&&plugin?await connectActionTextRuntime(preparedRuntime,plugin):undefined;
 const dataPolicy=process.env.NODE_ENV==='production'?loadDataPolicy(process.env.ACCOUNT_DATA_POLICY_PATH):undefined;
 const cloudRepository=process.env.NODE_ENV==='production'?new PolicyCloudSaveRepository(pool,dataPolicy):new PostgresCloudSaveRepository(pool,true);
-const turnRepository=createPostgresServerTurnRepository(pool, true,process.env.NODE_ENV==='production'?()=>dataPolicy:undefined);
+// REVIEW DRAFT. The existing signature loader still pins the original aggregate and fails closed.
+const v2Requested=process.env.NARRATIVE_T1_V2_ENABLED==='true';
+// A protocol-capable instance cannot start a legacy writer after the durable cutover fence exists.
+if(!v2Requested && (await pool.query("SELECT to_regclass('public.narrative_writer_fence') AS t")).rows[0].t
+  && (await pool.query('SELECT singleton FROM narrative_writer_fence WHERE singleton=true')).rowCount)
+  throw Error('LEGACY_WRITER_DISABLED_BY_DURABLE_FENCE');
+if(v2Requested && (!runtime?.rules || !runtime.narrativeFallback || !process.env.NARRATIVE_RENDERER_VERSION
+  || process.env.NARRATIVE_PUBLICATION_READS_ENABLED!=='true')) throw Error('T1_V2_PAIRED_RUNTIME_REQUIRED');
+const v2=v2Requested && runtime?.rules && runtime.narrativeFallback ? await prepareNarrativeV2RuntimeDraft({pool,
+  rules:runtime.rules,render:runtime.narrativeFallback,rendererVersion:process.env.NARRATIVE_RENDERER_VERSION!,
+  limits:{maxUtf16:Number(process.env.NARRATIVE_MAX_UTF16),maxUtf8:Number(process.env.NARRATIVE_MAX_UTF8)},
+  ...(process.env.NODE_ENV==='production'?{policy:()=>dataPolicy}:{})}) : undefined;
+const turnRepository=v2?.turns??createPostgresServerTurnRepository(pool, true,process.env.NODE_ENV==='production'?()=>dataPolicy:undefined);
 const app = createApp({ query: sql => pool.query(sql) }, emailAuth ? {
   service: new CloudSaveService(cloudRepository, true, true),
   archive: new CloudArchiveLifecycle(pool, true),
   auth: { resolveOwnerId: async request => (await emailAuth.service.resolve(sessionToken(request)))?.ownerId || null },
 } : undefined, emailAuth, emailAuth ? {
   // No author rules are bundled: absent host plugin remains fail closed.
-  service: new ServerTurnService(turnRepository,runtime?.rules,runtime?.narrator,120_000,runtime?.narrativeFallback),
+  service: v2?.service??new ServerTurnService(turnRepository,runtime?.rules,runtime?.narrator,120_000,runtime?.narrativeFallback),
   readReceipt: (owner, saveId, key) => turnRepository.getReceiptForOwner(owner, saveId, key),
   games: new AuthoritativeGameService(cloudRepository,runtime),
   auth: { resolveOwnerId: async request => (await emailAuth.service.resolve(sessionToken(request)))?.ownerId || null },
   memoryRecall: turnRepository.recallObservationPage ? { reader: turnRepository.recallObservationPage } : undefined,
 } : undefined, emailAuth && process.env.NARRATIVE_PUBLICATION_READS_ENABLED==='true' ? {
   auth:{resolveOwnerId:async request=>(await emailAuth.service.resolve(sessionToken(request)))?.ownerId||null},
-  repository:new NarrativePublicationRepository(pool),
+  repository:v2?.publication??new NarrativePublicationRepository(pool),
 } : undefined);
 
+// Only registered pending/expired jobs are consumed. No worker is called by an action duplicate or GET.
+let draining=false;
+const dispatch=v2?setInterval(()=>{
+  if(draining)return;draining=true;
+  void v2.worker.drain(20).catch(()=>{console.error('Narrative worker unavailable.');}).finally(()=>{draining=false;});
+},500):undefined;
 const server = serve({ fetch: app.fetch, port, hostname });
 console.log(`jiuxiao-api listening on ${hostname}:${port}`);
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+  if(dispatch)process.once(signal,()=>clearInterval(dispatch));
   process.on(signal, () => server.close(() => {
     void pool.end().then(
       () => process.exit(0),

@@ -12,7 +12,8 @@ export type NarrativeSeed = {
 export type Publication = { sourceId: string; publicationId: string; requestKey: string;
   revision: number; version: number; bodySha: string; text: string; generatorSource: 'deterministic' };
 export type Presentation = { settlement: 'accepted'; generation: string;
-  publication: 'published' | 'pending' | 'failed' | 'legacy-body-unavailable'; source: Publication | null };
+  publication: 'published' | 'pending' | 'failed' | 'legacy-body-unavailable' | 'not_requested' | 'ownership_unknown';
+  source: Publication | null; legacyBody?: {text:string;bodySha:string} };
 export type NarrativeLease = { generationId: string; attemptId: string; leaseEpoch: number; ownerId: string;
   saveId: string; requestKey: string; context: NarrativeSeed };
 export type BodyLimits = { maxUtf16: number; maxUtf8: number };
@@ -52,7 +53,7 @@ export async function seedNarrativeInTransaction(c: PoolClient, input: {
 
 /** Lock order: account → save → generation → attempt. Account erasure uses the same prefix. */
 export class NarrativePublicationRepository {
-  constructor(private readonly pool: Pool, private readonly limits?: BodyLimits) {}
+  constructor(private readonly pool: Pool, private readonly limits?: BodyLimits, private readonly v2?: { maxAttempts:number; leaseMs:number }) {}
   private async transaction<T>(fn: (c: PoolClient) => Promise<T>): Promise<T> {
     const c = await this.pool.connect();
     try { await c.query('BEGIN'); const result = await fn(c); await c.query('COMMIT'); return result; }
@@ -65,7 +66,8 @@ export class NarrativePublicationRepository {
       AND NOT EXISTS(SELECT 1 FROM cloud_archive_trash t WHERE t.save_id=s.id) FOR SHARE`, [save, owner])).rowCount);
   }
   async claim(owner: string, save: string, key: string, leaseMs = 30_000): Promise<NarrativeLease | null> {
-    if (!Number.isInteger(leaseMs) || leaseMs < 1 || leaseMs > 120_000) throw Error('INVALID_LEASE');
+    if (this.v2) leaseMs=this.v2.leaseMs;
+    if (!Number.isInteger(leaseMs) || leaseMs < 1 || leaseMs > 180_000) throw Error('INVALID_LEASE');
     const outcome = await this.transaction<NarrativeLease | null | { failure: string }>(async c => {
       if (!await this.lockOwner(c, owner, save)) return null;
       const g = (await c.query(`SELECT g.*,c.context,
@@ -74,7 +76,12 @@ export class NarrativePublicationRepository {
         FROM narrative_generation_requests g LEFT JOIN narrative_context_snapshots c ON c.id=g.context_id
         LEFT JOIN turn_requests r ON r.save_id=g.save_id AND r.idempotency_key=g.request_key
         WHERE g.save_id=$1 AND g.request_key=$2 FOR UPDATE OF g`, [save, key])).rows[0];
-      if (!g || g.state === 'published') return null;
+      if (!g || g.state === 'published' || g.state === 'failed') return null;
+      if (this.v2) {
+        await this.requireV2Ownership(c,owner,save,key,g.id);
+        if (!Number.isInteger(this.v2.maxAttempts) || this.v2.maxAttempts<1 || this.v2.maxAttempts>3)
+          throw Error('NARRATIVE_RECOVERY_BUDGET_INVALID');
+      }
       let failure: string | undefined;
       if (!g.context) failure = 'NARRATIVE_CONTEXT_MISSING';
       else if (!g.intact || g.context.ownerId || g.context.format !== 'authority-context-v1'
@@ -89,6 +96,12 @@ export class NarrativePublicationRepository {
       }
       const live = await c.query(`SELECT id FROM narrative_attempts WHERE generation_id=$1 AND state='running' AND lease_until>clock_timestamp()`, [g.id]);
       if (live.rowCount) return null;
+      if (this.v2 && g.lease_epoch >= this.v2.maxAttempts) {
+        await c.query("UPDATE narrative_attempts SET state='expired' WHERE generation_id=$1 AND state='running'",[g.id]);
+        await c.query("UPDATE narrative_generation_requests SET state='failed' WHERE id=$1",[g.id]);
+        await c.query("UPDATE narrative_outbox SET state='done' WHERE generation_id=$1 AND kind='generate'",[g.id]);
+        return null;
+      }
       await c.query(`UPDATE narrative_attempts SET state='expired' WHERE generation_id=$1 AND state='running'`, [g.id]);
       const epoch = g.lease_epoch + 1, attempt = randomUUID();
       await c.query(`UPDATE narrative_generation_requests SET state='running',lease_epoch=$2 WHERE id=$1`, [g.id, epoch]);
@@ -108,6 +121,7 @@ export class NarrativePublicationRepository {
       const g = (await c.query(`SELECT * FROM narrative_generation_requests WHERE id=$1 AND save_id=$2 AND request_key=$3 FOR UPDATE`,
         [lease.generationId, lease.saveId, lease.requestKey])).rows[0];
       if (!g) throw Error('NARRATIVE_NOT_FOUND');
+      if (this.v2) await this.requireV2Ownership(c,lease.ownerId,lease.saveId,lease.requestKey,g.id);
       const a = (await c.query(`SELECT *,lease_until>clock_timestamp() AS live FROM narrative_attempts
         WHERE id=$1 AND generation_id=$2 AND lease_epoch=$3 FOR UPDATE`, [lease.attemptId, g.id, lease.leaseEpoch])).rows[0];
       if (!a || g.lease_epoch !== lease.leaseEpoch) throw Error('NARRATIVE_STALE_ATTEMPT');
@@ -151,6 +165,23 @@ export class NarrativePublicationRepository {
       if (a.rowCount) await c.query(`UPDATE narrative_generation_requests SET state='failed' WHERE id=$1`, [lease.generationId]);
     });
   }
+  private async requireV2Ownership(c:PoolClient,owner:string,save:string,key:string,generation:string) {
+    const gate=await c.query(`SELECT singleton FROM narrative_writer_fence WHERE singleton=true AND phase='managed'
+      AND protocol_version=2 AND old_writer_drained AND old_role_revoked
+      AND fleet_manifest_sha ~ '^[a-f0-9]{64}$' AND valid_until>clock_timestamp()
+      AND renderer_version=(SELECT renderer_version FROM narrative_receipt_ownership
+        WHERE owner_id=$1 AND save_id=$2 AND request_key=$3 AND generation_id=$4) FOR SHARE`,[owner,save,key,generation]);
+    const row=await c.query(`SELECT o.generation_id FROM narrative_receipt_ownership o
+      JOIN turn_requests r ON r.save_id=o.save_id AND r.idempotency_key=o.request_key
+      JOIN narrative_generation_requests g ON g.id=o.generation_id
+      JOIN narrative_context_snapshots c ON c.id=g.context_id
+      WHERE o.owner_id=$1 AND o.save_id=$2 AND o.request_key=$3 AND o.generation_id=$4
+      AND o.ownership='managed' AND o.protocol_version=2 AND o.request_narrative
+      AND o.receipt_sha=encode(sha256(convert_to(r.result::text,'UTF8')),'hex')
+      AND c.owner_id=o.owner_id AND c.receipt_sha=o.receipt_sha AND c.branch_id=o.branch_id
+      AND c.context->>'rendererVersion'=o.renderer_version AND c.context->>'format'=o.context_version`,[owner,save,key,generation]);
+    if (!gate.rowCount || !row.rowCount) throw Error('NARRATIVE_WRITER_OWNERSHIP_UNPROVEN');
+  }
   private decode(row: Record<string, any>, revision: number): Publication {
     const bytes = row.body as Buffer;
     const text = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes);
@@ -162,16 +193,49 @@ export class NarrativePublicationRepository {
   async presentation(owner: string, save: string, key: string): Promise<Presentation | null> {
     return this.transaction(async c => {
       if (!await this.lockOwner(c, owner, save)) return null;
+      return this.presentationInTransaction(c,owner,save,key);
+    });
+  }
+  private async presentationInTransaction(c:PoolClient,owner:string,save:string,key:string):Promise<Presentation|null> {
       const r = (await c.query(`SELECT result FROM turn_requests WHERE save_id=$1 AND idempotency_key=$2`, [save, key])).rows[0];
       if (!r || r.result?.decision?.status !== 'accepted') return null;
       const receipt = TurnReceiptSchema.parse(r.result);
       const g = (await c.query('SELECT id,state FROM narrative_generation_requests WHERE save_id=$1 AND request_key=$2', [save, key])).rows[0];
+      if (this.v2) {
+        const o=(await c.query(`SELECT o.*,o.receipt_sha=encode(sha256(convert_to(r.result::text,'UTF8')),'hex') AS intact
+          FROM narrative_receipt_ownership o JOIN turn_requests r ON r.save_id=o.save_id AND r.idempotency_key=o.request_key
+          WHERE o.owner_id=$1 AND o.save_id=$2 AND o.request_key=$3`,[owner,save,key])).rows[0];
+        if (!o) return {settlement:'accepted',generation:'unknown',publication:'ownership_unknown',source:null};
+        if (!o.intact || o.branch_id!=='root') throw Error('NARRATIVE_OWNERSHIP_CORRUPT');
+        if (o.ownership==='suppressed') {
+          if(g)throw Error('NARRATIVE_SUPPRESSED_INTEGRITY_FAILURE');
+          return {settlement:'accepted',generation:'not_requested',publication:'not_requested',source:null};
+        }
+        if(o.ownership==='legacy') {
+          if(g || !o.legacy_inventory_sha)throw Error('NARRATIVE_LEGACY_INTEGRITY_FAILURE');
+          const result:Presentation={settlement:'accepted',generation:'legacy',publication:'legacy-body-unavailable',source:null};
+          if(o.legacy_body) {
+            const text=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true}).decode(o.legacy_body);
+            if(createHash('sha256').update(o.legacy_body).digest('hex')!==o.legacy_body_sha
+              || !Buffer.from(text).equals(o.legacy_body))throw Error('NARRATIVE_BODY_CORRUPT');
+            result.publication='published';result.legacyBody={text,bodySha:o.legacy_body_sha};
+          }
+          return result;
+        }
+        if(o.ownership!=='managed' || o.protocol_version!==2 || !g || g.id!==o.generation_id)
+          throw Error('NARRATIVE_MANAGED_INTEGRITY_FAILURE');
+        if(!(await c.query(`SELECT id FROM narrative_context_snapshots WHERE id=(SELECT context_id
+          FROM narrative_generation_requests WHERE id=$1) AND owner_id=$2 AND receipt_sha=$3
+          AND context->>'rendererVersion'=$4 AND context->>'format'=$5
+          AND context_sha=encode(sha256(convert_to(context::text,'UTF8')),'hex')`,
+          [g.id,owner,o.receipt_sha,o.renderer_version,o.context_version])).rowCount)
+          throw Error('NARRATIVE_MANAGED_INTEGRITY_FAILURE');
+      }
       if (!g) return { settlement: 'accepted', generation: 'not_recorded', publication: 'legacy-body-unavailable', source: null };
       const p = (await c.query(`SELECT p.*,s.body,s.body_sha,s.utf16_length,s.utf8_length FROM narrative_publications p
         JOIN narrative_sources s ON s.id=p.source_id WHERE p.generation_id=$1`, [g.id])).rows[0];
       if (p) return { settlement: 'accepted', generation: 'published', publication: 'published', source: this.decode(p, receipt.resultingRevision) };
       return { settlement: 'accepted', generation: g.state, publication: g.state === 'failed' ? 'failed' : 'pending', source: null };
-    });
   }
   async source(owner: string, save: string, source: string): Promise<Publication | null> {
     // Ownership is checked before any source lookup; presentation rechecks under account/save locks.
@@ -193,13 +257,18 @@ export class NarrativePublicationRepository {
         AND ($2::integer IS NULL OR (r.result->>'resultingRevision')::integer<$2)
         ORDER BY (r.result->>'resultingRevision')::integer DESC LIMIT 11`, [save, beforeRevision ?? null])).rows;
       const selected=rows.slice(0,10);
-      const items=selected.map(row=>{
+      const items=await Promise.all(selected.map(async row=>{
         const receipt=TurnReceiptSchema.parse(row.result);
+        if(this.v2) {
+          const presentation=await this.presentationInTransaction(c,owner,save,receipt.idempotencyKey);
+          if(!presentation)throw Error('NARRATIVE_NOT_FOUND');
+          return {receipt,presentation};
+        }
         const source=row.source_id?this.decode(row,receipt.resultingRevision):null;
         const presentation:Presentation={settlement:'accepted',generation:row.generation_state??'not_recorded',
           publication:source?'published':!row.generation_id?'legacy-body-unavailable':row.generation_state==='failed'?'failed':'pending',source};
         return {receipt,presentation};
-      });
+      }));
       return {items:items.reverse(),nextBeforeRevision:rows.length>10?Number(selected.at(-1)?.result.resultingRevision):null};
     });
   }
@@ -220,6 +289,9 @@ export class NarrativePublicationRepository {
 
 /** Caller must already hold the existing authorized erasure proof and account/save locks. */
 export async function eraseNarrativeForOwner(c: PoolClient, owner: string) {
+  // A new table may not be deployed yet. Existing 0022 lifecycle remains usable.
+  if ((await c.query("SELECT to_regclass('public.narrative_receipt_ownership') AS relation")).rows[0].relation)
+    await c.query('DELETE FROM narrative_receipt_ownership WHERE owner_id=$1',[owner]);
   await c.query(`DELETE FROM source_event_links l USING narrative_sources s,narrative_generation_requests g,game_saves v
     WHERE l.source_id=s.id AND s.generation_id=g.id AND g.save_id=v.id AND v.owner_id=$1`, [owner]);
   await c.query(`DELETE FROM narrative_segments l USING narrative_sources s,narrative_generation_requests g,game_saves v

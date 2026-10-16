@@ -84,6 +84,8 @@ export type AcceptedTurnCommitInput = {
   nextJournal: NpcMemoryJournal;
   authorizedObservations: readonly AuthorizedObservationOutboxRecord[];
   authorizedSupersessions?: readonly AuthorizedObservationSupersessionRecord[];
+  requestNarrative?: boolean;
+  cancellation?: AbortSignal;
 };
 
 export type AcceptedTurnCommitResult =
@@ -124,7 +126,7 @@ type NormalizedCommit = Omit<AcceptedTurnCommitInput, 'ownerId' | 'receipt' | 's
  * and journal on the server; this repository never decides gameplay or visibility.
  */
 export class PostgresNpcMemoryTurnRepository {
-  constructor(private readonly database: Database, private readonly requiresLiveAccount = false,private readonly guard?: (client:PoolClient,commit:AcceptedTurnCommitInput)=>Promise<void>) {}
+  constructor(private readonly database: Database, private readonly requiresLiveAccount = false,private readonly guard?: (client:PoolClient,commit:AcceptedTurnCommitInput)=>Promise<void>, private readonly registerNarrative?: (client:PoolClient,commit:AcceptedTurnCommitInput)=>Promise<void>) {}
 
   async getReceiptForOwner(ownerId: string, saveId: string, requestId: string): Promise<TurnReceipt | null> {
     const owner = normalizeOwnerId(ownerId);
@@ -272,11 +274,13 @@ export class PostgresNpcMemoryTurnRepository {
     const commit = normalizeCommit(input);
     const client = await this.database.connect();
     let inTransaction = false;
+    let commitAttempted = false;
+    let released = false;
 
     try {
       await client.query('BEGIN');
       inTransaction = true;
-      if (this.requiresLiveAccount && !(await client.query('SELECT id FROM auth_accounts WHERE id=$1 AND closed_at IS NULL '+(this.guard?'FOR UPDATE':'FOR KEY SHARE'), [commit.ownerId])).rowCount) {
+      if (this.requiresLiveAccount && !(await client.query('SELECT id FROM auth_accounts WHERE id=$1 AND closed_at IS NULL '+(this.guard||this.registerNarrative?'FOR UPDATE':'FOR KEY SHARE'), [commit.ownerId])).rowCount) {
         return await rollbackWith(client, () => { inTransaction = false; return { kind: 'not_found' }; });
       }
 
@@ -430,20 +434,33 @@ export class PostgresNpcMemoryTurnRepository {
         [commit.save.saveId, commit.nextJournal.revision, serializeNpcMemoryJournal(commit.nextJournal)],
       );
 
+      await this.registerNarrative?.(client,commit);
+      if (commit.cancellation?.aborted) throw Error('TURN_CANCELLED_BEFORE_COMMIT');
+      commitAttempted = true;
       await client.query('COMMIT');
       inTransaction = false;
       return { kind: 'committed', receipt: commit.receipt, save: commit.save, journal: commit.nextJournal };
     } catch (error) {
-      if (inTransaction) {
+      if (inTransaction && !commitAttempted) {
         try {
           await client.query('ROLLBACK');
         } catch {
           // Preserve the original failure; PostgreSQL will discard an open transaction on release.
         }
       }
+      if (commitAttempted) {
+        // A COMMIT transport error is ambiguous. Drop this connection before a new read.
+        client.release(true); released = true;
+        let recovered: TurnReceipt | null = null;
+        try { recovered = await this.getReceiptForOwner(commit.ownerId,commit.save.saveId,commit.receipt.idempotencyKey); }
+        catch { /* Remains unknown; never resubmit an action here. */ }
+        if (recovered && recovered.requestFingerprint === commit.receipt.requestFingerprint)
+          return {kind:'duplicate',receipt:recovered};
+        throw new TurnCommitOutcomeUnknown(commit.save.saveId,commit.receipt.idempotencyKey);
+      }
       throw error;
     } finally {
-      client.release();
+      if (!released) client.release();
     }
   }
 }
@@ -609,4 +626,8 @@ function canonicalJson(value: unknown): string {
 async function rollbackWith<T>(client: PoolClient, createResult: () => T): Promise<T> {
   await client.query('ROLLBACK');
   return createResult();
+}
+
+export class TurnCommitOutcomeUnknown extends Error {
+  constructor(readonly saveId:string,readonly requestKey:string) { super('TURN_COMMIT_OUTCOME_UNKNOWN'); }
 }
