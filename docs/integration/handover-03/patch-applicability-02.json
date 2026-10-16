@@ -1,0 +1,29 @@
+{
+  "baseline": "d8ea49a8a74beb79233b100db71bbc4295db47c3",
+  "patchSha256": "2e43821722dcc72b693756de2ca6a50fb5af6146ccac7fc9bdbdf17b71588393",
+  "readtree": {
+    "command": [
+      "git",
+      "read-tree",
+      "d8ea49a8a74beb79233b100db71bbc4295db47c3"
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "objects": {
+    "command": [
+      "git",
+      "apply",
+      "--cached",
+      "--check",
+      "C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-t1-v2-draft-20261016\\docs\\integration\\pending\\t1-v2-review-release\\t1-v2-minimal.patch"
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "applied": false,
+  "realIndexModified": false,
+  "temporaryIndexRetained": "circle tools/tmp/handover03-applicability.index"
+}

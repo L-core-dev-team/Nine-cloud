@@ -1,0 +1,146 @@
+{
+  "baseline": "d8ea49a8a74beb79233b100db71bbc4295db47c3",
+  "patchSha256": "2e43821722dcc72b693756de2ca6a50fb5af6146ccac7fc9bdbdf17b71588393",
+  "files": [
+    {
+      "path": "apps/api/src/index.ts",
+      "rawSha256": "d9808345b11c339bba824d50e6370ee223a7c85d4c19a708fa7129bc5a555ef4",
+      "baselineBlobSha256": "cf9440ab040129aca6ddfd64537f55945859972242ac909b86dda0c32cb5cc64",
+      "rawExact": false,
+      "normalizedEqual": true
+    },
+    {
+      "path": "apps/api/src/routes/games.ts",
+      "rawSha256": "1929febfb26680694077f6d16a45e9c0e90bea65cf2ac3a0145b597b2bffc7e0",
+      "baselineBlobSha256": "c932269428a160777d7a74ff8a791fff0dff9b571ebe704b0a492da44fb058b0",
+      "rawExact": false,
+      "normalizedEqual": true
+    },
+    {
+      "path": "apps/api/src/routes/turns.ts",
+      "rawSha256": "7f3be567a81477410b92039a4d483124f9ce8782c43798c6c7456bda4750bf25",
+      "baselineBlobSha256": "88ae855169fe42cc995d67edc418fb3dd9b0133cd62f2ee998ad2aea9386e1bd",
+      "rawExact": false,
+      "normalizedEqual": true
+    },
+    {
+      "path": "apps/api/src/services/account-export.ts",
+      "rawSha256": "5a6888f4565d6dc437d53e26d101d1a6bfce95c48f552fbdee88011e9596da9d",
+      "baselineBlobSha256": "d872246985b7c59e831c4666ac93811c0078cd9599114a80487261620236a4cb",
+      "rawExact": false,
+      "normalizedEqual": true
+    },
+    {
+      "path": "apps/api/src/services/narrative-outbox-worker.ts",
+      "rawSha256": "3a1bef6b5693aa9c77062e31dcb16a1f463003d9b55d1b630909a9274d77a18c",
+      "baselineBlobSha256": "599e029d5f92a77adcdd79f8679383410f4044c4dad662b22129d4af958147fe",
+      "rawExact": false,
+      "normalizedEqual": true
+    },
+    {
+      "path": "apps/api/src/services/narrative-ownership-v2.ts",
+      "newFile": true,
+      "absentInCandidate": true
+    },
+    {
+      "path": "apps/api/src/services/narrative-publication-repository.ts",
+      "rawSha256": "e514e7d0b590329e9c23b649c02cfff570ea7a85ef003872d63e16931360442c",
+      "baselineBlobSha256": "62258b0a3067716b71ee163f6c7222d4399bb1fefd383dcf68f310e9c2837df3",
+      "rawExact": false,
+      "normalizedEqual": true
+    },
+    {
+      "path": "apps/api/src/services/narrative-v2-runtime-draft.ts",
+      "newFile": true,
+      "absentInCandidate": true
+    },
+    {
+      "path": "apps/api/src/services/npc-memory-turn-transaction.ts",
+      "rawSha256": "b0ea6f5f5f8382c393e19d670e1eb1ee5424cd2f53d438f4ce3211d6ae1a84a2",
+      "baselineBlobSha256": "2e054ef9962f2de4381c2605f6e48b6bb6aa04cc5cbf140cf5a3cd0d62bcc63a",
+      "rawExact": false,
+      "normalizedEqual": true
+    },
+    {
+      "path": "apps/api/src/services/postgres-server-turn.ts",
+      "rawSha256": "d09eb2edfa9a03537436c8767719c3fda5a39c4f981c6efb905982a1f5e65aae",
+      "baselineBlobSha256": "0bbeef8de0a27f6f0002a502f823e904a1e0e67d9bc4cac6d70d81f9a125071b",
+      "rawExact": false,
+      "normalizedEqual": true
+    },
+    {
+      "path": "apps/api/src/services/server-turn.ts",
+      "rawSha256": "a5e588c48ff602675673104ed01b4251718f6af57cb8e335ea4244280a97c6ad",
+      "baselineBlobSha256": "a8633c442069dab8bca96e97088b500dc12d9f0dd1f56bd3311d027061f9f150",
+      "rawExact": false,
+      "normalizedEqual": true
+    },
+    {
+      "path": "apps/web/src/game-publications.ts",
+      "rawSha256": "41f7f982fc2b4555cfeeb079d50442328ce593aab4acf9b5dc9bde5a9a448ecc",
+      "baselineBlobSha256": "ce63a9b83bd27b9dd60b973591ea4b56c696ea37b778cbcf81e487b823ec1807",
+      "rawExact": false,
+      "normalizedEqual": true
+    },
+    {
+      "path": "apps/web/src/use-cloud-game-session.ts",
+      "rawSha256": "a158ec6079ca25f490996c9efee4df1c99ff3c608c149425bc2483dbb62252d0",
+      "baselineBlobSha256": "d5376bc40a53b927a3ca166fdc4d4e6247f159312dd899731dd73ef67d3edcce",
+      "rawExact": false,
+      "normalizedEqual": true
+    },
+    {
+      "path": "docs/integration/pending/0023_narrative_ownership_v2.sql",
+      "newFile": true,
+      "absentInCandidate": true
+    }
+  ],
+  "ordinary": {
+    "command": [
+      "git",
+      "apply",
+      "--check",
+      "C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-t1-v2-draft-20261016\\docs\\integration\\pending\\t1-v2-review-release\\t1-v2-minimal.patch"
+    ],
+    "exitCode": 1,
+    "stdout": "",
+    "stderr": "error: patch failed: apps/api/src/index.ts:1\nerror: apps/api/src/index.ts: patch does not apply\nerror: patch failed: apps/api/src/routes/games.ts:1\nerror: apps/api/src/routes/games.ts: patch does not apply\nerror: patch failed: apps/api/src/routes/turns.ts:1\nerror: apps/api/src/routes/turns.ts: patch does not apply\nerror: patch failed: apps/api/src/services/account-export.ts:15\nerror: apps/api/src/services/account-export.ts: patch does not apply\nerror: patch failed: apps/api/src/services/narrative-outbox-worker.ts:7\nerror: apps/api/src/services/narrative-outbox-worker.ts: patch does not apply\nerror: patch failed: apps/api/src/services/narrative-publication-repository.ts:12\nerror: apps/api/src/services/narrative-publication-repository.ts: patch does not apply\nerror: patch failed: apps/api/src/services/npc-memory-turn-transaction.ts:84\nerror: apps/api/src/services/npc-memory-turn-transaction.ts: patch does not apply\nerror: patch failed: apps/api/src/services/postgres-server-turn.ts:1\nerror: apps/api/src/services/postgres-server-turn.ts: patch does not apply\nerror: patch failed: apps/api/src/services/server-turn.ts:1\nerror: apps/api/src/services/server-turn.ts: patch does not apply\nerror: patch failed: apps/web/src/game-publications.ts:21\nerror: apps/web/src/game-publications.ts: patch does not apply\nerror: patch failed: apps/web/src/use-cloud-game-session.ts:191\nerror: apps/web/src/use-cloud-game-session.ts: patch does not apply\n"
+  },
+  "whitespace": {
+    "command": [
+      "git",
+      "apply",
+      "--check",
+      "--ignore-space-change",
+      "C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-t1-v2-draft-20261016\\docs\\integration\\pending\\t1-v2-review-release\\t1-v2-minimal.patch"
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "temporaryIndex": "C:\\Users\\11954\\Desktop\\水龙吟专用\\??\\INTEGRATION-HANDOVER-01\\tmp\\handover03-applicability.index",
+  "readtree": {
+    "command": [
+      "git",
+      "read-tree",
+      "d8ea49a8a74beb79233b100db71bbc4295db47c3"
+    ],
+    "exitCode": 128,
+    "stdout": "",
+    "stderr": "fatal: Unable to create 'C:\\Users\\11954\\Desktop\\水龙吟专用\\??\\INTEGRATION-HANDOVER-01\\tmp\\handover03-applicability.index.lock': Invalid argument\n"
+  },
+  "objects": {
+    "command": [
+      "git",
+      "apply",
+      "--cached",
+      "--check",
+      "C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-t1-v2-draft-20261016\\docs\\integration\\pending\\t1-v2-review-release\\t1-v2-minimal.patch"
+    ],
+    "exitCode": 1,
+    "stdout": "",
+    "stderr": "error: apps/api/src/index.ts: does not exist in index\nerror: apps/api/src/routes/games.ts: does not exist in index\nerror: apps/api/src/routes/turns.ts: does not exist in index\nerror: apps/api/src/services/account-export.ts: does not exist in index\nerror: apps/api/src/services/narrative-outbox-worker.ts: does not exist in index\nerror: apps/api/src/services/narrative-publication-repository.ts: does not exist in index\nerror: apps/api/src/services/npc-memory-turn-transaction.ts: does not exist in index\nerror: apps/api/src/services/postgres-server-turn.ts: does not exist in index\nerror: apps/api/src/services/server-turn.ts: does not exist in index\nerror: apps/web/src/game-publications.ts: does not exist in index\nerror: apps/web/src/use-cloud-game-session.ts: does not exist in index\n"
+  },
+  "applied": false,
+  "realIndexModified": false
+}

@@ -1,0 +1,187 @@
+{
+  "kind": "official-matrix-preparation-only",
+  "sourceSha256": "c2e4d06dee2fdb217bc7c5e754cd2e1cb92bbd6e6bc165303d12df44967b9f2c",
+  "pass": 0,
+  "fail": 0,
+  "skip": 0,
+  "blocked": 16,
+  "executed": 0,
+  "cases": [
+    {
+      "id": "T01",
+      "title": "T01 同事务成功（旧01/05）",
+      "inputAndFault": "游客真实登录，明确已批行动；另测规则内合法失败；在COMMIT前暂停事务，用第二连接查看",
+      "databaseAssertions": "提交前第二连接看不到新R/E/C/G/O；提交后R=1、C=1、G=1、generate O=1，revision只+1，E/stateDelta与已批结果一致",
+      "expectedAndForbidden": "accepted；合法失败不转成未结算。禁止先提交R后异步补G",
+      "evidenceAndPassGate": "保存事务屏障、两连接快照及HTTP/正文；原子可见且发布后单默认P才PASS",
+      "status": "BLOCKED",
+      "reason": "Formal T1 V2 diff and aggregate not signed; entry not authorized or applied",
+      "executed": 0
+    },
+    {
+      "id": "T02",
+      "title": "T02 登记故障（旧06/07）",
+      "inputAndFault": "分别在C、G、O写后抛错，COMMIT前断连接",
+      "databaseAssertions": "本次R/E/C/G/O增量全0；存档、journal、授权/替代与前快照逐字段相等",
+      "expectedAndForbidden": "未提交错误或未知待查询，无成功receipt；禁止吞错继续提交",
+      "evidenceAndPassGate": "三个failpoint+断连接证据均满足；原key重试最多一次结算",
+      "status": "BLOCKED",
+      "reason": "Formal T1 V2 diff and aggregate not signed; entry not authorized or applied",
+      "executed": 0
+    },
+    {
+      "id": "T03",
+      "title": "T03 拒绝/澄清（旧04）",
+      "inputAndFault": "缺参、歧义、unknown、已批规则拒绝；随后按规范确认合法行动",
+      "databaseAssertions": "前阶段E/C/G/A/S/P增量0、state/revision不变；非accepted R如现有设计可存在",
+      "expectedAndForbidden": "明确缺项/候选/拒绝；禁止确认前推进时间",
+      "evidenceAndPassGate": "每类经NLU的请求和DB快照；后续合法输入独立符合T01",
+      "status": "BLOCKED",
+      "reason": "Formal T1 V2 diff and aggregate not signed; entry not authorized or applied",
+      "executed": 0
+    },
+    {
+      "id": "T04",
+      "title": "T04 幂等与并发（旧02/03）",
+      "inputAndFault": "两实例同key同指纹；同key异指纹；不同key同revision；旧revision迟到",
+      "databaseAssertions": "同key唯一R/G、一次revision和事件；竞争不同key至多一胜；败者无G",
+      "expectedAndForbidden": "返回同receipt或现有冲突；不能换key重复执行；已存在原请求优先恢复",
+      "evidenceAndPassGate": "独立进程屏障日志、requestFingerprint核对、唯一约束结果",
+      "status": "BLOCKED",
+      "reason": "Formal T1 V2 diff and aggregate not signed; entry not authorized or applied",
+      "executed": 0
+    },
+    {
+      "id": "T05",
+      "title": "T05 双writer（旧14）",
+      "inputAndFault": "同receipt新旧路由竞争；模拟未支持归属的旧实例仍存活",
+      "databaseAssertions": "只有所属writer可claim/publish；G/P唯一，旧writer调用计数0；世界不变",
+      "expectedAndForbidden": "不支持协议的混跑启动/切换被拒；禁止新失败后旧兜底",
+      "evidenceAndPassGate": "有效租约、调用记录、部署能力拒绝证据；仅单请求early return不算PASS",
+      "status": "BLOCKED",
+      "reason": "Formal T1 V2 diff and aggregate not signed; entry not authorized or applied",
+      "executed": 0
+    },
+    {
+      "id": "T06",
+      "title": "T06 生成失败（旧09）",
+      "inputAndFault": "renderer抛错、版本缺失；反复GET和重复行动请求",
+      "databaseAssertions": "R/E/state保持T1结果；failed后A不因查询/duplicate增长，P=0",
+      "expectedAndForbidden": "accepted+明确失败；禁止再结算、换renderer、自动failed重试",
+      "evidenceAndPassGate": "调用次数及DB状态前后对照；不启用独立重试接口",
+      "status": "BLOCKED",
+      "reason": "Formal T1 V2 diff and aggregate not signed; entry not authorized or applied",
+      "executed": 0
+    },
+    {
+      "id": "T07",
+      "title": "T07 崩溃及租约（旧08）",
+      "inputAndFault": "提交后worker未领即退出；领取后进程终止；活租约重复领取",
+      "databaseAssertions": "pending可领取；活租约只有一有效A；过期后epoch递增，旧A失效，R/E不增",
+      "expectedAndForbidden": "pending/running与failed区分；禁止把null一律当失败",
+      "evidenceAndPassGate": "真实重启和受控租约过期记录；只按批准恢复预算运行",
+      "status": "BLOCKED",
+      "reason": "Formal T1 V2 diff and aggregate not signed; entry not authorized or applied",
+      "executed": 0
+    },
+    {
+      "id": "T08",
+      "title": "T08 T3与迟到发布（旧10/16）",
+      "inputAndFault": "旧epoch迟到；同attempt同正文重复；异正文；逐个source/publication/segment/O失败",
+      "databaseAssertions": "T3失败S/P/segments/links/index O全部回滚；同字节同P；异字节/旧epoch拒绝；默认P≤1",
+      "expectedAndForbidden": "保留accepted；禁止partial source、覆盖原文、改默认竞争",
+      "evidenceAndPassGate": "实际Unicode/BOM/CRLF字节和SHA、每个failpoint及唯一约束证据",
+      "status": "BLOCKED",
+      "reason": "Formal T1 V2 diff and aggregate not signed; entry not authorized or applied",
+      "executed": 0
+    },
+    {
+      "id": "T09",
+      "title": "T09 历史兼容（新增，旧14/15扩展）",
+      "inputAndFault": "旧accepted有可信服务端正文、无正文、只有客户端文本；新managed缺G",
+      "databaseAssertions": "legacy不新增C/G/A/P；已存body不变；managed缺G报完整性故障",
+      "expectedAndForbidden": "分别返回旧原文/legacy unavailable/本地未验证；禁止用当前状态补历史",
+      "evidenceAndPassGate": "历史fixture来源证明、旧正文hash；仅无G不足判legacy",
+      "status": "BLOCKED",
+      "reason": "Formal T1 V2 diff and aggregate not signed; entry not authorized or applied",
+      "executed": 0
+    },
+    {
+      "id": "T10",
+      "title": "T10 关闭正文（旧15）",
+      "inputAndFault": "首请求false；同keyfalse重放、改true；首true后改false",
+      "databaseAssertions": "false仍R/E结算，G/A/S/P/generate O=0；归属suppressed；首选项不变",
+      "expectedAndForbidden": "规则回执+固定正文选择；禁止变相生成或改变fingerprint规范",
+      "evidenceAndPassGate": "首选项持久化与多会话重放证据；响应协议先获批",
+      "status": "BLOCKED",
+      "reason": "Formal T1 V2 diff and aggregate not signed; entry not authorized or applied",
+      "executed": 0
+    },
+    {
+      "id": "T11",
+      "title": "T11 取消/超时（旧07/15）",
+      "inputAndFault": "提交前取消、与COMMIT竞争、提交后取消；20秒等待超时；离页后worker继续",
+      "databaseAssertions": "前取消被确认时全回滚；提交竞态查询确定；提交后R/E稳定且G保留；超时不写failed",
+      "expectedAndForbidden": "已提交不能说未结算；未知不能换key；20秒仅等待预算",
+      "evidenceAndPassGate": "提交屏障和时间轴；断线后同key查回原结果",
+      "status": "BLOCKED",
+      "reason": "Formal T1 V2 diff and aggregate not signed; entry not authorized or applied",
+      "executed": 0
+    },
+    {
+      "id": "T12",
+      "title": "T12 跨身份/存档/branch（旧13扩展）",
+      "inputAndFault": "伪造owner/save/request，过期session；相同文本不同branch/root；回执hash不匹配",
+      "databaseAssertions": "无越权读取、claim、发布或数据修改；G/C/P绑定正确root/revision/receipt",
+      "expectedAndForbidden": "统一未授权/不可见响应，不泄露他人存在性",
+      "evidenceAndPassGate": "真实两账号会话和两存档branch；错误source链接拒绝证据",
+      "status": "BLOCKED",
+      "reason": "Formal T1 V2 diff and aggregate not signed; entry not authorized or applied",
+      "executed": 0
+    },
+    {
+      "id": "T13",
+      "title": "T13 关闭/删除/恢复（旧13/16）",
+      "inputAndFault": "T1/T3与关闭两连接竞争，删除后迟到发布，按既有政策恢复账号",
+      "databaseAssertions": "账号锁确定先后；关闭先胜无提交/发布；删除依赖清理无孤儿；迟到不重建；恢复不自动重跑failed",
+      "expectedAndForbidden": "关闭后不返回正文；已提交规则不伪装取消",
+      "evidenceAndPassGate": "事务锁屏障、关联行检查、已有生命周期恢复测试；政策不明则BLOCKED",
+      "status": "BLOCKED",
+      "reason": "Formal T1 V2 diff and aggregate not signed; entry not authorized or applied",
+      "executed": 0
+    },
+    {
+      "id": "T14",
+      "title": "T14 P4/P5等价（旧12）",
+      "inputAndFault": "固定已批事件及as-of，分别P4显式回忆、P5叙事遗忘；未授权NPC读取正文",
+      "databaseAssertions": "事件/state/journal/授权/替代投影与基线相等；player-only不新增NPC授权；T1失败均回滚",
+      "expectedAndForbidden": "保留policySurface差异，NPC拒读；不以生成文本作世界事实",
+      "evidenceAndPassGate": "基线/候选逐字段差异为0；旧叙事检索与新空记忆差异单列，不伪称输出完全一致",
+      "status": "BLOCKED",
+      "reason": "Formal T1 V2 diff and aggregate not signed; entry not authorized or applied",
+      "executed": 0
+    },
+    {
+      "id": "T15",
+      "title": "T15 PG恢复（旧16扩展）",
+      "inputAndFault": "专用PG备份并在第二独立库恢复；恢复前后含published/running/failed与旧档",
+      "databaseAssertions": "全部R/C/G/S/P身份、FK、正文SHA一致；旧v1/v3完整；租约按获批恢复规则处理",
+      "expectedAndForbidden": "恢复后只读得到相同原文；禁止清库原库或生成替代原文",
+      "evidenceAndPassGate": "真实备份恢复命令/退出码、清单与字节核验；缺pg_dump/restore或恢复库则BLOCKED",
+      "status": "BLOCKED",
+      "reason": "Formal T1 V2 diff and aggregate not signed; entry not authorized or applied",
+      "executed": 0
+    },
+    {
+      "id": "T16",
+      "title": "T16 无缓存恢复（旧11）",
+      "inputAndFault": "T3成功后丢HTTP；清浏览器缓存、新会话/另一浏览器恢复；较旧历史超过首10条",
+      "databaseAssertions": "恢复只读，A/G/E不增；同P/S和正文SHA，分页无重复遗漏",
+      "expectedAndForbidden": "同一不可变正文；禁止重结算、重生成或依赖本地缓存当来源",
+      "evidenceAndPassGate": "真实HTTP+PG+浏览器链路，分页游标、身份和正文hash证据",
+      "status": "BLOCKED",
+      "reason": "Formal T1 V2 diff and aggregate not signed; entry not authorized or applied",
+      "executed": 0
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "engineeringCheckpoint": "d8ea49a8a74beb79233b100db71bbc4295db47c3",
+  "draftBaseline": "d8ea49a8a74beb79233b100db71bbc4295db47c3",
+  "draftHead": "d83f5317d71a9d0334d676fff14ba21fd635a87c",
+  "draftClean": true,
+  "minimalPatchSha256": "2e43821722dcc72b693756de2ca6a50fb5af6146ccac7fc9bdbdf17b71588393",
+  "sourceChecksPass": true,
+  "candidateProductDiffEmpty": true,
+  "formal": {
+    "pass": 0,
+    "fail": 0,
+    "skip": 0,
+    "blocked": 16
+  },
+  "migrationExecuted": false,
+  "T1AppliedToCandidate": false,
+  "productionTouched": false
+}

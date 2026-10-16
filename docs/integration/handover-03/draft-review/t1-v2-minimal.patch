@@ -1,0 +1,783 @@
+diff --git a/apps/api/src/index.ts b/apps/api/src/index.ts
+index 205edcd..259b66e 100644
+--- a/apps/api/src/index.ts
++++ b/apps/api/src/index.ts
+@@ -1,4 +1,5 @@
+ import { NarrativePublicationRepository } from './services/narrative-publication-repository.js';
++import {prepareNarrativeV2RuntimeDraft} from './services/narrative-v2-runtime-draft.js';
+ import {configureAccountQuota} from './services/account-rate-limit.js';
+ import {loadDataPolicy} from './services/data-policy-node.js';
+ import {PolicyCloudSaveRepository} from './services/policy-cloud-save-repository.js';
+@@ -35,26 +36,45 @@ const preparedRuntime=plugin?prepareTurnRuntime(plugin,await loadNarrativeSlots(
+ const runtime=preparedRuntime&&plugin?await connectActionTextRuntime(preparedRuntime,plugin):undefined;
+ const dataPolicy=process.env.NODE_ENV==='production'?loadDataPolicy(process.env.ACCOUNT_DATA_POLICY_PATH):undefined;
+ const cloudRepository=process.env.NODE_ENV==='production'?new PolicyCloudSaveRepository(pool,dataPolicy):new PostgresCloudSaveRepository(pool,true);
+-const turnRepository=createPostgresServerTurnRepository(pool, true,process.env.NODE_ENV==='production'?()=>dataPolicy:undefined);
++// REVIEW DRAFT. The existing signature loader still pins the original aggregate and fails closed.
++const v2Requested=process.env.NARRATIVE_T1_V2_ENABLED==='true';
++// A protocol-capable instance cannot start a legacy writer after the durable cutover fence exists.
++if(!v2Requested && (await pool.query("SELECT to_regclass('public.narrative_writer_fence') AS t")).rows[0].t
++  && (await pool.query('SELECT singleton FROM narrative_writer_fence WHERE singleton=true')).rowCount)
++  throw Error('LEGACY_WRITER_DISABLED_BY_DURABLE_FENCE');
++if(v2Requested && (!runtime?.rules || !runtime.narrativeFallback || !process.env.NARRATIVE_RENDERER_VERSION
++  || process.env.NARRATIVE_PUBLICATION_READS_ENABLED!=='true')) throw Error('T1_V2_PAIRED_RUNTIME_REQUIRED');
++const v2=v2Requested && runtime?.rules && runtime.narrativeFallback ? await prepareNarrativeV2RuntimeDraft({pool,
++  rules:runtime.rules,render:runtime.narrativeFallback,rendererVersion:process.env.NARRATIVE_RENDERER_VERSION!,
++  limits:{maxUtf16:Number(process.env.NARRATIVE_MAX_UTF16),maxUtf8:Number(process.env.NARRATIVE_MAX_UTF8)},
++  ...(process.env.NODE_ENV==='production'?{policy:()=>dataPolicy}:{})}) : undefined;
++const turnRepository=v2?.turns??createPostgresServerTurnRepository(pool, true,process.env.NODE_ENV==='production'?()=>dataPolicy:undefined);
+ const app = createApp({ query: sql => pool.query(sql) }, emailAuth ? {
+   service: new CloudSaveService(cloudRepository, true, true),
+   archive: new CloudArchiveLifecycle(pool, true),
+   auth: { resolveOwnerId: async request => (await emailAuth.service.resolve(sessionToken(request)))?.ownerId || null },
+ } : undefined, emailAuth, emailAuth ? {
+   // No author rules are bundled: absent host plugin remains fail closed.
+-  service: new ServerTurnService(turnRepository,runtime?.rules,runtime?.narrator,120_000,runtime?.narrativeFallback),
++  service: v2?.service??new ServerTurnService(turnRepository,runtime?.rules,runtime?.narrator,120_000,runtime?.narrativeFallback),
+   readReceipt: (owner, saveId, key) => turnRepository.getReceiptForOwner(owner, saveId, key),
+   games: new AuthoritativeGameService(cloudRepository,runtime),
+   auth: { resolveOwnerId: async request => (await emailAuth.service.resolve(sessionToken(request)))?.ownerId || null },
+   memoryRecall: turnRepository.recallObservationPage ? { reader: turnRepository.recallObservationPage } : undefined,
+ } : undefined, emailAuth && process.env.NARRATIVE_PUBLICATION_READS_ENABLED==='true' ? {
+   auth:{resolveOwnerId:async request=>(await emailAuth.service.resolve(sessionToken(request)))?.ownerId||null},
+-  repository:new NarrativePublicationRepository(pool),
++  repository:v2?.publication??new NarrativePublicationRepository(pool),
+ } : undefined);
+ 
++// Only registered pending/expired jobs are consumed. No worker is called by an action duplicate or GET.
++let draining=false;
++const dispatch=v2?setInterval(()=>{
++  if(draining)return;draining=true;
++  void v2.worker.drain(20).catch(()=>{console.error('Narrative worker unavailable.');}).finally(()=>{draining=false;});
++},500):undefined;
+ const server = serve({ fetch: app.fetch, port, hostname });
+ console.log(`jiuxiao-api listening on ${hostname}:${port}`);
+ for (const signal of ['SIGINT', 'SIGTERM'] as const) {
++  if(dispatch)process.once(signal,()=>clearInterval(dispatch));
+   process.on(signal, () => server.close(() => {
+     void pool.end().then(
+       () => process.exit(0),
+diff --git a/apps/api/src/routes/games.ts b/apps/api/src/routes/games.ts
+index cfa7456..4a1a84f 100644
+--- a/apps/api/src/routes/games.ts
++++ b/apps/api/src/routes/games.ts
+@@ -1,3 +1,4 @@
++import { TurnCommitOutcomeUnknown } from '../services/npc-memory-turn-transaction.js';
+ import type { Hono } from 'hono';
+ import { ActionIntentSchema, TurnReceiptSchema, type TurnReceipt } from '@jiuxiao/contracts';
+ import { readGameMinute } from '@jiuxiao/domain';
+@@ -41,6 +42,8 @@ export function mountGames(
+       if (result.status === 'not_found') return c.json({ code: 'NOT_FOUND' }, 404);
+       return c.json({ save: result.save, ...(publicationsAvailable ? {publicationsAvailable:true} : {}) });
+     } catch (error) {
++      if (error instanceof TurnCommitOutcomeUnknown) return c.json({code:'TURN_COMMIT_OUTCOME_UNKNOWN',
++        saveId:error.saveId,requestKey:error.requestKey,recovery:'query_original_receipt'},503);
+       if (error instanceof SaveSchemaNotReadyError) return c.json({ code: 'SAVE_SCHEMA_NOT_READY' }, 503);
+       return c.json({ code: 'GAME_UNAVAILABLE' }, 503);
+     }
+@@ -88,6 +91,8 @@ export function mountGames(
+       const recall = await resolveNpcMemoryRecall({ reader: memoryRecall.reader, ownerId: owner, save, receipt, npcId, utterance });
+       return c.json({ recall });
+     } catch (error) {
++      if (error instanceof TurnCommitOutcomeUnknown) return c.json({code:'TURN_COMMIT_OUTCOME_UNKNOWN',
++        saveId:error.saveId,requestKey:error.requestKey,recovery:'query_original_receipt'},503);
+       if (error instanceof SaveSchemaNotReadyError) return c.json({ code: 'SAVE_SCHEMA_NOT_READY' }, 503);
+       return c.json({ code: 'GAME_UNAVAILABLE' }, 503);
+     }
+@@ -128,6 +133,8 @@ export function mountGames(
+       const response = serverTurnHttpResponse(result);
+       return c.json(response.body, response.status);
+     } catch (error) {
++      if (error instanceof TurnCommitOutcomeUnknown) return c.json({code:'TURN_COMMIT_OUTCOME_UNKNOWN',
++        saveId:error.saveId,requestKey:error.requestKey,recovery:'query_original_receipt'},503);
+       if (error instanceof SaveSchemaNotReadyError) return c.json({ code: 'SAVE_SCHEMA_NOT_READY' }, 503);
+       return c.json({ code: 'TURN_UNAVAILABLE' }, 503);
+     }
+@@ -152,6 +159,8 @@ export function mountGames(
+       if (result.status === 'conflict') return c.json({ code: 'IDEMPOTENCY_CONFLICT' }, 409);
+       return c.json(result, result.duplicate ? 200 : 201);
+     } catch (error) {
++      if (error instanceof TurnCommitOutcomeUnknown) return c.json({code:'TURN_COMMIT_OUTCOME_UNKNOWN',
++        saveId:error.saveId,requestKey:error.requestKey,recovery:'query_original_receipt'},503);
+       if (error instanceof CloudCapacityError) return c.json({ code: 'CAPACITY_EXCEEDED' }, 413);
+       if (error instanceof Error && error.message === 'DATA_POLICY_NOT_READY') return c.json({ code: 'DATA_POLICY_NOT_READY' }, 503);
+       if (error instanceof SaveSchemaNotReadyError) return c.json({ code: 'SAVE_SCHEMA_NOT_READY' }, 503);
+diff --git a/apps/api/src/routes/turns.ts b/apps/api/src/routes/turns.ts
+index 188ca1a..35ecd46 100644
+--- a/apps/api/src/routes/turns.ts
++++ b/apps/api/src/routes/turns.ts
+@@ -1,3 +1,4 @@
++import { TurnCommitOutcomeUnknown } from '../services/npc-memory-turn-transaction.js';
+ import type { Hono } from 'hono';
+ import { ActionIntentSchema } from '@jiuxiao/contracts';
+ import { readJson, type CloudSaveRouteAuth } from './saves.js';
+@@ -31,6 +32,8 @@ export function mountServerTurnRoutes(app: Hono, { service, auth }: ServerTurnRo
+       const response = serverTurnHttpResponse(result);
+       return c.json(response.body, response.status);
+     } catch (error) {
++      if (error instanceof TurnCommitOutcomeUnknown) return c.json({code:'TURN_COMMIT_OUTCOME_UNKNOWN',
++        saveId:error.saveId,requestKey:error.requestKey,recovery:'query_original_receipt'},503);
+       if (error instanceof SaveSchemaNotReadyError) return c.json({ code: 'SAVE_SCHEMA_NOT_READY' }, 503);
+       return c.json({ code: 'TURN_UNAVAILABLE' }, 503);
+     }
+diff --git a/apps/api/src/services/account-export.ts b/apps/api/src/services/account-export.ts
+index f40b146..9cf7ded 100644
+--- a/apps/api/src/services/account-export.ts
++++ b/apps/api/src/services/account-export.ts
+@@ -15,6 +15,8 @@ export class AccountExport {
+   if(corrupt.rowCount)throw new Error('NARRATIVE_BODY_CORRUPT');
+   const sources:Record<string,string>={narrativePublications:`SELECT p.id AS publication_id,p.source_id,p.save_id,p.request_key,p.version,p.is_default,p.created_at,s.body_sha,convert_from(s.body,'UTF8') AS text FROM narrative_publications p JOIN narrative_sources s ON s.id=p.source_id JOIN game_saves v ON v.id=p.save_id WHERE v.owner_id=$1`,audit:"SELECT id,operation,policy_version,occurred_at FROM account_lifecycle_audit WHERE owner_digest=encode(sha256(convert_to($1,'UTF8')),'hex')",saves:'SELECT s.* FROM game_saves s WHERE s.owner_id=$1',events:'SELECT e.* FROM turn_events e JOIN game_saves s ON s.id=e.save_id WHERE s.owner_id=$1',receipts:'SELECT r.* FROM turn_requests r JOIN game_saves s ON s.id=r.save_id WHERE s.owner_id=$1',trash:'SELECT t.* FROM cloud_archive_trash t WHERE t.owner_id=$1',usageBalances:'SELECT b.* FROM entitlement_balances b WHERE b.owner_id=$1',usageLedger:'SELECT l.* FROM entitlement_ledger_entries l WHERE l.owner_id=$1',accountOperations:'SELECT id,operation,old_email,new_email,phase,created_at,expires_at FROM account_operations WHERE owner_id=$1',sessions:'SELECT expires_at FROM auth_sessions WHERE owner_id=$1'};
+   const data:Record<string,unknown>={};let bytes=0;
++  if((await c.query("SELECT to_regclass('public.narrative_receipt_ownership') AS relation")).rows[0].relation)
++    sources.narrativeOwnership='SELECT owner_id,save_id,request_key,receipt_sha,protocol_version,ownership,request_narrative,renderer_version,context_version,branch_id,generation_id,legacy_inventory_sha,legacy_body_sha,CASE WHEN legacy_body IS NULL THEN NULL ELSE convert_from(legacy_body,\'UTF8\') END AS legacy_text FROM narrative_receipt_ownership WHERE owner_id=$1';
+   for(const [key,query]of Object.entries(sources)){
+    const size=(await c.query(`SELECT coalesce(sum(octet_length(to_jsonb(t)::text)),0)::text AS bytes FROM (${query}) t`,[owner])).rows[0].bytes;bytes+=Number(size);
+    if(bytes>30_000_000)throw new Error('EXPORT_REQUIRES_OFFLINE_TRANSFER');
+diff --git a/apps/api/src/services/narrative-outbox-worker.ts b/apps/api/src/services/narrative-outbox-worker.ts
+index 2cfe7f9..6291d58 100644
+--- a/apps/api/src/services/narrative-outbox-worker.ts
++++ b/apps/api/src/services/narrative-outbox-worker.ts
+@@ -7,7 +7,7 @@ export type DeterministicRenderer = (receipt: TurnReceipt, context: NarrativeCon
+ /** Internal worker only. No public retry endpoint, no model, no new action key or rule execution. */
+ export class NarrativeOutboxWorker {
+   constructor(private readonly repository: NarrativePublicationRepository,
+-    private readonly renderers: ReadonlyMap<string, DeterministicRenderer>) {}
++    private readonly renderers: ReadonlyMap<string, DeterministicRenderer>, private readonly executionMs = 120_000) {}
+   async drain(limit=20) {
+     const tasks=await this.repository.queued(limit);
+     const outcomes:('published'|'pending'|'failed')[]=[];
+@@ -23,12 +23,17 @@ export class NarrativeOutboxWorker {
+     if (prior.source) return prior.source;
+     const lease = await this.repository.claim(owner, save, key);
+     if (!lease) return (await this.repository.presentation(owner, save, key))?.source ?? null;
++    let timer:ReturnType<typeof setTimeout>|undefined;
+     try {
+       const render = this.renderers.get(lease.context.rendererVersion);
+       if (!render) throw Error('NARRATIVE_RENDERER_VERSION_UNAVAILABLE');
+       const context: NarrativeContext = { npcMemories: [], ...lease.context.hints };
+-      const rendered = await render(structuredClone(lease.context.receipt), structuredClone(context));
++      const rendered = await Promise.race([
++        Promise.resolve().then(()=>render(structuredClone(lease.context.receipt), structuredClone(context))),
++        new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(Error('NARRATIVE_EXECUTION_TIMEOUT')),this.executionMs);}),
++      ]);
+       return await this.repository.publish(lease, ensureP1NarrativeHints(rendered, lease.context.receipt, context));
+     } catch (error) { await this.repository.fail(lease); throw error; }
++    finally { if(timer)clearTimeout(timer); }
+   }
+ }
+diff --git a/apps/api/src/services/narrative-ownership-v2.ts b/apps/api/src/services/narrative-ownership-v2.ts
+new file mode 100644
+index 0000000..dca0b48
+--- /dev/null
++++ b/apps/api/src/services/narrative-ownership-v2.ts
+@@ -0,0 +1,125 @@
++import type { Pool, PoolClient } from 'pg';
++import type { TurnReceipt } from '@jiuxiao/contracts';
++import type { AcceptedTurnCommitInput } from './npc-memory-turn-transaction.js';
++import { seedNarrativeInTransaction, NarrativePublicationRepository } from './narrative-publication-repository.js';
++import type { NarrativeResult } from './server-turn.js';
++
++/** REVIEW DRAFT. SQL proposal must be separately approved and installed. No historical inference. */
++export const NARRATIVE_V2_BUDGET = Object.freeze({
++  httpWaitMs: 20_000, workerExecutionMs: 120_000, leaseMs: 150_000,
++  maxAttempts: 3, contextVersion: 'authority-context-v1', protocolVersion: 2,
++});
++export interface NarrativeV2Port {
++  register(c: PoolClient, commit: AcceptedTurnCommitInput): Promise<void>;
++  read(owner: string, receipt: TurnReceipt, cancellation?: AbortSignal): Promise<NarrativeResult>;
++}
++
++/** Rechecked under a shared DB lock by each T1/claim/publish, never a process-global switch.
++ * Attestation is issued only after inventory, traffic fence, role revocation and old writer drain.
++ * Heartbeats alone are NOT proof that all instances are compatible. */
++export async function requireWriterFence(c: PoolClient,rendererVersion:string) {
++  const gate = (await c.query(`SELECT protocol_version FROM narrative_writer_fence
++    WHERE singleton=true AND phase='managed' AND protocol_version=2
++    AND old_writer_drained AND old_role_revoked AND fleet_manifest_sha ~ '^[a-f0-9]{64}$'
++    AND renderer_version=$1 AND valid_until>clock_timestamp() FOR SHARE`,[rendererVersion])).rows[0];
++  if (!gate) throw Error('NARRATIVE_WRITER_FENCE_UNPROVEN');
++}
++
++export function createNarrativeV2Port(pool: Pool, rendererVersion: string,
++  repository: NarrativePublicationRepository): NarrativeV2Port {
++  if (!rendererVersion.trim()) throw Error('NARRATIVE_RENDERER_VERSION_REQUIRED');
++  return {
++    async register(c, commit) {
++      await requireWriterFence(c,rendererVersion);
++      if (commit.cancellation?.aborted) throw Error('TURN_CANCELLED_BEFORE_COMMIT');
++      const branch = commit.save.schemaVersion === 3 ? commit.save.branchId : 'root';
++      if (branch !== 'root') throw Error('NARRATIVE_BRANCH_NOT_SUPPORTED');
++      // No ON CONFLICT: a duplicate must have returned the original receipt before this callback.
++      const row = (await c.query(`INSERT INTO narrative_receipt_ownership
++        (owner_id,save_id,request_key,receipt_sha,protocol_version,ownership,request_narrative,
++         renderer_version,context_version,branch_id)
++        SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,$6,$7,'root'
++        FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
++        RETURNING receipt_sha`, [commit.ownerId, commit.save.saveId, commit.receipt.idempotencyKey,
++        commit.requestNarrative === true ? 'managed' : 'suppressed', commit.requestNarrative === true,
++        rendererVersion, NARRATIVE_V2_BUDGET.contextVersion])).rows[0];
++      if (!row) throw Error('NARRATIVE_RECEIPT_MISSING');
++      if (commit.requestNarrative === true) {
++        const generation = await seedNarrativeInTransaction(c, { ownerId: commit.ownerId,
++          receipt: commit.receipt, save: commit.save, rendererVersion });
++        await c.query(`UPDATE narrative_receipt_ownership SET generation_id=$4
++          WHERE owner_id=$1 AND save_id=$2 AND request_key=$3`,
++        [commit.ownerId, commit.save.saveId, commit.receipt.idempotencyKey, generation]);
++      }
++      // A deferred constraint validates managed->G, suppressed->no G at COMMIT.
++    },
++    async read(owner, receipt, cancellation) {
++      const c = await pool.connect();
++      try {
++        await c.query('BEGIN');
++        // Same lifecycle lock prefix as T1/T3. Never accepts an owner supplied in receipt JSON.
++        if (!(await c.query('SELECT id FROM auth_accounts WHERE id=$1 AND closed_at IS NULL FOR SHARE',[owner])).rowCount)
++          throw Error('NARRATIVE_NOT_FOUND');
++        if (!(await c.query(`SELECT id FROM game_saves s WHERE id=$1 AND owner_id=$2
++          AND NOT EXISTS(SELECT 1 FROM cloud_archive_trash t WHERE t.save_id=s.id) FOR SHARE`,[receipt.saveId,owner])).rowCount)
++          throw Error('NARRATIVE_NOT_FOUND');
++        const stored = (await c.query(`SELECT result,encode(sha256(convert_to(result::text,'UTF8')),'hex') AS sha
++          FROM turn_requests WHERE save_id=$1 AND idempotency_key=$2`,[receipt.saveId,receipt.idempotencyKey])).rows[0];
++        if (!stored || stored.result.requestFingerprint !== receipt.requestFingerprint
++          || stored.result.resultingRevision !== receipt.resultingRevision) throw Error('NARRATIVE_RECEIPT_MISMATCH');
++        const o = (await c.query(`SELECT * FROM narrative_receipt_ownership
++          WHERE owner_id=$1 AND save_id=$2 AND request_key=$3`,[owner,receipt.saveId,receipt.idempotencyKey])).rows[0];
++        if (!o) { await c.query('COMMIT'); return {status:'ownership_unknown'}; }
++        if (o.receipt_sha !== stored.sha || o.branch_id !== 'root') throw Error('NARRATIVE_OWNERSHIP_CORRUPT');
++        if (o.ownership === 'suppressed') {
++          if((await c.query('SELECT id FROM narrative_generation_requests WHERE save_id=$1 AND request_key=$2',
++            [receipt.saveId,receipt.idempotencyKey])).rowCount) throw Error('NARRATIVE_SUPPRESSED_INTEGRITY_FAILURE');
++          await c.query('COMMIT'); return {status:'not_requested'};
++        }
++        if (o.ownership === 'legacy') {
++          // Only pre-cutover inventory with server-side byte evidence may populate this row.
++          if(o.protocol_version!==1 || !o.legacy_inventory_sha || o.generation_id
++            || (await c.query('SELECT id FROM narrative_generation_requests WHERE save_id=$1 AND request_key=$2',
++              [receipt.saveId,receipt.idempotencyKey])).rowCount)throw Error('NARRATIVE_LEGACY_INTEGRITY_FAILURE');
++          if (!o.legacy_body) { await c.query('COMMIT'); return {status:'legacy_body_unavailable'}; }
++          const body = Buffer.from(o.legacy_body);
++          const {createHash}=await import('node:crypto');
++          const text=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true}).decode(body);
++          if (createHash('sha256').update(body).digest('hex')!==o.legacy_body_sha || !Buffer.from(text).equals(body))
++            throw Error('NARRATIVE_LEGACY_BODY_CORRUPT');
++          if(!['model','deterministic'].includes(o.legacy_generator_source))throw Error('NARRATIVE_LEGACY_BODY_CORRUPT');
++          await c.query('COMMIT'); return {status:'received',text,source:o.legacy_generator_source};
++        }
++        const g = (await c.query(`SELECT g.id,c."rendererVersion" FROM narrative_generation_requests g
++          JOIN LATERAL (SELECT context->>'rendererVersion' AS "rendererVersion",receipt_sha,context_sha,context
++            FROM narrative_context_snapshots WHERE id=g.context_id AND owner_id=$4) c ON true
++          WHERE g.id=$1 AND g.save_id=$2 AND g.request_key=$3 AND c.receipt_sha=$5
++          AND c.context_sha=encode(sha256(convert_to(c.context::text,'UTF8')),'hex')`,
++          [o.generation_id,receipt.saveId,receipt.idempotencyKey,owner,stored.sha])).rows[0];
++        if (o.ownership !== 'managed' || o.protocol_version !== 2 || !g
++          || g.rendererVersion !== o.renderer_version || o.context_version !== 'authority-context-v1')
++          throw Error('NARRATIVE_MANAGED_INTEGRITY_FAILURE');
++        await c.query('COMMIT');
++      } catch(e) { await c.query('ROLLBACK').catch(()=>{}); throw e; }
++      finally { c.release(); }
++      // Read-only: no run/claim on action duplicate, query or ordinary polling.
++      const end=Date.now()+NARRATIVE_V2_BUDGET.httpWaitMs;
++      for(;;) {
++        const value = await repository.presentation(owner,receipt.saveId,receipt.idempotencyKey);
++        if (!value || value.generation === 'not_recorded') throw Error('NARRATIVE_MANAGED_INTEGRITY_FAILURE');
++        if (value.source) return {status:'received',text:value.source.text,source:value.source.generatorSource};
++        if (value.generation === 'failed') return {status:'failed',code:'NARRATIVE_UNAVAILABLE'};
++        const state=value.generation === 'running' ? 'running' as const : 'pending' as const;
++        if(cancellation?.aborted)return {status:state,wait:'cancelled'};
++        if(Date.now()>=end)return {status:state,wait:'timeout'};
++        // Waiting only. Ordinary reads cannot claim, seed, render or clear a failed state.
++        await new Promise<void>(resolve=>{
++          const done=()=>{clearTimeout(timer);cancellation?.removeEventListener('abort',done);resolve();};
++          const timer=setTimeout(done,Math.min(200,end-Date.now()));
++          cancellation?.addEventListener('abort',done,{once:true});
++          if(cancellation?.aborted)done();
++        });
++      }
++    },
++  };
++}
+diff --git a/apps/api/src/services/narrative-publication-repository.ts b/apps/api/src/services/narrative-publication-repository.ts
+index 6a5a635..edf85f8 100644
+--- a/apps/api/src/services/narrative-publication-repository.ts
++++ b/apps/api/src/services/narrative-publication-repository.ts
+@@ -12,7 +12,8 @@ export type NarrativeSeed = {
+ export type Publication = { sourceId: string; publicationId: string; requestKey: string;
+   revision: number; version: number; bodySha: string; text: string; generatorSource: 'deterministic' };
+ export type Presentation = { settlement: 'accepted'; generation: string;
+-  publication: 'published' | 'pending' | 'failed' | 'legacy-body-unavailable'; source: Publication | null };
++  publication: 'published' | 'pending' | 'failed' | 'legacy-body-unavailable' | 'not_requested' | 'ownership_unknown';
++  source: Publication | null; legacyBody?: {text:string;bodySha:string} };
+ export type NarrativeLease = { generationId: string; attemptId: string; leaseEpoch: number; ownerId: string;
+   saveId: string; requestKey: string; context: NarrativeSeed };
+ export type BodyLimits = { maxUtf16: number; maxUtf8: number };
+@@ -52,7 +53,7 @@ export async function seedNarrativeInTransaction(c: PoolClient, input: {
+ 
+ /** Lock order: account → save → generation → attempt. Account erasure uses the same prefix. */
+ export class NarrativePublicationRepository {
+-  constructor(private readonly pool: Pool, private readonly limits?: BodyLimits) {}
++  constructor(private readonly pool: Pool, private readonly limits?: BodyLimits, private readonly v2?: { maxAttempts:number; leaseMs:number }) {}
+   private async transaction<T>(fn: (c: PoolClient) => Promise<T>): Promise<T> {
+     const c = await this.pool.connect();
+     try { await c.query('BEGIN'); const result = await fn(c); await c.query('COMMIT'); return result; }
+@@ -65,7 +66,8 @@ export class NarrativePublicationRepository {
+       AND NOT EXISTS(SELECT 1 FROM cloud_archive_trash t WHERE t.save_id=s.id) FOR SHARE`, [save, owner])).rowCount);
+   }
+   async claim(owner: string, save: string, key: string, leaseMs = 30_000): Promise<NarrativeLease | null> {
+-    if (!Number.isInteger(leaseMs) || leaseMs < 1 || leaseMs > 120_000) throw Error('INVALID_LEASE');
++    if (this.v2) leaseMs=this.v2.leaseMs;
++    if (!Number.isInteger(leaseMs) || leaseMs < 1 || leaseMs > 180_000) throw Error('INVALID_LEASE');
+     const outcome = await this.transaction<NarrativeLease | null | { failure: string }>(async c => {
+       if (!await this.lockOwner(c, owner, save)) return null;
+       const g = (await c.query(`SELECT g.*,c.context,
+@@ -74,7 +76,12 @@ export class NarrativePublicationRepository {
+         FROM narrative_generation_requests g LEFT JOIN narrative_context_snapshots c ON c.id=g.context_id
+         LEFT JOIN turn_requests r ON r.save_id=g.save_id AND r.idempotency_key=g.request_key
+         WHERE g.save_id=$1 AND g.request_key=$2 FOR UPDATE OF g`, [save, key])).rows[0];
+-      if (!g || g.state === 'published') return null;
++      if (!g || g.state === 'published' || g.state === 'failed') return null;
++      if (this.v2) {
++        await this.requireV2Ownership(c,owner,save,key,g.id);
++        if (!Number.isInteger(this.v2.maxAttempts) || this.v2.maxAttempts<1 || this.v2.maxAttempts>3)
++          throw Error('NARRATIVE_RECOVERY_BUDGET_INVALID');
++      }
+       let failure: string | undefined;
+       if (!g.context) failure = 'NARRATIVE_CONTEXT_MISSING';
+       else if (!g.intact || g.context.ownerId || g.context.format !== 'authority-context-v1'
+@@ -89,6 +96,12 @@ export class NarrativePublicationRepository {
+       }
+       const live = await c.query(`SELECT id FROM narrative_attempts WHERE generation_id=$1 AND state='running' AND lease_until>clock_timestamp()`, [g.id]);
+       if (live.rowCount) return null;
++      if (this.v2 && g.lease_epoch >= this.v2.maxAttempts) {
++        await c.query("UPDATE narrative_attempts SET state='expired' WHERE generation_id=$1 AND state='running'",[g.id]);
++        await c.query("UPDATE narrative_generation_requests SET state='failed' WHERE id=$1",[g.id]);
++        await c.query("UPDATE narrative_outbox SET state='done' WHERE generation_id=$1 AND kind='generate'",[g.id]);
++        return null;
++      }
+       await c.query(`UPDATE narrative_attempts SET state='expired' WHERE generation_id=$1 AND state='running'`, [g.id]);
+       const epoch = g.lease_epoch + 1, attempt = randomUUID();
+       await c.query(`UPDATE narrative_generation_requests SET state='running',lease_epoch=$2 WHERE id=$1`, [g.id, epoch]);
+@@ -108,6 +121,7 @@ export class NarrativePublicationRepository {
+       const g = (await c.query(`SELECT * FROM narrative_generation_requests WHERE id=$1 AND save_id=$2 AND request_key=$3 FOR UPDATE`,
+         [lease.generationId, lease.saveId, lease.requestKey])).rows[0];
+       if (!g) throw Error('NARRATIVE_NOT_FOUND');
++      if (this.v2) await this.requireV2Ownership(c,lease.ownerId,lease.saveId,lease.requestKey,g.id);
+       const a = (await c.query(`SELECT *,lease_until>clock_timestamp() AS live FROM narrative_attempts
+         WHERE id=$1 AND generation_id=$2 AND lease_epoch=$3 FOR UPDATE`, [lease.attemptId, g.id, lease.leaseEpoch])).rows[0];
+       if (!a || g.lease_epoch !== lease.leaseEpoch) throw Error('NARRATIVE_STALE_ATTEMPT');
+@@ -151,6 +165,23 @@ export class NarrativePublicationRepository {
+       if (a.rowCount) await c.query(`UPDATE narrative_generation_requests SET state='failed' WHERE id=$1`, [lease.generationId]);
+     });
+   }
++  private async requireV2Ownership(c:PoolClient,owner:string,save:string,key:string,generation:string) {
++    const gate=await c.query(`SELECT singleton FROM narrative_writer_fence WHERE singleton=true AND phase='managed'
++      AND protocol_version=2 AND old_writer_drained AND old_role_revoked
++      AND fleet_manifest_sha ~ '^[a-f0-9]{64}$' AND valid_until>clock_timestamp()
++      AND renderer_version=(SELECT renderer_version FROM narrative_receipt_ownership
++        WHERE owner_id=$1 AND save_id=$2 AND request_key=$3 AND generation_id=$4) FOR SHARE`,[owner,save,key,generation]);
++    const row=await c.query(`SELECT o.generation_id FROM narrative_receipt_ownership o
++      JOIN turn_requests r ON r.save_id=o.save_id AND r.idempotency_key=o.request_key
++      JOIN narrative_generation_requests g ON g.id=o.generation_id
++      JOIN narrative_context_snapshots c ON c.id=g.context_id
++      WHERE o.owner_id=$1 AND o.save_id=$2 AND o.request_key=$3 AND o.generation_id=$4
++      AND o.ownership='managed' AND o.protocol_version=2 AND o.request_narrative
++      AND o.receipt_sha=encode(sha256(convert_to(r.result::text,'UTF8')),'hex')
++      AND c.owner_id=o.owner_id AND c.receipt_sha=o.receipt_sha AND c.branch_id=o.branch_id
++      AND c.context->>'rendererVersion'=o.renderer_version AND c.context->>'format'=o.context_version`,[owner,save,key,generation]);
++    if (!gate.rowCount || !row.rowCount) throw Error('NARRATIVE_WRITER_OWNERSHIP_UNPROVEN');
++  }
+   private decode(row: Record<string, any>, revision: number): Publication {
+     const bytes = row.body as Buffer;
+     const text = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(bytes);
+@@ -162,16 +193,49 @@ export class NarrativePublicationRepository {
+   async presentation(owner: string, save: string, key: string): Promise<Presentation | null> {
+     return this.transaction(async c => {
+       if (!await this.lockOwner(c, owner, save)) return null;
++      return this.presentationInTransaction(c,owner,save,key);
++    });
++  }
++  private async presentationInTransaction(c:PoolClient,owner:string,save:string,key:string):Promise<Presentation|null> {
+       const r = (await c.query(`SELECT result FROM turn_requests WHERE save_id=$1 AND idempotency_key=$2`, [save, key])).rows[0];
+       if (!r || r.result?.decision?.status !== 'accepted') return null;
+       const receipt = TurnReceiptSchema.parse(r.result);
+       const g = (await c.query('SELECT id,state FROM narrative_generation_requests WHERE save_id=$1 AND request_key=$2', [save, key])).rows[0];
++      if (this.v2) {
++        const o=(await c.query(`SELECT o.*,o.receipt_sha=encode(sha256(convert_to(r.result::text,'UTF8')),'hex') AS intact
++          FROM narrative_receipt_ownership o JOIN turn_requests r ON r.save_id=o.save_id AND r.idempotency_key=o.request_key
++          WHERE o.owner_id=$1 AND o.save_id=$2 AND o.request_key=$3`,[owner,save,key])).rows[0];
++        if (!o) return {settlement:'accepted',generation:'unknown',publication:'ownership_unknown',source:null};
++        if (!o.intact || o.branch_id!=='root') throw Error('NARRATIVE_OWNERSHIP_CORRUPT');
++        if (o.ownership==='suppressed') {
++          if(g)throw Error('NARRATIVE_SUPPRESSED_INTEGRITY_FAILURE');
++          return {settlement:'accepted',generation:'not_requested',publication:'not_requested',source:null};
++        }
++        if(o.ownership==='legacy') {
++          if(g || !o.legacy_inventory_sha)throw Error('NARRATIVE_LEGACY_INTEGRITY_FAILURE');
++          const result:Presentation={settlement:'accepted',generation:'legacy',publication:'legacy-body-unavailable',source:null};
++          if(o.legacy_body) {
++            const text=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true}).decode(o.legacy_body);
++            if(createHash('sha256').update(o.legacy_body).digest('hex')!==o.legacy_body_sha
++              || !Buffer.from(text).equals(o.legacy_body))throw Error('NARRATIVE_BODY_CORRUPT');
++            result.publication='published';result.legacyBody={text,bodySha:o.legacy_body_sha};
++          }
++          return result;
++        }
++        if(o.ownership!=='managed' || o.protocol_version!==2 || !g || g.id!==o.generation_id)
++          throw Error('NARRATIVE_MANAGED_INTEGRITY_FAILURE');
++        if(!(await c.query(`SELECT id FROM narrative_context_snapshots WHERE id=(SELECT context_id
++          FROM narrative_generation_requests WHERE id=$1) AND owner_id=$2 AND receipt_sha=$3
++          AND context->>'rendererVersion'=$4 AND context->>'format'=$5
++          AND context_sha=encode(sha256(convert_to(context::text,'UTF8')),'hex')`,
++          [g.id,owner,o.receipt_sha,o.renderer_version,o.context_version])).rowCount)
++          throw Error('NARRATIVE_MANAGED_INTEGRITY_FAILURE');
++      }
+       if (!g) return { settlement: 'accepted', generation: 'not_recorded', publication: 'legacy-body-unavailable', source: null };
+       const p = (await c.query(`SELECT p.*,s.body,s.body_sha,s.utf16_length,s.utf8_length FROM narrative_publications p
+         JOIN narrative_sources s ON s.id=p.source_id WHERE p.generation_id=$1`, [g.id])).rows[0];
+       if (p) return { settlement: 'accepted', generation: 'published', publication: 'published', source: this.decode(p, receipt.resultingRevision) };
+       return { settlement: 'accepted', generation: g.state, publication: g.state === 'failed' ? 'failed' : 'pending', source: null };
+-    });
+   }
+   async source(owner: string, save: string, source: string): Promise<Publication | null> {
+     // Ownership is checked before any source lookup; presentation rechecks under account/save locks.
+@@ -193,13 +257,18 @@ export class NarrativePublicationRepository {
+         AND ($2::integer IS NULL OR (r.result->>'resultingRevision')::integer<$2)
+         ORDER BY (r.result->>'resultingRevision')::integer DESC LIMIT 11`, [save, beforeRevision ?? null])).rows;
+       const selected=rows.slice(0,10);
+-      const items=selected.map(row=>{
++      const items=await Promise.all(selected.map(async row=>{
+         const receipt=TurnReceiptSchema.parse(row.result);
++        if(this.v2) {
++          const presentation=await this.presentationInTransaction(c,owner,save,receipt.idempotencyKey);
++          if(!presentation)throw Error('NARRATIVE_NOT_FOUND');
++          return {receipt,presentation};
++        }
+         const source=row.source_id?this.decode(row,receipt.resultingRevision):null;
+         const presentation:Presentation={settlement:'accepted',generation:row.generation_state??'not_recorded',
+           publication:source?'published':!row.generation_id?'legacy-body-unavailable':row.generation_state==='failed'?'failed':'pending',source};
+         return {receipt,presentation};
+-      });
++      }));
+       return {items:items.reverse(),nextBeforeRevision:rows.length>10?Number(selected.at(-1)?.result.resultingRevision):null};
+     });
+   }
+@@ -220,6 +289,9 @@ export class NarrativePublicationRepository {
+ 
+ /** Caller must already hold the existing authorized erasure proof and account/save locks. */
+ export async function eraseNarrativeForOwner(c: PoolClient, owner: string) {
++  // A new table may not be deployed yet. Existing 0022 lifecycle remains usable.
++  if ((await c.query("SELECT to_regclass('public.narrative_receipt_ownership') AS relation")).rows[0].relation)
++    await c.query('DELETE FROM narrative_receipt_ownership WHERE owner_id=$1',[owner]);
+   await c.query(`DELETE FROM source_event_links l USING narrative_sources s,narrative_generation_requests g,game_saves v
+     WHERE l.source_id=s.id AND s.generation_id=g.id AND g.save_id=v.id AND v.owner_id=$1`, [owner]);
+   await c.query(`DELETE FROM narrative_segments l USING narrative_sources s,narrative_generation_requests g,game_saves v
+diff --git a/apps/api/src/services/narrative-v2-runtime-draft.ts b/apps/api/src/services/narrative-v2-runtime-draft.ts
+new file mode 100644
+index 0000000..e6c0e13
+--- /dev/null
++++ b/apps/api/src/services/narrative-v2-runtime-draft.ts
+@@ -0,0 +1,27 @@
++import type { Pool } from 'pg';
++import {createNarrativeV2Port,NARRATIVE_V2_BUDGET,requireWriterFence} from './narrative-ownership-v2.js';
++import {NarrativePublicationRepository,finalBody,type BodyLimits} from './narrative-publication-repository.js';
++import {NarrativeOutboxWorker,type DeterministicRenderer} from './narrative-outbox-worker.js';
++import {createPostgresServerTurnRepository} from './postgres-server-turn.js';
++import {ServerTurnService,type ServerTurnRules} from './server-turn.js';
++import type {DataPolicy} from './data-policy.js';
++
++/** Uninstalled assembly proposal. No environment flag enables this from index.ts.
++ * An approval artifact plus an externally established DB fleet fence are both prerequisites.
++ * All action/read endpoints must receive this service and this repository as a pair.
++ */
++export async function prepareNarrativeV2RuntimeDraft(input:{pool:Pool;rules:ServerTurnRules;
++  rendererVersion:string;render:DeterministicRenderer;limits:BodyLimits;policy?:()=>DataPolicy|undefined}) {
++  finalBody('x',input.limits);
++  const c=await input.pool.connect();
++  try {await c.query('BEGIN');await requireWriterFence(c,input.rendererVersion);await c.query('ROLLBACK');}
++  catch(e){await c.query('ROLLBACK').catch(()=>{});throw e;} finally{c.release();}
++  const publication=new NarrativePublicationRepository(input.pool,input.limits,
++    {maxAttempts:NARRATIVE_V2_BUDGET.maxAttempts,leaseMs:NARRATIVE_V2_BUDGET.leaseMs});
++  const port=createNarrativeV2Port(input.pool,input.rendererVersion,publication);
++  const turns=createPostgresServerTurnRepository(input.pool,true,input.policy,port);
++  const service=new ServerTurnService(turns,input.rules,undefined,NARRATIVE_V2_BUDGET.httpWaitMs,undefined,port);
++  const worker=new NarrativeOutboxWorker(publication,new Map([[input.rendererVersion,input.render]]),
++    NARRATIVE_V2_BUDGET.workerExecutionMs);
++  return {service,turns,publication,worker};
++}
+diff --git a/apps/api/src/services/npc-memory-turn-transaction.ts b/apps/api/src/services/npc-memory-turn-transaction.ts
+index c9609a7..733b6b9 100644
+--- a/apps/api/src/services/npc-memory-turn-transaction.ts
++++ b/apps/api/src/services/npc-memory-turn-transaction.ts
+@@ -84,6 +84,8 @@ export type AcceptedTurnCommitInput = {
+   nextJournal: NpcMemoryJournal;
+   authorizedObservations: readonly AuthorizedObservationOutboxRecord[];
+   authorizedSupersessions?: readonly AuthorizedObservationSupersessionRecord[];
++  requestNarrative?: boolean;
++  cancellation?: AbortSignal;
+ };
+ 
+ export type AcceptedTurnCommitResult =
+@@ -124,7 +126,7 @@ type NormalizedCommit = Omit<AcceptedTurnCommitInput, 'ownerId' | 'receipt' | 's
+  * and journal on the server; this repository never decides gameplay or visibility.
+  */
+ export class PostgresNpcMemoryTurnRepository {
+-  constructor(private readonly database: Database, private readonly requiresLiveAccount = false,private readonly guard?: (client:PoolClient,commit:AcceptedTurnCommitInput)=>Promise<void>) {}
++  constructor(private readonly database: Database, private readonly requiresLiveAccount = false,private readonly guard?: (client:PoolClient,commit:AcceptedTurnCommitInput)=>Promise<void>, private readonly registerNarrative?: (client:PoolClient,commit:AcceptedTurnCommitInput)=>Promise<void>) {}
+ 
+   async getReceiptForOwner(ownerId: string, saveId: string, requestId: string): Promise<TurnReceipt | null> {
+     const owner = normalizeOwnerId(ownerId);
+@@ -272,11 +274,13 @@ export class PostgresNpcMemoryTurnRepository {
+     const commit = normalizeCommit(input);
+     const client = await this.database.connect();
+     let inTransaction = false;
++    let commitAttempted = false;
++    let released = false;
+ 
+     try {
+       await client.query('BEGIN');
+       inTransaction = true;
+-      if (this.requiresLiveAccount && !(await client.query('SELECT id FROM auth_accounts WHERE id=$1 AND closed_at IS NULL '+(this.guard?'FOR UPDATE':'FOR KEY SHARE'), [commit.ownerId])).rowCount) {
++      if (this.requiresLiveAccount && !(await client.query('SELECT id FROM auth_accounts WHERE id=$1 AND closed_at IS NULL '+(this.guard||this.registerNarrative?'FOR UPDATE':'FOR KEY SHARE'), [commit.ownerId])).rowCount) {
+         return await rollbackWith(client, () => { inTransaction = false; return { kind: 'not_found' }; });
+       }
+ 
+@@ -430,20 +434,33 @@ export class PostgresNpcMemoryTurnRepository {
+         [commit.save.saveId, commit.nextJournal.revision, serializeNpcMemoryJournal(commit.nextJournal)],
+       );
+ 
++      await this.registerNarrative?.(client,commit);
++      if (commit.cancellation?.aborted) throw Error('TURN_CANCELLED_BEFORE_COMMIT');
++      commitAttempted = true;
+       await client.query('COMMIT');
+       inTransaction = false;
+       return { kind: 'committed', receipt: commit.receipt, save: commit.save, journal: commit.nextJournal };
+     } catch (error) {
+-      if (inTransaction) {
++      if (inTransaction && !commitAttempted) {
+         try {
+           await client.query('ROLLBACK');
+         } catch {
+           // Preserve the original failure; PostgreSQL will discard an open transaction on release.
+         }
+       }
++      if (commitAttempted) {
++        // A COMMIT transport error is ambiguous. Drop this connection before a new read.
++        client.release(true); released = true;
++        let recovered: TurnReceipt | null = null;
++        try { recovered = await this.getReceiptForOwner(commit.ownerId,commit.save.saveId,commit.receipt.idempotencyKey); }
++        catch { /* Remains unknown; never resubmit an action here. */ }
++        if (recovered && recovered.requestFingerprint === commit.receipt.requestFingerprint)
++          return {kind:'duplicate',receipt:recovered};
++        throw new TurnCommitOutcomeUnknown(commit.save.saveId,commit.receipt.idempotencyKey);
++      }
+       throw error;
+     } finally {
+-      client.release();
++      if (!released) client.release();
+     }
+   }
+ }
+@@ -610,3 +627,7 @@ async function rollbackWith<T>(client: PoolClient, createResult: () => T): Promi
+   await client.query('ROLLBACK');
+   return createResult();
+ }
++
++export class TurnCommitOutcomeUnknown extends Error {
++  constructor(readonly saveId:string,readonly requestKey:string) { super('TURN_COMMIT_OUTCOME_UNKNOWN'); }
++}
+diff --git a/apps/api/src/services/postgres-server-turn.ts b/apps/api/src/services/postgres-server-turn.ts
+index 7f99433..124ce14 100644
+--- a/apps/api/src/services/postgres-server-turn.ts
++++ b/apps/api/src/services/postgres-server-turn.ts
+@@ -1,3 +1,4 @@
++import type { NarrativeV2Port } from './narrative-ownership-v2.js';
+ import {assertDataPolicy,checkQuota,type DataPolicy} from './data-policy.js';
+ import type { Pool } from 'pg';
+ import { PostgresCloudSaveRepository } from './postgres-cloud-save-repository.js';
+@@ -5,7 +6,7 @@ import { PostgresNpcMemoryTurnRepository } from './npc-memory-turn-transaction.j
+ import type { ServerTurnRepository } from './server-turn.js';
+ 
+ /** Host-side adapter only: it does not publish or supply gameplay rules. */
+-export function createPostgresServerTurnRepository(pool: Pool, requiresLiveAccount = false,policy?:()=>DataPolicy|undefined): ServerTurnRepository {
++export function createPostgresServerTurnRepository(pool: Pool, requiresLiveAccount = false,policy?:()=>DataPolicy|undefined,narrativeV2?:NarrativeV2Port): ServerTurnRepository {
+   const saves = new PostgresCloudSaveRepository(pool);
+   const turns = new PostgresNpcMemoryTurnRepository(pool, requiresLiveAccount,policy?async(c,commit)=>{
+     const p=policy();assertDataPolicy(p);
+@@ -14,7 +15,7 @@ export function createPostgresServerTurnRepository(pool: Pool, requiresLiveAccou
+     const memoryPolicyJson=commit.save.schemaVersion===1?null:JSON.stringify(commit.save.memoryPolicy);
+     const next=Number((await c.query('SELECT octet_length($1::jsonb::text)+coalesce(octet_length($2::jsonb::text),0) AS bytes',[JSON.stringify(commit.save.state),memoryPolicyJson])).rows[0].bytes);
+     checkQuota(p,{count:current.count,bytes:Number(current.bytes)},next,Number(before.bytes));
+-  }:undefined);
++  }:undefined,narrativeV2?.register);
+   return {
+     loadSave: async(owner,id)=>{const save=await saves.getForOwner(owner,id);if(save&&!((await pool.query('SELECT verify_turn_event_chain($1) AS ok',[id])).rows[0].ok))throw new Error('EVENT_INTEGRITY_FAILED');return save;},
+     getReceiptForOwner: (owner, id, key) => turns.getReceiptForOwner(owner, id, key),
+diff --git a/apps/api/src/services/server-turn.ts b/apps/api/src/services/server-turn.ts
+index 93fa4a8..4a50c00 100644
+--- a/apps/api/src/services/server-turn.ts
++++ b/apps/api/src/services/server-turn.ts
+@@ -1,3 +1,4 @@
++import type { NarrativeV2Port } from './narrative-ownership-v2.js';
+ import { randomUUID } from 'node:crypto';
+ import {
+   ActionIntentSchema, DomainEventSchema, SaveEnvelopeSchema, TurnReceiptSchema,
+@@ -40,6 +41,8 @@ export interface ServerTurnRepository {
+ }
+ export type NarrativeResult =
+   | { status: 'not_requested' }
++  | { status: 'pending' | 'running'; wait?: 'cancelled' | 'timeout' }
++  | { status: 'ownership_unknown' | 'legacy_body_unavailable' | 'integrity_failure' | 'status_unavailable' }
+   | { status: 'received'; text: string; source: 'model' | 'deterministic' }
+   | { status: 'failed'; code: 'NARRATIVE_UNAVAILABLE' | 'NARRATIVE_TIMEOUT' | 'NARRATIVE_CANCELLED' };
+ export type ServerTurnResult =
+@@ -58,6 +61,7 @@ export class ServerTurnService {
+     private readonly narrator?: Narrator,
+     private readonly narrativeTimeoutMs = 20_000,
+     private readonly deterministicNarrative?: DeterministicNarrative,
++    private readonly narrativeV2?: NarrativeV2Port,
+   ) {
+     if (!Number.isInteger(narrativeTimeoutMs) || narrativeTimeoutMs < 1 || narrativeTimeoutMs > 120_000) {
+       throw new TypeError('Invalid narrative timeout');
+@@ -129,7 +133,8 @@ export class ServerTurnService {
+     const committed = await this.repository.commitAcceptedTurn({ ownerId, expectedRevision: save.revision,
+       receipt: prepared.receipt, save: prepared.save,
+       events: committedEvents,
+-      previousJournal: journal, nextJournal: next.journal, authorizedObservations: next.authorizedObservations });
++      previousJournal: journal, nextJournal: next.journal, authorizedObservations: next.authorizedObservations,
++      requestNarrative, ...(cancellation ? {cancellation} : {}) });
+     if (committed.kind === 'not_found') return { status: 'not_found' };
+     if (committed.kind === 'idempotency_conflict') return { status: 'idempotency_conflict' };
+     if (committed.kind === 'conflict' || committed.kind === 'memory_conflict') {
+@@ -141,6 +146,17 @@ export class ServerTurnService {
+   private async completed(ownerId:string, raw: TurnReceipt, duplicate: boolean, requestNarrative: boolean, cancellation?: AbortSignal, save?: SaveEnvelope): Promise<ServerTurnResult> {
+     const receipt = TurnReceiptSchema.parse(raw);
+     if (receipt.decision.status !== 'accepted') return { status: 'decision', receipt };
++    if (this.narrativeV2) {
++      // Deployment adapter selects the protocol; persistent metadata decides each receipt's owner.
++      // Reads never start workers or re-claim failed work, including duplicate requests.
++      let narrative: NarrativeResult;
++      try { narrative = await this.narrativeV2.read(ownerId,receipt,cancellation); }
++      catch(error) {
++        narrative = {status:error instanceof Error && /CORRUPT|INTEGRITY|MISMATCH/.test(error.message)
++          ? 'integrity_failure' : 'status_unavailable'};
++      }
++      return {status:'accepted',duplicate,receipt,narrative};
++    }
+     let narrative: NarrativeResult = { status: 'not_requested' };
+     if (requestNarrative) {
+       const attemptId=randomUUID();
+diff --git a/apps/web/src/game-publications.ts b/apps/web/src/game-publications.ts
+index 003b121..e3c2f78 100644
+--- a/apps/web/src/game-publications.ts
++++ b/apps/web/src/game-publications.ts
+@@ -21,6 +21,15 @@ export async function readPublishedGameHistoryPage(scope:GameCacheScope,signal:A
+     let text:string;
+     if(p.publication==='published'){
+       const s=p.source;
++      if(!s && p.legacyBody) {
++        const legacy=p.legacyBody;
++        if(typeof legacy.text!=='string'||legacy.text.length>100000||!/^[a-f0-9]{64}$/.test(legacy.bodySha))throw Error('INVALID_LEGACY_SOURCE');
++        const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(legacy.text));
++        const sha=Array.from(new Uint8Array(digest),v=>v.toString(16).padStart(2,'0')).join('');
++        if(sha!==legacy.bodySha)throw Error('NARRATIVE_BODY_CORRUPT');
++        rows.push({id:receipt.idempotencyKey,revision:receipt.resultingRevision,receipt,text:legacy.text});
++        continue;
++      }
+       if(!s||typeof s.text!=='string'||s.text.length>100000||s.requestKey!==receipt.idempotencyKey
+         ||s.revision!==receipt.resultingRevision||s.version!==1||typeof s.sourceId!=='string'
+         ||typeof s.publicationId!=='string'||s.generatorSource!=='deterministic'||!/^[a-f0-9]{64}$/.test(s.bodySha))throw Error('INVALID_PUBLICATION_SOURCE');
+@@ -32,6 +41,8 @@ export async function readPublishedGameHistoryPage(scope:GameCacheScope,signal:A
+     }else if(p.publication==='legacy-body-unavailable')text='规则已结算；此历史回合没有服务端正文，无法恢复原文。';
+     else if(p.publication==='pending')text='规则已结算；正文仍在处理中。';
+     else if(p.publication==='failed')text='规则已结算；正文生成失败，权威结果已保留。';
++    else if(p.publication==='not_requested')text='规则已结算；本回合首次选择不请求正文。';
++    else if(p.publication==='ownership_unknown')text='规则已结算；正文归属尚未确认，暂不提供原文。';
+     else throw Error('INVALID_PUBLICATION_STATE');
+     rows.push({id:receipt.idempotencyKey,revision:receipt.resultingRevision,receipt,text});
+   }
+diff --git a/apps/web/src/use-cloud-game-session.ts b/apps/web/src/use-cloud-game-session.ts
+index b67ba80..5c1f315 100644
+--- a/apps/web/src/use-cloud-game-session.ts
++++ b/apps/web/src/use-cloud-game-session.ts
+@@ -191,7 +191,12 @@ export function useCloudGameSession(saveId: string) {
+       publish(session, next); setText(next.draft);
+       await loadSave(session);
+       if (isCurrent(session)) setNotice(next.history.at(-1)?.receipt.decision.status === 'accepted'
+-        ? narrative?.status === 'failed' ? '规则已结算，叙事失败；权威结果已保存，不需重新行动。' : '规则结算已保存。'
++        ? narrative?.status === 'failed' ? '规则已结算，叙事失败；权威结果已保存，不需重新行动。'
++          : narrative?.status === 'pending' || narrative?.status === 'running' ? '规则已结算；正文仍在处理中，可稍后读取原文。'
++          : narrative?.status === 'not_requested' ? '规则已结算；本回合首次选择不请求正文。'
++          : narrative?.status === 'integrity_failure' ? '规则已结算；正文完整性校验未通过，原回执已保留。'
++          : narrative?.status === 'ownership_unknown' || narrative?.status === 'status_unavailable' ? '规则已结算；正文状态暂无法确认，原回执已保留。'
++          : narrative?.status === 'legacy_body_unavailable' ? '规则已结算；历史回合没有可恢复的服务端原文。' : '规则结算已保存。'
+         : next.history.at(-1)?.receipt.decision.status === 'clarify' ? '需要补充信息，世界未推进。' : '服务端明确拒绝，世界未推进；原文保留。');
+     } catch (error) {
+       let released = false;
+diff --git a/docs/integration/pending/0023_narrative_ownership_v2.sql b/docs/integration/pending/0023_narrative_ownership_v2.sql
+new file mode 100644
+index 0000000..38b9e33
+--- /dev/null
++++ b/docs/integration/pending/0023_narrative_ownership_v2.sql
+@@ -0,0 +1,63 @@
++-- REVIEW PROPOSAL ONLY. Not registered in Drizzle journal, never executed by this task.
++-- Run only after separately approved migration, lifecycle/export and fleet cutover review.
++CREATE TABLE narrative_writer_fence (
++ singleton boolean PRIMARY KEY CHECK(singleton), protocol_version integer NOT NULL CHECK(protocol_version=2),
++ phase text NOT NULL CHECK(phase IN ('fenced','managed')), fleet_manifest_sha text NOT NULL,
++ renderer_version text NOT NULL CHECK(length(renderer_version)>0),
++ old_writer_drained boolean NOT NULL DEFAULT false, old_role_revoked boolean NOT NULL DEFAULT false,
++ valid_until timestamptz NOT NULL
++);
++-- Deliberately no enabled row. The application role must have SELECT only, no gate write rights.
++CREATE TABLE narrative_receipt_ownership (
++ owner_id text NOT NULL REFERENCES auth_accounts(id) ON DELETE CASCADE,
++ save_id text NOT NULL, request_key text NOT NULL, receipt_sha text NOT NULL CHECK(receipt_sha ~ '^[a-f0-9]{64}$'),
++ protocol_version integer NOT NULL CHECK(protocol_version IN (1,2)),
++ ownership text NOT NULL CHECK(ownership IN ('managed','suppressed','legacy')),
++ request_narrative boolean NOT NULL, renderer_version text NOT NULL, context_version text NOT NULL,
++ branch_id text NOT NULL CHECK(branch_id='root'), generation_id uuid REFERENCES narrative_generation_requests(id)
++ DEFERRABLE INITIALLY DEFERRED,
++ legacy_inventory_sha text, legacy_body bytea, legacy_body_sha text,
++ legacy_generator_source text CHECK(legacy_generator_source IN ('model','deterministic')),
++ PRIMARY KEY(save_id,request_key), UNIQUE(owner_id,save_id,request_key,receipt_sha),
++ FOREIGN KEY(save_id,request_key) REFERENCES turn_requests(save_id,idempotency_key) ON DELETE CASCADE,
++ CHECK ((ownership='managed' AND request_narrative AND protocol_version=2)
++   OR (ownership='suppressed' AND NOT request_narrative AND protocol_version=2 AND generation_id IS NULL)
++   OR (ownership='legacy' AND protocol_version=1 AND generation_id IS NULL AND legacy_inventory_sha IS NOT NULL AND legacy_inventory_sha ~ '^[a-f0-9]{64}$')),
++ CHECK(ownership='legacy' OR (legacy_body IS NULL AND legacy_body_sha IS NULL AND legacy_inventory_sha IS NULL AND legacy_generator_source IS NULL)),
++ CHECK((legacy_body IS NULL AND legacy_body_sha IS NULL) OR
++   (legacy_body IS NOT NULL AND legacy_body_sha IS NOT NULL AND legacy_generator_source IS NOT NULL AND legacy_body_sha=encode(sha256(legacy_body),'hex')))
++);
++CREATE FUNCTION verify_narrative_ownership_v2() RETURNS trigger LANGUAGE plpgsql AS $$
++DECLARE o narrative_receipt_ownership; BEGIN
++ SELECT * INTO o FROM narrative_receipt_ownership WHERE save_id=NEW.save_id AND request_key=NEW.request_key;
++ IF NOT FOUND THEN RETURN NULL; END IF;
++ IF NOT EXISTS(SELECT 1 FROM game_saves s JOIN turn_requests r ON r.save_id=s.id
++   WHERE s.id=o.save_id AND s.owner_id=o.owner_id AND r.idempotency_key=o.request_key
++   AND o.receipt_sha=encode(sha256(convert_to(r.result::text,'UTF8')),'hex')) THEN
++   RAISE EXCEPTION 'NARRATIVE_OWNERSHIP_IDENTITY_INVALID'; END IF;
++ IF o.ownership='managed' AND NOT EXISTS(
++   SELECT 1 FROM narrative_generation_requests g JOIN narrative_context_snapshots c ON c.id=g.context_id
++   WHERE g.id=o.generation_id AND g.save_id=o.save_id AND g.request_key=o.request_key
++   AND c.owner_id=o.owner_id AND c.receipt_sha=o.receipt_sha AND c.branch_id=o.branch_id
++   AND c.context->>'rendererVersion'=o.renderer_version AND c.context->>'format'=o.context_version) THEN
++   RAISE EXCEPTION 'NARRATIVE_MANAGED_INTEGRITY_FAILURE'; END IF;
++ IF o.ownership IN ('suppressed','legacy') AND EXISTS(SELECT 1 FROM narrative_generation_requests
++   WHERE save_id=o.save_id AND request_key=o.request_key) THEN RAISE EXCEPTION 'NARRATIVE_WRITER_CONFLICT'; END IF;
++ RETURN NULL; END $$;
++CREATE CONSTRAINT TRIGGER narrative_ownership_v2_complete AFTER INSERT OR UPDATE
++ ON narrative_receipt_ownership DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION verify_narrative_ownership_v2();
++CREATE FUNCTION protect_narrative_ownership_v2() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
++ IF TG_OP='UPDATE' AND ((to_jsonb(NEW)-'generation_id') IS DISTINCT FROM (to_jsonb(OLD)-'generation_id')
++   OR OLD.generation_id IS NOT NULL OR NEW.generation_id IS NULL OR OLD.ownership<>'managed') THEN
++   RAISE EXCEPTION 'NARRATIVE_OWNERSHIP_IMMUTABLE'; END IF;
++ IF TG_OP='DELETE' AND coalesce(current_setting('jiuxiao.account_erasure_operation',true),'')='' THEN
++   RAISE EXCEPTION 'NARRATIVE_AUTHORIZED_ERASURE_REQUIRED'; END IF;
++ IF TG_OP='DELETE' THEN RETURN OLD; ELSE RETURN NEW; END IF;
++END $$;
++CREATE TRIGGER narrative_ownership_v2_immutable BEFORE UPDATE OR DELETE ON narrative_receipt_ownership
++ FOR EACH ROW EXECUTE FUNCTION protect_narrative_ownership_v2();
++-- Deployment role plan: application may SELECT/INSERT ownership, UPDATE(generation_id) only;
++-- no legacy import, gate writes, DDL, replication-role or trigger disable privileges.
++-- Legacy inventory importer must be a separate offline role, revoked before traffic opens.
++-- Gate updates require an operator role after externally verifying full fleet and draining ingress.
++-- No backfill based on missing G or timestamps. Legacy inventory import is an offline, separately reviewed step.

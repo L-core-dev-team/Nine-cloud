@@ -1,0 +1,420 @@
+{
+  "status": "PASS",
+  "head": "d8ea49a8a74beb79233b100db71bbc4295db47c3",
+  "baseline": "dbae068d86e5f9cd188d6196e403ce6dd701a1de",
+  "exactBaselineFiles": 47,
+  "verifiedOriginalBackups": 44,
+  "explicitPins": 10,
+  "records": [
+    {
+      "path": "docs/acceptance/2026-10-03/九霄1.0-P0玩法双记忆验收记录表-2026-10-03.xlsx",
+      "beforeSha256": "6f75e27850ba7aa574441f5f8f17a0cc96197be4b341d52375af6c7c83804db3",
+      "afterSha256": "6f75e27850ba7aa574441f5f8f17a0cc96197be4b341d52375af6c7c83804db3",
+      "baselineSha256": "6f75e27850ba7aa574441f5f8f17a0cc96197be4b341d52375af6c7c83804db3",
+      "pin": "6f75e27850ba7aa574441f5f8f17a0cc96197be4b341d52375af6c7c83804db3",
+      "pinMatches": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-03/九霄1.0-P1-玩法规则与序章-签署表-2026-10-03.xlsx",
+      "beforeSha256": "33b6c8f6708d76f3420df12eb29f1439c5059f67f4cb7320ffe7810ed071c1bd",
+      "afterSha256": "33b6c8f6708d76f3420df12eb29f1439c5059f67f4cb7320ffe7810ed071c1bd",
+      "baselineSha256": "33b6c8f6708d76f3420df12eb29f1439c5059f67f4cb7320ffe7810ed071c1bd",
+      "pin": "33b6c8f6708d76f3420df12eb29f1439c5059f67f4cb7320ffe7810ed071c1bd",
+      "pinMatches": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/P1-MAP-作者可执行映射.md",
+      "beforeSha256": "f882d1f5d818c0b5f46b81d01466daa1a256f0a5312e4e488f6d7fd546b6b82c",
+      "afterSha256": "5869f3a3518156c2ac166388cc9f652aebc7bd5e36f071172030665f3d0a9e53",
+      "baselineSha256": "5869f3a3518156c2ac166388cc9f652aebc7bd5e36f071172030665f3d0a9e53",
+      "pin": "5869f3a3518156c2ac166388cc9f652aebc7bd5e36f071172030665f3d0a9e53",
+      "pinMatches": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/P1-NLU-双作者盲标表.md",
+      "beforeSha256": "9ad8814063e25b9228f3fe182ace24d79b544c0acd6863c1c526a39139ac21e3",
+      "afterSha256": "8d03539dfa2865f3d276c5c63346484e0637ae4a67529b919798c0fc2e50f0b9",
+      "baselineSha256": "8d03539dfa2865f3d276c5c63346484e0637ae4a67529b919798c0fc2e50f0b9"
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/P1-PR51-技术审阅依据.md",
+      "beforeSha256": "ba7111d3f339e1778162fd872e2e4b63bcbcb36a8cfb85429cf125fb2a66ed74",
+      "afterSha256": "859d84db16b6cba3cd1421f208601f7f1f93fec871951a6873b4c9a5288aa3d1",
+      "baselineSha256": "859d84db16b6cba3cd1421f208601f7f1f93fec871951a6873b4c9a5288aa3d1"
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/P1-作者共同认可与PR-4验收裁决-2026-10-05.md",
+      "beforeSha256": "c22b21ed3918e194305ea3265232d02ee90a2873fe5723ed389ac76ae72b6512",
+      "afterSha256": "ab79734f1758c24942bfbb55a7912c2babd9bbcd9b7aaeb57ead4f8c9ebfd194",
+      "baselineSha256": "ab79734f1758c24942bfbb55a7912c2babd9bbcd9b7aaeb57ead4f8c9ebfd194"
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/P1-审阅结论-代签.md",
+      "beforeSha256": "bf1d0f1e20a3236d93308880408670abda1e6d9073345cb52328c747b77b30b5",
+      "afterSha256": "fb24c6631cbe0f549b65e1b09441915ec5c30e37d66918c34728a3169563a386",
+      "baselineSha256": "fb24c6631cbe0f549b65e1b09441915ec5c30e37d66918c34728a3169563a386"
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/PR-4-执行规格对照与边界裁定.md",
+      "beforeSha256": "7a7cb5d3ae8627c2ce190df88fd1d00802802f530a932de1e08de5bf6ad8f63e",
+      "afterSha256": "461e0bbf8f9a1ec6dc512985da29322f5928012bbd57a23ea10aad59be442789",
+      "baselineSha256": "461e0bbf8f9a1ec6dc512985da29322f5928012bbd57a23ea10aad59be442789"
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/archived-candidates/P1-EXEC-SPEC-v3.1.0-20261004.md",
+      "beforeSha256": "9815fd2113aaa87d58a7e6b674954b8e09447e8da2e747d395a575c389a2e777",
+      "afterSha256": "3edba2136ef1a783a701327c16208bab289908f83db0084dc748bdc612fa526f",
+      "baselineSha256": "3edba2136ef1a783a701327c16208bab289908f83db0084dc748bdc612fa526f",
+      "pin": "3edba2136ef1a783a701327c16208bab289908f83db0084dc748bdc612fa526f",
+      "pinMatches": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/archived-candidates/prologue-v1-20261004.ts",
+      "beforeSha256": "81ba905b72fd0e7f8d44f33133d262691bd92a57de4a1636bb3b78e431c8fa34",
+      "afterSha256": "66c7557c74263813d7a7ea832de4961c612a12fa48a6f15ecdf6c53a7a1a571f",
+      "baselineSha256": "66c7557c74263813d7a7ea832de4961c612a12fa48a6f15ecdf6c53a7a1a571f",
+      "pin": "66c7557c74263813d7a7ea832de4961c612a12fa48a6f15ecdf6c53a7a1a571f",
+      "pinMatches": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-signed-evidence/G03-行动规则表.md",
+      "beforeSha256": "f1800bf8c8c6902f12984edcdda767bccc9355ed533364e895f9abd588ad4560",
+      "afterSha256": "c4d06467515c865b3a9abad0980e812af4151c5ac58868d9af7db4d74741e879",
+      "baselineSha256": "c4d06467515c865b3a9abad0980e812af4151c5ac58868d9af7db4d74741e879"
+    },
+    {
+      "path": "docs/sources/worldbook-draft-index.json",
+      "beforeSha256": "bb6ef3d31d7a9479e31b6ea39abf45e3eabf20a5587faa17ba16ff47fa7f215c",
+      "afterSha256": "fc43f4714957a2f51da76ce4a85d4f23d918f096ff64eccc0b653f3f42d05d0b",
+      "baselineSha256": "fc43f4714957a2f51da76ce4a85d4f23d918f096ff64eccc0b653f3f42d05d0b"
+    },
+    {
+      "path": "docs/sources/世界书_保守补全版.md",
+      "beforeSha256": "1d871057163f7f0b439c135b3af943e948b2401bb284ab077622ed95450d35d2",
+      "afterSha256": "1d871057163f7f0b439c135b3af943e948b2401bb284ab077622ed95450d35d2",
+      "baselineSha256": "1d871057163f7f0b439c135b3af943e948b2401bb284ab077622ed95450d35d2"
+    },
+    {
+      "path": "docs/九霄1.0-P1-执行规格-GPT交付版-2026-10-03.md",
+      "beforeSha256": "7083693353002d07d7da9b5880db1c9269058cf8f11be06752304c7795aaa41e",
+      "afterSha256": "7677776d40825889694abeff4cb51c33d4fcd4a91e70eafcf8baae491635259e",
+      "baselineSha256": "7677776d40825889694abeff4cb51c33d4fcd4a91e70eafcf8baae491635259e",
+      "pin": "7677776d40825889694abeff4cb51c33d4fcd4a91e70eafcf8baae491635259e",
+      "pinMatches": true
+    },
+    {
+      "path": "docs/九霄P1序章作者原创输入登记-2026-10-03.md",
+      "beforeSha256": "d17911b4b9a7f18c09db7d90636834b9655228301e17b34c3548e07e24e36da6",
+      "afterSha256": "6c390226f731f71c19c7c29d246ffff59d1a971c28c8da807bace6e613bcc052",
+      "baselineSha256": "6c390226f731f71c19c7c29d246ffff59d1a971c28c8da807bace6e613bcc052",
+      "pin": "6c390226f731f71c19c7c29d246ffff59d1a971c28c8da807bace6e613bcc052",
+      "pinMatches": true
+    },
+    {
+      "path": "packages/content/src/canon.registry.json",
+      "beforeSha256": "f4bea4615410ee617d1bb558c19a2a8d9b23e27860586209b3f3f6f4401b25d4",
+      "afterSha256": "2fbaab0609bf51edae91996be32e8a6c76a1b496b2a6d80bb926dcef8b391943",
+      "baselineSha256": "2fbaab0609bf51edae91996be32e8a6c76a1b496b2a6d80bb926dcef8b391943"
+    },
+    {
+      "path": "packages/content/src/index.ts",
+      "beforeSha256": "2563ab6bd1c43ddc0b328f4a21dc0268e6d75685a6da7dee88fd06a314d868ea",
+      "afterSha256": "b46be0f4e70c868ea0910abc2904270d614403c4929e800547429f16e8a8c277",
+      "baselineSha256": "b46be0f4e70c868ea0910abc2904270d614403c4929e800547429f16e8a8c277"
+    },
+    {
+      "path": "packages/content/src/prologue/prologue-v1.rulebook-candidate.ts",
+      "beforeSha256": "0b2ea6f79ed22db5bc7f7924f9fcd2740c881a9ba869b7e3b826d7e4fca26679",
+      "afterSha256": "e45ede3035770bc4dcc56c85daddfd567314eea9ac8bfbc3821edda89f6a53c4",
+      "baselineSha256": "e45ede3035770bc4dcc56c85daddfd567314eea9ac8bfbc3821edda89f6a53c4"
+    },
+    {
+      "path": "packages/content/src/prologue/prologue-v1.test.ts",
+      "beforeSha256": "6c24cba4c8434db5c912312e9fcce4e02fdb0084fae1a1f5d22c98a29cc207a5",
+      "afterSha256": "cc3231e3ee26a0138485ad21a7769dbca5156461295dc044a04e0b106941771e",
+      "baselineSha256": "cc3231e3ee26a0138485ad21a7769dbca5156461295dc044a04e0b106941771e"
+    },
+    {
+      "path": "packages/content/src/prologue/prologue-v1.ts",
+      "beforeSha256": "6f42af7feb65c7d53a15cbef540c815066f3d75487d7c98bdcc03856b63d1136",
+      "afterSha256": "5a73149978919112d2ec2e29064a0c82e5c487c68b46444d9b5699b00fb49d7a",
+      "baselineSha256": "5a73149978919112d2ec2e29064a0c82e5c487c68b46444d9b5699b00fb49d7a",
+      "pin": "5a73149978919112d2ec2e29064a0c82e5c487c68b46444d9b5699b00fb49d7a",
+      "pinMatches": true
+    },
+    {
+      "path": "packages/content/src/rules/prologue-v1.constants.ts",
+      "beforeSha256": "77fc5681236e764461be26c0f1b9a0328d00ec353b8eb51235d3ff83c2c84d6e",
+      "afterSha256": "f759db23414c2987e61d9c45d712686be0a56b2ccf71fb9c8f54881909533e3d",
+      "baselineSha256": "f759db23414c2987e61d9c45d712686be0a56b2ccf71fb9c8f54881909533e3d"
+    },
+    {
+      "path": "packages/contracts/src/action.ts",
+      "beforeSha256": "9ab27394103f696da2a22044b4536fa6c2a0997d09629773366f92e43afc4b06",
+      "afterSha256": "45f1654eaddc532d4b6cc707ce4860254d125b9813b1ce85ca80991b87ac5e2e",
+      "baselineSha256": "45f1654eaddc532d4b6cc707ce4860254d125b9813b1ce85ca80991b87ac5e2e"
+    },
+    {
+      "path": "packages/contracts/src/decision.ts",
+      "beforeSha256": "c2a3f82b57691af1a85878cd9ea64a4baf6bdf93a2030ff0a0f1195ac703ba0f",
+      "afterSha256": "a7c61da21a856423791d9758ece67be467ceb099f41b34b14d4581a9b100876a",
+      "baselineSha256": "a7c61da21a856423791d9758ece67be467ceb099f41b34b14d4581a9b100876a"
+    },
+    {
+      "path": "packages/contracts/src/errors.ts",
+      "beforeSha256": "aba7fa9f27f6c25c74c742c5aa91e7f9f52721b627399d640d95777fcdb5ac96",
+      "afterSha256": "695eb0dbe55c92e97b23e96e7b948f898c1950c99c3951666d9bf12428dcba9d",
+      "baselineSha256": "695eb0dbe55c92e97b23e96e7b948f898c1950c99c3951666d9bf12428dcba9d"
+    },
+    {
+      "path": "packages/contracts/src/event.ts",
+      "beforeSha256": "e5e171693558931bdf10663cf633cd45744513b63b981f06b6d0f7896bb28dd7",
+      "afterSha256": "8f536702ce7c3deb998916f08882391646e73b38a1962a6441290fee519750ba",
+      "baselineSha256": "8f536702ce7c3deb998916f08882391646e73b38a1962a6441290fee519750ba"
+    },
+    {
+      "path": "packages/contracts/src/index.ts",
+      "beforeSha256": "dac91c7c02d6c40883b586e387c86ad5f8285048eb9ee5f238191f979eee4524",
+      "afterSha256": "bf509bebd85acb0498ec9f18a86a2107e29ce3438758b499a14b6be5198b5651",
+      "baselineSha256": "bf509bebd85acb0498ec9f18a86a2107e29ce3438758b499a14b6be5198b5651"
+    },
+    {
+      "path": "packages/contracts/src/json-bounds.ts",
+      "beforeSha256": "4b1b6c1eb9e970ab469b1cc708c24d799fa3f23c33775fa28dc3a3c9ee611d8a",
+      "afterSha256": "38bcd46b149da54edfd614349f7c2233c720bbe4b3af58d2eb3eb7851c24a9c7",
+      "baselineSha256": "38bcd46b149da54edfd614349f7c2233c720bbe4b3af58d2eb3eb7851c24a9c7"
+    },
+    {
+      "path": "packages/contracts/src/prologue.ts",
+      "beforeSha256": "61384d01a83e426e32381137068ca8fb3fedea6598a8290918833ff82eb11f64",
+      "afterSha256": "901dd80e74c81ea68d942312816bcf84dc7fd69283fa65ee1aa1d2747ad07273",
+      "baselineSha256": "901dd80e74c81ea68d942312816bcf84dc7fd69283fa65ee1aa1d2747ad07273"
+    },
+    {
+      "path": "packages/contracts/src/save.ts",
+      "beforeSha256": "6684fe48d81514e044f24c743e6210080b35250f0d03dd203826566d6c794505",
+      "afterSha256": "cd7a76f0d4e26e6d3dcb078498b035e0e1828b54365bebe18e565af70780e0ed",
+      "baselineSha256": "cd7a76f0d4e26e6d3dcb078498b035e0e1828b54365bebe18e565af70780e0ed"
+    },
+    {
+      "path": "packages/contracts/src/state-delta.ts",
+      "beforeSha256": "a2666e8cc98b566d81bc328dec4f1659daa1c991400d51a8bf7a1725098c9361",
+      "afterSha256": "f73404acf344cb5f2d009df1d19aa621dad09ef3bee5ff46ede9e7852258ae59",
+      "baselineSha256": "f73404acf344cb5f2d009df1d19aa621dad09ef3bee5ff46ede9e7852258ae59"
+    },
+    {
+      "path": "packages/contracts/src/turn.ts",
+      "beforeSha256": "7ce9c937046e12ea57360ddab32d64c31845efb044f52a89df68ea29d9d2aacb",
+      "afterSha256": "56e2735bda9adcee5fa3e59324abed9215ce4fae077793c8e6f3aea59c8556a9",
+      "baselineSha256": "56e2735bda9adcee5fa3e59324abed9215ce4fae077793c8e6f3aea59c8556a9"
+    },
+    {
+      "path": "packages/contracts/src/world.ts",
+      "beforeSha256": "6bb18ceb8589a35c13323dfce8ebc3f32908cf5c9be90e521d7215dbcb31cc66",
+      "afterSha256": "285db04f009dc0f27e24427350ed8ce75c70c69dd89da7adfff42febb9c1252a",
+      "baselineSha256": "285db04f009dc0f27e24427350ed8ce75c70c69dd89da7adfff42febb9c1252a"
+    },
+    {
+      "path": "packages/domain/src/event-log.ts",
+      "beforeSha256": "96dae5b367b0dd9b39fa5434b45cf1938c47b80a2d036d70fc17181a69976b55",
+      "afterSha256": "b96484753d0459c469d3691be8d37620b76ed2dc9ed35ede7e2fb60f6283da9c",
+      "baselineSha256": "b96484753d0459c469d3691be8d37620b76ed2dc9ed35ede7e2fb60f6283da9c"
+    },
+    {
+      "path": "packages/domain/src/index.ts",
+      "beforeSha256": "8dbed8ff2d6c69540c87522d1647b34ddb32f24654b132bb001b1a0523cf53c0",
+      "afterSha256": "47a9ce089fb471c37bdc66f8680fb37ad4efb7f7d817a0b66f908e9694b138df",
+      "baselineSha256": "47a9ce089fb471c37bdc66f8680fb37ad4efb7f7d817a0b66f908e9694b138df"
+    },
+    {
+      "path": "packages/domain/src/memory/p4-recall-cues-v1.json",
+      "beforeSha256": "96d8454467efd8dae4671ed7f571f514cc2bf98bd4013db1d153af00d439ac64",
+      "afterSha256": "d3dcd20c850741d5095b960488310007a163b03b53cb40aaa60b57dae9031e31",
+      "baselineSha256": "d3dcd20c850741d5095b960488310007a163b03b53cb40aaa60b57dae9031e31",
+      "pin": "d3dcd20c850741d5095b960488310007a163b03b53cb40aaa60b57dae9031e31",
+      "pinMatches": true
+    },
+    {
+      "path": "packages/domain/src/memory/p4-recall-policy-v2.json",
+      "beforeSha256": "6f986bd22bacceab0135049287d054ea00482891b86b8147491655bea45c6168",
+      "afterSha256": "5da8bd8e61e4859e5492b5393e3f458b12ded9cc36025858415fbe51c27261de",
+      "baselineSha256": "5da8bd8e61e4859e5492b5393e3f458b12ded9cc36025858415fbe51c27261de",
+      "pin": "5da8bd8e61e4859e5492b5393e3f458b12ded9cc36025858415fbe51c27261de",
+      "pinMatches": true
+    },
+    {
+      "path": "packages/domain/src/nlu/action-parser.test.ts",
+      "beforeSha256": "65e2132431f89868a76feb016ff6226d02eb189f3b7b36830a0e4e587477c809",
+      "afterSha256": "8b5c129d1901791387b5c2be70e0b30ab7402665c44418ede3fe709076b70b7f",
+      "baselineSha256": "8b5c129d1901791387b5c2be70e0b30ab7402665c44418ede3fe709076b70b7f"
+    },
+    {
+      "path": "packages/domain/src/nlu/action-parser.ts",
+      "beforeSha256": "2eb81546711751314cc1432cfe72d62baefbacca3aa6a2e57b0b91344435a2f6",
+      "afterSha256": "fb7374c307998b2a384bfad385e6a5ce19bd9501bc1982b29aade0e2bdd72e70",
+      "baselineSha256": "fb7374c307998b2a384bfad385e6a5ce19bd9501bc1982b29aade0e2bdd72e70"
+    },
+    {
+      "path": "packages/domain/src/nlu/index.ts",
+      "beforeSha256": "d66a2513909c461fc5532211076d37504c995e969f0e16209ca0591566efe41a",
+      "afterSha256": "38391f5c8ae965779fff766fa95e4164cc745b7d5225a97f27041c4c14ba566e",
+      "baselineSha256": "38391f5c8ae965779fff766fa95e4164cc745b7d5225a97f27041c4c14ba566e"
+    },
+    {
+      "path": "packages/domain/src/nlu/prologue-v1-nlu-fixtures.test.ts",
+      "beforeSha256": "6d572c59c21866d020e5ed25b8df465171736ed1b635b96c2884a6ec5b7c6341",
+      "afterSha256": "084a049a40f609ddd5415b1f7213485789b8f69affebe7f3dd41f9eb1f53a8da",
+      "baselineSha256": "084a049a40f609ddd5415b1f7213485789b8f69affebe7f3dd41f9eb1f53a8da"
+    },
+    {
+      "path": "packages/domain/src/nlu/prologue-v1-nlu-fixtures.ts",
+      "beforeSha256": "77ff33a8ffb1b5f8d7424e60e7df0fc7e4606d82c529d93725d17eeae4e5487d",
+      "afterSha256": "53ed4f2b9204cd0ae2220537b32238a1d9bb644eb25285b13da6f90df41b62b5",
+      "baselineSha256": "53ed4f2b9204cd0ae2220537b32238a1d9bb644eb25285b13da6f90df41b62b5"
+    },
+    {
+      "path": "packages/domain/src/prologue-v1-candidate.test.ts",
+      "beforeSha256": "ea2eb0c5269895d89f02af42b126100cfae100606f9d6c5995d3a5b5e59c8766",
+      "afterSha256": "cca17d0435e6b8332126b8b948c69e3554633f1adb82db5cb9e9733ce9fe23d7",
+      "baselineSha256": "cca17d0435e6b8332126b8b948c69e3554633f1adb82db5cb9e9733ce9fe23d7"
+    },
+    {
+      "path": "packages/domain/src/prologue-v1-rules.test.ts",
+      "beforeSha256": "65ac66f4258fe2c4678a7492477e2ef67b858d6ff1ad1bbb653111afaeb5f1f7",
+      "afterSha256": "0f4de380601c9a212602e57730c3241f53ad37d720471bb9f835076abe67a555",
+      "baselineSha256": "0f4de380601c9a212602e57730c3241f53ad37d720471bb9f835076abe67a555"
+    },
+    {
+      "path": "packages/domain/src/prologue-v1-rules.ts",
+      "beforeSha256": "c6d398011bef31262e7a73fa098257980605bbd96ae8fcb07bd1bcc3f702aa7e",
+      "afterSha256": "c8b68595c1c3f38da660c6781edbdde77eb1111a8be0a684440167a8c929319f",
+      "baselineSha256": "c8b68595c1c3f38da660c6781edbdde77eb1111a8be0a684440167a8c929319f"
+    },
+    {
+      "path": "packages/domain/src/prologue-v1-time.ts",
+      "beforeSha256": "b1010cb25d5a61860e0b73e7b42517f725862f9290a15c8d8faa7c1ac4273cf3",
+      "afterSha256": "480171d4e2117024b593bacbd93521149c3e972ade693083f5c2813095d06ffe",
+      "baselineSha256": "480171d4e2117024b593bacbd93521149c3e972ade693083f5c2813095d06ffe"
+    },
+    {
+      "path": "packages/domain/src/rules.ts",
+      "beforeSha256": "2ac43e469c6a58f45fffafb52fae9a39d919a037d4ca5315f1942b122485c7e1",
+      "afterSha256": "62d09f33ee9a14a7bdaf9f29c064319d723dd51422fbd19104f33da37bcbcc06",
+      "baselineSha256": "62d09f33ee9a14a7bdaf9f29c064319d723dd51422fbd19104f33da37bcbcc06"
+    },
+    {
+      "path": "packages/domain/src/state-delta.ts",
+      "beforeSha256": "30c7fc16bba589dc62e485c0a5358a900d893bc15f8f473a5ce1e3efedf7ad12",
+      "afterSha256": "f7e8d143f125a06300d73154a17073697b91bccff0a2f8c2772b77f6a33ad142",
+      "baselineSha256": "f7e8d143f125a06300d73154a17073697b91bccff0a2f8c2772b77f6a33ad142"
+    }
+  ],
+  "semanticSha256": "sha256:73580596f25c530d9ad33170282955187eb281e5927872607feef9e2aae83f42",
+  "signedAstFiles": 35,
+  "bundleSha256": "sha256:468a26ad109c64c6cf2a7224b0e895fd7614241e15c5b468842295d91dcddbce",
+  "nonTargetTrackedFilesUnchanged": 1597,
+  "helperChanges": [
+    {
+      "path": "docs/integration/handover-01/CHECKPOINT.md",
+      "beforeSha256": "e3af58cfafd89e185de6f63fd0304092d480eb8e8b65fd1efa79d9f0055c5880",
+      "currentSha256": "a92e69c82404d98e2915e0a5f41a22d87c779320ff81dddf95c332fbd5c0dda8",
+      "reason": "Historical BYTEFIX commit updated this report after its before-manifest; current bytes equal verified starting HEAD"
+    },
+    {
+      "path": "scripts/handover-browser.cjs",
+      "beforeSha256": "be59e89b92c6ad0c74d7cfcbc88b745c350bb942815edc4d2411e488d389ff5a",
+      "currentSha256": "76d9842e703952f4c2b83d2d69b61ddcb396ddeb56c8d1611516fa63bb6b9e80",
+      "reason": "Unique output name and wait for exact persisted page length before existing assertions"
+    },
+    {
+      "path": "scripts/handover-test-support.cjs",
+      "beforeSha256": "dd935c1c678b131cc5a31f9ec8788cb7e1932edaaac361bd4b5ae7bd28800c34",
+      "currentSha256": "811eb000da063435f7b471c7c33141ff1331d8f49a44b824987766e0b48873d8",
+      "reason": "Synthetic fixture optionally omits seed to test genuinely absent legacy generation; default unchanged"
+    },
+    {
+      "path": "tests/e2e/cloud-game-shell.cjs",
+      "beforeSha256": "73f9a5ff58a3f5cc6567eb1bc3f1988fea45d59fd7f98de91b720abea9d87c2e",
+      "currentSha256": "88b4d548c274c1a3fdb0bb67648095a0d975f10979160116d5011fa75f092ecd",
+      "reason": "Optional unique output name; existing assertions unchanged"
+    }
+  ],
+  "originalClean": true,
+  "originalHead": "dbae068d86e5f9cd188d6196e403ce6dd701a1de",
+  "originalFiles": 61,
+  "migrations": 23,
+  "historicalLogs": 42,
+  "T1Applied": false,
+  "patchSha256": "a517f0249e12d44b003cf29255e26002489a270c049f8d713c3bc6323912b01e",
+  "inheritedRuns": [
+    {
+      "name": "bytefix-content-01",
+      "baselineOrCandidate": "9587d05da09171e3bc75de309a8f65b8d601b8a6",
+      "command": [
+        "pnpm",
+        "--filter",
+        "@jiuxiao/content",
+        "test"
+      ],
+      "started": "2026-10-15T04:39:36.394Z",
+      "finished": "2026-10-15T04:39:37.928Z",
+      "exitCode": 0,
+      "logSha256": "1fd3afed574bed7ba72ec1a3202e30300feb2dff27718a4c2af6615607041b79",
+      "resultSha256": "754e4f254404fe50f02dfacb65f59e8ad5cb6da119a058101705cebadc8c9103"
+    },
+    {
+      "name": "bytefix-api-01",
+      "baselineOrCandidate": "9587d05da09171e3bc75de309a8f65b8d601b8a6",
+      "command": [
+        "pnpm",
+        "--filter",
+        "@jiuxiao/api",
+        "test"
+      ],
+      "started": "2026-10-15T04:39:55.502Z",
+      "finished": "2026-10-15T04:40:02.122Z",
+      "exitCode": 0,
+      "logSha256": "967e13563f29d502002bbd01bb35fa3374c3e23ca0dd3498834d3dd153aad465",
+      "resultSha256": "3b35abbfc0cb6f78488093ff526e0e73e23421e351025b7125a935427f65b5a1"
+    },
+    {
+      "name": "bytefix-full-test-01",
+      "baselineOrCandidate": "9587d05da09171e3bc75de309a8f65b8d601b8a6",
+      "command": [
+        "pnpm",
+        "test"
+      ],
+      "started": "2026-10-15T04:40:12.917Z",
+      "finished": "2026-10-15T04:40:23.284Z",
+      "exitCode": 0,
+      "logSha256": "0395b2bfe666f98abfbda4ef52febc8c3c36decc42090ee5c8425ca191f2d785",
+      "resultSha256": "49d36f0e166ebacd9847e2f39097f51d9e042a25a4cabc82bf5fb065b723d18b"
+    },
+    {
+      "name": "bytefix-typecheck-01",
+      "baselineOrCandidate": "9587d05da09171e3bc75de309a8f65b8d601b8a6",
+      "command": [
+        "pnpm",
+        "typecheck"
+      ],
+      "started": "2026-10-15T04:40:23.346Z",
+      "finished": "2026-10-15T04:40:27.991Z",
+      "exitCode": 0,
+      "logSha256": "bd0cce0bed70f704a44d7cc75db24638d6bed32d28cba37faddf69f5f9c7b158",
+      "resultSha256": "5be504329f22c45645f55e65d051909472b27d6f8ece2ae9c5ddde58b943a39e"
+    },
+    {
+      "name": "bytefix-build-01",
+      "baselineOrCandidate": "9587d05da09171e3bc75de309a8f65b8d601b8a6",
+      "command": [
+        "pnpm",
+        "build"
+      ],
+      "started": "2026-10-15T04:40:28.049Z",
+      "finished": "2026-10-15T04:40:31.370Z",
+      "exitCode": 0,
+      "logSha256": "51b7070d523490e935cec2397745a822516a19525ea843dd0cafa480bc758086",
+      "resultSha256": "be9384490d3e627d3a026042e90dc7756b76778ffeb34afc0e8d8c42492551b4"
+    }
+  ]
+}

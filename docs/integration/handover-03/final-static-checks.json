@@ -1,0 +1,46 @@
+{
+  "draftSourceWhitespace": {
+    "command": [
+      "git",
+      "diff",
+      "d8ea49a8a74beb79233b100db71bbc4295db47c3",
+      "--check",
+      "--",
+      "apps/api/src",
+      "apps/web/src",
+      "docs/integration/pending/0023_narrative_ownership_v2.sql",
+      "scripts"
+    ],
+    "cwd": "C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-t1-v2-draft-20261016",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "draftWholeCommitWhitespace": {
+    "command": [
+      "git",
+      "diff",
+      "d8ea49a8a74beb79233b100db71bbc4295db47c3",
+      "--check"
+    ],
+    "cwd": "C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-t1-v2-draft-20261016",
+    "exitCode": 2,
+    "stdout": "docs/integration/pending/t1-v2-review-release/code-and-tests.diff:46: trailing whitespace.\n+ \ndocs/integration/pending/t1-v2-review-release/code-and-tests.diff:314: trailing whitespace.\n+ \ndocs/integration/pending/t1-v2-review-release/code-and-tests.diff:464: trailing whitespace.\n+ \ndocs/integration/pending/t1-v2-review-release/code-and-tests.diff:517: trailing whitespace.\n+ \ndocs/integration/pending/t1-v2-review-release/code-and-tests.diff:525: trailing whitespace.\n+ \ndocs/integration/pending/t1-v2-review-release/code-and-tests.diff:534: trailing whitespace.\n+ \ndocs/integration/pending/t1-v2-review-release/code-and-tests.diff:542: trailing whitespace.\n+ \ndocs/integration/pending/t1-v2-review-release/code-and-tests.diff:546: trailing whitespace.\n+ \ndocs/integration/pending/t1-v2-review-release/code-and-tests.diff:598: trailing whitespace.\n+ \ndocs/integration/pending/t1-v2-review-release/t1-v2-minimal.patch:46: trailing whitespace.\n+ \ndocs/integration/pending/t1-v2-review-release/t1-v2-minimal.patch:314: trailing whitespace.\n+ \ndocs/integration/pending/t1-v2-review-release/t1-v2-minimal.patch:464: trailing whitespace.\n+ \ndocs/integration/pending/t1-v2-review-release/t1-v2-minimal.patch:517: trailing whitespace.\n+ \ndocs/integration/pending/t1-v2-review-release/t1-v2-minimal.patch:525: trailing whitespace.\n+ \ndocs/integration/pending/t1-v2-review-release/t1-v2-minimal.patch:534: trailing whitespace.\n+ \ndocs/integration/pending/t1-v2-review-release/t1-v2-minimal.patch:542: trailing whitespace.\n+ \ndocs/integration/pending/t1-v2-review-release/t1-v2-minimal.patch:546: trailing whitespace.\n+ \ndocs/integration/pending/t1-v2-review-release/t1-v2-minimal.patch:598: trailing whitespace.\n+ \n",
+    "stderr": ""
+  },
+  "candidateProductsUnchanged": {
+    "command": [
+      "git",
+      "diff",
+      "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+      "--name-only",
+      "--",
+      "apps",
+      "packages"
+    ],
+    "cwd": "C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-p3-p6-handover-01-20261014",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+}
