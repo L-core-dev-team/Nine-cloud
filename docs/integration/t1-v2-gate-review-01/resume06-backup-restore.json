@@ -1,0 +1,134 @@
+{
+  "status": "PASS",
+  "source": "jiuxiao_test_gate-revised-resume06",
+  "target": "jiuxiao_test_gate-restored-resume06",
+  "steps": [
+    {
+      "exe": "pg_dump.exe",
+      "args": [
+        "-h",
+        "127.0.0.1",
+        "-p",
+        "55463",
+        "-U",
+        "gate_review_admin",
+        "-Fc",
+        "-f",
+        "C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-t1-v2-gate-review-01-20261016\\docs\\integration\\t1-v2-gate-review-01\\resume06-backup.dump",
+        "jiuxiao_test_gate-revised-resume06"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "exe": "pg_restore.exe",
+      "args": [
+        "-h",
+        "127.0.0.1",
+        "-p",
+        "55463",
+        "-U",
+        "gate_review_admin",
+        "--exit-on-error",
+        "-d",
+        "jiuxiao_test_gate-restored-resume06",
+        "C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-t1-v2-gate-review-01-20261016\\docs\\integration\\t1-v2-gate-review-01\\resume06-backup.dump"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "before": {
+    "game_saves": {
+      "n": 35,
+      "sha": "31cc70e35722a4204df7f103ca8ebc3837acd9013e8a388603d8494a099ff567"
+    },
+    "turn_requests": {
+      "n": 40,
+      "sha": "e4301c9b6fdcf6129ff0497026b0c38b1b04068238532fe361d1056957d3dc6b"
+    },
+    "turn_events": {
+      "n": 40,
+      "sha": "da7fc8346fb67bcf7672708c41c927317a838fa39d32b4aea6a2c9707aec5a36"
+    },
+    "narrative_context_snapshots": {
+      "n": 9,
+      "sha": "c9df9dd0e777d4ff489f66bf2f5eeccd3470fb345c0321da2d3afce1539fb89f"
+    },
+    "narrative_generation_requests": {
+      "n": 9,
+      "sha": "5da9dbcc0bd68996cf437af1474dec46c9215432e270dfbc97cc126bf4749b4d"
+    },
+    "narrative_attempts": {
+      "n": 6,
+      "sha": "b9af55d9e243c4b7a8c97ed237c28b7a64c21d2ef0f59c5792c84f6dcc67011b"
+    },
+    "narrative_sources": {
+      "n": 3,
+      "sha": "de7044d690587e9ced4caa3e1ab77abbb28b9b3554e19ffbd15347964ecfa1d4"
+    },
+    "narrative_publications": {
+      "n": 3,
+      "sha": "5aadd1bbf9f6f0d082e2e7bb207bf5761d5effcd82bd2b9deb27fe4ef1d38c1a"
+    },
+    "narrative_receipt_ownership": {
+      "n": 16,
+      "sha": "952f5e1a487e93ce995500bb25c4b9c22864391e3db9e21680be00cfd693b151"
+    },
+    "narrative_writer_fence": {
+      "n": 1,
+      "sha": "026dfe43acd46f25c0930f887456fc10eb9b5a4e9fa6bffa7f63d12e8654311e"
+    }
+  },
+  "after": {
+    "game_saves": {
+      "n": 35,
+      "sha": "31cc70e35722a4204df7f103ca8ebc3837acd9013e8a388603d8494a099ff567"
+    },
+    "turn_requests": {
+      "n": 40,
+      "sha": "e4301c9b6fdcf6129ff0497026b0c38b1b04068238532fe361d1056957d3dc6b"
+    },
+    "turn_events": {
+      "n": 40,
+      "sha": "da7fc8346fb67bcf7672708c41c927317a838fa39d32b4aea6a2c9707aec5a36"
+    },
+    "narrative_context_snapshots": {
+      "n": 9,
+      "sha": "c9df9dd0e777d4ff489f66bf2f5eeccd3470fb345c0321da2d3afce1539fb89f"
+    },
+    "narrative_generation_requests": {
+      "n": 9,
+      "sha": "5da9dbcc0bd68996cf437af1474dec46c9215432e270dfbc97cc126bf4749b4d"
+    },
+    "narrative_attempts": {
+      "n": 6,
+      "sha": "b9af55d9e243c4b7a8c97ed237c28b7a64c21d2ef0f59c5792c84f6dcc67011b"
+    },
+    "narrative_sources": {
+      "n": 3,
+      "sha": "de7044d690587e9ced4caa3e1ab77abbb28b9b3554e19ffbd15347964ecfa1d4"
+    },
+    "narrative_publications": {
+      "n": 3,
+      "sha": "5aadd1bbf9f6f0d082e2e7bb207bf5761d5effcd82bd2b9deb27fe4ef1d38c1a"
+    },
+    "narrative_receipt_ownership": {
+      "n": 16,
+      "sha": "952f5e1a487e93ce995500bb25c4b9c22864391e3db9e21680be00cfd693b151"
+    },
+    "narrative_writer_fence": {
+      "n": 1,
+      "sha": "026dfe43acd46f25c0930f887456fc10eb9b5a4e9fa6bffa7f63d12e8654311e"
+    }
+  },
+  "dumpSha256": "3473af930748e32e5e2405db71c15c0096d3da4beb7636229e8255896e804703",
+  "restoredConstraintsEnforced": true,
+  "downgradeExecuted": false,
+  "formal": {
+    "pass": 0,
+    "blocked": 16
+  }
+}

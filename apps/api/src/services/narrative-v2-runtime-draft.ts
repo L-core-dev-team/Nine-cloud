@@ -14,7 +14,20 @@ export async function prepareNarrativeV2RuntimeDraft(input:{pool:Pool;rules:Serv
   rendererVersion:string;render:DeterministicRenderer;limits:BodyLimits;policy?:()=>DataPolicy|undefined}) {
   finalBody('x',input.limits);
   const c=await input.pool.connect();
-  try {await c.query('BEGIN');await requireWriterFence(c,input.rendererVersion);await c.query('ROLLBACK');}
+  try {
+    await c.query('BEGIN');
+    const role=(await c.query(`SELECT r.rolsuper,r.rolcreaterole,r.rolcreatedb,r.rolbypassrls,
+      pg_has_role(session_user,'jiuxiao_narrative_operator','MEMBER') AS operator,
+      pg_has_role(session_user,'jiuxiao_narrative_erasure','MEMBER') AS eraser,
+      pg_has_role(session_user,'jiuxiao_narrative_schema_owner','MEMBER') AS schema_owner,
+      (has_table_privilege(current_user,'public.narrative_writer_fence','INSERT,UPDATE,DELETE,TRUNCATE,TRIGGER')
+        OR has_any_column_privilege(current_user,'public.narrative_writer_fence','INSERT,UPDATE')) AS fence_write
+      FROM pg_roles r WHERE r.rolname=session_user`)).rows[0];
+    if(!role || role.rolsuper || role.rolcreaterole || role.rolcreatedb || role.rolbypassrls
+      || role.operator || role.eraser || role.schema_owner || role.fence_write)
+      throw Error('NARRATIVE_APPLICATION_ROLE_NOT_ISOLATED');
+    await requireWriterFence(c,input.rendererVersion);await c.query('ROLLBACK');
+  }
   catch(e){await c.query('ROLLBACK').catch(()=>{});throw e;} finally{c.release();}
   const publication=new NarrativePublicationRepository(input.pool,input.limits,
     {maxAttempts:NARRATIVE_V2_BUDGET.maxAttempts,leaseMs:NARRATIVE_V2_BUDGET.leaseMs});

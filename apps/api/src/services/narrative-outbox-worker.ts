@@ -3,7 +3,7 @@ import type { NarrativeContext } from './narrative-scheduler.js';
 import { ensureP1NarrativeHints } from './p1-narrative-hints.js';
 import { NarrativePublicationRepository, type Publication } from './narrative-publication-repository.js';
 
-export type DeterministicRenderer = (receipt: TurnReceipt, context: NarrativeContext) => string | Promise<string>;
+export type DeterministicRenderer = (receipt: TurnReceipt, context: NarrativeContext, signal?: AbortSignal) => string | Promise<string>;
 /** Internal worker only. No public retry endpoint, no model, no new action key or rule execution. */
 export class NarrativeOutboxWorker {
   constructor(private readonly repository: NarrativePublicationRepository,
@@ -24,16 +24,17 @@ export class NarrativeOutboxWorker {
     const lease = await this.repository.claim(owner, save, key);
     if (!lease) return (await this.repository.presentation(owner, save, key))?.source ?? null;
     let timer:ReturnType<typeof setTimeout>|undefined;
+    const abort=new AbortController();
     try {
       const render = this.renderers.get(lease.context.rendererVersion);
       if (!render) throw Error('NARRATIVE_RENDERER_VERSION_UNAVAILABLE');
       const context: NarrativeContext = { npcMemories: [], ...lease.context.hints };
       const rendered = await Promise.race([
-        Promise.resolve().then(()=>render(structuredClone(lease.context.receipt), structuredClone(context))),
-        new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(Error('NARRATIVE_EXECUTION_TIMEOUT')),this.executionMs);}),
+        Promise.resolve().then(()=>render(structuredClone(lease.context.receipt), structuredClone(context),abort.signal)),
+        new Promise<never>((_,reject)=>{timer=setTimeout(()=>{abort.abort();reject(Error('NARRATIVE_EXECUTION_TIMEOUT'));},this.executionMs);}),
       ]);
       return await this.repository.publish(lease, ensureP1NarrativeHints(rendered, lease.context.receipt, context));
-    } catch (error) { await this.repository.fail(lease); throw error; }
+    } catch (error) { abort.abort();await this.repository.fail(lease); throw error; }
     finally { if(timer)clearTimeout(timer); }
   }
 }

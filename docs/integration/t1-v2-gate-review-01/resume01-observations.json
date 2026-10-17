@@ -1,0 +1,8 @@
+{
+  "kind": "real-pg-component-fault-tests",
+  "formal": {
+    "pass": 0,
+    "blocked": 16
+  },
+  "observations": []
+}

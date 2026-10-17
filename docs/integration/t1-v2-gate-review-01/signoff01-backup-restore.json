@@ -1,0 +1,134 @@
+{
+  "status": "PASS",
+  "source": "jiuxiao_test_gate-revised-signoff01",
+  "target": "jiuxiao_test_gate-restored-signoff01",
+  "steps": [
+    {
+      "exe": "pg_dump.exe",
+      "args": [
+        "-h",
+        "127.0.0.1",
+        "-p",
+        "55463",
+        "-U",
+        "gate_review_admin",
+        "-Fc",
+        "-f",
+        "C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-t1-v2-gate-review-01-20261016\\docs\\integration\\t1-v2-gate-review-01\\signoff01-backup.dump",
+        "jiuxiao_test_gate-revised-signoff01"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "exe": "pg_restore.exe",
+      "args": [
+        "-h",
+        "127.0.0.1",
+        "-p",
+        "55463",
+        "-U",
+        "gate_review_admin",
+        "--exit-on-error",
+        "-d",
+        "jiuxiao_test_gate-restored-signoff01",
+        "C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-t1-v2-gate-review-01-20261016\\docs\\integration\\t1-v2-gate-review-01\\signoff01-backup.dump"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "before": {
+    "game_saves": {
+      "n": 37,
+      "sha": "ebe7b5bc491a9041354f0944aea674be07a75bbada26e4636cfca39326de4ba4"
+    },
+    "turn_requests": {
+      "n": 42,
+      "sha": "33d08b8a0a84d3cb0be67939f399ba79aa3f3273cfa7c39ff6f0a34a6e6f5ce1"
+    },
+    "turn_events": {
+      "n": 42,
+      "sha": "bf1c8a4951b10e61dc9dcd1a2680aaacc4ed8e34a68cee1c4ac38a612bfbac6e"
+    },
+    "narrative_context_snapshots": {
+      "n": 11,
+      "sha": "9aa13f1883b9aa35001ff2f20651813fadfe685d417e4dc8c561d3f0899a0ec9"
+    },
+    "narrative_generation_requests": {
+      "n": 11,
+      "sha": "cbe651d42504331ffaed7fb1613d8bb3998834db7a382ecc9c50c3fdaee580d7"
+    },
+    "narrative_attempts": {
+      "n": 9,
+      "sha": "4d71503576f7f34b19433fcceef5c00b4d5ff1c34d8bb4fd2caea01ab1e572c4"
+    },
+    "narrative_sources": {
+      "n": 3,
+      "sha": "7e8d5d9811aad073e38e299d8f1962d5113836813a95fd25a3dcafa7522374d9"
+    },
+    "narrative_publications": {
+      "n": 3,
+      "sha": "6cbae398dc458ca615dfafa585def8c7bffb4f7627ad1d6ff45f59a3a7955455"
+    },
+    "narrative_receipt_ownership": {
+      "n": 18,
+      "sha": "ca69eff10da37cebfd58a5533899eae76600090286ffb1bccf35c44f18af0133"
+    },
+    "narrative_writer_fence": {
+      "n": 1,
+      "sha": "7653498dea906da8f9c714475b46e88f1c278e2147bfdbe18293251744e09fa0"
+    }
+  },
+  "after": {
+    "game_saves": {
+      "n": 37,
+      "sha": "ebe7b5bc491a9041354f0944aea674be07a75bbada26e4636cfca39326de4ba4"
+    },
+    "turn_requests": {
+      "n": 42,
+      "sha": "33d08b8a0a84d3cb0be67939f399ba79aa3f3273cfa7c39ff6f0a34a6e6f5ce1"
+    },
+    "turn_events": {
+      "n": 42,
+      "sha": "bf1c8a4951b10e61dc9dcd1a2680aaacc4ed8e34a68cee1c4ac38a612bfbac6e"
+    },
+    "narrative_context_snapshots": {
+      "n": 11,
+      "sha": "9aa13f1883b9aa35001ff2f20651813fadfe685d417e4dc8c561d3f0899a0ec9"
+    },
+    "narrative_generation_requests": {
+      "n": 11,
+      "sha": "cbe651d42504331ffaed7fb1613d8bb3998834db7a382ecc9c50c3fdaee580d7"
+    },
+    "narrative_attempts": {
+      "n": 9,
+      "sha": "4d71503576f7f34b19433fcceef5c00b4d5ff1c34d8bb4fd2caea01ab1e572c4"
+    },
+    "narrative_sources": {
+      "n": 3,
+      "sha": "7e8d5d9811aad073e38e299d8f1962d5113836813a95fd25a3dcafa7522374d9"
+    },
+    "narrative_publications": {
+      "n": 3,
+      "sha": "6cbae398dc458ca615dfafa585def8c7bffb4f7627ad1d6ff45f59a3a7955455"
+    },
+    "narrative_receipt_ownership": {
+      "n": 18,
+      "sha": "ca69eff10da37cebfd58a5533899eae76600090286ffb1bccf35c44f18af0133"
+    },
+    "narrative_writer_fence": {
+      "n": 1,
+      "sha": "7653498dea906da8f9c714475b46e88f1c278e2147bfdbe18293251744e09fa0"
+    }
+  },
+  "dumpSha256": "f92ade1acaca8e1ec64251a52331f7751245757a8f2ccb3a197cd2b1f64242f5",
+  "restoredConstraintsEnforced": true,
+  "downgradeExecuted": false,
+  "formal": {
+    "pass": 0,
+    "blocked": 16
+  }
+}

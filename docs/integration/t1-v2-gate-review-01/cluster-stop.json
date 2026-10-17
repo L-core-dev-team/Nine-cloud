@@ -1,0 +1,11 @@
+{
+  "identity": {
+    "current_user": "gate_review_admin",
+    "port": 55463,
+    "directory": "J:/gate-review-01/pgdata-02",
+    "version": "PostgreSQL 18.6 on x86_64-windows, compiled by msvc-19.44.35229, 64-bit"
+  },
+  "stopped": true,
+  "mappingRemoved": true,
+  "allDatabaseFilesRetained": true
+}

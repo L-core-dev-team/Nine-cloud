@@ -1,0 +1,174 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1790167576242,
+      "tag": "0000_glamorous_robbie_robertson",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790603780986,
+      "tag": "0001_s7_entitlement_ledger",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790670000000,
+      "tag": "0002_s4_npc_memory_atomic",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1790824121091,
+      "tag": "0003_s6_email_auth",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790845235945,
+      "tag": "0004_s6_archive_trash",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1790913321543,
+      "tag": "0005_fearless_shatterstar",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790915091978,
+      "tag": "0006_next_the_enforcers",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1790926313007,
+      "tag": "0007_account_erasure_ledger",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1790951820808,
+      "tag": "0008_sec_integrity_auth_limits",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1790955433115,
+      "tag": "0009_overjoyed_crystal",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1791018000000,
+      "tag": "0010_retention_purge_receipt",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1791020000000,
+      "tag": "0011_test_cleanup_database_guard",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1791020000001,
+      "tag": "0012_closeout_runtime_controls",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1791020000002,
+      "tag": "0013_event_integrity_ownership",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1791100000000,
+      "tag": "0014_npc_authorized_observation_outbox",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1791134101001,
+      "tag": "0015_p1_gameplay_persistence",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1791302400000,
+      "tag": "0016_supabase_external_identity",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1791285000000,
+      "tag": "0017_p2_authority_lineage",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1791285000001,
+      "tag": "0018_p2_canon_artifact_identity",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1791285000002,
+      "tag": "0019_p1_guest_accounts",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1791178800000,
+      "tag": "0020_npc_memory_recall_semantics",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1791763200000,
+      "tag": "0021_recall_upgrade_compatibility",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1791849600000,
+      "tag": "0022_narrative_publication",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1792108800000,
+      "tag": "0023_narrative_ownership_v2",
+      "breakpoints": true
+    }
+  ]
+}

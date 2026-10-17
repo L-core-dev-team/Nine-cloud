@@ -18,10 +18,7 @@ export interface NarrativeV2Port {
  * Attestation is issued only after inventory, traffic fence, role revocation and old writer drain.
  * Heartbeats alone are NOT proof that all instances are compatible. */
 export async function requireWriterFence(c: PoolClient,rendererVersion:string) {
-  const gate = (await c.query(`SELECT protocol_version FROM narrative_writer_fence
-    WHERE singleton=true AND phase='managed' AND protocol_version=2
-    AND old_writer_drained AND old_role_revoked AND fleet_manifest_sha ~ '^[a-f0-9]{64}$'
-    AND renderer_version=$1 AND valid_until>clock_timestamp() FOR SHARE`,[rendererVersion])).rows[0];
+  const gate = (await c.query('SELECT protocol_version FROM public.lock_narrative_writer_fence_v2($1)',[rendererVersion])).rows[0];
   if (!gate) throw Error('NARRATIVE_WRITER_FENCE_UNPROVEN');
 }
 

@@ -1,0 +1,300 @@
+{
+  "kind": "real-pg-signoff-preflight",
+  "formalT1Executed": false,
+  "P01_P06": "BLOCKED",
+  "T01_T16": {
+    "pass": 0,
+    "blocked": 16
+  },
+  "observations": [
+    {
+      "case": "install-sequence",
+      "rejectedUnfinished": true,
+      "failedInstallLeftNoOwnershipTable": true,
+      "oldWriterUser": "grpf_old_writer",
+      "terminal": [
+        {
+          "id": "886dbb9f-eeaf-4e4d-b95a-b08552bdf1ee",
+          "state": "failed"
+        },
+        {
+          "id": "c7dc02ae-dd1b-4706-9df7-f6e9fb697766",
+          "state": "published"
+        }
+      ],
+      "officialJournalUnchanged": true,
+      "externalFleetProven": false
+    },
+    {
+      "case": "old-0022-update-block",
+      "session": {
+        "session_user": "gr01_app",
+        "current_user": "gr01_app"
+      },
+      "rejected": [
+        {
+          "generation": "64d4385c-3fff-43cd-97b0-260a820774ee",
+          "code": "P0001",
+          "message": "NARRATIVE_MANAGED_DECLARATION_REQUIRED"
+        },
+        {
+          "generation": "d8efdd0c-700c-4176-8749-f4c8581ace1e",
+          "code": "P0001",
+          "message": "NARRATIVE_MANAGED_DECLARATION_REQUIRED"
+        }
+      ]
+    },
+    {
+      "case": "prior-temp-shadow-vulnerability",
+      "expected": "DB_REJECT",
+      "actual": "ACCEPT",
+      "originalCandidateSafety": "FAIL",
+      "session": "gr01_app",
+      "generation": null
+    },
+    {
+      "case": "revised-temp-shadow",
+      "session": "gr01_app",
+      "rejectedAtCommit": true
+    },
+    {
+      "case": "field-trigger-registration",
+      "session": {
+        "session_user": "gr01_app",
+        "current_user": "gr01_app"
+      },
+      "fields": [
+        {
+          "attname": "narrative_updated_at",
+          "type": "timestamp with time zone",
+          "attnotnull": false,
+          "attgenerated": "",
+          "attidentity": ""
+        }
+      ],
+      "triggers": [
+        {
+          "relname": "narrative_generation_requests",
+          "tgname": "narrative_generation_identity",
+          "tgenabled": "O",
+          "proname": "protect_narrative_identity",
+          "definition": "CREATE TRIGGER narrative_generation_identity BEFORE DELETE OR UPDATE ON public.narrative_generation_requests FOR EACH ROW EXECUTE FUNCTION protect_narrative_identity()"
+        },
+        {
+          "relname": "narrative_generation_requests",
+          "tgname": "narrative_generation_managed_v2",
+          "tgenabled": "O",
+          "proname": "require_narrative_managed_declaration_v2",
+          "definition": "CREATE TRIGGER narrative_generation_managed_v2 BEFORE INSERT OR UPDATE ON public.narrative_generation_requests FOR EACH ROW EXECUTE FUNCTION require_narrative_managed_declaration_v2()"
+        },
+        {
+          "relname": "narrative_receipt_ownership",
+          "tgname": "narrative_ownership_erasure_complete_v2",
+          "tgenabled": "O",
+          "proname": "verify_narrative_ownership_erasure_v2",
+          "definition": "CREATE CONSTRAINT TRIGGER narrative_ownership_erasure_complete_v2 AFTER DELETE ON public.narrative_receipt_ownership DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION verify_narrative_ownership_erasure_v2()"
+        },
+        {
+          "relname": "narrative_receipt_ownership",
+          "tgname": "narrative_ownership_receipt_seal_v2",
+          "tgenabled": "O",
+          "proname": "seal_narrative_receipt_v2",
+          "definition": "CREATE TRIGGER narrative_ownership_receipt_seal_v2 BEFORE INSERT ON public.narrative_receipt_ownership FOR EACH ROW EXECUTE FUNCTION seal_narrative_receipt_v2()"
+        },
+        {
+          "relname": "narrative_receipt_ownership",
+          "tgname": "narrative_ownership_v2_complete",
+          "tgenabled": "O",
+          "proname": "verify_narrative_ownership_v2",
+          "definition": "CREATE CONSTRAINT TRIGGER narrative_ownership_v2_complete AFTER INSERT OR UPDATE ON public.narrative_receipt_ownership DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION verify_narrative_ownership_v2()"
+        },
+        {
+          "relname": "narrative_receipt_ownership",
+          "tgname": "narrative_ownership_v2_immutable",
+          "tgenabled": "O",
+          "proname": "protect_narrative_ownership_v2",
+          "definition": "CREATE TRIGGER narrative_ownership_v2_immutable BEFORE DELETE OR UPDATE ON public.narrative_receipt_ownership FOR EACH ROW EXECUTE FUNCTION protect_narrative_ownership_v2()"
+        },
+        {
+          "relname": "turn_requests",
+          "tgname": "narrative_owned_receipt_immutable_v2",
+          "tgenabled": "O",
+          "proname": "protect_owned_receipt_v2",
+          "definition": "CREATE TRIGGER narrative_owned_receipt_immutable_v2 BEFORE UPDATE ON public.turn_requests FOR EACH ROW EXECUTE FUNCTION protect_owned_receipt_v2()"
+        }
+      ],
+      "before": {
+        "result": {
+          "saveId": "handover-70626e19-b0cb-4604-bdc7-30f0c94a0db5",
+          "decision": {
+            "events": [
+              {
+                "id": "53e258f1-56fa-4e62-87b1-07c43a472169",
+                "type": "handover.fixture",
+                "saveId": "handover-70626e19-b0cb-4604-bdc7-30f0c94a0db5",
+                "source": "RULES",
+                "payload": {
+                  "summary": "synthetic fixture only"
+                },
+                "occurredAt": "2026-10-17T04:21:24.896Z",
+                "ruleVersion": "fixture",
+                "afterRevision": 1,
+                "beforeRevision": 0
+              }
+            ],
+            "status": "accepted",
+            "nextRevision": 1
+          },
+          "idempotencyKey": "54ec5d7b-c8f3-4b8e-9e81-27c354c2ac06",
+          "resultingRevision": 1,
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "narrative_updated_at": "2026-10-17T00:00:00.000Z",
+        "version": "2787"
+      },
+      "after": {
+        "result": {
+          "saveId": "handover-70626e19-b0cb-4604-bdc7-30f0c94a0db5",
+          "decision": {
+            "events": [
+              {
+                "id": "53e258f1-56fa-4e62-87b1-07c43a472169",
+                "type": "handover.fixture",
+                "saveId": "handover-70626e19-b0cb-4604-bdc7-30f0c94a0db5",
+                "source": "RULES",
+                "payload": {
+                  "summary": "synthetic fixture only"
+                },
+                "occurredAt": "2026-10-17T04:21:24.896Z",
+                "ruleVersion": "fixture",
+                "afterRevision": 1,
+                "beforeRevision": 0
+              }
+            ],
+            "status": "accepted",
+            "nextRevision": 1
+          },
+          "idempotencyKey": "54ec5d7b-c8f3-4b8e-9e81-27c354c2ac06",
+          "resultingRevision": 1,
+          "requestFingerprint": "sha256:v1:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "narrative_updated_at": "2026-10-17T00:00:00.000Z",
+        "version": "2788"
+      },
+      "managedGeneration": "a8f9a916-03dc-40b7-987a-037751f2c9a0"
+    },
+    {
+      "case": "security-definer-audit",
+      "querySession": "gr01_app",
+      "functions": [
+        {
+          "proname": "lock_narrative_writer_fence_v2",
+          "prosecdef": true,
+          "proconfig": [
+            "search_path=pg_catalog, public, pg_temp"
+          ],
+          "acl": "{jiuxiao_narrative_schema_owner=X/jiuxiao_narrative_schema_owner,jiuxiao_narrative_runtime=X/jiuxiao_narrative_schema_owner}",
+          "owner": "jiuxiao_narrative_schema_owner",
+          "rolcanlogin": false,
+          "rolsuper": false,
+          "rolcreatedb": false,
+          "rolcreaterole": false,
+          "rolbypassrls": false,
+          "public_execute": false
+        },
+        {
+          "proname": "narrative_erasure_allowed",
+          "prosecdef": true,
+          "proconfig": [
+            "search_path=pg_catalog, public, pg_temp"
+          ],
+          "acl": "{jiuxiao_narrative_schema_owner=X/jiuxiao_narrative_schema_owner,jiuxiao_narrative_runtime=X/jiuxiao_narrative_schema_owner,jiuxiao_narrative_erasure=X/jiuxiao_narrative_schema_owner}",
+          "owner": "jiuxiao_narrative_schema_owner",
+          "rolcanlogin": false,
+          "rolsuper": false,
+          "rolcreatedb": false,
+          "rolcreaterole": false,
+          "rolbypassrls": false,
+          "public_execute": false
+        }
+      ],
+      "roles": [
+        {
+          "rolname": "gr01_app",
+          "rolsuper": false,
+          "rolcreaterole": false,
+          "rolcreatedb": false,
+          "rolbypassrls": false
+        },
+        {
+          "rolname": "gr01_eraser",
+          "rolsuper": false,
+          "rolcreaterole": false,
+          "rolcreatedb": false,
+          "rolbypassrls": false
+        },
+        {
+          "rolname": "gr01_operator",
+          "rolsuper": false,
+          "rolcreaterole": false,
+          "rolcreatedb": false,
+          "rolbypassrls": false
+        },
+        {
+          "rolname": "jiuxiao_narrative_runtime",
+          "rolsuper": false,
+          "rolcreaterole": false,
+          "rolcreatedb": false,
+          "rolbypassrls": false
+        },
+        {
+          "rolname": "jiuxiao_narrative_schema_owner",
+          "rolsuper": false,
+          "rolcreaterole": false,
+          "rolcreatedb": false,
+          "rolbypassrls": false
+        }
+      ],
+      "outsiderSession": "grpf_untrusted",
+      "outsiderDenied": true
+    },
+    {
+      "case": "fence-role-boundary",
+      "application": "gr01_app",
+      "operator": "gr01_operator",
+      "attestedBy": "gr01_operator",
+      "syntheticManifestOnly": true,
+      "productionEvidence": "BLOCKED"
+    },
+    {
+      "case": "erasure-boundary",
+      "app": "gr01_app",
+      "eraser": "gr01_eraser",
+      "genuineSelectorAloneRejected": true,
+      "unauthorizedProofRejected": true,
+      "authorizedErasure": true
+    },
+    {
+      "case": "abort-and-late-attempt",
+      "app": "gr01_app",
+      "cooperative": true,
+      "signalAborted": true,
+      "abortEvents": 1,
+      "completed": 0,
+      "sources": 0,
+      "publications": 0,
+      "externalProviderCancellationProven": false
+    },
+    {
+      "case": "abort-and-late-attempt",
+      "app": "gr01_app",
+      "cooperative": false,
+      "signalAborted": true,
+      "abortEvents": 1,
+      "completed": 1,
+      "sources": 0,
+      "publications": 0,
+      "externalProviderCancellationProven": false
+    }
+  ]
+}

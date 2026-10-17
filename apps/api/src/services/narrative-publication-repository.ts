@@ -166,11 +166,9 @@ export class NarrativePublicationRepository {
     });
   }
   private async requireV2Ownership(c:PoolClient,owner:string,save:string,key:string,generation:string) {
-    const gate=await c.query(`SELECT singleton FROM narrative_writer_fence WHERE singleton=true AND phase='managed'
-      AND protocol_version=2 AND old_writer_drained AND old_role_revoked
-      AND fleet_manifest_sha ~ '^[a-f0-9]{64}$' AND valid_until>clock_timestamp()
-      AND renderer_version=(SELECT renderer_version FROM narrative_receipt_ownership
-        WHERE owner_id=$1 AND save_id=$2 AND request_key=$3 AND generation_id=$4) FOR SHARE`,[owner,save,key,generation]);
+    const gate=await c.query(`SELECT protocol_version FROM public.lock_narrative_writer_fence_v2(
+      (SELECT renderer_version FROM narrative_receipt_ownership
+        WHERE owner_id=$1 AND save_id=$2 AND request_key=$3 AND generation_id=$4))`,[owner,save,key,generation]);
     const row=await c.query(`SELECT o.generation_id FROM narrative_receipt_ownership o
       JOIN turn_requests r ON r.save_id=o.save_id AND r.idempotency_key=o.request_key
       JOIN narrative_generation_requests g ON g.id=o.generation_id
