@@ -16,12 +16,12 @@
     "test:s6:integration": "node ../../scripts/assert-test-database.mjs && vitest run src/services/cloud-save-repository.integration.test.ts src/services/email-auth.integration.test.ts src/services/cloud-archive-lifecycle.integration.test.ts src/services/account-lifecycle.integration.test.ts src/services/data-policy.integration.test.ts src/services/runtime-controls.integration.test.ts"
   },
   "dependencies": {
-    "@hono/node-server": "2.1.3",
+    "@hono/node-server": "2.1.5",
     "@jiuxiao/contracts": "workspace:*",
     "@jiuxiao/content": "workspace:*",
     "@jiuxiao/domain": "workspace:*",
-    "hono": "4.13.12",
-    "nodemailer": "10.0.13",
+    "hono": "4.13.13",
+    "nodemailer": "10.1.1",
     "pg": "8.23.1"
   },
   "devDependencies": {
