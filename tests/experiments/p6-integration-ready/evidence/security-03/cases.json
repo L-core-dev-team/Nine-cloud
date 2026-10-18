@@ -1,0 +1,736 @@
+[
+  {
+    "id": "S01",
+    "title": "同一原文公开片段可读，私密片段不可读",
+    "status": "PASS",
+    "observed": {
+      "status": "evidence",
+      "reason": "authorized-original-evidence",
+      "items": [
+        {
+          "sourceId": "source-v1",
+          "segmentId": "public-segment",
+          "sourceType": "original-narrative",
+          "revision": 1,
+          "asOfRevision": 4,
+          "startUtf16": 0,
+          "endUtf16": 18,
+          "text": "她说：“旧灯暂由你保管，不得转卖。”",
+          "sourceSha256": "eb1d604a97086cef70b686e219de71f3b63593bc8f4a424251c342af479ea1ed",
+          "receiptKey": "00000000-0000-4000-8000-000000000002",
+          "receiptSha256": "b5503485988b1f9fc31617a7cdaad8d9ed8963b2c78ea264e90c660efa18e2de",
+          "attemptId": "synthetic-attempt-1",
+          "generationVersion": "synthetic-generation-1",
+          "generatorSource": "deterministic",
+          "authority": {
+            "narrative": "original-prose-only",
+            "confirmedRuleFacts": [],
+            "unknownFields": []
+          },
+          "authorization": {
+            "status": "allowed",
+            "npcId": "npc-a",
+            "grantId": "grant:v2:14:synthetic-save4:root5:npc-a36:00000000-0000-4000-8000-00000000000128:p1-direct-npc-participant-v1",
+            "visibilityEpoch": "visibility-1",
+            "memoryPolicyHash": "sha256:5da8bd8e61e4859e5492b5393e3f458b12ded9cc36025858415fbe51c27261de",
+            "forgettingEpoch": "forgetting-1",
+            "policySurface": "p4-explicit-recall"
+          }
+        }
+      ],
+      "generatedAnswer": null,
+      "estimatedTokens": 27,
+      "authorityUnknown": false
+    }
+  },
+  {
+    "id": "S02",
+    "title": "NPC 在场但没有私密谈话 grant，不推断知情",
+    "status": "PASS",
+    "observed": {
+      "status": "insufficient",
+      "reason": "no-authorized-evidence",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S03",
+    "title": "后来获转述的秘密在知情 revision 之前不可读",
+    "status": "PASS",
+    "observed": {
+      "status": "insufficient",
+      "reason": "no-authorized-evidence",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S04",
+    "title": "后来转述 grant 与原来源分开，可在实际知情后读取",
+    "status": "PASS",
+    "observed": {
+      "status": "evidence",
+      "reason": "authorized-original-evidence",
+      "items": [
+        {
+          "sourceId": "source-v1",
+          "segmentId": "public-segment",
+          "sourceType": "original-narrative",
+          "revision": 1,
+          "asOfRevision": 4,
+          "startUtf16": 19,
+          "endUtf16": 37,
+          "text": "未被听见的私语：暗门口令是紫鹭三声。",
+          "sourceSha256": "eb1d604a97086cef70b686e219de71f3b63593bc8f4a424251c342af479ea1ed",
+          "receiptKey": "00000000-0000-4000-8000-000000000002",
+          "receiptSha256": "b5503485988b1f9fc31617a7cdaad8d9ed8963b2c78ea264e90c660efa18e2de",
+          "attemptId": "synthetic-attempt-1",
+          "generationVersion": "synthetic-generation-1",
+          "generatorSource": "deterministic",
+          "authority": {
+            "narrative": "original-prose-only",
+            "confirmedRuleFacts": [],
+            "unknownFields": []
+          },
+          "authorization": {
+            "status": "allowed",
+            "npcId": "npc-a",
+            "grantId": "grant:v2:14:synthetic-save4:root5:npc-a36:00000000-0000-4000-8000-00000000000328:p1-direct-npc-participant-v1",
+            "visibilityEpoch": "visibility-1",
+            "memoryPolicyHash": "sha256:5da8bd8e61e4859e5492b5393e3f458b12ded9cc36025858415fbe51c27261de",
+            "forgettingEpoch": "forgetting-1",
+            "policySurface": "p4-explicit-recall"
+          }
+        }
+      ],
+      "generatedAnswer": null,
+      "estimatedTokens": 27,
+      "authorityUnknown": false
+    }
+  },
+  {
+    "id": "S05",
+    "title": "历史允许后当前撤销，不能返回缓存片段",
+    "status": "PASS",
+    "observed": {
+      "status": "insufficient",
+      "reason": "no-authorized-evidence",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S06",
+    "title": "实际 P4 遗忘门限后再次查询应 forgotten",
+    "status": "PASS",
+    "observed": {
+      "status": "forgotten",
+      "reason": "formal-p4-forgotten",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S07",
+    "title": "同名 NPC 使用不同稳定身份，不共享观察",
+    "status": "PASS",
+    "observed": {
+      "status": "insufficient",
+      "reason": "no-authorized-evidence",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S08",
+    "title": "伪造账号 session 不得读取已知 sourceId",
+    "status": "PASS",
+    "observed": {
+      "status": "blocked",
+      "reason": "identity-unavailable",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S09",
+    "title": "跨存档可信读取范围不能误配旧正文",
+    "status": "PASS",
+    "observed": {
+      "status": "insufficient",
+      "reason": "no-authorized-evidence",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S10",
+    "title": "非 root 分支没有正式契约，不猜测 lineage",
+    "status": "PASS",
+    "observed": {
+      "status": "blocked",
+      "reason": "production-branch-contract-unavailable",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S11",
+    "title": "未证实主观说法仍 unverified，即使回合已经结算",
+    "status": "PASS",
+    "observed": {
+      "status": "evidence",
+      "reason": "authorized-original-evidence",
+      "items": [
+        {
+          "sourceId": "source-v1",
+          "segmentId": "public-segment",
+          "sourceType": "original-narrative",
+          "revision": 1,
+          "asOfRevision": 4,
+          "startUtf16": 0,
+          "endUtf16": 18,
+          "text": "她说：“旧灯暂由你保管，不得转卖。”",
+          "sourceSha256": "eb1d604a97086cef70b686e219de71f3b63593bc8f4a424251c342af479ea1ed",
+          "receiptKey": "00000000-0000-4000-8000-000000000002",
+          "receiptSha256": "b5503485988b1f9fc31617a7cdaad8d9ed8963b2c78ea264e90c660efa18e2de",
+          "attemptId": "synthetic-attempt-1",
+          "generationVersion": "synthetic-generation-1",
+          "generatorSource": "deterministic",
+          "authority": {
+            "narrative": "unverified-claim",
+            "confirmedRuleFacts": [],
+            "unknownFields": []
+          },
+          "authorization": {
+            "status": "allowed",
+            "npcId": "npc-a",
+            "grantId": "grant:v2:14:synthetic-save4:root5:npc-a36:00000000-0000-4000-8000-00000000000128:p1-direct-npc-participant-v1",
+            "visibilityEpoch": "visibility-1",
+            "memoryPolicyHash": "sha256:5da8bd8e61e4859e5492b5393e3f458b12ded9cc36025858415fbe51c27261de",
+            "forgettingEpoch": "forgetting-1",
+            "policySurface": "p4-explicit-recall"
+          }
+        }
+      ],
+      "generatedAnswer": null,
+      "estimatedTokens": 27,
+      "authorityUnknown": false
+    }
+  },
+  {
+    "id": "S12",
+    "title": "缺失规则事件引用明确未知，不创造权威事实",
+    "status": "PASS",
+    "observed": {
+      "status": "evidence",
+      "reason": "authorized-original-evidence",
+      "items": [
+        {
+          "sourceId": "unknown-fact",
+          "segmentId": "public-segment",
+          "sourceType": "original-narrative",
+          "revision": 1,
+          "asOfRevision": 4,
+          "startUtf16": 0,
+          "endUtf16": 18,
+          "text": "她说：“旧灯暂由你保管，不得转卖。”",
+          "sourceSha256": "eb1d604a97086cef70b686e219de71f3b63593bc8f4a424251c342af479ea1ed",
+          "receiptKey": "00000000-0000-4000-8000-000000000002",
+          "receiptSha256": "b5503485988b1f9fc31617a7cdaad8d9ed8963b2c78ea264e90c660efa18e2de",
+          "attemptId": "unknown-attempt",
+          "generationVersion": "synthetic-generation-1",
+          "generatorSource": "deterministic",
+          "authority": {
+            "narrative": "original-prose-only",
+            "confirmedRuleFacts": [],
+            "unknownFields": [
+              "rule-confirmation"
+            ]
+          },
+          "authorization": {
+            "status": "allowed",
+            "npcId": "npc-a",
+            "grantId": "grant:v2:14:synthetic-save4:root5:npc-a36:00000000-0000-4000-8000-00000000000128:p1-direct-npc-participant-v1",
+            "visibilityEpoch": "visibility-1",
+            "memoryPolicyHash": "sha256:5da8bd8e61e4859e5492b5393e3f458b12ded9cc36025858415fbe51c27261de",
+            "forgettingEpoch": "forgetting-1",
+            "policySurface": "p4-explicit-recall"
+          }
+        }
+      ],
+      "generatedAnswer": null,
+      "estimatedTokens": 27,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S13",
+    "title": "已被后继推翻的当前事实不再作为当前证据",
+    "status": "PASS",
+    "observed": {
+      "status": "insufficient",
+      "reason": "no-authorized-evidence",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S14",
+    "title": "原文 hash 损坏后缓存命中也必须拒绝",
+    "status": "PASS",
+    "observed": {
+      "status": "conflict",
+      "reason": "source-integrity-failed",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S15",
+    "title": "授权片段 source hash 与实际正文不符",
+    "status": "PASS",
+    "observed": {
+      "status": "conflict",
+      "reason": "source-proof-or-time-mismatch",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S16",
+    "title": "授权策略 hash 失效，不复用已命中缓存",
+    "status": "PASS",
+    "observed": {
+      "status": "blocked",
+      "reason": "policy-unavailable",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S17",
+    "title": "未知叙事总结没有原文来源，不进入证据",
+    "status": "PASS",
+    "observed": {
+      "status": "unknown",
+      "reason": "source-unavailable",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S18",
+    "title": "检索未命中不会生成确定答案",
+    "status": "PASS",
+    "observed": {
+      "status": "insufficient",
+      "reason": "no-authorized-evidence",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S19",
+    "title": "偏移错位导致原句不等于授权字段，拒绝",
+    "status": "PASS",
+    "observed": {
+      "status": "conflict",
+      "reason": "segment-text-not-bound-to-authorized-field",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S20",
+    "title": "预算不足不截断“不得转卖”等限定条件",
+    "status": "PASS",
+    "observed": {
+      "status": "insufficient",
+      "reason": "budget-missing-intact-segment",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S21",
+    "title": "未授权标题或别名不进入模型上下文",
+    "status": "PASS",
+    "observed": {
+      "status": "insufficient",
+      "reason": "no-authorized-evidence",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S22",
+    "title": "读取过程中授权 epoch 改变，拒绝交付旧片段",
+    "status": "PASS",
+    "observed": {
+      "status": "blocked",
+      "reason": "authorization-changed-during-read",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S23",
+    "title": "授权 grant 没有覆盖私密字段，不能扩大为全文",
+    "status": "PASS",
+    "observed": {
+      "status": "insufficient",
+      "reason": "no-authorized-evidence",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S24",
+    "title": "无逐段映射真实接口时 BLOCKED，不能退回整条 ACL",
+    "status": "PASS",
+    "observed": {
+      "status": "blocked",
+      "reason": "segment-binding-unavailable",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S25",
+    "title": "不完整授权分页明确 BLOCKED，不当作空档案",
+    "status": "PASS",
+    "observed": {
+      "status": "blocked",
+      "reason": "archive-incomplete",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S26",
+    "title": "未确认回执不能发布正文或重做行动",
+    "status": "PASS",
+    "observed": {
+      "status": "unknown",
+      "reason": "receipt-unconfirmed",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S27",
+    "title": "行动已结算但叙事正在生成，正文未保存",
+    "status": "PASS",
+    "observed": {
+      "actionSettled": true,
+      "narrativeState": "generating",
+      "bodyPersisted": false,
+      "npcMayRead": "unknown",
+      "descriptionRuleConfirmed": false
+    }
+  },
+  {
+    "id": "S28",
+    "title": "叙事失败不撤销权威行动，也不伪造原文",
+    "status": "PASS",
+    "observed": {
+      "actionSettled": true,
+      "narrativeState": "failed",
+      "bodyPersisted": false,
+      "npcMayRead": "unknown",
+      "descriptionRuleConfirmed": false
+    }
+  },
+  {
+    "id": "S29",
+    "title": "正文保存不等同 NPC 获准或叙事已成为规则事实",
+    "status": "PASS",
+    "observed": {
+      "actionSettled": true,
+      "narrativeState": "persisted",
+      "bodyPersisted": true,
+      "npcMayRead": "unknown",
+      "descriptionRuleConfirmed": false
+    }
+  },
+  {
+    "id": "S30",
+    "title": "同回执不同生成版本不可互相覆盖，未指定版本拒绝猜测",
+    "status": "PASS",
+    "observed": {
+      "status": "conflict",
+      "reason": "generation-version-ambiguous",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S31",
+    "title": "请求不存在的生成版本不回退另一版本",
+    "status": "PASS",
+    "observed": {
+      "status": "unknown",
+      "reason": "version-unavailable",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S32",
+    "title": "未来查询 revision 不可突破服务端边界",
+    "status": "PASS",
+    "observed": {
+      "status": "unknown",
+      "reason": "invalid-as-of",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S33",
+    "title": "观察的 NPC 身份伪造且沿用旧 grantId，正式验证拒绝",
+    "status": "PASS",
+    "observed": {
+      "status": "blocked",
+      "reason": "observation-scope-or-time-mismatch",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S34",
+    "title": "授权来源回执 hash 变更，不以已有正文掩盖",
+    "status": "PASS",
+    "observed": {
+      "status": "conflict",
+      "reason": "receipt-provenance-changed",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S35",
+    "title": "引用了权威事件但未授权字段，NPC 不能获得该事实",
+    "status": "PASS",
+    "observed": {
+      "status": "evidence",
+      "reason": "authorized-original-evidence",
+      "items": [
+        {
+          "sourceId": "fact-ref",
+          "segmentId": "public-segment",
+          "sourceType": "original-narrative",
+          "revision": 1,
+          "asOfRevision": 4,
+          "startUtf16": 0,
+          "endUtf16": 18,
+          "text": "她说：“旧灯暂由你保管，不得转卖。”",
+          "sourceSha256": "eb1d604a97086cef70b686e219de71f3b63593bc8f4a424251c342af479ea1ed",
+          "receiptKey": "00000000-0000-4000-8000-000000000002",
+          "receiptSha256": "b5503485988b1f9fc31617a7cdaad8d9ed8963b2c78ea264e90c660efa18e2de",
+          "attemptId": "fact-ref",
+          "generationVersion": "synthetic-generation-1",
+          "generatorSource": "deterministic",
+          "authority": {
+            "narrative": "original-prose-only",
+            "confirmedRuleFacts": [],
+            "unknownFields": [
+              "rule-confirmation"
+            ]
+          },
+          "authorization": {
+            "status": "allowed",
+            "npcId": "npc-a",
+            "grantId": "grant:v2:14:synthetic-save4:root5:npc-a36:00000000-0000-4000-8000-00000000000128:p1-direct-npc-participant-v1",
+            "visibilityEpoch": "visibility-1",
+            "memoryPolicyHash": "sha256:5da8bd8e61e4859e5492b5393e3f458b12ded9cc36025858415fbe51c27261de",
+            "forgettingEpoch": "forgetting-1",
+            "policySurface": "p4-explicit-recall"
+          }
+        }
+      ],
+      "generatedAnswer": null,
+      "estimatedTokens": 27,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S36",
+    "title": "缓存对返回对象修改隔离，且命中仍读取授权与正文",
+    "status": "PASS",
+    "observed": {
+      "status": "evidence",
+      "reason": "authorized-original-evidence",
+      "items": [
+        {
+          "sourceId": "source-v1",
+          "segmentId": "public-segment",
+          "sourceType": "original-narrative",
+          "revision": 1,
+          "asOfRevision": 4,
+          "startUtf16": 0,
+          "endUtf16": 18,
+          "text": "她说：“旧灯暂由你保管，不得转卖。”",
+          "sourceSha256": "eb1d604a97086cef70b686e219de71f3b63593bc8f4a424251c342af479ea1ed",
+          "receiptKey": "00000000-0000-4000-8000-000000000002",
+          "receiptSha256": "b5503485988b1f9fc31617a7cdaad8d9ed8963b2c78ea264e90c660efa18e2de",
+          "attemptId": "synthetic-attempt-1",
+          "generationVersion": "synthetic-generation-1",
+          "generatorSource": "deterministic",
+          "authority": {
+            "narrative": "original-prose-only",
+            "confirmedRuleFacts": [],
+            "unknownFields": []
+          },
+          "authorization": {
+            "status": "allowed",
+            "npcId": "npc-a",
+            "grantId": "grant:v2:14:synthetic-save4:root5:npc-a36:00000000-0000-4000-8000-00000000000128:p1-direct-npc-participant-v1",
+            "visibilityEpoch": "visibility-1",
+            "memoryPolicyHash": "sha256:5da8bd8e61e4859e5492b5393e3f458b12ded9cc36025858415fbe51c27261de",
+            "forgettingEpoch": "forgetting-1",
+            "policySurface": "p4-explicit-recall"
+          }
+        }
+      ],
+      "generatedAnswer": null,
+      "estimatedTokens": 27,
+      "authorityUnknown": false
+    }
+  },
+  {
+    "id": "S37",
+    "title": "遗忘时间改变但 ACL epoch 不变，缓存仍必须过真实门限",
+    "status": "PASS",
+    "observed": {
+      "status": "forgotten",
+      "reason": "formal-p4-forgotten",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S38",
+    "title": "没有统一 P4/P5 策略入口时拒绝自行选择",
+    "status": "PASS",
+    "observed": {
+      "status": "blocked",
+      "reason": "policy-surface-unresolved",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S39",
+    "title": "授权回调故障不生成假答案",
+    "status": "PASS",
+    "observed": {
+      "status": "blocked",
+      "reason": "trusted-reader-unavailable",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S40",
+    "title": "同一来源的不同正文或 attempt 不可重写",
+    "status": "PASS",
+    "observed": {
+      "status": "conflict",
+      "reason": "SOURCE_CONFLICT",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S41",
+    "title": "无版本的授权快照不能参与缓存",
+    "status": "PASS",
+    "observed": {
+      "status": "blocked",
+      "reason": "unversioned-authorization-boundary",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "S42",
+    "title": "accepted 的 legal_failure 仍为已结算行动，不能混成叙事失败",
+    "status": "PASS",
+    "observed": {
+      "status": "persisted",
+      "sourceId": "legal-failure",
+      "sha256": "eb1d604a97086cef70b686e219de71f3b63593bc8f4a424251c342af479ea1ed",
+      "actionSettled": true,
+      "narrativeState": "persisted",
+      "npcMayRead": "unknown",
+      "descriptionRuleConfirmed": false
+    }
+  }
+]

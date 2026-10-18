@@ -1,0 +1,3650 @@
+[
+  {
+    "questionId": "holdout:0:body:0",
+    "split": "holdout",
+    "category": "body",
+    "text": "温芹耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:0:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:0:1",
+        "sourceId": "long:0:1",
+        "turn": 129,
+        "start": 131,
+        "end": 156,
+        "text": "温芹耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "bb849785060177acd3c6483ed6f4d65922d8fd3e8c8fbf94682287a24f287e90",
+        "kind": "body",
+        "subject": "n0",
+        "value": "温芹耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:0:body-waist:1",
+    "split": "holdout",
+    "category": "body-waist",
+    "text": "温芹腰间有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:0:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:0:1",
+        "sourceId": "long:0:1",
+        "turn": 129,
+        "start": 131,
+        "end": 156,
+        "text": "温芹耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "bb849785060177acd3c6483ed6f4d65922d8fd3e8c8fbf94682287a24f287e90",
+        "kind": "body",
+        "subject": "n0",
+        "value": "温芹耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:0:body-missing:2",
+    "split": "holdout",
+    "category": "body-missing",
+    "text": "温芹耳后的翡翠耳坠原文在哪里？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:0:rain:3",
+    "split": "holdout",
+    "category": "rain",
+    "text": "斜榆轩雨里的气味是什么？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:0:2"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:0:2",
+        "sourceId": "long:0:2",
+        "turn": 243,
+        "start": 85,
+        "end": 108,
+        "text": "斜榆轩雨中，湿苔带起青草味，檐下还有泥土气味。",
+        "sha256": "5433ee286fcf8521b7d5b8b3763eb81c6f853d4737b28c47833796124240837c",
+        "kind": "weather",
+        "subject": "n0",
+        "value": "斜榆轩雨中，湿苔带起青草味，檐下还有泥土气味。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:0:clear:4",
+    "split": "holdout",
+    "category": "clear",
+    "text": "斜榆轩晴天的气味是什么？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:0:3"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:0:3",
+        "sourceId": "long:0:3",
+        "turn": 357,
+        "start": 117,
+        "end": 130,
+        "text": "斜榆轩晴天，日光晒出木香。",
+        "sha256": "9a7168ce0a4f5609a0a23971791dd0a770bb71c33c07c5b657959d7570aacb2b",
+        "kind": "weather",
+        "subject": "n0",
+        "value": "斜榆轩晴天，日光晒出木香。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:0:landing:5",
+    "split": "holdout",
+    "category": "landing",
+    "text": "斜榆轩落地木珠的声音出现在哪里？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:0:4"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:0:4",
+        "sourceId": "long:0:4",
+        "turn": 471,
+        "start": 133,
+        "end": 160,
+        "text": "斜榆轩里，木珠掉到地上弹了两下，棋子留在桌上没有移动。",
+        "sha256": "9a5896e6424bc1024dce288be1275e405b50239b240f7336b5cb189f891f01ec",
+        "kind": "event",
+        "subject": "n0",
+        "value": "斜榆轩里，木珠掉到地上弹了两下，棋子留在桌上没有移动。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:0:wrong-object:6",
+    "split": "holdout",
+    "category": "wrong-object",
+    "text": "斜榆轩落地棋子的声音出现在哪里？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:0:future:7",
+    "split": "holdout",
+    "category": "future",
+    "text": "温芹耳后有什么装饰？",
+    "asOfTurn": 128,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:0:alias-future:8",
+    "split": "holdout",
+    "category": "alias-future",
+    "text": "温芹客耳后有什么装饰？",
+    "asOfTurn": 585,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:0:alias-known:9",
+    "split": "holdout",
+    "category": "alias-known",
+    "text": "温芹客耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:0:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:0:1",
+        "sourceId": "long:0:1",
+        "turn": 129,
+        "start": 131,
+        "end": 156,
+        "text": "温芹耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "bb849785060177acd3c6483ed6f4d65922d8fd3e8c8fbf94682287a24f287e90",
+        "kind": "body",
+        "subject": "n0",
+        "value": "温芹耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:0:npc-self:10",
+    "split": "holdout",
+    "category": "npc-self",
+    "text": "温芹耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "npc",
+      "npcId": "n0"
+    },
+    "expectedSourceIds": [
+      "long:0:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:0:1",
+        "sourceId": "long:0:1",
+        "turn": 129,
+        "start": 131,
+        "end": 156,
+        "text": "温芹耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "bb849785060177acd3c6483ed6f4d65922d8fd3e8c8fbf94682287a24f287e90",
+        "kind": "body",
+        "subject": "n0",
+        "value": "温芹耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:0:npc-unknown:11",
+    "split": "holdout",
+    "category": "npc-unknown",
+    "text": "温芹耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "npc",
+      "npcId": "n1"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:0:same-name:12",
+    "split": "holdout",
+    "category": "same-name",
+    "text": "老渡客耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:0:historical-relation:13",
+    "split": "holdout",
+    "category": "historical-relation",
+    "text": "温芹当时的关系如何？",
+    "asOfTurn": 585,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:0:0"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:0:0",
+        "sourceId": "long:0:0",
+        "turn": 15,
+        "start": 130,
+        "end": 164,
+        "text": "温芹第一次在斜榆轩见到玩家，态度戒备，说：“先问清来处，再谈同行。”",
+        "sha256": "8093b48533b8e3979ba6fab3d23262c12052d232b70e6a6067dfa5e09aa5b95b",
+        "kind": "meeting",
+        "subject": "n0",
+        "value": "斜榆轩",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "戒备"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:0:current-relation:14",
+    "split": "holdout",
+    "category": "current-relation",
+    "text": "温芹当前关系如何？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:0:5"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:0:5",
+        "sourceId": "long:0:5",
+        "turn": 586,
+        "start": 147,
+        "end": 179,
+        "text": "温芹在斜榆轩兑现共同修桥的承诺，改称玩家为同行者；双方建立信任。",
+        "sha256": "f5e5efb77811fd62923006ae54f85cccbe8b7054ef975a4899abf358c95215c5",
+        "kind": "relationship",
+        "subject": "n0",
+        "value": "信任",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "信任"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:0:promise:15",
+    "split": "holdout",
+    "category": "promise",
+    "text": "温芹当前承诺是否兑现？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:0:5"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:0:5",
+        "sourceId": "long:0:5",
+        "turn": 586,
+        "start": 147,
+        "end": 179,
+        "text": "温芹在斜榆轩兑现共同修桥的承诺，改称玩家为同行者；双方建立信任。",
+        "sha256": "f5e5efb77811fd62923006ae54f85cccbe8b7054ef975a4899abf358c95215c5",
+        "kind": "relationship",
+        "subject": "n0",
+        "value": "信任",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "已兑现"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:0:consumed:16",
+    "split": "holdout",
+    "category": "consumed",
+    "text": "木珠信物当前归属？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:0:6"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:0:6",
+        "sourceId": "long:0:6",
+        "turn": 700,
+        "start": 85,
+        "end": 115,
+        "text": "温芹把木珠信物交给玩家，随后信物被消耗于阵门，归属不再有效。",
+        "sha256": "0f0a35616191cae4705f94333e0969365e0318c699a4a235c2eb77bd79111b5d",
+        "kind": "transfer",
+        "subject": "n0",
+        "value": "已消耗",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "已消耗"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:0:rumor:17",
+    "split": "holdout",
+    "category": "rumor",
+    "text": "温芹的身份传闻是什么？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:0:7"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:0:7",
+        "sourceId": "long:0:7",
+        "turn": 814,
+        "start": 141,
+        "end": 173,
+        "text": "温芹说：“听说远方的门已经开放。”他没有亲眼确认，谣言仍未核实。",
+        "sha256": "39e6a9144d593725d7b2d6a2c5936193889356302f5971c0434c07b9aa3efb85",
+        "kind": "rumor",
+        "subject": "n0",
+        "value": "远门已开放",
+        "status": "unverified"
+      }
+    ],
+    "expectedFactValues": [
+      "远门已开放"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:1:body:18",
+    "split": "holdout",
+    "category": "body",
+    "text": "谢荻耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:1:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:1:1",
+        "sourceId": "long:1:1",
+        "turn": 143,
+        "start": 132,
+        "end": 157,
+        "text": "谢荻耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "c866865afa98a1c3653273bcae35de1411357854dec7e893edc87050c741367a",
+        "kind": "body",
+        "subject": "n1",
+        "value": "谢荻耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:1:body-waist:19",
+    "split": "holdout",
+    "category": "body-waist",
+    "text": "谢荻腰间有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:1:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:1:1",
+        "sourceId": "long:1:1",
+        "turn": 143,
+        "start": 132,
+        "end": 157,
+        "text": "谢荻耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "c866865afa98a1c3653273bcae35de1411357854dec7e893edc87050c741367a",
+        "kind": "body",
+        "subject": "n1",
+        "value": "谢荻耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:1:body-missing:20",
+    "split": "holdout",
+    "category": "body-missing",
+    "text": "谢荻耳后的翡翠耳坠原文在哪里？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:1:rain:21",
+    "split": "holdout",
+    "category": "rain",
+    "text": "温苓院雨里的气味是什么？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:1:2"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:1:2",
+        "sourceId": "long:1:2",
+        "turn": 257,
+        "start": 132,
+        "end": 155,
+        "text": "温苓院雨中，湿苔带起青草味，檐下还有泥土气味。",
+        "sha256": "9dd9b9c0d831e72d514d7eab010f82cb63a306828af97f325a309ccba9bb17e5",
+        "kind": "weather",
+        "subject": "n1",
+        "value": "温苓院雨中，湿苔带起青草味，檐下还有泥土气味。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:1:clear:22",
+    "split": "holdout",
+    "category": "clear",
+    "text": "温苓院晴天的气味是什么？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:1:3"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:1:3",
+        "sourceId": "long:1:3",
+        "turn": 372,
+        "start": 85,
+        "end": 98,
+        "text": "温苓院晴天，日光晒出木香。",
+        "sha256": "17fe6dd5a9ee2b1e8e32207242a1f6b22ba6322afe6edec8312aaa218d2e9417",
+        "kind": "weather",
+        "subject": "n1",
+        "value": "温苓院晴天，日光晒出木香。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:1:landing:23",
+    "split": "holdout",
+    "category": "landing",
+    "text": "温苓院落地瓷杯的声音出现在哪里？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:1:4"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:1:4",
+        "sourceId": "long:1:4",
+        "turn": 486,
+        "start": 140,
+        "end": 167,
+        "text": "温苓院里，瓷杯掉到地上弹了两下，棋子留在桌上没有移动。",
+        "sha256": "6a40bd091158787f41c98e8e359c16c452bf209b1e34f399f6c81ec681e123a5",
+        "kind": "event",
+        "subject": "n1",
+        "value": "温苓院里，瓷杯掉到地上弹了两下，棋子留在桌上没有移动。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:1:wrong-object:24",
+    "split": "holdout",
+    "category": "wrong-object",
+    "text": "温苓院落地棋子的声音出现在哪里？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:1:future:25",
+    "split": "holdout",
+    "category": "future",
+    "text": "谢荻耳后有什么装饰？",
+    "asOfTurn": 142,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:1:alias-future:26",
+    "split": "holdout",
+    "category": "alias-future",
+    "text": "谢荻客耳后有什么装饰？",
+    "asOfTurn": 599,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:1:alias-known:27",
+    "split": "holdout",
+    "category": "alias-known",
+    "text": "谢荻客耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:1:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:1:1",
+        "sourceId": "long:1:1",
+        "turn": 143,
+        "start": 132,
+        "end": 157,
+        "text": "谢荻耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "c866865afa98a1c3653273bcae35de1411357854dec7e893edc87050c741367a",
+        "kind": "body",
+        "subject": "n1",
+        "value": "谢荻耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:1:npc-self:28",
+    "split": "holdout",
+    "category": "npc-self",
+    "text": "谢荻耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "npc",
+      "npcId": "n1"
+    },
+    "expectedSourceIds": [
+      "long:1:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:1:1",
+        "sourceId": "long:1:1",
+        "turn": 143,
+        "start": 132,
+        "end": 157,
+        "text": "谢荻耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "c866865afa98a1c3653273bcae35de1411357854dec7e893edc87050c741367a",
+        "kind": "body",
+        "subject": "n1",
+        "value": "谢荻耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:1:npc-unknown:29",
+    "split": "holdout",
+    "category": "npc-unknown",
+    "text": "谢荻耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "npc",
+      "npcId": "n2"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:1:same-name:30",
+    "split": "holdout",
+    "category": "same-name",
+    "text": "老渡客耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:1:historical-relation:31",
+    "split": "holdout",
+    "category": "historical-relation",
+    "text": "谢荻当时的关系如何？",
+    "asOfTurn": 599,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:1:0"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:1:0",
+        "sourceId": "long:1:0",
+        "turn": 29,
+        "start": 114,
+        "end": 148,
+        "text": "谢荻第一次在温苓院见到玩家，态度戒备，说：“先问清来处，再谈同行。”",
+        "sha256": "d482238ac302bb682affbefc2c38428202b2cf231eb7697b47ed785737685389",
+        "kind": "meeting",
+        "subject": "n1",
+        "value": "温苓院",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "戒备"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:1:current-relation:32",
+    "split": "holdout",
+    "category": "current-relation",
+    "text": "谢荻当前关系如何？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:1:5"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:1:5",
+        "sourceId": "long:1:5",
+        "turn": 600,
+        "start": 99,
+        "end": 131,
+        "text": "谢荻在温苓院兑现共同修桥的承诺，改称玩家为同行者；双方建立信任。",
+        "sha256": "d4b91dc351da253b797e76b6cd01b38a9131d120f7d78e8c3a9016506bf5e7b0",
+        "kind": "relationship",
+        "subject": "n1",
+        "value": "信任",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "信任"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:1:promise:33",
+    "split": "holdout",
+    "category": "promise",
+    "text": "谢荻当前承诺是否兑现？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:1:5"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:1:5",
+        "sourceId": "long:1:5",
+        "turn": 600,
+        "start": 99,
+        "end": 131,
+        "text": "谢荻在温苓院兑现共同修桥的承诺，改称玩家为同行者；双方建立信任。",
+        "sha256": "d4b91dc351da253b797e76b6cd01b38a9131d120f7d78e8c3a9016506bf5e7b0",
+        "kind": "relationship",
+        "subject": "n1",
+        "value": "信任",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "已兑现"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:1:consumed:34",
+    "split": "holdout",
+    "category": "consumed",
+    "text": "瓷杯信物当前归属？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:1:6"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:1:6",
+        "sourceId": "long:1:6",
+        "turn": 714,
+        "start": 147,
+        "end": 177,
+        "text": "谢荻把瓷杯信物交给玩家，随后信物被消耗于阵门，归属不再有效。",
+        "sha256": "9c05e2067393eeb3e624d3bd1891967c155124bd0605c0b52e5e19ae40923c85",
+        "kind": "transfer",
+        "subject": "n1",
+        "value": "已消耗",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "已消耗"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:1:rumor:35",
+    "split": "holdout",
+    "category": "rumor",
+    "text": "谢荻的身份传闻是什么？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:1:7"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:1:7",
+        "sourceId": "long:1:7",
+        "turn": 828,
+        "start": 86,
+        "end": 118,
+        "text": "谢荻说：“听说远方的门已经开放。”他没有亲眼确认，谣言仍未核实。",
+        "sha256": "b76547112603c889941340000ad8fde813ead946612e1b9843adaf7dab737aa2",
+        "kind": "rumor",
+        "subject": "n1",
+        "value": "远门已开放",
+        "status": "unverified"
+      }
+    ],
+    "expectedFactValues": [
+      "远门已开放"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:2:body:36",
+    "split": "holdout",
+    "category": "body",
+    "text": "钱柚耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:2:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:2:1",
+        "sourceId": "long:2:1",
+        "turn": 157,
+        "start": 116,
+        "end": 141,
+        "text": "钱柚耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "5b788f653ba04aad1ab2affb7af7ceebfe02e2add530bd3867561d10d56633f8",
+        "kind": "body",
+        "subject": "n2",
+        "value": "钱柚耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:2:body-waist:37",
+    "split": "holdout",
+    "category": "body-waist",
+    "text": "钱柚腰间有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:2:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:2:1",
+        "sourceId": "long:2:1",
+        "turn": 157,
+        "start": 116,
+        "end": 141,
+        "text": "钱柚耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "5b788f653ba04aad1ab2affb7af7ceebfe02e2add530bd3867561d10d56633f8",
+        "kind": "body",
+        "subject": "n2",
+        "value": "钱柚耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:2:body-missing:38",
+    "split": "holdout",
+    "category": "body-missing",
+    "text": "钱柚耳后的翡翠耳坠原文在哪里？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:2:rain:39",
+    "split": "holdout",
+    "category": "rain",
+    "text": "映荻馆雨里的气味是什么？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:2:2"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:2:2",
+        "sourceId": "long:2:2",
+        "turn": 272,
+        "start": 99,
+        "end": 122,
+        "text": "映荻馆雨中，湿苔带起青草味，檐下还有泥土气味。",
+        "sha256": "6c6321f612e4898c77b08b0a57c8a429b9bca6ab9e846162f6896a11fa76c1f7",
+        "kind": "weather",
+        "subject": "n2",
+        "value": "映荻馆雨中，湿苔带起青草味，檐下还有泥土气味。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:2:clear:40",
+    "split": "holdout",
+    "category": "clear",
+    "text": "映荻馆晴天的气味是什么？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:2:3"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:2:3",
+        "sourceId": "long:2:3",
+        "turn": 386,
+        "start": 147,
+        "end": 160,
+        "text": "映荻馆晴天，日光晒出木香。",
+        "sha256": "c9381ca9cd77808db8706feef281a7b03849b6d242aae21ddb20b4156e2e3e46",
+        "kind": "weather",
+        "subject": "n2",
+        "value": "映荻馆晴天，日光晒出木香。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:2:landing:41",
+    "split": "holdout",
+    "category": "landing",
+    "text": "映荻馆落地铜环的声音出现在哪里？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:2:4"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:2:4",
+        "sourceId": "long:2:4",
+        "turn": 500,
+        "start": 85,
+        "end": 112,
+        "text": "映荻馆里，铜环掉到地上弹了两下，棋子留在桌上没有移动。",
+        "sha256": "b5d4eeef007d612c8a668f3ddc03742c68538d50d59c45e60acfab18de233449",
+        "kind": "event",
+        "subject": "n2",
+        "value": "映荻馆里，铜环掉到地上弹了两下，棋子留在桌上没有移动。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:2:wrong-object:42",
+    "split": "holdout",
+    "category": "wrong-object",
+    "text": "映荻馆落地棋子的声音出现在哪里？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:2:future:43",
+    "split": "holdout",
+    "category": "future",
+    "text": "钱柚耳后有什么装饰？",
+    "asOfTurn": 156,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:2:alias-future:44",
+    "split": "holdout",
+    "category": "alias-future",
+    "text": "钱柚客耳后有什么装饰？",
+    "asOfTurn": 613,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:2:alias-known:45",
+    "split": "holdout",
+    "category": "alias-known",
+    "text": "钱柚客耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:2:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:2:1",
+        "sourceId": "long:2:1",
+        "turn": 157,
+        "start": 116,
+        "end": 141,
+        "text": "钱柚耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "5b788f653ba04aad1ab2affb7af7ceebfe02e2add530bd3867561d10d56633f8",
+        "kind": "body",
+        "subject": "n2",
+        "value": "钱柚耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:2:npc-self:46",
+    "split": "holdout",
+    "category": "npc-self",
+    "text": "钱柚耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "npc",
+      "npcId": "n2"
+    },
+    "expectedSourceIds": [
+      "long:2:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:2:1",
+        "sourceId": "long:2:1",
+        "turn": 157,
+        "start": 116,
+        "end": 141,
+        "text": "钱柚耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "5b788f653ba04aad1ab2affb7af7ceebfe02e2add530bd3867561d10d56633f8",
+        "kind": "body",
+        "subject": "n2",
+        "value": "钱柚耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:2:npc-unknown:47",
+    "split": "holdout",
+    "category": "npc-unknown",
+    "text": "钱柚耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "npc",
+      "npcId": "n3"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:2:same-name:48",
+    "split": "holdout",
+    "category": "same-name",
+    "text": "老渡客耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:2:historical-relation:49",
+    "split": "holdout",
+    "category": "historical-relation",
+    "text": "钱柚当时的关系如何？",
+    "asOfTurn": 613,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:2:0"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:2:0",
+        "sourceId": "long:2:0",
+        "turn": 43,
+        "start": 83,
+        "end": 117,
+        "text": "钱柚第一次在映荻馆见到玩家，态度戒备，说：“先问清来处，再谈同行。”",
+        "sha256": "cd33791522cde0cf9e3dc029eee6082e1b9fa66dc8283bb44fb7f3dc331b6c23",
+        "kind": "meeting",
+        "subject": "n2",
+        "value": "映荻馆",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "戒备"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:2:current-relation:50",
+    "split": "holdout",
+    "category": "current-relation",
+    "text": "钱柚当前关系如何？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:2:5"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:2:5",
+        "sourceId": "long:2:5",
+        "turn": 614,
+        "start": 139,
+        "end": 171,
+        "text": "钱柚在映荻馆兑现共同修桥的承诺，改称玩家为同行者；双方建立信任。",
+        "sha256": "c4f152e7ada65c9532a9f64c73d782844d6c1732a18d7ccc1ccf07ec78d605d7",
+        "kind": "relationship",
+        "subject": "n2",
+        "value": "信任",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "信任"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:2:promise:51",
+    "split": "holdout",
+    "category": "promise",
+    "text": "钱柚当前承诺是否兑现？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:2:5"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:2:5",
+        "sourceId": "long:2:5",
+        "turn": 614,
+        "start": 139,
+        "end": 171,
+        "text": "钱柚在映荻馆兑现共同修桥的承诺，改称玩家为同行者；双方建立信任。",
+        "sha256": "c4f152e7ada65c9532a9f64c73d782844d6c1732a18d7ccc1ccf07ec78d605d7",
+        "kind": "relationship",
+        "subject": "n2",
+        "value": "信任",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "已兑现"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:2:consumed:52",
+    "split": "holdout",
+    "category": "consumed",
+    "text": "铜环信物当前归属？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:2:6"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:2:6",
+        "sourceId": "long:2:6",
+        "turn": 728,
+        "start": 99,
+        "end": 129,
+        "text": "钱柚把铜环信物交给玩家，随后信物被消耗于阵门，归属不再有效。",
+        "sha256": "bd98a2923824dd2f171c628f550137d4ba2a9798319025199e89b9e0ffeed861",
+        "kind": "transfer",
+        "subject": "n2",
+        "value": "已消耗",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "已消耗"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:2:rumor:53",
+    "split": "holdout",
+    "category": "rumor",
+    "text": "钱柚的身份传闻是什么？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:2:7"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:2:7",
+        "sourceId": "long:2:7",
+        "turn": 843,
+        "start": 86,
+        "end": 118,
+        "text": "钱柚说：“听说远方的门已经开放。”他没有亲眼确认，谣言仍未核实。",
+        "sha256": "d353b444fed55684b09121132ace93788c20adb8b7c6a2a1f45c8bfe1f9e5fec",
+        "kind": "rumor",
+        "subject": "n2",
+        "value": "远门已开放",
+        "status": "unverified"
+      }
+    ],
+    "expectedFactValues": [
+      "远门已开放"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:3:body:54",
+    "split": "holdout",
+    "category": "body",
+    "text": "蒋榆耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:3:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:3:1",
+        "sourceId": "long:3:1",
+        "turn": 172,
+        "start": 85,
+        "end": 110,
+        "text": "蒋榆耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "87e334221b5e5e08f4e5d3fa137a02fc5e27e81cdda0634618914c544eb628de",
+        "kind": "body",
+        "subject": "n3",
+        "value": "蒋榆耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:3:body-waist:55",
+    "split": "holdout",
+    "category": "body-waist",
+    "text": "蒋榆腰间有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:3:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:3:1",
+        "sourceId": "long:3:1",
+        "turn": 172,
+        "start": 85,
+        "end": 110,
+        "text": "蒋榆耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "87e334221b5e5e08f4e5d3fa137a02fc5e27e81cdda0634618914c544eb628de",
+        "kind": "body",
+        "subject": "n3",
+        "value": "蒋榆耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:3:body-missing:56",
+    "split": "holdout",
+    "category": "body-missing",
+    "text": "蒋榆耳后的翡翠耳坠原文在哪里？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:3:rain:57",
+    "split": "holdout",
+    "category": "rain",
+    "text": "沉柚台雨里的气味是什么？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:3:2"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:3:2",
+        "sourceId": "long:3:2",
+        "turn": 286,
+        "start": 140,
+        "end": 163,
+        "text": "沉柚台雨中，湿苔带起青草味，檐下还有泥土气味。",
+        "sha256": "eec29be624aea7b0a88f904f899880613df8efebe30ca9ab627b155896eb7096",
+        "kind": "weather",
+        "subject": "n3",
+        "value": "沉柚台雨中，湿苔带起青草味，檐下还有泥土气味。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:3:clear:58",
+    "split": "holdout",
+    "category": "clear",
+    "text": "沉柚台晴天的气味是什么？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:3:3"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:3:3",
+        "sourceId": "long:3:3",
+        "turn": 400,
+        "start": 99,
+        "end": 112,
+        "text": "沉柚台晴天，日光晒出木香。",
+        "sha256": "d46819013cec1a74281d44e3322f2ab30a594920443d482987ebc9bceaa7633f",
+        "kind": "weather",
+        "subject": "n3",
+        "value": "沉柚台晴天，日光晒出木香。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:3:landing:59",
+    "split": "holdout",
+    "category": "landing",
+    "text": "沉柚台落地石盏的声音出现在哪里？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:3:4"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:3:4",
+        "sourceId": "long:3:4",
+        "turn": 514,
+        "start": 147,
+        "end": 174,
+        "text": "沉柚台里，石盏掉到地上弹了两下，棋子留在桌上没有移动。",
+        "sha256": "640305604dc306e300b974f1aadc54d1ee4f4e75d890ed9e839a241d2cfba5e4",
+        "kind": "event",
+        "subject": "n3",
+        "value": "沉柚台里，石盏掉到地上弹了两下，棋子留在桌上没有移动。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:3:wrong-object:60",
+    "split": "holdout",
+    "category": "wrong-object",
+    "text": "沉柚台落地棋子的声音出现在哪里？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:3:future:61",
+    "split": "holdout",
+    "category": "future",
+    "text": "蒋榆耳后有什么装饰？",
+    "asOfTurn": 171,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:3:alias-future:62",
+    "split": "holdout",
+    "category": "alias-future",
+    "text": "蒋榆客耳后有什么装饰？",
+    "asOfTurn": 627,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:3:alias-known:63",
+    "split": "holdout",
+    "category": "alias-known",
+    "text": "蒋榆客耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:3:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:3:1",
+        "sourceId": "long:3:1",
+        "turn": 172,
+        "start": 85,
+        "end": 110,
+        "text": "蒋榆耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "87e334221b5e5e08f4e5d3fa137a02fc5e27e81cdda0634618914c544eb628de",
+        "kind": "body",
+        "subject": "n3",
+        "value": "蒋榆耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:3:npc-self:64",
+    "split": "holdout",
+    "category": "npc-self",
+    "text": "蒋榆耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "npc",
+      "npcId": "n3"
+    },
+    "expectedSourceIds": [
+      "long:3:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:3:1",
+        "sourceId": "long:3:1",
+        "turn": 172,
+        "start": 85,
+        "end": 110,
+        "text": "蒋榆耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "87e334221b5e5e08f4e5d3fa137a02fc5e27e81cdda0634618914c544eb628de",
+        "kind": "body",
+        "subject": "n3",
+        "value": "蒋榆耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:3:npc-unknown:65",
+    "split": "holdout",
+    "category": "npc-unknown",
+    "text": "蒋榆耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "npc",
+      "npcId": "n4"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:3:same-name:66",
+    "split": "holdout",
+    "category": "same-name",
+    "text": "老渡客耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:3:historical-relation:67",
+    "split": "holdout",
+    "category": "historical-relation",
+    "text": "蒋榆当时的关系如何？",
+    "asOfTurn": 627,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:3:0"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:3:0",
+        "sourceId": "long:3:0",
+        "turn": 58,
+        "start": 143,
+        "end": 177,
+        "text": "蒋榆第一次在沉柚台见到玩家，态度戒备，说：“先问清来处，再谈同行。”",
+        "sha256": "f03c6998a01ca477f852c25e4b4ea6ee787fd80f831212f732bd85934cfa5a46",
+        "kind": "meeting",
+        "subject": "n3",
+        "value": "沉柚台",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "戒备"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:3:current-relation:68",
+    "split": "holdout",
+    "category": "current-relation",
+    "text": "蒋榆当前关系如何？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:3:5"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:3:5",
+        "sourceId": "long:3:5",
+        "turn": 628,
+        "start": 84,
+        "end": 116,
+        "text": "蒋榆在沉柚台兑现共同修桥的承诺，改称玩家为同行者；双方建立信任。",
+        "sha256": "75aff026170b2fac9942644d7325068a013b8e8276252ea8ee0aca0a537a532a",
+        "kind": "relationship",
+        "subject": "n3",
+        "value": "信任",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "信任"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:3:promise:69",
+    "split": "holdout",
+    "category": "promise",
+    "text": "蒋榆当前承诺是否兑现？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:3:5"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:3:5",
+        "sourceId": "long:3:5",
+        "turn": 628,
+        "start": 84,
+        "end": 116,
+        "text": "蒋榆在沉柚台兑现共同修桥的承诺，改称玩家为同行者；双方建立信任。",
+        "sha256": "75aff026170b2fac9942644d7325068a013b8e8276252ea8ee0aca0a537a532a",
+        "kind": "relationship",
+        "subject": "n3",
+        "value": "信任",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "已兑现"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:3:consumed:70",
+    "split": "holdout",
+    "category": "consumed",
+    "text": "石盏信物当前归属？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:3:6"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:3:6",
+        "sourceId": "long:3:6",
+        "turn": 743,
+        "start": 133,
+        "end": 163,
+        "text": "蒋榆把石盏信物交给玩家，随后信物被消耗于阵门，归属不再有效。",
+        "sha256": "3246b76cfe80bc2f00fe245b259f2ba6f2bcca4d8a51c1f80e9e7a4a4f815597",
+        "kind": "transfer",
+        "subject": "n3",
+        "value": "已消耗",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "已消耗"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:3:rumor:71",
+    "split": "holdout",
+    "category": "rumor",
+    "text": "蒋榆的身份传闻是什么？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:3:7"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:3:7",
+        "sourceId": "long:3:7",
+        "turn": 857,
+        "start": 133,
+        "end": 165,
+        "text": "蒋榆说：“听说远方的门已经开放。”他没有亲眼确认，谣言仍未核实。",
+        "sha256": "b8baff3d134eb3313061c12109cfbfcab191974164e2c8f9e529ee58d920fea2",
+        "kind": "rumor",
+        "subject": "n3",
+        "value": "远门已开放",
+        "status": "unverified"
+      }
+    ],
+    "expectedFactValues": [
+      "远门已开放"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:4:body:72",
+    "split": "holdout",
+    "category": "body",
+    "text": "鲁蓼耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:4:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:4:1",
+        "sourceId": "long:4:1",
+        "turn": 186,
+        "start": 147,
+        "end": 172,
+        "text": "鲁蓼耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "a316820f0bc07a75436478d8b761564b80cd59cbda2b880177365352dd330fa6",
+        "kind": "body",
+        "subject": "n4",
+        "value": "鲁蓼耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:4:body-waist:73",
+    "split": "holdout",
+    "category": "body-waist",
+    "text": "鲁蓼腰间有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:4:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:4:1",
+        "sourceId": "long:4:1",
+        "turn": 186,
+        "start": 147,
+        "end": 172,
+        "text": "鲁蓼耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "a316820f0bc07a75436478d8b761564b80cd59cbda2b880177365352dd330fa6",
+        "kind": "body",
+        "subject": "n4",
+        "value": "鲁蓼耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:4:body-missing:74",
+    "split": "holdout",
+    "category": "body-missing",
+    "text": "鲁蓼耳后的翡翠耳坠原文在哪里？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:4:rain:75",
+    "split": "holdout",
+    "category": "rain",
+    "text": "听蓼庭雨里的气味是什么？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:4:2"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:4:2",
+        "sourceId": "long:4:2",
+        "turn": 300,
+        "start": 85,
+        "end": 108,
+        "text": "听蓼庭雨中，湿苔带起青草味，檐下还有泥土气味。",
+        "sha256": "4491d96ac150c421dc5cc2935fcbe13f43b69c051808d88c764d168972ae0d76",
+        "kind": "weather",
+        "subject": "n4",
+        "value": "听蓼庭雨中，湿苔带起青草味，檐下还有泥土气味。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:4:clear:76",
+    "split": "holdout",
+    "category": "clear",
+    "text": "听蓼庭晴天的气味是什么？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:4:3"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:4:3",
+        "sourceId": "long:4:3",
+        "turn": 414,
+        "start": 140,
+        "end": 153,
+        "text": "听蓼庭晴天，日光晒出木香。",
+        "sha256": "b4336f9345b7f799b2a542f90c2a8e6bdac7c685447f4bf40200f29d0c208da7",
+        "kind": "weather",
+        "subject": "n4",
+        "value": "听蓼庭晴天，日光晒出木香。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:4:landing:77",
+    "split": "holdout",
+    "category": "landing",
+    "text": "听蓼庭落地竹笛的声音出现在哪里？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:4:4"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:4:4",
+        "sourceId": "long:4:4",
+        "turn": 529,
+        "start": 132,
+        "end": 159,
+        "text": "听蓼庭里，竹笛掉到地上弹了两下，棋子留在桌上没有移动。",
+        "sha256": "0bad0e345039a344480c1e1fcaeefbfc7c02eacf5adb4f5c6e24d0d72d838acc",
+        "kind": "event",
+        "subject": "n4",
+        "value": "听蓼庭里，竹笛掉到地上弹了两下，棋子留在桌上没有移动。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:4:wrong-object:78",
+    "split": "holdout",
+    "category": "wrong-object",
+    "text": "听蓼庭落地棋子的声音出现在哪里？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:4:future:79",
+    "split": "holdout",
+    "category": "future",
+    "text": "鲁蓼耳后有什么装饰？",
+    "asOfTurn": 185,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:4:alias-future:80",
+    "split": "holdout",
+    "category": "alias-future",
+    "text": "鲁蓼客耳后有什么装饰？",
+    "asOfTurn": 642,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:4:alias-known:81",
+    "split": "holdout",
+    "category": "alias-known",
+    "text": "鲁蓼客耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:4:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:4:1",
+        "sourceId": "long:4:1",
+        "turn": 186,
+        "start": 147,
+        "end": 172,
+        "text": "鲁蓼耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "a316820f0bc07a75436478d8b761564b80cd59cbda2b880177365352dd330fa6",
+        "kind": "body",
+        "subject": "n4",
+        "value": "鲁蓼耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:4:npc-self:82",
+    "split": "holdout",
+    "category": "npc-self",
+    "text": "鲁蓼耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "npc",
+      "npcId": "n4"
+    },
+    "expectedSourceIds": [
+      "long:4:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:4:1",
+        "sourceId": "long:4:1",
+        "turn": 186,
+        "start": 147,
+        "end": 172,
+        "text": "鲁蓼耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "a316820f0bc07a75436478d8b761564b80cd59cbda2b880177365352dd330fa6",
+        "kind": "body",
+        "subject": "n4",
+        "value": "鲁蓼耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:4:npc-unknown:83",
+    "split": "holdout",
+    "category": "npc-unknown",
+    "text": "鲁蓼耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "npc",
+      "npcId": "n5"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:4:same-name:84",
+    "split": "holdout",
+    "category": "same-name",
+    "text": "老渡客耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:4:historical-relation:85",
+    "split": "holdout",
+    "category": "historical-relation",
+    "text": "鲁蓼当时的关系如何？",
+    "asOfTurn": 642,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:4:0"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:4:0",
+        "sourceId": "long:4:0",
+        "turn": 72,
+        "start": 96,
+        "end": 130,
+        "text": "鲁蓼第一次在听蓼庭见到玩家，态度戒备，说：“先问清来处，再谈同行。”",
+        "sha256": "83b00b0bd8200dda47796931302259bcfbcbe877774b116e3f3c783533ca5a93",
+        "kind": "meeting",
+        "subject": "n4",
+        "value": "听蓼庭",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "戒备"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:4:current-relation:86",
+    "split": "holdout",
+    "category": "current-relation",
+    "text": "鲁蓼当前关系如何？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:4:5"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:4:5",
+        "sourceId": "long:4:5",
+        "turn": 643,
+        "start": 85,
+        "end": 117,
+        "text": "鲁蓼在听蓼庭兑现共同修桥的承诺，改称玩家为同行者；双方建立信任。",
+        "sha256": "a64dd021652539faa46f89a827d34db0b343adba780fc9d0248408631460c37c",
+        "kind": "relationship",
+        "subject": "n4",
+        "value": "信任",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "信任"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:4:promise:87",
+    "split": "holdout",
+    "category": "promise",
+    "text": "鲁蓼当前承诺是否兑现？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:4:5"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:4:5",
+        "sourceId": "long:4:5",
+        "turn": 643,
+        "start": 85,
+        "end": 117,
+        "text": "鲁蓼在听蓼庭兑现共同修桥的承诺，改称玩家为同行者；双方建立信任。",
+        "sha256": "a64dd021652539faa46f89a827d34db0b343adba780fc9d0248408631460c37c",
+        "kind": "relationship",
+        "subject": "n4",
+        "value": "信任",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "已兑现"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:4:consumed:88",
+    "split": "holdout",
+    "category": "consumed",
+    "text": "竹笛信物当前归属？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:4:6"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:4:6",
+        "sourceId": "long:4:6",
+        "turn": 757,
+        "start": 117,
+        "end": 147,
+        "text": "鲁蓼把竹笛信物交给玩家，随后信物被消耗于阵门，归属不再有效。",
+        "sha256": "16e262839fcf64bafaff5424942f87a6162d6611f09491e7cb1ecb4d7ddac52d",
+        "kind": "transfer",
+        "subject": "n4",
+        "value": "已消耗",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "已消耗"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:4:rumor:89",
+    "split": "holdout",
+    "category": "rumor",
+    "text": "鲁蓼的身份传闻是什么？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:4:7"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:4:7",
+        "sourceId": "long:4:7",
+        "turn": 871,
+        "start": 134,
+        "end": 166,
+        "text": "鲁蓼说：“听说远方的门已经开放。”他没有亲眼确认，谣言仍未核实。",
+        "sha256": "e0e01896983b565871c60d10d6af3f023017e2755fe9747179cbf8a748ab9fa3",
+        "kind": "rumor",
+        "subject": "n4",
+        "value": "远门已开放",
+        "status": "unverified"
+      }
+    ],
+    "expectedFactValues": [
+      "远门已开放"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:5:body:90",
+    "split": "holdout",
+    "category": "body",
+    "text": "曹苓耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:5:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:5:1",
+        "sourceId": "long:5:1",
+        "turn": 200,
+        "start": 99,
+        "end": 124,
+        "text": "曹苓耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "d2546b805127dfb882f563b707b5f4593dbfd9ec42ea742404b5ac9eb0980ac7",
+        "kind": "body",
+        "subject": "n5",
+        "value": "曹苓耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:5:body-waist:91",
+    "split": "holdout",
+    "category": "body-waist",
+    "text": "曹苓腰间有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:5:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:5:1",
+        "sourceId": "long:5:1",
+        "turn": 200,
+        "start": 99,
+        "end": 124,
+        "text": "曹苓耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "d2546b805127dfb882f563b707b5f4593dbfd9ec42ea742404b5ac9eb0980ac7",
+        "kind": "body",
+        "subject": "n5",
+        "value": "曹苓耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:5:body-missing:92",
+    "split": "holdout",
+    "category": "body-missing",
+    "text": "曹苓耳后的翡翠耳坠原文在哪里？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:5:rain:93",
+    "split": "holdout",
+    "category": "rain",
+    "text": "寒薇坞雨里的气味是什么？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:5:2"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:5:2",
+        "sourceId": "long:5:2",
+        "turn": 314,
+        "start": 147,
+        "end": 170,
+        "text": "寒薇坞雨中，湿苔带起青草味，檐下还有泥土气味。",
+        "sha256": "c330f2f57a45f489759bae13d97c87990803332107293e419ed0ed740f891866",
+        "kind": "weather",
+        "subject": "n5",
+        "value": "寒薇坞雨中，湿苔带起青草味，檐下还有泥土气味。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:5:clear:94",
+    "split": "holdout",
+    "category": "clear",
+    "text": "寒薇坞晴天的气味是什么？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:5:3"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:5:3",
+        "sourceId": "long:5:3",
+        "turn": 429,
+        "start": 117,
+        "end": 130,
+        "text": "寒薇坞晴天，日光晒出木香。",
+        "sha256": "80ddeadc4eeea6393885b9cb1db7da84a45e79d38454a842462bf06f23033081",
+        "kind": "weather",
+        "subject": "n5",
+        "value": "寒薇坞晴天，日光晒出木香。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:5:landing:95",
+    "split": "holdout",
+    "category": "landing",
+    "text": "寒薇坞落地铁扣的声音出现在哪里？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:5:4"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:5:4",
+        "sourceId": "long:5:4",
+        "turn": 543,
+        "start": 133,
+        "end": 160,
+        "text": "寒薇坞里，铁扣掉到地上弹了两下，棋子留在桌上没有移动。",
+        "sha256": "88a4e28ca19ac5f43292126cf4e793076e38bcac02b9c3ebf35a3236485fddef",
+        "kind": "event",
+        "subject": "n5",
+        "value": "寒薇坞里，铁扣掉到地上弹了两下，棋子留在桌上没有移动。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:5:wrong-object:96",
+    "split": "holdout",
+    "category": "wrong-object",
+    "text": "寒薇坞落地棋子的声音出现在哪里？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:5:future:97",
+    "split": "holdout",
+    "category": "future",
+    "text": "曹苓耳后有什么装饰？",
+    "asOfTurn": 199,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:5:alias-future:98",
+    "split": "holdout",
+    "category": "alias-future",
+    "text": "曹苓客耳后有什么装饰？",
+    "asOfTurn": 656,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:5:alias-known:99",
+    "split": "holdout",
+    "category": "alias-known",
+    "text": "曹苓客耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:5:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:5:1",
+        "sourceId": "long:5:1",
+        "turn": 200,
+        "start": 99,
+        "end": 124,
+        "text": "曹苓耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "d2546b805127dfb882f563b707b5f4593dbfd9ec42ea742404b5ac9eb0980ac7",
+        "kind": "body",
+        "subject": "n5",
+        "value": "曹苓耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:5:npc-self:100",
+    "split": "holdout",
+    "category": "npc-self",
+    "text": "曹苓耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "npc",
+      "npcId": "n5"
+    },
+    "expectedSourceIds": [
+      "long:5:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:5:1",
+        "sourceId": "long:5:1",
+        "turn": 200,
+        "start": 99,
+        "end": 124,
+        "text": "曹苓耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "d2546b805127dfb882f563b707b5f4593dbfd9ec42ea742404b5ac9eb0980ac7",
+        "kind": "body",
+        "subject": "n5",
+        "value": "曹苓耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:5:npc-unknown:101",
+    "split": "holdout",
+    "category": "npc-unknown",
+    "text": "曹苓耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "npc",
+      "npcId": "n6"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:5:same-name:102",
+    "split": "holdout",
+    "category": "same-name",
+    "text": "老渡客耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:5:historical-relation:103",
+    "split": "holdout",
+    "category": "historical-relation",
+    "text": "曹苓当时的关系如何？",
+    "asOfTurn": 656,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:5:0"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:5:0",
+        "sourceId": "long:5:0",
+        "turn": 86,
+        "start": 138,
+        "end": 172,
+        "text": "曹苓第一次在寒薇坞见到玩家，态度戒备，说：“先问清来处，再谈同行。”",
+        "sha256": "50979103e81b6cc5b49ddaeccc76a8a792a5bdefea65a2697d37c7ffcc82cdab",
+        "kind": "meeting",
+        "subject": "n5",
+        "value": "寒薇坞",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "戒备"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:5:current-relation:104",
+    "split": "holdout",
+    "category": "current-relation",
+    "text": "曹苓当前关系如何？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:5:5"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:5:5",
+        "sourceId": "long:5:5",
+        "turn": 657,
+        "start": 132,
+        "end": 164,
+        "text": "曹苓在寒薇坞兑现共同修桥的承诺，改称玩家为同行者；双方建立信任。",
+        "sha256": "af35ef19f6f4a6bedcb39de94df4c9ee2ec1e0ce7e73ca54c6b4c5eb2f047a65",
+        "kind": "relationship",
+        "subject": "n5",
+        "value": "信任",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "信任"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:5:promise:105",
+    "split": "holdout",
+    "category": "promise",
+    "text": "曹苓当前承诺是否兑现？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:5:5"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:5:5",
+        "sourceId": "long:5:5",
+        "turn": 657,
+        "start": 132,
+        "end": 164,
+        "text": "曹苓在寒薇坞兑现共同修桥的承诺，改称玩家为同行者；双方建立信任。",
+        "sha256": "af35ef19f6f4a6bedcb39de94df4c9ee2ec1e0ce7e73ca54c6b4c5eb2f047a65",
+        "kind": "relationship",
+        "subject": "n5",
+        "value": "信任",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "已兑现"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:5:consumed:106",
+    "split": "holdout",
+    "category": "consumed",
+    "text": "铁扣信物当前归属？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:5:6"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:5:6",
+        "sourceId": "long:5:6",
+        "turn": 771,
+        "start": 86,
+        "end": 116,
+        "text": "曹苓把铁扣信物交给玩家，随后信物被消耗于阵门，归属不再有效。",
+        "sha256": "0a45ea6b427a5456d0e1afd5c54fd8e75cf4f38c71fa3aaae06b152929f40297",
+        "kind": "transfer",
+        "subject": "n5",
+        "value": "已消耗",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "已消耗"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:5:rumor:107",
+    "split": "holdout",
+    "category": "rumor",
+    "text": "曹苓的身份传闻是什么？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:5:7"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:5:7",
+        "sourceId": "long:5:7",
+        "turn": 885,
+        "start": 118,
+        "end": 150,
+        "text": "曹苓说：“听说远方的门已经开放。”他没有亲眼确认，谣言仍未核实。",
+        "sha256": "b469da615907a26b1035f71016d639da1f244b3ebf7a28cc17255ac7afcf758c",
+        "kind": "rumor",
+        "subject": "n5",
+        "value": "远门已开放",
+        "status": "unverified"
+      }
+    ],
+    "expectedFactValues": [
+      "远门已开放"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:6:body:108",
+    "split": "holdout",
+    "category": "body",
+    "text": "邵芩耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:6:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:6:1",
+        "sourceId": "long:6:1",
+        "turn": 215,
+        "start": 133,
+        "end": 158,
+        "text": "邵芩耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "ba2cbb0fae6ca62143854c0f9f3d9cab6f4bbefd494e354af28b9c835acf4226",
+        "kind": "body",
+        "subject": "n6",
+        "value": "邵芩耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:6:body-waist:109",
+    "split": "holdout",
+    "category": "body-waist",
+    "text": "邵芩腰间有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:6:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:6:1",
+        "sourceId": "long:6:1",
+        "turn": 215,
+        "start": 133,
+        "end": 158,
+        "text": "邵芩耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "ba2cbb0fae6ca62143854c0f9f3d9cab6f4bbefd494e354af28b9c835acf4226",
+        "kind": "body",
+        "subject": "n6",
+        "value": "邵芩耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:6:body-missing:110",
+    "split": "holdout",
+    "category": "body-missing",
+    "text": "邵芩耳后的翡翠耳坠原文在哪里？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:6:rain:111",
+    "split": "holdout",
+    "category": "rain",
+    "text": "望芩阁雨里的气味是什么？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:6:2"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:6:2",
+        "sourceId": "long:6:2",
+        "turn": 329,
+        "start": 132,
+        "end": 155,
+        "text": "望芩阁雨中，湿苔带起青草味，檐下还有泥土气味。",
+        "sha256": "0e7608baa73d2f30047ae27bf61436ef3032e112349eb070a9c7afef1e2cc894",
+        "kind": "weather",
+        "subject": "n6",
+        "value": "望芩阁雨中，湿苔带起青草味，檐下还有泥土气味。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:6:clear:112",
+    "split": "holdout",
+    "category": "clear",
+    "text": "望芩阁晴天的气味是什么？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:6:3"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:6:3",
+        "sourceId": "long:6:3",
+        "turn": 443,
+        "start": 85,
+        "end": 98,
+        "text": "望芩阁晴天，日光晒出木香。",
+        "sha256": "5eb7f6d8ae03a47aa82addfad67b0c936e3f400a5d1d6fcc9d7c5914903fd105",
+        "kind": "weather",
+        "subject": "n6",
+        "value": "望芩阁晴天，日光晒出木香。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:6:landing:113",
+    "split": "holdout",
+    "category": "landing",
+    "text": "望芩阁落地银铃的声音出现在哪里？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:6:4"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:6:4",
+        "sourceId": "long:6:4",
+        "turn": 557,
+        "start": 117,
+        "end": 144,
+        "text": "望芩阁里，银铃掉到地上弹了两下，棋子留在桌上没有移动。",
+        "sha256": "e6d36b7585e86854b90010ced94baeb395b9896c5f88fcc10cd2c0dc33e006b7",
+        "kind": "event",
+        "subject": "n6",
+        "value": "望芩阁里，银铃掉到地上弹了两下，棋子留在桌上没有移动。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:6:wrong-object:114",
+    "split": "holdout",
+    "category": "wrong-object",
+    "text": "望芩阁落地棋子的声音出现在哪里？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:6:future:115",
+    "split": "holdout",
+    "category": "future",
+    "text": "邵芩耳后有什么装饰？",
+    "asOfTurn": 214,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:6:alias-future:116",
+    "split": "holdout",
+    "category": "alias-future",
+    "text": "邵芩客耳后有什么装饰？",
+    "asOfTurn": 670,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:6:alias-known:117",
+    "split": "holdout",
+    "category": "alias-known",
+    "text": "邵芩客耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:6:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:6:1",
+        "sourceId": "long:6:1",
+        "turn": 215,
+        "start": 133,
+        "end": 158,
+        "text": "邵芩耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "ba2cbb0fae6ca62143854c0f9f3d9cab6f4bbefd494e354af28b9c835acf4226",
+        "kind": "body",
+        "subject": "n6",
+        "value": "邵芩耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:6:npc-self:118",
+    "split": "holdout",
+    "category": "npc-self",
+    "text": "邵芩耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "npc",
+      "npcId": "n6"
+    },
+    "expectedSourceIds": [
+      "long:6:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:6:1",
+        "sourceId": "long:6:1",
+        "turn": 215,
+        "start": 133,
+        "end": 158,
+        "text": "邵芩耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "ba2cbb0fae6ca62143854c0f9f3d9cab6f4bbefd494e354af28b9c835acf4226",
+        "kind": "body",
+        "subject": "n6",
+        "value": "邵芩耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:6:npc-unknown:119",
+    "split": "holdout",
+    "category": "npc-unknown",
+    "text": "邵芩耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "npc",
+      "npcId": "n7"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:6:same-name:120",
+    "split": "holdout",
+    "category": "same-name",
+    "text": "老渡客耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:6:historical-relation:121",
+    "split": "holdout",
+    "category": "historical-relation",
+    "text": "邵芩当时的关系如何？",
+    "asOfTurn": 670,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:6:0"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:6:0",
+        "sourceId": "long:6:0",
+        "turn": 100,
+        "start": 85,
+        "end": 119,
+        "text": "邵芩第一次在望芩阁见到玩家，态度戒备，说：“先问清来处，再谈同行。”",
+        "sha256": "832cc44dfb1f1686555c9b378386c49f26196eda3f85444230451ba86c8800c3",
+        "kind": "meeting",
+        "subject": "n6",
+        "value": "望芩阁",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "戒备"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:6:current-relation:122",
+    "split": "holdout",
+    "category": "current-relation",
+    "text": "邵芩当前关系如何？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:6:5"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:6:5",
+        "sourceId": "long:6:5",
+        "turn": 671,
+        "start": 133,
+        "end": 165,
+        "text": "邵芩在望芩阁兑现共同修桥的承诺，改称玩家为同行者；双方建立信任。",
+        "sha256": "8ee1e9623c01708fb49b38841a725574bad05d405c5f45a0c1bb1d889439d715",
+        "kind": "relationship",
+        "subject": "n6",
+        "value": "信任",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "信任"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:6:promise:123",
+    "split": "holdout",
+    "category": "promise",
+    "text": "邵芩当前承诺是否兑现？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:6:5"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:6:5",
+        "sourceId": "long:6:5",
+        "turn": 671,
+        "start": 133,
+        "end": 165,
+        "text": "邵芩在望芩阁兑现共同修桥的承诺，改称玩家为同行者；双方建立信任。",
+        "sha256": "8ee1e9623c01708fb49b38841a725574bad05d405c5f45a0c1bb1d889439d715",
+        "kind": "relationship",
+        "subject": "n6",
+        "value": "信任",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "已兑现"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:6:consumed:124",
+    "split": "holdout",
+    "category": "consumed",
+    "text": "银铃信物当前归属？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:6:6"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:6:6",
+        "sourceId": "long:6:6",
+        "turn": 785,
+        "start": 133,
+        "end": 163,
+        "text": "邵芩把银铃信物交给玩家，随后信物被消耗于阵门，归属不再有效。",
+        "sha256": "1dc4e09f3a3eacd28bcf24a9591dcc0ec783bbc85f2a5989bba1d67b8a0bbc7f",
+        "kind": "transfer",
+        "subject": "n6",
+        "value": "已消耗",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "已消耗"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:6:rumor:125",
+    "split": "holdout",
+    "category": "rumor",
+    "text": "邵芩的身份传闻是什么？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:6:7"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:6:7",
+        "sourceId": "long:6:7",
+        "turn": 900,
+        "start": 86,
+        "end": 118,
+        "text": "邵芩说：“听说远方的门已经开放。”他没有亲眼确认，谣言仍未核实。",
+        "sha256": "2869ea73bc22453bf22a5ca71229adf85d1848f8b0469beb6a257e9fa47b3c81",
+        "kind": "rumor",
+        "subject": "n6",
+        "value": "远门已开放",
+        "status": "unverified"
+      }
+    ],
+    "expectedFactValues": [
+      "远门已开放"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:7:body:126",
+    "split": "holdout",
+    "category": "body",
+    "text": "许薇耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:7:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:7:1",
+        "sourceId": "long:7:1",
+        "turn": 229,
+        "start": 117,
+        "end": 142,
+        "text": "许薇耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "8de5494c2de2e2a5368af16e9ba5d526b68a3a4c244f507dd4883993792f3f61",
+        "kind": "body",
+        "subject": "n7",
+        "value": "许薇耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:7:body-waist:127",
+    "split": "holdout",
+    "category": "body-waist",
+    "text": "许薇腰间有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:7:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:7:1",
+        "sourceId": "long:7:1",
+        "turn": 229,
+        "start": 117,
+        "end": 142,
+        "text": "许薇耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "8de5494c2de2e2a5368af16e9ba5d526b68a3a4c244f507dd4883993792f3f61",
+        "kind": "body",
+        "subject": "n7",
+        "value": "许薇耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:7:body-missing:128",
+    "split": "holdout",
+    "category": "body-missing",
+    "text": "许薇耳后的翡翠耳坠原文在哪里？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:7:rain:129",
+    "split": "holdout",
+    "category": "rain",
+    "text": "渡芹楼雨里的气味是什么？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:7:2"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:7:2",
+        "sourceId": "long:7:2",
+        "turn": 343,
+        "start": 133,
+        "end": 156,
+        "text": "渡芹楼雨中，湿苔带起青草味，檐下还有泥土气味。",
+        "sha256": "eabec0f950d59aea2027cd38d5a567f5ec3b369e8ac67b9f98fe0224c55bf378",
+        "kind": "weather",
+        "subject": "n7",
+        "value": "渡芹楼雨中，湿苔带起青草味，檐下还有泥土气味。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:7:clear:130",
+    "split": "holdout",
+    "category": "clear",
+    "text": "渡芹楼晴天的气味是什么？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:7:3"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:7:3",
+        "sourceId": "long:7:3",
+        "turn": 457,
+        "start": 132,
+        "end": 145,
+        "text": "渡芹楼晴天，日光晒出木香。",
+        "sha256": "475c52615f51177744afc83de1560163dca21c89fbdf7cae04e24b6bf1c0a693",
+        "kind": "weather",
+        "subject": "n7",
+        "value": "渡芹楼晴天，日光晒出木香。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:7:landing:131",
+    "split": "holdout",
+    "category": "landing",
+    "text": "渡芹楼落地陶筒的声音出现在哪里？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:7:4"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:7:4",
+        "sourceId": "long:7:4",
+        "turn": 571,
+        "start": 85,
+        "end": 112,
+        "text": "渡芹楼里，陶筒掉到地上弹了两下，棋子留在桌上没有移动。",
+        "sha256": "cee773284546f3d2922bce9630bb547c4a9204d126017fa70f5a0894722daa5e",
+        "kind": "event",
+        "subject": "n7",
+        "value": "渡芹楼里，陶筒掉到地上弹了两下，棋子留在桌上没有移动。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:7:wrong-object:132",
+    "split": "holdout",
+    "category": "wrong-object",
+    "text": "渡芹楼落地棋子的声音出现在哪里？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:7:future:133",
+    "split": "holdout",
+    "category": "future",
+    "text": "许薇耳后有什么装饰？",
+    "asOfTurn": 228,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:7:alias-future:134",
+    "split": "holdout",
+    "category": "alias-future",
+    "text": "许薇客耳后有什么装饰？",
+    "asOfTurn": 685,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:7:alias-known:135",
+    "split": "holdout",
+    "category": "alias-known",
+    "text": "许薇客耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:7:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:7:1",
+        "sourceId": "long:7:1",
+        "turn": 229,
+        "start": 117,
+        "end": 142,
+        "text": "许薇耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "8de5494c2de2e2a5368af16e9ba5d526b68a3a4c244f507dd4883993792f3f61",
+        "kind": "body",
+        "subject": "n7",
+        "value": "许薇耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:7:npc-self:136",
+    "split": "holdout",
+    "category": "npc-self",
+    "text": "许薇耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "npc",
+      "npcId": "n7"
+    },
+    "expectedSourceIds": [
+      "long:7:1"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:7:1",
+        "sourceId": "long:7:1",
+        "turn": 229,
+        "start": 117,
+        "end": 142,
+        "text": "许薇耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "sha256": "8de5494c2de2e2a5368af16e9ba5d526b68a3a4c244f507dd4883993792f3f61",
+        "kind": "body",
+        "subject": "n7",
+        "value": "许薇耳后别着一片青叶，腰间系着灰绳，衣襟别着铜扣。",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:7:npc-unknown:137",
+    "split": "holdout",
+    "category": "npc-unknown",
+    "text": "许薇耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "npc",
+      "npcId": "n0"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:7:same-name:138",
+    "split": "holdout",
+    "category": "same-name",
+    "text": "老渡客耳后有什么装饰？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "expectedSpans": [],
+    "expectedFactValues": [],
+    "noEvidence": true
+  },
+  {
+    "questionId": "holdout:7:historical-relation:139",
+    "split": "holdout",
+    "category": "historical-relation",
+    "text": "许薇当时的关系如何？",
+    "asOfTurn": 685,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:7:0"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:7:0",
+        "sourceId": "long:7:0",
+        "turn": 115,
+        "start": 85,
+        "end": 119,
+        "text": "许薇第一次在渡芹楼见到玩家，态度戒备，说：“先问清来处，再谈同行。”",
+        "sha256": "66fcea9b4b4b3a3e4593fe288533e8813da536ad056c0dddc50a8f9f2d74567c",
+        "kind": "meeting",
+        "subject": "n7",
+        "value": "渡芹楼",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "戒备"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:7:current-relation:140",
+    "split": "holdout",
+    "category": "current-relation",
+    "text": "许薇当前关系如何？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:7:5"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:7:5",
+        "sourceId": "long:7:5",
+        "turn": 686,
+        "start": 139,
+        "end": 171,
+        "text": "许薇在渡芹楼兑现共同修桥的承诺，改称玩家为同行者；双方建立信任。",
+        "sha256": "614f4208752ad8194066028b45a8d01764a20fac1eff9fdfa0c82056fd1573dc",
+        "kind": "relationship",
+        "subject": "n7",
+        "value": "信任",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "信任"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:7:promise:141",
+    "split": "holdout",
+    "category": "promise",
+    "text": "许薇当前承诺是否兑现？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:7:5"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:7:5",
+        "sourceId": "long:7:5",
+        "turn": 686,
+        "start": 139,
+        "end": 171,
+        "text": "许薇在渡芹楼兑现共同修桥的承诺，改称玩家为同行者；双方建立信任。",
+        "sha256": "614f4208752ad8194066028b45a8d01764a20fac1eff9fdfa0c82056fd1573dc",
+        "kind": "relationship",
+        "subject": "n7",
+        "value": "信任",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "已兑现"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:7:consumed:142",
+    "split": "holdout",
+    "category": "consumed",
+    "text": "陶筒信物当前归属？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:7:6"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:7:6",
+        "sourceId": "long:7:6",
+        "turn": 800,
+        "start": 100,
+        "end": 130,
+        "text": "许薇把陶筒信物交给玩家，随后信物被消耗于阵门，归属不再有效。",
+        "sha256": "abd55a043c2777cfc05bf1a8fabb5a472c6a402e2811a3cb1cd631672d7c1489",
+        "kind": "transfer",
+        "subject": "n7",
+        "value": "已消耗",
+        "status": "original-prose-only"
+      }
+    ],
+    "expectedFactValues": [
+      "已消耗"
+    ],
+    "noEvidence": false
+  },
+  {
+    "questionId": "holdout:7:rumor:143",
+    "split": "holdout",
+    "category": "rumor",
+    "text": "许薇的身份传闻是什么？",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "long:7:7"
+    ],
+    "expectedSpans": [
+      {
+        "id": "ledger:long:7:7",
+        "sourceId": "long:7:7",
+        "turn": 914,
+        "start": 148,
+        "end": 180,
+        "text": "许薇说：“听说远方的门已经开放。”他没有亲眼确认，谣言仍未核实。",
+        "sha256": "545eae10fec07f93ade292ed183e16bbd74868a60f4e675d9bc2c7110eaa1f3c",
+        "kind": "rumor",
+        "subject": "n7",
+        "value": "远门已开放",
+        "status": "unverified"
+      }
+    ],
+    "expectedFactValues": [
+      "远门已开放"
+    ],
+    "noEvidence": false
+  }
+]

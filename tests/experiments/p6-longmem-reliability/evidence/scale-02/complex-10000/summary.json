@@ -1,0 +1,151 @@
+{
+  "kind": "complex",
+  "count": 10000,
+  "questionsSha256": "a9d6f614872ae314442b6bba64472dec327dda8a4ff29907eea26a8b92bd5bac",
+  "reusedWriter": false,
+  "crashRecovery": {
+    "checkpoint": "halfway-after-commit",
+    "committedTurns": 5000,
+    "pid": 19344,
+    "exitCode": null,
+    "signal": "SIGKILL",
+    "interruptedWriteMs": 4543
+  },
+  "writer": {
+    "pid": 10320,
+    "root": "5dccdbe15429e9bf1e3df3afcf4cb5d1c73115b636c3a616f4ed5f9a2f28f6bb",
+    "count": 10000,
+    "saved": 5000,
+    "duplicates": 5000,
+    "writeMs": 5091.473,
+    "writeP50Ms": 0.6093999999998232,
+    "writeP95Ms": 1.0421999999998661,
+    "duplicateMs": 0.8139000000001033,
+    "dbBytes": 23334912,
+    "bodyBytes": 1873663,
+    "heapUsed": 27134920,
+    "sqlite": "WAL + synchronous FULL"
+  },
+  "reader": {
+    "pid": 32304,
+    "restoreMs": 501.56669999999997,
+    "restoredRoot": "5dccdbe15429e9bf1e3df3afcf4cb5d1c73115b636c3a616f4ed5f9a2f28f6bb",
+    "restoredCount": 10000,
+    "heapUsed": 540026040,
+    "builds": [
+      {
+        "audience": {
+          "kind": "player"
+        },
+        "firstSearchIncludingIndexMs": 444.0463000000018,
+        "indexBuildMs": 423.90469999999914
+      },
+      {
+        "audience": {
+          "kind": "npc",
+          "npcId": "p-a0-lead"
+        },
+        "firstSearchIncludingIndexMs": 27.218300000000454,
+        "indexBuildMs": 24.554400000000896
+      }
+    ],
+    "viewBuildCount": 101,
+    "viewBuildTotalMs": 20861.11620000001,
+    "runs": [
+      {
+        "budget": 512,
+        "queries": 100,
+        "pass": 100,
+        "fail": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.9047619047619048,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "byteChecks": 270,
+        "estimatedTokensMean": 207.2,
+        "estimatedTokensMax": 474,
+        "endToEndP50Ms": 10.212999999999965,
+        "endToEndP95Ms": 302.4269999999999,
+        "endToEndMaxMs": 682.8667999999998
+      },
+      {
+        "budget": 1024,
+        "queries": 100,
+        "pass": 100,
+        "fail": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.9047619047619048,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "byteChecks": 270,
+        "estimatedTokensMean": 207.2,
+        "estimatedTokensMax": 474,
+        "endToEndP50Ms": 13.81210000000101,
+        "endToEndP95Ms": 541.7267999999985,
+        "endToEndMaxMs": 670.9829
+      },
+      {
+        "budget": 2048,
+        "queries": 100,
+        "pass": 100,
+        "fail": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.9047619047619048,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "byteChecks": 270,
+        "estimatedTokensMean": 207.2,
+        "estimatedTokensMax": 474,
+        "endToEndP50Ms": 13.08100000000195,
+        "endToEndP95Ms": 445.04249999999956,
+        "endToEndMaxMs": 701.9277999999995
+      },
+      {
+        "budget": 4096,
+        "queries": 100,
+        "pass": 100,
+        "fail": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.9047619047619048,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "byteChecks": 270,
+        "estimatedTokensMean": 207.2,
+        "estimatedTokensMax": 474,
+        "endToEndP50Ms": 8.194400000000314,
+        "endToEndP95Ms": 414.47559999999794,
+        "endToEndMaxMs": 525.199099999998
+      }
+    ],
+    "processResource": {
+      "userCPUTime": 36562000,
+      "systemCPUTime": 1468000,
+      "maxRSS": 1306048,
+      "sharedMemorySize": 0,
+      "unsharedDataSize": 0,
+      "unsharedStackSize": 0,
+      "minorPageFault": 0,
+      "majorPageFault": 455881,
+      "swappedOut": 0,
+      "fsRead": 27260,
+      "fsWrite": 3,
+      "ipcSent": 0,
+      "ipcReceived": 0,
+      "signalsCount": 0,
+      "voluntaryContextSwitches": 0,
+      "involuntaryContextSwitches": 0
+    }
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "node": "v24.19.0",
+  "copiedOriginalBytes": [
+    {
+      "file": "store.cjs",
+      "sha256": "95e31156f81bc37ba19139edf2807146b777b0aa71d3454eafa42e6907a22b0b",
+      "byteEqual": true
+    },
+    {
+      "file": "worker.cjs",
+      "sha256": "8aef7bd51b12ffe77d02b54ceb9b0999e7bd11c1dddec11d3930ab5d5ca19367",
+      "byteEqual": true
+    },
+    {
+      "file": "store.test.cjs",
+      "sha256": "cfa70fe37c14e601d3b8d54a829c8a28f7c1b89afd6864099a4d0a26e152c3ab",
+      "byteEqual": true
+    },
+    {
+      "file": "adapter.ts",
+      "sha256": "f1e46b2920998e4a58c7bb540bdaea7a83d84e1b13d0caba62783cb2e49485b4",
+      "byteEqual": true
+    },
+    {
+      "file": "adapter.test.ts",
+      "sha256": "9406d7c8c4abe58976d034e28cf52b9d8bb47c687ca54e6c627f92210786e4ef",
+      "byteEqual": true
+    },
+    {
+      "file": "workload.ts",
+      "sha256": "85505dfb19dc92f3dcd0581cebe38ad3323c8227773edd7c4fa1866cb12a9c52",
+      "byteEqual": true
+    }
+  ],
+  "results": [
+    {
+      "label": "old-storage-and-adapter",
+      "status": 0,
+      "error": null
+    },
+    {
+      "label": "old-lexical-prose-safety",
+      "status": 0,
+      "error": null
+    },
+    {
+      "label": "typescript",
+      "status": 1,
+      "error": null
+    },
+    {
+      "label": "syntax-audit.cjs",
+      "status": 0,
+      "error": null
+    },
+    {
+      "label": "syntax-bridge.cjs",
+      "status": 0,
+      "error": null
+    },
+    {
+      "label": "syntax-checks.cjs",
+      "status": 0,
+      "error": null
+    },
+    {
+      "label": "syntax-fixtures.cjs",
+      "status": 0,
+      "error": null
+    },
+    {
+      "label": "syntax-formal.cjs",
+      "status": 0,
+      "error": null
+    },
+    {
+      "label": "syntax-legacy-audit.cjs",
+      "status": 0,
+      "error": null
+    },
+    {
+      "label": "syntax-security.cjs",
+      "status": 0,
+      "error": null
+    }
+  ]
+}

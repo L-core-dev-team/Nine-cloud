@@ -1,0 +1,328 @@
+TAP version 13
+# Subtest: continuous meaningful corpus and scale
+ok 1 - continuous meaningful corpus and scale
+  ---
+  duration_ms: 5.9826
+  type: 'test'
+  ...
+# Subtest: fixture hashes immutable (reads bytes, not frozen answers)
+ok 2 - fixture hashes immutable (reads bytes, not frozen answers)
+  ---
+  duration_ms: 7.3563
+  type: 'test'
+  ...
+# Subtest: same-name requires unique entity
+ok 3 - same-name requires unique entity
+  ---
+  duration_ms: 5.0937
+  type: 'test'
+  ...
+# Subtest: old owner stays current before future transfer; future metadata removed
+ok 4 - old owner stays current before future transfer; future metadata removed
+  ---
+  duration_ms: 0.9966
+  type: 'test'
+  ...
+# Subtest: NPC secret and hidden transition cannot leak through metadata
+ok 5 - NPC secret and hidden transition cannot leak through metadata
+  ---
+  duration_ms: 1.2209
+  type: 'test'
+  ...
+# Subtest: original sentences keep exact offsets and budget bounds
+ok 6 - original sentences keep exact offsets and budget bounds
+  ---
+  duration_ms: 3.4794
+  type: 'test'
+  ...
+# Subtest: unsupported action refused and rumor never promoted
+ok 7 - unsupported action refused and rumor never promoted
+  ---
+  duration_ms: 1.9075
+  type: 'test'
+  ...
+# Subtest: invalid budgets audience and ranges rejected
+ok 8 - invalid budgets audience and ranges rejected
+  ---
+  duration_ms: 0.4022
+  type: 'test'
+  ...
+# Subtest: fixture generation reproducible
+ok 9 - fixture generation reproducible
+  ---
+  duration_ms: 13.3245
+  type: 'test'
+  ...
+# Subtest: existing prototype remains executable
+ok 10 - existing prototype remains executable
+  ---
+  duration_ms: 6.1838
+  type: 'test'
+  ...
+# Subtest: future rename cannot resolve an earlier identity
+ok 11 - future rename cannot resolve an earlier identity
+  ---
+  duration_ms: 0.6613
+  type: 'test'
+  ...
+# Subtest: subjective opinion is a claim independently of confirmed relationship
+ok 12 - subjective opinion is a claim independently of confirmed relationship
+  ---
+  duration_ms: 1.2737
+  type: 'test'
+  ...
+# Subtest: NPC latest knowledge differs from world latest without secret expiry
+ok 13 - NPC latest knowledge differs from world latest without secret expiry
+  ---
+  duration_ms: 0.6047
+  type: 'test'
+  ...
+# Subtest: multi-source proof refuses when a tiny budget removes an essential link
+ok 14 - multi-source proof refuses when a tiny budget removes an essential link
+  ---
+  duration_ms: 1.7535
+  type: 'test'
+  ...
+# Subtest: temporal lexical boundaries cover compounds, location questions and explicit time
+ok 15 - temporal lexical boundaries cover compounds, location questions and explicit time
+  ---
+  duration_ms: 8.7268
+  type: 'test'
+  ...
+# Subtest: no fact labels required, including sources carrying unrelated world facts
+ok 16 - no fact labels required, including sources carrying unrelated world facts
+  ---
+  duration_ms: 7.6419
+  type: 'test'
+  ...
+# Subtest: verbatim dialogue includes closing quotation, with exact UTF-16 offsets and hash
+ok 17 - verbatim dialogue includes closing quotation, with exact UTF-16 offsets and hash
+  ---
+  duration_ms: 2.178
+  type: 'test'
+  ...
+# Subtest: query and original recovery enforce the same NPC permissions
+ok 18 - query and original recovery enforce the same NPC permissions
+  ---
+  duration_ms: 1.7777
+  type: 'test'
+  ...
+# Subtest: as-of and explicit ranges forbid future sources and do not leak future aliases
+ok 19 - as-of and explicit ranges forbid future sources and do not leak future aliases
+  ---
+  duration_ms: 1.2971
+  type: 'test'
+  ...
+# Subtest: earliest and latest describe narration time, preserving original provenance
+ok 20 - earliest and latest describe narration time, preserving original provenance
+  ---
+  duration_ms: 3.0101
+  type: 'test'
+  ...
+# Subtest: same names require unique identity and all explicit entities must match
+ok 21 - same names require unique identity and all explicit entities must match
+  ---
+  duration_ms: 3.347
+  type: 'test'
+  ...
+# Subtest: unknown concrete detail abstains rather than substituting known clothing
+ok 22 - unknown concrete detail abstains rather than substituting known clothing
+  ---
+  duration_ms: 1.6539
+  type: 'test'
+  ...
+# Subtest: tiny budgets omit intact sentences, do not truncate or paraphrase
+ok 23 - tiny budgets omit intact sentences, do not truncate or paraphrase
+  ---
+  duration_ms: 8.3516
+  type: 'test'
+  ...
+# Subtest: retrieval leaves original objects intact and rejects invalid input
+ok 24 - retrieval leaves original objects intact and rejects invalid input
+  ---
+  duration_ms: 3.8793
+  type: 'test'
+  ...
+# Subtest: legacy typed claims and current NPC knowledge retain status and hidden metadata
+ok 25 - legacy typed claims and current NPC knowledge retain status and hidden metadata
+  ---
+  duration_ms: 41.1928
+  type: 'test'
+  ...
+# Subtest: frozen data and answers remain byte-identical; test never parses holdout answers
+ok 26 - frozen data and answers remain byte-identical; test never parses holdout answers
+  ---
+  duration_ms: 2.8077
+  type: 'test'
+  ...
+# Subtest: unavailable best lexical match cannot affect NPC output or leak provenance
+ok 27 - unavailable best lexical match cannot affect NPC output or leak provenance
+  ---
+  duration_ms: 14.5576
+  type: 'test'
+  ...
+# Subtest: budget pressure keeps an overlong original sentence intact and exposes omission
+ok 28 - budget pressure keeps an overlong original sentence intact and exposes omission
+  ---
+  duration_ms: 16.4563
+  type: 'test'
+  ...
+# Subtest: eyes: ordinary 眼睛 finds original 双眼 without adding a fact
+ok 29 - eyes: ordinary 眼睛 finds original 双眼 without adding a fact
+  ---
+  duration_ms: 5.6656
+  type: 'test'
+  ...
+# Subtest: hair: 头发 finds 一缕发 and returns original bytes
+ok 30 - hair: 头发 finds 一缕发 and returns original bytes
+  ---
+  duration_ms: 1.9131
+  type: 'test'
+  ...
+# Subtest: retain request: 留下 matches 留住 only as a verbatim quote
+ok 31 - retain request: 留下 matches 留住 only as a verbatim quote
+  ---
+  duration_ms: 1.9329
+  type: 'test'
+  ...
+# Subtest: a retain verb alone does not support an unknown requested object
+ok 32 - a retain verb alone does not support an unknown requested object
+  ---
+  duration_ms: 0.5291
+  type: 'test'
+  ...
+# Subtest: eyes are not an eye disease: unknown concrete condition abstains
+ok 33 - eyes are not an eye disease: unknown concrete condition abstains
+  ---
+  duration_ms: 0.5331
+  type: 'test'
+  ...
+# Subtest: 发出 and 出发 are not hair synonyms
+ok 34 - 发出 and 出发 are not hair synonyms
+  ---
+  duration_ms: 0.5668
+  type: 'test'
+  ...
+# Subtest: same names stay ambiguous; unique identity never combines twins
+ok 35 - same names stay ambiguous; unique identity never combines twins
+  ---
+  duration_ms: 1.1233
+  type: 'test'
+  ...
+# Subtest: different items remain distinct even when matching body vocabulary
+ok 36 - different items remain distinct even when matching body vocabulary
+  ---
+  duration_ms: 0.8826
+  type: 'test'
+  ...
+# Subtest: synonym matching cannot expose unauthorized original sources
+ok 37 - synonym matching cannot expose unauthorized original sources
+  ---
+  duration_ms: 0.3195
+  type: 'test'
+  ...
+# Subtest: rumors keep unverified status instead of becoming world facts
+ok 38 - rumors keep unverified status instead of becoming world facts
+  ---
+  duration_ms: 1.1634
+  type: 'test'
+  ...
+# Subtest: time boundaries and all four budgets retain original safety rules
+ok 39 - time boundaries and all four budgets retain original safety rules
+  ---
+  duration_ms: 1.068
+  type: 'test'
+  ...
+# Subtest: temporal lexical boundaries cover compounds, location questions and explicit time
+ok 40 - temporal lexical boundaries cover compounds, location questions and explicit time
+  ---
+  duration_ms: 2.6009
+  type: 'test'
+  ...
+# Subtest: no fact labels required, including sources carrying unrelated world facts
+ok 41 - no fact labels required, including sources carrying unrelated world facts
+  ---
+  duration_ms: 8.2373
+  type: 'test'
+  ...
+# Subtest: verbatim dialogue includes closing quotation, with exact UTF-16 offsets and hash
+ok 42 - verbatim dialogue includes closing quotation, with exact UTF-16 offsets and hash
+  ---
+  duration_ms: 1.8609
+  type: 'test'
+  ...
+# Subtest: query and original recovery enforce the same NPC permissions
+ok 43 - query and original recovery enforce the same NPC permissions
+  ---
+  duration_ms: 1.6711
+  type: 'test'
+  ...
+# Subtest: as-of and explicit ranges forbid future sources and do not leak future aliases
+ok 44 - as-of and explicit ranges forbid future sources and do not leak future aliases
+  ---
+  duration_ms: 1.4096
+  type: 'test'
+  ...
+# Subtest: earliest and latest describe narration time, preserving original provenance
+ok 45 - earliest and latest describe narration time, preserving original provenance
+  ---
+  duration_ms: 1.6065
+  type: 'test'
+  ...
+# Subtest: same names require unique identity and all explicit entities must match
+ok 46 - same names require unique identity and all explicit entities must match
+  ---
+  duration_ms: 2.6081
+  type: 'test'
+  ...
+# Subtest: unknown concrete detail abstains rather than substituting known clothing
+ok 47 - unknown concrete detail abstains rather than substituting known clothing
+  ---
+  duration_ms: 0.791
+  type: 'test'
+  ...
+# Subtest: tiny budgets omit intact sentences, do not truncate or paraphrase
+ok 48 - tiny budgets omit intact sentences, do not truncate or paraphrase
+  ---
+  duration_ms: 7.3615
+  type: 'test'
+  ...
+# Subtest: retrieval leaves original objects intact and rejects invalid input
+ok 49 - retrieval leaves original objects intact and rejects invalid input
+  ---
+  duration_ms: 3.4752
+  type: 'test'
+  ...
+# Subtest: legacy typed claims and current NPC knowledge retain status and hidden metadata
+ok 50 - legacy typed claims and current NPC knowledge retain status and hidden metadata
+  ---
+  duration_ms: 35.7565
+  type: 'test'
+  ...
+# Subtest: frozen data and answers remain byte-identical; test never parses holdout answers
+ok 51 - frozen data and answers remain byte-identical; test never parses holdout answers
+  ---
+  duration_ms: 1.0651
+  type: 'test'
+  ...
+# Subtest: unavailable best lexical match cannot affect NPC output or leak provenance
+ok 52 - unavailable best lexical match cannot affect NPC output or leak provenance
+  ---
+  duration_ms: 13.9693
+  type: 'test'
+  ...
+# Subtest: budget pressure keeps an overlong original sentence intact and exposes omission
+ok 53 - budget pressure keeps an overlong original sentence intact and exposes omission
+  ---
+  duration_ms: 14.1552
+  type: 'test'
+  ...
+1..53
+# tests 53
+# suites 0
+# pass 53
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 301.8768

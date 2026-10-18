@@ -1,0 +1,247 @@
+[
+  {
+    "id": "NPC01",
+    "status": "PASS",
+    "observed": {
+      "npcId": "npc-stable-1",
+      "authorized": true,
+      "otherIdentityDenied": true,
+      "revokedCacheDenied": true
+    }
+  },
+  {
+    "id": "NPC02",
+    "status": "PASS",
+    "observed": {
+      "npcId": "npc-stable-2",
+      "authorized": true,
+      "otherIdentityDenied": true,
+      "revokedCacheDenied": true
+    }
+  },
+  {
+    "id": "NPC03",
+    "status": "PASS",
+    "observed": {
+      "npcId": "npc-stable-3",
+      "authorized": true,
+      "otherIdentityDenied": true,
+      "revokedCacheDenied": true
+    }
+  },
+  {
+    "id": "NPC04",
+    "status": "PASS",
+    "observed": {
+      "npcId": "npc-stable-4",
+      "authorized": true,
+      "otherIdentityDenied": true,
+      "revokedCacheDenied": true
+    }
+  },
+  {
+    "id": "NPC05",
+    "status": "PASS",
+    "observed": {
+      "npcId": "npc-stable-5",
+      "authorized": true,
+      "otherIdentityDenied": true,
+      "revokedCacheDenied": true
+    }
+  },
+  {
+    "id": "NPC06",
+    "status": "PASS",
+    "observed": {
+      "npcId": "npc-stable-6",
+      "authorized": true,
+      "otherIdentityDenied": true,
+      "revokedCacheDenied": true
+    }
+  },
+  {
+    "id": "NPC07",
+    "status": "PASS",
+    "observed": {
+      "npcId": "npc-stable-7",
+      "authorized": true,
+      "otherIdentityDenied": true,
+      "revokedCacheDenied": true
+    }
+  },
+  {
+    "id": "NPC08",
+    "status": "PASS",
+    "observed": {
+      "npcId": "npc-stable-8",
+      "authorized": true,
+      "otherIdentityDenied": true,
+      "revokedCacheDenied": true
+    }
+  },
+  {
+    "id": "NPC09",
+    "status": "PASS",
+    "observed": {
+      "npcId": "npc-stable-9",
+      "authorized": true,
+      "otherIdentityDenied": true,
+      "revokedCacheDenied": true
+    }
+  },
+  {
+    "id": "NPC10",
+    "status": "PASS",
+    "observed": {
+      "npcId": "npc-stable-10",
+      "authorized": true,
+      "otherIdentityDenied": true,
+      "revokedCacheDenied": true
+    }
+  },
+  {
+    "id": "NPC11",
+    "status": "PASS",
+    "observed": {
+      "npcId": "npc-stable-11",
+      "authorized": true,
+      "otherIdentityDenied": true,
+      "revokedCacheDenied": true
+    }
+  },
+  {
+    "id": "NPC12",
+    "status": "PASS",
+    "observed": {
+      "npcId": "npc-stable-12",
+      "authorized": true,
+      "otherIdentityDenied": true,
+      "revokedCacheDenied": true
+    }
+  },
+  {
+    "id": "NPC13",
+    "status": "PASS",
+    "observed": {
+      "npcId": "npc-stable-13",
+      "authorized": true,
+      "otherIdentityDenied": true,
+      "revokedCacheDenied": true
+    }
+  },
+  {
+    "id": "NPC14",
+    "status": "PASS",
+    "observed": {
+      "npcId": "npc-stable-14",
+      "authorized": true,
+      "otherIdentityDenied": true,
+      "revokedCacheDenied": true
+    }
+  },
+  {
+    "id": "NPC15",
+    "status": "PASS",
+    "observed": {
+      "npcId": "npc-stable-15",
+      "authorized": true,
+      "otherIdentityDenied": true,
+      "revokedCacheDenied": true
+    }
+  },
+  {
+    "id": "NPC16",
+    "status": "PASS",
+    "observed": {
+      "npcId": "npc-stable-16",
+      "authorized": true,
+      "otherIdentityDenied": true,
+      "revokedCacheDenied": true
+    }
+  },
+  {
+    "id": "NPC17",
+    "status": "PASS",
+    "observed": {
+      "npcId": "npc-stable-17",
+      "authorized": true,
+      "otherIdentityDenied": true,
+      "revokedCacheDenied": true
+    }
+  },
+  {
+    "id": "NPC18",
+    "status": "PASS",
+    "observed": {
+      "npcId": "npc-stable-18",
+      "authorized": true,
+      "otherIdentityDenied": true,
+      "revokedCacheDenied": true
+    }
+  },
+  {
+    "id": "NPC19",
+    "status": "PASS",
+    "observed": {
+      "npcId": "npc-stable-19",
+      "authorized": true,
+      "otherIdentityDenied": true,
+      "revokedCacheDenied": true
+    }
+  },
+  {
+    "id": "NPC20",
+    "status": "PASS",
+    "observed": {
+      "npcId": "npc-stable-20",
+      "authorized": true,
+      "otherIdentityDenied": true,
+      "revokedCacheDenied": true
+    }
+  },
+  {
+    "id": "C01-independent-source-audit",
+    "status": "PASS",
+    "observed": {
+      "verifiedItems": 1,
+      "utf16AndSha": true,
+      "receiptAndGrant": true
+    }
+  },
+  {
+    "id": "C02-receipt-lifecycle-binding",
+    "status": "PASS",
+    "observed": {
+      "actionSettled": true,
+      "narrativeState": "persisted",
+      "bodyPersisted": "unknown",
+      "npcMayRead": "unknown",
+      "descriptionRuleConfirmed": "unknown"
+    }
+  },
+  {
+    "id": "C03-invalid-segment-revision",
+    "status": "FAIL",
+    "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'trusted-reader-unavailable'\n- 'invalid-segment-proof'\n\n    at C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-P6-integration-ready-20261013\\tests\\experiments\\p6-integration-ready\\audit.cjs:11:306\n    at async check (C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-P6-integration-ready-20261013\\tests\\experiments\\p6-integration-ready\\audit.cjs:6:70)\n    at async main (C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-P6-integration-ready-20261013\\tests\\experiments\\p6-integration-ready\\audit.cjs:11:2)"
+  },
+  {
+    "id": "C04-exact-audience-shape",
+    "status": "PASS",
+    "observed": {
+      "status": "conflict",
+      "reason": "invalid-query",
+      "items": [],
+      "generatedAnswer": null,
+      "estimatedTokens": 0,
+      "authorityUnknown": true
+    }
+  },
+  {
+    "id": "C05-independent-all-security-evidence",
+    "status": "PASS",
+    "observed": {
+      "cases": 42,
+      "spans": 6
+    }
+  }
+]

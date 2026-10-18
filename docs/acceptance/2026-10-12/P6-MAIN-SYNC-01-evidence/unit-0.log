@@ -1,0 +1,46 @@
+✔ continuous meaningful corpus and scale (6.647ms)
+✔ fixture hashes immutable (reads bytes, not frozen answers) (3.9101ms)
+✔ same-name requires unique entity (6.0726ms)
+✔ old owner stays current before future transfer; future metadata removed (1.5001ms)
+✔ NPC secret and hidden transition cannot leak through metadata (2.4739ms)
+✔ original sentences keep exact offsets and budget bounds (5.9425ms)
+✔ unsupported action refused and rumor never promoted (2.351ms)
+✔ invalid budgets audience and ranges rejected (0.4859ms)
+✔ fixture generation reproducible (12.1204ms)
+✔ existing prototype remains executable (6.4142ms)
+✔ future rename cannot resolve an earlier identity (0.6282ms)
+✔ subjective opinion is a claim independently of confirmed relationship (2.0863ms)
+✔ NPC latest knowledge differs from world latest without secret expiry (0.6ms)
+✔ multi-source proof refuses when a tiny budget removes an essential link (2.501ms)
+✔ 200/500/1000 continuous deterministic synthetic histories have valid independent sources (18.7558ms)
+✔ gold oracle has 60 unique independent questions and real explicitly cited sources/facts (1.1459ms)
+✔ exact event lookup returns original narrative and provenance, never an invented answer (2.2622ms)
+✔ early gift is recoverable at turn 180 after 170 turns (1.0061ms)
+✔ explicit similar person names do not silently alias (0.5655ms)
+✔ NPC secret filtering happens before ranking, and does not erase the player archive (1.6275ms)
+✔ following a historical link cannot leak an unauthorized original source (3.5506ms)
+✔ as-of clock hides future sources AND future expiry metadata (0.2563ms)
+✔ historical ownership is distinguished from current ownership (0.6259ms)
+✔ rumors remain unverified even after independent confirmation; sensory detail is not a rule event (0.5658ms)
+✔ nonexistent event and unsupported destructive action are refused (0.3033ms)
+✔ range filter and player/NPC clock errors fail safely (0.6255ms)
+✔ all 60 questions respect all budgets with complete source texts and explicit estimates (157.9315ms)
+✔ insufficient budget cannot turn a partial source into a confident answer (0.3342ms)
+✔ packer skips oversize sources without cutting a claim qualification (0.3173ms)
+✔ recent baseline uses the full available budget, rather than an arbitrary eight-source ceiling (1.4995ms)
+✔ evaluator detects missing evidence, wrong fact values/status, future and unauthorized sources (1.5215ms)
+✔ quality results are reproducible; elapsed time is excluded from this assertion (15.0805ms)
+✔ literally same-name people require a unique alias or stable entity ID (11.5547ms)
+✔ narrative-only detail without extracted facts or events is retrievable verbatim (4.8913ms)
+✔ NPC cannot learn an unauthorized successor from expiry or provenance links (4.6633ms)
+✔ same-label transfer events remain separate by event ID and query clock (4.4858ms)
+ℹ tests 36
+ℹ suites 0
+ℹ pass 36
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 407.7018
+
+

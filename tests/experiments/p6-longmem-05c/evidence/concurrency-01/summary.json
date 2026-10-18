@@ -1,0 +1,419 @@
+[
+  {
+    "count": 1000,
+    "pair": [
+      {
+        "mode": "baseline",
+        "endToEndMs": 565.8216,
+        "summaries": [
+          {
+            "count": 1000,
+            "mode": "baseline",
+            "worker": 0,
+            "queries": 16,
+            "pass": 16,
+            "dataHash": "7d17a1af0790457aab25d9e9bddb95c5197c81c08206ee4f815c64292fa48bf5",
+            "p50Ms": 8.769000000000005,
+            "p95Ms": 92.06860000000003,
+            "queryMs": 241.6741999999999,
+            "rss": 116297728,
+            "heap": 40635504,
+            "stats": {
+              "hits": 0,
+              "misses": 16,
+              "evictions": 12,
+              "builds": 16,
+              "buildMs": 118.41889999999998,
+              "originalBytesRead": 0,
+              "maxEntries": 4,
+              "maxEstimatedBytes": 892929,
+              "currentEntries": 4,
+              "currentEstimatedBytes": 892929,
+              "entryLimit": 4,
+              "estimatedByteLimit": 134217728,
+              "sourceRoot": "7d17a1af0790457aab25d9e9bddb95c5197c81c08206ee4f815c64292fa48bf5",
+              "policyEpoch": 0,
+              "limitation": "Serialization bounds are not heap bounds; offline whole-source policy simulation only; original bytes are logical reads, not physical disk IO."
+            }
+          },
+          {
+            "count": 1000,
+            "mode": "baseline",
+            "worker": 1,
+            "queries": 16,
+            "pass": 16,
+            "dataHash": "7d17a1af0790457aab25d9e9bddb95c5197c81c08206ee4f815c64292fa48bf5",
+            "p50Ms": 8.862300000000005,
+            "p95Ms": 92.07789999999997,
+            "queryMs": 238.52799999999993,
+            "rss": 116731904,
+            "heap": 44117960,
+            "stats": {
+              "hits": 0,
+              "misses": 16,
+              "evictions": 12,
+              "builds": 16,
+              "buildMs": 113.13479999999993,
+              "originalBytesRead": 0,
+              "maxEntries": 4,
+              "maxEstimatedBytes": 892929,
+              "currentEntries": 4,
+              "currentEstimatedBytes": 892929,
+              "entryLimit": 4,
+              "estimatedByteLimit": 134217728,
+              "sourceRoot": "7d17a1af0790457aab25d9e9bddb95c5197c81c08206ee4f815c64292fa48bf5",
+              "policyEpoch": 0,
+              "limitation": "Serialization bounds are not heap bounds; offline whole-source policy simulation only; original bytes are logical reads, not physical disk IO."
+            }
+          }
+        ]
+      },
+      {
+        "mode": "retained",
+        "endToEndMs": 286.51239999999996,
+        "summaries": [
+          {
+            "count": 1000,
+            "mode": "retained",
+            "worker": 0,
+            "queries": 16,
+            "pass": 16,
+            "dataHash": "7d17a1af0790457aab25d9e9bddb95c5197c81c08206ee4f815c64292fa48bf5",
+            "p50Ms": 5.804300000000012,
+            "p95Ms": 17.016199999999998,
+            "queryMs": 82.42420000000001,
+            "rss": 102584320,
+            "heap": 36720248,
+            "stats": {
+              "hits": 8,
+              "misses": 8,
+              "evictions": 0,
+              "builds": 8,
+              "buildMs": 48.80340000000001,
+              "originalBytesRead": 0,
+              "maxEntries": 8,
+              "maxEstimatedBytes": 1785663,
+              "currentEntries": 8,
+              "currentEstimatedBytes": 1785663,
+              "entryLimit": 12,
+              "estimatedByteLimit": 134217728,
+              "sourceRoot": "7d17a1af0790457aab25d9e9bddb95c5197c81c08206ee4f815c64292fa48bf5",
+              "policyEpoch": 0,
+              "limitation": "Serialization bounds are not heap bounds; offline whole-source policy simulation only; original bytes are logical reads, not physical disk IO."
+            }
+          },
+          {
+            "count": 1000,
+            "mode": "retained",
+            "worker": 1,
+            "queries": 16,
+            "pass": 16,
+            "dataHash": "7d17a1af0790457aab25d9e9bddb95c5197c81c08206ee4f815c64292fa48bf5",
+            "p50Ms": 5.880599999999987,
+            "p95Ms": 19.364499999999992,
+            "queryMs": 81.34049999999999,
+            "rss": 96927744,
+            "heap": 33197656,
+            "stats": {
+              "hits": 8,
+              "misses": 8,
+              "evictions": 0,
+              "builds": 8,
+              "buildMs": 47.60769999999991,
+              "originalBytesRead": 0,
+              "maxEntries": 8,
+              "maxEstimatedBytes": 1785663,
+              "currentEntries": 8,
+              "currentEstimatedBytes": 1785663,
+              "entryLimit": 12,
+              "estimatedByteLimit": 134217728,
+              "sourceRoot": "7d17a1af0790457aab25d9e9bddb95c5197c81c08206ee4f815c64292fa48bf5",
+              "policyEpoch": 0,
+              "limitation": "Serialization bounds are not heap bounds; offline whole-source policy simulation only; original bytes are logical reads, not physical disk IO."
+            }
+          }
+        ]
+      }
+    ],
+    "sameEvidence": true,
+    "method": "Two genuinely concurrent child processes; each owns its cache; end-to-end includes process startup and data generation. Not a shared server throughput claim."
+  },
+  {
+    "count": 3000,
+    "pair": [
+      {
+        "mode": "baseline",
+        "endToEndMs": 690.5990999999999,
+        "summaries": [
+          {
+            "count": 3000,
+            "mode": "baseline",
+            "worker": 0,
+            "queries": 16,
+            "pass": 16,
+            "dataHash": "cf1d58aabfcc3d99a720441b84e4d6770aaae3d98da8d4bd0c8e445d79e5882a",
+            "p50Ms": 18.60809999999998,
+            "p95Ms": 37.71539999999999,
+            "queryMs": 309.1191,
+            "rss": 183197696,
+            "heap": 78478216,
+            "stats": {
+              "hits": 0,
+              "misses": 16,
+              "evictions": 12,
+              "builds": 16,
+              "buildMs": 206.51589999999996,
+              "originalBytesRead": 0,
+              "maxEntries": 4,
+              "maxEstimatedBytes": 2557614,
+              "currentEntries": 4,
+              "currentEstimatedBytes": 2557003,
+              "entryLimit": 4,
+              "estimatedByteLimit": 134217728,
+              "sourceRoot": "cf1d58aabfcc3d99a720441b84e4d6770aaae3d98da8d4bd0c8e445d79e5882a",
+              "policyEpoch": 0,
+              "limitation": "Serialization bounds are not heap bounds; offline whole-source policy simulation only; original bytes are logical reads, not physical disk IO."
+            }
+          },
+          {
+            "count": 3000,
+            "mode": "baseline",
+            "worker": 1,
+            "queries": 16,
+            "pass": 16,
+            "dataHash": "cf1d58aabfcc3d99a720441b84e4d6770aaae3d98da8d4bd0c8e445d79e5882a",
+            "p50Ms": 18.613699999999994,
+            "p95Ms": 34.167100000000005,
+            "queryMs": 304.59649999999993,
+            "rss": 183513088,
+            "heap": 78621304,
+            "stats": {
+              "hits": 0,
+              "misses": 16,
+              "evictions": 12,
+              "builds": 16,
+              "buildMs": 212.50249999999997,
+              "originalBytesRead": 0,
+              "maxEntries": 4,
+              "maxEstimatedBytes": 2557614,
+              "currentEntries": 4,
+              "currentEstimatedBytes": 2557003,
+              "entryLimit": 4,
+              "estimatedByteLimit": 134217728,
+              "sourceRoot": "cf1d58aabfcc3d99a720441b84e4d6770aaae3d98da8d4bd0c8e445d79e5882a",
+              "policyEpoch": 0,
+              "limitation": "Serialization bounds are not heap bounds; offline whole-source policy simulation only; original bytes are logical reads, not physical disk IO."
+            }
+          }
+        ]
+      },
+      {
+        "mode": "retained",
+        "endToEndMs": 475.6318000000001,
+        "summaries": [
+          {
+            "count": 3000,
+            "mode": "retained",
+            "worker": 0,
+            "queries": 16,
+            "pass": 16,
+            "dataHash": "cf1d58aabfcc3d99a720441b84e4d6770aaae3d98da8d4bd0c8e445d79e5882a",
+            "p50Ms": 13.408599999999979,
+            "p95Ms": 26.7106,
+            "queryMs": 178.41060000000007,
+            "rss": 143585280,
+            "heap": 66193544,
+            "stats": {
+              "hits": 8,
+              "misses": 8,
+              "evictions": 0,
+              "builds": 8,
+              "buildMs": 114.97580000000005,
+              "originalBytesRead": 0,
+              "maxEntries": 8,
+              "maxEstimatedBytes": 5114546,
+              "currentEntries": 8,
+              "currentEstimatedBytes": 5114546,
+              "entryLimit": 12,
+              "estimatedByteLimit": 134217728,
+              "sourceRoot": "cf1d58aabfcc3d99a720441b84e4d6770aaae3d98da8d4bd0c8e445d79e5882a",
+              "policyEpoch": 0,
+              "limitation": "Serialization bounds are not heap bounds; offline whole-source policy simulation only; original bytes are logical reads, not physical disk IO."
+            }
+          },
+          {
+            "count": 3000,
+            "mode": "retained",
+            "worker": 1,
+            "queries": 16,
+            "pass": 16,
+            "dataHash": "cf1d58aabfcc3d99a720441b84e4d6770aaae3d98da8d4bd0c8e445d79e5882a",
+            "p50Ms": 12.566599999999994,
+            "p95Ms": 26.597499999999997,
+            "queryMs": 177.83799999999997,
+            "rss": 144949248,
+            "heap": 66289280,
+            "stats": {
+              "hits": 8,
+              "misses": 8,
+              "evictions": 0,
+              "builds": 8,
+              "buildMs": 114.1588999999999,
+              "originalBytesRead": 0,
+              "maxEntries": 8,
+              "maxEstimatedBytes": 5114546,
+              "currentEntries": 8,
+              "currentEstimatedBytes": 5114546,
+              "entryLimit": 12,
+              "estimatedByteLimit": 134217728,
+              "sourceRoot": "cf1d58aabfcc3d99a720441b84e4d6770aaae3d98da8d4bd0c8e445d79e5882a",
+              "policyEpoch": 0,
+              "limitation": "Serialization bounds are not heap bounds; offline whole-source policy simulation only; original bytes are logical reads, not physical disk IO."
+            }
+          }
+        ]
+      }
+    ],
+    "sameEvidence": true,
+    "method": "Two genuinely concurrent child processes; each owns its cache; end-to-end includes process startup and data generation. Not a shared server throughput claim."
+  },
+  {
+    "count": 10000,
+    "pair": [
+      {
+        "mode": "baseline",
+        "endToEndMs": 1422.1194999999998,
+        "summaries": [
+          {
+            "count": 10000,
+            "mode": "baseline",
+            "worker": 0,
+            "queries": 16,
+            "pass": 16,
+            "dataHash": "494ff01071af5a0bc5e6dabd83586ce5d3e7aad04f24dcd850bc9401a52bd04b",
+            "p50Ms": 47.67569999999989,
+            "p95Ms": 96.57809999999995,
+            "queryMs": 854.0802999999994,
+            "rss": 363659264,
+            "heap": 213147504,
+            "stats": {
+              "hits": 0,
+              "misses": 16,
+              "evictions": 12,
+              "builds": 16,
+              "buildMs": 640.5025,
+              "originalBytesRead": 0,
+              "maxEntries": 4,
+              "maxEstimatedBytes": 8381742,
+              "currentEntries": 4,
+              "currentEstimatedBytes": 8381229,
+              "entryLimit": 4,
+              "estimatedByteLimit": 134217728,
+              "sourceRoot": "494ff01071af5a0bc5e6dabd83586ce5d3e7aad04f24dcd850bc9401a52bd04b",
+              "policyEpoch": 0,
+              "limitation": "Serialization bounds are not heap bounds; offline whole-source policy simulation only; original bytes are logical reads, not physical disk IO."
+            }
+          },
+          {
+            "count": 10000,
+            "mode": "baseline",
+            "worker": 1,
+            "queries": 16,
+            "pass": 16,
+            "dataHash": "494ff01071af5a0bc5e6dabd83586ce5d3e7aad04f24dcd850bc9401a52bd04b",
+            "p50Ms": 45.29340000000002,
+            "p95Ms": 92.75779999999997,
+            "queryMs": 846.8480000000003,
+            "rss": 377323520,
+            "heap": 232341048,
+            "stats": {
+              "hits": 0,
+              "misses": 16,
+              "evictions": 12,
+              "builds": 16,
+              "buildMs": 633.6993000000002,
+              "originalBytesRead": 0,
+              "maxEntries": 4,
+              "maxEstimatedBytes": 8381742,
+              "currentEntries": 4,
+              "currentEstimatedBytes": 8381229,
+              "entryLimit": 4,
+              "estimatedByteLimit": 134217728,
+              "sourceRoot": "494ff01071af5a0bc5e6dabd83586ce5d3e7aad04f24dcd850bc9401a52bd04b",
+              "policyEpoch": 0,
+              "limitation": "Serialization bounds are not heap bounds; offline whole-source policy simulation only; original bytes are logical reads, not physical disk IO."
+            }
+          }
+        ]
+      },
+      {
+        "mode": "retained",
+        "endToEndMs": 936.5978,
+        "summaries": [
+          {
+            "count": 10000,
+            "mode": "retained",
+            "worker": 0,
+            "queries": 16,
+            "pass": 16,
+            "dataHash": "494ff01071af5a0bc5e6dabd83586ce5d3e7aad04f24dcd850bc9401a52bd04b",
+            "p50Ms": 35.70230000000004,
+            "p95Ms": 69.50369999999998,
+            "queryMs": 430.92880000000025,
+            "rss": 311398400,
+            "heap": 168993536,
+            "stats": {
+              "hits": 8,
+              "misses": 8,
+              "evictions": 0,
+              "builds": 8,
+              "buildMs": 293.0853,
+              "originalBytesRead": 0,
+              "maxEntries": 8,
+              "maxEstimatedBytes": 16762891,
+              "currentEntries": 8,
+              "currentEstimatedBytes": 16762891,
+              "entryLimit": 12,
+              "estimatedByteLimit": 134217728,
+              "sourceRoot": "494ff01071af5a0bc5e6dabd83586ce5d3e7aad04f24dcd850bc9401a52bd04b",
+              "policyEpoch": 0,
+              "limitation": "Serialization bounds are not heap bounds; offline whole-source policy simulation only; original bytes are logical reads, not physical disk IO."
+            }
+          },
+          {
+            "count": 10000,
+            "mode": "retained",
+            "worker": 1,
+            "queries": 16,
+            "pass": 16,
+            "dataHash": "494ff01071af5a0bc5e6dabd83586ce5d3e7aad04f24dcd850bc9401a52bd04b",
+            "p50Ms": 34.712800000000016,
+            "p95Ms": 71.26350000000002,
+            "queryMs": 428.00920000000013,
+            "rss": 308695040,
+            "heap": 167889784,
+            "stats": {
+              "hits": 8,
+              "misses": 8,
+              "evictions": 0,
+              "builds": 8,
+              "buildMs": 293.01120000000003,
+              "originalBytesRead": 0,
+              "maxEntries": 8,
+              "maxEstimatedBytes": 16762891,
+              "currentEntries": 8,
+              "currentEstimatedBytes": 16762891,
+              "entryLimit": 12,
+              "estimatedByteLimit": 134217728,
+              "sourceRoot": "494ff01071af5a0bc5e6dabd83586ce5d3e7aad04f24dcd850bc9401a52bd04b",
+              "policyEpoch": 0,
+              "limitation": "Serialization bounds are not heap bounds; offline whole-source policy simulation only; original bytes are logical reads, not physical disk IO."
+            }
+          }
+        ]
+      }
+    ],
+    "sameEvidence": true,
+    "method": "Two genuinely concurrent child processes; each owns its cache; end-to-end includes process startup and data generation. Not a shared server throughput claim."
+  }
+]

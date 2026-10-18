@@ -1,0 +1,454 @@
+{
+  "name": "scale-02",
+  "createdAt": "2026-10-13T06:27:40.512Z",
+  "node": "v24.19.0",
+  "platform": "win32",
+  "arch": "x64",
+  "testedSourceSha": "1323c17d9d41408917b44cfb99f53c0db7b4f280",
+  "corpora": [
+    {
+      "kind": "complex",
+      "count": 1000,
+      "questionsSha256": "8aa1ce5d780af9567ab34526c44de86a746f41252f68557fa1155c0f393f09b1",
+      "reusedWriter": true,
+      "crashRecovery": null,
+      "writer": {
+        "pid": 20160,
+        "root": "a3c4a3283eaf7bc8a9d9d4b0f9e93ed137a319a87933373bebc5d09b7d025087",
+        "count": 1000,
+        "saved": 1000,
+        "duplicates": 0,
+        "writeMs": 771.3969,
+        "writeP50Ms": 0.7271999999999821,
+        "writeP95Ms": 0.9721000000000117,
+        "duplicateMs": 1.489500000000021,
+        "dbBytes": 2248704,
+        "bodyBytes": 175854,
+        "heapUsed": 14686296,
+        "sqlite": "WAL + synchronous FULL",
+        "legacyUnsortedDigest": "2b29d3f5821e0e40e11f8eb6994f1039b348066f95b5e6b81822c14aa185d18c"
+      },
+      "reader": {
+        "pid": 30476,
+        "restoreMs": 77.78930000000001,
+        "restoredRoot": "a3c4a3283eaf7bc8a9d9d4b0f9e93ed137a319a87933373bebc5d09b7d025087",
+        "restoredCount": 1000,
+        "heapUsed": 175340480,
+        "builds": [
+          {
+            "audience": {
+              "kind": "player"
+            },
+            "firstSearchIncludingIndexMs": 32.62609999999995,
+            "indexBuildMs": 30.553400000000238
+          },
+          {
+            "audience": {
+              "kind": "npc",
+              "npcId": "p-a0-lead"
+            },
+            "firstSearchIncludingIndexMs": 4.958000000000084,
+            "indexBuildMs": 3.9836999999997715
+          }
+        ],
+        "viewBuildCount": 101,
+        "viewBuildTotalMs": 1262.2388,
+        "runs": [
+          {
+            "budget": 512,
+            "queries": 100,
+            "pass": 100,
+            "fail": 0,
+            "sourceRecall": 1,
+            "sourcePrecision": 0.9047619047619048,
+            "npcLeaks": 0,
+            "futureLeaks": 0,
+            "wrongFactStatus": 0,
+            "misattribution": 0,
+            "negativeFalsePositive": 0,
+            "byteChecks": 270,
+            "estimatedTokensMean": 206.2,
+            "estimatedTokensMax": 472,
+            "endToEndP50Ms": 1.8766999999999996,
+            "endToEndP95Ms": 30.294399999999996,
+            "endToEndMaxMs": 41.581800000000044
+          },
+          {
+            "budget": 1024,
+            "queries": 100,
+            "pass": 100,
+            "fail": 0,
+            "sourceRecall": 1,
+            "sourcePrecision": 0.9047619047619048,
+            "npcLeaks": 0,
+            "futureLeaks": 0,
+            "wrongFactStatus": 0,
+            "misattribution": 0,
+            "negativeFalsePositive": 0,
+            "byteChecks": 270,
+            "estimatedTokensMean": 206.2,
+            "estimatedTokensMax": 472,
+            "endToEndP50Ms": 1.5231999999999744,
+            "endToEndP95Ms": 29.56679999999983,
+            "endToEndMaxMs": 36.386799999999994
+          },
+          {
+            "budget": 2048,
+            "queries": 100,
+            "pass": 100,
+            "fail": 0,
+            "sourceRecall": 1,
+            "sourcePrecision": 0.9047619047619048,
+            "npcLeaks": 0,
+            "futureLeaks": 0,
+            "wrongFactStatus": 0,
+            "misattribution": 0,
+            "negativeFalsePositive": 0,
+            "byteChecks": 270,
+            "estimatedTokensMean": 206.2,
+            "estimatedTokensMax": 472,
+            "endToEndP50Ms": 1.3899999999998727,
+            "endToEndP95Ms": 27.299600000000055,
+            "endToEndMaxMs": 36.32269999999994
+          },
+          {
+            "budget": 4096,
+            "queries": 100,
+            "pass": 100,
+            "fail": 0,
+            "sourceRecall": 1,
+            "sourcePrecision": 0.9047619047619048,
+            "npcLeaks": 0,
+            "futureLeaks": 0,
+            "wrongFactStatus": 0,
+            "misattribution": 0,
+            "negativeFalsePositive": 0,
+            "byteChecks": 270,
+            "estimatedTokensMean": 206.2,
+            "estimatedTokensMax": 472,
+            "endToEndP50Ms": 1.4945999999999913,
+            "endToEndP95Ms": 26.71199999999999,
+            "endToEndMaxMs": 34.11999999999989
+          }
+        ],
+        "processResource": {
+          "userCPUTime": 3421000,
+          "systemCPUTime": 343000,
+          "maxRSS": 423392,
+          "sharedMemorySize": 0,
+          "unsharedDataSize": 0,
+          "unsharedStackSize": 0,
+          "minorPageFault": 0,
+          "majorPageFault": 133315,
+          "swappedOut": 0,
+          "fsRead": 1765,
+          "fsWrite": 3,
+          "ipcSent": 0,
+          "ipcReceived": 0,
+          "signalsCount": 0,
+          "voluntaryContextSwitches": 0,
+          "involuntaryContextSwitches": 0
+        }
+      }
+    },
+    {
+      "kind": "complex",
+      "count": 3000,
+      "questionsSha256": "184d3be7e415fea77a35408b7f70560b5fb876eac4ddd78bcae177ff0ff15297",
+      "reusedWriter": false,
+      "crashRecovery": null,
+      "writer": {
+        "pid": 20432,
+        "root": "147d945779eb432a974f36ae2248e9dc328d0e2ccfd119fc0d718a0441ee0cb2",
+        "count": 3000,
+        "saved": 3000,
+        "duplicates": 0,
+        "writeMs": 2465.976,
+        "writeP50Ms": 0.7500999999999749,
+        "writeP95Ms": 1.298899999999776,
+        "duplicateMs": 1.180199999999786,
+        "dbBytes": 6836224,
+        "bodyBytes": 552628,
+        "heapUsed": 22353088,
+        "sqlite": "WAL + synchronous FULL"
+      },
+      "reader": {
+        "pid": 18164,
+        "restoreMs": 167.8554,
+        "restoredRoot": "147d945779eb432a974f36ae2248e9dc328d0e2ccfd119fc0d718a0441ee0cb2",
+        "restoredCount": 3000,
+        "heapUsed": 177918880,
+        "builds": [
+          {
+            "audience": {
+              "kind": "player"
+            },
+            "firstSearchIncludingIndexMs": 203.84879999999976,
+            "indexBuildMs": 194.66729999999916
+          },
+          {
+            "audience": {
+              "kind": "npc",
+              "npcId": "p-a0-lead"
+            },
+            "firstSearchIncludingIndexMs": 16.41229999999996,
+            "indexBuildMs": 14.099899999999252
+          }
+        ],
+        "viewBuildCount": 101,
+        "viewBuildTotalMs": 5652.777799999999,
+        "runs": [
+          {
+            "budget": 512,
+            "queries": 100,
+            "pass": 100,
+            "fail": 0,
+            "sourceRecall": 1,
+            "sourcePrecision": 0.9047619047619048,
+            "npcLeaks": 0,
+            "futureLeaks": 0,
+            "wrongFactStatus": 0,
+            "misattribution": 0,
+            "negativeFalsePositive": 0,
+            "byteChecks": 270,
+            "estimatedTokensMean": 206.7,
+            "estimatedTokensMax": 473,
+            "endToEndP50Ms": 3.495200000000068,
+            "endToEndP95Ms": 91.64139999999998,
+            "endToEndMaxMs": 111.48930000000001
+          },
+          {
+            "budget": 1024,
+            "queries": 100,
+            "pass": 100,
+            "fail": 0,
+            "sourceRecall": 1,
+            "sourcePrecision": 0.9047619047619048,
+            "npcLeaks": 0,
+            "futureLeaks": 0,
+            "wrongFactStatus": 0,
+            "misattribution": 0,
+            "negativeFalsePositive": 0,
+            "byteChecks": 270,
+            "estimatedTokensMean": 206.7,
+            "estimatedTokensMax": 473,
+            "endToEndP50Ms": 3.802500000000009,
+            "endToEndP95Ms": 81.84450000000015,
+            "endToEndMaxMs": 94.13639999999987
+          },
+          {
+            "budget": 2048,
+            "queries": 100,
+            "pass": 100,
+            "fail": 0,
+            "sourceRecall": 1,
+            "sourcePrecision": 0.9047619047619048,
+            "npcLeaks": 0,
+            "futureLeaks": 0,
+            "wrongFactStatus": 0,
+            "misattribution": 0,
+            "negativeFalsePositive": 0,
+            "byteChecks": 270,
+            "estimatedTokensMean": 206.7,
+            "estimatedTokensMax": 473,
+            "endToEndP50Ms": 6.641700000000128,
+            "endToEndP95Ms": 187.0016000000005,
+            "endToEndMaxMs": 246.79320000000007
+          },
+          {
+            "budget": 4096,
+            "queries": 100,
+            "pass": 100,
+            "fail": 0,
+            "sourceRecall": 1,
+            "sourcePrecision": 0.9047619047619048,
+            "npcLeaks": 0,
+            "futureLeaks": 0,
+            "wrongFactStatus": 0,
+            "misattribution": 0,
+            "negativeFalsePositive": 0,
+            "byteChecks": 270,
+            "estimatedTokensMean": 206.7,
+            "estimatedTokensMax": 473,
+            "endToEndP50Ms": 7.087899999999536,
+            "endToEndP95Ms": 170.72520000000077,
+            "endToEndMaxMs": 216.0639999999994
+          }
+        ],
+        "processResource": {
+          "userCPUTime": 11484000,
+          "systemCPUTime": 437000,
+          "maxRSS": 488980,
+          "sharedMemorySize": 0,
+          "unsharedDataSize": 0,
+          "unsharedStackSize": 0,
+          "minorPageFault": 0,
+          "majorPageFault": 164196,
+          "swappedOut": 0,
+          "fsRead": 7461,
+          "fsWrite": 3,
+          "ipcSent": 0,
+          "ipcReceived": 0,
+          "signalsCount": 0,
+          "voluntaryContextSwitches": 0,
+          "involuntaryContextSwitches": 0
+        }
+      }
+    },
+    {
+      "kind": "complex",
+      "count": 10000,
+      "questionsSha256": "a9d6f614872ae314442b6bba64472dec327dda8a4ff29907eea26a8b92bd5bac",
+      "reusedWriter": false,
+      "crashRecovery": {
+        "checkpoint": "halfway-after-commit",
+        "committedTurns": 5000,
+        "pid": 19344,
+        "exitCode": null,
+        "signal": "SIGKILL",
+        "interruptedWriteMs": 4543
+      },
+      "writer": {
+        "pid": 10320,
+        "root": "5dccdbe15429e9bf1e3df3afcf4cb5d1c73115b636c3a616f4ed5f9a2f28f6bb",
+        "count": 10000,
+        "saved": 5000,
+        "duplicates": 5000,
+        "writeMs": 5091.473,
+        "writeP50Ms": 0.6093999999998232,
+        "writeP95Ms": 1.0421999999998661,
+        "duplicateMs": 0.8139000000001033,
+        "dbBytes": 23334912,
+        "bodyBytes": 1873663,
+        "heapUsed": 27134920,
+        "sqlite": "WAL + synchronous FULL"
+      },
+      "reader": {
+        "pid": 32304,
+        "restoreMs": 501.56669999999997,
+        "restoredRoot": "5dccdbe15429e9bf1e3df3afcf4cb5d1c73115b636c3a616f4ed5f9a2f28f6bb",
+        "restoredCount": 10000,
+        "heapUsed": 540026040,
+        "builds": [
+          {
+            "audience": {
+              "kind": "player"
+            },
+            "firstSearchIncludingIndexMs": 444.0463000000018,
+            "indexBuildMs": 423.90469999999914
+          },
+          {
+            "audience": {
+              "kind": "npc",
+              "npcId": "p-a0-lead"
+            },
+            "firstSearchIncludingIndexMs": 27.218300000000454,
+            "indexBuildMs": 24.554400000000896
+          }
+        ],
+        "viewBuildCount": 101,
+        "viewBuildTotalMs": 20861.11620000001,
+        "runs": [
+          {
+            "budget": 512,
+            "queries": 100,
+            "pass": 100,
+            "fail": 0,
+            "sourceRecall": 1,
+            "sourcePrecision": 0.9047619047619048,
+            "npcLeaks": 0,
+            "futureLeaks": 0,
+            "wrongFactStatus": 0,
+            "misattribution": 0,
+            "negativeFalsePositive": 0,
+            "byteChecks": 270,
+            "estimatedTokensMean": 207.2,
+            "estimatedTokensMax": 474,
+            "endToEndP50Ms": 10.212999999999965,
+            "endToEndP95Ms": 302.4269999999999,
+            "endToEndMaxMs": 682.8667999999998
+          },
+          {
+            "budget": 1024,
+            "queries": 100,
+            "pass": 100,
+            "fail": 0,
+            "sourceRecall": 1,
+            "sourcePrecision": 0.9047619047619048,
+            "npcLeaks": 0,
+            "futureLeaks": 0,
+            "wrongFactStatus": 0,
+            "misattribution": 0,
+            "negativeFalsePositive": 0,
+            "byteChecks": 270,
+            "estimatedTokensMean": 207.2,
+            "estimatedTokensMax": 474,
+            "endToEndP50Ms": 13.81210000000101,
+            "endToEndP95Ms": 541.7267999999985,
+            "endToEndMaxMs": 670.9829
+          },
+          {
+            "budget": 2048,
+            "queries": 100,
+            "pass": 100,
+            "fail": 0,
+            "sourceRecall": 1,
+            "sourcePrecision": 0.9047619047619048,
+            "npcLeaks": 0,
+            "futureLeaks": 0,
+            "wrongFactStatus": 0,
+            "misattribution": 0,
+            "negativeFalsePositive": 0,
+            "byteChecks": 270,
+            "estimatedTokensMean": 207.2,
+            "estimatedTokensMax": 474,
+            "endToEndP50Ms": 13.08100000000195,
+            "endToEndP95Ms": 445.04249999999956,
+            "endToEndMaxMs": 701.9277999999995
+          },
+          {
+            "budget": 4096,
+            "queries": 100,
+            "pass": 100,
+            "fail": 0,
+            "sourceRecall": 1,
+            "sourcePrecision": 0.9047619047619048,
+            "npcLeaks": 0,
+            "futureLeaks": 0,
+            "wrongFactStatus": 0,
+            "misattribution": 0,
+            "negativeFalsePositive": 0,
+            "byteChecks": 270,
+            "estimatedTokensMean": 207.2,
+            "estimatedTokensMax": 474,
+            "endToEndP50Ms": 8.194400000000314,
+            "endToEndP95Ms": 414.47559999999794,
+            "endToEndMaxMs": 525.199099999998
+          }
+        ],
+        "processResource": {
+          "userCPUTime": 36562000,
+          "systemCPUTime": 1468000,
+          "maxRSS": 1306048,
+          "sharedMemorySize": 0,
+          "unsharedDataSize": 0,
+          "unsharedStackSize": 0,
+          "minorPageFault": 0,
+          "majorPageFault": 455881,
+          "swappedOut": 0,
+          "fsRead": 27260,
+          "fsWrite": 3,
+          "ipcSent": 0,
+          "ipcReceived": 0,
+          "signalsCount": 0,
+          "voluntaryContextSwitches": 0,
+          "involuntaryContextSwitches": 0
+        }
+      }
+    }
+  ],
+  "tokenMethod": "ESTIMATE ceil(UTF-8 context bytes/2), not actual tokenizer or billing; excludes system/query/output",
+  "latencyMethod": "Sequential local subprocesses. End-to-end search includes disk verification and first view construction; independent cold-build samples listed separately. Not a production SLO.",
+  "modelCalls": 0,
+  "paidServices": 0
+}

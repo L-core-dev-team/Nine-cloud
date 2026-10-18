@@ -1,0 +1,56 @@
+{
+  "baseline": "e3e6caf502c88632678ce6e6710caa3e1bdee625",
+  "main": "2647439e0cccc9a136606a81131519f53253f125",
+  "testedSourceSha": "103d1fa496f2959167b4254a6c811c7ddf3fe03e",
+  "node": "v24.19.0",
+  "command": "node --test --test-reporter=tap tests/experiments/p6-longmem-durability/store.test.cjs",
+  "exitCode": 0,
+  "PASS": 8,
+  "FAIL": 0,
+  "syntaxCheck": "store.cjs and store.test.cjs passed node --check",
+  "restoredUtf8BytesIdentical": true,
+  "recoveryUsesSeparateProcesses": true,
+  "duplicateAndConflictProtection": true,
+  "scopeIsolation": "trusted owner/save/branch namespaces; not authentication",
+  "npcAuthorizationImplemented": false,
+  "crashOrPowerLossDurabilityClaimed": false,
+  "oldExperimentsUnchanged": true,
+  "productionPathsUnchanged": true,
+  "files": [
+    {
+      "path": "tests/experiments/p6-longmem-durability/.gitattributes",
+      "bytes": 18,
+      "sha256": "3ed77a80cf8c5ef7f346015f557db30e7ee4c1bd080c3f0e278ed0cca8aaf1b5"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-durability/.gitignore",
+      "bytes": 12,
+      "sha256": "382c2459a1c06e87659303603197f219ee949aec9b8f8809ab2b8cf4a82cad8c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-durability/evidence/tests.log",
+      "bytes": 4040,
+      "sha256": "a504b870c610dc73caefbd662db813254977f78e657cde90a82cb1de706bccc8"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-durability/README.md",
+      "bytes": 3538,
+      "sha256": "68482205fe4ba7e6316125b11f083a94a8209f2d26cbf0bb5ab67c5eec95a896"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-durability/store.cjs",
+      "bytes": 5090,
+      "sha256": "1113b18ca43278b476a7353794a7c295c69ebab318f3a2792eaf6ac4887cb704"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-durability/store.test.cjs",
+      "bytes": 6797,
+      "sha256": "ec986b02a7339d55b5a15404bc27d264e91fd3b0cbf69a1878c81de5eb22c2d5"
+    },
+    {
+      "path": "docs/acceptance/2026-10-12/P6-LONGMEM-04-PRE-原文保存与恢复验证回执.md",
+      "bytes": 5455,
+      "sha256": "2c638704b3fde8a0c7f35b022a2c5c7d921851e6260b9a191eb5aab8fab1d3f2"
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "mode": "retained",
+  "kind": "complex",
+  "count": 10000,
+  "queries": 400,
+  "unchangedEvidence": true,
+  "restoreMs": 575.6251,
+  "viewBuildCount": 21,
+  "viewBuildTotalMs": 2676.1499000000013,
+  "maxSampledHeapBytes": 737717848,
+  "runs": [
+    {
+      "budget": 512,
+      "queries": 100,
+      "pass": 100,
+      "fail": 0,
+      "p50Ms": 8.146299999999883,
+      "p95Ms": 323.09679999999935,
+      "maxMs": 380.67599999999993,
+      "queryMs": 3825.9915999999976,
+      "totalIncludingVerificationMs": 4014.555,
+      "byteChecks": 270,
+      "npcLeaks": 0,
+      "futureLeaks": 0
+    },
+    {
+      "budget": 1024,
+      "queries": 100,
+      "pass": 100,
+      "fail": 0,
+      "p50Ms": 9.731899999999769,
+      "p95Ms": 20.36619999999948,
+      "maxMs": 389.4926999999998,
+      "queryMs": 1367.163799999994,
+      "totalIncludingVerificationMs": 1610.1454999999996,
+      "byteChecks": 270,
+      "npcLeaks": 0,
+      "futureLeaks": 0
+    },
+    {
+      "budget": 2048,
+      "queries": 100,
+      "pass": 100,
+      "fail": 0,
+      "p50Ms": 9.6270999999997,
+      "p95Ms": 19.16779999999926,
+      "maxMs": 21.54059999999936,
+      "queryMs": 949.6963000000014,
+      "totalIncludingVerificationMs": 1183.9865,
+      "byteChecks": 270,
+      "npcLeaks": 0,
+      "futureLeaks": 0
+    },
+    {
+      "budget": 4096,
+      "queries": 100,
+      "pass": 100,
+      "fail": 0,
+      "p50Ms": 8.856300000000374,
+      "p95Ms": 17.03859999999986,
+      "maxMs": 20.863099999998667,
+      "queryMs": 896.4180000000106,
+      "totalIncludingVerificationMs": 1128.4263,
+      "byteChecks": 270,
+      "npcLeaks": 0,
+      "futureLeaks": 0
+    }
+  ],
+  "retention": {
+    "hits": 1459,
+    "misses": 21,
+    "evictions": 0,
+    "maxEntries": 21,
+    "maxEstimatedBytes": 72738945,
+    "currentEntries": 21,
+    "currentEstimatedBytes": 72738945,
+    "entryLimit": 32,
+    "estimatedByteLimit": 100663296,
+    "limitation": "Estimated serialized payload bound is not a heap bound; scopes and snapshot are frozen. No dynamic production authorization is claimed."
+  }
+}

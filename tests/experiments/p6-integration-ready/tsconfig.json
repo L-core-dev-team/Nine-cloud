@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "types": [
+      "node"
+    ],
+    "paths": {
+      "@jiuxiao/contracts": [
+        "../../../packages/contracts/src/index.ts"
+      ],
+      "zod": [
+        "../../../../Nine-cloud-P6-main-sync-20261012/node_modules/.pnpm/zod@4.6.5/node_modules/zod"
+      ]
+    },
+    "typeRoots": [
+      "../../../../Nine-cloud-P6-main-sync-20261012/node_modules/@types"
+    ],
+    "allowImportingTsExtensions": true
+  },
+  "include": [
+    "contracts.ts",
+    "contract-check.ts",
+    "bridge.d.cts",
+    "benchmark.ts",
+    "runtime-schema.ts"
+  ]
+}

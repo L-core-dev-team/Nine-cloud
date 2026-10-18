@@ -1,0 +1,1248 @@
+{
+  "testedSourceSha": "394fd4f13dc5790a69e4125a29d196271b717a5c",
+  "main": "2647439e0cccc9a136606a81131519f53253f125",
+  "node": "v24.19.0",
+  "icu": "78.3",
+  "files": [
+    {
+      "path": "tests/experiments/p6-longmem-lexical/.gitattributes",
+      "bytes": 18,
+      "sha256": "3ed77a80cf8c5ef7f346015f557db30e7ee4c1bd080c3f0e278ed0cca8aaf1b5"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/benchmark.ts",
+      "bytes": 5110,
+      "sha256": "6f4b2df8d426874ea96d39cbdf337288c56b3e16cc4bd3df44117a3ddd6f5d62"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/compatibility.test.ts",
+      "bytes": 7105,
+      "sha256": "d50aaa557f915346b54dbb5edfee85ca885fc063400b903fbab345a84aed1f10"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/after-tests.log",
+      "bytes": 1806,
+      "sha256": "60152a424b4d6ae0df936e326cddfc6adf7d3b86568185e5b526c9cd618ccf1f"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/all-tests.log",
+      "bytes": 12604,
+      "sha256": "bb2f74966397c4dcd961c2b4fa3c01ab801f327460c80237f3353320e9d810dd"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/before-tests-complete.log",
+      "bytes": 14288,
+      "sha256": "f551a4366309bad9888a41ca34161fd099b4e7086d3ae5988d6f8dc849cff462"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/before-tests.log",
+      "bytes": 14138,
+      "sha256": "4fd7de262df3c53446cc30c503dc0538362c3c6f88a96a24cb69807e74d51542"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-1000-lexical-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-1000-lexical-1024.json.gz",
+      "bytes": 40795,
+      "sha256": "ab7ed4bcc25e0e51b35f2f3bbf043f0834cb0dde0b737cb92fb5818af66a409d"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-1000-lexical-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-1000-lexical-2048.json.gz",
+      "bytes": 40806,
+      "sha256": "618e69274c2e2811bcab561786593def75a0ca6e63bed38438db94db8c448075"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-1000-lexical-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-1000-lexical-4096.json.gz",
+      "bytes": 40796,
+      "sha256": "775bcf3ce7d50e7d1a4b7619a02b056257ce9611093803d276b56addd9e6a8e5"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-1000-lexical-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-1000-lexical-512.json.gz",
+      "bytes": 40817,
+      "sha256": "6c4460749b891c33a34dda679264939a786d18dcaf48533b6cf2d896f5aa4d53"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-1000-p603-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-1000-p603-1024.json.gz",
+      "bytes": 40795,
+      "sha256": "56d1de884ffe4846008e19cdfa36609f7fc512a06208b4a5cdfd60f0947bf308"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-1000-p603-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-1000-p603-2048.json.gz",
+      "bytes": 40788,
+      "sha256": "ee21ba3a53cce7ffa29fecd7d55a5302e3dcee40daa4f722279be1bfd85ea067"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-1000-p603-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-1000-p603-4096.json.gz",
+      "bytes": 40806,
+      "sha256": "6fbb88555e58d6e1109938bb29c8c9c948e0849cf1d195c1e86f335530577206"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-1000-p603-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-1000-p603-512.json.gz",
+      "bytes": 40792,
+      "sha256": "1d85b370113e9ff7c22ae3337766e3f3908ec7a9500a982611fc7aa2582bf77c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-200-lexical-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-200-lexical-1024.json.gz",
+      "bytes": 40791,
+      "sha256": "c9d11b47d29fceab8a9dd7895acb401104b77364b4cd366c438339b99aedf701"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-200-lexical-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-200-lexical-2048.json.gz",
+      "bytes": 40773,
+      "sha256": "bd3f9c35e717aef95247bc0f1b88f7a380efc6544e55b813c02c04af699ec74b"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-200-lexical-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-200-lexical-4096.json.gz",
+      "bytes": 40781,
+      "sha256": "014871432c53509eb495efb6c4ead44121a96867bf28624f97062fb15efff09c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-200-lexical-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-200-lexical-512.json.gz",
+      "bytes": 40781,
+      "sha256": "a5467c05468ef65fb11915389a4301370dedc207407a8f788f4fc9388aea458b"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-200-p603-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-200-p603-1024.json.gz",
+      "bytes": 40769,
+      "sha256": "3d34c5fcfe1fe9762ff5ec877d529a246260dfcb5706f5a7ec7454439f9058b1"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-200-p603-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-200-p603-2048.json.gz",
+      "bytes": 40778,
+      "sha256": "ab3b3ebd1c6ebbab7914fa613e1e593adbcd71b386951f8bd015bca613a5da84"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-200-p603-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-200-p603-4096.json.gz",
+      "bytes": 40780,
+      "sha256": "98421b7579eafc72b40b1599c516a516bc0873c6387b3b19190365492124e624"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-200-p603-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-200-p603-512.json.gz",
+      "bytes": 40781,
+      "sha256": "a756788e64a234cce4af4239b242b632ec0867864b809bd6252bf98b8f49ebaf"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-500-lexical-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-500-lexical-1024.json.gz",
+      "bytes": 40789,
+      "sha256": "381bbc45f2d31cc53d5033d70f6a3b6d54c6713374410606f6acc5b4800e9b50"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-500-lexical-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-500-lexical-2048.json.gz",
+      "bytes": 40778,
+      "sha256": "6bc6656f748ec835619b9d4c8983571c90d7791b9d1d225ed0c903388e695c17"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-500-lexical-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-500-lexical-4096.json.gz",
+      "bytes": 40800,
+      "sha256": "57811291d33816767058e4a6a1477ac7f37cf89255db34c2eb79d80a70c00d49"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-500-lexical-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-500-lexical-512.json.gz",
+      "bytes": 40783,
+      "sha256": "79ae7fe5c1c2d5739d64523a9ec3158294cba5c8cdd8b1c2d17ede595725002c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-500-p603-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-500-p603-1024.json.gz",
+      "bytes": 40798,
+      "sha256": "93289b446b47d8e20dcd8fc2e2fbf0b6da57d2fbef409ae6fc0fda90ea8c97cb"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-500-p603-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-500-p603-2048.json.gz",
+      "bytes": 40787,
+      "sha256": "3f202ca457a33f351e0252ac626e14cdd0c6510c224ac5a7031b259bddfcf509"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-500-p603-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-500-p603-4096.json.gz",
+      "bytes": 40795,
+      "sha256": "1164e9eddd315e8babb95174230274e21cc9962c5a527ef6afc3e03533fe82df"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-500-p603-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/original60-500-p603-512.json.gz",
+      "bytes": 40766,
+      "sha256": "c5ca095bfe139a60f960e3c227e4884d2a7ef2370de9e1cf1447aa297ec97e07"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-development50-lexical-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-development50-lexical-1024.json.gz",
+      "bytes": 217472,
+      "sha256": "37e1f788b0070c25038b51560355d08c58a4d94d85bef4fac113cdb4282cef9b"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-development50-lexical-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-development50-lexical-2048.json.gz",
+      "bytes": 217492,
+      "sha256": "800892ed5033452d460959302cbc83fc0df47c4a1c6c792b7bd2f853b54bb185"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-development50-lexical-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-development50-lexical-4096.json.gz",
+      "bytes": 217471,
+      "sha256": "43c08b4a82f0ca937c06fbd5c36c6684e6ab908228b53ff1c50447f9d7094242"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-development50-lexical-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-development50-lexical-512.json.gz",
+      "bytes": 217481,
+      "sha256": "6cc004bb200e7b090667947b97d2329cdabddd3c6fbf50c01bd65b3ff1323fba"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-development50-p603-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-development50-p603-1024.json.gz",
+      "bytes": 217437,
+      "sha256": "782ad26d683eaa4a35b46765113697c289f3f6cfea635342f6ffbdc0163425b1"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-development50-p603-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-development50-p603-2048.json.gz",
+      "bytes": 217436,
+      "sha256": "f6905ec8372d00057468342d286170298998e2a23588748e670a14341b5eb71d"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-development50-p603-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-development50-p603-4096.json.gz",
+      "bytes": 217453,
+      "sha256": "f8788c0ca1e7c3d84f4b980d658014d956c9ed5ba441854a47a87bca99bf7be5"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-development50-p603-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-development50-p603-512.json.gz",
+      "bytes": 217447,
+      "sha256": "57366a3eb32ffe7d2ccc64090e2a42b971874d6d0e1f935611828daaf183808f"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-public50-lexical-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-public50-lexical-1024.json.gz",
+      "bytes": 150914,
+      "sha256": "e4b55f0fc8a7e186a773f7608a65521dabe29d34b316ca2ef5bc3f397c8ffe2f"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-public50-lexical-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-public50-lexical-2048.json.gz",
+      "bytes": 150936,
+      "sha256": "b9172df9f5bd4708c7d655e5108cf481d0e745dabb2f7afae6a4a08b62133ebe"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-public50-lexical-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-public50-lexical-4096.json.gz",
+      "bytes": 150945,
+      "sha256": "d81b6b911fd2dadda5759c577f9971735be3bfada5a25c3cc48678f81d8debd4"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-public50-lexical-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-public50-lexical-512.json.gz",
+      "bytes": 150907,
+      "sha256": "063ee387460d8078b794c634748ad81ad683853316f3078da2553311194f5b4b"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-public50-p603-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-public50-p603-1024.json.gz",
+      "bytes": 150899,
+      "sha256": "d03358c0663e7fa181cc31660961b80a9b7e15bf52ddc8dacaa1f9691b9642a8"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-public50-p603-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-public50-p603-2048.json.gz",
+      "bytes": 150903,
+      "sha256": "9615e5d5aa6d0dcf9ce4854cbf4ef86118f62f0b474d822d7eb35b5c9ad9cff9"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-public50-p603-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-public50-p603-4096.json.gz",
+      "bytes": 150905,
+      "sha256": "71d1456bcc8efbe1bfde929fc80fd9d134123e7912a751857867f1378df848c4"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-public50-p603-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p602-public50-p603-512.json.gz",
+      "bytes": 150902,
+      "sha256": "4a4b65a40cb8f9bdeeea9d211d0fa9e457e3ace5407115a987cbec7e0a89e914"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-development100-lexical-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-development100-lexical-1024.json.gz",
+      "bytes": 13287,
+      "sha256": "aeb71a768fc65ff7c7a4b35e557adbe3bf85b5079d732e1df513d3f8a18e3d87"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-development100-lexical-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-development100-lexical-2048.json.gz",
+      "bytes": 13264,
+      "sha256": "b6c6c6fd15dd779ab525e805be502cda0bf921151e0be391caf6da4d904a4fe9"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-development100-lexical-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-development100-lexical-4096.json.gz",
+      "bytes": 13279,
+      "sha256": "a64b299b287f44f1c1604291a41e98f9fee1b42d127fa2673c5f8aeca67fbe49"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-development100-lexical-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-development100-lexical-512.json.gz",
+      "bytes": 13255,
+      "sha256": "85ca719c432f3211389f688c01520dfefb2c6674f16b2cd98ede35948b399637"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-development100-p603-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-development100-p603-1024.json.gz",
+      "bytes": 13244,
+      "sha256": "ecab3b4c5c6b6669c67180e8ff6680758bff0c374bfdb718d0877dca4d7d934e"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-development100-p603-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-development100-p603-2048.json.gz",
+      "bytes": 13221,
+      "sha256": "a5327b5db71441e346a7e2330cedf3c344ccbe0c7710c8d15eb5edf4a0ba5c34"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-development100-p603-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-development100-p603-4096.json.gz",
+      "bytes": 13246,
+      "sha256": "fb88c2680582f97ee17b91a6df35dd3fd96c9bd630d32044a73d14c64a4b9664"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-development100-p603-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-development100-p603-512.json.gz",
+      "bytes": 13245,
+      "sha256": "aa0b81755b81aeacb44488694cba7fad928d6e608cf8688d7b0907a97cbd9e8f"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-public100-lexical-1024-failures.json.gz",
+      "bytes": 1025,
+      "sha256": "95fa12303eec0806017cd6c9075e3ae236a1d8e80c840de54ccc2749110784a6"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-public100-lexical-1024.json.gz",
+      "bytes": 13071,
+      "sha256": "6499a14960dca17475b4d2e81f4b27faf16dc72fa65471170f701ad42f36c201"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-public100-lexical-2048-failures.json.gz",
+      "bytes": 1027,
+      "sha256": "b1e0aed8c50894da96ff58361aa29eee39bcb511b05c5c934747e4424b5a0e6d"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-public100-lexical-2048.json.gz",
+      "bytes": 13087,
+      "sha256": "6e39d7fcafa5e44c77b558ab3a01dac4cac3478ec493f5970f6bdfc0f8e271fc"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-public100-lexical-4096-failures.json.gz",
+      "bytes": 1026,
+      "sha256": "7d3331a6135723f8cd82febc952fb110e189d989ebff9bd131c3a421b1136c35"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-public100-lexical-4096.json.gz",
+      "bytes": 13104,
+      "sha256": "7fba8100b2892b5ebf492bbbf0c3d0e81bf94e4ca1e1a1282d83981e909e8067"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-public100-lexical-512-failures.json.gz",
+      "bytes": 1026,
+      "sha256": "582c5494378b25ee6860649ccc95f28fdb06043e42ba2d1a3fb6faa1c5e0d0a0"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-public100-lexical-512.json.gz",
+      "bytes": 13103,
+      "sha256": "edaaa42e9a1c7905da3ff6c86a0ec7b55a8fbd8c2a895c5d712dc49cd39ee01e"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-public100-p603-1024-failures.json.gz",
+      "bytes": 1356,
+      "sha256": "996e5b39969fb69093dedbbd99e58c252fdf654716f2fffc9f2cb62aaaf7d885"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-public100-p603-1024.json.gz",
+      "bytes": 13056,
+      "sha256": "0cf3ae8da6ba13ee6d21e08d69f10e4411d02d51bc4b3a421d5904c5cb44130b"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-public100-p603-2048-failures.json.gz",
+      "bytes": 1359,
+      "sha256": "42bb6ee4f74bcbea7ebc394130bbf987e60f7bcd59c638893547594f1a89a932"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-public100-p603-2048.json.gz",
+      "bytes": 13037,
+      "sha256": "af71c1d6f52f5b7082db6bca8c9677093836c7e8ace707c44357f9eaf04bc18c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-public100-p603-4096-failures.json.gz",
+      "bytes": 1359,
+      "sha256": "f6eec9823787ae6c4e7bed22a36d86d4947a1c930f5ea914c10414af91c951ea"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-public100-p603-4096.json.gz",
+      "bytes": 13050,
+      "sha256": "b69bcdc229292e4481d054bd6304443a593b695dabe7b833f73c71b08fbb5c40"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-public100-p603-512-failures.json.gz",
+      "bytes": 1356,
+      "sha256": "9b11b461bbc13c8e6ae7694088468a02248eb382026ac3c12b8a971443cada4a"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/p603-public100-p603-512.json.gz",
+      "bytes": 13079,
+      "sha256": "3100d39f582fc712c27c32c71944391e26103b13d998b54dc4f9f410f5a6fcc1"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/six-public-cases.json",
+      "bytes": 10491,
+      "sha256": "f05eb796536839293f0b37830d96193834b5d7a003eb9c0d5bb38488f108f216"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression/summary.json",
+      "bytes": 30307,
+      "sha256": "5d36ec329e5ba35adf07bc905d0271e62634df73e6a73bc98939599943c4f34f"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-1000-lexical-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-1000-lexical-1024.json.gz",
+      "bytes": 40805,
+      "sha256": "978275c4d263444d64fd7a246aff17a302b4b198efd1e40a8b4fc46edcdb121d"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-1000-lexical-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-1000-lexical-2048.json.gz",
+      "bytes": 40801,
+      "sha256": "c2b953751d622cde056f06df5a42ab806c9e267749c1e9d64fa7db464f356bdb"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-1000-lexical-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-1000-lexical-4096.json.gz",
+      "bytes": 40795,
+      "sha256": "9876f2e4d7a0eb6c53f67a000aa50c407d6dd3532007ad07e42f17dd7fe8c638"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-1000-lexical-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-1000-lexical-512.json.gz",
+      "bytes": 40794,
+      "sha256": "327d82f8f0fb18512f172c966e395c952ec52071b62c472e1c8f43570384d74f"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-1000-p603-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-1000-p603-1024.json.gz",
+      "bytes": 40790,
+      "sha256": "49382a1d1b51622cb3e9eb05c91d51410409ad9423134ee120e0d5b28e11c89b"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-1000-p603-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-1000-p603-2048.json.gz",
+      "bytes": 40810,
+      "sha256": "7548d2814455c6aecb9d412ac0acdf5dde4400beff42239ee09c100798ff70b4"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-1000-p603-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-1000-p603-4096.json.gz",
+      "bytes": 40780,
+      "sha256": "2bccde43591c0c9e8b3aec16c79bedbd842d52ed18e7890606182b78a23c7f73"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-1000-p603-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-1000-p603-512.json.gz",
+      "bytes": 40791,
+      "sha256": "5a48382ba6f51ec25278a2766a877068e548d71e9ac226ab2360c42c6a573ba5"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-200-lexical-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-200-lexical-1024.json.gz",
+      "bytes": 40785,
+      "sha256": "43991fda9b2731fb4623df0cf0ed548b4b562ba5c5a2c490f87d983dde0755df"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-200-lexical-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-200-lexical-2048.json.gz",
+      "bytes": 40765,
+      "sha256": "f7850098e8f0917c5a719e19cb1ed3098e787048be6609497924a104bc2659e0"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-200-lexical-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-200-lexical-4096.json.gz",
+      "bytes": 40790,
+      "sha256": "b4f99891ddff90c75b2b6a3624aa4a87bf96cdfaca4396485757978dfd6ea86b"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-200-lexical-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-200-lexical-512.json.gz",
+      "bytes": 40774,
+      "sha256": "00ac877b25cb497e4c08be6f4c0bc5f0c4ab185fa148b2411f68ed0e70a3678d"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-200-p603-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-200-p603-1024.json.gz",
+      "bytes": 40779,
+      "sha256": "cfcfc0f9fbc20620302f8864d258bc86e449538c8fa3d740d0cef72efa095b79"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-200-p603-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-200-p603-2048.json.gz",
+      "bytes": 40772,
+      "sha256": "265ba0551b3bacc09128547d6a74f9aa2e0b8443ddf6b617f27dc75f469177a2"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-200-p603-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-200-p603-4096.json.gz",
+      "bytes": 40759,
+      "sha256": "6957cd5c565bbdb13020e525f5608ccfebce84bd869df38e09bab8e915a21677"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-200-p603-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-200-p603-512.json.gz",
+      "bytes": 40769,
+      "sha256": "545a765c030def8ecadbdd31f5c71d6cb38752b2f42d90385ad6c16907fd114d"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-500-lexical-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-500-lexical-1024.json.gz",
+      "bytes": 40795,
+      "sha256": "414f749bcef486f949f4e9b1b09027637cb2c210f8d44b91ce62aec7591582ac"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-500-lexical-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-500-lexical-2048.json.gz",
+      "bytes": 40788,
+      "sha256": "1332ef93cbeaee1560e2875e4b9e9958be5735d80d7b04e6013329f1d8bce1c4"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-500-lexical-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-500-lexical-4096.json.gz",
+      "bytes": 40799,
+      "sha256": "e33e20a4ff7db835352ffa93ed5eac2214ae024d067adca4d5cd76de205fa708"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-500-lexical-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-500-lexical-512.json.gz",
+      "bytes": 40773,
+      "sha256": "09fed156ddf7835f8876dbfafd217bc3de5297b67c38b514334c0bdc7c50d890"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-500-p603-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-500-p603-1024.json.gz",
+      "bytes": 40781,
+      "sha256": "f8cd123e24ceb68ecf2b164743d8224c2212558e356382e7dbf916695a895985"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-500-p603-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-500-p603-2048.json.gz",
+      "bytes": 40794,
+      "sha256": "8fcab065259a7e59ae72bc06dcccaf5e3f78d99ead748154775ba8ba48028374"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-500-p603-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-500-p603-4096.json.gz",
+      "bytes": 40798,
+      "sha256": "f55f0eacad093c437b77bdc0363ed8cc3d20a2bdba8d52bcb315a43ea33423d2"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-500-p603-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/original60-500-p603-512.json.gz",
+      "bytes": 40780,
+      "sha256": "6774761e914becaf63470dd6cb5c5c401c225ff5c3b16898f7ec2bfb9e510987"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-development50-lexical-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-development50-lexical-1024.json.gz",
+      "bytes": 217470,
+      "sha256": "785829114119df050cdfa1910af01649b68139965d58c524de47bc583158e40c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-development50-lexical-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-development50-lexical-2048.json.gz",
+      "bytes": 217486,
+      "sha256": "dd3fcb5db0b80d85ab023a4a6aaae091eff02233ce517d60091fd87185455075"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-development50-lexical-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-development50-lexical-4096.json.gz",
+      "bytes": 217464,
+      "sha256": "b50b4a8570840cd8a27b389812ff062443b97057ea67728b3c06c68c0ede9158"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-development50-lexical-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-development50-lexical-512.json.gz",
+      "bytes": 217474,
+      "sha256": "301640f6dec690fe1225e214e750fd04cbf6f64ecd1abc2fafe7de844380bdd4"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-development50-p603-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-development50-p603-1024.json.gz",
+      "bytes": 217448,
+      "sha256": "dc70eefa6c27658a4225ff04e8c854b4fcee4f5faf03d0de2cfe68c1ae20f66c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-development50-p603-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-development50-p603-2048.json.gz",
+      "bytes": 217443,
+      "sha256": "d4b6886d49e5120ae3593cd822c47ca6f5d07326f3c3f9d624401e57dc93c825"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-development50-p603-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-development50-p603-4096.json.gz",
+      "bytes": 217438,
+      "sha256": "99dfa181ef40caf093ef5d77c1dfbfcc0fdd095ac630f3262a47b9b912bc3b8c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-development50-p603-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-development50-p603-512.json.gz",
+      "bytes": 217449,
+      "sha256": "8024f946753d48377b569b9d2021c2bdc0fef704a0f1de09d100e5c79bbc159a"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-public50-lexical-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-public50-lexical-1024.json.gz",
+      "bytes": 150929,
+      "sha256": "c0325fa748bf7b55b24d8aa256e1cfaa4d7d576d5b3ae06eec334f72eb4e0c9a"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-public50-lexical-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-public50-lexical-2048.json.gz",
+      "bytes": 150932,
+      "sha256": "285ead64dd599625c05f66851eea6d7b280cfa42772ef84b9cbf18fd64f85d3d"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-public50-lexical-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-public50-lexical-4096.json.gz",
+      "bytes": 150934,
+      "sha256": "199dd9855e91980f761bfac782cb9577996e21cec35c33a1e14f6bb0b28af9d4"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-public50-lexical-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-public50-lexical-512.json.gz",
+      "bytes": 150897,
+      "sha256": "e23a5cd976a5d9092d802af7f1c6e9a9fbe53f5c2b04c89879075e50eedb583b"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-public50-p603-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-public50-p603-1024.json.gz",
+      "bytes": 150921,
+      "sha256": "04011d5b18e7a3d9b74e1f95dc2f5ed37b6bfb8466fcc8ce189a0e0490fb5200"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-public50-p603-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-public50-p603-2048.json.gz",
+      "bytes": 150906,
+      "sha256": "bad99515900590b0410df3912a1f729d9ba16153d6dcf0a04ff748159b159e61"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-public50-p603-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-public50-p603-4096.json.gz",
+      "bytes": 150915,
+      "sha256": "69c45bbc2940abc258213ddc59e5aa1e26f204d8be27554d3474fde5d0311b35"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-public50-p603-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p602-public50-p603-512.json.gz",
+      "bytes": 150920,
+      "sha256": "da752ac3f7068f8f5cd519483b81c50f61079510f08fd6863b99af897a54955a"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-development100-lexical-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-development100-lexical-1024.json.gz",
+      "bytes": 13246,
+      "sha256": "508ee0067cc576393340321bf8a08dfcd3218cbc245019c7a5f2aeb24f483533"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-development100-lexical-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-development100-lexical-2048.json.gz",
+      "bytes": 13241,
+      "sha256": "7130989679114d50ae999304ea251dc1b6a06b6ec4277ace1ca79ae8089730f5"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-development100-lexical-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-development100-lexical-4096.json.gz",
+      "bytes": 13230,
+      "sha256": "7709a253bf3487b1cde282ffef56cbe4fa842213b8552216887899dccc207c57"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-development100-lexical-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-development100-lexical-512.json.gz",
+      "bytes": 13218,
+      "sha256": "8a903b9f9911fb8b7496b6daa83b11c12e0a81b9490972fe6bafad2380f6d064"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-development100-p603-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-development100-p603-1024.json.gz",
+      "bytes": 13247,
+      "sha256": "7afc087b43cd292b902275e2eedcee556c498816c5888968ee91de5d4721c719"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-development100-p603-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-development100-p603-2048.json.gz",
+      "bytes": 13236,
+      "sha256": "36de1b7abf704ea3a75787975ffaafe6aedabfeb8a04abd649952436803c2d0c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-development100-p603-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-development100-p603-4096.json.gz",
+      "bytes": 13243,
+      "sha256": "24becd6a5541e50ce7432031cd4454c1d3fd135e5a9368025d891de4cbcf7daf"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-development100-p603-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-development100-p603-512.json.gz",
+      "bytes": 13256,
+      "sha256": "504178f80e0eaf7091df2c8f238d7269617d2942f9c36e512dfed7c3c42e04e0"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-public100-lexical-1024-failures.json.gz",
+      "bytes": 1024,
+      "sha256": "80e46b9b54e8ded7730884e6bd9f99e311ac75bdbad7f4f1a715b1ad8691377c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-public100-lexical-1024.json.gz",
+      "bytes": 13099,
+      "sha256": "95fa4ad4247afa45428cefb034103e1772592d44393ec2b37b8a3d627ca2bf50"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-public100-lexical-2048-failures.json.gz",
+      "bytes": 1023,
+      "sha256": "dd1ddffcca0d86224ef4c08e46118f742d60dfb8b463af69e4c3924b6d84a7d4"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-public100-lexical-2048.json.gz",
+      "bytes": 13052,
+      "sha256": "f3c99f631199cea81d574b59bfe0ad8a9e21350b71c9bfea14ce180852faf83a"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-public100-lexical-4096-failures.json.gz",
+      "bytes": 1025,
+      "sha256": "22662fa553a6f2d9c23953290f7056301c58d39cd5bb60fb304020bcc582db2a"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-public100-lexical-4096.json.gz",
+      "bytes": 13098,
+      "sha256": "a891504454c84ff32b509be275456c882c3df4cf90db484c382084e29afcac64"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-public100-lexical-512-failures.json.gz",
+      "bytes": 1024,
+      "sha256": "d972c8cbffc3715540bdd313cf8f86777da373610b33b5252dcbb733c0e89900"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-public100-lexical-512.json.gz",
+      "bytes": 13068,
+      "sha256": "cba6cb6bad2c02d109da635806c10e65b8e739ce6e2e71ae614b4ca8a2f8c406"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-public100-p603-1024-failures.json.gz",
+      "bytes": 1357,
+      "sha256": "cb3492e8ec0ae5df9522775510138c0052d5e48b61f291c4fa763a2f2a12c999"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-public100-p603-1024.json.gz",
+      "bytes": 13068,
+      "sha256": "b63f7123bb2a1b97b7d23f55c2f10f8650d1f8f7f384c015fb1e11f13efd3e29"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-public100-p603-2048-failures.json.gz",
+      "bytes": 1359,
+      "sha256": "459015add66dc9e568c0688fe23d01bc7a59d69ca2367d29456732050409c658"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-public100-p603-2048.json.gz",
+      "bytes": 13074,
+      "sha256": "dee33bd9440f31447d68128f81b724e9d4bc8f0e9e71d8e1a658fe6a0fc688a0"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-public100-p603-4096-failures.json.gz",
+      "bytes": 1355,
+      "sha256": "1e2ba8fe22fabb7191e2d680a656db23bfc8f960352031c155cc06e813883361"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-public100-p603-4096.json.gz",
+      "bytes": 13061,
+      "sha256": "8b02785fde1cd87fd66006382392862064722f47a5a42b7e97f3203e18c9b52c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-public100-p603-512-failures.json.gz",
+      "bytes": 1356,
+      "sha256": "c755fa0692bc6edeaf24a33f4b2e81827f0b44fdaec60e9b8c29ed1c3c7b52fd"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/p603-public100-p603-512.json.gz",
+      "bytes": 13072,
+      "sha256": "ba0ae7bada34905b9958130584fa60e6f65d3fb4fb46b51b620821d5dfa12f3b"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/six-public-cases.json",
+      "bytes": 10491,
+      "sha256": "f05eb796536839293f0b37830d96193834b5d7a003eb9c0d5bb38488f108f216"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final/summary.json",
+      "bytes": 30258,
+      "sha256": "ea28307b3815dccc9b3b25e42203ddd533802af530016fa74ccf272dd6de75c3"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression-final.log",
+      "bytes": 40270,
+      "sha256": "1173a96c4e988d8b16411902adcd1bffaf8c4bf1b34963fd89bb3aa9619234e8"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/regression.log",
+      "bytes": 40368,
+      "sha256": "ce1e1bd006eaa491e4081339abecfab5827bbe77a194f8ff720c41e3bde1db7f"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/typecheck-fixed.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/typecheck.log",
+      "bytes": 584,
+      "sha256": "34234f3464f45ed227d12bd5a0546ceb35a737e0215904b31e781245ca90e7df"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/verification.json",
+      "bytes": 386,
+      "sha256": "71f6dd423c6262ca2a050dc59f48a77c4b2c0c66a0d72d0286e7ce092f631efd"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/evidence/verification.log",
+      "bytes": 686,
+      "sha256": "81f70079b818f6fca99d7aff5955e5b9363dd40eed39ee66e43f4fb8df9c5b86"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/lexical.test.ts",
+      "bytes": 5132,
+      "sha256": "9e47585fc0631a97f49ba16b58604fe3ad66d98f1d966c092e28d90159632ef3"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/lexical.ts",
+      "bytes": 857,
+      "sha256": "79aaefa2f485bdea63bac558a984181fd896859b6a08958430b17991b15c16a5"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/package.json",
+      "bytes": 33,
+      "sha256": "a90fc33418afa2b9cbf4768524b021135b965ecdf993457505bfae3ac44a8428"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/retrieval.ts",
+      "bytes": 9371,
+      "sha256": "448889d700786480396bf17abcc1720e421e30d505dfd61d949fa526d95df8a9"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/tsconfig.json",
+      "bytes": 146,
+      "sha256": "e31928eb4e622695a129b7f7fe28c9f2feb939dbc52eafd8839adcac301accab"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-lexical/verify.cjs",
+      "bytes": 3010,
+      "sha256": "e4bd70ecd4cd0fcc51edf5234887e349ab4f3a68b3c3f429d9c9b7a96459003a"
+    },
+    {
+      "path": "docs/acceptance/2026-10-12/P6-LONGMEM-03.1-中文近义表达强化回执.md",
+      "bytes": 5471,
+      "sha256": "80454ec92a5aa9f32c411e3c3adcc5ca6c3f53bd958a04c18910a5352dde5c97"
+    }
+  ]
+}

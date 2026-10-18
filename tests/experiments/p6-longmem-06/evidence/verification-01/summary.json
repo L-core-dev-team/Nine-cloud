@@ -1,0 +1,56 @@
+{
+  "status": "PASS",
+  "sourceChecks": 42000,
+  "ledgerChecks": 600,
+  "queryChecks": 11520,
+  "spanChecks": 29200,
+  "factChecks": 1864,
+  "policyChecks": 7392,
+  "freezeChecks": 48,
+  "inherited05cChecks": 704,
+  "comparisons": [
+    {
+      "suite": "development",
+      "count": 1000,
+      "improved": 59,
+      "newFailures": 11,
+      "newWrongSources": 0
+    },
+    {
+      "suite": "development",
+      "count": 3000,
+      "improved": 60,
+      "newFailures": 8,
+      "newWrongSources": 0
+    },
+    {
+      "suite": "development",
+      "count": 10000,
+      "improved": 63,
+      "newFailures": 11,
+      "newWrongSources": 0
+    },
+    {
+      "suite": "holdout",
+      "count": 1000,
+      "improved": 64,
+      "newFailures": 4,
+      "newWrongSources": 0
+    },
+    {
+      "suite": "holdout",
+      "count": 3000,
+      "improved": 67,
+      "newFailures": 11,
+      "newWrongSources": 0
+    },
+    {
+      "suite": "holdout",
+      "count": 10000,
+      "improved": 64,
+      "newFailures": 4,
+      "newWrongSources": 0
+    }
+  ],
+  "independence": "No retriever/parser/policy/oracle generator imported; expected answers read only from immutable authored fixtures; all new refusals are counted, not hidden."
+}

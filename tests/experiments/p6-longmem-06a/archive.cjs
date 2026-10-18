@@ -1,0 +1,10 @@
+'use strict';
+const fs=require('node:fs'),p=require('node:path'),{createHash}=require('node:crypto'),{execFileSync}=require('node:child_process');
+const root=__dirname,repo=p.resolve(root,'../../..'),rel='tests/experiments/p6-longmem-06a/',sha=b=>createHash('sha256').update(b).digest('hex');
+const git=args=>execFileSync('git',args,{cwd:repo,maxBuffer:16*1024*1024});
+const code=['boundary.test.ts','run.cjs','regression.cjs','audit.cjs','tsconfig.json'];
+git(['add','--',...code.map(f=>rel+f)]);fs.writeFileSync(p.join(root,'minimal.patch'),git(['diff','--cached','--',...code.map(f=>rel+f)]));
+const walk=d=>fs.readdirSync(d,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(p.join(d,e.name)):[p.join(d,e.name)]);
+const entries=walk(root).filter(f=>p.basename(f)!=='file-manifest.json').map(f=>{const b=fs.readFileSync(f);return{path:p.relative(root,f).replaceAll('\\','/'),bytes:b.length,sha256:sha(b)};});
+fs.writeFileSync(p.join(root,'file-manifest.json'),JSON.stringify({baseline:'8b06d0606a665b06b8d2a23c78e888bde2d78265',scope:'06A new files only; manifest itself excluded',runtimeAlgorithmDiffFiles:0,files:entries.length,totalBytes:entries.reduce((n,e)=>n+e.bytes,0),entries},null,2));
+console.log(JSON.stringify({files:entries.length,totalBytes:entries.reduce((n,e)=>n+e.bytes,0)}));

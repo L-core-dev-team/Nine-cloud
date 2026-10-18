@@ -1,0 +1,506 @@
+[
+  {
+    "engine": "p603",
+    "budget": 512,
+    "id": "H-10-0",
+    "text": "祁栖耳后有什么装饰？",
+    "pass": false,
+    "missing": [
+      "p0101"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "p603",
+    "budget": 512,
+    "id": "H-14-2",
+    "text": "旧棋室落地棋子的声音出现在哪里？",
+    "pass": false,
+    "missing": [
+      "p0137"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "p603",
+    "budget": 512,
+    "id": "H-15-0",
+    "text": "柳璇眼睛有什么外貌细节？",
+    "pass": false,
+    "missing": [
+      "p0146"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "p603",
+    "budget": 512,
+    "id": "H-16-1",
+    "text": "碎玉坡雨里的味道是什么？",
+    "pass": false,
+    "missing": [
+      "p0155"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "p603",
+    "budget": 512,
+    "id": "H-17-0",
+    "text": "林絮额前头发是什么样？",
+    "pass": false,
+    "missing": [
+      "p0164"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "p603",
+    "budget": 512,
+    "id": "H-19-4",
+    "text": "季萦请求留下什么原话？",
+    "pass": false,
+    "missing": [
+      "p0182"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "p603",
+    "budget": 1024,
+    "id": "H-10-0",
+    "text": "祁栖耳后有什么装饰？",
+    "pass": false,
+    "missing": [
+      "p0101"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "p603",
+    "budget": 1024,
+    "id": "H-14-2",
+    "text": "旧棋室落地棋子的声音出现在哪里？",
+    "pass": false,
+    "missing": [
+      "p0137"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "p603",
+    "budget": 1024,
+    "id": "H-15-0",
+    "text": "柳璇眼睛有什么外貌细节？",
+    "pass": false,
+    "missing": [
+      "p0146"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "p603",
+    "budget": 1024,
+    "id": "H-16-1",
+    "text": "碎玉坡雨里的味道是什么？",
+    "pass": false,
+    "missing": [
+      "p0155"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "p603",
+    "budget": 1024,
+    "id": "H-17-0",
+    "text": "林絮额前头发是什么样？",
+    "pass": false,
+    "missing": [
+      "p0164"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "p603",
+    "budget": 1024,
+    "id": "H-19-4",
+    "text": "季萦请求留下什么原话？",
+    "pass": false,
+    "missing": [
+      "p0182"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "p603",
+    "budget": 2048,
+    "id": "H-10-0",
+    "text": "祁栖耳后有什么装饰？",
+    "pass": false,
+    "missing": [
+      "p0101"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "p603",
+    "budget": 2048,
+    "id": "H-14-2",
+    "text": "旧棋室落地棋子的声音出现在哪里？",
+    "pass": false,
+    "missing": [
+      "p0137"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "p603",
+    "budget": 2048,
+    "id": "H-15-0",
+    "text": "柳璇眼睛有什么外貌细节？",
+    "pass": false,
+    "missing": [
+      "p0146"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "p603",
+    "budget": 2048,
+    "id": "H-16-1",
+    "text": "碎玉坡雨里的味道是什么？",
+    "pass": false,
+    "missing": [
+      "p0155"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "p603",
+    "budget": 2048,
+    "id": "H-17-0",
+    "text": "林絮额前头发是什么样？",
+    "pass": false,
+    "missing": [
+      "p0164"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "p603",
+    "budget": 2048,
+    "id": "H-19-4",
+    "text": "季萦请求留下什么原话？",
+    "pass": false,
+    "missing": [
+      "p0182"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "p603",
+    "budget": 4096,
+    "id": "H-10-0",
+    "text": "祁栖耳后有什么装饰？",
+    "pass": false,
+    "missing": [
+      "p0101"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "p603",
+    "budget": 4096,
+    "id": "H-14-2",
+    "text": "旧棋室落地棋子的声音出现在哪里？",
+    "pass": false,
+    "missing": [
+      "p0137"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "p603",
+    "budget": 4096,
+    "id": "H-15-0",
+    "text": "柳璇眼睛有什么外貌细节？",
+    "pass": false,
+    "missing": [
+      "p0146"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "p603",
+    "budget": 4096,
+    "id": "H-16-1",
+    "text": "碎玉坡雨里的味道是什么？",
+    "pass": false,
+    "missing": [
+      "p0155"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "p603",
+    "budget": 4096,
+    "id": "H-17-0",
+    "text": "林絮额前头发是什么样？",
+    "pass": false,
+    "missing": [
+      "p0164"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "p603",
+    "budget": 4096,
+    "id": "H-19-4",
+    "text": "季萦请求留下什么原话？",
+    "pass": false,
+    "missing": [
+      "p0182"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "lexical",
+    "budget": 512,
+    "id": "H-10-0",
+    "text": "祁栖耳后有什么装饰？",
+    "pass": false,
+    "missing": [
+      "p0101"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "lexical",
+    "budget": 512,
+    "id": "H-14-2",
+    "text": "旧棋室落地棋子的声音出现在哪里？",
+    "pass": false,
+    "missing": [
+      "p0137"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "lexical",
+    "budget": 512,
+    "id": "H-15-0",
+    "text": "柳璇眼睛有什么外貌细节？",
+    "pass": true,
+    "missing": [],
+    "context": "[p0146 turn=146 type=narrative-detail; original-prose-only]\n双眼因熬夜泛着细细血丝。"
+  },
+  {
+    "engine": "lexical",
+    "budget": 512,
+    "id": "H-16-1",
+    "text": "碎玉坡雨里的味道是什么？",
+    "pass": false,
+    "missing": [
+      "p0155"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "lexical",
+    "budget": 512,
+    "id": "H-17-0",
+    "text": "林絮额前头发是什么样？",
+    "pass": true,
+    "missing": [],
+    "context": "[p0164 turn=164 type=narrative-detail; original-prose-only]\n额前垂着被雨黏住的一缕发。"
+  },
+  {
+    "engine": "lexical",
+    "budget": 512,
+    "id": "H-19-4",
+    "text": "季萦请求留下什么原话？",
+    "pass": true,
+    "missing": [],
+    "context": "[p0182 turn=182 type=narrative-detail; original-prose-only]\n她说：“留住这一片。”"
+  },
+  {
+    "engine": "lexical",
+    "budget": 1024,
+    "id": "H-10-0",
+    "text": "祁栖耳后有什么装饰？",
+    "pass": false,
+    "missing": [
+      "p0101"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "lexical",
+    "budget": 1024,
+    "id": "H-14-2",
+    "text": "旧棋室落地棋子的声音出现在哪里？",
+    "pass": false,
+    "missing": [
+      "p0137"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "lexical",
+    "budget": 1024,
+    "id": "H-15-0",
+    "text": "柳璇眼睛有什么外貌细节？",
+    "pass": true,
+    "missing": [],
+    "context": "[p0146 turn=146 type=narrative-detail; original-prose-only]\n双眼因熬夜泛着细细血丝。"
+  },
+  {
+    "engine": "lexical",
+    "budget": 1024,
+    "id": "H-16-1",
+    "text": "碎玉坡雨里的味道是什么？",
+    "pass": false,
+    "missing": [
+      "p0155"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "lexical",
+    "budget": 1024,
+    "id": "H-17-0",
+    "text": "林絮额前头发是什么样？",
+    "pass": true,
+    "missing": [],
+    "context": "[p0164 turn=164 type=narrative-detail; original-prose-only]\n额前垂着被雨黏住的一缕发。"
+  },
+  {
+    "engine": "lexical",
+    "budget": 1024,
+    "id": "H-19-4",
+    "text": "季萦请求留下什么原话？",
+    "pass": true,
+    "missing": [],
+    "context": "[p0182 turn=182 type=narrative-detail; original-prose-only]\n她说：“留住这一片。”"
+  },
+  {
+    "engine": "lexical",
+    "budget": 2048,
+    "id": "H-10-0",
+    "text": "祁栖耳后有什么装饰？",
+    "pass": false,
+    "missing": [
+      "p0101"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "lexical",
+    "budget": 2048,
+    "id": "H-14-2",
+    "text": "旧棋室落地棋子的声音出现在哪里？",
+    "pass": false,
+    "missing": [
+      "p0137"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "lexical",
+    "budget": 2048,
+    "id": "H-15-0",
+    "text": "柳璇眼睛有什么外貌细节？",
+    "pass": true,
+    "missing": [],
+    "context": "[p0146 turn=146 type=narrative-detail; original-prose-only]\n双眼因熬夜泛着细细血丝。"
+  },
+  {
+    "engine": "lexical",
+    "budget": 2048,
+    "id": "H-16-1",
+    "text": "碎玉坡雨里的味道是什么？",
+    "pass": false,
+    "missing": [
+      "p0155"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "lexical",
+    "budget": 2048,
+    "id": "H-17-0",
+    "text": "林絮额前头发是什么样？",
+    "pass": true,
+    "missing": [],
+    "context": "[p0164 turn=164 type=narrative-detail; original-prose-only]\n额前垂着被雨黏住的一缕发。"
+  },
+  {
+    "engine": "lexical",
+    "budget": 2048,
+    "id": "H-19-4",
+    "text": "季萦请求留下什么原话？",
+    "pass": true,
+    "missing": [],
+    "context": "[p0182 turn=182 type=narrative-detail; original-prose-only]\n她说：“留住这一片。”"
+  },
+  {
+    "engine": "lexical",
+    "budget": 4096,
+    "id": "H-10-0",
+    "text": "祁栖耳后有什么装饰？",
+    "pass": false,
+    "missing": [
+      "p0101"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "lexical",
+    "budget": 4096,
+    "id": "H-14-2",
+    "text": "旧棋室落地棋子的声音出现在哪里？",
+    "pass": false,
+    "missing": [
+      "p0137"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "lexical",
+    "budget": 4096,
+    "id": "H-15-0",
+    "text": "柳璇眼睛有什么外貌细节？",
+    "pass": true,
+    "missing": [],
+    "context": "[p0146 turn=146 type=narrative-detail; original-prose-only]\n双眼因熬夜泛着细细血丝。"
+  },
+  {
+    "engine": "lexical",
+    "budget": 4096,
+    "id": "H-16-1",
+    "text": "碎玉坡雨里的味道是什么？",
+    "pass": false,
+    "missing": [
+      "p0155"
+    ],
+    "context": ""
+  },
+  {
+    "engine": "lexical",
+    "budget": 4096,
+    "id": "H-17-0",
+    "text": "林絮额前头发是什么样？",
+    "pass": true,
+    "missing": [],
+    "context": "[p0164 turn=164 type=narrative-detail; original-prose-only]\n额前垂着被雨黏住的一缕发。"
+  },
+  {
+    "engine": "lexical",
+    "budget": 4096,
+    "id": "H-19-4",
+    "text": "季萦请求留下什么原话？",
+    "pass": true,
+    "missing": [],
+    "context": "[p0182 turn=182 type=narrative-detail; original-prose-only]\n她说：“留住这一片。”"
+  }
+]

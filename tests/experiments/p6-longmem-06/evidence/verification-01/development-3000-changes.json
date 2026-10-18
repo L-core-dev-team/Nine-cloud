@@ -1,0 +1,498 @@
+{
+  "summary": {
+    "suite": "development",
+    "count": 3000,
+    "improved": 60,
+    "newFailures": 8,
+    "newWrongSources": 0
+  },
+  "improved": [
+    {
+      "questionId": "development:0:historical-relation:13",
+      "budget": 512,
+      "category": "historical-relation"
+    },
+    {
+      "questionId": "development:0:promise:15",
+      "budget": 512,
+      "category": "promise"
+    },
+    {
+      "questionId": "development:0:rumor:17",
+      "budget": 512,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:1:historical-relation:31",
+      "budget": 512,
+      "category": "historical-relation"
+    },
+    {
+      "questionId": "development:1:promise:33",
+      "budget": 512,
+      "category": "promise"
+    },
+    {
+      "questionId": "development:1:rumor:35",
+      "budget": 512,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:2:historical-relation:49",
+      "budget": 512,
+      "category": "historical-relation"
+    },
+    {
+      "questionId": "development:2:promise:51",
+      "budget": 512,
+      "category": "promise"
+    },
+    {
+      "questionId": "development:2:rumor:53",
+      "budget": 512,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:3:promise:69",
+      "budget": 512,
+      "category": "promise"
+    },
+    {
+      "questionId": "development:3:rumor:71",
+      "budget": 512,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:4:historical-relation:85",
+      "budget": 512,
+      "category": "historical-relation"
+    },
+    {
+      "questionId": "development:4:promise:87",
+      "budget": 512,
+      "category": "promise"
+    },
+    {
+      "questionId": "development:4:rumor:89",
+      "budget": 512,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:5:historical-relation:103",
+      "budget": 512,
+      "category": "historical-relation"
+    },
+    {
+      "questionId": "development:5:promise:105",
+      "budget": 512,
+      "category": "promise"
+    },
+    {
+      "questionId": "development:5:rumor:107",
+      "budget": 512,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:6:promise:123",
+      "budget": 512,
+      "category": "promise"
+    },
+    {
+      "questionId": "development:7:historical-relation:139",
+      "budget": 512,
+      "category": "historical-relation"
+    },
+    {
+      "questionId": "development:7:promise:141",
+      "budget": 512,
+      "category": "promise"
+    },
+    {
+      "questionId": "development:7:rumor:143",
+      "budget": 512,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:0:historical-relation:13",
+      "budget": 1024,
+      "category": "historical-relation"
+    },
+    {
+      "questionId": "development:0:rumor:17",
+      "budget": 1024,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:1:historical-relation:31",
+      "budget": 1024,
+      "category": "historical-relation"
+    },
+    {
+      "questionId": "development:1:rumor:35",
+      "budget": 1024,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:2:historical-relation:49",
+      "budget": 1024,
+      "category": "historical-relation"
+    },
+    {
+      "questionId": "development:2:rumor:53",
+      "budget": 1024,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:3:rumor:71",
+      "budget": 1024,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:4:historical-relation:85",
+      "budget": 1024,
+      "category": "historical-relation"
+    },
+    {
+      "questionId": "development:4:rumor:89",
+      "budget": 1024,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:5:historical-relation:103",
+      "budget": 1024,
+      "category": "historical-relation"
+    },
+    {
+      "questionId": "development:5:rumor:107",
+      "budget": 1024,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:7:historical-relation:139",
+      "budget": 1024,
+      "category": "historical-relation"
+    },
+    {
+      "questionId": "development:7:rumor:143",
+      "budget": 1024,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:0:historical-relation:13",
+      "budget": 2048,
+      "category": "historical-relation"
+    },
+    {
+      "questionId": "development:0:rumor:17",
+      "budget": 2048,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:1:historical-relation:31",
+      "budget": 2048,
+      "category": "historical-relation"
+    },
+    {
+      "questionId": "development:1:rumor:35",
+      "budget": 2048,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:2:historical-relation:49",
+      "budget": 2048,
+      "category": "historical-relation"
+    },
+    {
+      "questionId": "development:2:rumor:53",
+      "budget": 2048,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:3:rumor:71",
+      "budget": 2048,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:4:historical-relation:85",
+      "budget": 2048,
+      "category": "historical-relation"
+    },
+    {
+      "questionId": "development:4:rumor:89",
+      "budget": 2048,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:5:historical-relation:103",
+      "budget": 2048,
+      "category": "historical-relation"
+    },
+    {
+      "questionId": "development:5:rumor:107",
+      "budget": 2048,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:7:historical-relation:139",
+      "budget": 2048,
+      "category": "historical-relation"
+    },
+    {
+      "questionId": "development:7:rumor:143",
+      "budget": 2048,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:0:historical-relation:13",
+      "budget": 4096,
+      "category": "historical-relation"
+    },
+    {
+      "questionId": "development:0:rumor:17",
+      "budget": 4096,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:1:historical-relation:31",
+      "budget": 4096,
+      "category": "historical-relation"
+    },
+    {
+      "questionId": "development:1:rumor:35",
+      "budget": 4096,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:2:historical-relation:49",
+      "budget": 4096,
+      "category": "historical-relation"
+    },
+    {
+      "questionId": "development:2:rumor:53",
+      "budget": 4096,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:3:rumor:71",
+      "budget": 4096,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:4:historical-relation:85",
+      "budget": 4096,
+      "category": "historical-relation"
+    },
+    {
+      "questionId": "development:4:rumor:89",
+      "budget": 4096,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:5:historical-relation:103",
+      "budget": 4096,
+      "category": "historical-relation"
+    },
+    {
+      "questionId": "development:5:rumor:107",
+      "budget": 4096,
+      "category": "rumor"
+    },
+    {
+      "questionId": "development:7:historical-relation:139",
+      "budget": 4096,
+      "category": "historical-relation"
+    },
+    {
+      "questionId": "development:7:rumor:143",
+      "budget": 4096,
+      "category": "rumor"
+    }
+  ],
+  "newFailures": [
+    {
+      "questionId": "development:0:consumed:16",
+      "budget": 512,
+      "category": "consumed",
+      "reason": [
+        {
+          "sourceId": "long:0:6",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:0:归属:已消耗"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "no-complete-supporting-unit",
+          "confirmation": "offline-event-bound",
+          "npcAuthorized": true,
+          "asOfTurn": 3000,
+          "spans": []
+        }
+      ]
+    },
+    {
+      "questionId": "development:3:consumed:70",
+      "budget": 512,
+      "category": "consumed",
+      "reason": [
+        {
+          "sourceId": "long:3:6",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:3:归属:已消耗"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "no-complete-supporting-unit",
+          "confirmation": "offline-event-bound",
+          "npcAuthorized": true,
+          "asOfTurn": 3000,
+          "spans": []
+        }
+      ]
+    },
+    {
+      "questionId": "development:0:consumed:16",
+      "budget": 1024,
+      "category": "consumed",
+      "reason": [
+        {
+          "sourceId": "long:0:6",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:0:归属:已消耗"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "no-complete-supporting-unit",
+          "confirmation": "offline-event-bound",
+          "npcAuthorized": true,
+          "asOfTurn": 3000,
+          "spans": []
+        }
+      ]
+    },
+    {
+      "questionId": "development:3:consumed:70",
+      "budget": 1024,
+      "category": "consumed",
+      "reason": [
+        {
+          "sourceId": "long:3:6",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:3:归属:已消耗"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "no-complete-supporting-unit",
+          "confirmation": "offline-event-bound",
+          "npcAuthorized": true,
+          "asOfTurn": 3000,
+          "spans": []
+        }
+      ]
+    },
+    {
+      "questionId": "development:0:consumed:16",
+      "budget": 2048,
+      "category": "consumed",
+      "reason": [
+        {
+          "sourceId": "long:0:6",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:0:归属:已消耗"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "no-complete-supporting-unit",
+          "confirmation": "offline-event-bound",
+          "npcAuthorized": true,
+          "asOfTurn": 3000,
+          "spans": []
+        }
+      ]
+    },
+    {
+      "questionId": "development:3:consumed:70",
+      "budget": 2048,
+      "category": "consumed",
+      "reason": [
+        {
+          "sourceId": "long:3:6",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:3:归属:已消耗"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "no-complete-supporting-unit",
+          "confirmation": "offline-event-bound",
+          "npcAuthorized": true,
+          "asOfTurn": 3000,
+          "spans": []
+        }
+      ]
+    },
+    {
+      "questionId": "development:0:consumed:16",
+      "budget": 4096,
+      "category": "consumed",
+      "reason": [
+        {
+          "sourceId": "long:0:6",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:0:归属:已消耗"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "no-complete-supporting-unit",
+          "confirmation": "offline-event-bound",
+          "npcAuthorized": true,
+          "asOfTurn": 3000,
+          "spans": []
+        }
+      ]
+    },
+    {
+      "questionId": "development:3:consumed:70",
+      "budget": 4096,
+      "category": "consumed",
+      "reason": [
+        {
+          "sourceId": "long:3:6",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:3:归属:已消耗"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "no-complete-supporting-unit",
+          "confirmation": "offline-event-bound",
+          "npcAuthorized": true,
+          "asOfTurn": 3000,
+          "spans": []
+        }
+      ]
+    }
+  ],
+  "newWrongSources": []
+}

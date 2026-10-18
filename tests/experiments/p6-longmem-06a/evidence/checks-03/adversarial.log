@@ -1,0 +1,28 @@
+(node:37736) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/Users/11954/Desktop/%E6%B0%B4%E9%BE%99%E5%90%9F%E4%B8%93%E7%94%A8/%E9%A1%B9%E7%9B%AE/Nine-cloud-P6-longmem-06a-20261014/tests/experiments/p6-longmem-06/adversarial.test.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-P6-longmem-06a-20261014\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ nested original quote 甲岚说：“你说的‘三日归还’我记得。先核验，再启程。” (6.5094ms)
+✔ nested original quote 甲岚说：‘我听说「青铜法器」已归还，不过没有亲眼看见。’ (0.902ms)
+✔ nested original quote 甲岚说：「有人转述『青铜法器已经归还』，但我仍怀疑。」 (0.3355ms)
+✔ unclosed or mismatched original quotes must not be invented or marked sufficient (0.6713ms)
+✔ two speakers never donate each other’s claim evidence (1.2739ms)
+✔ unrelated same-person background never supports a labeled rumor (0.3378ms)
+✔ mentioning a rumor index or denying that a speech act occurred does not prove SAY (1.005ms)
+✔ plain dialogue also refuses the other named speaker in a shared source (2.1229ms)
+✔ a different topic and a named missing object cannot borrow the same actor claim (0.6357ms)
+✔ author supplied rumor binding preserves cross-sentence doubt and indirect reporter (0.4723ms)
+✔ wrong speaker or hash mapping is rejected, not used to manufacture support (0.3522ms)
+✔ binding cannot cut a closed quote or swallow a second speaker (0.3378ms)
+✔ promise conditions are atomic under low budget, cancellation is a distinct historical state (0.8176ms)
+✔ unheard promise, future cancellation and unknown identity are unavailable (0.3983ms)
+✔ generated unconfirmed fields cannot become authoritative facts (0.1943ms)
+✔ same-name ambiguity, emoji UTF-16, multiline dialogue and original immutability (0.6196ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 167.3802

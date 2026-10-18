@@ -1,0 +1,2 @@
+tests/experiments/p6-longmem-reliability/scale-worker.ts(36,128): error TS2339: Property 'gameMinuteRange' does not exist on type 'GoldQuestion & { expectedSpans?: { text: string; }[] | undefined; }'.
+tests/experiments/p6-longmem-reliability/scale-worker.ts(36,163): error TS2339: Property 'gameMinuteRange' does not exist on type 'GoldQuestion & { expectedSpans?: { text: string; }[] | undefined; }'.

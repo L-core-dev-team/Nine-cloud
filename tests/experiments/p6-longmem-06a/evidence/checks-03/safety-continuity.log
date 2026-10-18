@@ -1,0 +1,28 @@
+(node:19872) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/Users/11954/Desktop/%E6%B0%B4%E9%BE%99%E5%90%9F%E4%B8%93%E7%94%A8/%E9%A1%B9%E7%9B%AE/Nine-cloud-P6-longmem-06a-20261014/tests/experiments/p6-longmem-06/continuity.test.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-P6-longmem-06a-20261014\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ relationship evolution, expired promises and changed identity use authored rule events (352.5545ms)
+✔ different NPC perceptions stay attributed and independently authorized (24.4039ms)
+✔ new location and identity cannot leak into earlier original recovery (177.6723ms)
+✔ rumor remains unverified even when source is readable (152.1631ms)
+(node:38296) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/Users/11954/Desktop/%E6%B0%B4%E9%BE%99%E5%90%9F%E4%B8%93%E7%94%A8/%E9%A1%B9%E7%9B%AE/Nine-cloud-P6-longmem-06a-20261014/tests/experiments/p6-longmem-06/safety.test.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-P6-longmem-06a-20261014\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ cached authorized view cannot survive revocation or forgetting (79.5442ms)
+✔ later learned information does not travel backward (38.3937ms)
+✔ finish-read revalidation blocks mid-read policy changes (27.4722ms)
+✔ source hashes and snapshot revisions are mandatory; caller mutation is isolated (19.9875ms)
+✔ unconfirmed generated narration never becomes a rule fact (178.506ms)
+✔ current NPC projection cannot leak a later unknown successor (25.8295ms)
+✔ tiny budgets expose refusal without cutting or fabricating prose (19.0647ms)
+✔ LRU eviction and byte guard do not change evidence (70.6191ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 912.9715

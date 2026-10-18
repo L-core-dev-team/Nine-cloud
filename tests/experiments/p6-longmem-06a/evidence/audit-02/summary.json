@@ -1,0 +1,34 @@
+{
+  "status": "PASS",
+  "baseline": "8b06d0606a665b06b8d2a23c78e888bde2d78265",
+  "original06Clean": true,
+  "inherited": [
+    {
+      "label": "p6-longmem-05c",
+      "unchanged": 704
+    },
+    {
+      "label": "p6-longmem-06",
+      "unchanged": 922
+    }
+  ],
+  "sourceSha256": "1287d2f0e53bfebfd3512baaf958e41557f50002f151f3c4c9f6cc834fd77b10",
+  "frozenEvidence": {
+    "start": 120,
+    "end": 150,
+    "text": "钱柚把铜环信物交给玩家，随后信物被消耗于阵门，归属不再有效。"
+  },
+  "openQuote": 104,
+  "bindingsAvailable": false,
+  "comparedQueries": 576,
+  "differing": 0,
+  "targetStrictPass": 0,
+  "targetCount": 4,
+  "algorithmDiffFiles": [],
+  "environment": {
+    "node": "v24.19.0",
+    "platform": "win32",
+    "arch": "x64",
+    "git": "git version 2.55.0.windows.3"
+  }
+}

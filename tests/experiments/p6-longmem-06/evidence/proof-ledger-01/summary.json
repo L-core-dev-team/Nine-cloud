@@ -1,0 +1,6 @@
+{
+  "queries": 672,
+  "traces": 336,
+  "npcTraces": 64,
+  "source": "Immutable authored fixtures and recorded results only; no retrieval/parser/policy imports."
+}

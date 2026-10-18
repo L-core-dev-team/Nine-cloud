@@ -1,0 +1,340 @@
+{
+  "node": "v24.19.0",
+  "platform": "win32",
+  "startedAt": "2026-10-13T11:41:23.482Z",
+  "synthetic": true,
+  "productionReady": false,
+  "modelCalls": 0,
+  "paidServices": 0,
+  "corpora": [
+    {
+      "kind": "complex",
+      "count": 10000,
+      "questionCount": 100,
+      "questionsSha256": "a9d6f614872ae314442b6bba64472dec327dda8a4ff29907eea26a8b92bd5bac",
+      "writer": {
+        "pid": 4512,
+        "root": "5dccdbe15429e9bf1e3df3afcf4cb5d1c73115b636c3a616f4ed5f9a2f28f6bb",
+        "count": 10000,
+        "saved": 10000,
+        "duplicates": 0,
+        "writeMs": 8264.4,
+        "writeP50Ms": 0.7716000000000349,
+        "writeP95Ms": 1.0677000000005137,
+        "duplicateMs": 1.4872999999988679,
+        "dbBytes": 23334912,
+        "bodyBytes": 1873663,
+        "heapUsed": 37332208,
+        "sqlite": "WAL + synchronous FULL"
+      },
+      "reader": {
+        "pid": 4892,
+        "restoreMs": 513.0955,
+        "restoredRoot": "5dccdbe15429e9bf1e3df3afcf4cb5d1c73115b636c3a616f4ed5f9a2f28f6bb",
+        "restoredCount": 10000,
+        "unboundWorldLabelsExcluded": 0,
+        "heapUsed": 543632888,
+        "builds": [
+          {
+            "audience": {
+              "kind": "player"
+            },
+            "firstSearchIncludingIndexMs": 598.5701000000008,
+            "indexBuildMs": 584.4606000000022
+          },
+          {
+            "audience": {
+              "kind": "npc",
+              "npcId": "p-a0-lead"
+            },
+            "firstSearchIncludingIndexMs": 34.2996000000021,
+            "indexBuildMs": 32.50340000000142
+          }
+        ],
+        "viewBuildCount": 101,
+        "viewBuildTotalMs": 20727.783900000017,
+        "runs": [
+          {
+            "budget": 512,
+            "queries": 100,
+            "pass": 100,
+            "fail": 0,
+            "sourceRecall": 1,
+            "sourcePrecision": 0.9047619047619048,
+            "npcLeaks": 0,
+            "futureLeaks": 0,
+            "wrongFactStatus": 0,
+            "misattribution": 0,
+            "negativeFalsePositive": 0,
+            "byteChecks": 270,
+            "estimatedTokensMean": 207.2,
+            "estimatedTokensMax": 474,
+            "endToEndP50Ms": 10.026499999999942,
+            "endToEndP95Ms": 323.3908,
+            "endToEndMaxMs": 545.1836000000003
+          },
+          {
+            "budget": 1024,
+            "queries": 100,
+            "pass": 100,
+            "fail": 0,
+            "sourceRecall": 1,
+            "sourcePrecision": 0.9047619047619048,
+            "npcLeaks": 0,
+            "futureLeaks": 0,
+            "wrongFactStatus": 0,
+            "misattribution": 0,
+            "negativeFalsePositive": 0,
+            "byteChecks": 270,
+            "estimatedTokensMean": 207.2,
+            "estimatedTokensMax": 474,
+            "endToEndP50Ms": 11.326900000000023,
+            "endToEndP95Ms": 519.4326000000001,
+            "endToEndMaxMs": 593.3927999999996
+          },
+          {
+            "budget": 2048,
+            "queries": 100,
+            "pass": 100,
+            "fail": 0,
+            "sourceRecall": 1,
+            "sourcePrecision": 0.9047619047619048,
+            "npcLeaks": 0,
+            "futureLeaks": 0,
+            "wrongFactStatus": 0,
+            "misattribution": 0,
+            "negativeFalsePositive": 0,
+            "byteChecks": 270,
+            "estimatedTokensMean": 207.2,
+            "estimatedTokensMax": 474,
+            "endToEndP50Ms": 11.569100000000617,
+            "endToEndP95Ms": 515.7178999999996,
+            "endToEndMaxMs": 687.0055000000029
+          },
+          {
+            "budget": 4096,
+            "queries": 100,
+            "pass": 100,
+            "fail": 0,
+            "sourceRecall": 1,
+            "sourcePrecision": 0.9047619047619048,
+            "npcLeaks": 0,
+            "futureLeaks": 0,
+            "wrongFactStatus": 0,
+            "misattribution": 0,
+            "negativeFalsePositive": 0,
+            "byteChecks": 270,
+            "estimatedTokensMean": 207.2,
+            "estimatedTokensMax": 474,
+            "endToEndP50Ms": 10.576600000000326,
+            "endToEndP95Ms": 527.0748999999996,
+            "endToEndMaxMs": 562.645199999999
+          }
+        ],
+        "processResource": {
+          "userCPUTime": 36406000,
+          "systemCPUTime": 1593000,
+          "maxRSS": 1287640,
+          "sharedMemorySize": 0,
+          "unsharedDataSize": 0,
+          "unsharedStackSize": 0,
+          "minorPageFault": 0,
+          "majorPageFault": 452555,
+          "swappedOut": 0,
+          "fsRead": 27260,
+          "fsWrite": 3,
+          "ipcSent": 0,
+          "ipcReceived": 0,
+          "signalsCount": 0,
+          "voluntaryContextSwitches": 0,
+          "involuntaryContextSwitches": 0
+        }
+      }
+    },
+    {
+      "kind": "prose",
+      "count": 10000,
+      "questionCount": 200,
+      "questionsSha256": "58640216c9589287905806437ea1035c504e337ae88acea87b85e7631c50fc31",
+      "writer": {
+        "pid": 29324,
+        "root": "3420d422f48560ad1c8cf7c677725f3c9ad09308609f55c79ed39aac00c37114",
+        "count": 10000,
+        "saved": 10000,
+        "duplicates": 0,
+        "writeMs": 8259.3308,
+        "writeP50Ms": 0.7767999999996391,
+        "writeP95Ms": 1.0672999999997046,
+        "duplicateMs": 1.1284000000014203,
+        "dbBytes": 21549056,
+        "bodyBytes": 1761369,
+        "heapUsed": 37256120,
+        "sqlite": "WAL + synchronous FULL"
+      },
+      "reader": {
+        "pid": 37204,
+        "restoreMs": 531.1201,
+        "restoredRoot": "3420d422f48560ad1c8cf7c677725f3c9ad09308609f55c79ed39aac00c37114",
+        "restoredCount": 10000,
+        "unboundWorldLabelsExcluded": 7,
+        "heapUsed": 269877472,
+        "builds": [
+          {
+            "audience": {
+              "kind": "player"
+            },
+            "firstSearchIncludingIndexMs": 388.6846000000005,
+            "indexBuildMs": 374.6358
+          },
+          {
+            "audience": {
+              "kind": "npc",
+              "npcId": "observer"
+            },
+            "firstSearchIncludingIndexMs": 21.922599999998056,
+            "indexBuildMs": 17.854300000002695
+          }
+        ],
+        "viewBuildCount": 134,
+        "viewBuildTotalMs": 15484.060199999998,
+        "runs": [
+          {
+            "budget": 512,
+            "queries": 200,
+            "pass": 197,
+            "fail": 3,
+            "sourceRecall": 0.9785714285714285,
+            "sourcePrecision": 0.958041958041958,
+            "npcLeaks": 0,
+            "futureLeaks": 0,
+            "wrongFactStatus": 0,
+            "misattribution": 0,
+            "negativeFalsePositive": 0,
+            "byteChecks": 149,
+            "estimatedTokensMean": 34.84,
+            "estimatedTokensMax": 103,
+            "endToEndP50Ms": 8.539299999999912,
+            "endToEndP95Ms": 84.44660000000022,
+            "endToEndMaxMs": 603.7417
+          },
+          {
+            "budget": 1024,
+            "queries": 200,
+            "pass": 197,
+            "fail": 3,
+            "sourceRecall": 0.9785714285714285,
+            "sourcePrecision": 0.958041958041958,
+            "npcLeaks": 0,
+            "futureLeaks": 0,
+            "wrongFactStatus": 0,
+            "misattribution": 0,
+            "negativeFalsePositive": 0,
+            "byteChecks": 149,
+            "estimatedTokensMean": 34.84,
+            "estimatedTokensMax": 103,
+            "endToEndP50Ms": 8.577000000001135,
+            "endToEndP95Ms": 75.1869999999999,
+            "endToEndMaxMs": 588.0801000000001
+          },
+          {
+            "budget": 2048,
+            "queries": 200,
+            "pass": 197,
+            "fail": 3,
+            "sourceRecall": 0.9785714285714285,
+            "sourcePrecision": 0.958041958041958,
+            "npcLeaks": 0,
+            "futureLeaks": 0,
+            "wrongFactStatus": 0,
+            "misattribution": 0,
+            "negativeFalsePositive": 0,
+            "byteChecks": 149,
+            "estimatedTokensMean": 34.84,
+            "estimatedTokensMax": 103,
+            "endToEndP50Ms": 8.096199999999953,
+            "endToEndP95Ms": 81.85050000000047,
+            "endToEndMaxMs": 443.65789999999834
+          },
+          {
+            "budget": 4096,
+            "queries": 200,
+            "pass": 197,
+            "fail": 3,
+            "sourceRecall": 0.9785714285714285,
+            "sourcePrecision": 0.958041958041958,
+            "npcLeaks": 0,
+            "futureLeaks": 0,
+            "wrongFactStatus": 0,
+            "misattribution": 0,
+            "negativeFalsePositive": 0,
+            "byteChecks": 149,
+            "estimatedTokensMean": 34.84,
+            "estimatedTokensMax": 103,
+            "endToEndP50Ms": 7.27390000000014,
+            "endToEndP95Ms": 64.79049999999916,
+            "endToEndMaxMs": 438.6408999999985
+          }
+        ],
+        "processResource": {
+          "userCPUTime": 32625000,
+          "systemCPUTime": 1390000,
+          "maxRSS": 942516,
+          "sharedMemorySize": 0,
+          "unsharedDataSize": 0,
+          "unsharedStackSize": 0,
+          "minorPageFault": 0,
+          "majorPageFault": 375808,
+          "swappedOut": 0,
+          "fsRead": 24805,
+          "fsWrite": 3,
+          "ipcSent": 0,
+          "ipcReceived": 0,
+          "signalsCount": 0,
+          "voluntaryContextSwitches": 0,
+          "involuntaryContextSwitches": 0
+        }
+      }
+    }
+  ],
+  "tokenMethod": "ceil(UTF-8 context bytes/2); estimate only",
+  "workerSha256": "e4aada104c33bbd52cb6ed4fb68a731597ff8d2fb373a12793485cfed2cda4b4",
+  "plan": "Full unchanged 10000-turn complex and prose corpora; unchanged 300 public questions at four budgets. No reduction in records, answers, permissions or evidence checks.",
+  "bridgeCacheAB": [
+    {
+      "cache": false,
+      "queries": 200,
+      "totalMs": 120.26600000000326,
+      "p50Ms": 0.5328999999910593,
+      "p95Ms": 0.9924999999930151,
+      "resultSha256": "3f96a83979c39aa184c7a48184e9f6b7ad4a466a122b38a491c7194f699a58b9",
+      "counters": {
+        "hits": 0,
+        "misses": 200,
+        "proofReads": 200,
+        "bodyReads": 200
+      }
+    },
+    {
+      "cache": true,
+      "queries": 200,
+      "totalMs": 87.17960000000312,
+      "p50Ms": 0.3757000000041444,
+      "p95Ms": 0.670799999992596,
+      "resultSha256": "3f96a83979c39aa184c7a48184e9f6b7ad4a466a122b38a491c7194f699a58b9",
+      "counters": {
+        "hits": 199,
+        "misses": 1,
+        "proofReads": 200,
+        "bodyReads": 200
+      }
+    }
+  ],
+  "completedAt": "2026-10-13T11:42:35.613Z",
+  "diagnosis": {
+    "measured": "See per-corpus viewBuildCount/viewBuildTotalMs and cold-build samples, plus restore and per-query p95.",
+    "codeCause": "DiskRecall.view caches only four audience/asOfTurn keys; public questions alternate scopes and historic cutoffs, evicting earlier full dense views. Each view allocates 10000 slots and clones authorized data before lexical construction. IntegrationBridge cache still rereads all proof, body and receipt integrity, so it saves only final result assembly.",
+    "nextStep": "Server-approved versioned authorization snapshot port first; then an immutable source index with incremental grants and lazy body access. Every read must reauthenticate, validate source/grant binding and final epoch/game-time snapshot. No full-source ACL substitution.",
+    "implementedOptimization": false,
+    "reason": "This run provides the permitted reproducible baseline and next-step proposal. The legacy whole-source index cannot safely become production cache without the six outstanding cross-system contracts."
+  }
+}

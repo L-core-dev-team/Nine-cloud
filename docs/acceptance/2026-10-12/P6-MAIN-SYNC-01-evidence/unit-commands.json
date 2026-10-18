@@ -1,0 +1,12 @@
+[
+  {
+    "args": [
+      "--test",
+      "tests/experiments/p6-longmem/*.test.ts",
+      "tests/experiments/p6-longmem-hardening/*.test.ts"
+    ],
+    "started": "2026-10-12T04:47:50.271Z",
+    "finished": "2026-10-12T04:47:50.763Z",
+    "exitCode": 0
+  }
+]

@@ -1,0 +1,161 @@
+diff --git a/tests/experiments/p6-longmem-06a/audit.cjs b/tests/experiments/p6-longmem-06a/audit.cjs
+new file mode 100644
+index 0000000..f102b56
+--- /dev/null
++++ b/tests/experiments/p6-longmem-06a/audit.cjs
+@@ -0,0 +1,16 @@
++'use strict';
++const fs=require('node:fs'),path=require('node:path'),z=require('node:zlib'),{createHash}=require('node:crypto'),{execFileSync}=require('node:child_process');
++const root=__dirname,repo=path.resolve(root,'../../..'),circle='C:/Users/11954/Desktop/水龙吟专用',original=path.join(circle,'项目/Nine-cloud-P6-longmem-06-20261014');
++const name=process.argv[2]??'audit-01',regressionName=process.argv[3]??'frozen-01';if(!/^[a-z0-9-]+$/.test(name)||!/^[a-z0-9-]+$/.test(regressionName))throw Error('Safe new run names required');
++const sha=b=>createHash('sha256').update(b).digest('hex'),read=p=>JSON.parse(fs.readFileSync(p,'utf8').replace(/^\uFEFF/,''));
++const git=(args,cwd=repo)=>execFileSync('git',args,{cwd,maxBuffer:16*1024*1024}).toString().trim();
++const inherited=[];for(const label of ['p6-longmem-05c','p6-longmem-06']){const base=path.resolve(root,'../'+label),m=read(path.join(base,'file-manifest.json'));for(const e of m.entries){if(sha(fs.readFileSync(path.join(base,e.path)))!==e.sha256)throw Error('Inherited hash mismatch: '+label+'/'+e.path);const originalFile=path.join(original,'tests/experiments',label,e.path);if(sha(fs.readFileSync(originalFile))!==e.sha256)throw Error('Original hash mismatch: '+e.path);}inherited.push({label,unchanged:m.entries.length});}
++const before=git(['status','--porcelain'],original);if(before)throw Error('Original 06 is dirty');
++const originalHead=git(['rev-parse','HEAD'],original);if(originalHead!=='8b06d0606a665b06b8d2a23c78e888bde2d78265')throw Error('Original moved');
++const base=path.resolve(root,'../p6-longmem-05c/fixtures/holdout-10000-'),gun=p=>JSON.parse(z.gunzipSync(fs.readFileSync(p)));
++const d=gun(base+'dataset.json.gz'),qs=gun(base+'questions.json.gz'),s=d.turns.find(s=>s.sourceId==='long:2:6'),q=qs.find(q=>q.questionId==='holdout:2:consumed:52');
++const span=q.expectedSpans[0];if(s.narrative.slice(span.start,span.end)!==span.text||sha(s.narrative)!==span.sha256)throw Error('Frozen source/UTF16 mismatch');
++const regression=read(path.join(root,'evidence',regressionName,'comparison.json'));if(regression.differing)throw Error('Baseline behavior changed');
++const summary={status:'PASS',baseline:originalHead,original06Clean:true,inherited,sourceSha256:sha(s.narrative),frozenEvidence:{start:span.start,end:span.end,text:span.text},openQuote:s.narrative.indexOf('“'),bindingsAvailable:!!d.evidenceBindings?.[s.facts[0].id],comparedQueries:regression.compared,differing:regression.differing,targetStrictPass:regression.target.filter(r=>r.pass).length,targetCount:regression.target.length,algorithmDiffFiles:git(['diff','--name-only','HEAD','--','tests/experiments/p6-longmem-06']).split('\n').filter(Boolean),environment:{node:process.version,platform:process.platform,arch:process.arch,git:git(['--version'])}};
++if(summary.algorithmDiffFiles.length)throw Error('Unexpected algorithm edit');
++const out=path.join(root,'evidence',name);fs.mkdirSync(out);fs.writeFileSync(path.join(out,'summary.json'),JSON.stringify(summary,null,2));fs.writeFileSync(path.join(out,'target-frozen-evidence.json'),JSON.stringify({source:s,question:q,actual:regression.target},null,2));console.log(JSON.stringify(summary));
+diff --git a/tests/experiments/p6-longmem-06a/boundary.test.ts b/tests/experiments/p6-longmem-06a/boundary.test.ts
+new file mode 100644
+index 0000000..7a37286
+--- /dev/null
++++ b/tests/experiments/p6-longmem-06a/boundary.test.ts
+@@ -0,0 +1,95 @@
++import {test} from 'node:test';
++import assert from 'node:assert/strict';
++import fs from 'node:fs';
++import {gunzipSync} from 'node:zlib';
++import {fileURLToPath} from 'node:url';
++import {LexicalIndex} from '../p6-longmem-06/retrieval.ts';
++import {units,selectProof,sha} from '../p6-longmem-06/evidence.ts';
++import type {Dataset,Source,Fact} from '../p6-longmem/types.ts';
++
++const entities:Dataset['entities']=[{id:'speaker',name:'岑苇',aliases:[],kind:'person'},{id:'other',name:'杜桐',aliases:[],kind:'person'},{id:'item',name:'赤玉符',aliases:[],kind:'item'}];
++const event='岑苇把赤玉符交给玩家，随后赤玉符被消耗于阵门，归属不再有效。';
++const fact:Fact={id:'spent',subject:'item',predicate:'归属',value:'已消耗',kind:'world-event',validFrom:1,confirmedBy:'receipt'};
++const source=(narrative:string,sourceId='source'):Source=>({sourceId,narrative,turnId:1,gameMinute:1,gameTime:'离线',participants:['speaker'],items:['item'],location:'',eventIds:['receipt'],tags:[],facts:[{...fact}],historicalSources:[],authorizedNpcIds:['speaker']});
++const data=(turns:Source[]):Dataset=>({schemaVersion:1,synthetic:true,entities,turns});
++const query={text:'赤玉符当前归属？',asOfTurn:1,audience:{kind:'player' as const}};
++
++// Deliberately unsafe diagnostics. Never imported by a retriever, never an accepted recovery.
++// A freshly parsed suffix looks closed only because the original quote stack was discarded.
++function punctuationRestart(text:string){return [...text.matchAll(/[。！？]/gu)].flatMap(m=>units(text.slice(m.index!+1)).filter(u=>u.closed).map(u=>({...u,start:u.start+m.index!+1,end:u.end+m.index!+1})));}
++function paragraphRestart(text:string){return text.split(/\n\s*\n/u).flatMap(part=>units(part).filter(u=>u.closed));}
++
++test('frozen consumed evidence: four budgets remain strict failures, not mislabeled successful refusals',()=>{
++ const prefix=new URL('../p6-longmem-05c/fixtures/holdout-10000-',import.meta.url);
++ const read=(suffix:string)=>JSON.parse(gunzipSync(fs.readFileSync(fileURLToPath(prefix)+suffix)).toString('utf8'));
++ const d=read('dataset.json.gz'),qs=read('questions.json.gz');
++ const q=qs.find((q:any)=>q.questionId==='holdout:2:consumed:52'),s=d.turns.find((s:any)=>s.sourceId==='long:2:6');
++ assert.ok(q&&s);assert.equal(s.narrative.slice(120,150),q.expectedSpans[0].text);assert.equal(sha(s.narrative),q.expectedSpans[0].sha256);
++ const before=JSON.stringify(s),index=new LexicalIndex(d);
++ for(const budget of [512,1024,2048,4096]){const r=index.search({text:q.text,asOfTurn:q.asOfTurn,audience:q.audience},budget);assert.equal(r.enoughEvidence,false);assert.deepEqual(r.evidence,[]);assert.equal(r.originalSpans.length,0);console.log(JSON.stringify({budget,strictPass:false,expected:q,actual:r}));}
++ assert.equal(JSON.stringify(s),before);
++ const at=units(s.narrative).find(u=>u.start<150&&u.end>120)!;assert.equal(at.closed,false);assert.ok(at.start<120);assert.ok(at.end>150);
++ assert.ok(punctuationRestart(s.narrative).some(u=>u.start===120&&u.end===150&&u.text===q.expectedSpans[0].text));
++});
++
++for(const prefix of ['岑苇问：“如果这只是演练，会不会这样？','岑苇说：“下列只是传闻，不代表此事发生。','岑苇说：“我否认下面这段记载。','杜桐问：“若岑苇没有在场，能否出现这种说法？'])test('punctuation restart loses governing condition: '+prefix,()=>{
++ const text=prefix+event,s=source(text),d=data([s]);
++ assert.ok(punctuationRestart(text).some(u=>u.text===event));
++ assert.equal(selectProof(d,s,s.facts,[/归属/],true).supported,false);
++ assert.equal(new LexicalIndex(d).search(query,1024).enoughEvidence,false);
++ assert.ok(s.eventIds.includes(fact.confirmedBy!)); // An event receipt alone is not a text boundary certificate.
++});
++
++test('blank paragraph cannot prove a quote has ended',()=>{
++ const text='岑苇说：“下段是假设，不是已发生的事件。\n\n'+event;
++ assert.ok(paragraphRestart(text).some(u=>u.text===event));
++ assert.equal(units(text).some(u=>u.closed&&u.text.includes(event)),false);
++ assert.equal(new LexicalIndex(data([source(text)])).search(query).enoughEvidence,false);
++});
++
++test('fresh speaker attribution cannot close somebody else’s quotation',()=>{
++ const text='杜桐说：“下面是我引用的岑苇的话。岑苇说：‘赤玉符已经消耗。’';
++ assert.ok(punctuationRestart(text).some(u=>u.text==='岑苇说：‘赤玉符已经消耗。’'));
++ const s=source(text);s.facts=[{...fact,subject:'speaker',predicate:'身份传闻',kind:'character-claim'}];
++ const r=new LexicalIndex(data([s])).search({...query,text:'岑苇的身份传闻是什么？'});
++ assert.equal(r.enoughEvidence,false);assert.equal(r.originalSpans.length,0);
++});
++
++for(const [open,close] of [['“','”'],['‘','’'],['「','」'],['『','』'],['"','"']])test('unclosed '+open+' is not silently reset before an event',()=>{
++ const text='岑苇问：'+open+'如果是演练？'+event;
++ assert.equal(units(text).filter(u=>u.closed).length,0);
++ assert.equal(new LexicalIndex(data([source(text)])).search(query).enoughEvidence,false);
++ const closed='岑苇问：'+open+'如果是演练？'+close+event;
++ const r=new LexicalIndex(data([source(closed)])).search(query,1024);
++ assert.equal(r.enoughEvidence,true);assert.ok(r.originalSpans.some(p=>p.text===event));
++});
++
++test('balanced nested quotation still preserves original outer bounds',()=>{
++ const text='岑苇说：“杜桐说过‘赤玉符已消耗。’，不过我没有核实。”';
++ assert.deepEqual(units(text),[{start:0,end:text.length,text,closed:true}]);
++ const unclosed=text.slice(0,-1);assert.equal(units(unclosed)[0]!.closed,false);
++ assert.equal(units('岑苇说：“杜桐说过‘赤玉符已消耗。”')[0]!.closed,false);
++});
++
++test('closed different speakers stay separate; one cannot donate a speech interval to the other',()=>{
++ const a='岑苇说：“我只是听说赤玉符已消耗。”',b='杜桐说：“我没有确认此事。”';
++ const s=source(a+b);s.facts=[{...fact,subject:'speaker',predicate:'身份传闻',kind:'character-claim'}];
++ const r=new LexicalIndex(data([s])).search({...query,text:'岑苇的身份传闻是什么？'});
++ assert.equal(r.enoughEvidence,true);assert.ok(r.context.includes(a));assert.ok(!r.context.includes(b));
++});
++
++test('real source boundary isolates a malformed quote without rewriting either source',()=>{
++ const damaged=source('杜桐问：“演练会发生什么？','damaged');damaged.facts=[];damaged.items=[];
++ const good=source(event,'independent');const d=data([damaged,good]),before=JSON.stringify(d);
++ const r=new LexicalIndex(d).search(query,1024);
++ assert.equal(r.enoughEvidence,true);assert.deepEqual(r.evidence.map(s=>s.sourceId),['independent']);
++ assert.ok(r.originalSpans.some(p=>p.sourceId==='independent'&&p.text===event));assert.equal(JSON.stringify(d),before);
++});
++
++test('closing delimiter after apparent event still makes it part of the preceding quote',()=>{
++ const text='岑苇说：“这只是我的假设。'+event+'”';
++ const ps=units(text);assert.equal(ps.length,1);assert.equal(ps[0]!.text,text);
++ assert.ok(punctuationRestart(text).some(u=>u.text===event));
++ // The suffix probe would wrongly remove the assumption despite the actual closing quote.
++ assert.ok(!ps.some(u=>u.start===text.indexOf(event)&&u.text===event));
++});
+diff --git a/tests/experiments/p6-longmem-06a/regression.cjs b/tests/experiments/p6-longmem-06a/regression.cjs
+new file mode 100644
+index 0000000..486ec58
+--- /dev/null
++++ b/tests/experiments/p6-longmem-06a/regression.cjs
+@@ -0,0 +1,9 @@
++'use strict';
++const fs=require('node:fs'),path=require('node:path'),{spawnSync}=require('node:child_process'),z=require('node:zlib');
++const root=__dirname,old=path.resolve(root,'../p6-longmem-06'),name=process.argv[2];if(!name||!/^[a-z0-9-]+$/.test(name))throw Error('New run name');
++const out=path.join(root,'evidence',name);fs.mkdirSync(out);const rows=[];
++const jobs=[{kind:'05c-public',suite:'holdout',count:10000,data:path.resolve(root,'../p6-longmem-05c/fixtures/holdout-10000-dataset.json.gz'),questions:path.resolve(root,'../p6-longmem-05c/fixtures/holdout-10000-questions.json.gz')},...['complex','prose'].flatMap(kind=>[1000,10000].map(count=>({kind,count})))];
++for(const job of jobs){const output=path.join(out,`${job.kind}-${job.count}`);fs.mkdirSync(output);const file=path.join(output,'config.json');fs.writeFileSync(file,JSON.stringify({...job,mode:'sufficient',output}));const r=spawnSync(process.execPath,['--max-old-space-size=1536',path.join(old,'evaluate-worker.ts'),file],{encoding:'utf8',windowsHide:true,timeout:600000,maxBuffer:16*1024*1024});fs.writeFileSync(path.join(output,'run.log'),(r.stdout??'')+(r.stderr??'')+(r.error?.stack??''));if(r.status!==0)throw Error('Regression process failed');const s=JSON.parse(fs.readFileSync(path.join(output,'summary.json')));rows.push(s);console.log(JSON.stringify({kind:s.kind,count:s.count,...s.metrics}));}
++const current=JSON.parse(z.gunzipSync(fs.readFileSync(path.join(out,'05c-public-10000/queries.json.gz'))));const previous=JSON.parse(z.gunzipSync(fs.readFileSync(path.join(old,'evidence/curated-public-01/05c-public-holdout-10000-sufficient/queries.json.gz'))));
++const oldRows=new Map(previous.map(r=>[r.questionId+':'+r.budget,r]));const differing=current.filter(r=>{const p=oldRows.get(r.questionId+':'+r.budget);return !p||r.pass!==p.pass||r.result.enoughEvidence!==p.result.enoughEvidence||JSON.stringify(r.actual)!==JSON.stringify(p.actual)||JSON.stringify(r.result.originalSpans)!==JSON.stringify(p.result.originalSpans);});
++fs.writeFileSync(path.join(out,'comparison.json'),JSON.stringify({compared:current.length,differing:differing.length,target:current.filter(r=>r.questionId==='holdout:2:consumed:52'),categoryMetrics:rows[0].byCategory},null,2));fs.writeFileSync(path.join(out,'summary.json'),JSON.stringify(rows,null,2));if(differing.length)throw Error('Unexpected baseline difference');
+diff --git a/tests/experiments/p6-longmem-06a/run.cjs b/tests/experiments/p6-longmem-06a/run.cjs
+new file mode 100644
+index 0000000..bbbbd4a
+--- /dev/null
++++ b/tests/experiments/p6-longmem-06a/run.cjs
+@@ -0,0 +1,7 @@
++'use strict';
++const fs=require('node:fs'),path=require('node:path'),{spawnSync}=require('node:child_process');
++const root=__dirname,old=path.resolve(root,'../p6-longmem-06'),name=process.argv[2];if(!name||!/^[a-z0-9-]+$/.test(name))throw Error('New run name required');
++const out=path.join(root,'evidence',name);fs.mkdirSync(out,{recursive:false});const rows=[];
++const jobs=[['boundary',['--test',path.join(root,'boundary.test.ts')]],['historical-targeted',['--test',path.join(old,'legacy-targeted.test.ts')]],['compatibility',['--test',path.join(old,'compatibility.test.ts')]],['adversarial',['--test',path.join(old,'adversarial.test.ts')]],['safety-continuity',['--test',path.join(old,'safety.test.ts'),path.join(old,'continuity.test.ts')]],['typescript',[path.resolve(root,'../../../../Nine-cloud-P6-main-sync-20261012/node_modules/typescript/bin/tsc'),'--project',path.join(root,'tsconfig.json')]]];
++for(const [label,args] of jobs){const r=spawnSync(process.execPath,args,{encoding:'utf8',windowsHide:true,timeout:180000,maxBuffer:16*1024*1024});fs.writeFileSync(path.join(out,label+'.log'),(r.stdout??'')+(r.stderr??'')+(r.error?.stack??''));rows.push({label,status:r.status,error:r.error?.message});console.log(JSON.stringify(rows.at(-1)));}
++fs.writeFileSync(path.join(out,'summary.json'),JSON.stringify(rows,null,2));if(rows.some(r=>r.status!==0))process.exitCode=1;
+diff --git a/tests/experiments/p6-longmem-06a/tsconfig.json b/tests/experiments/p6-longmem-06a/tsconfig.json
+new file mode 100644
+index 0000000..08b10b6
+--- /dev/null
++++ b/tests/experiments/p6-longmem-06a/tsconfig.json
+@@ -0,0 +1,4 @@
++{
++  "extends": "../p6-longmem-06/tsconfig.json",
++  "include": ["boundary.test.ts"]
++}

@@ -1,0 +1,46 @@
+{
+  "failure": "Corpus digest used JSON insertion order while store canonicalized metadata keys",
+  "expectedUnsortedDigest": "2b29d3f5821e0e40e11f8eb6994f1039b348066f95b5e6b81822c14aa185d18c",
+  "actualUnsortedDigest": "60db91283a193c7d01f27a46ed4178b01637832da26d7d22f8f0fe9d87b51fa2",
+  "sources": 1000,
+  "deepEqualityChecks": 1000,
+  "byteChecks": 1000,
+  "canonicalDataMatch": true,
+  "canonicalDigest": "a3e8420a6b15fa9338480e788eac0d055b5683e5812719373b37b20ed576cfab",
+  "writer": {
+    "pid": 20160,
+    "root": "2b29d3f5821e0e40e11f8eb6994f1039b348066f95b5e6b81822c14aa185d18c",
+    "count": 1000,
+    "saved": 1000,
+    "duplicates": 0,
+    "writeMs": 771.3969,
+    "writeP50Ms": 0.7271999999999821,
+    "writeP95Ms": 0.9721000000000117,
+    "duplicateMs": 1.489500000000021,
+    "dbBytes": 2248704,
+    "bodyBytes": 175854,
+    "heapUsed": 14686296,
+    "sqlite": "WAL + synchronous FULL"
+  },
+  "firstOriginalFactKeys": [
+    "id",
+    "subject",
+    "predicate",
+    "value",
+    "kind",
+    "validFrom",
+    "confirmedBy",
+    "validUntil"
+  ],
+  "firstRestoredFactKeys": [
+    "confirmedBy",
+    "id",
+    "kind",
+    "predicate",
+    "subject",
+    "validFrom",
+    "validUntil",
+    "value"
+  ],
+  "remedy": "Canonicalize corpus digest, retain scale-01 unchanged, resume same database without rewriting successful records"
+}

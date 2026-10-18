@@ -1,0 +1,8 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),{spawnSync}=require('node:child_process'),{createHash}=require('node:crypto');const name=process.argv[2];if(!name||!/^[a-z0-9-]+$/.test(name))throw Error('New safe run name required');const root=__dirname,out=path.join(root,'evidence',name);fs.mkdirSync(out);const rows=[];
+function run(label,args){const r=spawnSync(process.execPath,args,{encoding:'utf8',windowsHide:true,timeout:120000,maxBuffer:4*1024*1024,env:{...process.env,P6_05B_RUN:name}});fs.writeFileSync(path.join(out,label+'.log'),(r.stdout??'')+(r.stderr??'')+(r.error?'\n'+r.error.stack:''));const row={label,status:r.status,error:r.error?.message??null};rows.push(row);console.log(JSON.stringify(row));if(r.status!==0)process.exitCode=1;}
+run('targeted',['--test','--test-reporter=tap',path.join(root,'targeted.test.ts')]);
+run('small-regression',['--test','--test-reporter=tap','--test-name-pattern=^(verbatim dialogue|query and original|as-of and explicit|tiny budgets|retrieval leaves|unknown concrete)',path.join(root,'compatibility.test.ts')]);
+run('typescript',[path.resolve(root,'../../../../Nine-cloud-P6-main-sync-20261012/node_modules/typescript/bin/tsc'),'--project',path.join(root,'tsconfig.json')]);
+const inputs=JSON.parse(fs.readFileSync(path.join(root,'evidence/input-manifest.json'),'utf8')).protectedInputs;for(const p of inputs){const bytes=fs.readFileSync(path.resolve(root,'../../..',p.path));if(createHash('sha256').update(bytes).digest('hex')!==p.sha256)throw Error('Protected input changed '+p.path);}
+fs.writeFileSync(path.join(out,'summary.json'),JSON.stringify({results:rows,protectedInputsUnchanged:true,scope:'H-14-2 only; no full benchmark, production change, H-10/H-16 tests or model calls'},null,2)+'\n');

@@ -1,0 +1,49 @@
+{
+  "coreMatchesTestedSha": "add233a7a6173f021df8f694ec9c68a8250b98ae",
+  "files": [
+    {
+      "file": "adapter.test.ts",
+      "sha256": "9406d7c8c4abe58976d034e28cf52b9d8bb47c687ca54e6c627f92210786e4ef"
+    },
+    {
+      "file": "adapter.ts",
+      "sha256": "f1e46b2920998e4a58c7bb540bdaea7a83d84e1b13d0caba62783cb2e49485b4"
+    },
+    {
+      "file": "benchmark.ts",
+      "sha256": "fb8b1b299eeffe00f3a8c3c193a1cd8886248f749c9c3b7e71ab314b1c953ff9"
+    },
+    {
+      "file": "checks.cjs",
+      "sha256": "05414caffb8061c929f902c6e26959c40177b2844e6ecfbfccc9cf543a568ca5"
+    },
+    {
+      "file": "diagnose-scale.ts",
+      "sha256": "066fea41eaf1576d4584e444aeab4a43fd1ba401d39afc687c7a4ac27d6a63e7"
+    },
+    {
+      "file": "scale-worker.ts",
+      "sha256": "e4aada104c33bbd52cb6ed4fb68a731597ff8d2fb373a12793485cfed2cda4b4"
+    },
+    {
+      "file": "store.cjs",
+      "sha256": "95e31156f81bc37ba19139edf2807146b777b0aa71d3454eafa42e6907a22b0b"
+    },
+    {
+      "file": "store.test.cjs",
+      "sha256": "cfa70fe37c14e601d3b8d54a829c8a28f7c1b89afd6864099a4d0a26e152c3ab"
+    },
+    {
+      "file": "verify.ts",
+      "sha256": "0c971b270153d3d01268e3aba22b4bc2abbb2a0c3f1d744d318c3e531e2894bb"
+    },
+    {
+      "file": "worker.cjs",
+      "sha256": "8aef7bd51b12ffe77d02b54ceb9b0999e7bd11c1dddec11d3930ab5d5ca19367"
+    },
+    {
+      "file": "workload.ts",
+      "sha256": "85505dfb19dc92f3dcd0581cebe38ad3323c8227773edd7c4fa1866cb12a9c52"
+    }
+  ]
+}

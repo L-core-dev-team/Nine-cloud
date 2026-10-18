@@ -1,0 +1,38 @@
+[
+  {
+    "file": "p6-01/adversarial-history-200.json.gz",
+    "rawBytes": 132580,
+    "rawSha256": "02a463cd2a1c2a65d5b6c3c2117f7f5db183fcc6c5ef897225cd685c296a5e5c",
+    "gzipBytes": 9428
+  },
+  {
+    "file": "p6-01/evaluation.json.gz",
+    "rawBytes": 5224235,
+    "rawSha256": "edb96760206a556d688bdbe6b12c484f228ae2ce0b83cd36ffec045abaa3c9b9",
+    "gzipBytes": 227264
+  },
+  {
+    "file": "p6-01/failures.json.gz",
+    "rawBytes": 3630960,
+    "rawSha256": "ddd112b0e1eb45275f7b9e217fb4c10f8c57a478193126a4199fa8cc5011c68d",
+    "gzipBytes": 132595
+  },
+  {
+    "file": "p6-01/history-1000.json.gz",
+    "rawBytes": 640526,
+    "rawSha256": "dea4baacd67ed5b63dc3cef78aac59795ab2f4e927b716c19eea601c6caa13d0",
+    "gzipBytes": 23451
+  },
+  {
+    "file": "p6-01/history-200.json.gz",
+    "rawBytes": 132123,
+    "rawSha256": "4e551b324436534472455251d0aebaf4aedbdca9130f7c476ac54fc99248c0db",
+    "gzipBytes": 9250
+  },
+  {
+    "file": "p6-01/history-500.json.gz",
+    "rawBytes": 322833,
+    "rawSha256": "dc8fb12bc18eb5527cedc64b0c39278a6f89e0d4c96f435010183efd1409cb05",
+    "gzipBytes": 14804
+  }
+]

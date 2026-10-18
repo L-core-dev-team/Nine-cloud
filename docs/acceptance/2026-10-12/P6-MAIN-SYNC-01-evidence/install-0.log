@@ -1,0 +1,58 @@
+Scope: all 9 workspace projects
+✓ Lockfile passes supply-chain policies (verified 2d ago)
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +124
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Progress: resolved 124, reused 0, downloaded 0, added 0
+Packages are hard linked from the content-addressable store to the virtual store.
+  Content-addressable store is at: C:\Users\11954\Desktop\水龙吟专用\临时\P6-MAIN-SYNC-01\store\v11
+  Virtual store is at:             node_modules/.pnpm
+Progress: resolved 124, reused 0, downloaded 21, added 22
+Progress: resolved 124, reused 0, downloaded 51, added 51
+Progress: resolved 124, reused 0, downloaded 77, added 78
+
+   ╭──────────────────────────────────────────╮
+   │                                          │
+   │   Update available! 11.19.0 → 12.11.2.   │
+   │   Changelog: https://pnpm.io/v/12.11.2   │
+   │     To update, run: pnpm add -g pnpm     │
+   │                                          │
+   ╰──────────────────────────────────────────╯
+
+Progress: resolved 124, reused 0, downloaded 92, added 93
+Progress: resolved 124, reused 0, downloaded 94, added 95
+Progress: resolved 124, reused 0, downloaded 98, added 98
+Progress: resolved 124, reused 0, downloaded 104, added 105
+Progress: resolved 124, reused 0, downloaded 105, added 106
+Progress: resolved 124, reused 0, downloaded 109, added 109
+Progress: resolved 124, reused 0, downloaded 111, added 111
+Progress: resolved 124, reused 0, downloaded 111, added 112
+Progress: resolved 124, reused 0, downloaded 112, added 112
+Progress: resolved 124, reused 0, downloaded 114, added 115
+Progress: resolved 124, reused 0, downloaded 115, added 116
+Progress: resolved 124, reused 0, downloaded 116, added 116
+Progress: resolved 124, reused 0, downloaded 117, added 118
+Progress: resolved 124, reused 0, downloaded 118, added 118
+Progress: resolved 124, reused 0, downloaded 118, added 119
+Progress: resolved 124, reused 0, downloaded 119, added 119
+Progress: resolved 124, reused 0, downloaded 119, added 120
+Progress: resolved 124, reused 0, downloaded 120, added 120
+Progress: resolved 124, reused 0, downloaded 121, added 122
+Progress: resolved 124, reused 0, downloaded 122, added 122
+Progress: resolved 124, reused 0, downloaded 122, added 123
+Progress: resolved 124, reused 0, downloaded 123, added 123
+Progress: resolved 124, reused 0, downloaded 123, added 124, done
+.../esbuild@0.28.2/node_modules/esbuild postinstall$ node install.js
+.../esbuild@0.28.2/node_modules/esbuild postinstall: Done
+
+devDependencies:
++ @types/node 26.6.3
++ playwright 1.63.0
++ typescript 7.0.2
++ typescript-compiler-api <- typescript 6.0.2
++ vitest 5.0.3
+
+Done in 42.9s using pnpm v11.19.0
+
+
