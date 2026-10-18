@@ -1,0 +1,2 @@
+'use strict';const {isolatedPool}=require('./handover-test-support.cjs');
+(async()=>{const pool=await isolatedPool();try{console.log(JSON.stringify((await pool.query("SELECT pid,state,wait_event_type,wait_event,substring(query,1,120) AS query FROM pg_stat_activity WHERE datname=current_database() AND pid<>pg_backend_pid() ORDER BY pid")).rows,null,2));}finally{await pool.end();}})().catch(e=>{console.error(e);process.exitCode=1;});

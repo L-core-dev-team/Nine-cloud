@@ -1,0 +1,329 @@
+{
+  "status": "PASS",
+  "server": "18.6",
+  "sourceDatabase": "jiuxiao_test_handover-03-backup-20261016",
+  "restoredDatabase": "jiuxiao_test_handover-restore-1792145896393",
+  "snapshotAt": "2026-10-16T10:18:16.139Z",
+  "snapshot": "00000038-0000001E-1",
+  "dumpMs": 174.19970000000006,
+  "restoreMs": 304.65150000000006,
+  "rtoIncludingCreateRestoreAndVerifyMs": 666.7535,
+  "rpo": {
+    "method": "exported consistent snapshot; no WAL/PITR",
+    "allPreSnapshotRowsRestored": true,
+    "postSnapshotPublicationsIntentionallyExcluded": 1,
+    "continuousProductionRpoNotEstablished": true
+  },
+  "tables": 30,
+  "sourceShaChecks": 2,
+  "defaultPublicationReceiptChecks": 2,
+  "closedOwnerSourceRetained": "be56fdc9-6a3d-47cf-bbd9-a561c34544df",
+  "deletedOwnerAbsent": true,
+  "postSnapshotSourceExcluded": "385c767b-54fd-4269-8609-50276639dfce",
+  "dumpBytes": 112785,
+  "dumpSha256": "92e80f102c6e3a32731b6b496c7efa684c669494b5dfb6cc8d1489bb0cf8184b",
+  "expected": [
+    {
+      "table": "drizzle.__drizzle_migrations",
+      "count": 23,
+      "sha256": "09c0a3aa5cfba0d5148ae54cc47a02001648ea312f6f2494dbb61b0560c12388"
+    },
+    {
+      "table": "public.account_lifecycle_audit",
+      "count": 1,
+      "sha256": "cd141b096bb80941126525f22f11dd9a19534029fc9e8097c53c263667c9f4c6"
+    },
+    {
+      "table": "public.account_operations",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.account_rate_limits",
+      "count": 3,
+      "sha256": "11f4b3bbd703b3588196fd45135d4ad47b74bd84885c0f1f7170f99d8a011e01"
+    },
+    {
+      "table": "public.archive_retention_purge_receipts",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_accounts",
+      "count": 2,
+      "sha256": "f955f4f78fb5419e726facf70629a5372fab18e5a26b9263d9bb6d783ef047d4"
+    },
+    {
+      "table": "public.auth_challenges",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_external_identities",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_ip_mail_limits",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_mail_limits",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_provider_account_limits",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_provider_ip_limits",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_sessions",
+      "count": 2,
+      "sha256": "8707c4ac8a3a38057a2d8df54ff00efe8386d269f28c8ec00a6604386b79ec97"
+    },
+    {
+      "table": "public.cloud_archive_trash",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.entitlement_balances",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.entitlement_ledger_entries",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.game_saves",
+      "count": 2,
+      "sha256": "9384f93dddc856ade450b7a766cd762c1ace593fadeb0111ebb69a0bc8fde089"
+    },
+    {
+      "table": "public.narrative_attempts",
+      "count": 2,
+      "sha256": "bfd30830f81ac6421128b62ee1bb0ac3872aa96a228a45a9f1892c65d17da8ca"
+    },
+    {
+      "table": "public.narrative_context_snapshots",
+      "count": 2,
+      "sha256": "53e8c4f4e3a43114aa65523261b7a9d1cc3169162eed1c6e6f3bff84985f7464"
+    },
+    {
+      "table": "public.narrative_generation_requests",
+      "count": 2,
+      "sha256": "0c8708ead1b8f1536450a32bdefd91e3630f7576b10fe148d3fe0639f6dbe9a1"
+    },
+    {
+      "table": "public.narrative_outbox",
+      "count": 4,
+      "sha256": "1ac774f3b2533f9b9851eae7b6a1305d008749dc295a199f1352d63471c3a745"
+    },
+    {
+      "table": "public.narrative_publications",
+      "count": 2,
+      "sha256": "ecaf2550016f59f79f096373ba365d8af528e190e4c6cd840b878098f6da1b60"
+    },
+    {
+      "table": "public.narrative_segments",
+      "count": 2,
+      "sha256": "0cb4409fe2caf1facaf0c5f9bebae645b24c6b7d1dd35c5d3fd1e35b11f48f5e"
+    },
+    {
+      "table": "public.narrative_sources",
+      "count": 2,
+      "sha256": "1a21422ccedfa4f951dc3777622ee220b5420c03ba2009bb1212a30b18e33798"
+    },
+    {
+      "table": "public.npc_authorized_observation_outbox",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.npc_memory_journals",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.npc_memory_observation_supersessions",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.source_event_links",
+      "count": 2,
+      "sha256": "fcc50b19078ec792b175d9008c074371ec826e46757a8767d83c6542de881414"
+    },
+    {
+      "table": "public.turn_events",
+      "count": 2,
+      "sha256": "3d0651297b72153d89965568b8075efb6baaa65dd4c757c232286fed897969dd"
+    },
+    {
+      "table": "public.turn_requests",
+      "count": 2,
+      "sha256": "c98dac5704131d8ec021b1991153e6fd6552cf18b858289d14ab0e42cfe142e3"
+    }
+  ],
+  "actual": [
+    {
+      "table": "drizzle.__drizzle_migrations",
+      "count": 23,
+      "sha256": "09c0a3aa5cfba0d5148ae54cc47a02001648ea312f6f2494dbb61b0560c12388"
+    },
+    {
+      "table": "public.account_lifecycle_audit",
+      "count": 1,
+      "sha256": "cd141b096bb80941126525f22f11dd9a19534029fc9e8097c53c263667c9f4c6"
+    },
+    {
+      "table": "public.account_operations",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.account_rate_limits",
+      "count": 3,
+      "sha256": "11f4b3bbd703b3588196fd45135d4ad47b74bd84885c0f1f7170f99d8a011e01"
+    },
+    {
+      "table": "public.archive_retention_purge_receipts",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_accounts",
+      "count": 2,
+      "sha256": "f955f4f78fb5419e726facf70629a5372fab18e5a26b9263d9bb6d783ef047d4"
+    },
+    {
+      "table": "public.auth_challenges",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_external_identities",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_ip_mail_limits",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_mail_limits",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_provider_account_limits",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_provider_ip_limits",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.auth_sessions",
+      "count": 2,
+      "sha256": "8707c4ac8a3a38057a2d8df54ff00efe8386d269f28c8ec00a6604386b79ec97"
+    },
+    {
+      "table": "public.cloud_archive_trash",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.entitlement_balances",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.entitlement_ledger_entries",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.game_saves",
+      "count": 2,
+      "sha256": "9384f93dddc856ade450b7a766cd762c1ace593fadeb0111ebb69a0bc8fde089"
+    },
+    {
+      "table": "public.narrative_attempts",
+      "count": 2,
+      "sha256": "bfd30830f81ac6421128b62ee1bb0ac3872aa96a228a45a9f1892c65d17da8ca"
+    },
+    {
+      "table": "public.narrative_context_snapshots",
+      "count": 2,
+      "sha256": "53e8c4f4e3a43114aa65523261b7a9d1cc3169162eed1c6e6f3bff84985f7464"
+    },
+    {
+      "table": "public.narrative_generation_requests",
+      "count": 2,
+      "sha256": "0c8708ead1b8f1536450a32bdefd91e3630f7576b10fe148d3fe0639f6dbe9a1"
+    },
+    {
+      "table": "public.narrative_outbox",
+      "count": 4,
+      "sha256": "1ac774f3b2533f9b9851eae7b6a1305d008749dc295a199f1352d63471c3a745"
+    },
+    {
+      "table": "public.narrative_publications",
+      "count": 2,
+      "sha256": "ecaf2550016f59f79f096373ba365d8af528e190e4c6cd840b878098f6da1b60"
+    },
+    {
+      "table": "public.narrative_segments",
+      "count": 2,
+      "sha256": "0cb4409fe2caf1facaf0c5f9bebae645b24c6b7d1dd35c5d3fd1e35b11f48f5e"
+    },
+    {
+      "table": "public.narrative_sources",
+      "count": 2,
+      "sha256": "1a21422ccedfa4f951dc3777622ee220b5420c03ba2009bb1212a30b18e33798"
+    },
+    {
+      "table": "public.npc_authorized_observation_outbox",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.npc_memory_journals",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.npc_memory_observation_supersessions",
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "table": "public.source_event_links",
+      "count": 2,
+      "sha256": "fcc50b19078ec792b175d9008c074371ec826e46757a8767d83c6542de881414"
+    },
+    {
+      "table": "public.turn_events",
+      "count": 2,
+      "sha256": "3d0651297b72153d89965568b8075efb6baaa65dd4c757c232286fed897969dd"
+    },
+    {
+      "table": "public.turn_requests",
+      "count": 2,
+      "sha256": "c98dac5704131d8ec021b1991153e6fd6552cf18b858289d14ab0e42cfe142e3"
+    }
+  ]
+}

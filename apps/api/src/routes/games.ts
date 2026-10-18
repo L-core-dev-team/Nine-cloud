@@ -1,5 +1,6 @@
+import { TurnCommitOutcomeUnknown } from '../services/npc-memory-turn-transaction.js';
 import type { Hono } from 'hono';
-import { ActionIntentSchema, type TurnReceipt } from '@jiuxiao/contracts';
+import { ActionIntentSchema, TurnReceiptSchema, type TurnReceipt } from '@jiuxiao/contracts';
 import { readGameMinute } from '@jiuxiao/domain';
 import { readJson, type CloudSaveRouteAuth } from './saves.js';
 import { serverTurnHttpResponse } from './turn-http.js';
@@ -16,15 +17,33 @@ export function mountGames(
   auth: CloudSaveRouteAuth,
   turns?: ServerTurnService,
   memoryRecall?: { reader: AuthorizedRecallPageReader },
+  readReceipt?: (owner: string, saveId: string, key: string) => Promise<TurnReceipt | null>,
+  publicationsAvailable = false,
 ) {
+  // Recovery is read-only. Absence is NOT proof that an in-flight turn was never sent.
+  if (readReceipt) app.get('/api/games/:saveId/receipts/:key', async c => {
+    const owner = await resolveOwner(c.req.raw, c.req.header('x-jiuxiao-account'), auth);
+    if (!owner) return c.json({ code: 'UNAUTHENTICATED' }, 401);
+    if (!/^[a-f\d]{8}(-[a-f\d]{4}){3}-[a-f\d]{12}$/i.test(c.req.param('key'))) return c.json({ code: 'INVALID_TURN' }, 400);
+    try {
+      const game = await service.read(owner, c.req.param('saveId'));
+      if (game.status === 'not_found') return c.json({ code: 'NOT_FOUND' }, 404);
+      const raw = await readReceipt(owner, game.save.saveId, c.req.param('key'));
+      const receipt = raw ? TurnReceiptSchema.parse(raw) : null;
+      if (receipt && (receipt.saveId !== game.save.saveId || receipt.idempotencyKey !== c.req.param('key'))) throw Error('INVALID_RECEIPT');
+      return c.json({ status: receipt ? 'confirmed' : 'unknown', receipt, revision: game.save.revision });
+    } catch { return c.json({ code: 'GAME_UNAVAILABLE' }, 503); }
+  });
   app.get('/api/games/:saveId', async c => {
     const owner = await resolveOwner(c.req.raw, c.req.header('x-jiuxiao-account'), auth);
     if (!owner) return c.json({ code: 'UNAUTHENTICATED' }, 401);
     try {
       const result = await service.read(owner, c.req.param('saveId'));
       if (result.status === 'not_found') return c.json({ code: 'NOT_FOUND' }, 404);
-      return c.json({ save: result.save });
+      return c.json({ save: result.save, ...(publicationsAvailable ? {publicationsAvailable:true} : {}) });
     } catch (error) {
+      if (error instanceof TurnCommitOutcomeUnknown) return c.json({code:'TURN_COMMIT_OUTCOME_UNKNOWN',
+        saveId:error.saveId,requestKey:error.requestKey,recovery:'query_original_receipt'},503);
       if (error instanceof SaveSchemaNotReadyError) return c.json({ code: 'SAVE_SCHEMA_NOT_READY' }, 503);
       return c.json({ code: 'GAME_UNAVAILABLE' }, 503);
     }
@@ -72,6 +91,8 @@ export function mountGames(
       const recall = await resolveNpcMemoryRecall({ reader: memoryRecall.reader, ownerId: owner, save, receipt, npcId, utterance });
       return c.json({ recall });
     } catch (error) {
+      if (error instanceof TurnCommitOutcomeUnknown) return c.json({code:'TURN_COMMIT_OUTCOME_UNKNOWN',
+        saveId:error.saveId,requestKey:error.requestKey,recovery:'query_original_receipt'},503);
       if (error instanceof SaveSchemaNotReadyError) return c.json({ code: 'SAVE_SCHEMA_NOT_READY' }, 503);
       return c.json({ code: 'GAME_UNAVAILABLE' }, 503);
     }
@@ -81,7 +102,7 @@ export function mountGames(
     const owner = await resolveOwner(c.req.raw, c.req.header('x-jiuxiao-account'), auth);
     if (!owner) return c.json({ code: 'UNAUTHENTICATED' }, 401);
     if (!await consumeAccountQuota(owner, 'turn', 30, 60_000)) return c.json({ code: 'RATE_LIMITED' }, 429);
-    const body = await readJson(c.req.raw, 16_384);
+    const body = await readJson(c.req.raw, 65_536);
     if (!body.ok) return c.json({ code: body.status === 413 ? 'REQUEST_TOO_LARGE' : 'INVALID_TURN' }, body.status);
     const value = body.value as Record<string, unknown> | null;
     if (!value || typeof value !== 'object' || Array.isArray(value)
@@ -112,6 +133,8 @@ export function mountGames(
       const response = serverTurnHttpResponse(result);
       return c.json(response.body, response.status);
     } catch (error) {
+      if (error instanceof TurnCommitOutcomeUnknown) return c.json({code:'TURN_COMMIT_OUTCOME_UNKNOWN',
+        saveId:error.saveId,requestKey:error.requestKey,recovery:'query_original_receipt'},503);
       if (error instanceof SaveSchemaNotReadyError) return c.json({ code: 'SAVE_SCHEMA_NOT_READY' }, 503);
       return c.json({ code: 'TURN_UNAVAILABLE' }, 503);
     }
@@ -136,6 +159,8 @@ export function mountGames(
       if (result.status === 'conflict') return c.json({ code: 'IDEMPOTENCY_CONFLICT' }, 409);
       return c.json(result, result.duplicate ? 200 : 201);
     } catch (error) {
+      if (error instanceof TurnCommitOutcomeUnknown) return c.json({code:'TURN_COMMIT_OUTCOME_UNKNOWN',
+        saveId:error.saveId,requestKey:error.requestKey,recovery:'query_original_receipt'},503);
       if (error instanceof CloudCapacityError) return c.json({ code: 'CAPACITY_EXCEEDED' }, 413);
       if (error instanceof Error && error.message === 'DATA_POLICY_NOT_READY') return c.json({ code: 'DATA_POLICY_NOT_READY' }, 503);
       if (error instanceof SaveSchemaNotReadyError) return c.json({ code: 'SAVE_SCHEMA_NOT_READY' }, 503);

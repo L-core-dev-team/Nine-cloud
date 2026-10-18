@@ -1,0 +1,3 @@
+'use strict';
+const path=require('node:path'),{root,req,isolatedPool}=require('./handover-test-support.cjs'),{drizzle}=req('drizzle-orm/node-postgres'),{migrate}=req('drizzle-orm/node-postgres/migrator');
+(async()=>{const pool=await isolatedPool();try{await migrate(drizzle(pool),{migrationsFolder:path.join(root,'packages/db/drizzle')});await migrate(drizzle(pool),{migrationsFolder:path.join(root,'packages/db/drizzle')});console.log(JSON.stringify({database:(await pool.query('SELECT current_database() AS d')).rows[0].d,migrated:'0022',repeated:true}));}finally{await pool.end();}})().catch(e=>{console.error(e);process.exitCode=1;});

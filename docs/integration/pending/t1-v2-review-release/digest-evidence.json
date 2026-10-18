@@ -1,0 +1,441 @@
+{
+  "mode": "isolated-unapproved-draft",
+  "baseline": "d8ea49a8a74beb79233b100db71bbc4295db47c3",
+  "head": "d8ea49a8a74beb79233b100db71bbc4295db47c3",
+  "dirty": "M  apps/api/src/index.ts\nM  apps/api/src/routes/games.ts\nM  apps/api/src/routes/turns.ts\nM  apps/api/src/services/account-export.ts\nM  apps/api/src/services/narrative-outbox-worker.ts\nA  apps/api/src/services/narrative-ownership-v2.ts\nM  apps/api/src/services/narrative-publication-repository.ts\nA  apps/api/src/services/narrative-v2-runtime-draft.ts\nM  apps/api/src/services/npc-memory-turn-transaction.ts\nM  apps/api/src/services/postgres-server-turn.ts\nM  apps/api/src/services/server-turn.ts\nM  apps/web/src/game-publications.ts\nM  apps/web/src/use-cloud-game-session.ts\nA  docs/integration/pending/0023_narrative_ownership_v2.sql\nA  scripts/t1-v2-draft-tests.cjs\nA  scripts/t1-v2-review.mjs\n?? docs/integration/pending/t1-v2-review-final/\n?? docs/integration/pending/t1-v2-review-release/\n?? docs/integration/pending/t1-v2-review/\n?? scripts/prepare-t1-v2-draft.cjs\n",
+  "before": {
+    "format": "jiuxiao-p1-runtime-ast-v2",
+    "typescriptVersion": "6.0.2",
+    "sha256": "sha256:73580596f25c530d9ad33170282955187eb281e5927872607feef9e2aae83f42",
+    "files": [
+      {
+        "path": "apps/api/src/services/narrative-memory-context.ts",
+        "sha256": "a84ba9f2929b7a026840388137b9dc76a5ab219f1826b2c73f41656b07a6349e"
+      },
+      {
+        "path": "apps/api/src/services/npc-memory-turn-transaction.ts",
+        "sha256": "05dc7083965c68d74ea3117411bfb4930443189ff2fb49a496101a9bceff0351"
+      },
+      {
+        "path": "apps/api/src/services/p1-memory-policy.ts",
+        "sha256": "dbc9cf2770ab39b96c454d64bac45b2c5b1e3d3be0389b441b0ebaa0c3e7d8d7"
+      },
+      {
+        "path": "apps/api/src/services/p1-nlu-runtime.ts",
+        "sha256": "84a9090c27afff71dee22d80ce2e62cf7b584f29f974da606d2cf2d29f249daf"
+      },
+      {
+        "path": "apps/api/src/services/p1-prologue-plugin.ts",
+        "sha256": "f1a2d306f07b523cc0fe2de4e168878a460030c93578378dfa18d27a204aee26"
+      },
+      {
+        "path": "apps/api/src/services/p1-review-semantic-gate.ts",
+        "sha256": "5e829bf07ece79ab84fe49730836972ccc6c71f366e27cf63d91e2176277eb49"
+      },
+      {
+        "path": "apps/api/src/services/p1-rule-semantic-functions.ts",
+        "sha256": "fea0c8a52e08120229c60f77e94d3a1f763555c8e61713cb684905cbd98e9724"
+      },
+      {
+        "path": "apps/api/src/services/rule-semantic-fingerprint.ts",
+        "sha256": "e54e7549c5a864b9cf2cb819cce72a75db11f64469be670ef340cc175a2dd708"
+      },
+      {
+        "path": "apps/api/src/services/server-turn.ts",
+        "sha256": "5e1587a2a36b170f92102f2c675996651f4d21edaa6fd6e90c54ce911a7aba14"
+      },
+      {
+        "path": "apps/api/src/services/turn-runtime.ts",
+        "sha256": "9b259c7ca04a5e3a6a6c63d02ffa345496b4d65099c08372359cba63c9b745f8"
+      },
+      {
+        "path": "packages/contracts/package.json",
+        "sha256": "bada79c85c24cdbdc51217a17d713ad2a2c602122360e248aa27451d3ec7b257"
+      },
+      {
+        "path": "packages/contracts/src/action.ts",
+        "sha256": "39c7ea68097ebd806920deac9d1588e66097622ce1941a6e092cf4fb5eb910f2"
+      },
+      {
+        "path": "packages/contracts/src/decision.ts",
+        "sha256": "8c9072b869e14fbb840e79e3059836649b74bbb6076b4d244f2b9eb2010be7a2"
+      },
+      {
+        "path": "packages/contracts/src/event.ts",
+        "sha256": "110440e802eb9d115d79cdda5d0808206e11d4cff260089062b29b0f6cdc80b5"
+      },
+      {
+        "path": "packages/contracts/src/index.ts",
+        "sha256": "7f8459245591dc661f421aee21ee2c1072b7b38709d409f26f1b8e9756feb0e3"
+      },
+      {
+        "path": "packages/contracts/src/json-bounds.ts",
+        "sha256": "f4360b9ea473173118f61be96fe41dcafcc022ae9a9198d89a7aa6f75fc5989f"
+      },
+      {
+        "path": "packages/contracts/src/prologue.ts",
+        "sha256": "700acd9a8652edce8e252d4aac942fe9fb941acaebc22ef40d0ab80f31847bc7"
+      },
+      {
+        "path": "packages/contracts/src/save.ts",
+        "sha256": "35a437720328d286ff0b8062c74fdeb0cb9148353763547b3358afbacec0d638"
+      },
+      {
+        "path": "packages/contracts/src/state-delta.ts",
+        "sha256": "c420a0681d18ee1af608eade4559a3ef0adde6898583d56ede3efce4ccbc8a4a"
+      },
+      {
+        "path": "packages/contracts/src/turn.ts",
+        "sha256": "8e8984fa2a7fe4ab80cd10bc0b0a6cd6843610a5095d6df23e2b51d7646702a5"
+      },
+      {
+        "path": "packages/contracts/src/world.ts",
+        "sha256": "aff4a913b0672540e9d7b1ece5a8dedde107206c6e2f13ef354e19a38ded0e9d"
+      },
+      {
+        "path": "packages/domain/package.json",
+        "sha256": "67fdb4765ad138a7bef2df5fd42bc1f4c1bb9abb0982cc4698344643521a24b8"
+      },
+      {
+        "path": "packages/domain/src/event-log.ts",
+        "sha256": "e36cac475db2762f30db7d1b1966b189fc1a259f1ece8968f2d935cfd3ea4d3b"
+      },
+      {
+        "path": "packages/domain/src/index.ts",
+        "sha256": "b7e32746cfe7c9e7816d6a65a8c49f1a1a7baa52675a3e5f171ff428148f3f05"
+      },
+      {
+        "path": "packages/domain/src/memory/belief.ts",
+        "sha256": "edb4df5ddcaf121a2b2f79dd8b18ae8dd0ffe67718c6f19d5833fdbe765a0512"
+      },
+      {
+        "path": "packages/domain/src/memory/policy.ts",
+        "sha256": "92a2c1cd91262e1056543f99fd45d4c5fba05b74d526d31f8e1d11374a9b4043"
+      },
+      {
+        "path": "packages/domain/src/memory/turn-journal.ts",
+        "sha256": "ed4adc595d95a55c5e095e4a4d71602c4ad132f94673702b3d69de790d14b8fb"
+      },
+      {
+        "path": "packages/domain/src/nlu/action-parser.ts",
+        "sha256": "9dc1b2df2da738f9eb4e2dc949e50486718111abd0387ba2bac4841779ff2700"
+      },
+      {
+        "path": "packages/domain/src/nlu/index.ts",
+        "sha256": "3beb1713db386c7d1b8ab086f11e91230e6b070dbe974031d3a99ee3a3e8218b"
+      },
+      {
+        "path": "packages/domain/src/nlu/prologue-v1-nlu-fixtures.ts",
+        "sha256": "1a8e37d315a40aa7927ce488e9e53c1672baa3dcb9402e535b2c27f27e5409df"
+      },
+      {
+        "path": "packages/domain/src/prologue-v1-rules.ts",
+        "sha256": "67fdd8b9fd94e994e7e7d835de39beb5715b2ec3806c46e7d37af8241a376c49"
+      },
+      {
+        "path": "packages/domain/src/prologue-v1-time.ts",
+        "sha256": "1af9a9b5b04099126661b61091a06fb5930ff0cf00444ec1525916cd49468637"
+      },
+      {
+        "path": "packages/domain/src/rules.ts",
+        "sha256": "c9fe05500b9296839844f0deba448c64589f5877e5c1f37859b9b26b0584f6a4"
+      },
+      {
+        "path": "packages/domain/src/state-delta.ts",
+        "sha256": "078ff8aae4de7d0b20d724ad79c4db131ab50e181bbe4a6d576c2618c8672ac5"
+      },
+      {
+        "path": "scripts/p1-rule-semantic-source-digest.mjs",
+        "sha256": "566e40c082d9e65130dc50fa3a0d43980e70e5a84ac94c81a87b89d1a63d87c5"
+      }
+    ]
+  },
+  "after": {
+    "format": "jiuxiao-p1-runtime-ast-v2",
+    "typescriptVersion": "6.0.2",
+    "sha256": "sha256:9c7dc0c061e3467962c7436bab0e1e1c11c6c8b3b7eea8ab3f8252db0c1a9bd3",
+    "files": [
+      {
+        "path": "apps/api/src/services/narrative-memory-context.ts",
+        "sha256": "a84ba9f2929b7a026840388137b9dc76a5ab219f1826b2c73f41656b07a6349e"
+      },
+      {
+        "path": "apps/api/src/services/npc-memory-turn-transaction.ts",
+        "sha256": "07038df1e3e32d20d7edb351a5a85f07c81e569bf4c3044a1ca1fb7277150285"
+      },
+      {
+        "path": "apps/api/src/services/p1-memory-policy.ts",
+        "sha256": "dbc9cf2770ab39b96c454d64bac45b2c5b1e3d3be0389b441b0ebaa0c3e7d8d7"
+      },
+      {
+        "path": "apps/api/src/services/p1-nlu-runtime.ts",
+        "sha256": "84a9090c27afff71dee22d80ce2e62cf7b584f29f974da606d2cf2d29f249daf"
+      },
+      {
+        "path": "apps/api/src/services/p1-prologue-plugin.ts",
+        "sha256": "f1a2d306f07b523cc0fe2de4e168878a460030c93578378dfa18d27a204aee26"
+      },
+      {
+        "path": "apps/api/src/services/p1-review-semantic-gate.ts",
+        "sha256": "5e829bf07ece79ab84fe49730836972ccc6c71f366e27cf63d91e2176277eb49"
+      },
+      {
+        "path": "apps/api/src/services/p1-rule-semantic-functions.ts",
+        "sha256": "fea0c8a52e08120229c60f77e94d3a1f763555c8e61713cb684905cbd98e9724"
+      },
+      {
+        "path": "apps/api/src/services/rule-semantic-fingerprint.ts",
+        "sha256": "e54e7549c5a864b9cf2cb819cce72a75db11f64469be670ef340cc175a2dd708"
+      },
+      {
+        "path": "apps/api/src/services/server-turn.ts",
+        "sha256": "54a0503aa93b5fc05e5c59a36dfc627c96e08fe58e1862f260a377996769f56a"
+      },
+      {
+        "path": "apps/api/src/services/turn-runtime.ts",
+        "sha256": "9b259c7ca04a5e3a6a6c63d02ffa345496b4d65099c08372359cba63c9b745f8"
+      },
+      {
+        "path": "packages/contracts/package.json",
+        "sha256": "bada79c85c24cdbdc51217a17d713ad2a2c602122360e248aa27451d3ec7b257"
+      },
+      {
+        "path": "packages/contracts/src/action.ts",
+        "sha256": "39c7ea68097ebd806920deac9d1588e66097622ce1941a6e092cf4fb5eb910f2"
+      },
+      {
+        "path": "packages/contracts/src/decision.ts",
+        "sha256": "8c9072b869e14fbb840e79e3059836649b74bbb6076b4d244f2b9eb2010be7a2"
+      },
+      {
+        "path": "packages/contracts/src/event.ts",
+        "sha256": "110440e802eb9d115d79cdda5d0808206e11d4cff260089062b29b0f6cdc80b5"
+      },
+      {
+        "path": "packages/contracts/src/index.ts",
+        "sha256": "7f8459245591dc661f421aee21ee2c1072b7b38709d409f26f1b8e9756feb0e3"
+      },
+      {
+        "path": "packages/contracts/src/json-bounds.ts",
+        "sha256": "f4360b9ea473173118f61be96fe41dcafcc022ae9a9198d89a7aa6f75fc5989f"
+      },
+      {
+        "path": "packages/contracts/src/prologue.ts",
+        "sha256": "700acd9a8652edce8e252d4aac942fe9fb941acaebc22ef40d0ab80f31847bc7"
+      },
+      {
+        "path": "packages/contracts/src/save.ts",
+        "sha256": "35a437720328d286ff0b8062c74fdeb0cb9148353763547b3358afbacec0d638"
+      },
+      {
+        "path": "packages/contracts/src/state-delta.ts",
+        "sha256": "c420a0681d18ee1af608eade4559a3ef0adde6898583d56ede3efce4ccbc8a4a"
+      },
+      {
+        "path": "packages/contracts/src/turn.ts",
+        "sha256": "8e8984fa2a7fe4ab80cd10bc0b0a6cd6843610a5095d6df23e2b51d7646702a5"
+      },
+      {
+        "path": "packages/contracts/src/world.ts",
+        "sha256": "aff4a913b0672540e9d7b1ece5a8dedde107206c6e2f13ef354e19a38ded0e9d"
+      },
+      {
+        "path": "packages/domain/package.json",
+        "sha256": "67fdb4765ad138a7bef2df5fd42bc1f4c1bb9abb0982cc4698344643521a24b8"
+      },
+      {
+        "path": "packages/domain/src/event-log.ts",
+        "sha256": "e36cac475db2762f30db7d1b1966b189fc1a259f1ece8968f2d935cfd3ea4d3b"
+      },
+      {
+        "path": "packages/domain/src/index.ts",
+        "sha256": "b7e32746cfe7c9e7816d6a65a8c49f1a1a7baa52675a3e5f171ff428148f3f05"
+      },
+      {
+        "path": "packages/domain/src/memory/belief.ts",
+        "sha256": "edb4df5ddcaf121a2b2f79dd8b18ae8dd0ffe67718c6f19d5833fdbe765a0512"
+      },
+      {
+        "path": "packages/domain/src/memory/policy.ts",
+        "sha256": "92a2c1cd91262e1056543f99fd45d4c5fba05b74d526d31f8e1d11374a9b4043"
+      },
+      {
+        "path": "packages/domain/src/memory/turn-journal.ts",
+        "sha256": "ed4adc595d95a55c5e095e4a4d71602c4ad132f94673702b3d69de790d14b8fb"
+      },
+      {
+        "path": "packages/domain/src/nlu/action-parser.ts",
+        "sha256": "9dc1b2df2da738f9eb4e2dc949e50486718111abd0387ba2bac4841779ff2700"
+      },
+      {
+        "path": "packages/domain/src/nlu/index.ts",
+        "sha256": "3beb1713db386c7d1b8ab086f11e91230e6b070dbe974031d3a99ee3a3e8218b"
+      },
+      {
+        "path": "packages/domain/src/nlu/prologue-v1-nlu-fixtures.ts",
+        "sha256": "1a8e37d315a40aa7927ce488e9e53c1672baa3dcb9402e535b2c27f27e5409df"
+      },
+      {
+        "path": "packages/domain/src/prologue-v1-rules.ts",
+        "sha256": "67fdd8b9fd94e994e7e7d835de39beb5715b2ec3806c46e7d37af8241a376c49"
+      },
+      {
+        "path": "packages/domain/src/prologue-v1-time.ts",
+        "sha256": "1af9a9b5b04099126661b61091a06fb5930ff0cf00444ec1525916cd49468637"
+      },
+      {
+        "path": "packages/domain/src/rules.ts",
+        "sha256": "c9fe05500b9296839844f0deba448c64589f5877e5c1f37859b9b26b0584f6a4"
+      },
+      {
+        "path": "packages/domain/src/state-delta.ts",
+        "sha256": "078ff8aae4de7d0b20d724ad79c4db131ab50e181bbe4a6d576c2618c8672ac5"
+      },
+      {
+        "path": "scripts/p1-rule-semantic-source-digest.mjs",
+        "sha256": "566e40c082d9e65130dc50fa3a0d43980e70e5a84ac94c81a87b89d1a63d87c5"
+      }
+    ]
+  },
+  "oldAggregate": "sha256:94afe4339c08d982e4cd304f34c905877bdf24fc5863f0bb73079306858310cb",
+  "newAggregate": "sha256:40fdf902ade520a149687be7c798866eddb62f928770ccf0dc750cbbae1511a0",
+  "changedSigned": [
+    {
+      "path": "apps/api/src/services/npc-memory-turn-transaction.ts",
+      "sha256": "07038df1e3e32d20d7edb351a5a85f07c81e569bf4c3044a1ca1fb7277150285"
+    },
+    {
+      "path": "apps/api/src/services/server-turn.ts",
+      "sha256": "54a0503aa93b5fc05e5c59a36dfc627c96e08fe58e1862f260a377996769f56a"
+    }
+  ],
+  "dependencyInventory": [
+    {
+      "path": "apps/api/src/index.ts",
+      "beforeSha256": "cf9440ab040129aca6ddfd64537f55945859972242ac909b86dda0c32cb5cc64",
+      "afterSha256": "c11959f19b6103cf668b319e6d13393bac92d9ebd6e33ee13a30727ac63f4d40"
+    },
+    {
+      "path": "apps/api/src/routes/games.ts",
+      "beforeSha256": "c932269428a160777d7a74ff8a791fff0dff9b571ebe704b0a492da44fb058b0",
+      "afterSha256": "f65296e63c0f2ea80806a7d4021dfec5503d4cb7b49f8f45f3532c526691f8a1"
+    },
+    {
+      "path": "apps/api/src/routes/turns.ts",
+      "beforeSha256": "88ae855169fe42cc995d67edc418fb3dd9b0133cd62f2ee998ad2aea9386e1bd",
+      "afterSha256": "0fd3e4c671576d641fba91b091dcd7033a8f0a804585f2cbb725696549d0093d"
+    },
+    {
+      "path": "apps/api/src/services/account-export.ts",
+      "beforeSha256": "d872246985b7c59e831c4666ac93811c0078cd9599114a80487261620236a4cb",
+      "afterSha256": "afcd8e720dfdde173b53e6db8b11006863187a506aca2a5a2d4319c5129f937d"
+    },
+    {
+      "path": "apps/api/src/services/narrative-outbox-worker.ts",
+      "beforeSha256": "599e029d5f92a77adcdd79f8679383410f4044c4dad662b22129d4af958147fe",
+      "afterSha256": "20ec8a8e86061075eb564d69c8193c9db2a448e4e9bab9ddee7c886a87287eda"
+    },
+    {
+      "path": "apps/api/src/services/narrative-ownership-v2.ts",
+      "beforeSha256": null,
+      "afterSha256": "3276e084905d4f4e23defce522bd2f452256751825396f6a0760cd384e587751"
+    },
+    {
+      "path": "apps/api/src/services/narrative-publication-repository.ts",
+      "beforeSha256": "62258b0a3067716b71ee163f6c7222d4399bb1fefd383dcf68f310e9c2837df3",
+      "afterSha256": "edf38b21522cc08446f1845adc3a6523aa9b748298644b30d5aa8c96d46d3b3d"
+    },
+    {
+      "path": "apps/api/src/services/narrative-v2-runtime-draft.ts",
+      "beforeSha256": null,
+      "afterSha256": "6d41d0b6f9b015c765ab35aecec8200ea7c1554babc0efd6a4f802e946375a3e"
+    },
+    {
+      "path": "apps/api/src/services/npc-memory-turn-transaction.ts",
+      "beforeSha256": "2e054ef9962f2de4381c2605f6e48b6bb6aa04cc5cbf140cf5a3cd0d62bcc63a",
+      "afterSha256": "1631172f3891439dcb502d6998a7485a3c1f5674e5baa7515b40d45ef05bce19"
+    },
+    {
+      "path": "apps/api/src/services/postgres-server-turn.ts",
+      "beforeSha256": "0bbeef8de0a27f6f0002a502f823e904a1e0e67d9bc4cac6d70d81f9a125071b",
+      "afterSha256": "bfaaca28cbcb7f66df22aaa973ba71d84800f9ac293c433dffa565667ce08066"
+    },
+    {
+      "path": "apps/api/src/services/server-turn.ts",
+      "beforeSha256": "a8633c442069dab8bca96e97088b500dc12d9f0dd1f56bd3311d027061f9f150",
+      "afterSha256": "11a004071bdb49fe6880cf419e1c9c18db1144ad58cda7b3afab4c7e1b258136"
+    },
+    {
+      "path": "apps/web/src/game-publications.ts",
+      "beforeSha256": "ce63a9b83bd27b9dd60b973591ea4b56c696ea37b778cbcf81e487b823ec1807",
+      "afterSha256": "8f547ea09f33edb5489f96e30337875594a47d5487cef8b1a81419adff6af447"
+    },
+    {
+      "path": "apps/web/src/use-cloud-game-session.ts",
+      "beforeSha256": "d5376bc40a53b927a3ca166fdc4d4e6247f159312dd899731dd73ef67d3edcce",
+      "afterSha256": "bd60c44896dac52f91ec98b4108bda7e3d8d5f05478497330e8b0f5f0f91d126"
+    },
+    {
+      "path": "docs/integration/pending/0023_narrative_ownership_v2.sql",
+      "beforeSha256": null,
+      "afterSha256": "bd778c124540b189d435b312caba806dc6011c760de0311ef918e38cfc947770"
+    },
+    {
+      "path": "scripts/t1-v2-draft-tests.cjs",
+      "beforeSha256": null,
+      "afterSha256": "207b9d2c15aa0829300d8ee6131b475db736baf7d1742c492aa3d68fb929c272"
+    },
+    {
+      "path": "scripts/t1-v2-review.mjs",
+      "beforeSha256": null,
+      "afterSha256": "0309231367b1bede9d2ddbcf8d241a87aba9a0134701e533876bb87517aa20ed"
+    }
+  ],
+  "approvalFileUnchanged": true,
+  "migrationExecuted": false,
+  "formalT1Enabled": false,
+  "results": [
+    {
+      "name": "compile-final",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "apps/api/tsconfig.json"
+      ],
+      "started": "2026-10-16T10:30:58.779Z",
+      "finished": "2026-10-16T10:30:59.138Z",
+      "exitCode": 0,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "kind": "isolated-draft-unit-not-official-gameplay"
+    },
+    {
+      "name": "web-typecheck",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "apps/web/tsconfig.json",
+        "--noEmit"
+      ],
+      "started": "2026-10-16T10:30:59.138Z",
+      "finished": "2026-10-16T10:30:59.682Z",
+      "exitCode": 0,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "kind": "isolated-draft-unit-not-official-gameplay"
+    },
+    {
+      "name": "unit-final",
+      "command": [
+        "C:\\Program Files\\nodejs\\node.exe",
+        "--test",
+        "scripts/t1-v2-draft-tests.cjs"
+      ],
+      "started": "2026-10-16T10:30:59.682Z",
+      "finished": "2026-10-16T10:30:59.948Z",
+      "exitCode": 0,
+      "logSha256": "ceb17af9e6235cdd4d5cae2afe63f856ffe085885636b957b61b1a4ad8bbbb97",
+      "kind": "isolated-draft-unit-not-official-gameplay"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+TypeError: c.columns.join is not a function
+    at C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-p3-p6-handover-01-20261014\scripts\handover-schema-check.cjs:15:175
+    at Array.map (<anonymous>)
+    at C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-p3-p6-handover-01-20261014\scripts\handover-schema-check.cjs:15:158
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)

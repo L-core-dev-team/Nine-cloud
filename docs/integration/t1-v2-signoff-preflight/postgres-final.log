@@ -1,0 +1,1434 @@
+2026-10-16 18:55:02.315 CST [5592] LOG:  starting PostgreSQL 18.6 on x86_64-windows, compiled by msvc-19.44.35229, 64-bit
+2026-10-16 18:55:02.316 CST [5592] LOG:  listening on IPv4 address "127.0.0.1", port 55463
+2026-10-16 18:55:02.421 CST [24124] LOG:  database system was shut down at 2026-10-16 18:54:57 CST
+2026-10-16 18:55:02.435 CST [5592] LOG:  database system is ready to accept connections
+2026-10-16 18:57:30.732 CST [24028] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-16 18:57:30.732 CST [24028] CONTEXT:  PL/pgSQL function protect_narrative_identity() line 9 at RAISE
+2026-10-16 18:57:30.732 CST [24028] STATEMENT:  UPDATE narrative_generation_requests SET context_id=(SELECT context_id FROM narrative_generation_requests WHERE id=$1) WHERE id=$2
+2026-10-16 18:57:30.760 CST [35160] ERROR:  game_saves identity is immutable and revision must be monotonic
+2026-10-16 18:57:30.760 CST [35160] CONTEXT:  PL/pgSQL function guard_game_saves_update() line 6 at RAISE
+2026-10-16 18:57:30.760 CST [35160] STATEMENT:  UPDATE game_saves SET owner_id=$1 WHERE id=$2
+2026-10-16 19:00:02.408 CST [15828] LOG:  checkpoint starting: time
+2026-10-16 19:04:11.163 CST [15828] LOG:  checkpoint complete: wrote 2298 buffers (14.0%), wrote 3 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=247.414 s, sync=1.318 s, total=248.755 s; sync files=938, longest=0.005 s, average=0.002 s; distance=12512 kB, estimate=12512 kB; lsn=0/242B508, redo lsn=0/242B478
+2026-10-16 23:05:20.284 CST [5592] LOG:  autovacuum worker (PID 34864) was terminated by exception 0xC000026B
+2026-10-16 23:05:20.284 CST [5592] HINT:  See C include file "ntstatus.h" for a description of the hexadecimal value.
+2026-10-16 23:05:20.285 CST [5592] LOG:  terminating any other active server processes
+2026-10-16 23:05:20.299 CST [5592] LOG:  all server processes terminated; reinitializing
+2026-10-16 23:05:24.474 CST [5592] LOG:  could not reserve shared memory region (addr=0000016833460000) for child 0000000000000E4C: error code 487
+2026-10-17 11:50:13.003 CST [32480] LOG:  starting PostgreSQL 18.6 on x86_64-windows, compiled by msvc-19.44.35229, 64-bit
+2026-10-17 11:50:13.004 CST [32480] LOG:  listening on IPv4 address "127.0.0.1", port 55463
+2026-10-17 11:50:13.090 CST [31164] LOG:  database system was interrupted; last known up at 2026-10-16 19:04:11 CST
+2026-10-17 11:50:13.798 CST [31164] LOG:  database system was not properly shut down; automatic recovery in progress
+2026-10-17 11:50:13.803 CST [31164] LOG:  redo starts at 0/242B478
+2026-10-17 11:50:13.804 CST [31164] LOG:  invalid record length at 0/242B5B8: expected at least 24, got 0
+2026-10-17 11:50:13.804 CST [31164] LOG:  redo done at 0/242B580 system usage: CPU: user: 0.00 s, system: 0.00 s, elapsed: 0.00 s
+2026-10-17 11:50:13.808 CST [41416] LOG:  checkpoint starting: end-of-recovery immediate wait
+2026-10-17 11:50:13.816 CST [41416] LOG:  checkpoint complete: wrote 0 buffers (0.0%), wrote 3 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=0.002 s, sync=0.002 s, total=0.010 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/242B5B8, redo lsn=0/242B5B8
+2026-10-17 11:50:13.822 CST [32480] LOG:  database system is ready to accept connections
+2026-10-17 11:50:44.617 CST [24684] ERROR:  permission denied to examine "data_directory"
+2026-10-17 11:50:44.617 CST [24684] DETAIL:  Only roles with privileges of the "pg_read_all_settings" role may examine this parameter.
+2026-10-17 11:50:44.617 CST [24684] STATEMENT:  SELECT current_setting('data_directory') AS d,inet_server_port() AS p
+2026-10-17 11:50:55.086 CST [14072] ERROR:  NARRATIVE_MANAGED_DECLARATION_REQUIRED
+2026-10-17 11:50:55.086 CST [14072] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 6 at RAISE
+2026-10-17 11:50:55.086 CST [14072] STATEMENT:  INSERT INTO narrative_context_snapshots(id,save_id,request_key,owner_id,branch_id,receipt_sha,context,context_sha)
+	    SELECT $1,$2,$3,$4,'root',encode(sha256(convert_to(r.result::text,'UTF8')),'hex'),$5::jsonb,
+	      encode(sha256(convert_to($5::jsonb::text,'UTF8')),'hex')
+	    FROM turn_requests r WHERE r.save_id=$2 AND r.idempotency_key=$3
+2026-10-17 11:50:55.091 CST [33444] ERROR:  NARRATIVE_MANAGED_DECLARATION_REQUIRED
+2026-10-17 11:50:55.091 CST [33444] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 6 at RAISE
+2026-10-17 11:50:55.091 CST [33444] STATEMENT:  INSERT INTO narrative_generation_requests(id,context_id,save_id,request_key,generation_key,publication_key) SELECT $1,context_id,save_id,request_key,'initial-v1','initial-v1' FROM narrative_generation_requests WHERE id=$2
+2026-10-17 11:50:55.132 CST [14072] ERROR:  NARRATIVE_MANAGED_INTEGRITY_FAILURE
+2026-10-17 11:50:55.132 CST [14072] CONTEXT:  PL/pgSQL function verify_narrative_ownership_v2() line 14 at RAISE
+2026-10-17 11:50:55.132 CST [14072] STATEMENT:  COMMIT
+2026-10-17 11:50:55.132 CST [14072] WARNING:  there is no transaction in progress
+2026-10-17 11:50:55.162 CST [20020] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 11:50:55.162 CST [20020] CONTEXT:  PL/pgSQL function protect_narrative_identity() line 9 at RAISE
+2026-10-17 11:50:55.162 CST [20020] STATEMENT:  UPDATE narrative_generation_requests SET context_id=(SELECT context_id FROM narrative_generation_requests WHERE id=$1) WHERE id=$2
+2026-10-17 11:50:55.192 CST [36448] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 11:50:55.192 CST [36448] CONTEXT:  PL/pgSQL function protect_narrative_immutable() line 4 at RAISE
+2026-10-17 11:50:55.192 CST [36448] STATEMENT:  UPDATE narrative_context_snapshots SET context=context || '{"rendererVersion":"wrong"}'::jsonb WHERE save_id=$1
+2026-10-17 11:50:55.220 CST [26068] ERROR:  NARRATIVE_OWNERSHIP_IMMUTABLE
+2026-10-17 11:50:55.220 CST [26068] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 4 at RAISE
+2026-10-17 11:50:55.220 CST [26068] STATEMENT:  UPDATE narrative_receipt_ownership SET generation_id=$1 WHERE save_id=$2
+2026-10-17 11:50:55.265 CST [4408] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:50:55.265 CST [4408] CONTEXT:  PL/pgSQL function seal_narrative_receipt_v2() line 14 at RAISE
+2026-10-17 11:50:55.265 CST [4408] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:50:55.291 CST [4408] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:50:55.291 CST [4408] CONTEXT:  PL/pgSQL function seal_narrative_receipt_v2() line 14 at RAISE
+2026-10-17 11:50:55.291 CST [4408] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,ownership,request_narrative,renderer_version,context_version,branch_id)
+	   VALUES($1,$2,$3,$4,2,'suppressed',false,'handover-fixture-v1','authority-context-v1','root')
+2026-10-17 11:50:55.301 CST [4408] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:50:55.301 CST [4408] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 10 at RAISE
+2026-10-17 11:50:55.301 CST [4408] STATEMENT:  INSERT INTO narrative_context_snapshots(id,save_id,request_key,owner_id,branch_id,receipt_sha,context,context_sha)
+	    SELECT $1,$2,$3,$4,'root',encode(sha256(convert_to(r.result::text,'UTF8')),'hex'),$5::jsonb,
+	      encode(sha256(convert_to($5::jsonb::text,'UTF8')),'hex')
+	    FROM turn_requests r WHERE r.save_id=$2 AND r.idempotency_key=$3
+2026-10-17 11:50:55.316 CST [4408] ERROR:  NARRATIVE_OWNERSHIP_IMMUTABLE
+2026-10-17 11:50:55.316 CST [4408] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 4 at RAISE
+2026-10-17 11:50:55.316 CST [4408] STATEMENT:  UPDATE narrative_receipt_ownership SET branch_id='forged' WHERE save_id=$1
+2026-10-17 11:50:55.328 CST [4408] ERROR:  NARRATIVE_OWNED_RECEIPT_IMMUTABLE
+2026-10-17 11:50:55.328 CST [4408] CONTEXT:  PL/pgSQL function protect_owned_receipt_v2() line 3 at RAISE
+2026-10-17 11:50:55.328 CST [4408] STATEMENT:  UPDATE turn_requests SET result=jsonb_set(result,'{resultingRevision}','999'::jsonb) WHERE save_id=$1
+2026-10-17 11:50:55.401 CST [20212] ERROR:  duplicate key value violates unique constraint "narrative_receipt_ownership_pkey"
+2026-10-17 11:50:55.401 CST [20212] DETAIL:  Key (save_id, request_key)=(handover-8a569989-63ac-4397-b5a2-0200c097e3cb, f84c4bd5-b923-49c7-b7c3-fc4f251b3082) already exists.
+2026-10-17 11:50:55.401 CST [20212] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:50:55.405 CST [14072] WARNING:  there is no transaction in progress
+2026-10-17 11:50:55.406 CST [20212] WARNING:  there is no transaction in progress
+2026-10-17 11:50:55.423 CST [14072] ERROR:  could not serialize access due to concurrent update
+2026-10-17 11:50:55.423 CST [14072] CONTEXT:  SQL statement "UPDATE public.turn_requests SET narrative_updated_at=narrative_updated_at
+	 WHERE save_id=NEW.save_id AND idempotency_key=NEW.request_key RETURNING result"
+	PL/pgSQL function seal_narrative_receipt_v2() line 6 at SQL statement
+2026-10-17 11:50:55.423 CST [14072] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:50:55.426 CST [20212] WARNING:  there is no transaction in progress
+2026-10-17 11:50:55.426 CST [14072] WARNING:  there is no transaction in progress
+2026-10-17 11:50:55.494 CST [24116] ERROR:  NARRATIVE_OWNED_RECEIPT_IMMUTABLE
+2026-10-17 11:50:55.494 CST [24116] CONTEXT:  PL/pgSQL function protect_owned_receipt_v2() line 3 at RAISE
+2026-10-17 11:50:55.494 CST [24116] STATEMENT:  UPDATE turn_requests SET result=jsonb_set(result,'{resultingRevision}','999'::jsonb) WHERE save_id=$1
+2026-10-17 11:50:55.495 CST [22604] WARNING:  there is no transaction in progress
+2026-10-17 11:50:55.496 CST [24116] WARNING:  there is no transaction in progress
+2026-10-17 11:50:55.510 CST [22604] ERROR:  could not serialize access due to concurrent update
+2026-10-17 11:50:55.510 CST [22604] STATEMENT:  UPDATE turn_requests SET result=jsonb_set(result,'{resultingRevision}','999'::jsonb) WHERE save_id=$1
+2026-10-17 11:50:55.511 CST [24116] WARNING:  there is no transaction in progress
+2026-10-17 11:50:55.511 CST [22604] WARNING:  there is no transaction in progress
+2026-10-17 11:50:55.512 CST [14072] ERROR:  permission denied to set role "jiuxiao_narrative_operator"
+2026-10-17 11:50:55.512 CST [14072] STATEMENT:  SET ROLE jiuxiao_narrative_operator
+2026-10-17 11:50:55.512 CST [20212] ERROR:  permission denied to set role "jiuxiao_narrative_erasure"
+2026-10-17 11:50:55.512 CST [20212] STATEMENT:  SET ROLE jiuxiao_narrative_erasure
+2026-10-17 11:50:55.540 CST [18772] ERROR:  permission denied to set session authorization "gate_review_admin"
+2026-10-17 11:50:55.540 CST [18772] STATEMENT:  SET SESSION AUTHORIZATION gate_review_admin
+2026-10-17 11:50:55.567 CST [31260] ERROR:  permission denied to set parameter "session_replication_role"
+2026-10-17 11:50:55.567 CST [31260] STATEMENT:  SET session_replication_role='replica'
+2026-10-17 11:50:55.593 CST [28656] ERROR:  must be owner of table narrative_receipt_ownership
+2026-10-17 11:50:55.593 CST [28656] STATEMENT:  ALTER TABLE narrative_receipt_ownership DISABLE TRIGGER ALL
+2026-10-17 11:50:55.617 CST [38604] ERROR:  permission denied for table narrative_receipt_ownership
+2026-10-17 11:50:55.617 CST [38604] STATEMENT:  TRUNCATE narrative_receipt_ownership
+2026-10-17 11:50:55.645 CST [30156] ERROR:  permission denied for table narrative_writer_fence
+2026-10-17 11:50:55.645 CST [30156] STATEMENT:  UPDATE narrative_writer_fence SET old_role_revoked=true
+2026-10-17 11:50:55.672 CST [19900] ERROR:  NARRATIVE_OPERATOR_REQUIRED
+2026-10-17 11:50:55.672 CST [19900] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 3 at RAISE
+2026-10-17 11:50:55.672 CST [19900] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,valid_until) VALUES(true,2,'fenced',$1,'handover-fixture-v1',now()+interval '10 minutes')
+2026-10-17 11:50:55.712 CST [16956] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:50:55.712 CST [16956] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:50:55.712 CST [16956] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE save_id=$1
+2026-10-17 11:50:55.713 CST [16956] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:50:55.713 CST [16956] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:50:55.713 CST [16956] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE save_id=$1
+2026-10-17 11:50:55.719 CST [16028] ERROR:  NARRATIVE_OLD_ROLE_NOT_DRAINED
+2026-10-17 11:50:55.719 CST [16028] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 13 at RAISE
+2026-10-17 11:50:55.719 CST [16028] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,
+	  old_writer_drained,old_role_revoked,valid_until,retired_roles,drain_evidence_sha)
+	  VALUES(true,2,'managed',$1,'handover-fixture-v1',true,true,now()+interval '1 hour',ARRAY['gr01_retired'],$2)
+2026-10-17 11:50:55.799 CST [38444] ERROR:  NARRATIVE_OLD_ROLE_NOT_DRAINED
+2026-10-17 11:50:55.799 CST [38444] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 13 at RAISE
+2026-10-17 11:50:55.799 CST [38444] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,
+	  old_writer_drained,old_role_revoked,valid_until,retired_roles,drain_evidence_sha)
+	  VALUES(true,2,'managed',$1,'handover-fixture-v1',true,true,now()+interval '1 hour',ARRAY['gr01_retired'],$2)
+2026-10-17 11:50:55.830 CST [9984] ERROR:  NARRATIVE_OLD_ROLE_STILL_PRIVILEGED
+2026-10-17 11:50:55.830 CST [9984] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 18 at RAISE
+2026-10-17 11:50:55.830 CST [9984] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,
+	  old_writer_drained,old_role_revoked,valid_until,retired_roles,drain_evidence_sha)
+	  VALUES(true,2,'managed',$1,'handover-fixture-v1',true,true,now()+interval '1 hour',ARRAY['gr01_retired'],$2)
+2026-10-17 11:50:55.880 CST [16956] ERROR:  permission denied for table narrative_writer_fence
+2026-10-17 11:50:55.880 CST [16956] STATEMENT:  SELECT singleton FROM narrative_writer_fence WHERE singleton=true AND phase='managed'
+	      AND protocol_version=2 AND old_writer_drained AND old_role_revoked
+	      AND fleet_manifest_sha ~ '^[a-f0-9]{64}$' AND valid_until>clock_timestamp()
+	      AND renderer_version=(SELECT renderer_version FROM narrative_receipt_ownership
+	        WHERE owner_id=$1 AND save_id=$2 AND request_key=$3 AND generation_id=$4) FOR SHARE
+2026-10-17 11:50:55.897 CST [16956] ERROR:  permission denied for table narrative_writer_fence
+2026-10-17 11:50:55.897 CST [16956] STATEMENT:  SELECT singleton FROM narrative_writer_fence WHERE singleton=true AND phase='managed'
+	      AND protocol_version=2 AND old_writer_drained AND old_role_revoked
+	      AND fleet_manifest_sha ~ '^[a-f0-9]{64}$' AND valid_until>clock_timestamp()
+	      AND renderer_version=(SELECT renderer_version FROM narrative_receipt_ownership
+	        WHERE owner_id=$1 AND save_id=$2 AND request_key=$3 AND generation_id=$4) FOR SHARE
+2026-10-17 11:52:07.255 CST [26904] ERROR:  NARRATIVE_MANAGED_DECLARATION_REQUIRED
+2026-10-17 11:52:07.255 CST [26904] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 6 at RAISE
+2026-10-17 11:52:07.255 CST [26904] STATEMENT:  INSERT INTO narrative_context_snapshots(id,save_id,request_key,owner_id,branch_id,receipt_sha,context,context_sha)
+	    SELECT $1,$2,$3,$4,'root',encode(sha256(convert_to(r.result::text,'UTF8')),'hex'),$5::jsonb,
+	      encode(sha256(convert_to($5::jsonb::text,'UTF8')),'hex')
+	    FROM turn_requests r WHERE r.save_id=$2 AND r.idempotency_key=$3
+2026-10-17 11:52:07.260 CST [28812] ERROR:  NARRATIVE_MANAGED_DECLARATION_REQUIRED
+2026-10-17 11:52:07.260 CST [28812] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 6 at RAISE
+2026-10-17 11:52:07.260 CST [28812] STATEMENT:  INSERT INTO narrative_generation_requests(id,context_id,save_id,request_key,generation_key,publication_key) SELECT $1,context_id,save_id,request_key,'initial-v1','initial-v1' FROM narrative_generation_requests WHERE id=$2
+2026-10-17 11:52:07.306 CST [26904] ERROR:  NARRATIVE_MANAGED_INTEGRITY_FAILURE
+2026-10-17 11:52:07.306 CST [26904] CONTEXT:  PL/pgSQL function verify_narrative_ownership_v2() line 14 at RAISE
+2026-10-17 11:52:07.306 CST [26904] STATEMENT:  COMMIT
+2026-10-17 11:52:07.306 CST [26904] WARNING:  there is no transaction in progress
+2026-10-17 11:52:07.336 CST [2068] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 11:52:07.336 CST [2068] CONTEXT:  PL/pgSQL function protect_narrative_identity() line 9 at RAISE
+2026-10-17 11:52:07.336 CST [2068] STATEMENT:  UPDATE narrative_generation_requests SET context_id=(SELECT context_id FROM narrative_generation_requests WHERE id=$1) WHERE id=$2
+2026-10-17 11:52:07.367 CST [21908] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 11:52:07.367 CST [21908] CONTEXT:  PL/pgSQL function protect_narrative_immutable() line 4 at RAISE
+2026-10-17 11:52:07.367 CST [21908] STATEMENT:  UPDATE narrative_context_snapshots SET context=context || '{"rendererVersion":"wrong"}'::jsonb WHERE save_id=$1
+2026-10-17 11:52:07.398 CST [32804] ERROR:  NARRATIVE_OWNERSHIP_IMMUTABLE
+2026-10-17 11:52:07.398 CST [32804] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 4 at RAISE
+2026-10-17 11:52:07.398 CST [32804] STATEMENT:  UPDATE narrative_receipt_ownership SET generation_id=$1 WHERE save_id=$2
+2026-10-17 11:52:07.442 CST [36140] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:52:07.442 CST [36140] CONTEXT:  PL/pgSQL function seal_narrative_receipt_v2() line 14 at RAISE
+2026-10-17 11:52:07.442 CST [36140] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:52:07.455 CST [36140] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:52:07.455 CST [36140] CONTEXT:  PL/pgSQL function seal_narrative_receipt_v2() line 14 at RAISE
+2026-10-17 11:52:07.455 CST [36140] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:52:07.468 CST [36140] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:52:07.468 CST [36140] CONTEXT:  PL/pgSQL function seal_narrative_receipt_v2() line 14 at RAISE
+2026-10-17 11:52:07.468 CST [36140] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,ownership,request_narrative,renderer_version,context_version,branch_id)
+	   VALUES($1,$2,$3,$4,2,'suppressed',false,'handover-fixture-v1','authority-context-v1','root')
+2026-10-17 11:52:07.481 CST [36140] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:52:07.481 CST [36140] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 10 at RAISE
+2026-10-17 11:52:07.481 CST [36140] STATEMENT:  INSERT INTO narrative_context_snapshots(id,save_id,request_key,owner_id,branch_id,receipt_sha,context,context_sha)
+	    SELECT $1,$2,$3,$4,'root',encode(sha256(convert_to(r.result::text,'UTF8')),'hex'),$5::jsonb,
+	      encode(sha256(convert_to($5::jsonb::text,'UTF8')),'hex')
+	    FROM turn_requests r WHERE r.save_id=$2 AND r.idempotency_key=$3
+2026-10-17 11:52:07.497 CST [36140] ERROR:  NARRATIVE_OWNERSHIP_IMMUTABLE
+2026-10-17 11:52:07.497 CST [36140] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 4 at RAISE
+2026-10-17 11:52:07.497 CST [36140] STATEMENT:  UPDATE narrative_receipt_ownership SET branch_id='forged' WHERE save_id=$1
+2026-10-17 11:52:07.509 CST [36140] ERROR:  NARRATIVE_OWNED_RECEIPT_IMMUTABLE
+2026-10-17 11:52:07.509 CST [36140] CONTEXT:  PL/pgSQL function protect_owned_receipt_v2() line 3 at RAISE
+2026-10-17 11:52:07.509 CST [36140] STATEMENT:  UPDATE turn_requests SET result=jsonb_set(result,'{resultingRevision}','999'::jsonb) WHERE save_id=$1
+2026-10-17 11:52:07.602 CST [16112] ERROR:  duplicate key value violates unique constraint "narrative_receipt_ownership_pkey"
+2026-10-17 11:52:07.602 CST [16112] DETAIL:  Key (save_id, request_key)=(handover-d7b57956-bfd1-45a8-9806-91b937063545, 45f17520-35a7-425f-8435-518ac2b8187f) already exists.
+2026-10-17 11:52:07.602 CST [16112] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:52:07.606 CST [26904] WARNING:  there is no transaction in progress
+2026-10-17 11:52:07.606 CST [16112] WARNING:  there is no transaction in progress
+2026-10-17 11:52:07.618 CST [26904] ERROR:  could not serialize access due to concurrent update
+2026-10-17 11:52:07.618 CST [26904] CONTEXT:  SQL statement "UPDATE public.turn_requests SET narrative_updated_at=narrative_updated_at
+	 WHERE save_id=NEW.save_id AND idempotency_key=NEW.request_key RETURNING result"
+	PL/pgSQL function seal_narrative_receipt_v2() line 6 at SQL statement
+2026-10-17 11:52:07.618 CST [26904] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:52:07.621 CST [16112] WARNING:  there is no transaction in progress
+2026-10-17 11:52:07.621 CST [26904] WARNING:  there is no transaction in progress
+2026-10-17 11:52:07.690 CST [34936] ERROR:  NARRATIVE_OWNED_RECEIPT_IMMUTABLE
+2026-10-17 11:52:07.690 CST [34936] CONTEXT:  PL/pgSQL function protect_owned_receipt_v2() line 3 at RAISE
+2026-10-17 11:52:07.690 CST [34936] STATEMENT:  UPDATE turn_requests SET result=jsonb_set(result,'{resultingRevision}','999'::jsonb) WHERE save_id=$1
+2026-10-17 11:52:07.692 CST [40984] WARNING:  there is no transaction in progress
+2026-10-17 11:52:07.693 CST [34936] WARNING:  there is no transaction in progress
+2026-10-17 11:52:07.706 CST [40984] ERROR:  could not serialize access due to concurrent update
+2026-10-17 11:52:07.706 CST [40984] STATEMENT:  UPDATE turn_requests SET result=jsonb_set(result,'{resultingRevision}','999'::jsonb) WHERE save_id=$1
+2026-10-17 11:52:07.707 CST [34936] WARNING:  there is no transaction in progress
+2026-10-17 11:52:07.708 CST [40984] WARNING:  there is no transaction in progress
+2026-10-17 11:52:07.708 CST [26904] ERROR:  permission denied to set role "jiuxiao_narrative_operator"
+2026-10-17 11:52:07.708 CST [26904] STATEMENT:  SET ROLE jiuxiao_narrative_operator
+2026-10-17 11:52:07.709 CST [16112] ERROR:  permission denied to set role "jiuxiao_narrative_erasure"
+2026-10-17 11:52:07.709 CST [16112] STATEMENT:  SET ROLE jiuxiao_narrative_erasure
+2026-10-17 11:52:07.733 CST [24908] ERROR:  permission denied to set session authorization "gate_review_admin"
+2026-10-17 11:52:07.733 CST [24908] STATEMENT:  SET SESSION AUTHORIZATION gate_review_admin
+2026-10-17 11:52:07.758 CST [24096] ERROR:  permission denied to set parameter "session_replication_role"
+2026-10-17 11:52:07.758 CST [24096] STATEMENT:  SET session_replication_role='replica'
+2026-10-17 11:52:07.784 CST [7384] ERROR:  must be owner of table narrative_receipt_ownership
+2026-10-17 11:52:07.784 CST [7384] STATEMENT:  ALTER TABLE narrative_receipt_ownership DISABLE TRIGGER ALL
+2026-10-17 11:52:07.808 CST [30452] ERROR:  permission denied for table narrative_receipt_ownership
+2026-10-17 11:52:07.808 CST [30452] STATEMENT:  TRUNCATE narrative_receipt_ownership
+2026-10-17 11:52:07.835 CST [32568] ERROR:  permission denied for table narrative_writer_fence
+2026-10-17 11:52:07.835 CST [32568] STATEMENT:  UPDATE narrative_writer_fence SET old_role_revoked=true
+2026-10-17 11:52:07.862 CST [20268] ERROR:  NARRATIVE_OPERATOR_REQUIRED
+2026-10-17 11:52:07.862 CST [20268] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 3 at RAISE
+2026-10-17 11:52:07.862 CST [20268] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,valid_until) VALUES(true,2,'fenced',$1,'handover-fixture-v1',now()+interval '10 minutes')
+2026-10-17 11:52:07.899 CST [40728] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:52:07.899 CST [40728] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:52:07.899 CST [40728] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE save_id=$1
+2026-10-17 11:52:07.900 CST [40728] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:52:07.900 CST [40728] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:52:07.900 CST [40728] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE save_id=$1
+2026-10-17 11:52:07.907 CST [18724] ERROR:  NARRATIVE_OLD_ROLE_NOT_DRAINED
+2026-10-17 11:52:07.907 CST [18724] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 13 at RAISE
+2026-10-17 11:52:07.907 CST [18724] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,
+	  old_writer_drained,old_role_revoked,valid_until,retired_roles,drain_evidence_sha)
+	  VALUES(true,2,'managed',$1,'handover-fixture-v1',true,true,now()+interval '1 hour',ARRAY['gr01_retired'],$2)
+2026-10-17 11:52:07.986 CST [1704] ERROR:  NARRATIVE_OLD_ROLE_NOT_DRAINED
+2026-10-17 11:52:07.986 CST [1704] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 13 at RAISE
+2026-10-17 11:52:07.986 CST [1704] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,
+	  old_writer_drained,old_role_revoked,valid_until,retired_roles,drain_evidence_sha)
+	  VALUES(true,2,'managed',$1,'handover-fixture-v1',true,true,now()+interval '1 hour',ARRAY['gr01_retired'],$2)
+2026-10-17 11:52:08.019 CST [34400] ERROR:  NARRATIVE_OLD_ROLE_STILL_PRIVILEGED
+2026-10-17 11:52:08.019 CST [34400] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 18 at RAISE
+2026-10-17 11:52:08.019 CST [34400] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,
+	  old_writer_drained,old_role_revoked,valid_until,retired_roles,drain_evidence_sha)
+	  VALUES(true,2,'managed',$1,'handover-fixture-v1',true,true,now()+interval '1 hour',ARRAY['gr01_retired'],$2)
+2026-10-17 11:52:08.238 CST [40984] ERROR:  NARRATIVE_FAILED_TERMINAL
+2026-10-17 11:52:08.238 CST [40984] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 18 at RAISE
+2026-10-17 11:52:08.238 CST [40984] STATEMENT:  UPDATE narrative_generation_requests SET state='running',lease_epoch=lease_epoch+1 WHERE id=$1
+2026-10-17 11:52:08.609 CST [19768] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:52:08.609 CST [19768] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:52:08.609 CST [19768] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 11:52:08.611 CST [19768] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:52:08.611 CST [19768] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:52:08.611 CST [19768] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 11:52:08.612 CST [19768] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:52:08.612 CST [19768] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:52:08.612 CST [19768] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 11:52:08.614 CST [19768] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:52:08.614 CST [19768] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:52:08.614 CST [19768] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 11:53:27.330 CST [13248] ERROR:  NARRATIVE_MANAGED_DECLARATION_REQUIRED
+2026-10-17 11:53:27.330 CST [13248] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 6 at RAISE
+2026-10-17 11:53:27.330 CST [13248] STATEMENT:  INSERT INTO narrative_context_snapshots(id,save_id,request_key,owner_id,branch_id,receipt_sha,context,context_sha)
+	    SELECT $1,$2,$3,$4,'root',encode(sha256(convert_to(r.result::text,'UTF8')),'hex'),$5::jsonb,
+	      encode(sha256(convert_to($5::jsonb::text,'UTF8')),'hex')
+	    FROM turn_requests r WHERE r.save_id=$2 AND r.idempotency_key=$3
+2026-10-17 11:53:27.335 CST [23112] ERROR:  NARRATIVE_MANAGED_DECLARATION_REQUIRED
+2026-10-17 11:53:27.335 CST [23112] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 6 at RAISE
+2026-10-17 11:53:27.335 CST [23112] STATEMENT:  INSERT INTO narrative_generation_requests(id,context_id,save_id,request_key,generation_key,publication_key) SELECT $1,context_id,save_id,request_key,'initial-v1','initial-v1' FROM narrative_generation_requests WHERE id=$2
+2026-10-17 11:53:27.373 CST [13248] ERROR:  NARRATIVE_MANAGED_INTEGRITY_FAILURE
+2026-10-17 11:53:27.373 CST [13248] CONTEXT:  PL/pgSQL function verify_narrative_ownership_v2() line 14 at RAISE
+2026-10-17 11:53:27.373 CST [13248] STATEMENT:  COMMIT
+2026-10-17 11:53:27.374 CST [13248] WARNING:  there is no transaction in progress
+2026-10-17 11:53:27.403 CST [4356] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 11:53:27.403 CST [4356] CONTEXT:  PL/pgSQL function protect_narrative_identity() line 9 at RAISE
+2026-10-17 11:53:27.403 CST [4356] STATEMENT:  UPDATE narrative_generation_requests SET context_id=(SELECT context_id FROM narrative_generation_requests WHERE id=$1) WHERE id=$2
+2026-10-17 11:53:27.448 CST [22380] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 11:53:27.448 CST [22380] CONTEXT:  PL/pgSQL function protect_narrative_immutable() line 4 at RAISE
+2026-10-17 11:53:27.448 CST [22380] STATEMENT:  UPDATE narrative_context_snapshots SET context=context || '{"rendererVersion":"wrong"}'::jsonb WHERE save_id=$1
+2026-10-17 11:53:27.590 CST [27400] ERROR:  NARRATIVE_OWNERSHIP_IMMUTABLE
+2026-10-17 11:53:27.590 CST [27400] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 4 at RAISE
+2026-10-17 11:53:27.590 CST [27400] STATEMENT:  UPDATE narrative_receipt_ownership SET generation_id=$1 WHERE save_id=$2
+2026-10-17 11:53:27.646 CST [11296] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:53:27.646 CST [11296] CONTEXT:  PL/pgSQL function seal_narrative_receipt_v2() line 14 at RAISE
+2026-10-17 11:53:27.646 CST [11296] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:53:27.661 CST [11296] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:53:27.661 CST [11296] CONTEXT:  PL/pgSQL function seal_narrative_receipt_v2() line 14 at RAISE
+2026-10-17 11:53:27.661 CST [11296] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:53:27.673 CST [11296] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:53:27.673 CST [11296] CONTEXT:  PL/pgSQL function seal_narrative_receipt_v2() line 14 at RAISE
+2026-10-17 11:53:27.673 CST [11296] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,ownership,request_narrative,renderer_version,context_version,branch_id)
+	   VALUES($1,$2,$3,$4,2,'suppressed',false,'handover-fixture-v1','authority-context-v1','root')
+2026-10-17 11:53:27.688 CST [11296] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:53:27.688 CST [11296] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 10 at RAISE
+2026-10-17 11:53:27.688 CST [11296] STATEMENT:  INSERT INTO narrative_context_snapshots(id,save_id,request_key,owner_id,branch_id,receipt_sha,context,context_sha)
+	    SELECT $1,$2,$3,$4,'root',encode(sha256(convert_to(r.result::text,'UTF8')),'hex'),$5::jsonb,
+	      encode(sha256(convert_to($5::jsonb::text,'UTF8')),'hex')
+	    FROM turn_requests r WHERE r.save_id=$2 AND r.idempotency_key=$3
+2026-10-17 11:53:27.708 CST [11296] ERROR:  NARRATIVE_OWNERSHIP_IMMUTABLE
+2026-10-17 11:53:27.708 CST [11296] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 4 at RAISE
+2026-10-17 11:53:27.708 CST [11296] STATEMENT:  UPDATE narrative_receipt_ownership SET branch_id='forged' WHERE save_id=$1
+2026-10-17 11:53:27.725 CST [11296] ERROR:  NARRATIVE_OWNED_RECEIPT_IMMUTABLE
+2026-10-17 11:53:27.725 CST [11296] CONTEXT:  PL/pgSQL function protect_owned_receipt_v2() line 3 at RAISE
+2026-10-17 11:53:27.725 CST [11296] STATEMENT:  UPDATE turn_requests SET result=jsonb_set(result,'{resultingRevision}','999'::jsonb) WHERE save_id=$1
+2026-10-17 11:53:27.813 CST [37396] ERROR:  duplicate key value violates unique constraint "narrative_receipt_ownership_pkey"
+2026-10-17 11:53:27.813 CST [37396] DETAIL:  Key (save_id, request_key)=(handover-bdd0f6b1-2e59-4821-be5a-5f1e7a06c829, 17e6d2f6-39d1-4e44-aa3c-ffbef23f57a1) already exists.
+2026-10-17 11:53:27.813 CST [37396] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:53:27.818 CST [13248] WARNING:  there is no transaction in progress
+2026-10-17 11:53:27.819 CST [37396] WARNING:  there is no transaction in progress
+2026-10-17 11:53:27.839 CST [13248] ERROR:  could not serialize access due to concurrent update
+2026-10-17 11:53:27.839 CST [13248] CONTEXT:  SQL statement "UPDATE public.turn_requests SET narrative_updated_at=narrative_updated_at
+	 WHERE save_id=NEW.save_id AND idempotency_key=NEW.request_key RETURNING result"
+	PL/pgSQL function seal_narrative_receipt_v2() line 6 at SQL statement
+2026-10-17 11:53:27.839 CST [13248] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:53:27.841 CST [37396] WARNING:  there is no transaction in progress
+2026-10-17 11:53:27.842 CST [13248] WARNING:  there is no transaction in progress
+2026-10-17 11:53:28.035 CST [40748] ERROR:  NARRATIVE_OWNED_RECEIPT_IMMUTABLE
+2026-10-17 11:53:28.035 CST [40748] CONTEXT:  PL/pgSQL function protect_owned_receipt_v2() line 3 at RAISE
+2026-10-17 11:53:28.035 CST [40748] STATEMENT:  UPDATE turn_requests SET result=jsonb_set(result,'{resultingRevision}','999'::jsonb) WHERE save_id=$1
+2026-10-17 11:53:28.036 CST [40580] WARNING:  there is no transaction in progress
+2026-10-17 11:53:28.037 CST [40748] WARNING:  there is no transaction in progress
+2026-10-17 11:53:28.051 CST [40580] ERROR:  could not serialize access due to concurrent update
+2026-10-17 11:53:28.051 CST [40580] STATEMENT:  UPDATE turn_requests SET result=jsonb_set(result,'{resultingRevision}','999'::jsonb) WHERE save_id=$1
+2026-10-17 11:53:28.053 CST [40748] WARNING:  there is no transaction in progress
+2026-10-17 11:53:28.053 CST [40580] WARNING:  there is no transaction in progress
+2026-10-17 11:53:28.054 CST [13248] ERROR:  permission denied to set role "jiuxiao_narrative_operator"
+2026-10-17 11:53:28.054 CST [13248] STATEMENT:  SET ROLE jiuxiao_narrative_operator
+2026-10-17 11:53:28.054 CST [37396] ERROR:  permission denied to set role "jiuxiao_narrative_erasure"
+2026-10-17 11:53:28.054 CST [37396] STATEMENT:  SET ROLE jiuxiao_narrative_erasure
+2026-10-17 11:53:28.084 CST [14504] ERROR:  permission denied to set session authorization "gate_review_admin"
+2026-10-17 11:53:28.084 CST [14504] STATEMENT:  SET SESSION AUTHORIZATION gate_review_admin
+2026-10-17 11:53:28.114 CST [40584] ERROR:  permission denied to set parameter "session_replication_role"
+2026-10-17 11:53:28.114 CST [40584] STATEMENT:  SET session_replication_role='replica'
+2026-10-17 11:53:28.141 CST [29308] ERROR:  must be owner of table narrative_receipt_ownership
+2026-10-17 11:53:28.141 CST [29308] STATEMENT:  ALTER TABLE narrative_receipt_ownership DISABLE TRIGGER ALL
+2026-10-17 11:53:28.166 CST [34644] ERROR:  permission denied for table narrative_receipt_ownership
+2026-10-17 11:53:28.166 CST [34644] STATEMENT:  TRUNCATE narrative_receipt_ownership
+2026-10-17 11:53:28.194 CST [32336] ERROR:  permission denied for table narrative_writer_fence
+2026-10-17 11:53:28.194 CST [32336] STATEMENT:  UPDATE narrative_writer_fence SET old_role_revoked=true
+2026-10-17 11:53:28.221 CST [26864] ERROR:  NARRATIVE_OPERATOR_REQUIRED
+2026-10-17 11:53:28.221 CST [26864] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 3 at RAISE
+2026-10-17 11:53:28.221 CST [26864] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,valid_until) VALUES(true,2,'fenced',$1,'handover-fixture-v1',now()+interval '10 minutes')
+2026-10-17 11:53:28.382 CST [12860] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:53:28.382 CST [12860] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:53:28.382 CST [12860] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE save_id=$1
+2026-10-17 11:53:28.383 CST [12860] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:53:28.383 CST [12860] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:53:28.383 CST [12860] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE save_id=$1
+2026-10-17 11:53:28.390 CST [32400] ERROR:  NARRATIVE_OLD_ROLE_NOT_DRAINED
+2026-10-17 11:53:28.390 CST [32400] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 13 at RAISE
+2026-10-17 11:53:28.390 CST [32400] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,
+	  old_writer_drained,old_role_revoked,valid_until,retired_roles,drain_evidence_sha)
+	  VALUES(true,2,'managed',$1,'handover-fixture-v1',true,true,now()+interval '1 hour',ARRAY['gr01_retired'],$2)
+2026-10-17 11:53:28.475 CST [20688] ERROR:  NARRATIVE_OLD_ROLE_NOT_DRAINED
+2026-10-17 11:53:28.475 CST [20688] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 13 at RAISE
+2026-10-17 11:53:28.475 CST [20688] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,
+	  old_writer_drained,old_role_revoked,valid_until,retired_roles,drain_evidence_sha)
+	  VALUES(true,2,'managed',$1,'handover-fixture-v1',true,true,now()+interval '1 hour',ARRAY['gr01_retired'],$2)
+2026-10-17 11:53:28.509 CST [15116] ERROR:  NARRATIVE_OLD_ROLE_STILL_PRIVILEGED
+2026-10-17 11:53:28.509 CST [15116] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 19 at RAISE
+2026-10-17 11:53:28.509 CST [15116] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,
+	  old_writer_drained,old_role_revoked,valid_until,retired_roles,drain_evidence_sha)
+	  VALUES(true,2,'managed',$1,'handover-fixture-v1',true,true,now()+interval '1 hour',ARRAY['gr01_retired'],$2)
+2026-10-17 11:53:28.728 CST [40580] ERROR:  NARRATIVE_FAILED_TERMINAL
+2026-10-17 11:53:28.728 CST [40580] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 18 at RAISE
+2026-10-17 11:53:28.728 CST [40580] STATEMENT:  UPDATE narrative_generation_requests SET state='running',lease_epoch=lease_epoch+1 WHERE id=$1
+2026-10-17 11:53:29.071 CST [39500] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:53:29.071 CST [39500] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:53:29.071 CST [39500] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 11:53:29.073 CST [39500] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:53:29.073 CST [39500] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:53:29.073 CST [39500] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 11:53:29.074 CST [39500] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:53:29.074 CST [39500] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:53:29.074 CST [39500] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 11:53:29.075 CST [39500] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:53:29.075 CST [39500] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:53:29.075 CST [39500] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 11:53:29.630 CST [12184] ERROR:  NARRATIVE_OLD_ROLE_STILL_PRIVILEGED
+2026-10-17 11:53:29.630 CST [12184] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 19 at RAISE
+2026-10-17 11:53:29.630 CST [12184] STATEMENT:  UPDATE narrative_writer_fence SET valid_until=now()+interval '1 hour'
+2026-10-17 11:53:29.666 CST [35816] WARNING:  there is no transaction in progress
+2026-10-17 11:53:29.679 CST [39500] ERROR:  NARRATIVE_ERASURE_INCOMPLETE
+2026-10-17 11:53:29.679 CST [39500] CONTEXT:  PL/pgSQL function verify_narrative_ownership_erasure_v2() line 3 at RAISE
+2026-10-17 11:53:29.679 CST [39500] STATEMENT:  COMMIT
+2026-10-17 11:53:29.679 CST [39500] WARNING:  there is no transaction in progress
+2026-10-17 11:53:29.681 CST [35816] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 11:53:29.681 CST [35816] CONTEXT:  PL/pgSQL function protect_narrative_identity() line 4 at RAISE
+2026-10-17 11:53:29.681 CST [35816] STATEMENT:  DELETE FROM narrative_generation_requests WHERE save_id=$1
+2026-10-17 11:53:29.682 CST [35816] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 11:53:29.682 CST [35816] CONTEXT:  PL/pgSQL function protect_narrative_immutable() line 4 at RAISE
+2026-10-17 11:53:29.682 CST [35816] STATEMENT:  DELETE FROM narrative_context_snapshots WHERE save_id=$1
+2026-10-17 11:53:47.150 CST [3832] ERROR:  NARRATIVE_MANAGED_DECLARATION_REQUIRED
+2026-10-17 11:53:47.150 CST [3832] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 6 at RAISE
+2026-10-17 11:53:47.150 CST [3832] STATEMENT:  INSERT INTO narrative_context_snapshots(id,save_id,request_key,owner_id,branch_id,receipt_sha,context,context_sha)
+	    SELECT $1,$2,$3,$4,'root',encode(sha256(convert_to(r.result::text,'UTF8')),'hex'),$5::jsonb,
+	      encode(sha256(convert_to($5::jsonb::text,'UTF8')),'hex')
+	    FROM turn_requests r WHERE r.save_id=$2 AND r.idempotency_key=$3
+2026-10-17 11:53:47.156 CST [29844] ERROR:  NARRATIVE_MANAGED_DECLARATION_REQUIRED
+2026-10-17 11:53:47.156 CST [29844] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 6 at RAISE
+2026-10-17 11:53:47.156 CST [29844] STATEMENT:  INSERT INTO narrative_generation_requests(id,context_id,save_id,request_key,generation_key,publication_key) SELECT $1,context_id,save_id,request_key,'initial-v1','initial-v1' FROM narrative_generation_requests WHERE id=$2
+2026-10-17 11:53:47.195 CST [3832] ERROR:  NARRATIVE_MANAGED_INTEGRITY_FAILURE
+2026-10-17 11:53:47.195 CST [3832] CONTEXT:  PL/pgSQL function verify_narrative_ownership_v2() line 14 at RAISE
+2026-10-17 11:53:47.195 CST [3832] STATEMENT:  COMMIT
+2026-10-17 11:53:47.195 CST [3832] WARNING:  there is no transaction in progress
+2026-10-17 11:53:47.222 CST [24076] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 11:53:47.222 CST [24076] CONTEXT:  PL/pgSQL function protect_narrative_identity() line 9 at RAISE
+2026-10-17 11:53:47.222 CST [24076] STATEMENT:  UPDATE narrative_generation_requests SET context_id=(SELECT context_id FROM narrative_generation_requests WHERE id=$1) WHERE id=$2
+2026-10-17 11:53:47.250 CST [18772] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 11:53:47.250 CST [18772] CONTEXT:  PL/pgSQL function protect_narrative_immutable() line 4 at RAISE
+2026-10-17 11:53:47.250 CST [18772] STATEMENT:  UPDATE narrative_context_snapshots SET context=context || '{"rendererVersion":"wrong"}'::jsonb WHERE save_id=$1
+2026-10-17 11:53:47.278 CST [8828] ERROR:  NARRATIVE_OWNERSHIP_IMMUTABLE
+2026-10-17 11:53:47.278 CST [8828] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 4 at RAISE
+2026-10-17 11:53:47.278 CST [8828] STATEMENT:  UPDATE narrative_receipt_ownership SET generation_id=$1 WHERE save_id=$2
+2026-10-17 11:53:47.318 CST [38604] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:53:47.318 CST [38604] CONTEXT:  PL/pgSQL function seal_narrative_receipt_v2() line 14 at RAISE
+2026-10-17 11:53:47.318 CST [38604] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:53:47.329 CST [38604] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:53:47.329 CST [38604] CONTEXT:  PL/pgSQL function seal_narrative_receipt_v2() line 14 at RAISE
+2026-10-17 11:53:47.329 CST [38604] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:53:47.340 CST [38604] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:53:47.340 CST [38604] CONTEXT:  PL/pgSQL function seal_narrative_receipt_v2() line 14 at RAISE
+2026-10-17 11:53:47.340 CST [38604] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,ownership,request_narrative,renderer_version,context_version,branch_id)
+	   VALUES($1,$2,$3,$4,2,'suppressed',false,'handover-fixture-v1','authority-context-v1','root')
+2026-10-17 11:53:47.350 CST [38604] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:53:47.350 CST [38604] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 10 at RAISE
+2026-10-17 11:53:47.350 CST [38604] STATEMENT:  INSERT INTO narrative_context_snapshots(id,save_id,request_key,owner_id,branch_id,receipt_sha,context,context_sha)
+	    SELECT $1,$2,$3,$4,'root',encode(sha256(convert_to(r.result::text,'UTF8')),'hex'),$5::jsonb,
+	      encode(sha256(convert_to($5::jsonb::text,'UTF8')),'hex')
+	    FROM turn_requests r WHERE r.save_id=$2 AND r.idempotency_key=$3
+2026-10-17 11:53:47.365 CST [38604] ERROR:  NARRATIVE_OWNERSHIP_IMMUTABLE
+2026-10-17 11:53:47.365 CST [38604] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 4 at RAISE
+2026-10-17 11:53:47.365 CST [38604] STATEMENT:  UPDATE narrative_receipt_ownership SET branch_id='forged' WHERE save_id=$1
+2026-10-17 11:53:47.377 CST [38604] ERROR:  NARRATIVE_OWNED_RECEIPT_IMMUTABLE
+2026-10-17 11:53:47.377 CST [38604] CONTEXT:  PL/pgSQL function protect_owned_receipt_v2() line 3 at RAISE
+2026-10-17 11:53:47.377 CST [38604] STATEMENT:  UPDATE turn_requests SET result=jsonb_set(result,'{resultingRevision}','999'::jsonb) WHERE save_id=$1
+2026-10-17 11:53:47.447 CST [27064] ERROR:  duplicate key value violates unique constraint "narrative_receipt_ownership_pkey"
+2026-10-17 11:53:47.447 CST [27064] DETAIL:  Key (save_id, request_key)=(handover-e71348bc-1d7e-4ded-bc75-20f7b9136676, b19f7ba3-fdb3-4d28-bf81-707a2ea94faa) already exists.
+2026-10-17 11:53:47.447 CST [27064] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:53:47.451 CST [3832] WARNING:  there is no transaction in progress
+2026-10-17 11:53:47.452 CST [27064] WARNING:  there is no transaction in progress
+2026-10-17 11:53:47.469 CST [3832] ERROR:  could not serialize access due to concurrent update
+2026-10-17 11:53:47.469 CST [3832] CONTEXT:  SQL statement "UPDATE public.turn_requests SET narrative_updated_at=narrative_updated_at
+	 WHERE save_id=NEW.save_id AND idempotency_key=NEW.request_key RETURNING result"
+	PL/pgSQL function seal_narrative_receipt_v2() line 6 at SQL statement
+2026-10-17 11:53:47.469 CST [3832] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:53:47.471 CST [27064] WARNING:  there is no transaction in progress
+2026-10-17 11:53:47.471 CST [3832] WARNING:  there is no transaction in progress
+2026-10-17 11:53:47.534 CST [22740] ERROR:  NARRATIVE_OWNED_RECEIPT_IMMUTABLE
+2026-10-17 11:53:47.534 CST [22740] CONTEXT:  PL/pgSQL function protect_owned_receipt_v2() line 3 at RAISE
+2026-10-17 11:53:47.534 CST [22740] STATEMENT:  UPDATE turn_requests SET result=jsonb_set(result,'{resultingRevision}','999'::jsonb) WHERE save_id=$1
+2026-10-17 11:53:47.535 CST [16388] WARNING:  there is no transaction in progress
+2026-10-17 11:53:47.535 CST [22740] WARNING:  there is no transaction in progress
+2026-10-17 11:53:47.548 CST [16388] ERROR:  could not serialize access due to concurrent update
+2026-10-17 11:53:47.548 CST [16388] STATEMENT:  UPDATE turn_requests SET result=jsonb_set(result,'{resultingRevision}','999'::jsonb) WHERE save_id=$1
+2026-10-17 11:53:47.549 CST [22740] WARNING:  there is no transaction in progress
+2026-10-17 11:53:47.549 CST [16388] WARNING:  there is no transaction in progress
+2026-10-17 11:53:47.550 CST [3832] ERROR:  permission denied to set role "jiuxiao_narrative_operator"
+2026-10-17 11:53:47.550 CST [3832] STATEMENT:  SET ROLE jiuxiao_narrative_operator
+2026-10-17 11:53:47.551 CST [27064] ERROR:  permission denied to set role "jiuxiao_narrative_erasure"
+2026-10-17 11:53:47.551 CST [27064] STATEMENT:  SET ROLE jiuxiao_narrative_erasure
+2026-10-17 11:53:47.576 CST [30156] ERROR:  permission denied to set session authorization "gate_review_admin"
+2026-10-17 11:53:47.576 CST [30156] STATEMENT:  SET SESSION AUTHORIZATION gate_review_admin
+2026-10-17 11:53:47.601 CST [12960] ERROR:  permission denied to set parameter "session_replication_role"
+2026-10-17 11:53:47.601 CST [12960] STATEMENT:  SET session_replication_role='replica'
+2026-10-17 11:53:47.625 CST [16592] ERROR:  must be owner of table narrative_receipt_ownership
+2026-10-17 11:53:47.625 CST [16592] STATEMENT:  ALTER TABLE narrative_receipt_ownership DISABLE TRIGGER ALL
+2026-10-17 11:53:47.652 CST [8896] ERROR:  permission denied for table narrative_receipt_ownership
+2026-10-17 11:53:47.652 CST [8896] STATEMENT:  TRUNCATE narrative_receipt_ownership
+2026-10-17 11:53:47.677 CST [25972] ERROR:  permission denied for table narrative_writer_fence
+2026-10-17 11:53:47.677 CST [25972] STATEMENT:  UPDATE narrative_writer_fence SET old_role_revoked=true
+2026-10-17 11:53:47.809 CST [18176] ERROR:  NARRATIVE_OPERATOR_REQUIRED
+2026-10-17 11:53:47.809 CST [18176] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 3 at RAISE
+2026-10-17 11:53:47.809 CST [18176] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,valid_until) VALUES(true,2,'fenced',$1,'handover-fixture-v1',now()+interval '10 minutes')
+2026-10-17 11:53:47.853 CST [8664] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:53:47.853 CST [8664] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:53:47.853 CST [8664] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE save_id=$1
+2026-10-17 11:53:47.854 CST [8664] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:53:47.854 CST [8664] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:53:47.854 CST [8664] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE save_id=$1
+2026-10-17 11:53:47.860 CST [31328] ERROR:  NARRATIVE_OLD_ROLE_NOT_DRAINED
+2026-10-17 11:53:47.860 CST [31328] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 13 at RAISE
+2026-10-17 11:53:47.860 CST [31328] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,
+	  old_writer_drained,old_role_revoked,valid_until,retired_roles,drain_evidence_sha)
+	  VALUES(true,2,'managed',$1,'handover-fixture-v1',true,true,now()+interval '1 hour',ARRAY['gr01_retired'],$2)
+2026-10-17 11:53:47.943 CST [24740] ERROR:  NARRATIVE_OLD_ROLE_NOT_DRAINED
+2026-10-17 11:53:47.943 CST [24740] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 13 at RAISE
+2026-10-17 11:53:47.943 CST [24740] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,
+	  old_writer_drained,old_role_revoked,valid_until,retired_roles,drain_evidence_sha)
+	  VALUES(true,2,'managed',$1,'handover-fixture-v1',true,true,now()+interval '1 hour',ARRAY['gr01_retired'],$2)
+2026-10-17 11:53:47.973 CST [37352] ERROR:  NARRATIVE_OLD_ROLE_STILL_PRIVILEGED
+2026-10-17 11:53:47.973 CST [37352] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 19 at RAISE
+2026-10-17 11:53:47.973 CST [37352] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,
+	  old_writer_drained,old_role_revoked,valid_until,retired_roles,drain_evidence_sha)
+	  VALUES(true,2,'managed',$1,'handover-fixture-v1',true,true,now()+interval '1 hour',ARRAY['gr01_retired'],$2)
+2026-10-17 11:53:48.199 CST [16388] ERROR:  NARRATIVE_FAILED_TERMINAL
+2026-10-17 11:53:48.199 CST [16388] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 18 at RAISE
+2026-10-17 11:53:48.199 CST [16388] STATEMENT:  UPDATE narrative_generation_requests SET state='running',lease_epoch=lease_epoch+1 WHERE id=$1
+2026-10-17 11:53:48.462 CST [29840] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:53:48.462 CST [29840] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:53:48.462 CST [29840] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 11:53:48.465 CST [29840] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:53:48.465 CST [29840] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:53:48.465 CST [29840] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 11:53:48.467 CST [29840] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:53:48.467 CST [29840] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:53:48.467 CST [29840] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 11:53:48.468 CST [29840] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:53:48.468 CST [29840] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:53:48.468 CST [29840] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 11:53:48.911 CST [31532] ERROR:  NARRATIVE_OLD_ROLE_STILL_PRIVILEGED
+2026-10-17 11:53:48.911 CST [31532] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 19 at RAISE
+2026-10-17 11:53:48.911 CST [31532] STATEMENT:  UPDATE narrative_writer_fence SET valid_until=now()+interval '1 hour'
+2026-10-17 11:53:48.948 CST [22096] WARNING:  there is no transaction in progress
+2026-10-17 11:53:48.959 CST [29840] ERROR:  NARRATIVE_ERASURE_INCOMPLETE
+2026-10-17 11:53:48.959 CST [29840] CONTEXT:  PL/pgSQL function verify_narrative_ownership_erasure_v2() line 3 at RAISE
+2026-10-17 11:53:48.959 CST [29840] STATEMENT:  COMMIT
+2026-10-17 11:53:48.960 CST [29840] WARNING:  there is no transaction in progress
+2026-10-17 11:53:48.963 CST [22096] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 11:53:48.963 CST [22096] CONTEXT:  PL/pgSQL function protect_narrative_identity() line 4 at RAISE
+2026-10-17 11:53:48.963 CST [22096] STATEMENT:  DELETE FROM narrative_generation_requests WHERE save_id=$1
+2026-10-17 11:53:48.965 CST [22096] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 11:53:48.965 CST [22096] CONTEXT:  PL/pgSQL function protect_narrative_immutable() line 4 at RAISE
+2026-10-17 11:53:48.965 CST [22096] STATEMENT:  DELETE FROM narrative_context_snapshots WHERE save_id=$1
+2026-10-17 11:54:28.338 CST [2160] ERROR:  NARRATIVE_MANAGED_DECLARATION_REQUIRED
+2026-10-17 11:54:28.338 CST [2160] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 6 at RAISE
+2026-10-17 11:54:28.338 CST [2160] STATEMENT:  INSERT INTO narrative_context_snapshots(id,save_id,request_key,owner_id,branch_id,receipt_sha,context,context_sha)
+	    SELECT $1,$2,$3,$4,'root',encode(sha256(convert_to(r.result::text,'UTF8')),'hex'),$5::jsonb,
+	      encode(sha256(convert_to($5::jsonb::text,'UTF8')),'hex')
+	    FROM turn_requests r WHERE r.save_id=$2 AND r.idempotency_key=$3
+2026-10-17 11:54:28.343 CST [39048] ERROR:  NARRATIVE_MANAGED_DECLARATION_REQUIRED
+2026-10-17 11:54:28.343 CST [39048] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 6 at RAISE
+2026-10-17 11:54:28.343 CST [39048] STATEMENT:  INSERT INTO narrative_generation_requests(id,context_id,save_id,request_key,generation_key,publication_key) SELECT $1,context_id,save_id,request_key,'initial-v1','initial-v1' FROM narrative_generation_requests WHERE id=$2
+2026-10-17 11:54:28.383 CST [2160] ERROR:  NARRATIVE_MANAGED_INTEGRITY_FAILURE
+2026-10-17 11:54:28.383 CST [2160] CONTEXT:  PL/pgSQL function verify_narrative_ownership_v2() line 14 at RAISE
+2026-10-17 11:54:28.383 CST [2160] STATEMENT:  COMMIT
+2026-10-17 11:54:28.384 CST [2160] WARNING:  there is no transaction in progress
+2026-10-17 11:54:28.414 CST [27264] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 11:54:28.414 CST [27264] CONTEXT:  PL/pgSQL function protect_narrative_identity() line 9 at RAISE
+2026-10-17 11:54:28.414 CST [27264] STATEMENT:  UPDATE narrative_generation_requests SET context_id=(SELECT context_id FROM narrative_generation_requests WHERE id=$1) WHERE id=$2
+2026-10-17 11:54:28.446 CST [39384] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 11:54:28.446 CST [39384] CONTEXT:  PL/pgSQL function protect_narrative_immutable() line 4 at RAISE
+2026-10-17 11:54:28.446 CST [39384] STATEMENT:  UPDATE narrative_context_snapshots SET context=context || '{"rendererVersion":"wrong"}'::jsonb WHERE save_id=$1
+2026-10-17 11:54:28.476 CST [17244] ERROR:  NARRATIVE_OWNERSHIP_IMMUTABLE
+2026-10-17 11:54:28.476 CST [17244] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 4 at RAISE
+2026-10-17 11:54:28.476 CST [17244] STATEMENT:  UPDATE narrative_receipt_ownership SET generation_id=$1 WHERE save_id=$2
+2026-10-17 11:54:28.523 CST [25900] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:54:28.523 CST [25900] CONTEXT:  PL/pgSQL function seal_narrative_receipt_v2() line 14 at RAISE
+2026-10-17 11:54:28.523 CST [25900] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:54:28.534 CST [25900] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:54:28.534 CST [25900] CONTEXT:  PL/pgSQL function seal_narrative_receipt_v2() line 14 at RAISE
+2026-10-17 11:54:28.534 CST [25900] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:54:28.545 CST [25900] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:54:28.545 CST [25900] CONTEXT:  PL/pgSQL function seal_narrative_receipt_v2() line 14 at RAISE
+2026-10-17 11:54:28.545 CST [25900] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,ownership,request_narrative,renderer_version,context_version,branch_id)
+	   VALUES($1,$2,$3,$4,2,'suppressed',false,'handover-fixture-v1','authority-context-v1','root')
+2026-10-17 11:54:28.556 CST [25900] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:54:28.556 CST [25900] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 10 at RAISE
+2026-10-17 11:54:28.556 CST [25900] STATEMENT:  INSERT INTO narrative_context_snapshots(id,save_id,request_key,owner_id,branch_id,receipt_sha,context,context_sha)
+	    SELECT $1,$2,$3,$4,'root',encode(sha256(convert_to(r.result::text,'UTF8')),'hex'),$5::jsonb,
+	      encode(sha256(convert_to($5::jsonb::text,'UTF8')),'hex')
+	    FROM turn_requests r WHERE r.save_id=$2 AND r.idempotency_key=$3
+2026-10-17 11:54:28.572 CST [25900] ERROR:  NARRATIVE_OWNERSHIP_IMMUTABLE
+2026-10-17 11:54:28.572 CST [25900] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 4 at RAISE
+2026-10-17 11:54:28.572 CST [25900] STATEMENT:  UPDATE narrative_receipt_ownership SET branch_id='forged' WHERE save_id=$1
+2026-10-17 11:54:28.584 CST [25900] ERROR:  NARRATIVE_OWNED_RECEIPT_IMMUTABLE
+2026-10-17 11:54:28.584 CST [25900] CONTEXT:  PL/pgSQL function protect_owned_receipt_v2() line 3 at RAISE
+2026-10-17 11:54:28.584 CST [25900] STATEMENT:  UPDATE turn_requests SET result=jsonb_set(result,'{resultingRevision}','999'::jsonb) WHERE save_id=$1
+2026-10-17 11:54:28.682 CST [36924] ERROR:  duplicate key value violates unique constraint "narrative_receipt_ownership_pkey"
+2026-10-17 11:54:28.682 CST [36924] DETAIL:  Key (save_id, request_key)=(handover-f88d4037-5106-466a-9b52-83b9ce3acce8, 34b2c50f-478d-4702-b5d6-7fe14793c370) already exists.
+2026-10-17 11:54:28.682 CST [36924] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:54:28.686 CST [2160] WARNING:  there is no transaction in progress
+2026-10-17 11:54:28.686 CST [36924] WARNING:  there is no transaction in progress
+2026-10-17 11:54:28.695 CST [2160] ERROR:  could not serialize access due to concurrent update
+2026-10-17 11:54:28.695 CST [2160] CONTEXT:  SQL statement "UPDATE public.turn_requests SET narrative_updated_at=narrative_updated_at
+	 WHERE save_id=NEW.save_id AND idempotency_key=NEW.request_key RETURNING result"
+	PL/pgSQL function seal_narrative_receipt_v2() line 6 at SQL statement
+2026-10-17 11:54:28.695 CST [2160] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:54:28.697 CST [36924] WARNING:  there is no transaction in progress
+2026-10-17 11:54:28.697 CST [2160] WARNING:  there is no transaction in progress
+2026-10-17 11:54:28.769 CST [35848] ERROR:  NARRATIVE_OWNED_RECEIPT_IMMUTABLE
+2026-10-17 11:54:28.769 CST [35848] CONTEXT:  PL/pgSQL function protect_owned_receipt_v2() line 3 at RAISE
+2026-10-17 11:54:28.769 CST [35848] STATEMENT:  UPDATE turn_requests SET result=jsonb_set(result,'{resultingRevision}','999'::jsonb) WHERE save_id=$1
+2026-10-17 11:54:28.771 CST [23492] WARNING:  there is no transaction in progress
+2026-10-17 11:54:28.771 CST [35848] WARNING:  there is no transaction in progress
+2026-10-17 11:54:28.787 CST [23492] ERROR:  could not serialize access due to concurrent update
+2026-10-17 11:54:28.787 CST [23492] STATEMENT:  UPDATE turn_requests SET result=jsonb_set(result,'{resultingRevision}','999'::jsonb) WHERE save_id=$1
+2026-10-17 11:54:28.788 CST [35848] WARNING:  there is no transaction in progress
+2026-10-17 11:54:28.788 CST [23492] WARNING:  there is no transaction in progress
+2026-10-17 11:54:28.789 CST [2160] ERROR:  permission denied to set role "jiuxiao_narrative_operator"
+2026-10-17 11:54:28.789 CST [2160] STATEMENT:  SET ROLE jiuxiao_narrative_operator
+2026-10-17 11:54:28.790 CST [36924] ERROR:  permission denied to set role "jiuxiao_narrative_erasure"
+2026-10-17 11:54:28.790 CST [36924] STATEMENT:  SET ROLE jiuxiao_narrative_erasure
+2026-10-17 11:54:28.821 CST [21976] ERROR:  permission denied to set session authorization "gate_review_admin"
+2026-10-17 11:54:28.821 CST [21976] STATEMENT:  SET SESSION AUTHORIZATION gate_review_admin
+2026-10-17 11:54:28.846 CST [24696] ERROR:  permission denied to set parameter "session_replication_role"
+2026-10-17 11:54:28.846 CST [24696] STATEMENT:  SET session_replication_role='replica'
+2026-10-17 11:54:28.871 CST [12280] ERROR:  must be owner of table narrative_receipt_ownership
+2026-10-17 11:54:28.871 CST [12280] STATEMENT:  ALTER TABLE narrative_receipt_ownership DISABLE TRIGGER ALL
+2026-10-17 11:54:28.896 CST [16644] ERROR:  permission denied for table narrative_receipt_ownership
+2026-10-17 11:54:28.896 CST [16644] STATEMENT:  TRUNCATE narrative_receipt_ownership
+2026-10-17 11:54:28.930 CST [21680] ERROR:  permission denied for table narrative_writer_fence
+2026-10-17 11:54:28.930 CST [21680] STATEMENT:  UPDATE narrative_writer_fence SET old_role_revoked=true
+2026-10-17 11:54:28.960 CST [15712] ERROR:  NARRATIVE_OPERATOR_REQUIRED
+2026-10-17 11:54:28.960 CST [15712] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 3 at RAISE
+2026-10-17 11:54:28.960 CST [15712] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,valid_until) VALUES(true,2,'fenced',$1,'handover-fixture-v1',now()+interval '10 minutes')
+2026-10-17 11:54:29.001 CST [14332] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:54:29.001 CST [14332] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:54:29.001 CST [14332] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE save_id=$1
+2026-10-17 11:54:29.002 CST [14332] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:54:29.002 CST [14332] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:54:29.002 CST [14332] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE save_id=$1
+2026-10-17 11:54:29.009 CST [18192] ERROR:  NARRATIVE_OLD_ROLE_NOT_DRAINED
+2026-10-17 11:54:29.009 CST [18192] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 13 at RAISE
+2026-10-17 11:54:29.009 CST [18192] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,
+	  old_writer_drained,old_role_revoked,valid_until,retired_roles,drain_evidence_sha)
+	  VALUES(true,2,'managed',$1,'handover-fixture-v1',true,true,now()+interval '1 hour',ARRAY['gr01_retired'],$2)
+2026-10-17 11:54:29.092 CST [22600] ERROR:  NARRATIVE_OLD_ROLE_NOT_DRAINED
+2026-10-17 11:54:29.092 CST [22600] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 13 at RAISE
+2026-10-17 11:54:29.092 CST [22600] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,
+	  old_writer_drained,old_role_revoked,valid_until,retired_roles,drain_evidence_sha)
+	  VALUES(true,2,'managed',$1,'handover-fixture-v1',true,true,now()+interval '1 hour',ARRAY['gr01_retired'],$2)
+2026-10-17 11:54:29.121 CST [13616] ERROR:  NARRATIVE_OLD_ROLE_STILL_PRIVILEGED
+2026-10-17 11:54:29.121 CST [13616] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 19 at RAISE
+2026-10-17 11:54:29.121 CST [13616] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,
+	  old_writer_drained,old_role_revoked,valid_until,retired_roles,drain_evidence_sha)
+	  VALUES(true,2,'managed',$1,'handover-fixture-v1',true,true,now()+interval '1 hour',ARRAY['gr01_retired'],$2)
+2026-10-17 11:54:29.347 CST [23492] ERROR:  NARRATIVE_FAILED_TERMINAL
+2026-10-17 11:54:29.347 CST [23492] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 18 at RAISE
+2026-10-17 11:54:29.347 CST [23492] STATEMENT:  UPDATE narrative_generation_requests SET state='running',lease_epoch=lease_epoch+1 WHERE id=$1
+2026-10-17 11:54:29.621 CST [19244] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:54:29.621 CST [19244] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:54:29.621 CST [19244] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 11:54:29.624 CST [19244] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:54:29.624 CST [19244] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:54:29.624 CST [19244] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 11:54:29.625 CST [19244] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:54:29.625 CST [19244] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:54:29.625 CST [19244] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 11:54:29.627 CST [19244] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:54:29.627 CST [19244] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:54:29.627 CST [19244] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 11:54:30.058 CST [11260] ERROR:  NARRATIVE_OLD_ROLE_STILL_PRIVILEGED
+2026-10-17 11:54:30.058 CST [11260] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 19 at RAISE
+2026-10-17 11:54:30.058 CST [11260] STATEMENT:  UPDATE narrative_writer_fence SET valid_until=now()+interval '1 hour'
+2026-10-17 11:54:30.111 CST [36800] WARNING:  there is no transaction in progress
+2026-10-17 11:54:30.125 CST [19244] ERROR:  NARRATIVE_ERASURE_INCOMPLETE
+2026-10-17 11:54:30.125 CST [19244] CONTEXT:  PL/pgSQL function verify_narrative_ownership_erasure_v2() line 3 at RAISE
+2026-10-17 11:54:30.125 CST [19244] STATEMENT:  COMMIT
+2026-10-17 11:54:30.125 CST [19244] WARNING:  there is no transaction in progress
+2026-10-17 11:54:30.130 CST [36800] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 11:54:30.130 CST [36800] CONTEXT:  PL/pgSQL function protect_narrative_identity() line 4 at RAISE
+2026-10-17 11:54:30.130 CST [36800] STATEMENT:  DELETE FROM narrative_generation_requests WHERE save_id=$1
+2026-10-17 11:54:30.131 CST [36800] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 11:54:30.131 CST [36800] CONTEXT:  PL/pgSQL function protect_narrative_immutable() line 4 at RAISE
+2026-10-17 11:54:30.131 CST [36800] STATEMENT:  DELETE FROM narrative_context_snapshots WHERE save_id=$1
+2026-10-17 11:54:40.614 CST [35724] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:54:40.614 CST [35724] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:54:40.614 CST [35724] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 11:55:13.819 CST [41416] LOG:  checkpoint starting: time
+2026-10-17 11:55:58.793 CST [35680] ERROR:  NARRATIVE_MANAGED_DECLARATION_REQUIRED
+2026-10-17 11:55:58.793 CST [35680] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 6 at RAISE
+2026-10-17 11:55:58.793 CST [35680] STATEMENT:  INSERT INTO narrative_context_snapshots(id,save_id,request_key,owner_id,branch_id,receipt_sha,context,context_sha)
+	    SELECT $1,$2,$3,$4,'root',encode(sha256(convert_to(r.result::text,'UTF8')),'hex'),$5::jsonb,
+	      encode(sha256(convert_to($5::jsonb::text,'UTF8')),'hex')
+	    FROM turn_requests r WHERE r.save_id=$2 AND r.idempotency_key=$3
+2026-10-17 11:55:58.799 CST [11016] ERROR:  NARRATIVE_MANAGED_DECLARATION_REQUIRED
+2026-10-17 11:55:58.799 CST [11016] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 6 at RAISE
+2026-10-17 11:55:58.799 CST [11016] STATEMENT:  INSERT INTO narrative_generation_requests(id,context_id,save_id,request_key,generation_key,publication_key) SELECT $1,context_id,save_id,request_key,'initial-v1','initial-v1' FROM narrative_generation_requests WHERE id=$2
+2026-10-17 11:55:58.841 CST [35680] ERROR:  NARRATIVE_MANAGED_INTEGRITY_FAILURE
+2026-10-17 11:55:58.841 CST [35680] CONTEXT:  PL/pgSQL function verify_narrative_ownership_v2() line 14 at RAISE
+2026-10-17 11:55:58.841 CST [35680] STATEMENT:  COMMIT
+2026-10-17 11:55:58.842 CST [35680] WARNING:  there is no transaction in progress
+2026-10-17 11:55:58.875 CST [18192] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 11:55:58.875 CST [18192] CONTEXT:  PL/pgSQL function protect_narrative_identity() line 9 at RAISE
+2026-10-17 11:55:58.875 CST [18192] STATEMENT:  UPDATE narrative_generation_requests SET context_id=(SELECT context_id FROM narrative_generation_requests WHERE id=$1) WHERE id=$2
+2026-10-17 11:55:58.902 CST [14224] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 11:55:58.902 CST [14224] CONTEXT:  PL/pgSQL function protect_narrative_immutable() line 4 at RAISE
+2026-10-17 11:55:58.902 CST [14224] STATEMENT:  UPDATE narrative_context_snapshots SET context=context || '{"rendererVersion":"wrong"}'::jsonb WHERE save_id=$1
+2026-10-17 11:55:59.045 CST [33208] ERROR:  NARRATIVE_OWNERSHIP_IMMUTABLE
+2026-10-17 11:55:59.045 CST [33208] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 4 at RAISE
+2026-10-17 11:55:59.045 CST [33208] STATEMENT:  UPDATE narrative_receipt_ownership SET generation_id=$1 WHERE save_id=$2
+2026-10-17 11:55:59.086 CST [22600] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:55:59.086 CST [22600] CONTEXT:  PL/pgSQL function seal_narrative_receipt_v2() line 14 at RAISE
+2026-10-17 11:55:59.086 CST [22600] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:55:59.099 CST [22600] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:55:59.099 CST [22600] CONTEXT:  PL/pgSQL function seal_narrative_receipt_v2() line 14 at RAISE
+2026-10-17 11:55:59.099 CST [22600] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:55:59.109 CST [22600] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:55:59.109 CST [22600] CONTEXT:  PL/pgSQL function seal_narrative_receipt_v2() line 14 at RAISE
+2026-10-17 11:55:59.109 CST [22600] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,ownership,request_narrative,renderer_version,context_version,branch_id)
+	   VALUES($1,$2,$3,$4,2,'suppressed',false,'handover-fixture-v1','authority-context-v1','root')
+2026-10-17 11:55:59.120 CST [22600] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:55:59.120 CST [22600] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 10 at RAISE
+2026-10-17 11:55:59.120 CST [22600] STATEMENT:  INSERT INTO narrative_context_snapshots(id,save_id,request_key,owner_id,branch_id,receipt_sha,context,context_sha)
+	    SELECT $1,$2,$3,$4,'root',encode(sha256(convert_to(r.result::text,'UTF8')),'hex'),$5::jsonb,
+	      encode(sha256(convert_to($5::jsonb::text,'UTF8')),'hex')
+	    FROM turn_requests r WHERE r.save_id=$2 AND r.idempotency_key=$3
+2026-10-17 11:55:59.135 CST [22600] ERROR:  NARRATIVE_OWNERSHIP_IMMUTABLE
+2026-10-17 11:55:59.135 CST [22600] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 4 at RAISE
+2026-10-17 11:55:59.135 CST [22600] STATEMENT:  UPDATE narrative_receipt_ownership SET branch_id='forged' WHERE save_id=$1
+2026-10-17 11:55:59.146 CST [22600] ERROR:  NARRATIVE_OWNED_RECEIPT_IMMUTABLE
+2026-10-17 11:55:59.146 CST [22600] CONTEXT:  PL/pgSQL function protect_owned_receipt_v2() line 3 at RAISE
+2026-10-17 11:55:59.146 CST [22600] STATEMENT:  UPDATE turn_requests SET result=jsonb_set(result,'{resultingRevision}','999'::jsonb) WHERE save_id=$1
+2026-10-17 11:55:59.217 CST [40444] ERROR:  duplicate key value violates unique constraint "narrative_receipt_ownership_pkey"
+2026-10-17 11:55:59.217 CST [40444] DETAIL:  Key (save_id, request_key)=(handover-701374eb-2967-4199-b47c-2cda5af12046, f97113d9-34a7-449e-9592-fa907b22d17b) already exists.
+2026-10-17 11:55:59.217 CST [40444] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:55:59.221 CST [35680] WARNING:  there is no transaction in progress
+2026-10-17 11:55:59.221 CST [40444] WARNING:  there is no transaction in progress
+2026-10-17 11:55:59.237 CST [35680] ERROR:  could not serialize access due to concurrent update
+2026-10-17 11:55:59.237 CST [35680] CONTEXT:  SQL statement "UPDATE public.turn_requests SET narrative_updated_at=narrative_updated_at
+	 WHERE save_id=NEW.save_id AND idempotency_key=NEW.request_key RETURNING result"
+	PL/pgSQL function seal_narrative_receipt_v2() line 6 at SQL statement
+2026-10-17 11:55:59.237 CST [35680] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:55:59.239 CST [40444] WARNING:  there is no transaction in progress
+2026-10-17 11:55:59.240 CST [35680] WARNING:  there is no transaction in progress
+2026-10-17 11:55:59.304 CST [30116] ERROR:  NARRATIVE_OWNED_RECEIPT_IMMUTABLE
+2026-10-17 11:55:59.304 CST [30116] CONTEXT:  PL/pgSQL function protect_owned_receipt_v2() line 3 at RAISE
+2026-10-17 11:55:59.304 CST [30116] STATEMENT:  UPDATE turn_requests SET result=jsonb_set(result,'{resultingRevision}','999'::jsonb) WHERE save_id=$1
+2026-10-17 11:55:59.306 CST [13616] WARNING:  there is no transaction in progress
+2026-10-17 11:55:59.306 CST [30116] WARNING:  there is no transaction in progress
+2026-10-17 11:55:59.323 CST [13616] ERROR:  could not serialize access due to concurrent update
+2026-10-17 11:55:59.323 CST [13616] STATEMENT:  UPDATE turn_requests SET result=jsonb_set(result,'{resultingRevision}','999'::jsonb) WHERE save_id=$1
+2026-10-17 11:55:59.324 CST [30116] WARNING:  there is no transaction in progress
+2026-10-17 11:55:59.324 CST [13616] WARNING:  there is no transaction in progress
+2026-10-17 11:55:59.325 CST [35680] ERROR:  permission denied to set role "jiuxiao_narrative_operator"
+2026-10-17 11:55:59.325 CST [35680] STATEMENT:  SET ROLE jiuxiao_narrative_operator
+2026-10-17 11:55:59.326 CST [40444] ERROR:  permission denied to set role "jiuxiao_narrative_erasure"
+2026-10-17 11:55:59.326 CST [40444] STATEMENT:  SET ROLE jiuxiao_narrative_erasure
+2026-10-17 11:55:59.350 CST [8256] ERROR:  permission denied to set session authorization "gate_review_admin"
+2026-10-17 11:55:59.350 CST [8256] STATEMENT:  SET SESSION AUTHORIZATION gate_review_admin
+2026-10-17 11:55:59.377 CST [23424] ERROR:  permission denied to set parameter "session_replication_role"
+2026-10-17 11:55:59.377 CST [23424] STATEMENT:  SET session_replication_role='replica'
+2026-10-17 11:55:59.402 CST [23816] ERROR:  must be owner of table narrative_receipt_ownership
+2026-10-17 11:55:59.402 CST [23816] STATEMENT:  ALTER TABLE narrative_receipt_ownership DISABLE TRIGGER ALL
+2026-10-17 11:55:59.427 CST [41524] ERROR:  permission denied for table narrative_receipt_ownership
+2026-10-17 11:55:59.427 CST [41524] STATEMENT:  TRUNCATE narrative_receipt_ownership
+2026-10-17 11:55:59.456 CST [24772] ERROR:  permission denied for table narrative_writer_fence
+2026-10-17 11:55:59.456 CST [24772] STATEMENT:  UPDATE narrative_writer_fence SET old_role_revoked=true
+2026-10-17 11:55:59.488 CST [23084] ERROR:  NARRATIVE_OPERATOR_REQUIRED
+2026-10-17 11:55:59.488 CST [23084] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 3 at RAISE
+2026-10-17 11:55:59.488 CST [23084] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,valid_until) VALUES(true,2,'fenced',$1,'handover-fixture-v1',now()+interval '10 minutes')
+2026-10-17 11:55:59.528 CST [16300] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:55:59.528 CST [16300] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:55:59.528 CST [16300] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE save_id=$1
+2026-10-17 11:55:59.530 CST [16300] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:55:59.530 CST [16300] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:55:59.530 CST [16300] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE save_id=$1
+2026-10-17 11:55:59.536 CST [38668] ERROR:  NARRATIVE_OLD_ROLE_NOT_DRAINED
+2026-10-17 11:55:59.536 CST [38668] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 13 at RAISE
+2026-10-17 11:55:59.536 CST [38668] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,
+	  old_writer_drained,old_role_revoked,valid_until,retired_roles,drain_evidence_sha)
+	  VALUES(true,2,'managed',$1,'handover-fixture-v1',true,true,now()+interval '1 hour',ARRAY['gr01_retired'],$2)
+2026-10-17 11:55:59.625 CST [25312] ERROR:  NARRATIVE_OLD_ROLE_NOT_DRAINED
+2026-10-17 11:55:59.625 CST [25312] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 13 at RAISE
+2026-10-17 11:55:59.625 CST [25312] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,
+	  old_writer_drained,old_role_revoked,valid_until,retired_roles,drain_evidence_sha)
+	  VALUES(true,2,'managed',$1,'handover-fixture-v1',true,true,now()+interval '1 hour',ARRAY['gr01_retired'],$2)
+2026-10-17 11:55:59.654 CST [22796] ERROR:  NARRATIVE_OLD_ROLE_STILL_PRIVILEGED
+2026-10-17 11:55:59.654 CST [22796] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 19 at RAISE
+2026-10-17 11:55:59.654 CST [22796] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,
+	  old_writer_drained,old_role_revoked,valid_until,retired_roles,drain_evidence_sha)
+	  VALUES(true,2,'managed',$1,'handover-fixture-v1',true,true,now()+interval '1 hour',ARRAY['gr01_retired'],$2)
+2026-10-17 11:55:59.857 CST [13616] ERROR:  NARRATIVE_FAILED_TERMINAL
+2026-10-17 11:55:59.857 CST [13616] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 18 at RAISE
+2026-10-17 11:55:59.857 CST [13616] STATEMENT:  UPDATE narrative_generation_requests SET state='running',lease_epoch=lease_epoch+1 WHERE id=$1
+2026-10-17 11:56:00.181 CST [39556] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:56:00.181 CST [39556] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:56:00.181 CST [39556] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 11:56:00.183 CST [39556] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:56:00.183 CST [39556] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:56:00.183 CST [39556] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 11:56:00.185 CST [39556] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:56:00.185 CST [39556] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:56:00.185 CST [39556] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 11:56:00.186 CST [39556] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:56:00.186 CST [39556] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:56:00.186 CST [39556] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 11:56:00.635 CST [19672] ERROR:  NARRATIVE_OLD_ROLE_STILL_PRIVILEGED
+2026-10-17 11:56:00.635 CST [19672] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 19 at RAISE
+2026-10-17 11:56:00.635 CST [19672] STATEMENT:  UPDATE narrative_writer_fence SET valid_until=now()+interval '1 hour'
+2026-10-17 11:56:00.668 CST [24532] WARNING:  there is no transaction in progress
+2026-10-17 11:56:00.682 CST [39556] ERROR:  NARRATIVE_ERASURE_INCOMPLETE
+2026-10-17 11:56:00.682 CST [39556] CONTEXT:  PL/pgSQL function verify_narrative_ownership_erasure_v2() line 3 at RAISE
+2026-10-17 11:56:00.682 CST [39556] STATEMENT:  COMMIT
+2026-10-17 11:56:00.682 CST [39556] WARNING:  there is no transaction in progress
+2026-10-17 11:56:00.684 CST [24532] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 11:56:00.684 CST [24532] CONTEXT:  PL/pgSQL function protect_narrative_identity() line 4 at RAISE
+2026-10-17 11:56:00.684 CST [24532] STATEMENT:  DELETE FROM narrative_generation_requests WHERE save_id=$1
+2026-10-17 11:56:00.686 CST [24532] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 11:56:00.686 CST [24532] CONTEXT:  PL/pgSQL function protect_narrative_immutable() line 4 at RAISE
+2026-10-17 11:56:00.686 CST [24532] STATEMENT:  DELETE FROM narrative_context_snapshots WHERE save_id=$1
+2026-10-17 11:56:11.520 CST [31480] ERROR:  NARRATIVE_MANAGED_DECLARATION_REQUIRED
+2026-10-17 11:56:11.520 CST [31480] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 6 at RAISE
+2026-10-17 11:56:11.520 CST [31480] STATEMENT:  INSERT INTO narrative_context_snapshots(id,save_id,request_key,owner_id,branch_id,receipt_sha,context,context_sha)
+	    SELECT $1,$2,$3,$4,'root',encode(sha256(convert_to(r.result::text,'UTF8')),'hex'),$5::jsonb,
+	      encode(sha256(convert_to($5::jsonb::text,'UTF8')),'hex')
+	    FROM turn_requests r WHERE r.save_id=$2 AND r.idempotency_key=$3
+2026-10-17 11:56:11.526 CST [2024] ERROR:  NARRATIVE_MANAGED_DECLARATION_REQUIRED
+2026-10-17 11:56:11.526 CST [2024] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 6 at RAISE
+2026-10-17 11:56:11.526 CST [2024] STATEMENT:  INSERT INTO narrative_generation_requests(id,context_id,save_id,request_key,generation_key,publication_key) SELECT $1,context_id,save_id,request_key,'initial-v1','initial-v1' FROM narrative_generation_requests WHERE id=$2
+2026-10-17 11:56:11.566 CST [31480] ERROR:  NARRATIVE_MANAGED_INTEGRITY_FAILURE
+2026-10-17 11:56:11.566 CST [31480] CONTEXT:  PL/pgSQL function verify_narrative_ownership_v2() line 14 at RAISE
+2026-10-17 11:56:11.566 CST [31480] STATEMENT:  COMMIT
+2026-10-17 11:56:11.566 CST [31480] WARNING:  there is no transaction in progress
+2026-10-17 11:56:11.598 CST [3184] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 11:56:11.598 CST [3184] CONTEXT:  PL/pgSQL function protect_narrative_identity() line 9 at RAISE
+2026-10-17 11:56:11.598 CST [3184] STATEMENT:  UPDATE narrative_generation_requests SET context_id=(SELECT context_id FROM narrative_generation_requests WHERE id=$1) WHERE id=$2
+2026-10-17 11:56:11.632 CST [20436] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 11:56:11.632 CST [20436] CONTEXT:  PL/pgSQL function protect_narrative_immutable() line 4 at RAISE
+2026-10-17 11:56:11.632 CST [20436] STATEMENT:  UPDATE narrative_context_snapshots SET context=context || '{"rendererVersion":"wrong"}'::jsonb WHERE save_id=$1
+2026-10-17 11:56:11.768 CST [26024] ERROR:  NARRATIVE_OWNERSHIP_IMMUTABLE
+2026-10-17 11:56:11.768 CST [26024] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 4 at RAISE
+2026-10-17 11:56:11.768 CST [26024] STATEMENT:  UPDATE narrative_receipt_ownership SET generation_id=$1 WHERE save_id=$2
+2026-10-17 11:56:11.812 CST [23448] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:56:11.812 CST [23448] CONTEXT:  PL/pgSQL function seal_narrative_receipt_v2() line 14 at RAISE
+2026-10-17 11:56:11.812 CST [23448] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:56:11.825 CST [23448] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:56:11.825 CST [23448] CONTEXT:  PL/pgSQL function seal_narrative_receipt_v2() line 14 at RAISE
+2026-10-17 11:56:11.825 CST [23448] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:56:11.836 CST [23448] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:56:11.836 CST [23448] CONTEXT:  PL/pgSQL function seal_narrative_receipt_v2() line 14 at RAISE
+2026-10-17 11:56:11.836 CST [23448] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,ownership,request_narrative,renderer_version,context_version,branch_id)
+	   VALUES($1,$2,$3,$4,2,'suppressed',false,'handover-fixture-v1','authority-context-v1','root')
+2026-10-17 11:56:11.849 CST [23448] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 11:56:11.849 CST [23448] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 10 at RAISE
+2026-10-17 11:56:11.849 CST [23448] STATEMENT:  INSERT INTO narrative_context_snapshots(id,save_id,request_key,owner_id,branch_id,receipt_sha,context,context_sha)
+	    SELECT $1,$2,$3,$4,'root',encode(sha256(convert_to(r.result::text,'UTF8')),'hex'),$5::jsonb,
+	      encode(sha256(convert_to($5::jsonb::text,'UTF8')),'hex')
+	    FROM turn_requests r WHERE r.save_id=$2 AND r.idempotency_key=$3
+2026-10-17 11:56:11.867 CST [23448] ERROR:  NARRATIVE_OWNERSHIP_IMMUTABLE
+2026-10-17 11:56:11.867 CST [23448] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 4 at RAISE
+2026-10-17 11:56:11.867 CST [23448] STATEMENT:  UPDATE narrative_receipt_ownership SET branch_id='forged' WHERE save_id=$1
+2026-10-17 11:56:11.879 CST [23448] ERROR:  NARRATIVE_OWNED_RECEIPT_IMMUTABLE
+2026-10-17 11:56:11.879 CST [23448] CONTEXT:  PL/pgSQL function protect_owned_receipt_v2() line 3 at RAISE
+2026-10-17 11:56:11.879 CST [23448] STATEMENT:  UPDATE turn_requests SET result=jsonb_set(result,'{resultingRevision}','999'::jsonb) WHERE save_id=$1
+2026-10-17 11:56:11.972 CST [41420] ERROR:  duplicate key value violates unique constraint "narrative_receipt_ownership_pkey"
+2026-10-17 11:56:11.972 CST [41420] DETAIL:  Key (save_id, request_key)=(handover-d2a75718-0abd-4860-87e9-b58e4767f4b5, aec70d03-a6fe-4655-9b6b-9358caddf572) already exists.
+2026-10-17 11:56:11.972 CST [41420] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:56:11.976 CST [31480] WARNING:  there is no transaction in progress
+2026-10-17 11:56:11.976 CST [41420] WARNING:  there is no transaction in progress
+2026-10-17 11:56:11.993 CST [31480] ERROR:  could not serialize access due to concurrent update
+2026-10-17 11:56:11.993 CST [31480] CONTEXT:  SQL statement "UPDATE public.turn_requests SET narrative_updated_at=narrative_updated_at
+	 WHERE save_id=NEW.save_id AND idempotency_key=NEW.request_key RETURNING result"
+	PL/pgSQL function seal_narrative_receipt_v2() line 6 at SQL statement
+2026-10-17 11:56:11.993 CST [31480] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 11:56:11.994 CST [41420] WARNING:  there is no transaction in progress
+2026-10-17 11:56:11.995 CST [31480] WARNING:  there is no transaction in progress
+2026-10-17 11:56:12.065 CST [35788] ERROR:  NARRATIVE_OWNED_RECEIPT_IMMUTABLE
+2026-10-17 11:56:12.065 CST [35788] CONTEXT:  PL/pgSQL function protect_owned_receipt_v2() line 3 at RAISE
+2026-10-17 11:56:12.065 CST [35788] STATEMENT:  UPDATE turn_requests SET result=jsonb_set(result,'{resultingRevision}','999'::jsonb) WHERE save_id=$1
+2026-10-17 11:56:12.067 CST [32268] WARNING:  there is no transaction in progress
+2026-10-17 11:56:12.067 CST [35788] WARNING:  there is no transaction in progress
+2026-10-17 11:56:12.082 CST [32268] ERROR:  could not serialize access due to concurrent update
+2026-10-17 11:56:12.082 CST [32268] STATEMENT:  UPDATE turn_requests SET result=jsonb_set(result,'{resultingRevision}','999'::jsonb) WHERE save_id=$1
+2026-10-17 11:56:12.083 CST [35788] WARNING:  there is no transaction in progress
+2026-10-17 11:56:12.083 CST [32268] WARNING:  there is no transaction in progress
+2026-10-17 11:56:12.084 CST [31480] ERROR:  permission denied to set role "jiuxiao_narrative_operator"
+2026-10-17 11:56:12.084 CST [31480] STATEMENT:  SET ROLE jiuxiao_narrative_operator
+2026-10-17 11:56:12.084 CST [41420] ERROR:  permission denied to set role "jiuxiao_narrative_erasure"
+2026-10-17 11:56:12.084 CST [41420] STATEMENT:  SET ROLE jiuxiao_narrative_erasure
+2026-10-17 11:56:12.110 CST [26192] ERROR:  permission denied to set session authorization "gate_review_admin"
+2026-10-17 11:56:12.110 CST [26192] STATEMENT:  SET SESSION AUTHORIZATION gate_review_admin
+2026-10-17 11:56:12.136 CST [7392] ERROR:  permission denied to set parameter "session_replication_role"
+2026-10-17 11:56:12.136 CST [7392] STATEMENT:  SET session_replication_role='replica'
+2026-10-17 11:56:12.162 CST [35876] ERROR:  must be owner of table narrative_receipt_ownership
+2026-10-17 11:56:12.162 CST [35876] STATEMENT:  ALTER TABLE narrative_receipt_ownership DISABLE TRIGGER ALL
+2026-10-17 11:56:12.187 CST [30392] ERROR:  permission denied for table narrative_receipt_ownership
+2026-10-17 11:56:12.187 CST [30392] STATEMENT:  TRUNCATE narrative_receipt_ownership
+2026-10-17 11:56:12.218 CST [4116] ERROR:  permission denied for table narrative_writer_fence
+2026-10-17 11:56:12.218 CST [4116] STATEMENT:  UPDATE narrative_writer_fence SET old_role_revoked=true
+2026-10-17 11:56:12.246 CST [24164] ERROR:  NARRATIVE_OPERATOR_REQUIRED
+2026-10-17 11:56:12.246 CST [24164] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 3 at RAISE
+2026-10-17 11:56:12.246 CST [24164] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,valid_until) VALUES(true,2,'fenced',$1,'handover-fixture-v1',now()+interval '10 minutes')
+2026-10-17 11:56:12.284 CST [35740] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:56:12.284 CST [35740] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:56:12.284 CST [35740] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE save_id=$1
+2026-10-17 11:56:12.286 CST [35740] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:56:12.286 CST [35740] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:56:12.286 CST [35740] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE save_id=$1
+2026-10-17 11:56:12.292 CST [12536] ERROR:  NARRATIVE_OLD_ROLE_NOT_DRAINED
+2026-10-17 11:56:12.292 CST [12536] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 13 at RAISE
+2026-10-17 11:56:12.292 CST [12536] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,
+	  old_writer_drained,old_role_revoked,valid_until,retired_roles,drain_evidence_sha)
+	  VALUES(true,2,'managed',$1,'handover-fixture-v1',true,true,now()+interval '1 hour',ARRAY['gr01_retired'],$2)
+2026-10-17 11:56:12.486 CST [41236] ERROR:  NARRATIVE_OLD_ROLE_NOT_DRAINED
+2026-10-17 11:56:12.486 CST [41236] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 13 at RAISE
+2026-10-17 11:56:12.486 CST [41236] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,
+	  old_writer_drained,old_role_revoked,valid_until,retired_roles,drain_evidence_sha)
+	  VALUES(true,2,'managed',$1,'handover-fixture-v1',true,true,now()+interval '1 hour',ARRAY['gr01_retired'],$2)
+2026-10-17 11:56:12.518 CST [22840] ERROR:  NARRATIVE_OLD_ROLE_STILL_PRIVILEGED
+2026-10-17 11:56:12.518 CST [22840] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 19 at RAISE
+2026-10-17 11:56:12.518 CST [22840] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,
+	  old_writer_drained,old_role_revoked,valid_until,retired_roles,drain_evidence_sha)
+	  VALUES(true,2,'managed',$1,'handover-fixture-v1',true,true,now()+interval '1 hour',ARRAY['gr01_retired'],$2)
+2026-10-17 11:56:12.747 CST [32268] ERROR:  NARRATIVE_FAILED_TERMINAL
+2026-10-17 11:56:12.747 CST [32268] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 18 at RAISE
+2026-10-17 11:56:12.747 CST [32268] STATEMENT:  UPDATE narrative_generation_requests SET state='running',lease_epoch=lease_epoch+1 WHERE id=$1
+2026-10-17 11:56:13.071 CST [29728] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:56:13.071 CST [29728] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:56:13.071 CST [29728] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 11:56:13.074 CST [29728] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:56:13.074 CST [29728] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:56:13.074 CST [29728] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 11:56:13.076 CST [29728] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:56:13.076 CST [29728] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:56:13.076 CST [29728] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 11:56:13.077 CST [29728] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:56:13.077 CST [29728] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:56:13.077 CST [29728] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 11:56:13.506 CST [15700] ERROR:  NARRATIVE_OLD_ROLE_STILL_PRIVILEGED
+2026-10-17 11:56:13.506 CST [15700] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 19 at RAISE
+2026-10-17 11:56:13.506 CST [15700] STATEMENT:  UPDATE narrative_writer_fence SET valid_until=now()+interval '1 hour'
+2026-10-17 11:56:13.548 CST [11036] WARNING:  there is no transaction in progress
+2026-10-17 11:56:13.562 CST [29728] ERROR:  NARRATIVE_ERASURE_INCOMPLETE
+2026-10-17 11:56:13.562 CST [29728] CONTEXT:  PL/pgSQL function verify_narrative_ownership_erasure_v2() line 3 at RAISE
+2026-10-17 11:56:13.562 CST [29728] STATEMENT:  COMMIT
+2026-10-17 11:56:13.562 CST [29728] WARNING:  there is no transaction in progress
+2026-10-17 11:56:13.564 CST [11036] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 11:56:13.564 CST [11036] CONTEXT:  PL/pgSQL function protect_narrative_identity() line 4 at RAISE
+2026-10-17 11:56:13.564 CST [11036] STATEMENT:  DELETE FROM narrative_generation_requests WHERE save_id=$1
+2026-10-17 11:56:13.566 CST [11036] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 11:56:13.566 CST [11036] CONTEXT:  PL/pgSQL function protect_narrative_immutable() line 4 at RAISE
+2026-10-17 11:56:13.566 CST [11036] STATEMENT:  DELETE FROM narrative_context_snapshots WHERE save_id=$1
+2026-10-17 11:56:27.121 CST [17584] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 11:56:27.121 CST [17584] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 11:56:27.121 CST [17584] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 11:57:19.962 CST [32480] LOG:  received fast shutdown request
+2026-10-17 11:57:19.966 CST [32480] LOG:  aborting any active transactions
+2026-10-17 11:57:19.972 CST [32480] LOG:  background worker "logical replication launcher" (PID 38932) exited with exit code 1
+2026-10-17 11:57:25.151 CST [41416] LOG:  checkpoint complete: wrote 8385 buffers (51.2%), wrote 3 SLRU buffers; 0 WAL file(s) added, 0 removed, 2 recycled; write=126.459 s, sync=4.848 s, total=131.333 s; sync files=4675, longest=0.010 s, average=0.002 s; distance=44030 kB, estimate=44030 kB; lsn=0/61D8910, redo lsn=0/4F2AF80
+2026-10-17 11:57:25.163 CST [41416] LOG:  shutting down
+2026-10-17 11:57:25.165 CST [41416] LOG:  checkpoint starting: shutdown immediate
+2026-10-17 11:57:27.301 CST [41416] LOG:  checkpoint complete: wrote 3568 buffers (21.8%), wrote 4 SLRU buffers; 0 WAL file(s) added, 0 removed, 2 recycled; write=0.093 s, sync=2.017 s, total=2.138 s; sync files=927, longest=0.007 s, average=0.003 s; distance=19126 kB, estimate=41540 kB; lsn=0/61D8988, redo lsn=0/61D8988
+2026-10-17 11:57:27.500 CST [32480] LOG:  database system is shut down
+2026-10-17 12:18:44.981 CST [29436] LOG:  starting PostgreSQL 18.6 on x86_64-windows, compiled by msvc-19.44.35229, 64-bit
+2026-10-17 12:18:44.982 CST [29436] LOG:  listening on IPv4 address "127.0.0.1", port 55463
+2026-10-17 12:18:45.079 CST [25952] LOG:  database system was shut down at 2026-10-17 11:57:27 CST
+2026-10-17 12:18:45.097 CST [29436] LOG:  database system is ready to accept connections
+2026-10-17 12:21:24.483 CST [31112] ERROR:  NARRATIVE_0022_UNFINISHED_GENERATIONS
+2026-10-17 12:21:24.483 CST [31112] CONTEXT:  PL/pgSQL function inline_code_block line 3 at RAISE
+2026-10-17 12:21:24.483 CST [31112] STATEMENT:  -- REVIEW PROPOSAL ONLY. Registered only in an isolated development migration bundle.
+	-- No production journal/signature changes. Roles must be provisioned by a separate administrator.
+	DO $$ DECLARE role_name text; BEGIN
+	 FOREACH role_name IN ARRAY ARRAY['jiuxiao_narrative_operator','jiuxiao_narrative_erasure',
+	   'jiuxiao_narrative_schema_owner','jiuxiao_narrative_runtime'] LOOP
+	  IF NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname=role_name AND NOT rolcanlogin AND NOT rolsuper
+	    AND NOT rolcreaterole AND NOT rolcreatedb AND NOT rolbypassrls)
+	  THEN RAISE EXCEPTION 'NARRATIVE_SECURITY_ROLES_REQUIRED'; END IF;
+	 END LOOP;
+	END $$;
+	-- Install in a single transaction, after ingress freeze and all old workers are stopped.
+	-- Serialize the check against old G writes. Never strand an unfinished 0022 task behind
+	-- the new managed-declaration UPDATE trigger, or manufacture a V2 declaration for it.
+	LOCK TABLE public.narrative_generation_requests IN SHARE MODE;
+	DO $$ BEGIN
+	 IF EXISTS(SELECT 1 FROM public.narrative_generation_requests WHERE state IN ('pending','running'))
+	 THEN RAISE EXCEPTION 'NARRATIVE_0022_UNFINISHED_GENERATIONS'; END IF;
+	END $$;
+	CREATE TABLE narrative_writer_fence (
+	 singleton boolean PRIMARY KEY CHECK(singleton), protocol_version integer NOT NULL CHECK(protocol_version=2),
+	 phase text NOT NULL CHECK(phase IN ('fenced','managed')), fleet_manifest_sha text NOT NULL,
+	 renderer_version text NOT NULL CHECK(length(renderer_version)>0),
+	 old_writer_drained boolean NOT NULL DEFAULT false, old_role_revoked boolean NOT NULL DEFAULT false,
+	 valid_until timestamptz NOT NULL,
+	 retired_roles text[] NOT NULL DEFAULT '{}', drain_evidence_sha text,
+	 attested_by text, attested_at timestamptz
+	);
+	-- Deliberately no enabled row. The application role must have SELECT only, no gate write rights.
+	CREATE TABLE narrative_receipt_ownership (
+	 owner_id text NOT NULL REFERENCES auth_accounts(id) ON DELETE CASCADE,
+	 save_id text NOT NULL, request_key text NOT NULL, receipt_sha text NOT NULL CHECK(receipt_sha ~ '^[a-f0-9]{64}$'),
+	 protocol_version integer NOT NULL CHECK(protocol_version IN (1,2)),
+	 ownership text NOT NULL CHECK(ownership IN ('managed','suppressed','legacy')),
+	 request_narrative boolean NOT NULL, renderer_version text NOT NULL, context_version text NOT NULL,
+	 branch_id text NOT NULL CHECK(branch_id='root'), generation_id uuid REFERENCES narrative_generation_requests(id)
+	 DEFERRABLE INITIALLY DEFERRED,
+	 legacy_inventory_sha text, legacy_body bytea, legacy_body_sha text,
+	 legacy_generator_source text CHECK(legacy_generator_source IN ('model','deterministic')),
+	 PRIMARY KEY(save_id,request_key), UNIQUE(owner_id,save_id,request_key,receipt_sha),
+	 FOREIGN KEY(save_id,request_key) REFERENCES turn_requests(save_id,idempotency_key) ON DELETE CASCADE,
+	 CHECK ((ownership='managed' AND request_narrative AND protocol_version=2)
+	   OR (ownership='suppressed' AND NOT request_narrative AND protocol_version=2 AND generation_id IS NULL)
+	   OR (ownership='legacy' AND protocol_version=1 AND generation_id IS NULL AND legacy_inventory_sha IS NOT NULL AND legacy_inventory_sha ~ '^[a-f0-9]{64}$')),
+	 CHECK(ownership='legacy' OR (legacy_body IS NULL AND legacy_body_sha IS NULL AND legacy_inventory_sha IS NULL AND legacy_generator_source IS NULL)),
+	 CHECK((legacy_body IS NULL AND legacy_body_sha IS NULL) OR
+	   (legacy_body IS NOT NULL AND legacy_body_sha IS NOT NULL AND legacy_generator_source IS NOT NULL AND legacy_body_sha=encode(sha256(legacy_body),'hex')))
+	);
+	CREATE FUNCTION verify_narrative_ownership_v2() RETURNS trigger LANGUAGE plpgsql SET search_path=pg_catalog,public,pg_temp AS $$
+	DECLARE o narrative_receipt_ownership; BEGIN
+	 SELECT * INTO o FROM narrative_receipt_ownership WHERE save_id=NEW.save_id AND request_key=NEW.request_key;
+	 IF NOT FOUND THEN RETURN NULL; END IF;
+	 IF NOT EXISTS(SELECT 1 FROM game_saves s JOIN turn_requests r ON r.save_id=s.id
+	   WHERE s.id=o.save_id AND s.owner_id=o.owner_id AND r.idempotency_key=o.request_key
+	   AND o.receipt_sha=encode(sha256(convert_to(r.result::text,'UTF8')),'hex')) THEN
+	   RAISE EXCEPTION 'NARRATIVE_OWNERSHIP_IDENTITY_INVALID'; END IF;
+	 IF o.ownership='managed' AND NOT EXISTS(
+	   SELECT 1 FROM narrative_generation_requests g JOIN narrative_context_snapshots c ON c.id=g.context_id
+	   WHERE g.id=o.generation_id AND g.save_id=o.save_id AND g.request_key=o.request_key
+	   AND c.owner_id=o.owner_id AND c.receipt_sha=o.receipt_sha AND c.branch_id=o.branch_id
+	   AND c.context->>'rendererVersion'=o.renderer_version AND c.context->>'format'=o.context_version) THEN
+	   RAISE EXCEPTION 'NARRATIVE_MANAGED_INTEGRITY_FAILURE'; END IF;
+	 IF o.ownership IN ('suppressed','legacy') AND EXISTS(SELECT 1 FROM narrative_generation_requests
+	   WHERE save_id=o.save_id AND request_key=o.request_key) THEN RAISE EXCEPTION 'NARRATIVE_WRITER_CONFLICT'; END IF;
+	 RETURN NULL; END $$;
+	CREATE CONSTRAINT TRIGGER narrative_ownership_v2_complete AFTER INSERT OR UPDATE
+	 ON narrative_receipt_ownership DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION verify_narrative_ownership_v2();
+	CREATE FUNCTION protect_narrative_ownership_v2() RETURNS trigger LANGUAGE plpgsql SET search_path=pg_catalog,public,pg_temp AS $$ BEGIN
+	 IF TG_OP='UPDATE' AND ((to_jsonb(NEW)-'generation_id') IS DISTINCT FROM (to_jsonb(OLD)-'generation_id')
+	   OR OLD.generation_id IS NOT NULL OR NEW.generation_id IS NULL OR OLD.ownership<>'managed') THEN
+	   RAISE EXCEPTION 'NARRATIVE_OWNERSHIP_IMMUTABLE'; END IF;
+	 IF TG_OP='DELETE' AND NOT narrative_erasure_allowed(to_jsonb(OLD)) THEN
+	   RAISE EXCEPTION 'NARRATIVE_AUTHORIZED_ERASURE_REQUIRED'; END IF;
+	 IF TG_OP='DELETE' THEN RETURN OLD; ELSE RETURN NEW; END IF;
+	END $$;
+	CREATE TRIGGER narrative_ownership_v2_immutable BEFORE UPDATE OR DELETE ON narrative_receipt_ownership
+	 FOR EACH ROW EXECUTE FUNCTION protect_narrative_ownership_v2();
+	CREATE FUNCTION verify_narrative_ownership_erasure_v2() RETURNS trigger LANGUAGE plpgsql
+	 SET search_path=pg_catalog,public,pg_temp AS $$ BEGIN
+	 IF EXISTS(SELECT 1 FROM public.narrative_generation_requests WHERE save_id=OLD.save_id AND request_key=OLD.request_key)
+	 THEN RAISE EXCEPTION 'NARRATIVE_ERASURE_INCOMPLETE'; END IF;
+	 RETURN NULL;
+	END $$;
+	CREATE CONSTRAINT TRIGGER narrative_ownership_erasure_complete_v2 AFTER DELETE ON narrative_receipt_ownership
+	 DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION verify_narrative_ownership_erasure_v2();
+	-- Deployment role plan: application may SELECT/INSERT ownership, UPDATE(generation_id) only;
+	-- no legacy import, gate writes, DDL, replication-role or trigger disable privileges.
+	-- Legacy inventory importer must be a separate offline role, revoked before traffic opens.
+	-- Gate updates require an operator role after externally verifying full fleet and draining ingress.
+	-- No backfill based on missing G or timestamps. Legacy inventory import is an offline, separately reviewed step.
+	
+	CREATE FUNCTION seal_narrative_receipt_v2() RETURNS trigger LANGUAGE plpgsql SET search_path=pg_catalog,public,pg_temp AS $$
+	DECLARE r jsonb; owner_value text; revision_value integer; BEGIN
+	 -- A physical no-op version write serializes receipt changes against ownership admission.
+	 -- It does not change result, revision, timestamps, fingerprint or other logical data.
+	 -- Under REPEATABLE READ a stale concurrent writer receives serialization failure.
+	 UPDATE public.turn_requests SET narrative_updated_at=narrative_updated_at
+	 WHERE save_id=NEW.save_id AND idempotency_key=NEW.request_key RETURNING result INTO r;
+	 SELECT owner_id,revision INTO owner_value,revision_value FROM public.game_saves WHERE id=NEW.save_id;
+	 IF r IS NULL OR r->'decision'->>'status' IS DISTINCT FROM 'accepted'
+	  OR owner_value IS DISTINCT FROM NEW.owner_id OR r->>'saveId' IS DISTINCT FROM NEW.save_id
+	  OR r->>'idempotencyKey' IS DISTINCT FROM NEW.request_key
+	  OR (r->>'resultingRevision')::integer>revision_value
+	  OR NEW.receipt_sha IS DISTINCT FROM encode(sha256(convert_to(r::text,'UTF8')),'hex')
+	 THEN RAISE EXCEPTION 'NARRATIVE_OWNERSHIP_IDENTITY_INVALID'; END IF;
+	 RETURN NEW;
+	END $$;
+	CREATE TRIGGER narrative_ownership_receipt_seal_v2 BEFORE INSERT ON narrative_receipt_ownership
+	 FOR EACH ROW EXECUTE FUNCTION seal_narrative_receipt_v2();
+	
+	-- Reverse writes must already have a managed declaration. An absent/uncommitted declaration is
+	-- rejected, never guessed legacy. Existing 0022 rows remain untouched and read-only until reviewed.
+	-- This ordering prevents write skew even under REPEATABLE READ: a suppressed/legacy row cannot
+	-- ever be the declaration required by a new context/G, and the unique request key prevents replacement.
+	CREATE FUNCTION require_narrative_managed_declaration_v2() RETURNS trigger LANGUAGE plpgsql
+	 SET search_path=pg_catalog,public,pg_temp AS $$
+	DECLARE o public.narrative_receipt_ownership; BEGIN
+	 SELECT * INTO o FROM public.narrative_receipt_ownership
+	 WHERE save_id=NEW.save_id AND request_key=NEW.request_key FOR KEY SHARE;
+	 IF NOT FOUND OR o.ownership<>'managed' OR o.protocol_version<>2 OR NOT o.request_narrative THEN
+	   RAISE EXCEPTION 'NARRATIVE_MANAGED_DECLARATION_REQUIRED'; END IF;
+	 IF TG_TABLE_NAME='narrative_context_snapshots' THEN
+	  IF NEW.owner_id IS DISTINCT FROM o.owner_id OR NEW.receipt_sha IS DISTINCT FROM o.receipt_sha
+	   OR NEW.branch_id IS DISTINCT FROM o.branch_id OR NEW.context->>'rendererVersion' IS DISTINCT FROM o.renderer_version
+	   OR NEW.context->>'format' IS DISTINCT FROM o.context_version THEN RAISE EXCEPTION 'NARRATIVE_OWNERSHIP_IDENTITY_INVALID'; END IF;
+	 ELSE
+	  IF o.generation_id IS NOT NULL AND o.generation_id<>NEW.id THEN RAISE EXCEPTION 'NARRATIVE_MANAGED_INTEGRITY_FAILURE'; END IF;
+	  IF NOT EXISTS(SELECT 1 FROM public.narrative_context_snapshots c WHERE c.id=NEW.context_id
+	   AND c.save_id=o.save_id AND c.request_key=o.request_key AND c.owner_id=o.owner_id AND c.receipt_sha=o.receipt_sha
+	   AND c.branch_id=o.branch_id AND c.context->>'rendererVersion'=o.renderer_version AND c.context->>'format'=o.context_version)
+	   THEN RAISE EXCEPTION 'NARRATIVE_MANAGED_INTEGRITY_FAILURE'; END IF;
+	  IF TG_OP='UPDATE' AND OLD.state='failed' AND to_jsonb(NEW) IS DISTINCT FROM to_jsonb(OLD)
+	   THEN RAISE EXCEPTION 'NARRATIVE_FAILED_TERMINAL'; END IF;
+	 END IF;
+	 RETURN NEW;
+	END $$;
+	CREATE TRIGGER narrative_context_managed_v2 BEFORE INSERT ON narrative_context_snapshots
+	 FOR EACH ROW EXECUTE FUNCTION require_narrative_managed_declaration_v2();
+	CREATE TRIGGER narrative_generation_managed_v2 BEFORE INSERT OR UPDATE ON narrative_generation_requests
+	 FOR EACH ROW EXECUTE FUNCTION require_narrative_managed_declaration_v2();
+	
+	CREATE FUNCTION protect_owned_receipt_v2() RETURNS trigger LANGUAGE plpgsql SET search_path=pg_catalog,public,pg_temp AS $$ BEGIN
+	 IF NEW.result IS DISTINCT FROM OLD.result AND EXISTS(SELECT 1 FROM public.narrative_receipt_ownership
+	   WHERE save_id=OLD.save_id AND request_key=OLD.idempotency_key) THEN RAISE EXCEPTION 'NARRATIVE_OWNED_RECEIPT_IMMUTABLE'; END IF;
+	 RETURN NEW;
+	END $$;
+	CREATE TRIGGER narrative_owned_receipt_immutable_v2 BEFORE UPDATE ON turn_requests
+	 FOR EACH ROW EXECUTE FUNCTION protect_owned_receipt_v2();
+	
+	-- A custom GUC is an operation selector, never an authorization capability. In particular,
+	-- the old test-cleanup exception is unavailable after this migration, even on a test-named DB.
+	CREATE OR REPLACE FUNCTION narrative_erasure_allowed(row_data jsonb) RETURNS boolean LANGUAGE plpgsql
+	 SECURITY DEFINER SET search_path=pg_catalog,public,pg_temp AS $$
+	DECLARE owner_value text; BEGIN
+	 IF NOT pg_has_role(session_user,'jiuxiao_narrative_erasure','MEMBER') THEN RETURN false; END IF;
+	 IF row_data ? 'owner_id' THEN owner_value=row_data->>'owner_id';
+	 ELSIF row_data ? 'save_id' THEN SELECT owner_id INTO owner_value FROM public.game_saves WHERE id=row_data->>'save_id';
+	 ELSIF row_data ? 'generation_id' THEN SELECT s.owner_id INTO owner_value FROM public.game_saves s
+	  JOIN public.narrative_generation_requests g ON g.save_id=s.id WHERE g.id::text=row_data->>'generation_id';
+	 ELSE SELECT v.owner_id INTO owner_value FROM public.narrative_sources s JOIN public.narrative_generation_requests g ON g.id=s.generation_id
+	  JOIN public.game_saves v ON v.id=g.save_id WHERE s.id::text=row_data->>'source_id'; END IF;
+	 RETURN EXISTS(SELECT 1 FROM public.account_operations o WHERE o.id=current_setting('jiuxiao.account_erasure_operation',true)
+	   AND o.owner_id=owner_value AND o.operation='delete' AND o.phase='ready' AND o.expires_at>clock_timestamp());
+	END $$;
+	GRANT SELECT ON game_saves,narrative_generation_requests,narrative_sources,account_operations TO jiuxiao_narrative_schema_owner;
+	ALTER FUNCTION narrative_erasure_allowed(jsonb) OWNER TO jiuxiao_narrative_schema_owner;
+	REVOKE ALL ON FUNCTION public.narrative_erasure_allowed(jsonb) FROM PUBLIC;
+	GRANT EXECUTE ON FUNCTION public.narrative_erasure_allowed(jsonb) TO jiuxiao_narrative_runtime,jiuxiao_narrative_erasure;
+	
+	CREATE FUNCTION protect_narrative_writer_fence_v2() RETURNS trigger LANGUAGE plpgsql
+	 SET search_path=pg_catalog,public,pg_temp AS $$
+	DECLARE retired text; tbl text; BEGIN
+	 IF NOT pg_has_role(session_user,'jiuxiao_narrative_operator','MEMBER') THEN RAISE EXCEPTION 'NARRATIVE_OPERATOR_REQUIRED'; END IF;
+	 IF TG_OP='DELETE' THEN RETURN OLD; END IF;
+	 IF NEW.phase='managed' THEN
+	  IF NOT NEW.old_writer_drained OR NOT NEW.old_role_revoked OR NEW.fleet_manifest_sha !~ '^[a-f0-9]{64}$'
+	    OR NEW.drain_evidence_sha IS NULL OR NEW.drain_evidence_sha !~ '^[a-f0-9]{64}$'
+	    OR cardinality(NEW.retired_roles)=0 OR NEW.valid_until<=clock_timestamp() THEN RAISE EXCEPTION 'NARRATIVE_CUTOVER_PROOF_REQUIRED'; END IF;
+	  FOREACH retired IN ARRAY NEW.retired_roles LOOP
+	   IF NOT EXISTS(SELECT 1 FROM pg_roles WHERE rolname=retired AND NOT rolcanlogin AND NOT rolsuper
+	    AND NOT rolcreaterole AND NOT rolcreatedb AND NOT rolbypassrls)
+	    OR EXISTS(SELECT 1 FROM pg_stat_activity WHERE usename=retired)
+	    OR has_schema_privilege(retired,'public','CREATE') THEN RAISE EXCEPTION 'NARRATIVE_OLD_ROLE_NOT_DRAINED'; END IF;
+	   FOREACH tbl IN ARRAY ARRAY['game_saves','turn_requests','turn_events','narrative_context_snapshots',
+	     'narrative_generation_requests','narrative_attempts','narrative_sources','narrative_publications',
+	     'narrative_segments','source_event_links','narrative_outbox','narrative_receipt_ownership','narrative_writer_fence'] LOOP
+	    IF has_table_privilege(retired,'public.'||tbl,'INSERT,UPDATE,DELETE,TRUNCATE,TRIGGER')
+	     OR has_any_column_privilege(retired,'public.'||tbl,'INSERT,UPDATE')
+	     THEN RAISE EXCEPTION 'NARRATIVE_OLD_ROLE_STILL_PRIVILEGED'; END IF;
+	   END LOOP;
+	  END LOOP;
+	 END IF;
+	 NEW.attested_by=session_user;NEW.attested_at=clock_timestamp();RETURN NEW;
+	END $$;
+	CREATE TRIGGER narrative_fence_operator_v2 BEFORE INSERT OR UPDATE OR DELETE ON narrative_writer_fence
+	 FOR EACH ROW EXECUTE FUNCTION protect_narrative_writer_fence_v2();
+	ALTER TABLE narrative_writer_fence OWNER TO jiuxiao_narrative_schema_owner;
+	ALTER TABLE narrative_receipt_ownership OWNER TO jiuxiao_narrative_schema_owner;
+	REVOKE ALL ON narrative_writer_fence,narrative_receipt_ownership FROM PUBLIC;
+	REVOKE CREATE ON SCHEMA public FROM PUBLIC;
+	GRANT USAGE ON SCHEMA public TO jiuxiao_narrative_schema_owner,jiuxiao_narrative_operator,jiuxiao_narrative_erasure,jiuxiao_narrative_runtime;
+	GRANT SELECT,INSERT,UPDATE,DELETE ON narrative_writer_fence TO jiuxiao_narrative_operator;
+	
+	-- PostgreSQL row locks require UPDATE privileges. Expose only a fixed read/lock operation,
+	-- so runtime connections retain SELECT-only table privileges and cannot attest a cutover.
+	CREATE FUNCTION public.lock_narrative_writer_fence_v2(expected_renderer text)
+	 RETURNS TABLE(protocol_version integer) LANGUAGE plpgsql SECURITY DEFINER
+	 SET search_path=pg_catalog,public,pg_temp AS $$ BEGIN
+	 RETURN QUERY SELECT f.protocol_version FROM public.narrative_writer_fence f
+	 WHERE f.singleton AND f.phase='managed' AND f.protocol_version=2
+	 AND f.old_writer_drained AND f.old_role_revoked AND f.fleet_manifest_sha ~ '^[a-f0-9]{64}$'
+	 AND f.renderer_version=expected_renderer AND f.valid_until>clock_timestamp() FOR SHARE;
+	END $$;
+	ALTER FUNCTION public.lock_narrative_writer_fence_v2(text) OWNER TO jiuxiao_narrative_schema_owner;
+	REVOKE ALL ON FUNCTION public.lock_narrative_writer_fence_v2(text) FROM PUBLIC;
+	GRANT EXECUTE ON FUNCTION public.lock_narrative_writer_fence_v2(text) TO jiuxiao_narrative_runtime;
+	
+	-- Preserve historical 0022 bytes. Harden its helpers in this new migration, so a
+	-- caller's temporary relations cannot shadow authority tables during V2 writes.
+	ALTER FUNCTION public.validate_narrative_context() SET search_path=pg_catalog,public,pg_temp;
+	ALTER FUNCTION public.validate_narrative_link() SET search_path=pg_catalog,public,pg_temp;
+	ALTER FUNCTION public.protect_narrative_immutable() SET search_path=pg_catalog,public,pg_temp;
+	ALTER FUNCTION public.protect_narrative_identity() SET search_path=pg_catalog,public,pg_temp;
+	ALTER FUNCTION public.validate_narrative_source() SET search_path=pg_catalog,public,pg_temp;
+	ALTER FUNCTION public.validate_narrative_segment() SET search_path=pg_catalog,public,pg_temp;
+	
+2026-10-17 12:21:24.763 CST [30364] ERROR:  NARRATIVE_MANAGED_DECLARATION_REQUIRED
+2026-10-17 12:21:24.763 CST [30364] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 6 at RAISE
+2026-10-17 12:21:24.763 CST [30364] STATEMENT:  UPDATE narrative_generation_requests SET state='failed' WHERE id=$1
+2026-10-17 12:21:24.790 CST [31684] ERROR:  NARRATIVE_MANAGED_DECLARATION_REQUIRED
+2026-10-17 12:21:24.790 CST [31684] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 6 at RAISE
+2026-10-17 12:21:24.790 CST [31684] STATEMENT:  UPDATE narrative_generation_requests SET state='failed' WHERE id=$1
+2026-10-17 12:21:24.870 CST [34476] WARNING:  there is no transaction in progress
+2026-10-17 12:21:24.888 CST [34284] ERROR:  NARRATIVE_MANAGED_INTEGRITY_FAILURE
+2026-10-17 12:21:24.888 CST [34284] CONTEXT:  PL/pgSQL function verify_narrative_ownership_v2() line 14 at RAISE
+2026-10-17 12:21:24.888 CST [34284] STATEMENT:  COMMIT
+2026-10-17 12:21:24.889 CST [34284] WARNING:  there is no transaction in progress
+2026-10-17 12:21:24.921 CST [17020] ERROR:  permission denied for function lock_narrative_writer_fence_v2
+2026-10-17 12:21:24.921 CST [17020] STATEMENT:  SELECT * FROM public.lock_narrative_writer_fence_v2('forged')
+2026-10-17 12:21:24.948 CST [32316] ERROR:  permission denied for function narrative_erasure_allowed
+2026-10-17 12:21:24.948 CST [32316] STATEMENT:  SELECT public.narrative_erasure_allowed('{}'::jsonb)
+2026-10-17 12:21:24.949 CST [34284] ERROR:  permission denied to set role "jiuxiao_narrative_schema_owner"
+2026-10-17 12:21:24.949 CST [34284] STATEMENT:  SET ROLE jiuxiao_narrative_schema_owner
+2026-10-17 12:21:25.086 CST [32312] ERROR:  permission denied to set role "jiuxiao_narrative_operator"
+2026-10-17 12:21:25.086 CST [32312] STATEMENT:  SET ROLE jiuxiao_narrative_operator
+2026-10-17 12:21:25.112 CST [34448] ERROR:  permission denied to set role "jiuxiao_narrative_erasure"
+2026-10-17 12:21:25.112 CST [34448] STATEMENT:  SET ROLE jiuxiao_narrative_erasure
+2026-10-17 12:21:25.140 CST [36104] ERROR:  must be owner of function lock_narrative_writer_fence_v2
+2026-10-17 12:21:25.140 CST [36104] STATEMENT:  ALTER FUNCTION public.lock_narrative_writer_fence_v2(text) OWNER TO gr01_app
+2026-10-17 12:21:25.168 CST [4592] ERROR:  permission denied for schema public at character 14
+2026-10-17 12:21:25.168 CST [4592] STATEMENT:  CREATE TABLE public.preflight_forgery(id integer)
+2026-10-17 12:21:25.197 CST [25548] ERROR:  permission denied for table narrative_writer_fence
+2026-10-17 12:21:25.197 CST [25548] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,valid_until) VALUES(true,2,'fenced',$1,'handover-fixture-v1',now()+interval '1 hour')
+2026-10-17 12:21:25.295 CST [40580] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 12:21:25.295 CST [40580] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 12:21:25.295 CST [40580] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 12:21:25.300 CST [18628] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 12:21:25.300 CST [18628] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 12:21:25.300 CST [18628] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 12:21:38.327 CST [28528] ERROR:  NARRATIVE_MANAGED_DECLARATION_REQUIRED
+2026-10-17 12:21:38.327 CST [28528] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 6 at RAISE
+2026-10-17 12:21:38.327 CST [28528] STATEMENT:  INSERT INTO narrative_context_snapshots(id,save_id,request_key,owner_id,branch_id,receipt_sha,context,context_sha)
+	    SELECT $1,$2,$3,$4,'root',encode(sha256(convert_to(r.result::text,'UTF8')),'hex'),$5::jsonb,
+	      encode(sha256(convert_to($5::jsonb::text,'UTF8')),'hex')
+	    FROM turn_requests r WHERE r.save_id=$2 AND r.idempotency_key=$3
+2026-10-17 12:21:38.332 CST [16436] ERROR:  NARRATIVE_MANAGED_DECLARATION_REQUIRED
+2026-10-17 12:21:38.332 CST [16436] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 6 at RAISE
+2026-10-17 12:21:38.332 CST [16436] STATEMENT:  INSERT INTO narrative_generation_requests(id,context_id,save_id,request_key,generation_key,publication_key) SELECT $1,context_id,save_id,request_key,'initial-v1','initial-v1' FROM narrative_generation_requests WHERE id=$2
+2026-10-17 12:21:38.370 CST [28528] ERROR:  NARRATIVE_MANAGED_INTEGRITY_FAILURE
+2026-10-17 12:21:38.370 CST [28528] CONTEXT:  PL/pgSQL function verify_narrative_ownership_v2() line 14 at RAISE
+2026-10-17 12:21:38.370 CST [28528] STATEMENT:  COMMIT
+2026-10-17 12:21:38.371 CST [28528] WARNING:  there is no transaction in progress
+2026-10-17 12:21:38.399 CST [9948] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 12:21:38.399 CST [9948] CONTEXT:  PL/pgSQL function protect_narrative_identity() line 9 at RAISE
+2026-10-17 12:21:38.399 CST [9948] STATEMENT:  UPDATE narrative_generation_requests SET context_id=(SELECT context_id FROM narrative_generation_requests WHERE id=$1) WHERE id=$2
+2026-10-17 12:21:38.435 CST [24956] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 12:21:38.435 CST [24956] CONTEXT:  PL/pgSQL function protect_narrative_immutable() line 4 at RAISE
+2026-10-17 12:21:38.435 CST [24956] STATEMENT:  UPDATE narrative_context_snapshots SET context=context || '{"rendererVersion":"wrong"}'::jsonb WHERE save_id=$1
+2026-10-17 12:21:38.470 CST [28008] ERROR:  NARRATIVE_OWNERSHIP_IMMUTABLE
+2026-10-17 12:21:38.470 CST [28008] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 4 at RAISE
+2026-10-17 12:21:38.470 CST [28008] STATEMENT:  UPDATE narrative_receipt_ownership SET generation_id=$1 WHERE save_id=$2
+2026-10-17 12:21:38.519 CST [30680] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 12:21:38.519 CST [30680] CONTEXT:  PL/pgSQL function seal_narrative_receipt_v2() line 14 at RAISE
+2026-10-17 12:21:38.519 CST [30680] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 12:21:38.532 CST [30680] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 12:21:38.532 CST [30680] CONTEXT:  PL/pgSQL function seal_narrative_receipt_v2() line 14 at RAISE
+2026-10-17 12:21:38.532 CST [30680] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 12:21:38.544 CST [30680] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 12:21:38.544 CST [30680] CONTEXT:  PL/pgSQL function seal_narrative_receipt_v2() line 14 at RAISE
+2026-10-17 12:21:38.544 CST [30680] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,ownership,request_narrative,renderer_version,context_version,branch_id)
+	   VALUES($1,$2,$3,$4,2,'suppressed',false,'handover-fixture-v1','authority-context-v1','root')
+2026-10-17 12:21:38.556 CST [30680] ERROR:  NARRATIVE_OWNERSHIP_IDENTITY_INVALID
+2026-10-17 12:21:38.556 CST [30680] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 10 at RAISE
+2026-10-17 12:21:38.556 CST [30680] STATEMENT:  INSERT INTO narrative_context_snapshots(id,save_id,request_key,owner_id,branch_id,receipt_sha,context,context_sha)
+	    SELECT $1,$2,$3,$4,'root',encode(sha256(convert_to(r.result::text,'UTF8')),'hex'),$5::jsonb,
+	      encode(sha256(convert_to($5::jsonb::text,'UTF8')),'hex')
+	    FROM turn_requests r WHERE r.save_id=$2 AND r.idempotency_key=$3
+2026-10-17 12:21:38.571 CST [30680] ERROR:  NARRATIVE_OWNERSHIP_IMMUTABLE
+2026-10-17 12:21:38.571 CST [30680] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 4 at RAISE
+2026-10-17 12:21:38.571 CST [30680] STATEMENT:  UPDATE narrative_receipt_ownership SET branch_id='forged' WHERE save_id=$1
+2026-10-17 12:21:38.583 CST [30680] ERROR:  NARRATIVE_OWNED_RECEIPT_IMMUTABLE
+2026-10-17 12:21:38.583 CST [30680] CONTEXT:  PL/pgSQL function protect_owned_receipt_v2() line 3 at RAISE
+2026-10-17 12:21:38.583 CST [30680] STATEMENT:  UPDATE turn_requests SET result=jsonb_set(result,'{resultingRevision}','999'::jsonb) WHERE save_id=$1
+2026-10-17 12:21:38.671 CST [28936] ERROR:  duplicate key value violates unique constraint "narrative_receipt_ownership_pkey"
+2026-10-17 12:21:38.671 CST [28936] DETAIL:  Key (save_id, request_key)=(handover-264060f9-d749-4c20-a9d7-49935f781566, a79cfa29-9274-41e2-a908-d7cd275bc24f) already exists.
+2026-10-17 12:21:38.671 CST [28936] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 12:21:38.675 CST [28528] WARNING:  there is no transaction in progress
+2026-10-17 12:21:38.675 CST [28936] WARNING:  there is no transaction in progress
+2026-10-17 12:21:38.693 CST [28528] ERROR:  could not serialize access due to concurrent update
+2026-10-17 12:21:38.693 CST [28528] CONTEXT:  SQL statement "UPDATE public.turn_requests SET narrative_updated_at=narrative_updated_at
+	 WHERE save_id=NEW.save_id AND idempotency_key=NEW.request_key RETURNING result"
+	PL/pgSQL function seal_narrative_receipt_v2() line 6 at SQL statement
+2026-10-17 12:21:38.693 CST [28528] STATEMENT:  INSERT INTO narrative_receipt_ownership(owner_id,save_id,request_key,receipt_sha,protocol_version,
+	  ownership,request_narrative,renderer_version,context_version,branch_id)
+	  SELECT $1,$2,$3,encode(sha256(convert_to(result::text,'UTF8')),'hex'),2,$4,$5,'handover-fixture-v1','authority-context-v1','root'
+	  FROM turn_requests WHERE save_id=$2 AND idempotency_key=$3
+2026-10-17 12:21:38.695 CST [28936] WARNING:  there is no transaction in progress
+2026-10-17 12:21:38.695 CST [28528] WARNING:  there is no transaction in progress
+2026-10-17 12:21:38.769 CST [23696] ERROR:  NARRATIVE_OWNED_RECEIPT_IMMUTABLE
+2026-10-17 12:21:38.769 CST [23696] CONTEXT:  PL/pgSQL function protect_owned_receipt_v2() line 3 at RAISE
+2026-10-17 12:21:38.769 CST [23696] STATEMENT:  UPDATE turn_requests SET result=jsonb_set(result,'{resultingRevision}','999'::jsonb) WHERE save_id=$1
+2026-10-17 12:21:38.770 CST [6720] WARNING:  there is no transaction in progress
+2026-10-17 12:21:38.771 CST [23696] WARNING:  there is no transaction in progress
+2026-10-17 12:21:38.786 CST [6720] ERROR:  could not serialize access due to concurrent update
+2026-10-17 12:21:38.786 CST [6720] STATEMENT:  UPDATE turn_requests SET result=jsonb_set(result,'{resultingRevision}','999'::jsonb) WHERE save_id=$1
+2026-10-17 12:21:38.787 CST [23696] WARNING:  there is no transaction in progress
+2026-10-17 12:21:38.788 CST [6720] WARNING:  there is no transaction in progress
+2026-10-17 12:21:38.788 CST [28528] ERROR:  permission denied to set role "jiuxiao_narrative_operator"
+2026-10-17 12:21:38.788 CST [28528] STATEMENT:  SET ROLE jiuxiao_narrative_operator
+2026-10-17 12:21:38.789 CST [28936] ERROR:  permission denied to set role "jiuxiao_narrative_erasure"
+2026-10-17 12:21:38.789 CST [28936] STATEMENT:  SET ROLE jiuxiao_narrative_erasure
+2026-10-17 12:21:38.931 CST [23336] ERROR:  permission denied to set session authorization "gate_review_admin"
+2026-10-17 12:21:38.931 CST [23336] STATEMENT:  SET SESSION AUTHORIZATION gate_review_admin
+2026-10-17 12:21:38.958 CST [35324] ERROR:  permission denied to set parameter "session_replication_role"
+2026-10-17 12:21:38.958 CST [35324] STATEMENT:  SET session_replication_role='replica'
+2026-10-17 12:21:38.987 CST [19304] ERROR:  must be owner of table narrative_receipt_ownership
+2026-10-17 12:21:38.987 CST [19304] STATEMENT:  ALTER TABLE narrative_receipt_ownership DISABLE TRIGGER ALL
+2026-10-17 12:21:39.014 CST [13376] ERROR:  permission denied for table narrative_receipt_ownership
+2026-10-17 12:21:39.014 CST [13376] STATEMENT:  TRUNCATE narrative_receipt_ownership
+2026-10-17 12:21:39.040 CST [33048] ERROR:  permission denied for table narrative_writer_fence
+2026-10-17 12:21:39.040 CST [33048] STATEMENT:  UPDATE narrative_writer_fence SET old_role_revoked=true
+2026-10-17 12:21:39.068 CST [28976] ERROR:  NARRATIVE_OPERATOR_REQUIRED
+2026-10-17 12:21:39.068 CST [28976] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 3 at RAISE
+2026-10-17 12:21:39.068 CST [28976] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,valid_until) VALUES(true,2,'fenced',$1,'handover-fixture-v1',now()+interval '10 minutes')
+2026-10-17 12:21:39.107 CST [32648] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 12:21:39.107 CST [32648] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 12:21:39.107 CST [32648] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE save_id=$1
+2026-10-17 12:21:39.108 CST [32648] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 12:21:39.108 CST [32648] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 12:21:39.108 CST [32648] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE save_id=$1
+2026-10-17 12:21:39.113 CST [23556] ERROR:  NARRATIVE_OLD_ROLE_NOT_DRAINED
+2026-10-17 12:21:39.113 CST [23556] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 13 at RAISE
+2026-10-17 12:21:39.113 CST [23556] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,
+	  old_writer_drained,old_role_revoked,valid_until,retired_roles,drain_evidence_sha)
+	  VALUES(true,2,'managed',$1,'handover-fixture-v1',true,true,now()+interval '1 hour',ARRAY['gr01_retired'],$2)
+2026-10-17 12:21:39.194 CST [11636] ERROR:  NARRATIVE_OLD_ROLE_NOT_DRAINED
+2026-10-17 12:21:39.194 CST [11636] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 13 at RAISE
+2026-10-17 12:21:39.194 CST [11636] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,
+	  old_writer_drained,old_role_revoked,valid_until,retired_roles,drain_evidence_sha)
+	  VALUES(true,2,'managed',$1,'handover-fixture-v1',true,true,now()+interval '1 hour',ARRAY['gr01_retired'],$2)
+2026-10-17 12:21:39.227 CST [11492] ERROR:  NARRATIVE_OLD_ROLE_STILL_PRIVILEGED
+2026-10-17 12:21:39.227 CST [11492] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 19 at RAISE
+2026-10-17 12:21:39.227 CST [11492] STATEMENT:  INSERT INTO narrative_writer_fence(singleton,protocol_version,phase,fleet_manifest_sha,renderer_version,
+	  old_writer_drained,old_role_revoked,valid_until,retired_roles,drain_evidence_sha)
+	  VALUES(true,2,'managed',$1,'handover-fixture-v1',true,true,now()+interval '1 hour',ARRAY['gr01_retired'],$2)
+2026-10-17 12:21:39.448 CST [6720] ERROR:  NARRATIVE_FAILED_TERMINAL
+2026-10-17 12:21:39.448 CST [6720] CONTEXT:  PL/pgSQL function require_narrative_managed_declaration_v2() line 18 at RAISE
+2026-10-17 12:21:39.448 CST [6720] STATEMENT:  UPDATE narrative_generation_requests SET state='running',lease_epoch=lease_epoch+1 WHERE id=$1
+2026-10-17 12:21:39.816 CST [30308] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 12:21:39.816 CST [30308] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 12:21:39.816 CST [30308] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 12:21:39.818 CST [30308] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 12:21:39.818 CST [30308] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 12:21:39.818 CST [30308] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 12:21:39.821 CST [30308] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 12:21:39.821 CST [30308] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 12:21:39.821 CST [30308] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 12:21:39.822 CST [30308] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 12:21:39.822 CST [30308] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 12:21:39.822 CST [30308] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 12:21:40.412 CST [31624] ERROR:  NARRATIVE_OLD_ROLE_STILL_PRIVILEGED
+2026-10-17 12:21:40.412 CST [31624] CONTEXT:  PL/pgSQL function protect_narrative_writer_fence_v2() line 19 at RAISE
+2026-10-17 12:21:40.412 CST [31624] STATEMENT:  UPDATE narrative_writer_fence SET valid_until=now()+interval '1 hour'
+2026-10-17 12:21:40.450 CST [6028] WARNING:  there is no transaction in progress
+2026-10-17 12:21:40.462 CST [30308] ERROR:  NARRATIVE_ERASURE_INCOMPLETE
+2026-10-17 12:21:40.462 CST [30308] CONTEXT:  PL/pgSQL function verify_narrative_ownership_erasure_v2() line 3 at RAISE
+2026-10-17 12:21:40.462 CST [30308] STATEMENT:  COMMIT
+2026-10-17 12:21:40.462 CST [30308] WARNING:  there is no transaction in progress
+2026-10-17 12:21:40.465 CST [6028] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 12:21:40.465 CST [6028] CONTEXT:  PL/pgSQL function protect_narrative_identity() line 4 at RAISE
+2026-10-17 12:21:40.465 CST [6028] STATEMENT:  DELETE FROM narrative_generation_requests WHERE save_id=$1
+2026-10-17 12:21:40.467 CST [6028] ERROR:  NARRATIVE_IMMUTABLE
+2026-10-17 12:21:40.467 CST [6028] CONTEXT:  PL/pgSQL function protect_narrative_immutable() line 4 at RAISE
+2026-10-17 12:21:40.467 CST [6028] STATEMENT:  DELETE FROM narrative_context_snapshots WHERE save_id=$1
+2026-10-17 12:22:22.809 CST [36760] ERROR:  NARRATIVE_AUTHORIZED_ERASURE_REQUIRED
+2026-10-17 12:22:22.809 CST [36760] CONTEXT:  PL/pgSQL function protect_narrative_ownership_v2() line 6 at RAISE
+2026-10-17 12:22:22.809 CST [36760] STATEMENT:  DELETE FROM narrative_receipt_ownership WHERE owner_id=$1
+2026-10-17 12:23:06.810 CST [29436] LOG:  received fast shutdown request
+2026-10-17 12:23:06.815 CST [29436] LOG:  aborting any active transactions
+2026-10-17 12:23:06.819 CST [29436] LOG:  background worker "logical replication launcher" (PID 8164) exited with exit code 1
+2026-10-17 12:23:06.820 CST [3600] LOG:  shutting down
+2026-10-17 12:23:06.822 CST [3600] LOG:  checkpoint starting: shutdown immediate
+2026-10-17 12:23:10.200 CST [3600] LOG:  checkpoint complete: wrote 4751 buffers (29.0%), wrote 4 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.148 s, sync=3.211 s, total=3.381 s; sync files=1880, longest=0.008 s, average=0.002 s; distance=25299 kB, estimate=25299 kB; lsn=0/7A8D978, redo lsn=0/7A8D978
+2026-10-17 12:23:10.293 CST [29436] LOG:  database system is shut down

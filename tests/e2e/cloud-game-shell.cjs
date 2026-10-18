@@ -6,17 +6,19 @@ const { join, resolve } = require('node:path');
 const net = require('node:net');
 const { chromium } = require('playwright');
 const root = resolve(__dirname, '../..');
-const output = join(root, 'test-results/cloud-game-shell');
+const runName = process.argv[2];
+if(runName !== undefined && !/^[a-z0-9-]+$/.test(runName))throw Error('Invalid unique run name');
+const output = runName ? join(root, 'docs/integration/handover-02', runName) : join(root, 'test-results/cloud-game-shell');
 let server, browser;
 (async () => {
-  mkdirSync(output, { recursive: true });
+  mkdirSync(output, { recursive: !runName });
   const port = await new Promise(resolve => {
     const socket = net.createServer().listen(0, '127.0.0.1', () => { const port = socket.address().port; socket.close(() => resolve(port)); });
   });
   server = spawn(process.execPath, [join(root, 'apps/web/node_modules/vite/bin/vite.js'), 'preview', '--host', '127.0.0.1', '--port', String(port), '--strictPort'], { cwd: join(root, 'apps/web'), windowsHide: true, stdio: 'pipe' });
   const base = `http://127.0.0.1:${port}`;
   for (let attempt = 0; attempt < 100; attempt++) { try { if ((await fetch(base)).ok) break; } catch {} await new Promise(resolve => setTimeout(resolve, 100)); }
-  browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_BROWSER_EXECUTABLE || 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe' });
+  browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_BROWSER_EXECUTABLE || (process.platform === 'win32' ? 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe' : undefined) });
   const results = [];
   for (const viewport of [{ width: 320, height: 568 }, { width: 390, height: 844 }, { width: 844, height: 390 }, { width: 1440, height: 900 }]) for (const theme of ['night', 'day']) {
     const context = await browser.newContext({ viewport, reducedMotion: 'reduce' });
@@ -28,14 +30,15 @@ let server, browser;
     await page.route('**/api/**', async route => {
       const pathname = new URL(route.request().url()).pathname;
       let body, status = 200;
-      if (pathname.endsWith('/action-suggestions')) body = { actions: [{ id: 'synthetic', kind: 'observe', label: '测试观察', text: '测试行动' }] };
+      if (pathname === '/api/auth/session') body = { account: {id:'synthetic-owner',kind:'guest'} };
+      else if (pathname.endsWith('/action-suggestions')) body = { actions: [{ id: 'synthetic', kind: 'observe', label: '测试观察', text: '测试行动' }] };
       else if (pathname.endsWith('/turns')) {
         submissions++;
         const request = route.request().postDataJSON();
         assert.equal(request.expectedRevision, 0); assert.equal(request.requestNarrative, true);
         assert.equal(request.text, failNext ? '保留未确认行动' : '测试行动');
         if (failNext) { status = 503; body = { code: 'ENV_UNAVAILABLE' }; }
-        else body = { receipt: { idempotencyKey: request.idempotencyKey, saveId: save.saveId, requestFingerprint: `sha256:v1:${'0'.repeat(64)}`, decision: { status: 'rejected', code: 'INPUT_SYNTHETIC', message: '测试回执：行动未获接受。'.repeat(400), revision: 0 }, resultingRevision: 0 } };
+        else body = { receipt: { idempotencyKey: request.idempotencyKey, saveId: save.saveId, requestFingerprint: require('./game-receipt-fixture.cjs')(save, request), decision: { status: 'rejected', code: 'INPUT_SYNTHETIC', message: '测试回执：行动未获接受。'.repeat(400), revision: 0 }, resultingRevision: 0 } };
       } else if (pathname.endsWith('/' + save.saveId)) body = { save };
       else { status = 503; body = { code: 'AUTH_PROVIDER_UNAVAILABLE' }; }
       await route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) });
@@ -62,7 +65,7 @@ let server, browser;
     await page.getByRole('button', { name: '世界设定', exact: true }).last().click();
     await page.getByRole('button', { name: '返回当前行旅', exact: true }).click(); await input.waitFor();
     failNext = true; await input.fill('保留未确认行动'); await page.getByTestId('p2-submit-action').click();
-    await page.getByTestId('p2-status').filter({ hasText: '服务端请求未完成' }).waitFor();
+    await page.getByTestId('p2-status').filter({ hasText: '请求未确认' }).waitFor();
     assert.equal(await input.inputValue(), '保留未确认行动'); assert.equal(submissions, 2);
     assert.deepEqual(errors, []);
     await page.screenshot({ path: join(output, `${viewport.width}-${theme}.png`) });

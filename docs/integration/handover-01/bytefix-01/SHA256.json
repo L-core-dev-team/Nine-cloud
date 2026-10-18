@@ -1,0 +1,38 @@
+[
+  {
+    "path": "after-audit.json",
+    "sha256": "00c4dee03633e33801cc446aecdc741b96c078417ce53baa5ef97a2eb663ec32"
+  },
+  {
+    "path": "after-semantic-digest.json",
+    "sha256": "9826c9752a134047057c8ef731ea5be898c1b778b1775e37741d55a1e85fac68"
+  },
+  {
+    "path": "before-manifest.json",
+    "sha256": "d28abeda169359b8f28ff61db8490d5bfb6fe34a5d10ead393854116bea5ebbe"
+  },
+  {
+    "path": "bytefix.cjs",
+    "sha256": "873c525357ce80a1f032b254d98b6286378fda8a76cf6ae02c9c61f99f6ea15b"
+  },
+  {
+    "path": "cleanup.json",
+    "sha256": "9f7637ae39c0af58fd920760bbdbe4008acb418bffcb076b95d406bf3d4fdcee"
+  },
+  {
+    "path": "final-verification.json",
+    "sha256": "ab724668d46ff909688be5e45c939b675037c2b9e6ce7914fa7cb1dd69cc869f"
+  },
+  {
+    "path": "postflight-audit.json",
+    "sha256": "cc3c3dc3b9963fe78b9e93fb2a201866d0348555d73f422c7f310b89670f74af"
+  },
+  {
+    "path": "postflight.cjs",
+    "sha256": "a03c38f790ac553c453e7df61b49113b7c9fbf745ae64c8f5d496bdea05514f7"
+  },
+  {
+    "path": "restored.json",
+    "sha256": "1c767640845f5bb118fd1395609e521c45e8c6a26b8cb94199ae2ad766261607"
+  }
+]

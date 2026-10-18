@@ -1,0 +1,11 @@
+$ pnpm --filter @jiuxiao/api test:integration
+$ node ../../scripts/assert-test-database.mjs && vitest run src/app.integration.test.ts src/services/cloud-save-repository.integration.test.ts src/services/entitlement-ledger.integration.test.ts src/services/npc-memory-turn-transaction.integration.test.ts src/services/server-turn.integration.test.ts src/services/email-auth.integration.test.ts src/services/supabase-auth.integration.test.ts src/services/p3-guest-supabase.integration.test.ts src/services/cloud-archive-lifecycle.integration.test.ts src/services/account-lifecycle.integration.test.ts src/services/data-policy.integration.test.ts src/services/runtime-controls.integration.test.ts src/services/narrative-publication.integration.test.ts
+
+ RUN  v5.0.3 C:/Users/11954/Documents/Codex/Nine-cloud-p3-p6-stage1-20261013/apps/api
+
+
+ Test Files  13 passed (13)
+      Tests  62 passed (62)
+   Start at  19:00:22
+   Duration  4.26s (tests 57%, import 23%, transform 20%)
+

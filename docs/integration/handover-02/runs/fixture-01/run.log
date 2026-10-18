@@ -1,0 +1,14 @@
+✔ component: legacy accepted without generation is explicit and never rendered or seeded on read (321.0773ms)
+✔ component: twenty competing workers retain one generation, one effective attempt and one default (205.0918ms)
+✔ component: expired lease cannot publish even before another claimant (94.9135ms)
+✔ component: abandoned wait and late worker cannot replace default; reread uses original key (98.3112ms)
+✔ component: renderer failure preserves settlement and returns failed with absent original (21.4789ms)
+✔ component: closing account after claim prohibits late publication (19.2728ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 900.7972

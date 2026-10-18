@@ -1,0 +1,31 @@
+
+ RUN  v5.0.3 C:/Users/11954/Documents/Codex/Nine-cloud-p3-p6-stage1-20261013/apps/api
+
+ ❯ src/services/narrative-publication.integration.test.ts (11 tests | 1 failed) 910ms
+   ❯ stage1 PostgreSQL publication and recovery (synthetic rules, real database/session) (10)
+     × real session: cross-account/expired session/expected-account/trash denied; new request restores same body 109ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/services/narrative-publication.integration.test.ts > stage1 PostgreSQL publication and recovery (synthetic rules, real database/session) > real session: cross-account/expired session/expected-account/trash denied; new request restores same body
+error: null value in column "backup" of relation "cloud_archive_trash" violates not-null constraint
+ ❯ ../../node_modules/.pnpm/pg-pool@3.14.0_pg@8.23.1/node_modules/pg-pool/index.js:45:11
+ ❯ src/services/narrative-publication.integration.test.ts:105:5
+    103|     expect((await get(other.token,other.owner)).status).toBe(404);expe…
+    104|     expect((await app.request(`/api/games/${f.saveId}/sources/${p.sour…
+    105|     await pool.query('INSERT INTO cloud_archive_trash(save_id,owner_id…
+       |     ^
+    106|     await pool.query('DELETE FROM cloud_archive_trash WHERE save_id=$1…
+    107|     await pool.query('UPDATE auth_sessions SET expires_at=now()-interv…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 10 passed (11)
+   Start at  10:27:09
+   Duration  4.34s (import 60%, tests 25%, transform 14%, worker 1%)
+
+undefined
+C:\Users\11954\Documents\Codex\Nine-cloud-p3-p6-stage1-20261013\apps\api:
+[ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL] Command failed with exit code 1: vitest run src/services/narrative-publication.integration.test.ts

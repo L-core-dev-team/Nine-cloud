@@ -1,0 +1,29 @@
+▶ requires a PostgreSQL integration database and rejects other protocols
+  ✔ missing URL fails with a non-secret diagnostic (49.7546ms)
+  ✔ non-PostgreSQL URL is rejected (45.2084ms)
+  ✔ PostgreSQL URL without a database is rejected (45.0264ms)
+  ✔ database without the project test prefix is rejected (46.9845ms)
+  ✔ encoded path separators cannot smuggle a different database name (47.9123ms)
+  ✔ valid PostgreSQL URL passes without printing credentials (43.8176ms)
+✔ requires a PostgreSQL integration database and rejects other protocols (280.8424ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 354.775
+
+ RUN  v5.0.3 C:/Users/11954/Desktop/水龙吟专用/项目/Nine-cloud-p3-p6-handover-01-20261014/apps/api
+
+
+ Test Files  45 passed (45)
+      Tests  387 passed (387)
+   Start at  12:39:56
+   Duration  5.29s (tests 48%, import 31%, transform 19%, worker 1%)
+
+    Isolate  45 workers spawned · ~317ms startup each (spawn + environment, per file)
+             at least ~634ms faster with isolate: false — reuses workers across files instead of one per file
+
+$ node --test ../../scripts/assert-test-database.test.mjs && vitest run

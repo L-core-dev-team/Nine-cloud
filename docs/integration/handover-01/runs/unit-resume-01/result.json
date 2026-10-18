@@ -1,0 +1,11 @@
+{
+  "name": "unit-resume-01",
+  "baselineOrCandidate": "500a85c458e4428ea9b8747f05ceac7d05bc527f",
+  "command": [
+    "pnpm",
+    "test"
+  ],
+  "started": "2026-10-15T04:24:35.578Z",
+  "finished": "2026-10-15T04:24:39.492Z",
+  "exitCode": 1
+}

@@ -1,0 +1,14 @@
+
+ RUN  v5.0.3 C:/Users/11954/Desktop/水龙吟专用/项目/Nine-cloud-p3-p6-handover-01-20261014/apps/web
+
+
+ Test Files  29 passed (29)
+      Tests  203 passed (203)
+   Start at  12:24:58
+   Duration  1.70s (transform 54%, import 33%, tests 11%, worker 2%)
+
+  Transform  transforming modules took 5.61s · 54% of tracked time, re-done on every run
+             persist transforms across runs with fsModuleCache: true
+             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns
+
+$ vitest run

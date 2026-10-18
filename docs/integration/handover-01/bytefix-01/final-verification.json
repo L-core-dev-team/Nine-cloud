@@ -1,0 +1,99 @@
+{
+  "status": "PASS",
+  "restoredOnly44": true,
+  "onlyOtherOriginalTrackedChange": "docs/integration/handover-01/CHECKPOINT.md",
+  "allRequestedCommandsPass": true,
+  "runs": [
+    {
+      "name": "bytefix-api-01",
+      "baselineOrCandidate": "9587d05da09171e3bc75de309a8f65b8d601b8a6",
+      "command": [
+        "pnpm",
+        "--filter",
+        "@jiuxiao/api",
+        "test"
+      ],
+      "started": "2026-10-15T04:39:55.502Z",
+      "finished": "2026-10-15T04:40:02.122Z",
+      "exitCode": 0
+    },
+    {
+      "name": "bytefix-build-01",
+      "baselineOrCandidate": "9587d05da09171e3bc75de309a8f65b8d601b8a6",
+      "command": [
+        "pnpm",
+        "build"
+      ],
+      "started": "2026-10-15T04:40:28.049Z",
+      "finished": "2026-10-15T04:40:31.370Z",
+      "exitCode": 0
+    },
+    {
+      "name": "bytefix-content-01",
+      "baselineOrCandidate": "9587d05da09171e3bc75de309a8f65b8d601b8a6",
+      "command": [
+        "pnpm",
+        "--filter",
+        "@jiuxiao/content",
+        "test"
+      ],
+      "started": "2026-10-15T04:39:36.394Z",
+      "finished": "2026-10-15T04:39:37.928Z",
+      "exitCode": 0
+    },
+    {
+      "name": "bytefix-db-identity-01",
+      "baselineOrCandidate": "9587d05da09171e3bc75de309a8f65b8d601b8a6",
+      "command": [
+        "node",
+        "scripts/handover-diagnose.cjs"
+      ],
+      "started": "2026-10-15T04:39:55.174Z",
+      "finished": "2026-10-15T04:39:55.432Z",
+      "exitCode": 0
+    },
+    {
+      "name": "bytefix-final-db-state-01",
+      "baselineOrCandidate": "9587d05da09171e3bc75de309a8f65b8d601b8a6",
+      "command": [
+        "node",
+        "scripts/handover-diagnose.cjs"
+      ],
+      "started": "2026-10-15T04:41:36.048Z",
+      "finished": "2026-10-15T04:41:36.233Z",
+      "exitCode": 0
+    },
+    {
+      "name": "bytefix-full-test-01",
+      "baselineOrCandidate": "9587d05da09171e3bc75de309a8f65b8d601b8a6",
+      "command": [
+        "pnpm",
+        "test"
+      ],
+      "started": "2026-10-15T04:40:12.917Z",
+      "finished": "2026-10-15T04:40:23.284Z",
+      "exitCode": 0
+    },
+    {
+      "name": "bytefix-typecheck-01",
+      "baselineOrCandidate": "9587d05da09171e3bc75de309a8f65b8d601b8a6",
+      "command": [
+        "pnpm",
+        "typecheck"
+      ],
+      "started": "2026-10-15T04:40:23.346Z",
+      "finished": "2026-10-15T04:40:27.991Z",
+      "exitCode": 0
+    }
+  ],
+  "nonTargetEngineeringPreserved": true,
+  "productSourceTreeChanged": false,
+  "localGitConfig": {
+    "autocrlf": "false",
+    "eol": "lf"
+  },
+  "T1Applied": false,
+  "productionAccess": false,
+  "P01_P06": "BLOCKED",
+  "workStopped": true
+}

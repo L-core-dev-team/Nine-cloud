@@ -1,0 +1,18 @@
+{
+  "exe": "pg_dump.exe",
+  "args": [
+    "-h",
+    "127.0.0.1",
+    "-p",
+    "55463",
+    "-U",
+    "gate_review_admin",
+    "-Fc",
+    "-f",
+    "C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-t1-v2-gate-review-01-20261016\\docs\\integration\\t1-v2-gate-review-01\\signoff01-backup.dump",
+    "jiuxiao_test_gate-revised-signoff01"
+  ],
+  "exitCode": 0,
+  "stdout": "",
+  "stderr": ""
+}

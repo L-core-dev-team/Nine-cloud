@@ -1,0 +1,134 @@
+{
+  "status": "PASS",
+  "source": "jiuxiao_test_gate-revised-resume08",
+  "target": "jiuxiao_test_gate-restored-resume08",
+  "steps": [
+    {
+      "exe": "pg_dump.exe",
+      "args": [
+        "-h",
+        "127.0.0.1",
+        "-p",
+        "55463",
+        "-U",
+        "gate_review_admin",
+        "-Fc",
+        "-f",
+        "C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-t1-v2-gate-review-01-20261016\\docs\\integration\\t1-v2-gate-review-01\\resume08-backup.dump",
+        "jiuxiao_test_gate-revised-resume08"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "exe": "pg_restore.exe",
+      "args": [
+        "-h",
+        "127.0.0.1",
+        "-p",
+        "55463",
+        "-U",
+        "gate_review_admin",
+        "--exit-on-error",
+        "-d",
+        "jiuxiao_test_gate-restored-resume08",
+        "C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-t1-v2-gate-review-01-20261016\\docs\\integration\\t1-v2-gate-review-01\\resume08-backup.dump"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "before": {
+    "game_saves": {
+      "n": 37,
+      "sha": "185d74f61eae0e06b47577a79b6866eb795060ab9e7f6079d09c9a44abb0802e"
+    },
+    "turn_requests": {
+      "n": 42,
+      "sha": "ef16fd8a40a9e1f80872aa90c791733c98fd3afa72ba2738381fc57ab0804261"
+    },
+    "turn_events": {
+      "n": 42,
+      "sha": "0d0c3f465d090d9b2b979d525d5eb8cc2a8f4c813b2b808e17a44356a0385c34"
+    },
+    "narrative_context_snapshots": {
+      "n": 11,
+      "sha": "c44cde610253547e09278990a2a586748471efd8f3d48a488c01a6beedb90009"
+    },
+    "narrative_generation_requests": {
+      "n": 11,
+      "sha": "dbaaa6c3e9303777e7d07203ee8f95030271d03bd48b85b19bbfcb964f0298a4"
+    },
+    "narrative_attempts": {
+      "n": 9,
+      "sha": "0b1954293425faa397c94216cd05ecc5fc7d9ab941dc6b81c4d6aa11be9845ea"
+    },
+    "narrative_sources": {
+      "n": 3,
+      "sha": "d2d18e8af2bb598eb6ab061678e9d4efdb7159ab827fcaebfb8593c57b8496c9"
+    },
+    "narrative_publications": {
+      "n": 3,
+      "sha": "22742bef61706c467e8f41e4e6a4e6e9ecba59b3ecd74878ec43807a129d46d2"
+    },
+    "narrative_receipt_ownership": {
+      "n": 18,
+      "sha": "0aef5061a78d6fc4134ee246826f78fb9abfc2fc56abfa31a652094a24a832ea"
+    },
+    "narrative_writer_fence": {
+      "n": 1,
+      "sha": "ab2d7cc1f6303a3347443780c8eb826434b92a8540c6adbc3f29c5b8d680cf01"
+    }
+  },
+  "after": {
+    "game_saves": {
+      "n": 37,
+      "sha": "185d74f61eae0e06b47577a79b6866eb795060ab9e7f6079d09c9a44abb0802e"
+    },
+    "turn_requests": {
+      "n": 42,
+      "sha": "ef16fd8a40a9e1f80872aa90c791733c98fd3afa72ba2738381fc57ab0804261"
+    },
+    "turn_events": {
+      "n": 42,
+      "sha": "0d0c3f465d090d9b2b979d525d5eb8cc2a8f4c813b2b808e17a44356a0385c34"
+    },
+    "narrative_context_snapshots": {
+      "n": 11,
+      "sha": "c44cde610253547e09278990a2a586748471efd8f3d48a488c01a6beedb90009"
+    },
+    "narrative_generation_requests": {
+      "n": 11,
+      "sha": "dbaaa6c3e9303777e7d07203ee8f95030271d03bd48b85b19bbfcb964f0298a4"
+    },
+    "narrative_attempts": {
+      "n": 9,
+      "sha": "0b1954293425faa397c94216cd05ecc5fc7d9ab941dc6b81c4d6aa11be9845ea"
+    },
+    "narrative_sources": {
+      "n": 3,
+      "sha": "d2d18e8af2bb598eb6ab061678e9d4efdb7159ab827fcaebfb8593c57b8496c9"
+    },
+    "narrative_publications": {
+      "n": 3,
+      "sha": "22742bef61706c467e8f41e4e6a4e6e9ecba59b3ecd74878ec43807a129d46d2"
+    },
+    "narrative_receipt_ownership": {
+      "n": 18,
+      "sha": "0aef5061a78d6fc4134ee246826f78fb9abfc2fc56abfa31a652094a24a832ea"
+    },
+    "narrative_writer_fence": {
+      "n": 1,
+      "sha": "ab2d7cc1f6303a3347443780c8eb826434b92a8540c6adbc3f29c5b8d680cf01"
+    }
+  },
+  "dumpSha256": "d09d32644c956777fe234b7757e387d9d39ab56f4ed7503fb81c4745e3d5c464",
+  "restoredConstraintsEnforced": true,
+  "downgradeExecuted": false,
+  "formal": {
+    "pass": 0,
+    "blocked": 16
+  }
+}

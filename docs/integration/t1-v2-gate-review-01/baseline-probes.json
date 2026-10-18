@@ -1,0 +1,54 @@
+{
+  "baseline": "d83f5317d71a9d0334d676fff14ba21fd635a87c",
+  "originalSqlSha256": "bd778c124540b189d435b312caba806dc6011c760de0311ef918e38cfc947770",
+  "database": "jiuxiao_test_gate-original-02",
+  "results": [
+    {
+      "id": "B01",
+      "title": "G inserted after committed suppressed ownership",
+      "expected": "DB_REJECT",
+      "actual": "ACCEPT",
+      "status": "FAIL"
+    },
+    {
+      "id": "B02",
+      "title": "arbitrary nonempty erasure GUC deletes ownership",
+      "expected": "DB_REJECT",
+      "actual": "ACCEPT",
+      "status": "FAIL"
+    },
+    {
+      "id": "B03",
+      "title": "managed generation context identity mutation",
+      "expected": "DB_REJECT",
+      "actual": "REJECT",
+      "status": "PASS",
+      "error": {
+        "code": "P0001",
+        "message": "NARRATIVE_IMMUTABLE"
+      }
+    },
+    {
+      "id": "B04",
+      "title": "receipt revision mutated after managed registration",
+      "expected": "DB_REJECT",
+      "actual": "ACCEPT",
+      "status": "FAIL"
+    },
+    {
+      "id": "B05",
+      "title": "save owner changed after ownership registration",
+      "expected": "DB_REJECT",
+      "actual": "REJECT",
+      "status": "PASS",
+      "error": {
+        "code": "P0001",
+        "message": "game_saves identity is immutable and revision must be monotonic"
+      }
+    }
+  ],
+  "formalAcceptance": {
+    "pass": 0,
+    "blocked": 16
+  }
+}

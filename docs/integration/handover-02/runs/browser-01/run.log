@@ -1,0 +1,12 @@
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+20 !== 23
+
+    at C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-p3-p6-handover-01-20261014\scripts\handover-browser.cjs:46:9 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 20,
+  expected: 23,
+  operator: 'strictEqual',
+  diff: 'simple'
+}

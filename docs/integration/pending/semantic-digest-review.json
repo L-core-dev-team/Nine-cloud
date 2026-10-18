@@ -1,0 +1,298 @@
+{
+  "before": {
+    "format": "jiuxiao-p1-runtime-ast-v2",
+    "typescriptVersion": "6.0.2",
+    "sha256": "sha256:73580596f25c530d9ad33170282955187eb281e5927872607feef9e2aae83f42",
+    "files": [
+      {
+        "path": "apps/api/src/services/narrative-memory-context.ts",
+        "sha256": "a84ba9f2929b7a026840388137b9dc76a5ab219f1826b2c73f41656b07a6349e"
+      },
+      {
+        "path": "apps/api/src/services/npc-memory-turn-transaction.ts",
+        "sha256": "05dc7083965c68d74ea3117411bfb4930443189ff2fb49a496101a9bceff0351"
+      },
+      {
+        "path": "apps/api/src/services/p1-memory-policy.ts",
+        "sha256": "dbc9cf2770ab39b96c454d64bac45b2c5b1e3d3be0389b441b0ebaa0c3e7d8d7"
+      },
+      {
+        "path": "apps/api/src/services/p1-nlu-runtime.ts",
+        "sha256": "84a9090c27afff71dee22d80ce2e62cf7b584f29f974da606d2cf2d29f249daf"
+      },
+      {
+        "path": "apps/api/src/services/p1-prologue-plugin.ts",
+        "sha256": "f1a2d306f07b523cc0fe2de4e168878a460030c93578378dfa18d27a204aee26"
+      },
+      {
+        "path": "apps/api/src/services/p1-review-semantic-gate.ts",
+        "sha256": "5e829bf07ece79ab84fe49730836972ccc6c71f366e27cf63d91e2176277eb49"
+      },
+      {
+        "path": "apps/api/src/services/p1-rule-semantic-functions.ts",
+        "sha256": "fea0c8a52e08120229c60f77e94d3a1f763555c8e61713cb684905cbd98e9724"
+      },
+      {
+        "path": "apps/api/src/services/rule-semantic-fingerprint.ts",
+        "sha256": "e54e7549c5a864b9cf2cb819cce72a75db11f64469be670ef340cc175a2dd708"
+      },
+      {
+        "path": "apps/api/src/services/server-turn.ts",
+        "sha256": "5e1587a2a36b170f92102f2c675996651f4d21edaa6fd6e90c54ce911a7aba14"
+      },
+      {
+        "path": "apps/api/src/services/turn-runtime.ts",
+        "sha256": "9b259c7ca04a5e3a6a6c63d02ffa345496b4d65099c08372359cba63c9b745f8"
+      },
+      {
+        "path": "packages/contracts/package.json",
+        "sha256": "bada79c85c24cdbdc51217a17d713ad2a2c602122360e248aa27451d3ec7b257"
+      },
+      {
+        "path": "packages/contracts/src/action.ts",
+        "sha256": "39c7ea68097ebd806920deac9d1588e66097622ce1941a6e092cf4fb5eb910f2"
+      },
+      {
+        "path": "packages/contracts/src/decision.ts",
+        "sha256": "8c9072b869e14fbb840e79e3059836649b74bbb6076b4d244f2b9eb2010be7a2"
+      },
+      {
+        "path": "packages/contracts/src/event.ts",
+        "sha256": "110440e802eb9d115d79cdda5d0808206e11d4cff260089062b29b0f6cdc80b5"
+      },
+      {
+        "path": "packages/contracts/src/index.ts",
+        "sha256": "7f8459245591dc661f421aee21ee2c1072b7b38709d409f26f1b8e9756feb0e3"
+      },
+      {
+        "path": "packages/contracts/src/json-bounds.ts",
+        "sha256": "f4360b9ea473173118f61be96fe41dcafcc022ae9a9198d89a7aa6f75fc5989f"
+      },
+      {
+        "path": "packages/contracts/src/prologue.ts",
+        "sha256": "700acd9a8652edce8e252d4aac942fe9fb941acaebc22ef40d0ab80f31847bc7"
+      },
+      {
+        "path": "packages/contracts/src/save.ts",
+        "sha256": "35a437720328d286ff0b8062c74fdeb0cb9148353763547b3358afbacec0d638"
+      },
+      {
+        "path": "packages/contracts/src/state-delta.ts",
+        "sha256": "c420a0681d18ee1af608eade4559a3ef0adde6898583d56ede3efce4ccbc8a4a"
+      },
+      {
+        "path": "packages/contracts/src/turn.ts",
+        "sha256": "8e8984fa2a7fe4ab80cd10bc0b0a6cd6843610a5095d6df23e2b51d7646702a5"
+      },
+      {
+        "path": "packages/contracts/src/world.ts",
+        "sha256": "aff4a913b0672540e9d7b1ece5a8dedde107206c6e2f13ef354e19a38ded0e9d"
+      },
+      {
+        "path": "packages/domain/package.json",
+        "sha256": "67fdb4765ad138a7bef2df5fd42bc1f4c1bb9abb0982cc4698344643521a24b8"
+      },
+      {
+        "path": "packages/domain/src/event-log.ts",
+        "sha256": "e36cac475db2762f30db7d1b1966b189fc1a259f1ece8968f2d935cfd3ea4d3b"
+      },
+      {
+        "path": "packages/domain/src/index.ts",
+        "sha256": "b7e32746cfe7c9e7816d6a65a8c49f1a1a7baa52675a3e5f171ff428148f3f05"
+      },
+      {
+        "path": "packages/domain/src/memory/belief.ts",
+        "sha256": "edb4df5ddcaf121a2b2f79dd8b18ae8dd0ffe67718c6f19d5833fdbe765a0512"
+      },
+      {
+        "path": "packages/domain/src/memory/policy.ts",
+        "sha256": "92a2c1cd91262e1056543f99fd45d4c5fba05b74d526d31f8e1d11374a9b4043"
+      },
+      {
+        "path": "packages/domain/src/memory/turn-journal.ts",
+        "sha256": "ed4adc595d95a55c5e095e4a4d71602c4ad132f94673702b3d69de790d14b8fb"
+      },
+      {
+        "path": "packages/domain/src/nlu/action-parser.ts",
+        "sha256": "9dc1b2df2da738f9eb4e2dc949e50486718111abd0387ba2bac4841779ff2700"
+      },
+      {
+        "path": "packages/domain/src/nlu/index.ts",
+        "sha256": "3beb1713db386c7d1b8ab086f11e91230e6b070dbe974031d3a99ee3a3e8218b"
+      },
+      {
+        "path": "packages/domain/src/nlu/prologue-v1-nlu-fixtures.ts",
+        "sha256": "1a8e37d315a40aa7927ce488e9e53c1672baa3dcb9402e535b2c27f27e5409df"
+      },
+      {
+        "path": "packages/domain/src/prologue-v1-rules.ts",
+        "sha256": "67fdd8b9fd94e994e7e7d835de39beb5715b2ec3806c46e7d37af8241a376c49"
+      },
+      {
+        "path": "packages/domain/src/prologue-v1-time.ts",
+        "sha256": "1af9a9b5b04099126661b61091a06fb5930ff0cf00444ec1525916cd49468637"
+      },
+      {
+        "path": "packages/domain/src/rules.ts",
+        "sha256": "c9fe05500b9296839844f0deba448c64589f5877e5c1f37859b9b26b0584f6a4"
+      },
+      {
+        "path": "packages/domain/src/state-delta.ts",
+        "sha256": "078ff8aae4de7d0b20d724ad79c4db131ab50e181bbe4a6d576c2618c8672ac5"
+      },
+      {
+        "path": "scripts/p1-rule-semantic-source-digest.mjs",
+        "sha256": "566e40c082d9e65130dc50fa3a0d43980e70e5a84ac94c81a87b89d1a63d87c5"
+      }
+    ]
+  },
+  "after": {
+    "format": "jiuxiao-p1-runtime-ast-v2",
+    "typescriptVersion": "6.0.2",
+    "sha256": "sha256:a5300e8d8a7eb89dd6bb3a970840bb984fee48bf4250d8f031b721670746cf38",
+    "files": [
+      {
+        "path": "apps/api/src/services/narrative-memory-context.ts",
+        "sha256": "a84ba9f2929b7a026840388137b9dc76a5ab219f1826b2c73f41656b07a6349e"
+      },
+      {
+        "path": "apps/api/src/services/npc-memory-turn-transaction.ts",
+        "sha256": "7df5e9beaaa0e3f2a743b96049c6ae23ea594ca6fcd8fbf452da3fc475c739bd"
+      },
+      {
+        "path": "apps/api/src/services/p1-memory-policy.ts",
+        "sha256": "dbc9cf2770ab39b96c454d64bac45b2c5b1e3d3be0389b441b0ebaa0c3e7d8d7"
+      },
+      {
+        "path": "apps/api/src/services/p1-nlu-runtime.ts",
+        "sha256": "84a9090c27afff71dee22d80ce2e62cf7b584f29f974da606d2cf2d29f249daf"
+      },
+      {
+        "path": "apps/api/src/services/p1-prologue-plugin.ts",
+        "sha256": "f1a2d306f07b523cc0fe2de4e168878a460030c93578378dfa18d27a204aee26"
+      },
+      {
+        "path": "apps/api/src/services/p1-review-semantic-gate.ts",
+        "sha256": "5e829bf07ece79ab84fe49730836972ccc6c71f366e27cf63d91e2176277eb49"
+      },
+      {
+        "path": "apps/api/src/services/p1-rule-semantic-functions.ts",
+        "sha256": "fea0c8a52e08120229c60f77e94d3a1f763555c8e61713cb684905cbd98e9724"
+      },
+      {
+        "path": "apps/api/src/services/rule-semantic-fingerprint.ts",
+        "sha256": "e54e7549c5a864b9cf2cb819cce72a75db11f64469be670ef340cc175a2dd708"
+      },
+      {
+        "path": "apps/api/src/services/server-turn.ts",
+        "sha256": "43329bc4c9842cff24fb167371094d74f9192deabdbf818b46c9c768fd7f33a3"
+      },
+      {
+        "path": "apps/api/src/services/turn-runtime.ts",
+        "sha256": "9b259c7ca04a5e3a6a6c63d02ffa345496b4d65099c08372359cba63c9b745f8"
+      },
+      {
+        "path": "packages/contracts/package.json",
+        "sha256": "bada79c85c24cdbdc51217a17d713ad2a2c602122360e248aa27451d3ec7b257"
+      },
+      {
+        "path": "packages/contracts/src/action.ts",
+        "sha256": "39c7ea68097ebd806920deac9d1588e66097622ce1941a6e092cf4fb5eb910f2"
+      },
+      {
+        "path": "packages/contracts/src/decision.ts",
+        "sha256": "8c9072b869e14fbb840e79e3059836649b74bbb6076b4d244f2b9eb2010be7a2"
+      },
+      {
+        "path": "packages/contracts/src/event.ts",
+        "sha256": "110440e802eb9d115d79cdda5d0808206e11d4cff260089062b29b0f6cdc80b5"
+      },
+      {
+        "path": "packages/contracts/src/index.ts",
+        "sha256": "7f8459245591dc661f421aee21ee2c1072b7b38709d409f26f1b8e9756feb0e3"
+      },
+      {
+        "path": "packages/contracts/src/json-bounds.ts",
+        "sha256": "f4360b9ea473173118f61be96fe41dcafcc022ae9a9198d89a7aa6f75fc5989f"
+      },
+      {
+        "path": "packages/contracts/src/prologue.ts",
+        "sha256": "700acd9a8652edce8e252d4aac942fe9fb941acaebc22ef40d0ab80f31847bc7"
+      },
+      {
+        "path": "packages/contracts/src/save.ts",
+        "sha256": "35a437720328d286ff0b8062c74fdeb0cb9148353763547b3358afbacec0d638"
+      },
+      {
+        "path": "packages/contracts/src/state-delta.ts",
+        "sha256": "c420a0681d18ee1af608eade4559a3ef0adde6898583d56ede3efce4ccbc8a4a"
+      },
+      {
+        "path": "packages/contracts/src/turn.ts",
+        "sha256": "8e8984fa2a7fe4ab80cd10bc0b0a6cd6843610a5095d6df23e2b51d7646702a5"
+      },
+      {
+        "path": "packages/contracts/src/world.ts",
+        "sha256": "aff4a913b0672540e9d7b1ece5a8dedde107206c6e2f13ef354e19a38ded0e9d"
+      },
+      {
+        "path": "packages/domain/package.json",
+        "sha256": "67fdb4765ad138a7bef2df5fd42bc1f4c1bb9abb0982cc4698344643521a24b8"
+      },
+      {
+        "path": "packages/domain/src/event-log.ts",
+        "sha256": "e36cac475db2762f30db7d1b1966b189fc1a259f1ece8968f2d935cfd3ea4d3b"
+      },
+      {
+        "path": "packages/domain/src/index.ts",
+        "sha256": "b7e32746cfe7c9e7816d6a65a8c49f1a1a7baa52675a3e5f171ff428148f3f05"
+      },
+      {
+        "path": "packages/domain/src/memory/belief.ts",
+        "sha256": "edb4df5ddcaf121a2b2f79dd8b18ae8dd0ffe67718c6f19d5833fdbe765a0512"
+      },
+      {
+        "path": "packages/domain/src/memory/policy.ts",
+        "sha256": "92a2c1cd91262e1056543f99fd45d4c5fba05b74d526d31f8e1d11374a9b4043"
+      },
+      {
+        "path": "packages/domain/src/memory/turn-journal.ts",
+        "sha256": "ed4adc595d95a55c5e095e4a4d71602c4ad132f94673702b3d69de790d14b8fb"
+      },
+      {
+        "path": "packages/domain/src/nlu/action-parser.ts",
+        "sha256": "9dc1b2df2da738f9eb4e2dc949e50486718111abd0387ba2bac4841779ff2700"
+      },
+      {
+        "path": "packages/domain/src/nlu/index.ts",
+        "sha256": "3beb1713db386c7d1b8ab086f11e91230e6b070dbe974031d3a99ee3a3e8218b"
+      },
+      {
+        "path": "packages/domain/src/nlu/prologue-v1-nlu-fixtures.ts",
+        "sha256": "1a8e37d315a40aa7927ce488e9e53c1672baa3dcb9402e535b2c27f27e5409df"
+      },
+      {
+        "path": "packages/domain/src/prologue-v1-rules.ts",
+        "sha256": "67fdd8b9fd94e994e7e7d835de39beb5715b2ec3806c46e7d37af8241a376c49"
+      },
+      {
+        "path": "packages/domain/src/prologue-v1-time.ts",
+        "sha256": "1af9a9b5b04099126661b61091a06fb5930ff0cf00444ec1525916cd49468637"
+      },
+      {
+        "path": "packages/domain/src/rules.ts",
+        "sha256": "c9fe05500b9296839844f0deba448c64589f5877e5c1f37859b9b26b0584f6a4"
+      },
+      {
+        "path": "packages/domain/src/state-delta.ts",
+        "sha256": "078ff8aae4de7d0b20d724ad79c4db131ab50e181bbe4a6d576c2618c8672ac5"
+      },
+      {
+        "path": "scripts/p1-rule-semantic-source-digest.mjs",
+        "sha256": "566e40c082d9e65130dc50fa3a0d43980e70e5a84ac94c81a87b89d1a63d87c5"
+      }
+    ]
+  },
+  "applied": false,
+  "approval": "PENDING"
+}

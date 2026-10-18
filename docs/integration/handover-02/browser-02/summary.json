@@ -1,0 +1,22 @@
+{
+  "status": "PASS",
+  "realPostgres": true,
+  "realSession": true,
+  "realHttp": true,
+  "builtMobileUI": true,
+  "syntheticReceipts": true,
+  "T1Applied": false,
+  "actionPosts": 0,
+  "checks": [
+    "23-revisions-three-pages",
+    "exact-unicode-source",
+    "no-duplicate-history",
+    "current-body-preserved",
+    "pending-draft-version-preserved",
+    "refresh-recovery",
+    "mobile-width",
+    "page-failure-retry",
+    "late-logout-response-discarded",
+    "cross-account-denied"
+  ]
+}

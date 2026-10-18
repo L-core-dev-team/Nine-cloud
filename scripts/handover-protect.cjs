@@ -1,0 +1,12 @@
+'use strict';
+const fs=require('node:fs'),p=require('node:path'),{createHash}=require('node:crypto'),{execFileSync}=require('node:child_process');
+const root=p.resolve(__dirname,'..'),source='C:/Users/11954/Documents/Codex/Nine-cloud-p3-p6-stage1-20261013',logs='C:/Users/11954/Documents/Codex/p3-test-tools/p3-p6-stage1',out=p.join(root,'docs/integration/handover-01/protection');
+fs.mkdirSync(out,{recursive:true});if(fs.existsSync(p.join(out,'baseline.json')))throw Error('NO_OVERWRITE');
+const git=(cwd,args)=>execFileSync('git',args,{cwd,maxBuffer:8*1024*1024}).toString().trim(),sha=b=>createHash('sha256').update(b).digest('hex');
+const baseline='dbae068d86e5f9cd188d6196e403ce6dd701a1de';if(git(source,['rev-parse','HEAD'])!==baseline||git(source,['status','--porcelain']))throw Error('SOURCE_CHANGED');
+const signed=JSON.parse(fs.readFileSync(p.join(source,'docs/integration/pending/semantic-digest-review.json'),'utf8')).before.files.map(f=>f.path);
+const paths=[...new Set([...signed,...git(source,['diff-tree','--no-commit-id','--name-only','-r','-z',baseline]).split('\0').filter(Boolean)])];
+const files=paths.map(file=>{const b=fs.readFileSync(p.join(source,file)),candidate=fs.readFileSync(p.join(root,file)),identical=sha(candidate)===sha(b);if(!identical&&candidate.toString('utf8').replaceAll('\r\n','\n')!==b.toString('utf8').replaceAll('\r\n','\n'))throw Error('CLONE_CONTENT_MISMATCH '+file);return{path:file,sha256:sha(b),candidateSha256:sha(candidate),bytes:b.length,byteIdentical:identical,checkoutOnlyEolDifference:!identical};});
+fs.mkdirSync(p.join(out,'historical-logs'));const evidence=fs.readdirSync(logs,{withFileTypes:true}).filter(e=>e.isFile()).map(e=>{const b=fs.readFileSync(p.join(logs,e.name));fs.writeFileSync(p.join(out,'historical-logs',e.name),b);return{path:e.name,bytes:b.length,sha256:sha(b)};});
+const migrationFiles=fs.readdirSync(p.join(source,'packages/db/drizzle')).filter(n=>n.endsWith('.sql')).map(n=>({path:'packages/db/drizzle/'+n,sha256:sha(fs.readFileSync(p.join(source,'packages/db/drizzle',n)))}));
+fs.writeFileSync(p.join(out,'baseline.json'),JSON.stringify({baseline,sourceReadOnly:true,originalClean:true,signedPaths:signed,files,migrationFiles,evidence},null,2));console.log(JSON.stringify({baseline,protectedFiles:files.length,historicalLogs:evidence.length,migrations:migrationFiles.length}));

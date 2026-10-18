@@ -1,0 +1,13 @@
+{
+  "name": "db-unit-resume-01",
+  "baselineOrCandidate": "500a85c458e4428ea9b8747f05ceac7d05bc527f",
+  "command": [
+    "pnpm",
+    "--filter",
+    "@jiuxiao/db",
+    "test"
+  ],
+  "started": "2026-10-15T04:27:05.477Z",
+  "finished": "2026-10-15T04:27:05.994Z",
+  "exitCode": 0
+}

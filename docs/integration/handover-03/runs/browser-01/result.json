@@ -1,0 +1,12 @@
+{
+  "name": "browser-01",
+  "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+  "command": [
+    "node",
+    "scripts/handover-browser.cjs",
+    "handover03-browser-01"
+  ],
+  "started": "2026-10-16T10:16:48.569Z",
+  "finished": "2026-10-16T10:16:53.149Z",
+  "exitCode": 0
+}

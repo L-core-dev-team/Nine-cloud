@@ -1,0 +1,22 @@
+error: 关系 "game_saves" 的新列违反了检查约束 "game_saves_canon_artifact_hash_check"
+    at C:\Users\11954\Documents\Codex\Nine-cloud-p3-p6-stage1-20261013\node_modules\.pnpm\pg-pool@3.14.0_pg@8.23.1\node_modules\pg-pool\index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async C:\Users\11954\Documents\Codex\Nine-cloud-p3-p6-stage1-20261013\scripts\narrative-publication-migration-check.cjs:28:28 {
+  length: 464,
+  severity: '错误',
+  code: '23514',
+  detail: '失败, 行包含(keep-v3, keep-owner, 0, 3, fixture, fixture, fixture, {"facts": {"original": "unchanged"}, "playerId": "p", "locationI..., 2026-10-14 10:10:49.846299+08, 2026-10-14 10:10:49.846299+08, null, null, null, null, null, null, null, null).',
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: 'public',
+  table: 'game_saves',
+  column: undefined,
+  dataType: undefined,
+  constraint: 'game_saves_canon_artifact_hash_check',
+  file: 'execMain.c',
+  line: '2081',
+  routine: 'ExecConstraints'
+}

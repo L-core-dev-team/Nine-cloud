@@ -1,0 +1,48 @@
+{
+  "database": "jiuxiao_test_narrative-fresh-1791944822766",
+  "kind": "synthetic-test-sample-not-production-quota",
+  "rows": [
+    {
+      "sources": "32",
+      "utf16_units": "217",
+      "utf8_bytes": "613",
+      "source_relation_bytes": "65536",
+      "database_bytes": "12048063"
+    }
+  ],
+  "tables": [
+    {
+      "relname": "narrative_attempts",
+      "bytes": "81920"
+    },
+    {
+      "relname": "narrative_context_snapshots",
+      "bytes": "172032"
+    },
+    {
+      "relname": "narrative_generation_requests",
+      "bytes": "131072"
+    },
+    {
+      "relname": "narrative_outbox",
+      "bytes": "49152"
+    },
+    {
+      "relname": "narrative_publications",
+      "bytes": "114688"
+    },
+    {
+      "relname": "narrative_segments",
+      "bytes": "32768"
+    },
+    {
+      "relname": "narrative_sources",
+      "bytes": "65536"
+    },
+    {
+      "relname": "source_event_links",
+      "bytes": "49152"
+    }
+  ],
+  "backup": "BLOCKED: bundled PostgreSQL lacks pg_dump/pg_restore binaries; no backup generated"
+}

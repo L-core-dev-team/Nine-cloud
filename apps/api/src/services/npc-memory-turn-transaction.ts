@@ -39,6 +39,7 @@ interface SaveRow extends QueryResultRow {
 
 interface ReceiptRow extends QueryResultRow {
   result: unknown;
+  current_revision?: number;
 }
 
 interface JournalRow extends QueryResultRow {
@@ -84,6 +85,8 @@ export type AcceptedTurnCommitInput = {
   nextJournal: NpcMemoryJournal;
   authorizedObservations: readonly AuthorizedObservationOutboxRecord[];
   authorizedSupersessions?: readonly AuthorizedObservationSupersessionRecord[];
+  requestNarrative?: boolean;
+  cancellation?: AbortSignal;
 };
 
 export type AcceptedTurnCommitResult =
@@ -124,19 +127,24 @@ type NormalizedCommit = Omit<AcceptedTurnCommitInput, 'ownerId' | 'receipt' | 's
  * and journal on the server; this repository never decides gameplay or visibility.
  */
 export class PostgresNpcMemoryTurnRepository {
-  constructor(private readonly database: Database, private readonly requiresLiveAccount = false,private readonly guard?: (client:PoolClient,commit:AcceptedTurnCommitInput)=>Promise<void>) {}
+  constructor(private readonly database: Database, private readonly requiresLiveAccount = false,private readonly guard?: (client:PoolClient,commit:AcceptedTurnCommitInput)=>Promise<void>, private readonly registerNarrative?: (client:PoolClient,commit:AcceptedTurnCommitInput)=>Promise<void>) {}
 
   async getReceiptForOwner(ownerId: string, saveId: string, requestId: string): Promise<TurnReceipt | null> {
     const owner = normalizeOwnerId(ownerId);
     if (!isValidId(saveId) || !/^[0-9a-f-]{36}$/i.test(requestId)) throw new TypeError('Invalid turn identity');
     const result = await this.database.query<ReceiptRow>(
-      'SELECT r.result FROM turn_requests r JOIN game_saves s ON s.id = r.save_id ' +
+      'SELECT r.result,s.revision AS current_revision FROM turn_requests r JOIN game_saves s ON s.id = r.save_id ' +
       'WHERE r.save_id = $1 AND s.owner_id = $2 AND r.idempotency_key = $3 ' +
-      'AND NOT EXISTS (SELECT 1 FROM cloud_archive_trash t WHERE t.save_id = s.id) LIMIT 1',
+      'AND NOT EXISTS (SELECT 1 FROM cloud_archive_trash t WHERE t.save_id = s.id) ' +
+      (this.requiresLiveAccount ? 'AND EXISTS (SELECT 1 FROM auth_accounts a WHERE a.id=s.owner_id AND a.closed_at IS NULL) ' : '') + 'LIMIT 1',
       [saveId, owner, requestId],
     );
     if (!result.rows[0]) return null;
-    return TurnReceiptSchema.parse(result.rows[0].result);
+    const receipt=TurnReceiptSchema.parse(result.rows[0].result);
+    const currentRevision=Number(result.rows[0].current_revision);
+    if(receipt.saveId!==saveId || receipt.idempotencyKey!==requestId || !Number.isSafeInteger(currentRevision)
+      || currentRevision<receipt.resultingRevision) throw Error('TURN_RECEIPT_IDENTITY_OR_REVISION_MISMATCH');
+    return receipt;
   }
   async getForOwner(ownerId: string, saveId: string): Promise<NpcMemoryJournal | null> {
     const owner = normalizeOwnerId(ownerId);
@@ -272,11 +280,13 @@ export class PostgresNpcMemoryTurnRepository {
     const commit = normalizeCommit(input);
     const client = await this.database.connect();
     let inTransaction = false;
+    let commitAttempted = false;
+    let released = false;
 
     try {
       await client.query('BEGIN');
       inTransaction = true;
-      if (this.requiresLiveAccount && !(await client.query('SELECT id FROM auth_accounts WHERE id=$1 AND closed_at IS NULL '+(this.guard?'FOR UPDATE':'FOR KEY SHARE'), [commit.ownerId])).rowCount) {
+      if (this.requiresLiveAccount && !(await client.query('SELECT id FROM auth_accounts WHERE id=$1 AND closed_at IS NULL '+(this.guard||this.registerNarrative?'FOR UPDATE':'FOR KEY SHARE'), [commit.ownerId])).rowCount) {
         return await rollbackWith(client, () => { inTransaction = false; return { kind: 'not_found' }; });
       }
 
@@ -430,20 +440,33 @@ export class PostgresNpcMemoryTurnRepository {
         [commit.save.saveId, commit.nextJournal.revision, serializeNpcMemoryJournal(commit.nextJournal)],
       );
 
+      await this.registerNarrative?.(client,commit);
+      if (commit.cancellation?.aborted) throw Error('TURN_CANCELLED_BEFORE_COMMIT');
+      commitAttempted = true;
       await client.query('COMMIT');
       inTransaction = false;
       return { kind: 'committed', receipt: commit.receipt, save: commit.save, journal: commit.nextJournal };
     } catch (error) {
-      if (inTransaction) {
+      if (inTransaction && !commitAttempted) {
         try {
           await client.query('ROLLBACK');
         } catch {
           // Preserve the original failure; PostgreSQL will discard an open transaction on release.
         }
       }
+      if (commitAttempted) {
+        // A COMMIT transport error is ambiguous. Drop this connection before a new read.
+        client.release(true); released = true;
+        let recovered: TurnReceipt | null = null;
+        try { recovered = await this.getReceiptForOwner(commit.ownerId,commit.save.saveId,commit.receipt.idempotencyKey); }
+        catch { /* Remains unknown; never resubmit an action here. */ }
+        if (recovered && canonicalJson(recovered) === canonicalJson(commit.receipt))
+          return {kind:'duplicate',receipt:recovered};
+        throw new TurnCommitOutcomeUnknown(commit.save.saveId,commit.receipt.idempotencyKey);
+      }
       throw error;
     } finally {
-      client.release();
+      if (!released) client.release();
     }
   }
 }
@@ -609,4 +632,8 @@ function canonicalJson(value: unknown): string {
 async function rollbackWith<T>(client: PoolClient, createResult: () => T): Promise<T> {
   await client.query('ROLLBACK');
   return createResult();
+}
+
+export class TurnCommitOutcomeUnknown extends Error {
+  constructor(readonly saveId:string,readonly requestKey:string) { super('TURN_COMMIT_OUTCOME_UNKNOWN'); }
 }

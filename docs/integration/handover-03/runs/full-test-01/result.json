@@ -1,0 +1,11 @@
+{
+  "name": "full-test-01",
+  "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+  "command": [
+    "pnpm",
+    "test"
+  ],
+  "started": "2026-10-16T10:16:43.816Z",
+  "finished": "2026-10-16T10:16:44.369Z",
+  "exitCode": 1
+}

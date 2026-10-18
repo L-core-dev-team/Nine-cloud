@@ -1,0 +1,93 @@
+▶ requires a PostgreSQL integration database and rejects other protocols
+  ✔ missing URL fails with a non-secret diagnostic (49.0996ms)
+  ✔ non-PostgreSQL URL is rejected (44.3123ms)
+  ✔ PostgreSQL URL without a database is rejected (45.573ms)
+  ✔ database without the project test prefix is rejected (47.5154ms)
+  ✔ encoded path separators cannot smuggle a different database name (44.6492ms)
+  ✔ valid PostgreSQL URL passes without printing credentials (43.1946ms)
+✔ requires a PostgreSQL integration database and rejects other protocols (276.4394ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 351.4552
+
+ RUN  v5.0.3 C:/Users/11954/Desktop/水龙吟专用/项目/Nine-cloud-p3-p6-handover-01-20261014/apps/api
+
+ ❯ src/services/p1-memory-policy.test.ts (7 tests | 1 failed) 31ms
+   ❯ P1 save memory policy pinning (7)
+     × binds the pinned identity to the reviewed recall document bytes 16ms
+ ❯ src/services/p1-writing-gates.test.ts (2 tests | 1 failed) 50ms
+   ❯ P1 candidate writing gates (2)
+     × requires every registered prose line to retain source provenance and match an accepted author source (W8) 40ms
+ ❯ src/services/p1-review-rule-approval.test.ts (6 tests | 1 failed) 2215ms
+   ❯ P1 semantic review approval gate (6)
+     × keeps the reviewed bundle independent of the lockfile and drift-labelled as a byte diagnostic 36ms
+
+ Test Files  3 failed | 42 passed (45)
+      Tests  3 failed | 384 passed (387)
+   Start at  12:25:28
+   Duration  5.18s (tests 44%, import 33%, transform 22%, worker 1%)
+
+    Isolate  45 workers spawned · ~319ms startup each (spawn + environment, per file)
+             at least ~638ms faster with isolate: false — reuses workers across files instead of one per file
+
+C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-p3-p6-handover-01-20261014\apps\api:
+[ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL] @jiuxiao/api@1.0.0-alpha.0 test: `node --test ../../scripts/assert-test-database.test.mjs && vitest run`
+Exit status 1
+$ node --test ../../scripts/assert-test-database.test.mjs && vitest run
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/services/p1-memory-policy.test.ts > P1 save memory policy pinning > binds the pinned identity to the reviewed recall document bytes
+AssertionError: expected 'packages/domain/src/memory/p4-recall-…' to be 'packages/domain/src/memory/p4-recall-…' // Object.is equality
+
+Expected: "packages/domain/src/memory/p4-recall-policy-v2.json: sha256:5da8bd8e61e4859e5492b5393e3f458b12ded9cc36025858415fbe51c27261de"
+Received: "packages/domain/src/memory/p4-recall-policy-v2.json: sha256:6f986bd22bacceab0135049287d054ea00482891b86b8147491655bea45c6168"
+
+ ❯ src/services/p1-memory-policy.test.ts:56:39
+     54|     ] as const) {
+     55|       const fileBytes = `sha256:${createHash('sha256').update(readFile…
+     56|       expect(`${file}: ${fileBytes}`).toBe(`${file}: ${pinned}`);
+       |                                       ^
+     57|     }
+     58|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  src/services/p1-review-rule-approval.test.ts > P1 semantic review approval gate > keeps the reviewed bundle independent of the lockfile and drift-labelled as a byte diagnostic
+AssertionError: expected 'sha256:0103f1e83f974db83641d51891c9a6…' to be 'sha256:468a26ad109c64c6cf2a7224b0e895…' // Object.is equality
+
+Expected: "sha256:468a26ad109c64c6cf2a7224b0e895fd7614241e15c5b468842295d91dcddbce"
+Received: "sha256:0103f1e83f974db83641d51891c9a640b588d61aff94b6e4eddea498aa4a9a81"
+
+ ❯ src/services/p1-review-rule-approval.test.ts:26:26
+     24|     const digestInput = `${definition.format}\n${manifest.map(({ path,…
+     25|     const bundleSha256 = `sha256:${createHash('sha256').update(digestI…
+     26|     expect(bundleSha256).toBe(P1_REVIEW_RULE_APPROVAL.bundleSha256);
+       |                          ^
+     27|
+     28|     // semanticSha256 is the enforced pin; the byte diagnostics are on…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  src/services/p1-writing-gates.test.ts > P1 candidate writing gates > requires every registered prose line to retain source provenance and match an accepted author source (W8)
+AssertionError: source hash changed: docs/九霄1.0-P1-执行规格-GPT交付版-2026-10-03.md: expected '7083693353002d07d7da9b5880db1c9269058…' to be '7677776d40825889694abeff4cb51c33d4fcd…' // Object.is equality
+
+Expected: "7677776d40825889694abeff4cb51c33d4fcd4a91e70eafcf8baae491635259e"
+Received: "7083693353002d07d7da9b5880db1c9269058cf8f11be06752304c7795aaa41e"
+
+ ❯ src/services/p1-writing-gates.test.ts:44:61
+     42|       const bytes = readFileSync(resolve(root, source.path));
+     43|       const digest = createHash('sha256').update(bytes).digest('hex');
+     44|       expect(digest, `source hash changed: ${source.path}`).toBe(sourc…
+       |                                                             ^
+     45|       return [source.path, bytes.toString('utf8')] as const;
+     46|     }));
+ ❯ src/services/p1-writing-gates.test.ts:41:48
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+

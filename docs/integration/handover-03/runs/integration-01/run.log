@@ -1,0 +1,4 @@
+[ELIFECYCLE] Command failed with exit code 1.
+$ pnpm --filter @jiuxiao/api test:integration
+'pnpm' �����ڲ����ⲿ���Ҳ���ǿ����еĳ���
+���������ļ���

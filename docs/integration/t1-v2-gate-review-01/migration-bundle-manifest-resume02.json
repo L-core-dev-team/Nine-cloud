@@ -1,0 +1,99 @@
+{
+  "mode": "development-only-alternate-journal",
+  "productionJournalUnchanged": true,
+  "original": [
+    {
+      "path": "0000_glamorous_robbie_robertson.sql",
+      "sha256": "731b447f3b3b0e19b3e1600f0a44d71dab9607f7db109977574e692adbae81e5"
+    },
+    {
+      "path": "0001_s7_entitlement_ledger.sql",
+      "sha256": "8fbb82cfa3196510c6707e8f66b11eec8a2058c81f64ca3e2febb5371021f084"
+    },
+    {
+      "path": "0002_s4_npc_memory_atomic.sql",
+      "sha256": "de22e094b3cec254b155e468909d62c6a27b4d2e5f2911a4f68571ff88f0ca77"
+    },
+    {
+      "path": "0003_s6_email_auth.sql",
+      "sha256": "581214973cadd1a37ac0157d5dbbd90d32125d47502dabcc9bb0b0173ae719cb"
+    },
+    {
+      "path": "0004_s6_archive_trash.sql",
+      "sha256": "e078859176232b4eb450c05dd12e04872702587980f9bea35e0fd499b0974c28"
+    },
+    {
+      "path": "0005_fearless_shatterstar.sql",
+      "sha256": "08ec61fa3e76e496602938bdbd79056278fba98bc177e254a1c649c9d27f63ab"
+    },
+    {
+      "path": "0006_next_the_enforcers.sql",
+      "sha256": "5f68293a854a6770d7d8b2adcdc5b43e1fc1b4af168e84be75a7e98c0f55312b"
+    },
+    {
+      "path": "0007_account_erasure_ledger.sql",
+      "sha256": "1b24e43cdc643b13d9b45931d2daba555ef087a0269092e09a799bd00302f417"
+    },
+    {
+      "path": "0008_sec_integrity_auth_limits.sql",
+      "sha256": "8f55be10d57ee90387c442eb8f151867b95d6e02cd6ed339c83e26e38a171d0f"
+    },
+    {
+      "path": "0009_overjoyed_crystal.sql",
+      "sha256": "b4f810987bc54b18763397ea4c4cb36f3692e1fe9946e0e76b9da1b58efa7af6"
+    },
+    {
+      "path": "0010_retention_purge_receipt.sql",
+      "sha256": "2398f7c4c9766588d090fb26cc895450c704e52faa88f7799b7498e768388dc7"
+    },
+    {
+      "path": "0011_test_cleanup_database_guard.sql",
+      "sha256": "822d18d761301ca77880d59a465d6e8cc36a1d0e3025665d197dea3ff1b3fee1"
+    },
+    {
+      "path": "0012_closeout_runtime_controls.sql",
+      "sha256": "28124b7cdf5596ab08894bede0add68b05b4990aa214c47a9889880ad25cc31c"
+    },
+    {
+      "path": "0013_event_integrity_ownership.sql",
+      "sha256": "5cea34a3374c3e56619972d341a9a16e2ecce527378db44ae30866734f41498a"
+    },
+    {
+      "path": "0014_npc_authorized_observation_outbox.sql",
+      "sha256": "5501f275773e55a7ab897cba4aecb0dba345d67fce58f1f32a47dff4b7e04f0a"
+    },
+    {
+      "path": "0015_p1_gameplay_persistence.sql",
+      "sha256": "14711c747eb5a87106a3492bd28249d4cc33c0f95dec9acfece1fb3aeb985a66"
+    },
+    {
+      "path": "0016_supabase_external_identity.sql",
+      "sha256": "3eaadd2f9c07e41dfe90398f80a21de6cfe4e74377bd806b106b24ed4315401d"
+    },
+    {
+      "path": "0017_p2_authority_lineage.sql",
+      "sha256": "cfcf2348c6da5d3c7bf0e91e3f998a207aa060ee3135b436223e17bf1983095c"
+    },
+    {
+      "path": "0018_p2_canon_artifact_identity.sql",
+      "sha256": "a4e878fbb3579cfa73eb82e157f25ec3704a195a18c95b1b7f8d0a47885b4d17"
+    },
+    {
+      "path": "0019_p1_guest_accounts.sql",
+      "sha256": "02926e4864b38556029adaff31e92214226b90dea8a0699ea7808e760036ddff"
+    },
+    {
+      "path": "0020_npc_memory_recall_semantics.sql",
+      "sha256": "af1f6e79ac9993a28dddd418b2e38bf5927add04d78d173e99dca05477281084"
+    },
+    {
+      "path": "0021_recall_upgrade_compatibility.sql",
+      "sha256": "63698efc15825b0c9e638ced2d8fcb1ae515cc987fa5cf2a0add6aed79496367"
+    },
+    {
+      "path": "0022_narrative_publication.sql",
+      "sha256": "ef799e3604ea1f499a1cda67d9ac5d4d7b7feba914ac80a0905bfadfd8d254cd"
+    }
+  ],
+  "pending0023Sha256": "5ea072402c2b3ad6329be30669e956393cc6fbaf873919820fcf49a24480d408"
+}

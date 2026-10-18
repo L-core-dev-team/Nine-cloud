@@ -1,0 +1,16 @@
+✔ suppressed receipt returns not_requested without worker or generation reads (105.3688ms)
+✔ missing ownership remains unknown, never inferred legacy from missing G (0.3114ms)
+✔ managed declaration with missing generation raises integrity failure (0.544ms)
+✔ managed pending and running are read-only, cancellation cannot turn them failed (0.3834ms)
+✔ registration false records only ownership on caller client (0.53ms)
+✔ explicit failed generation cannot acquire a new attempt (0.7308ms)
+✔ active lease is not stolen, exhausted recovery becomes terminal (10.4554ms)
+✔ worker execution deadline fails task without late publish (6.3296ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 202.3403

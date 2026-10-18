@@ -1,0 +1,11 @@
+{
+  "name": "final-db-state-01",
+  "baselineOrCandidate": "500a85c458e4428ea9b8747f05ceac7d05bc527f",
+  "command": [
+    "node",
+    "scripts/handover-diagnose.cjs"
+  ],
+  "started": "2026-10-15T04:30:17.331Z",
+  "finished": "2026-10-15T04:30:17.939Z",
+  "exitCode": 0
+}

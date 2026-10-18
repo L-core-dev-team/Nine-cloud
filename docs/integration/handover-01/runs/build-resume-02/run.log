@@ -1,0 +1,32 @@
+Verified public Canon runtime 1.0: 34 confirmed entries; receiptsComplete=true; private source metadata excluded.
+Scope: 6 of 9 workspace projects
+packages/content build$ tsc -p tsconfig.json
+packages/contracts build$ tsc -p tsconfig.json
+packages/db build$ tsc -p tsconfig.json
+packages/content build: Done
+packages/contracts build: Done
+packages/db build: Done
+packages/domain build$ tsc -p tsconfig.json
+packages/domain build: Done
+apps/api build$ tsc -p tsconfig.json
+apps/web build$ vite build
+apps/web build: vite v8.3.1 building client environment for production...
+apps/web build: transforming...
+apps/api build: Done
+apps/web build: ✓ 171 modules transformed.
+apps/web build: rendering chunks...
+apps/web build: computing gzip size...
+apps/web build: dist/index.html                      0.91 kB │ gzip:   0.53 kB
+apps/web build: dist/assets/index-IUrIEjt0.css     119.81 kB │ gzip:  23.50 kB
+apps/web build: dist/assets/worldbook-Y1BHA5zF.js  220.12 kB │ gzip:  53.13 kB
+apps/web build: dist/assets/index-BRfvWzCQ.js      638.13 kB │ gzip: 196.34 kB
+apps/web build: ✓ built in 379ms
+apps/web build: [plugin builtin:vite-reporter] 
+apps/web build: (!) Some chunks are larger than 500 kB after minification. Consider:
+apps/web build: - Using dynamic import() to code-split the application
+apps/web build: - Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+apps/web build: - Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+apps/web build: Done
+Built web, API and schema at 500a85c458e4428ea9b8747f05ceac7d05bc527f (dirty worktree; 53 changed paths)
+$ pnpm worldbook:runtime:check && pnpm -r --filter=!@jiuxiao/scene-studio --filter=!@jiuxiao/scene-gate build && node scripts/build/write-manifest.mjs --stage S6
+$ node scripts/build-canon-runtime.mjs --check --allow-pending-receipts

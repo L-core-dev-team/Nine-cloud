@@ -1,0 +1,12 @@
+{
+  "name": "shell-01",
+  "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+  "command": [
+    "node",
+    "tests/e2e/cloud-game-shell.cjs",
+    "handover03-shell-01"
+  ],
+  "started": "2026-10-16T10:16:53.210Z",
+  "finished": "2026-10-16T10:17:02.618Z",
+  "exitCode": 0
+}

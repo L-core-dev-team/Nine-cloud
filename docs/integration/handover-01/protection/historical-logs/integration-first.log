@@ -1,0 +1,17 @@
+Scope: all 9 workspace projects
+[ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY] Aborted removal of modules directory due to no TTY
+
+If you are running pnpm in CI, set the CI environment variable to "true", or set "confirmModulesPurge" to "false".
+[ERROR] Command failed with exit code 1: "C:\Program Files\nodejs\node.exe" "C:\Users\11954\Documents\Codex\p3-test-tools\pnpm-11-19\node_modules\pnpm\bin\pnpm.mjs" install
+
+pnpm: Command failed with exit code 1: "C:\Program Files\nodejs\node.exe" "C:\Users\11954\Documents\Codex\p3-test-tools\pnpm-11-19\node_modules\pnpm\bin\pnpm.mjs" install
+    at getFinalError (file:///C:/Users/11954/Documents/Codex/p3-test-tools/pnpm-11-19/node_modules/pnpm/dist/pnpm.mjs:88973:14)
+    at makeError (file:///C:/Users/11954/Documents/Codex/p3-test-tools/pnpm-11-19/node_modules/pnpm/dist/pnpm.mjs:91280:21)
+    at getSyncResult (file:///C:/Users/11954/Documents/Codex/p3-test-tools/pnpm-11-19/node_modules/pnpm/dist/pnpm.mjs:93124:10)
+    at spawnSubprocessSync (file:///C:/Users/11954/Documents/Codex/p3-test-tools/pnpm-11-19/node_modules/pnpm/dist/pnpm.mjs:93084:14)
+    at execaCoreSync (file:///C:/Users/11954/Documents/Codex/p3-test-tools/pnpm-11-19/node_modules/pnpm/dist/pnpm.mjs:93014:23)
+    at callBoundExeca (file:///C:/Users/11954/Documents/Codex/p3-test-tools/pnpm-11-19/node_modules/pnpm/dist/pnpm.mjs:95542:23)
+    at boundExeca (file:///C:/Users/11954/Documents/Codex/p3-test-tools/pnpm-11-19/node_modules/pnpm/dist/pnpm.mjs:95519:49)
+    at sync2 (file:///C:/Users/11954/Documents/Codex/p3-test-tools/pnpm-11-19/node_modules/pnpm/dist/pnpm.mjs:95678:10)
+    at runPnpmCli (file:///C:/Users/11954/Documents/Codex/p3-test-tools/pnpm-11-19/node_modules/pnpm/dist/pnpm.mjs:252207:5)
+    at runDepsStatusCheck (file:///C:/Users/11954/Documents/Codex/p3-test-tools/pnpm-11-19/node_modules/pnpm/dist/pnpm.mjs:253973:7)

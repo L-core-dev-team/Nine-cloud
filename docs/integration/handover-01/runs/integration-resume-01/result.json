@@ -1,0 +1,11 @@
+{
+  "name": "integration-resume-01",
+  "baselineOrCandidate": "500a85c458e4428ea9b8747f05ceac7d05bc527f",
+  "command": [
+    "pnpm",
+    "test:integration"
+  ],
+  "started": "2026-10-15T04:24:55.167Z",
+  "finished": "2026-10-15T04:25:01.274Z",
+  "exitCode": 0
+}

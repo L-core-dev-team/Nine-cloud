@@ -1,0 +1,12 @@
+{
+  "name": "concurrency-01",
+  "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+  "command": [
+    "node",
+    "--test",
+    "scripts/handover-concurrency.cjs"
+  ],
+  "started": "2026-10-16T10:16:46.302Z",
+  "finished": "2026-10-16T10:16:48.505Z",
+  "exitCode": 0
+}

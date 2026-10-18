@@ -1,0 +1,1 @@
+P2 Chromium IndexedDB: v2->v3 upgrade, durable replay, cross-tab CAS, post-reload idempotent retry, atomic rollback, 100-turn replay (1236 ms), page-close recovery, and full archive restore passed.

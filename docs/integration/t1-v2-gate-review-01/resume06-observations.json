@@ -1,0 +1,627 @@
+{
+  "kind": "real-pg-component-fault-tests",
+  "formal": {
+    "pass": 0,
+    "blocked": 16
+  },
+  "observations": [
+    {
+      "case": "upgrade",
+      "versions": 24,
+      "old0022SnapshotBefore": [
+        {
+          "id": "a3ea9b42-2b94-49d6-bbaa-069f98f8e6ee",
+          "state": "published",
+          "lease_epoch": 1,
+          "context_sha": "80e5c3c03191d811c471e49b514025b5565519bf7fb48365f716cde0233e8e94",
+          "receipt_sha": "4c1fbf895759308b4a15dba495d97f97fb49b6f7017106713f6aa246d265a7a9",
+          "source_id": "60183003-9b3a-404a-8fdb-ec4a8dab3468",
+          "body_sha": "b5279bbebfe09361b72f7a7b7f44ebbdd219322d676ad754a64aaa96133e533b"
+        }
+      ],
+      "old0022SnapshotAfter": [
+        {
+          "id": "a3ea9b42-2b94-49d6-bbaa-069f98f8e6ee",
+          "state": "published",
+          "lease_epoch": 1,
+          "context_sha": "80e5c3c03191d811c471e49b514025b5565519bf7fb48365f716cde0233e8e94",
+          "receipt_sha": "4c1fbf895759308b4a15dba495d97f97fb49b6f7017106713f6aa246d265a7a9",
+          "source_id": "60183003-9b3a-404a-8fdb-ec4a8dab3468",
+          "body_sha": "b5279bbebfe09361b72f7a7b7f44ebbdd219322d676ad754a64aaa96133e533b"
+        }
+      ]
+    },
+    {
+      "case": "concurrent-admission",
+      "isolation": "READ COMMITTED",
+      "outcome": {
+        "ok": false,
+        "code": "23505",
+        "message": "duplicate key value violates unique constraint \"narrative_receipt_ownership_pkey\""
+      }
+    },
+    {
+      "case": "concurrent-admission",
+      "isolation": "REPEATABLE READ",
+      "outcome": {
+        "ok": false,
+        "code": "40001",
+        "message": "could not serialize access due to concurrent update"
+      }
+    },
+    {
+      "case": "receipt-race",
+      "isolation": "READ COMMITTED",
+      "outcome": {
+        "ok": false,
+        "code": "P0001",
+        "message": "NARRATIVE_OWNED_RECEIPT_IMMUTABLE"
+      }
+    },
+    {
+      "case": "receipt-race",
+      "isolation": "REPEATABLE READ",
+      "outcome": {
+        "ok": false,
+        "code": "40001",
+        "message": "could not serialize access due to concurrent update"
+      }
+    },
+    {
+      "case": "operator-fence",
+      "fence": {
+        "singleton": true,
+        "protocol_version": 2,
+        "phase": "managed",
+        "fleet_manifest_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "renderer_version": "handover-fixture-v1",
+        "old_writer_drained": true,
+        "old_role_revoked": true,
+        "valid_until": "2026-10-17T04:54:29.146Z",
+        "retired_roles": [
+          "gr01_retired"
+        ],
+        "drain_evidence_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "attested_by": "gr01_operator",
+        "attested_at": "2026-10-17T03:54:29.150Z"
+      },
+      "externalFleetEvidence": "synthetic test attestation only; no production fleet verified"
+    },
+    {
+      "case": "timeout",
+      "before": {
+        "receipts": 1,
+        "events": 1,
+        "revision": 1,
+        "generations": 1,
+        "attempts": 0,
+        "publications": 0,
+        "sources": 0
+      },
+      "after": {
+        "receipts": 1,
+        "events": 1,
+        "revision": 1,
+        "generations": 1,
+        "attempts": 1,
+        "publications": 0,
+        "sources": 0
+      },
+      "aborted": true,
+      "lateComputations": 1,
+      "failedAutomaticallyReclaimed": false,
+      "externalArbitraryClosureSideEffectsProvenAbsent": false
+    },
+    {
+      "case": "expired-epoch",
+      "outcome": {
+        "ok": false,
+        "message": "NARRATIVE_STALE_ATTEMPT"
+      },
+      "after": {
+        "receipts": 1,
+        "events": 1,
+        "revision": 1,
+        "generations": 1,
+        "attempts": 2,
+        "publications": 1,
+        "sources": 1
+      },
+      "winningEpoch": 2,
+      "sourceSha": "61a13b226a8fdd1eaa98abefcd178706d0b99a59abd67866315ea62f5b6775ce",
+      "testLeaseMs": 50,
+      "productionLeaseUnchanged": 150000
+    },
+    {
+      "case": "schema-parity",
+      "evidence": [
+        {
+          "table": "narrative_writer_fence",
+          "columns": [
+            {
+              "column_name": "singleton",
+              "is_nullable": "NO",
+              "udt_name": "bool"
+            },
+            {
+              "column_name": "protocol_version",
+              "is_nullable": "NO",
+              "udt_name": "int4"
+            },
+            {
+              "column_name": "phase",
+              "is_nullable": "NO",
+              "udt_name": "text"
+            },
+            {
+              "column_name": "fleet_manifest_sha",
+              "is_nullable": "NO",
+              "udt_name": "text"
+            },
+            {
+              "column_name": "renderer_version",
+              "is_nullable": "NO",
+              "udt_name": "text"
+            },
+            {
+              "column_name": "old_writer_drained",
+              "is_nullable": "NO",
+              "udt_name": "bool"
+            },
+            {
+              "column_name": "old_role_revoked",
+              "is_nullable": "NO",
+              "udt_name": "bool"
+            },
+            {
+              "column_name": "valid_until",
+              "is_nullable": "NO",
+              "udt_name": "timestamptz"
+            },
+            {
+              "column_name": "retired_roles",
+              "is_nullable": "NO",
+              "udt_name": "_text"
+            },
+            {
+              "column_name": "drain_evidence_sha",
+              "is_nullable": "YES",
+              "udt_name": "text"
+            },
+            {
+              "column_name": "attested_by",
+              "is_nullable": "YES",
+              "udt_name": "text"
+            },
+            {
+              "column_name": "attested_at",
+              "is_nullable": "YES",
+              "udt_name": "timestamptz"
+            }
+          ],
+          "constraints": [
+            {
+              "contype": "c",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "CHECK ((phase = ANY (ARRAY['fenced'::text, 'managed'::text])))"
+            },
+            {
+              "contype": "c",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "CHECK ((protocol_version = 2))"
+            },
+            {
+              "contype": "c",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "CHECK ((length(renderer_version) > 0))"
+            },
+            {
+              "contype": "c",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "CHECK (singleton)"
+            },
+            {
+              "contype": "n",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "NOT NULL fleet_manifest_sha"
+            },
+            {
+              "contype": "n",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "NOT NULL old_role_revoked"
+            },
+            {
+              "contype": "n",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "NOT NULL old_writer_drained"
+            },
+            {
+              "contype": "n",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "NOT NULL phase"
+            },
+            {
+              "contype": "n",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "NOT NULL protocol_version"
+            },
+            {
+              "contype": "n",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "NOT NULL renderer_version"
+            },
+            {
+              "contype": "n",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "NOT NULL retired_roles"
+            },
+            {
+              "contype": "n",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "NOT NULL singleton"
+            },
+            {
+              "contype": "n",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "NOT NULL valid_until"
+            },
+            {
+              "contype": "p",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "PRIMARY KEY (singleton)"
+            }
+          ],
+          "drizzleUniqueIndexes": [],
+          "sqlOnlyFeatures": [
+            "deferred generation FK",
+            "constraint and authorization triggers",
+            "SQL role grants"
+          ]
+        },
+        {
+          "table": "narrative_receipt_ownership",
+          "columns": [
+            {
+              "column_name": "owner_id",
+              "is_nullable": "NO",
+              "udt_name": "text"
+            },
+            {
+              "column_name": "save_id",
+              "is_nullable": "NO",
+              "udt_name": "text"
+            },
+            {
+              "column_name": "request_key",
+              "is_nullable": "NO",
+              "udt_name": "text"
+            },
+            {
+              "column_name": "receipt_sha",
+              "is_nullable": "NO",
+              "udt_name": "text"
+            },
+            {
+              "column_name": "protocol_version",
+              "is_nullable": "NO",
+              "udt_name": "int4"
+            },
+            {
+              "column_name": "ownership",
+              "is_nullable": "NO",
+              "udt_name": "text"
+            },
+            {
+              "column_name": "request_narrative",
+              "is_nullable": "NO",
+              "udt_name": "bool"
+            },
+            {
+              "column_name": "renderer_version",
+              "is_nullable": "NO",
+              "udt_name": "text"
+            },
+            {
+              "column_name": "context_version",
+              "is_nullable": "NO",
+              "udt_name": "text"
+            },
+            {
+              "column_name": "branch_id",
+              "is_nullable": "NO",
+              "udt_name": "text"
+            },
+            {
+              "column_name": "generation_id",
+              "is_nullable": "YES",
+              "udt_name": "uuid"
+            },
+            {
+              "column_name": "legacy_inventory_sha",
+              "is_nullable": "YES",
+              "udt_name": "text"
+            },
+            {
+              "column_name": "legacy_body",
+              "is_nullable": "YES",
+              "udt_name": "bytea"
+            },
+            {
+              "column_name": "legacy_body_sha",
+              "is_nullable": "YES",
+              "udt_name": "text"
+            },
+            {
+              "column_name": "legacy_generator_source",
+              "is_nullable": "YES",
+              "udt_name": "text"
+            }
+          ],
+          "constraints": [
+            {
+              "contype": "c",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "CHECK ((branch_id = 'root'::text))"
+            },
+            {
+              "contype": "c",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "CHECK ((((ownership = 'managed'::text) AND request_narrative AND (protocol_version = 2)) OR ((ownership = 'suppressed'::text) AND (NOT request_narrative) AND (protocol_version = 2) AND (generation_id IS NULL)) OR ((ownership = 'legacy'::text) AND (protocol_version = 1) AND (generation_id IS NULL) AND (legacy_inventory_sha IS NOT NULL) AND (legacy_inventory_sha ~ '^[a-f0-9]{64}$'::text))))"
+            },
+            {
+              "contype": "c",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "CHECK (((ownership = 'legacy'::text) OR ((legacy_body IS NULL) AND (legacy_body_sha IS NULL) AND (legacy_inventory_sha IS NULL) AND (legacy_generator_source IS NULL))))"
+            },
+            {
+              "contype": "c",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "CHECK ((((legacy_body IS NULL) AND (legacy_body_sha IS NULL)) OR ((legacy_body IS NOT NULL) AND (legacy_body_sha IS NOT NULL) AND (legacy_generator_source IS NOT NULL) AND (legacy_body_sha = encode(sha256(legacy_body), 'hex'::text)))))"
+            },
+            {
+              "contype": "c",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "CHECK ((legacy_generator_source = ANY (ARRAY['model'::text, 'deterministic'::text])))"
+            },
+            {
+              "contype": "c",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "CHECK ((ownership = ANY (ARRAY['managed'::text, 'suppressed'::text, 'legacy'::text])))"
+            },
+            {
+              "contype": "c",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "CHECK ((protocol_version = ANY (ARRAY[1, 2])))"
+            },
+            {
+              "contype": "c",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "CHECK ((receipt_sha ~ '^[a-f0-9]{64}$'::text))"
+            },
+            {
+              "contype": "f",
+              "condeferrable": true,
+              "condeferred": true,
+              "definition": "FOREIGN KEY (generation_id) REFERENCES narrative_generation_requests(id) DEFERRABLE INITIALLY DEFERRED"
+            },
+            {
+              "contype": "f",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "FOREIGN KEY (owner_id) REFERENCES auth_accounts(id) ON DELETE CASCADE"
+            },
+            {
+              "contype": "f",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "FOREIGN KEY (save_id, request_key) REFERENCES turn_requests(save_id, idempotency_key) ON DELETE CASCADE"
+            },
+            {
+              "contype": "n",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "NOT NULL branch_id"
+            },
+            {
+              "contype": "n",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "NOT NULL context_version"
+            },
+            {
+              "contype": "n",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "NOT NULL owner_id"
+            },
+            {
+              "contype": "n",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "NOT NULL ownership"
+            },
+            {
+              "contype": "n",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "NOT NULL protocol_version"
+            },
+            {
+              "contype": "n",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "NOT NULL receipt_sha"
+            },
+            {
+              "contype": "n",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "NOT NULL renderer_version"
+            },
+            {
+              "contype": "n",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "NOT NULL request_key"
+            },
+            {
+              "contype": "n",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "NOT NULL request_narrative"
+            },
+            {
+              "contype": "n",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "NOT NULL save_id"
+            },
+            {
+              "contype": "p",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "PRIMARY KEY (save_id, request_key)"
+            },
+            {
+              "contype": "t",
+              "condeferrable": true,
+              "condeferred": true,
+              "definition": "TRIGGER DEFERRABLE INITIALLY DEFERRED"
+            },
+            {
+              "contype": "t",
+              "condeferrable": true,
+              "condeferred": true,
+              "definition": "TRIGGER DEFERRABLE INITIALLY DEFERRED"
+            },
+            {
+              "contype": "u",
+              "condeferrable": false,
+              "condeferred": false,
+              "definition": "UNIQUE (owner_id, save_id, request_key, receipt_sha)"
+            }
+          ],
+          "drizzleUniqueIndexes": [
+            [
+              "owner_id",
+              "save_id",
+              "request_key",
+              "receipt_sha"
+            ]
+          ],
+          "sqlOnlyFeatures": [
+            "deferred generation FK",
+            "constraint and authorization triggers",
+            "SQL role grants"
+          ]
+        }
+      ]
+    },
+    {
+      "case": "commit-recovery",
+      "mode": "committed",
+      "stats": {
+        "commitSends": 1,
+        "recoveryQueries": 1,
+        "destroyed": true
+      },
+      "after": {
+        "receipts": 2,
+        "events": 2,
+        "revision": 2,
+        "generations": 0,
+        "attempts": 0,
+        "publications": 0,
+        "sources": 0
+      },
+      "fault": "real PG transaction; injected client COMMIT acknowledgement/read failure, not a production network fault"
+    },
+    {
+      "case": "commit-recovery",
+      "mode": "not-committed",
+      "stats": {
+        "commitSends": 1,
+        "recoveryQueries": 1,
+        "destroyed": true
+      },
+      "after": {
+        "receipts": 1,
+        "events": 1,
+        "revision": 1,
+        "generations": 0,
+        "attempts": 0,
+        "publications": 0,
+        "sources": 0
+      },
+      "fault": "real PG transaction; injected client COMMIT acknowledgement/read failure, not a production network fault"
+    },
+    {
+      "case": "commit-recovery",
+      "mode": "query-unavailable",
+      "stats": {
+        "commitSends": 1,
+        "recoveryQueries": 1,
+        "destroyed": true
+      },
+      "after": {
+        "receipts": 2,
+        "events": 2,
+        "revision": 2,
+        "generations": 0,
+        "attempts": 0,
+        "publications": 0,
+        "sources": 0
+      },
+      "fault": "real PG transaction; injected client COMMIT acknowledgement/read failure, not a production network fault"
+    },
+    {
+      "case": "http-disconnect",
+      "realLoopbackSocket": true,
+      "productionRoute": false,
+      "after": {
+        "receipts": 2,
+        "events": 2,
+        "revision": 2,
+        "generations": 0,
+        "attempts": 0,
+        "publications": 0,
+        "sources": 0
+      },
+      "requestKey": "4d86f3d1-455d-4c7e-a9b5-fa63a8f200d7"
+    },
+    {
+      "case": "existing-route-unknown",
+      "status": 503,
+      "realPg": true,
+      "syntheticPreparedTurn": true,
+      "formalGameplay": false,
+      "stats": {
+        "commitSends": 1,
+        "recoveryQueries": 1,
+        "destroyed": true
+      }
+    }
+  ]
+}

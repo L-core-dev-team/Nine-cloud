@@ -1,0 +1,12 @@
+{
+  "name": "fixture-01",
+  "head": "0268d905647d06838db73dd609795e4d5544f8e8",
+  "command": [
+    "node",
+    "--test",
+    "scripts/handover-02-fixtures.cjs"
+  ],
+  "started": "2026-10-15T13:59:39.639Z",
+  "finished": "2026-10-15T13:59:40.660Z",
+  "exitCode": 0
+}

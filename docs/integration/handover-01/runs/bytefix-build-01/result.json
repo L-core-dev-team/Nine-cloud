@@ -1,0 +1,11 @@
+{
+  "name": "bytefix-build-01",
+  "baselineOrCandidate": "9587d05da09171e3bc75de309a8f65b8d601b8a6",
+  "command": [
+    "pnpm",
+    "build"
+  ],
+  "started": "2026-10-15T04:40:28.049Z",
+  "finished": "2026-10-15T04:40:31.370Z",
+  "exitCode": 0
+}

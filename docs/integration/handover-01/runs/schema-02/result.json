@@ -1,0 +1,12 @@
+{
+  "name": "schema-02",
+  "baselineOrCandidate": "500a85c458e4428ea9b8747f05ceac7d05bc527f",
+  "command": [
+    "node",
+    "scripts/handover-schema-check.cjs",
+    "schema-check-02"
+  ],
+  "started": "2026-10-14T12:47:36.170Z",
+  "finished": "2026-10-14T12:47:36.988Z",
+  "exitCode": 0
+}

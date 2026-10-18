@@ -1,0 +1,2347 @@
+{
+  "inspectedFiles": 347,
+  "changedProtected": [
+    "apps/api/src/services/narrative-v2-runtime-draft.ts",
+    "docs/integration/pending/0023_narrative_ownership_v2.sql",
+    "scripts/gate-review/migration.cjs"
+  ],
+  "syntaxChecked": [
+    "scripts/gate-review/backup-restore.cjs",
+    "scripts/gate-review/baseline-probes.cjs",
+    "scripts/gate-review/check-patches.cjs",
+    "scripts/gate-review/finalize.cjs",
+    "scripts/gate-review/migration.cjs",
+    "scripts/gate-review/pg.cjs",
+    "scripts/gate-review/real-pg.test.cjs",
+    "scripts/gate-review/seal-review.mjs",
+    "scripts/gate-review/signoff-pg-stop.cjs",
+    "scripts/gate-review/signoff-preflight.test.cjs",
+    "scripts/gate-review/signoff-release.mjs",
+    "scripts/gate-review/support.cjs"
+  ],
+  "allJsonParsed": true,
+  "noDeletedFiles": true,
+  "inventory": [
+    {
+      "path": "apps/api/src/services/narrative-outbox-worker.ts",
+      "bytes": 2518,
+      "sha256": "76ec80e0158cd3a99f022b522eb395578372760d0179abfe5eb9b663ed0059dc",
+      "kind": "product"
+    },
+    {
+      "path": "apps/api/src/services/narrative-ownership-v2.ts",
+      "bytes": 8538,
+      "sha256": "e9fb38e86ed1a34faaecbd7aea44328da8065774410f53b7b70d371c29d8c2ea",
+      "kind": "product"
+    },
+    {
+      "path": "apps/api/src/services/narrative-publication-repository.ts",
+      "bytes": 23740,
+      "sha256": "3d7046d9b206c8ea8704ef88a0045c03eebee41a6da245a1d88b5ea3cc0890a6",
+      "kind": "product"
+    },
+    {
+      "path": "apps/api/src/services/narrative-v2-runtime-draft.ts",
+      "bytes": 2805,
+      "sha256": "898a8c8a0101baf319180461f183dd079d17dad70fe3c37c84bf9cbc51a66040",
+      "kind": "product"
+    },
+    {
+      "path": "apps/api/src/services/npc-memory-turn-transaction.ts",
+      "bytes": 32752,
+      "sha256": "c8e03129a43126a35fc2c54074afb75f35179a27afacf2a9a672c6217e3fc90c",
+      "kind": "product"
+    },
+    {
+      "path": "docs/integration/pending/0023_narrative_ownership_v2.sql",
+      "bytes": 17117,
+      "sha256": "acce3eb62fb59e606610f9d5e30e808c72e21e8c35db2eab87d0f7dd5cbeec11",
+      "kind": "product"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/CHECKPOINT.md",
+      "bytes": 992,
+      "sha256": "025801d2cd6db4f95d9a52965ee2116d4f0ffbf16f75b033a709fab83bfd18d0",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/baseline-probes-02.log",
+      "bytes": 1612,
+      "sha256": "85c6a18fff2d6c998b10f15a61126f2190145b99ad8fd47b7acc6c262d745204",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/baseline-probes.json",
+      "bytes": 1399,
+      "sha256": "f1f5f9f31c085040404ce93466d3c5b3d72aeb9dafbd2a842c2064c5645fc6b3",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/baseline-probes.log",
+      "bytes": 3066,
+      "sha256": "0c71180784607a20e8f8a8908e32fe65faf869d4a5f7c5c6d66d941ad175ce96",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/cluster-identity.json",
+      "bytes": 273,
+      "sha256": "57445ef7e17205f330af414a043e7f787353a95c913c1bee7f266421bdd88330",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/cluster-stop.json",
+      "bytes": 301,
+      "sha256": "a0316ebe38be7d1f1b7830216e7bc02aeb68f6a3f6a223a41fa02be130717f56",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/initdb-02.log",
+      "bytes": 867,
+      "sha256": "ea62b70e69cefbfcb3b5e5cc798b44b72602de3120e93e49601c0b5c8bb41def",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/initdb.log",
+      "bytes": 879,
+      "sha256": "a246f77b4984d36e61a897082d8520ec2a29ef1d131adc1c7913c54ed5502e95",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume01/0000_glamorous_robbie_robertson.sql",
+      "bytes": 1781,
+      "sha256": "731b447f3b3b0e19b3e1600f0a44d71dab9607f7db109977574e692adbae81e5",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume01/0001_s7_entitlement_ledger.sql",
+      "bytes": 3143,
+      "sha256": "8fbb82cfa3196510c6707e8f66b11eec8a2058c81f64ca3e2febb5371021f084",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume01/0002_s4_npc_memory_atomic.sql",
+      "bytes": 641,
+      "sha256": "de22e094b3cec254b155e468909d62c6a27b4d2e5f2911a4f68571ff88f0ca77",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume01/0003_s6_email_auth.sql",
+      "bytes": 1123,
+      "sha256": "581214973cadd1a37ac0157d5dbbd90d32125d47502dabcc9bb0b0173ae719cb",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume01/0004_s6_archive_trash.sql",
+      "bytes": 480,
+      "sha256": "e078859176232b4eb450c05dd12e04872702587980f9bea35e0fd499b0974c28",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume01/0005_fearless_shatterstar.sql",
+      "bytes": 725,
+      "sha256": "08ec61fa3e76e496602938bdbd79056278fba98bc177e254a1c649c9d27f63ab",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume01/0006_next_the_enforcers.sql",
+      "bytes": 300,
+      "sha256": "5f68293a854a6770d7d8b2adcdc5b43e1fc1b4af168e84be75a7e98c0f55312b",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume01/0007_account_erasure_ledger.sql",
+      "bytes": 629,
+      "sha256": "1b24e43cdc643b13d9b45931d2daba555ef087a0269092e09a799bd00302f417",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume01/0008_sec_integrity_auth_limits.sql",
+      "bytes": 2676,
+      "sha256": "8f55be10d57ee90387c442eb8f151867b95d6e02cd6ed339c83e26e38a171d0f",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume01/0009_overjoyed_crystal.sql",
+      "bytes": 2230,
+      "sha256": "b4f810987bc54b18763397ea4c4cb36f3692e1fe9946e0e76b9da1b58efa7af6",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume01/0010_retention_purge_receipt.sql",
+      "bytes": 1823,
+      "sha256": "2398f7c4c9766588d090fb26cc895450c704e52faa88f7799b7498e768388dc7",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume01/0011_test_cleanup_database_guard.sql",
+      "bytes": 1623,
+      "sha256": "822d18d761301ca77880d59a465d6e8cc36a1d0e3025665d197dea3ff1b3fee1",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume01/0012_closeout_runtime_controls.sql",
+      "bytes": 604,
+      "sha256": "28124b7cdf5596ab08894bede0add68b05b4990aa214c47a9889880ad25cc31c",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume01/0013_event_integrity_ownership.sql",
+      "bytes": 3236,
+      "sha256": "5cea34a3374c3e56619972d341a9a16e2ecce527378db44ae30866734f41498a",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume01/0014_npc_authorized_observation_outbox.sql",
+      "bytes": 3107,
+      "sha256": "5501f275773e55a7ab897cba4aecb0dba345d67fce58f1f32a47dff4b7e04f0a",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume01/0015_p1_gameplay_persistence.sql",
+      "bytes": 3991,
+      "sha256": "14711c747eb5a87106a3492bd28249d4cc33c0f95dec9acfece1fb3aeb985a66",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume01/0016_supabase_external_identity.sql",
+      "bytes": 3931,
+      "sha256": "3eaadd2f9c07e41dfe90398f80a21de6cfe4e74377bd806b106b24ed4315401d",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume01/0017_p2_authority_lineage.sql",
+      "bytes": 5665,
+      "sha256": "cfcf2348c6da5d3c7bf0e91e3f998a207aa060ee3135b436223e17bf1983095c",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume01/0018_p2_canon_artifact_identity.sql",
+      "bytes": 2424,
+      "sha256": "a4e878fbb3579cfa73eb82e157f25ec3704a195a18c95b1b7f8d0a47885b4d17",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume01/0019_p1_guest_accounts.sql",
+      "bytes": 795,
+      "sha256": "02926e4864b38556029adaff31e92214226b90dea8a0699ea7808e760036ddff",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume01/0020_npc_memory_recall_semantics.sql",
+      "bytes": 4644,
+      "sha256": "af1f6e79ac9993a28dddd418b2e38bf5927add04d78d173e99dca05477281084",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume01/0021_recall_upgrade_compatibility.sql",
+      "bytes": 5800,
+      "sha256": "63698efc15825b0c9e638ced2d8fcb1ae515cc987fa5cf2a0add6aed79496367",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume01/0022_narrative_publication.sql",
+      "bytes": 11608,
+      "sha256": "ef799e3604ea1f499a1cda67d9ac5d4d7b7feba914ac80a0905bfadfd8d254cd",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume01/0023_narrative_ownership_v2.sql",
+      "bytes": 13747,
+      "sha256": "5ea072402c2b3ad6329be30669e956393cc6fbaf873919820fcf49a24480d408",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume01/meta/_journal.json",
+      "bytes": 3693,
+      "sha256": "fae2f5c2ec6f1ea1c9b314ec319d3124fd4ec2fbada8b70e31c50694c96678f3",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume02/0000_glamorous_robbie_robertson.sql",
+      "bytes": 1781,
+      "sha256": "731b447f3b3b0e19b3e1600f0a44d71dab9607f7db109977574e692adbae81e5",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume02/0001_s7_entitlement_ledger.sql",
+      "bytes": 3143,
+      "sha256": "8fbb82cfa3196510c6707e8f66b11eec8a2058c81f64ca3e2febb5371021f084",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume02/0002_s4_npc_memory_atomic.sql",
+      "bytes": 641,
+      "sha256": "de22e094b3cec254b155e468909d62c6a27b4d2e5f2911a4f68571ff88f0ca77",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume02/0003_s6_email_auth.sql",
+      "bytes": 1123,
+      "sha256": "581214973cadd1a37ac0157d5dbbd90d32125d47502dabcc9bb0b0173ae719cb",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume02/0004_s6_archive_trash.sql",
+      "bytes": 480,
+      "sha256": "e078859176232b4eb450c05dd12e04872702587980f9bea35e0fd499b0974c28",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume02/0005_fearless_shatterstar.sql",
+      "bytes": 725,
+      "sha256": "08ec61fa3e76e496602938bdbd79056278fba98bc177e254a1c649c9d27f63ab",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume02/0006_next_the_enforcers.sql",
+      "bytes": 300,
+      "sha256": "5f68293a854a6770d7d8b2adcdc5b43e1fc1b4af168e84be75a7e98c0f55312b",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume02/0007_account_erasure_ledger.sql",
+      "bytes": 629,
+      "sha256": "1b24e43cdc643b13d9b45931d2daba555ef087a0269092e09a799bd00302f417",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume02/0008_sec_integrity_auth_limits.sql",
+      "bytes": 2676,
+      "sha256": "8f55be10d57ee90387c442eb8f151867b95d6e02cd6ed339c83e26e38a171d0f",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume02/0009_overjoyed_crystal.sql",
+      "bytes": 2230,
+      "sha256": "b4f810987bc54b18763397ea4c4cb36f3692e1fe9946e0e76b9da1b58efa7af6",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume02/0010_retention_purge_receipt.sql",
+      "bytes": 1823,
+      "sha256": "2398f7c4c9766588d090fb26cc895450c704e52faa88f7799b7498e768388dc7",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume02/0011_test_cleanup_database_guard.sql",
+      "bytes": 1623,
+      "sha256": "822d18d761301ca77880d59a465d6e8cc36a1d0e3025665d197dea3ff1b3fee1",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume02/0012_closeout_runtime_controls.sql",
+      "bytes": 604,
+      "sha256": "28124b7cdf5596ab08894bede0add68b05b4990aa214c47a9889880ad25cc31c",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume02/0013_event_integrity_ownership.sql",
+      "bytes": 3236,
+      "sha256": "5cea34a3374c3e56619972d341a9a16e2ecce527378db44ae30866734f41498a",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume02/0014_npc_authorized_observation_outbox.sql",
+      "bytes": 3107,
+      "sha256": "5501f275773e55a7ab897cba4aecb0dba345d67fce58f1f32a47dff4b7e04f0a",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume02/0015_p1_gameplay_persistence.sql",
+      "bytes": 3991,
+      "sha256": "14711c747eb5a87106a3492bd28249d4cc33c0f95dec9acfece1fb3aeb985a66",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume02/0016_supabase_external_identity.sql",
+      "bytes": 3931,
+      "sha256": "3eaadd2f9c07e41dfe90398f80a21de6cfe4e74377bd806b106b24ed4315401d",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume02/0017_p2_authority_lineage.sql",
+      "bytes": 5665,
+      "sha256": "cfcf2348c6da5d3c7bf0e91e3f998a207aa060ee3135b436223e17bf1983095c",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume02/0018_p2_canon_artifact_identity.sql",
+      "bytes": 2424,
+      "sha256": "a4e878fbb3579cfa73eb82e157f25ec3704a195a18c95b1b7f8d0a47885b4d17",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume02/0019_p1_guest_accounts.sql",
+      "bytes": 795,
+      "sha256": "02926e4864b38556029adaff31e92214226b90dea8a0699ea7808e760036ddff",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume02/0020_npc_memory_recall_semantics.sql",
+      "bytes": 4644,
+      "sha256": "af1f6e79ac9993a28dddd418b2e38bf5927add04d78d173e99dca05477281084",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume02/0021_recall_upgrade_compatibility.sql",
+      "bytes": 5800,
+      "sha256": "63698efc15825b0c9e638ced2d8fcb1ae515cc987fa5cf2a0add6aed79496367",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume02/0022_narrative_publication.sql",
+      "bytes": 11608,
+      "sha256": "ef799e3604ea1f499a1cda67d9ac5d4d7b7feba914ac80a0905bfadfd8d254cd",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume02/0023_narrative_ownership_v2.sql",
+      "bytes": 13747,
+      "sha256": "5ea072402c2b3ad6329be30669e956393cc6fbaf873919820fcf49a24480d408",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume02/meta/_journal.json",
+      "bytes": 3693,
+      "sha256": "fae2f5c2ec6f1ea1c9b314ec319d3124fd4ec2fbada8b70e31c50694c96678f3",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume03/0000_glamorous_robbie_robertson.sql",
+      "bytes": 1781,
+      "sha256": "731b447f3b3b0e19b3e1600f0a44d71dab9607f7db109977574e692adbae81e5",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume03/0001_s7_entitlement_ledger.sql",
+      "bytes": 3143,
+      "sha256": "8fbb82cfa3196510c6707e8f66b11eec8a2058c81f64ca3e2febb5371021f084",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume03/0002_s4_npc_memory_atomic.sql",
+      "bytes": 641,
+      "sha256": "de22e094b3cec254b155e468909d62c6a27b4d2e5f2911a4f68571ff88f0ca77",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume03/0003_s6_email_auth.sql",
+      "bytes": 1123,
+      "sha256": "581214973cadd1a37ac0157d5dbbd90d32125d47502dabcc9bb0b0173ae719cb",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume03/0004_s6_archive_trash.sql",
+      "bytes": 480,
+      "sha256": "e078859176232b4eb450c05dd12e04872702587980f9bea35e0fd499b0974c28",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume03/0005_fearless_shatterstar.sql",
+      "bytes": 725,
+      "sha256": "08ec61fa3e76e496602938bdbd79056278fba98bc177e254a1c649c9d27f63ab",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume03/0006_next_the_enforcers.sql",
+      "bytes": 300,
+      "sha256": "5f68293a854a6770d7d8b2adcdc5b43e1fc1b4af168e84be75a7e98c0f55312b",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume03/0007_account_erasure_ledger.sql",
+      "bytes": 629,
+      "sha256": "1b24e43cdc643b13d9b45931d2daba555ef087a0269092e09a799bd00302f417",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume03/0008_sec_integrity_auth_limits.sql",
+      "bytes": 2676,
+      "sha256": "8f55be10d57ee90387c442eb8f151867b95d6e02cd6ed339c83e26e38a171d0f",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume03/0009_overjoyed_crystal.sql",
+      "bytes": 2230,
+      "sha256": "b4f810987bc54b18763397ea4c4cb36f3692e1fe9946e0e76b9da1b58efa7af6",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume03/0010_retention_purge_receipt.sql",
+      "bytes": 1823,
+      "sha256": "2398f7c4c9766588d090fb26cc895450c704e52faa88f7799b7498e768388dc7",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume03/0011_test_cleanup_database_guard.sql",
+      "bytes": 1623,
+      "sha256": "822d18d761301ca77880d59a465d6e8cc36a1d0e3025665d197dea3ff1b3fee1",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume03/0012_closeout_runtime_controls.sql",
+      "bytes": 604,
+      "sha256": "28124b7cdf5596ab08894bede0add68b05b4990aa214c47a9889880ad25cc31c",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume03/0013_event_integrity_ownership.sql",
+      "bytes": 3236,
+      "sha256": "5cea34a3374c3e56619972d341a9a16e2ecce527378db44ae30866734f41498a",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume03/0014_npc_authorized_observation_outbox.sql",
+      "bytes": 3107,
+      "sha256": "5501f275773e55a7ab897cba4aecb0dba345d67fce58f1f32a47dff4b7e04f0a",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume03/0015_p1_gameplay_persistence.sql",
+      "bytes": 3991,
+      "sha256": "14711c747eb5a87106a3492bd28249d4cc33c0f95dec9acfece1fb3aeb985a66",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume03/0016_supabase_external_identity.sql",
+      "bytes": 3931,
+      "sha256": "3eaadd2f9c07e41dfe90398f80a21de6cfe4e74377bd806b106b24ed4315401d",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume03/0017_p2_authority_lineage.sql",
+      "bytes": 5665,
+      "sha256": "cfcf2348c6da5d3c7bf0e91e3f998a207aa060ee3135b436223e17bf1983095c",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume03/0018_p2_canon_artifact_identity.sql",
+      "bytes": 2424,
+      "sha256": "a4e878fbb3579cfa73eb82e157f25ec3704a195a18c95b1b7f8d0a47885b4d17",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume03/0019_p1_guest_accounts.sql",
+      "bytes": 795,
+      "sha256": "02926e4864b38556029adaff31e92214226b90dea8a0699ea7808e760036ddff",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume03/0020_npc_memory_recall_semantics.sql",
+      "bytes": 4644,
+      "sha256": "af1f6e79ac9993a28dddd418b2e38bf5927add04d78d173e99dca05477281084",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume03/0021_recall_upgrade_compatibility.sql",
+      "bytes": 5800,
+      "sha256": "63698efc15825b0c9e638ced2d8fcb1ae515cc987fa5cf2a0add6aed79496367",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume03/0022_narrative_publication.sql",
+      "bytes": 11608,
+      "sha256": "ef799e3604ea1f499a1cda67d9ac5d4d7b7feba914ac80a0905bfadfd8d254cd",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume03/0023_narrative_ownership_v2.sql",
+      "bytes": 14564,
+      "sha256": "24807a458203115f308f7ec86e5e3a76148b15ade6318c10db9bd970ef1ca34a",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume03/meta/_journal.json",
+      "bytes": 3693,
+      "sha256": "fae2f5c2ec6f1ea1c9b314ec319d3124fd4ec2fbada8b70e31c50694c96678f3",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume04/0000_glamorous_robbie_robertson.sql",
+      "bytes": 1781,
+      "sha256": "731b447f3b3b0e19b3e1600f0a44d71dab9607f7db109977574e692adbae81e5",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume04/0001_s7_entitlement_ledger.sql",
+      "bytes": 3143,
+      "sha256": "8fbb82cfa3196510c6707e8f66b11eec8a2058c81f64ca3e2febb5371021f084",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume04/0002_s4_npc_memory_atomic.sql",
+      "bytes": 641,
+      "sha256": "de22e094b3cec254b155e468909d62c6a27b4d2e5f2911a4f68571ff88f0ca77",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume04/0003_s6_email_auth.sql",
+      "bytes": 1123,
+      "sha256": "581214973cadd1a37ac0157d5dbbd90d32125d47502dabcc9bb0b0173ae719cb",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume04/0004_s6_archive_trash.sql",
+      "bytes": 480,
+      "sha256": "e078859176232b4eb450c05dd12e04872702587980f9bea35e0fd499b0974c28",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume04/0005_fearless_shatterstar.sql",
+      "bytes": 725,
+      "sha256": "08ec61fa3e76e496602938bdbd79056278fba98bc177e254a1c649c9d27f63ab",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume04/0006_next_the_enforcers.sql",
+      "bytes": 300,
+      "sha256": "5f68293a854a6770d7d8b2adcdc5b43e1fc1b4af168e84be75a7e98c0f55312b",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume04/0007_account_erasure_ledger.sql",
+      "bytes": 629,
+      "sha256": "1b24e43cdc643b13d9b45931d2daba555ef087a0269092e09a799bd00302f417",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume04/0008_sec_integrity_auth_limits.sql",
+      "bytes": 2676,
+      "sha256": "8f55be10d57ee90387c442eb8f151867b95d6e02cd6ed339c83e26e38a171d0f",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume04/0009_overjoyed_crystal.sql",
+      "bytes": 2230,
+      "sha256": "b4f810987bc54b18763397ea4c4cb36f3692e1fe9946e0e76b9da1b58efa7af6",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume04/0010_retention_purge_receipt.sql",
+      "bytes": 1823,
+      "sha256": "2398f7c4c9766588d090fb26cc895450c704e52faa88f7799b7498e768388dc7",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume04/0011_test_cleanup_database_guard.sql",
+      "bytes": 1623,
+      "sha256": "822d18d761301ca77880d59a465d6e8cc36a1d0e3025665d197dea3ff1b3fee1",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume04/0012_closeout_runtime_controls.sql",
+      "bytes": 604,
+      "sha256": "28124b7cdf5596ab08894bede0add68b05b4990aa214c47a9889880ad25cc31c",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume04/0013_event_integrity_ownership.sql",
+      "bytes": 3236,
+      "sha256": "5cea34a3374c3e56619972d341a9a16e2ecce527378db44ae30866734f41498a",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume04/0014_npc_authorized_observation_outbox.sql",
+      "bytes": 3107,
+      "sha256": "5501f275773e55a7ab897cba4aecb0dba345d67fce58f1f32a47dff4b7e04f0a",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume04/0015_p1_gameplay_persistence.sql",
+      "bytes": 3991,
+      "sha256": "14711c747eb5a87106a3492bd28249d4cc33c0f95dec9acfece1fb3aeb985a66",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume04/0016_supabase_external_identity.sql",
+      "bytes": 3931,
+      "sha256": "3eaadd2f9c07e41dfe90398f80a21de6cfe4e74377bd806b106b24ed4315401d",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume04/0017_p2_authority_lineage.sql",
+      "bytes": 5665,
+      "sha256": "cfcf2348c6da5d3c7bf0e91e3f998a207aa060ee3135b436223e17bf1983095c",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume04/0018_p2_canon_artifact_identity.sql",
+      "bytes": 2424,
+      "sha256": "a4e878fbb3579cfa73eb82e157f25ec3704a195a18c95b1b7f8d0a47885b4d17",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume04/0019_p1_guest_accounts.sql",
+      "bytes": 795,
+      "sha256": "02926e4864b38556029adaff31e92214226b90dea8a0699ea7808e760036ddff",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume04/0020_npc_memory_recall_semantics.sql",
+      "bytes": 4644,
+      "sha256": "af1f6e79ac9993a28dddd418b2e38bf5927add04d78d173e99dca05477281084",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume04/0021_recall_upgrade_compatibility.sql",
+      "bytes": 5800,
+      "sha256": "63698efc15825b0c9e638ced2d8fcb1ae515cc987fa5cf2a0add6aed79496367",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume04/0022_narrative_publication.sql",
+      "bytes": 11608,
+      "sha256": "ef799e3604ea1f499a1cda67d9ac5d4d7b7feba914ac80a0905bfadfd8d254cd",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume04/0023_narrative_ownership_v2.sql",
+      "bytes": 15190,
+      "sha256": "7ec08805e5df2108e24b2a352062588d3d421f1905169f1603122c0edba72858",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume04/meta/_journal.json",
+      "bytes": 3693,
+      "sha256": "fae2f5c2ec6f1ea1c9b314ec319d3124fd4ec2fbada8b70e31c50694c96678f3",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume05/0000_glamorous_robbie_robertson.sql",
+      "bytes": 1781,
+      "sha256": "731b447f3b3b0e19b3e1600f0a44d71dab9607f7db109977574e692adbae81e5",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume05/0001_s7_entitlement_ledger.sql",
+      "bytes": 3143,
+      "sha256": "8fbb82cfa3196510c6707e8f66b11eec8a2058c81f64ca3e2febb5371021f084",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume05/0002_s4_npc_memory_atomic.sql",
+      "bytes": 641,
+      "sha256": "de22e094b3cec254b155e468909d62c6a27b4d2e5f2911a4f68571ff88f0ca77",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume05/0003_s6_email_auth.sql",
+      "bytes": 1123,
+      "sha256": "581214973cadd1a37ac0157d5dbbd90d32125d47502dabcc9bb0b0173ae719cb",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume05/0004_s6_archive_trash.sql",
+      "bytes": 480,
+      "sha256": "e078859176232b4eb450c05dd12e04872702587980f9bea35e0fd499b0974c28",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume05/0005_fearless_shatterstar.sql",
+      "bytes": 725,
+      "sha256": "08ec61fa3e76e496602938bdbd79056278fba98bc177e254a1c649c9d27f63ab",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume05/0006_next_the_enforcers.sql",
+      "bytes": 300,
+      "sha256": "5f68293a854a6770d7d8b2adcdc5b43e1fc1b4af168e84be75a7e98c0f55312b",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume05/0007_account_erasure_ledger.sql",
+      "bytes": 629,
+      "sha256": "1b24e43cdc643b13d9b45931d2daba555ef087a0269092e09a799bd00302f417",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume05/0008_sec_integrity_auth_limits.sql",
+      "bytes": 2676,
+      "sha256": "8f55be10d57ee90387c442eb8f151867b95d6e02cd6ed339c83e26e38a171d0f",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume05/0009_overjoyed_crystal.sql",
+      "bytes": 2230,
+      "sha256": "b4f810987bc54b18763397ea4c4cb36f3692e1fe9946e0e76b9da1b58efa7af6",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume05/0010_retention_purge_receipt.sql",
+      "bytes": 1823,
+      "sha256": "2398f7c4c9766588d090fb26cc895450c704e52faa88f7799b7498e768388dc7",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume05/0011_test_cleanup_database_guard.sql",
+      "bytes": 1623,
+      "sha256": "822d18d761301ca77880d59a465d6e8cc36a1d0e3025665d197dea3ff1b3fee1",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume05/0012_closeout_runtime_controls.sql",
+      "bytes": 604,
+      "sha256": "28124b7cdf5596ab08894bede0add68b05b4990aa214c47a9889880ad25cc31c",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume05/0013_event_integrity_ownership.sql",
+      "bytes": 3236,
+      "sha256": "5cea34a3374c3e56619972d341a9a16e2ecce527378db44ae30866734f41498a",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume05/0014_npc_authorized_observation_outbox.sql",
+      "bytes": 3107,
+      "sha256": "5501f275773e55a7ab897cba4aecb0dba345d67fce58f1f32a47dff4b7e04f0a",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume05/0015_p1_gameplay_persistence.sql",
+      "bytes": 3991,
+      "sha256": "14711c747eb5a87106a3492bd28249d4cc33c0f95dec9acfece1fb3aeb985a66",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume05/0016_supabase_external_identity.sql",
+      "bytes": 3931,
+      "sha256": "3eaadd2f9c07e41dfe90398f80a21de6cfe4e74377bd806b106b24ed4315401d",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume05/0017_p2_authority_lineage.sql",
+      "bytes": 5665,
+      "sha256": "cfcf2348c6da5d3c7bf0e91e3f998a207aa060ee3135b436223e17bf1983095c",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume05/0018_p2_canon_artifact_identity.sql",
+      "bytes": 2424,
+      "sha256": "a4e878fbb3579cfa73eb82e157f25ec3704a195a18c95b1b7f8d0a47885b4d17",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume05/0019_p1_guest_accounts.sql",
+      "bytes": 795,
+      "sha256": "02926e4864b38556029adaff31e92214226b90dea8a0699ea7808e760036ddff",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume05/0020_npc_memory_recall_semantics.sql",
+      "bytes": 4644,
+      "sha256": "af1f6e79ac9993a28dddd418b2e38bf5927add04d78d173e99dca05477281084",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume05/0021_recall_upgrade_compatibility.sql",
+      "bytes": 5800,
+      "sha256": "63698efc15825b0c9e638ced2d8fcb1ae515cc987fa5cf2a0add6aed79496367",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume05/0022_narrative_publication.sql",
+      "bytes": 11608,
+      "sha256": "ef799e3604ea1f499a1cda67d9ac5d4d7b7feba914ac80a0905bfadfd8d254cd",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume05/0023_narrative_ownership_v2.sql",
+      "bytes": 15190,
+      "sha256": "7ec08805e5df2108e24b2a352062588d3d421f1905169f1603122c0edba72858",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume05/meta/_journal.json",
+      "bytes": 3693,
+      "sha256": "fae2f5c2ec6f1ea1c9b314ec319d3124fd4ec2fbada8b70e31c50694c96678f3",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume06/0000_glamorous_robbie_robertson.sql",
+      "bytes": 1781,
+      "sha256": "731b447f3b3b0e19b3e1600f0a44d71dab9607f7db109977574e692adbae81e5",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume06/0001_s7_entitlement_ledger.sql",
+      "bytes": 3143,
+      "sha256": "8fbb82cfa3196510c6707e8f66b11eec8a2058c81f64ca3e2febb5371021f084",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume06/0002_s4_npc_memory_atomic.sql",
+      "bytes": 641,
+      "sha256": "de22e094b3cec254b155e468909d62c6a27b4d2e5f2911a4f68571ff88f0ca77",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume06/0003_s6_email_auth.sql",
+      "bytes": 1123,
+      "sha256": "581214973cadd1a37ac0157d5dbbd90d32125d47502dabcc9bb0b0173ae719cb",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume06/0004_s6_archive_trash.sql",
+      "bytes": 480,
+      "sha256": "e078859176232b4eb450c05dd12e04872702587980f9bea35e0fd499b0974c28",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume06/0005_fearless_shatterstar.sql",
+      "bytes": 725,
+      "sha256": "08ec61fa3e76e496602938bdbd79056278fba98bc177e254a1c649c9d27f63ab",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume06/0006_next_the_enforcers.sql",
+      "bytes": 300,
+      "sha256": "5f68293a854a6770d7d8b2adcdc5b43e1fc1b4af168e84be75a7e98c0f55312b",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume06/0007_account_erasure_ledger.sql",
+      "bytes": 629,
+      "sha256": "1b24e43cdc643b13d9b45931d2daba555ef087a0269092e09a799bd00302f417",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume06/0008_sec_integrity_auth_limits.sql",
+      "bytes": 2676,
+      "sha256": "8f55be10d57ee90387c442eb8f151867b95d6e02cd6ed339c83e26e38a171d0f",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume06/0009_overjoyed_crystal.sql",
+      "bytes": 2230,
+      "sha256": "b4f810987bc54b18763397ea4c4cb36f3692e1fe9946e0e76b9da1b58efa7af6",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume06/0010_retention_purge_receipt.sql",
+      "bytes": 1823,
+      "sha256": "2398f7c4c9766588d090fb26cc895450c704e52faa88f7799b7498e768388dc7",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume06/0011_test_cleanup_database_guard.sql",
+      "bytes": 1623,
+      "sha256": "822d18d761301ca77880d59a465d6e8cc36a1d0e3025665d197dea3ff1b3fee1",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume06/0012_closeout_runtime_controls.sql",
+      "bytes": 604,
+      "sha256": "28124b7cdf5596ab08894bede0add68b05b4990aa214c47a9889880ad25cc31c",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume06/0013_event_integrity_ownership.sql",
+      "bytes": 3236,
+      "sha256": "5cea34a3374c3e56619972d341a9a16e2ecce527378db44ae30866734f41498a",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume06/0014_npc_authorized_observation_outbox.sql",
+      "bytes": 3107,
+      "sha256": "5501f275773e55a7ab897cba4aecb0dba345d67fce58f1f32a47dff4b7e04f0a",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume06/0015_p1_gameplay_persistence.sql",
+      "bytes": 3991,
+      "sha256": "14711c747eb5a87106a3492bd28249d4cc33c0f95dec9acfece1fb3aeb985a66",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume06/0016_supabase_external_identity.sql",
+      "bytes": 3931,
+      "sha256": "3eaadd2f9c07e41dfe90398f80a21de6cfe4e74377bd806b106b24ed4315401d",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume06/0017_p2_authority_lineage.sql",
+      "bytes": 5665,
+      "sha256": "cfcf2348c6da5d3c7bf0e91e3f998a207aa060ee3135b436223e17bf1983095c",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume06/0018_p2_canon_artifact_identity.sql",
+      "bytes": 2424,
+      "sha256": "a4e878fbb3579cfa73eb82e157f25ec3704a195a18c95b1b7f8d0a47885b4d17",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume06/0019_p1_guest_accounts.sql",
+      "bytes": 795,
+      "sha256": "02926e4864b38556029adaff31e92214226b90dea8a0699ea7808e760036ddff",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume06/0020_npc_memory_recall_semantics.sql",
+      "bytes": 4644,
+      "sha256": "af1f6e79ac9993a28dddd418b2e38bf5927add04d78d173e99dca05477281084",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume06/0021_recall_upgrade_compatibility.sql",
+      "bytes": 5800,
+      "sha256": "63698efc15825b0c9e638ced2d8fcb1ae515cc987fa5cf2a0add6aed79496367",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume06/0022_narrative_publication.sql",
+      "bytes": 11608,
+      "sha256": "ef799e3604ea1f499a1cda67d9ac5d4d7b7feba914ac80a0905bfadfd8d254cd",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume06/0023_narrative_ownership_v2.sql",
+      "bytes": 15190,
+      "sha256": "7ec08805e5df2108e24b2a352062588d3d421f1905169f1603122c0edba72858",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume06/meta/_journal.json",
+      "bytes": 3693,
+      "sha256": "fae2f5c2ec6f1ea1c9b314ec319d3124fd4ec2fbada8b70e31c50694c96678f3",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume07/0000_glamorous_robbie_robertson.sql",
+      "bytes": 1781,
+      "sha256": "731b447f3b3b0e19b3e1600f0a44d71dab9607f7db109977574e692adbae81e5",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume07/0001_s7_entitlement_ledger.sql",
+      "bytes": 3143,
+      "sha256": "8fbb82cfa3196510c6707e8f66b11eec8a2058c81f64ca3e2febb5371021f084",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume07/0002_s4_npc_memory_atomic.sql",
+      "bytes": 641,
+      "sha256": "de22e094b3cec254b155e468909d62c6a27b4d2e5f2911a4f68571ff88f0ca77",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume07/0003_s6_email_auth.sql",
+      "bytes": 1123,
+      "sha256": "581214973cadd1a37ac0157d5dbbd90d32125d47502dabcc9bb0b0173ae719cb",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume07/0004_s6_archive_trash.sql",
+      "bytes": 480,
+      "sha256": "e078859176232b4eb450c05dd12e04872702587980f9bea35e0fd499b0974c28",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume07/0005_fearless_shatterstar.sql",
+      "bytes": 725,
+      "sha256": "08ec61fa3e76e496602938bdbd79056278fba98bc177e254a1c649c9d27f63ab",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume07/0006_next_the_enforcers.sql",
+      "bytes": 300,
+      "sha256": "5f68293a854a6770d7d8b2adcdc5b43e1fc1b4af168e84be75a7e98c0f55312b",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume07/0007_account_erasure_ledger.sql",
+      "bytes": 629,
+      "sha256": "1b24e43cdc643b13d9b45931d2daba555ef087a0269092e09a799bd00302f417",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume07/0008_sec_integrity_auth_limits.sql",
+      "bytes": 2676,
+      "sha256": "8f55be10d57ee90387c442eb8f151867b95d6e02cd6ed339c83e26e38a171d0f",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume07/0009_overjoyed_crystal.sql",
+      "bytes": 2230,
+      "sha256": "b4f810987bc54b18763397ea4c4cb36f3692e1fe9946e0e76b9da1b58efa7af6",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume07/0010_retention_purge_receipt.sql",
+      "bytes": 1823,
+      "sha256": "2398f7c4c9766588d090fb26cc895450c704e52faa88f7799b7498e768388dc7",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume07/0011_test_cleanup_database_guard.sql",
+      "bytes": 1623,
+      "sha256": "822d18d761301ca77880d59a465d6e8cc36a1d0e3025665d197dea3ff1b3fee1",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume07/0012_closeout_runtime_controls.sql",
+      "bytes": 604,
+      "sha256": "28124b7cdf5596ab08894bede0add68b05b4990aa214c47a9889880ad25cc31c",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume07/0013_event_integrity_ownership.sql",
+      "bytes": 3236,
+      "sha256": "5cea34a3374c3e56619972d341a9a16e2ecce527378db44ae30866734f41498a",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume07/0014_npc_authorized_observation_outbox.sql",
+      "bytes": 3107,
+      "sha256": "5501f275773e55a7ab897cba4aecb0dba345d67fce58f1f32a47dff4b7e04f0a",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume07/0015_p1_gameplay_persistence.sql",
+      "bytes": 3991,
+      "sha256": "14711c747eb5a87106a3492bd28249d4cc33c0f95dec9acfece1fb3aeb985a66",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume07/0016_supabase_external_identity.sql",
+      "bytes": 3931,
+      "sha256": "3eaadd2f9c07e41dfe90398f80a21de6cfe4e74377bd806b106b24ed4315401d",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume07/0017_p2_authority_lineage.sql",
+      "bytes": 5665,
+      "sha256": "cfcf2348c6da5d3c7bf0e91e3f998a207aa060ee3135b436223e17bf1983095c",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume07/0018_p2_canon_artifact_identity.sql",
+      "bytes": 2424,
+      "sha256": "a4e878fbb3579cfa73eb82e157f25ec3704a195a18c95b1b7f8d0a47885b4d17",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume07/0019_p1_guest_accounts.sql",
+      "bytes": 795,
+      "sha256": "02926e4864b38556029adaff31e92214226b90dea8a0699ea7808e760036ddff",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume07/0020_npc_memory_recall_semantics.sql",
+      "bytes": 4644,
+      "sha256": "af1f6e79ac9993a28dddd418b2e38bf5927add04d78d173e99dca05477281084",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume07/0021_recall_upgrade_compatibility.sql",
+      "bytes": 5800,
+      "sha256": "63698efc15825b0c9e638ced2d8fcb1ae515cc987fa5cf2a0add6aed79496367",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume07/0022_narrative_publication.sql",
+      "bytes": 11608,
+      "sha256": "ef799e3604ea1f499a1cda67d9ac5d4d7b7feba914ac80a0905bfadfd8d254cd",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume07/0023_narrative_ownership_v2.sql",
+      "bytes": 15190,
+      "sha256": "7ec08805e5df2108e24b2a352062588d3d421f1905169f1603122c0edba72858",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume07/meta/_journal.json",
+      "bytes": 3693,
+      "sha256": "fae2f5c2ec6f1ea1c9b314ec319d3124fd4ec2fbada8b70e31c50694c96678f3",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume08/0000_glamorous_robbie_robertson.sql",
+      "bytes": 1781,
+      "sha256": "731b447f3b3b0e19b3e1600f0a44d71dab9607f7db109977574e692adbae81e5",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume08/0001_s7_entitlement_ledger.sql",
+      "bytes": 3143,
+      "sha256": "8fbb82cfa3196510c6707e8f66b11eec8a2058c81f64ca3e2febb5371021f084",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume08/0002_s4_npc_memory_atomic.sql",
+      "bytes": 641,
+      "sha256": "de22e094b3cec254b155e468909d62c6a27b4d2e5f2911a4f68571ff88f0ca77",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume08/0003_s6_email_auth.sql",
+      "bytes": 1123,
+      "sha256": "581214973cadd1a37ac0157d5dbbd90d32125d47502dabcc9bb0b0173ae719cb",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume08/0004_s6_archive_trash.sql",
+      "bytes": 480,
+      "sha256": "e078859176232b4eb450c05dd12e04872702587980f9bea35e0fd499b0974c28",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume08/0005_fearless_shatterstar.sql",
+      "bytes": 725,
+      "sha256": "08ec61fa3e76e496602938bdbd79056278fba98bc177e254a1c649c9d27f63ab",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume08/0006_next_the_enforcers.sql",
+      "bytes": 300,
+      "sha256": "5f68293a854a6770d7d8b2adcdc5b43e1fc1b4af168e84be75a7e98c0f55312b",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume08/0007_account_erasure_ledger.sql",
+      "bytes": 629,
+      "sha256": "1b24e43cdc643b13d9b45931d2daba555ef087a0269092e09a799bd00302f417",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume08/0008_sec_integrity_auth_limits.sql",
+      "bytes": 2676,
+      "sha256": "8f55be10d57ee90387c442eb8f151867b95d6e02cd6ed339c83e26e38a171d0f",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume08/0009_overjoyed_crystal.sql",
+      "bytes": 2230,
+      "sha256": "b4f810987bc54b18763397ea4c4cb36f3692e1fe9946e0e76b9da1b58efa7af6",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume08/0010_retention_purge_receipt.sql",
+      "bytes": 1823,
+      "sha256": "2398f7c4c9766588d090fb26cc895450c704e52faa88f7799b7498e768388dc7",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume08/0011_test_cleanup_database_guard.sql",
+      "bytes": 1623,
+      "sha256": "822d18d761301ca77880d59a465d6e8cc36a1d0e3025665d197dea3ff1b3fee1",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume08/0012_closeout_runtime_controls.sql",
+      "bytes": 604,
+      "sha256": "28124b7cdf5596ab08894bede0add68b05b4990aa214c47a9889880ad25cc31c",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume08/0013_event_integrity_ownership.sql",
+      "bytes": 3236,
+      "sha256": "5cea34a3374c3e56619972d341a9a16e2ecce527378db44ae30866734f41498a",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume08/0014_npc_authorized_observation_outbox.sql",
+      "bytes": 3107,
+      "sha256": "5501f275773e55a7ab897cba4aecb0dba345d67fce58f1f32a47dff4b7e04f0a",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume08/0015_p1_gameplay_persistence.sql",
+      "bytes": 3991,
+      "sha256": "14711c747eb5a87106a3492bd28249d4cc33c0f95dec9acfece1fb3aeb985a66",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume08/0016_supabase_external_identity.sql",
+      "bytes": 3931,
+      "sha256": "3eaadd2f9c07e41dfe90398f80a21de6cfe4e74377bd806b106b24ed4315401d",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume08/0017_p2_authority_lineage.sql",
+      "bytes": 5665,
+      "sha256": "cfcf2348c6da5d3c7bf0e91e3f998a207aa060ee3135b436223e17bf1983095c",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume08/0018_p2_canon_artifact_identity.sql",
+      "bytes": 2424,
+      "sha256": "a4e878fbb3579cfa73eb82e157f25ec3704a195a18c95b1b7f8d0a47885b4d17",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume08/0019_p1_guest_accounts.sql",
+      "bytes": 795,
+      "sha256": "02926e4864b38556029adaff31e92214226b90dea8a0699ea7808e760036ddff",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume08/0020_npc_memory_recall_semantics.sql",
+      "bytes": 4644,
+      "sha256": "af1f6e79ac9993a28dddd418b2e38bf5927add04d78d173e99dca05477281084",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume08/0021_recall_upgrade_compatibility.sql",
+      "bytes": 5800,
+      "sha256": "63698efc15825b0c9e638ced2d8fcb1ae515cc987fa5cf2a0add6aed79496367",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume08/0022_narrative_publication.sql",
+      "bytes": 11608,
+      "sha256": "ef799e3604ea1f499a1cda67d9ac5d4d7b7feba914ac80a0905bfadfd8d254cd",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume08/0023_narrative_ownership_v2.sql",
+      "bytes": 15190,
+      "sha256": "7ec08805e5df2108e24b2a352062588d3d421f1905169f1603122c0edba72858",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-resume08/meta/_journal.json",
+      "bytes": 3693,
+      "sha256": "fae2f5c2ec6f1ea1c9b314ec319d3124fd4ec2fbada8b70e31c50694c96678f3",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-signoff01/0000_glamorous_robbie_robertson.sql",
+      "bytes": 1781,
+      "sha256": "731b447f3b3b0e19b3e1600f0a44d71dab9607f7db109977574e692adbae81e5",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-signoff01/0001_s7_entitlement_ledger.sql",
+      "bytes": 3143,
+      "sha256": "8fbb82cfa3196510c6707e8f66b11eec8a2058c81f64ca3e2febb5371021f084",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-signoff01/0002_s4_npc_memory_atomic.sql",
+      "bytes": 641,
+      "sha256": "de22e094b3cec254b155e468909d62c6a27b4d2e5f2911a4f68571ff88f0ca77",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-signoff01/0003_s6_email_auth.sql",
+      "bytes": 1123,
+      "sha256": "581214973cadd1a37ac0157d5dbbd90d32125d47502dabcc9bb0b0173ae719cb",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-signoff01/0004_s6_archive_trash.sql",
+      "bytes": 480,
+      "sha256": "e078859176232b4eb450c05dd12e04872702587980f9bea35e0fd499b0974c28",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-signoff01/0005_fearless_shatterstar.sql",
+      "bytes": 725,
+      "sha256": "08ec61fa3e76e496602938bdbd79056278fba98bc177e254a1c649c9d27f63ab",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-signoff01/0006_next_the_enforcers.sql",
+      "bytes": 300,
+      "sha256": "5f68293a854a6770d7d8b2adcdc5b43e1fc1b4af168e84be75a7e98c0f55312b",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-signoff01/0007_account_erasure_ledger.sql",
+      "bytes": 629,
+      "sha256": "1b24e43cdc643b13d9b45931d2daba555ef087a0269092e09a799bd00302f417",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-signoff01/0008_sec_integrity_auth_limits.sql",
+      "bytes": 2676,
+      "sha256": "8f55be10d57ee90387c442eb8f151867b95d6e02cd6ed339c83e26e38a171d0f",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-signoff01/0009_overjoyed_crystal.sql",
+      "bytes": 2230,
+      "sha256": "b4f810987bc54b18763397ea4c4cb36f3692e1fe9946e0e76b9da1b58efa7af6",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-signoff01/0010_retention_purge_receipt.sql",
+      "bytes": 1823,
+      "sha256": "2398f7c4c9766588d090fb26cc895450c704e52faa88f7799b7498e768388dc7",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-signoff01/0011_test_cleanup_database_guard.sql",
+      "bytes": 1623,
+      "sha256": "822d18d761301ca77880d59a465d6e8cc36a1d0e3025665d197dea3ff1b3fee1",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-signoff01/0012_closeout_runtime_controls.sql",
+      "bytes": 604,
+      "sha256": "28124b7cdf5596ab08894bede0add68b05b4990aa214c47a9889880ad25cc31c",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-signoff01/0013_event_integrity_ownership.sql",
+      "bytes": 3236,
+      "sha256": "5cea34a3374c3e56619972d341a9a16e2ecce527378db44ae30866734f41498a",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-signoff01/0014_npc_authorized_observation_outbox.sql",
+      "bytes": 3107,
+      "sha256": "5501f275773e55a7ab897cba4aecb0dba345d67fce58f1f32a47dff4b7e04f0a",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-signoff01/0015_p1_gameplay_persistence.sql",
+      "bytes": 3991,
+      "sha256": "14711c747eb5a87106a3492bd28249d4cc33c0f95dec9acfece1fb3aeb985a66",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-signoff01/0016_supabase_external_identity.sql",
+      "bytes": 3931,
+      "sha256": "3eaadd2f9c07e41dfe90398f80a21de6cfe4e74377bd806b106b24ed4315401d",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-signoff01/0017_p2_authority_lineage.sql",
+      "bytes": 5665,
+      "sha256": "cfcf2348c6da5d3c7bf0e91e3f998a207aa060ee3135b436223e17bf1983095c",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-signoff01/0018_p2_canon_artifact_identity.sql",
+      "bytes": 2424,
+      "sha256": "a4e878fbb3579cfa73eb82e157f25ec3704a195a18c95b1b7f8d0a47885b4d17",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-signoff01/0019_p1_guest_accounts.sql",
+      "bytes": 795,
+      "sha256": "02926e4864b38556029adaff31e92214226b90dea8a0699ea7808e760036ddff",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-signoff01/0020_npc_memory_recall_semantics.sql",
+      "bytes": 4644,
+      "sha256": "af1f6e79ac9993a28dddd418b2e38bf5927add04d78d173e99dca05477281084",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-signoff01/0021_recall_upgrade_compatibility.sql",
+      "bytes": 5800,
+      "sha256": "63698efc15825b0c9e638ced2d8fcb1ae515cc987fa5cf2a0add6aed79496367",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-signoff01/0022_narrative_publication.sql",
+      "bytes": 11608,
+      "sha256": "ef799e3604ea1f499a1cda67d9ac5d4d7b7feba914ac80a0905bfadfd8d254cd",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-signoff01/0023_narrative_ownership_v2.sql",
+      "bytes": 17117,
+      "sha256": "acce3eb62fb59e606610f9d5e30e808c72e21e8c35db2eab87d0f7dd5cbeec11",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/isolated-migration-bundle-signoff01/meta/_journal.json",
+      "bytes": 3693,
+      "sha256": "fae2f5c2ec6f1ea1c9b314ec319d3124fd4ec2fbada8b70e31c50694c96678f3",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/migration-bundle-manifest-resume01.json",
+      "bytes": 3547,
+      "sha256": "efd475c4fa509dead025f43508fcdee9d3446cbe544abdea8d22094c199bd91d",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/migration-bundle-manifest-resume02.json",
+      "bytes": 3547,
+      "sha256": "efd475c4fa509dead025f43508fcdee9d3446cbe544abdea8d22094c199bd91d",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/migration-bundle-manifest-resume03.json",
+      "bytes": 3547,
+      "sha256": "283876c990a3af0d0a3c51c5fa42f8023b180f65d94b5bd85a1f3a31f416429a",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/migration-bundle-manifest-resume04.json",
+      "bytes": 3547,
+      "sha256": "fb344ca104d588054ced33261e3ff3063e4e197b159d2e55295d2c502df3c327",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/migration-bundle-manifest-resume05.json",
+      "bytes": 3547,
+      "sha256": "fb344ca104d588054ced33261e3ff3063e4e197b159d2e55295d2c502df3c327",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/migration-bundle-manifest-resume06.json",
+      "bytes": 3547,
+      "sha256": "fb344ca104d588054ced33261e3ff3063e4e197b159d2e55295d2c502df3c327",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/migration-bundle-manifest-resume07.json",
+      "bytes": 3547,
+      "sha256": "fb344ca104d588054ced33261e3ff3063e4e197b159d2e55295d2c502df3c327",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/migration-bundle-manifest-resume08.json",
+      "bytes": 3547,
+      "sha256": "fb344ca104d588054ced33261e3ff3063e4e197b159d2e55295d2c502df3c327",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/migration-bundle-manifest-signoff01.json",
+      "bytes": 3547,
+      "sha256": "eee301431fe4742cd5c192d54e08217f6def23ddc2441222cbe89f1b970587b3",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/original-0023.sql",
+      "bytes": 5194,
+      "sha256": "bd778c124540b189d435b312caba806dc6011c760de0311ef918e38cfc947770",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/pg-start-02.log",
+      "bytes": 944,
+      "sha256": "851780ead9f17d8ed8ffffab76f18a87d4e9c26f125552f2d4510850171ee7c3",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/pg-stop.log",
+      "bytes": 64,
+      "sha256": "0539903af0119531c9e4f6b64adaaa98a65b16ca11980d8587b3ca7bb764ad7f",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/postgres.log",
+      "bytes": 106483,
+      "sha256": "166155f744f2b06d2c14f37a82ec424c5fcc4db57436e3ef529bdaa064788ce5",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume-api-build-01.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume-api-build-02.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume-db-build-01.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume-draft-unit-01.log",
+      "bytes": 1510,
+      "sha256": "a63795ab6a76ad92b0efd9c5ef138248ebc80e69cd64cf07923c31c38b17bdd8",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume-pg-start-01.stderr.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume-pg-start-01.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume-pg-start-02.stderr.log",
+      "bytes": 177,
+      "sha256": "f81b5c837432c510834e32745c25f2901f9adf0282150f0e2c7e6cb192870ee7",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume-pg-start-02.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume-pg-start-03.stderr.log",
+      "bytes": 72,
+      "sha256": "aea019a160b266dc59e5772b3a4f0b6cf5e1fb91b2f00d59a64c9c9a02dd9a41",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume-pg-start-03.stdout.log",
+      "bytes": 54,
+      "sha256": "46038efb813fbca18a92272496901190638dea3f97b51f7af0daa1ca2eb13818",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume-web-typecheck-01.log",
+      "bytes": 366,
+      "sha256": "faa9009b5a22eb192bf9b809a577f5e8c2277c8db245f9cb97639115c37aa19d",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume-web-typecheck-02.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume01-observations.json",
+      "bytes": 119,
+      "sha256": "ae8b09b4803334b48a47912437e4dc48a676cb26263e82940196dfe968324add",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume01-real-pg.log",
+      "bytes": 67698,
+      "sha256": "a203fdd7f84af1a15f394e6fe9a459d4a766538ae78db7472f0e9a0835d42ad3",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume02-real-pg.log",
+      "bytes": 3098,
+      "sha256": "8f3aeb95fc2bab2c22b8ce5ce24f512ed14298be524ddad28b88c1ec4a0f5e4e",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume03-observations.json",
+      "bytes": 17107,
+      "sha256": "57298b76fb2313f34d743be7210fe0e8dc0d0b3e4bd7d34a14d4dfcc15da02e1",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume03-real-pg.log",
+      "bytes": 4372,
+      "sha256": "e176227242793134b44becbac82160ab6c289850a1b7db1f8052e501f0f32056",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume04-observations.json",
+      "bytes": 17306,
+      "sha256": "70c96d7974bb84305878833e51a8a674db3c379fe090ac68414b423d4f63763b",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume04-real-pg.log",
+      "bytes": 29100,
+      "sha256": "b4af8b68835609c2a15af72a91c797b5181f5a106269b4ffe8c0c922ab0480dc",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume05-observations.json",
+      "bytes": 19158,
+      "sha256": "59e49355e514fc8da73eb015fae789d8d8807216675f193a5a2f354f02de53d2",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume05-real-pg.log",
+      "bytes": 5984,
+      "sha256": "b616d4ce89320a044a8074dd4f43542645c7104f709ff46753c954b58ff81ac1",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume06-backup-restore.json",
+      "bytes": 3968,
+      "sha256": "7b2d88654676d602b9d1aed1203cb8c4b11856941f5538a2d28fcf4847636eb6",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume06-backup-restore.log",
+      "bytes": 44,
+      "sha256": "a0623d6542867fa86bd9c053c3c05023c939f849103340a98ea4acd7ac3745b2",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume06-backup.dump",
+      "bytes": 169333,
+      "sha256": "3473af930748e32e5e2405db71c15c0096d3da4beb7636229e8255896e804703",
+      "kind": "synthetic-test-pg-dump"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume06-observations.json",
+      "bytes": 19429,
+      "sha256": "11d1b4f164a8c7d552575002a82fb235e46c4d9b2b556750c39f92cfe73ebb18",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume06-pg_dump.exe.json",
+      "bytes": 402,
+      "sha256": "1bde368006f1d572dbb807b6fb65215c8b1931e7a2528bbbda175a9339377226",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume06-pg_restore.exe.json",
+      "bytes": 418,
+      "sha256": "ef77a0c778f7bdaf4af7c47848f6227626bf6daaf1e8e1bf725948e3089e7c3f",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume06-real-pg.log",
+      "bytes": 6216,
+      "sha256": "3df55877437914607bf54ff5a5c61c1ba696c084a5eca7fe0cefed32eea707f9",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume07-observations.json",
+      "bytes": 19429,
+      "sha256": "7c2000361a637ee90d9b15f99fdc1ef6f4b5f3e5c1b2ff26c3ec068f1a31ea08",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume07-real-pg.log",
+      "bytes": 10022,
+      "sha256": "bd85c4bda34ac7dc06b02b17bdcd3a2377d8909593ae2c00d09babdf71fe0ac7",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume08-backup-restore.json",
+      "bytes": 3972,
+      "sha256": "abddf317d0c01fca53e9c8364e1a1504539b8b4099e54649e00c50937ad19cb5",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume08-backup-restore.log",
+      "bytes": 44,
+      "sha256": "a0623d6542867fa86bd9c053c3c05023c939f849103340a98ea4acd7ac3745b2",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume08-backup.dump",
+      "bytes": 171526,
+      "sha256": "d09d32644c956777fe234b7757e387d9d39ab56f4ed7503fb81c4745e3d5c464",
+      "kind": "synthetic-test-pg-dump"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume08-observations.json",
+      "bytes": 19797,
+      "sha256": "2fc0b69961922cfd2cca2f955253cf5e80c8ac47ef9278008e0c321996d66167",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume08-pg_dump.exe.json",
+      "bytes": 402,
+      "sha256": "242873d15f31a1ab0246c90e4d774e3697cf6fda3b194b2d83d719dcabd03eb9",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume08-pg_restore.exe.json",
+      "bytes": 418,
+      "sha256": "6576dcbf73ff48812961ceaf3b556f4239c1efc8b665e501d5299c32312abcbf",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/resume08-real-pg.log",
+      "bytes": 7454,
+      "sha256": "a297c82d51567394ec6f512790aaf7905964cccc93437600b85e5c0a9cf6a706",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/signoff01-backup-restore.json",
+      "bytes": 3978,
+      "sha256": "19994d905372a84b37cc9d275674846e9efd6dc3ec6122c0bdd5c709eca5d64c",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/signoff01-backup.dump",
+      "bytes": 172984,
+      "sha256": "f92ade1acaca8e1ec64251a52331f7751245757a8f2ccb3a197cd2b1f64242f5",
+      "kind": "synthetic-test-pg-dump"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/signoff01-observations.json",
+      "bytes": 19797,
+      "sha256": "3327e01ef8de1e3fa42d769e02bf5434e8a3eff38ed6f1cb6c1fe8d1e4fbb8d1",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/signoff01-pg_dump.exe.json",
+      "bytes": 404,
+      "sha256": "6e53832bcb39e3083910b2a17e9bdeaabff3061012d53cae2545bfb8ca566446",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-gate-review-01/signoff01-pg_restore.exe.json",
+      "bytes": 420,
+      "sha256": "1a47f95b55c662ccdda7b6298e68754d14a0de7a5667cba8f199b03cadfceef4",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/CHECKPOINT.md",
+      "bytes": 1299,
+      "sha256": "aa507fabc71e8bd50023fa10a16cac173ceddd11a88a3ac0f16374fc0eb77fcb",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/T1-V2最终候选固定与剩余阻塞报告.md",
+      "bytes": 10974,
+      "sha256": "e5bceb8ab60bf8359de0bce01ef3212c053af45d14d09b60ab7a28d0e24f4413",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/api-build-01.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/backup-restore-01.log",
+      "bytes": 44,
+      "sha256": "a0623d6542867fa86bd9c053c3c05023c939f849103340a98ea4acd7ac3745b2",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/cluster-stop.json",
+      "bytes": 301,
+      "sha256": "bf910bf4b447baf1c7c29e0551664907e7aaf85ea0ce23dbe793fc30818b43ee",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/db-build-01.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/draft-unit-01.log",
+      "bytes": 1504,
+      "sha256": "a4cbeeda5c2048d2f8f933af6d964bb01f6dadeb7e532384cc63a0294508491f",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/isolated-migration-bundle-preflight-signoff01/0000_glamorous_robbie_robertson.sql",
+      "bytes": 1781,
+      "sha256": "731b447f3b3b0e19b3e1600f0a44d71dab9607f7db109977574e692adbae81e5",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/isolated-migration-bundle-preflight-signoff01/0001_s7_entitlement_ledger.sql",
+      "bytes": 3143,
+      "sha256": "8fbb82cfa3196510c6707e8f66b11eec8a2058c81f64ca3e2febb5371021f084",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/isolated-migration-bundle-preflight-signoff01/0002_s4_npc_memory_atomic.sql",
+      "bytes": 641,
+      "sha256": "de22e094b3cec254b155e468909d62c6a27b4d2e5f2911a4f68571ff88f0ca77",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/isolated-migration-bundle-preflight-signoff01/0003_s6_email_auth.sql",
+      "bytes": 1123,
+      "sha256": "581214973cadd1a37ac0157d5dbbd90d32125d47502dabcc9bb0b0173ae719cb",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/isolated-migration-bundle-preflight-signoff01/0004_s6_archive_trash.sql",
+      "bytes": 480,
+      "sha256": "e078859176232b4eb450c05dd12e04872702587980f9bea35e0fd499b0974c28",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/isolated-migration-bundle-preflight-signoff01/0005_fearless_shatterstar.sql",
+      "bytes": 725,
+      "sha256": "08ec61fa3e76e496602938bdbd79056278fba98bc177e254a1c649c9d27f63ab",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/isolated-migration-bundle-preflight-signoff01/0006_next_the_enforcers.sql",
+      "bytes": 300,
+      "sha256": "5f68293a854a6770d7d8b2adcdc5b43e1fc1b4af168e84be75a7e98c0f55312b",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/isolated-migration-bundle-preflight-signoff01/0007_account_erasure_ledger.sql",
+      "bytes": 629,
+      "sha256": "1b24e43cdc643b13d9b45931d2daba555ef087a0269092e09a799bd00302f417",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/isolated-migration-bundle-preflight-signoff01/0008_sec_integrity_auth_limits.sql",
+      "bytes": 2676,
+      "sha256": "8f55be10d57ee90387c442eb8f151867b95d6e02cd6ed339c83e26e38a171d0f",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/isolated-migration-bundle-preflight-signoff01/0009_overjoyed_crystal.sql",
+      "bytes": 2230,
+      "sha256": "b4f810987bc54b18763397ea4c4cb36f3692e1fe9946e0e76b9da1b58efa7af6",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/isolated-migration-bundle-preflight-signoff01/0010_retention_purge_receipt.sql",
+      "bytes": 1823,
+      "sha256": "2398f7c4c9766588d090fb26cc895450c704e52faa88f7799b7498e768388dc7",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/isolated-migration-bundle-preflight-signoff01/0011_test_cleanup_database_guard.sql",
+      "bytes": 1623,
+      "sha256": "822d18d761301ca77880d59a465d6e8cc36a1d0e3025665d197dea3ff1b3fee1",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/isolated-migration-bundle-preflight-signoff01/0012_closeout_runtime_controls.sql",
+      "bytes": 604,
+      "sha256": "28124b7cdf5596ab08894bede0add68b05b4990aa214c47a9889880ad25cc31c",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/isolated-migration-bundle-preflight-signoff01/0013_event_integrity_ownership.sql",
+      "bytes": 3236,
+      "sha256": "5cea34a3374c3e56619972d341a9a16e2ecce527378db44ae30866734f41498a",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/isolated-migration-bundle-preflight-signoff01/0014_npc_authorized_observation_outbox.sql",
+      "bytes": 3107,
+      "sha256": "5501f275773e55a7ab897cba4aecb0dba345d67fce58f1f32a47dff4b7e04f0a",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/isolated-migration-bundle-preflight-signoff01/0015_p1_gameplay_persistence.sql",
+      "bytes": 3991,
+      "sha256": "14711c747eb5a87106a3492bd28249d4cc33c0f95dec9acfece1fb3aeb985a66",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/isolated-migration-bundle-preflight-signoff01/0016_supabase_external_identity.sql",
+      "bytes": 3931,
+      "sha256": "3eaadd2f9c07e41dfe90398f80a21de6cfe4e74377bd806b106b24ed4315401d",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/isolated-migration-bundle-preflight-signoff01/0017_p2_authority_lineage.sql",
+      "bytes": 5665,
+      "sha256": "cfcf2348c6da5d3c7bf0e91e3f998a207aa060ee3135b436223e17bf1983095c",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/isolated-migration-bundle-preflight-signoff01/0018_p2_canon_artifact_identity.sql",
+      "bytes": 2424,
+      "sha256": "a4e878fbb3579cfa73eb82e157f25ec3704a195a18c95b1b7f8d0a47885b4d17",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/isolated-migration-bundle-preflight-signoff01/0019_p1_guest_accounts.sql",
+      "bytes": 795,
+      "sha256": "02926e4864b38556029adaff31e92214226b90dea8a0699ea7808e760036ddff",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/isolated-migration-bundle-preflight-signoff01/0020_npc_memory_recall_semantics.sql",
+      "bytes": 4644,
+      "sha256": "af1f6e79ac9993a28dddd418b2e38bf5927add04d78d173e99dca05477281084",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/isolated-migration-bundle-preflight-signoff01/0021_recall_upgrade_compatibility.sql",
+      "bytes": 5800,
+      "sha256": "63698efc15825b0c9e638ced2d8fcb1ae515cc987fa5cf2a0add6aed79496367",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/isolated-migration-bundle-preflight-signoff01/0022_narrative_publication.sql",
+      "bytes": 11608,
+      "sha256": "ef799e3604ea1f499a1cda67d9ac5d4d7b7feba914ac80a0905bfadfd8d254cd",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/isolated-migration-bundle-preflight-signoff01/0023_narrative_ownership_v2.sql",
+      "bytes": 17117,
+      "sha256": "acce3eb62fb59e606610f9d5e30e808c72e21e8c35db2eab87d0f7dd5cbeec11",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/isolated-migration-bundle-preflight-signoff01/meta/_journal.json",
+      "bytes": 3693,
+      "sha256": "fae2f5c2ec6f1ea1c9b314ec319d3124fd4ec2fbada8b70e31c50694c96678f3",
+      "kind": "isolated-sql-snapshot"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/migration-bundle-manifest-preflight-signoff01.json",
+      "bytes": 3547,
+      "sha256": "eee301431fe4742cd5c192d54e08217f6def23ddc2441222cbe89f1b970587b3",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/pg-stop.log",
+      "bytes": 61,
+      "sha256": "a0604eee00a146eff6ff314a2540400d27e59f3e51156b8f6285f7330ff6afeb",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/postgres-final.log",
+      "bytes": 143908,
+      "sha256": "91b144be6174d41423079a20c05182ac5421e0e9532cf5b49cbf57c5dc6291f5",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/signoff01-observations.json",
+      "bytes": 10482,
+      "sha256": "82e2802ea8002d95580fd366e968de0cdeb74047d000d12157a9ba384d667fa4",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/signoff01-real-pg.log",
+      "bytes": 2148,
+      "sha256": "e7dbfcceee04f8d9b469040761e2b04523e8eb44ea9730e5bcfd70b7d395e505",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/signoff01-regression.log",
+      "bytes": 7454,
+      "sha256": "4f574dfc5077b494480aea25a46986fcdb09f0d4da52699d1a25783712a1d5b4",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/web-typecheck-01.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "docs/integration/t1-v2-signoff-preflight/安全安装顺序与黄金基线依赖.md",
+      "bytes": 4255,
+      "sha256": "3e9ba1000aea700f1d1c836a9b08d7aa4fc3a3b2b174cfb5d04c77aec3df6c8c",
+      "kind": "evidence-or-report"
+    },
+    {
+      "path": "packages/db/src/narrative-v2-schema.ts",
+      "bytes": 3967,
+      "sha256": "034bbeba56dde38e595bc4749967af38737816d37357a72c819370d90c8ddba6",
+      "kind": "product"
+    },
+    {
+      "path": "scripts/gate-review/backup-restore.cjs",
+      "bytes": 3096,
+      "sha256": "e47ead67c3b028ea2515d72d84bdc041a4a6e8621997541dc8f90f43d6a9f04c",
+      "kind": "review-tool"
+    },
+    {
+      "path": "scripts/gate-review/baseline-probes.cjs",
+      "bytes": 3185,
+      "sha256": "02a21c458b4f5a32a497f598f94bbb7768078cbb648ed3d8416908e253c8886a",
+      "kind": "review-tool"
+    },
+    {
+      "path": "scripts/gate-review/check-patches.cjs",
+      "bytes": 1095,
+      "sha256": "cdf3352f86fd5a42c6468d714de8364b1a4b58f5cd5857dbc5c78c6bf8c7581c",
+      "kind": "review-tool"
+    },
+    {
+      "path": "scripts/gate-review/finalize.cjs",
+      "bytes": 4114,
+      "sha256": "fb896f5e1ee99f5f08177ead4237c9e4bc996caddbe7f852881703a7db83fb26",
+      "kind": "review-tool"
+    },
+    {
+      "path": "scripts/gate-review/migration.cjs",
+      "bytes": 3920,
+      "sha256": "16cf0e58eeabc02162bd8e113ccaaa7f2a6be4ca8e7c1916c630ae8c1cb5d5a2",
+      "kind": "review-tool"
+    },
+    {
+      "path": "scripts/gate-review/pg.cjs",
+      "bytes": 3636,
+      "sha256": "53ef6d71f4a22e46ab01a36bd6aae752af7749f53808875782accc37768d3e60",
+      "kind": "review-tool"
+    },
+    {
+      "path": "scripts/gate-review/real-pg.test.cjs",
+      "bytes": 33979,
+      "sha256": "15b12011a2e414a482434b4eab0a3a7426bf35c0d47935d6481176dfd570970e",
+      "kind": "review-tool"
+    },
+    {
+      "path": "scripts/gate-review/seal-review.mjs",
+      "bytes": 5528,
+      "sha256": "cbad6787169c434ae173307c44646b8fe93e2d6514eecc6eaca230987dd24831",
+      "kind": "review-tool"
+    },
+    {
+      "path": "scripts/gate-review/signoff-pg-stop.cjs",
+      "bytes": 1403,
+      "sha256": "1b36c2d269aad7fbf27f1db3c281c7707f2362aea09c1540f5e3283f90c92375",
+      "kind": "review-tool"
+    },
+    {
+      "path": "scripts/gate-review/signoff-preflight.test.cjs",
+      "bytes": 16704,
+      "sha256": "278128f47dc9c20c94d0a0b3522f37d0e43799231592b4bd5e6eea3a24d6dc85",
+      "kind": "review-tool"
+    },
+    {
+      "path": "scripts/gate-review/signoff-release.mjs",
+      "bytes": 12408,
+      "sha256": "5fac46e28279cdb66cc94aae11975dda2a7f5130eca4346ca051badaab593898",
+      "kind": "review-tool"
+    },
+    {
+      "path": "scripts/gate-review/support.cjs",
+      "bytes": 2868,
+      "sha256": "5ca961b735558aa61c5d511dc79dae2797a149fcd86b8097c7c153608294b4e6",
+      "kind": "review-tool"
+    }
+  ],
+  "binaryDumps": "Only dedicated jiuxiao_test_gate fixture databases; no production dump",
+  "unchangedStableByteFiles": 47,
+  "stableByteRecords": [
+    {
+      "path": "docs/acceptance/2026-10-03/九霄1.0-P0玩法双记忆验收记录表-2026-10-03.xlsx",
+      "sha256": "6f75e27850ba7aa574441f5f8f17a0cc96197be4b341d52375af6c7c83804db3",
+      "expected": "6f75e27850ba7aa574441f5f8f17a0cc96197be4b341d52375af6c7c83804db3"
+    },
+    {
+      "path": "docs/acceptance/2026-10-03/九霄1.0-P1-玩法规则与序章-签署表-2026-10-03.xlsx",
+      "sha256": "33b6c8f6708d76f3420df12eb29f1439c5059f67f4cb7320ffe7810ed071c1bd",
+      "expected": "33b6c8f6708d76f3420df12eb29f1439c5059f67f4cb7320ffe7810ed071c1bd"
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/P1-MAP-作者可执行映射.md",
+      "sha256": "5869f3a3518156c2ac166388cc9f652aebc7bd5e36f071172030665f3d0a9e53",
+      "expected": "5869f3a3518156c2ac166388cc9f652aebc7bd5e36f071172030665f3d0a9e53"
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/P1-NLU-双作者盲标表.md",
+      "sha256": "8d03539dfa2865f3d276c5c63346484e0637ae4a67529b919798c0fc2e50f0b9",
+      "expected": "8d03539dfa2865f3d276c5c63346484e0637ae4a67529b919798c0fc2e50f0b9"
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/P1-PR51-技术审阅依据.md",
+      "sha256": "859d84db16b6cba3cd1421f208601f7f1f93fec871951a6873b4c9a5288aa3d1",
+      "expected": "859d84db16b6cba3cd1421f208601f7f1f93fec871951a6873b4c9a5288aa3d1"
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/P1-作者共同认可与PR-4验收裁决-2026-10-05.md",
+      "sha256": "ab79734f1758c24942bfbb55a7912c2babd9bbcd9b7aaeb57ead4f8c9ebfd194",
+      "expected": "ab79734f1758c24942bfbb55a7912c2babd9bbcd9b7aaeb57ead4f8c9ebfd194"
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/P1-审阅结论-代签.md",
+      "sha256": "fb24c6631cbe0f549b65e1b09441915ec5c30e37d66918c34728a3169563a386",
+      "expected": "fb24c6631cbe0f549b65e1b09441915ec5c30e37d66918c34728a3169563a386"
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/PR-4-执行规格对照与边界裁定.md",
+      "sha256": "461e0bbf8f9a1ec6dc512985da29322f5928012bbd57a23ea10aad59be442789",
+      "expected": "461e0bbf8f9a1ec6dc512985da29322f5928012bbd57a23ea10aad59be442789"
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/archived-candidates/P1-EXEC-SPEC-v3.1.0-20261004.md",
+      "sha256": "3edba2136ef1a783a701327c16208bab289908f83db0084dc748bdc612fa526f",
+      "expected": "3edba2136ef1a783a701327c16208bab289908f83db0084dc748bdc612fa526f"
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/archived-candidates/prologue-v1-20261004.ts",
+      "sha256": "66c7557c74263813d7a7ea832de4961c612a12fa48a6f15ecdf6c53a7a1a571f",
+      "expected": "66c7557c74263813d7a7ea832de4961c612a12fa48a6f15ecdf6c53a7a1a571f"
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-signed-evidence/G03-行动规则表.md",
+      "sha256": "c4d06467515c865b3a9abad0980e812af4151c5ac58868d9af7db4d74741e879",
+      "expected": "c4d06467515c865b3a9abad0980e812af4151c5ac58868d9af7db4d74741e879"
+    },
+    {
+      "path": "docs/sources/worldbook-draft-index.json",
+      "sha256": "fc43f4714957a2f51da76ce4a85d4f23d918f096ff64eccc0b653f3f42d05d0b",
+      "expected": "fc43f4714957a2f51da76ce4a85d4f23d918f096ff64eccc0b653f3f42d05d0b"
+    },
+    {
+      "path": "docs/sources/世界书_保守补全版.md",
+      "sha256": "1d871057163f7f0b439c135b3af943e948b2401bb284ab077622ed95450d35d2",
+      "expected": "1d871057163f7f0b439c135b3af943e948b2401bb284ab077622ed95450d35d2"
+    },
+    {
+      "path": "docs/九霄1.0-P1-执行规格-GPT交付版-2026-10-03.md",
+      "sha256": "7677776d40825889694abeff4cb51c33d4fcd4a91e70eafcf8baae491635259e",
+      "expected": "7677776d40825889694abeff4cb51c33d4fcd4a91e70eafcf8baae491635259e"
+    },
+    {
+      "path": "docs/九霄P1序章作者原创输入登记-2026-10-03.md",
+      "sha256": "6c390226f731f71c19c7c29d246ffff59d1a971c28c8da807bace6e613bcc052",
+      "expected": "6c390226f731f71c19c7c29d246ffff59d1a971c28c8da807bace6e613bcc052"
+    },
+    {
+      "path": "packages/content/src/canon.registry.json",
+      "sha256": "2fbaab0609bf51edae91996be32e8a6c76a1b496b2a6d80bb926dcef8b391943",
+      "expected": "2fbaab0609bf51edae91996be32e8a6c76a1b496b2a6d80bb926dcef8b391943"
+    },
+    {
+      "path": "packages/content/src/index.ts",
+      "sha256": "b46be0f4e70c868ea0910abc2904270d614403c4929e800547429f16e8a8c277",
+      "expected": "b46be0f4e70c868ea0910abc2904270d614403c4929e800547429f16e8a8c277"
+    },
+    {
+      "path": "packages/content/src/prologue/prologue-v1.rulebook-candidate.ts",
+      "sha256": "e45ede3035770bc4dcc56c85daddfd567314eea9ac8bfbc3821edda89f6a53c4",
+      "expected": "e45ede3035770bc4dcc56c85daddfd567314eea9ac8bfbc3821edda89f6a53c4"
+    },
+    {
+      "path": "packages/content/src/prologue/prologue-v1.test.ts",
+      "sha256": "cc3231e3ee26a0138485ad21a7769dbca5156461295dc044a04e0b106941771e",
+      "expected": "cc3231e3ee26a0138485ad21a7769dbca5156461295dc044a04e0b106941771e"
+    },
+    {
+      "path": "packages/content/src/prologue/prologue-v1.ts",
+      "sha256": "5a73149978919112d2ec2e29064a0c82e5c487c68b46444d9b5699b00fb49d7a",
+      "expected": "5a73149978919112d2ec2e29064a0c82e5c487c68b46444d9b5699b00fb49d7a"
+    },
+    {
+      "path": "packages/content/src/rules/prologue-v1.constants.ts",
+      "sha256": "f759db23414c2987e61d9c45d712686be0a56b2ccf71fb9c8f54881909533e3d",
+      "expected": "f759db23414c2987e61d9c45d712686be0a56b2ccf71fb9c8f54881909533e3d"
+    },
+    {
+      "path": "packages/contracts/src/action.ts",
+      "sha256": "45f1654eaddc532d4b6cc707ce4860254d125b9813b1ce85ca80991b87ac5e2e",
+      "expected": "45f1654eaddc532d4b6cc707ce4860254d125b9813b1ce85ca80991b87ac5e2e"
+    },
+    {
+      "path": "packages/contracts/src/decision.ts",
+      "sha256": "a7c61da21a856423791d9758ece67be467ceb099f41b34b14d4581a9b100876a",
+      "expected": "a7c61da21a856423791d9758ece67be467ceb099f41b34b14d4581a9b100876a"
+    },
+    {
+      "path": "packages/contracts/src/errors.ts",
+      "sha256": "695eb0dbe55c92e97b23e96e7b948f898c1950c99c3951666d9bf12428dcba9d",
+      "expected": "695eb0dbe55c92e97b23e96e7b948f898c1950c99c3951666d9bf12428dcba9d"
+    },
+    {
+      "path": "packages/contracts/src/event.ts",
+      "sha256": "8f536702ce7c3deb998916f08882391646e73b38a1962a6441290fee519750ba",
+      "expected": "8f536702ce7c3deb998916f08882391646e73b38a1962a6441290fee519750ba"
+    },
+    {
+      "path": "packages/contracts/src/index.ts",
+      "sha256": "bf509bebd85acb0498ec9f18a86a2107e29ce3438758b499a14b6be5198b5651",
+      "expected": "bf509bebd85acb0498ec9f18a86a2107e29ce3438758b499a14b6be5198b5651"
+    },
+    {
+      "path": "packages/contracts/src/json-bounds.ts",
+      "sha256": "38bcd46b149da54edfd614349f7c2233c720bbe4b3af58d2eb3eb7851c24a9c7",
+      "expected": "38bcd46b149da54edfd614349f7c2233c720bbe4b3af58d2eb3eb7851c24a9c7"
+    },
+    {
+      "path": "packages/contracts/src/prologue.ts",
+      "sha256": "901dd80e74c81ea68d942312816bcf84dc7fd69283fa65ee1aa1d2747ad07273",
+      "expected": "901dd80e74c81ea68d942312816bcf84dc7fd69283fa65ee1aa1d2747ad07273"
+    },
+    {
+      "path": "packages/contracts/src/save.ts",
+      "sha256": "cd7a76f0d4e26e6d3dcb078498b035e0e1828b54365bebe18e565af70780e0ed",
+      "expected": "cd7a76f0d4e26e6d3dcb078498b035e0e1828b54365bebe18e565af70780e0ed"
+    },
+    {
+      "path": "packages/contracts/src/state-delta.ts",
+      "sha256": "f73404acf344cb5f2d009df1d19aa621dad09ef3bee5ff46ede9e7852258ae59",
+      "expected": "f73404acf344cb5f2d009df1d19aa621dad09ef3bee5ff46ede9e7852258ae59"
+    },
+    {
+      "path": "packages/contracts/src/turn.ts",
+      "sha256": "56e2735bda9adcee5fa3e59324abed9215ce4fae077793c8e6f3aea59c8556a9",
+      "expected": "56e2735bda9adcee5fa3e59324abed9215ce4fae077793c8e6f3aea59c8556a9"
+    },
+    {
+      "path": "packages/contracts/src/world.ts",
+      "sha256": "285db04f009dc0f27e24427350ed8ce75c70c69dd89da7adfff42febb9c1252a",
+      "expected": "285db04f009dc0f27e24427350ed8ce75c70c69dd89da7adfff42febb9c1252a"
+    },
+    {
+      "path": "packages/domain/src/event-log.ts",
+      "sha256": "b96484753d0459c469d3691be8d37620b76ed2dc9ed35ede7e2fb60f6283da9c",
+      "expected": "b96484753d0459c469d3691be8d37620b76ed2dc9ed35ede7e2fb60f6283da9c"
+    },
+    {
+      "path": "packages/domain/src/index.ts",
+      "sha256": "47a9ce089fb471c37bdc66f8680fb37ad4efb7f7d817a0b66f908e9694b138df",
+      "expected": "47a9ce089fb471c37bdc66f8680fb37ad4efb7f7d817a0b66f908e9694b138df"
+    },
+    {
+      "path": "packages/domain/src/memory/p4-recall-cues-v1.json",
+      "sha256": "d3dcd20c850741d5095b960488310007a163b03b53cb40aaa60b57dae9031e31",
+      "expected": "d3dcd20c850741d5095b960488310007a163b03b53cb40aaa60b57dae9031e31"
+    },
+    {
+      "path": "packages/domain/src/memory/p4-recall-policy-v2.json",
+      "sha256": "5da8bd8e61e4859e5492b5393e3f458b12ded9cc36025858415fbe51c27261de",
+      "expected": "5da8bd8e61e4859e5492b5393e3f458b12ded9cc36025858415fbe51c27261de"
+    },
+    {
+      "path": "packages/domain/src/nlu/action-parser.test.ts",
+      "sha256": "8b5c129d1901791387b5c2be70e0b30ab7402665c44418ede3fe709076b70b7f",
+      "expected": "8b5c129d1901791387b5c2be70e0b30ab7402665c44418ede3fe709076b70b7f"
+    },
+    {
+      "path": "packages/domain/src/nlu/action-parser.ts",
+      "sha256": "fb7374c307998b2a384bfad385e6a5ce19bd9501bc1982b29aade0e2bdd72e70",
+      "expected": "fb7374c307998b2a384bfad385e6a5ce19bd9501bc1982b29aade0e2bdd72e70"
+    },
+    {
+      "path": "packages/domain/src/nlu/index.ts",
+      "sha256": "38391f5c8ae965779fff766fa95e4164cc745b7d5225a97f27041c4c14ba566e",
+      "expected": "38391f5c8ae965779fff766fa95e4164cc745b7d5225a97f27041c4c14ba566e"
+    },
+    {
+      "path": "packages/domain/src/nlu/prologue-v1-nlu-fixtures.test.ts",
+      "sha256": "084a049a40f609ddd5415b1f7213485789b8f69affebe7f3dd41f9eb1f53a8da",
+      "expected": "084a049a40f609ddd5415b1f7213485789b8f69affebe7f3dd41f9eb1f53a8da"
+    },
+    {
+      "path": "packages/domain/src/nlu/prologue-v1-nlu-fixtures.ts",
+      "sha256": "53ed4f2b9204cd0ae2220537b32238a1d9bb644eb25285b13da6f90df41b62b5",
+      "expected": "53ed4f2b9204cd0ae2220537b32238a1d9bb644eb25285b13da6f90df41b62b5"
+    },
+    {
+      "path": "packages/domain/src/prologue-v1-candidate.test.ts",
+      "sha256": "cca17d0435e6b8332126b8b948c69e3554633f1adb82db5cb9e9733ce9fe23d7",
+      "expected": "cca17d0435e6b8332126b8b948c69e3554633f1adb82db5cb9e9733ce9fe23d7"
+    },
+    {
+      "path": "packages/domain/src/prologue-v1-rules.test.ts",
+      "sha256": "0f4de380601c9a212602e57730c3241f53ad37d720471bb9f835076abe67a555",
+      "expected": "0f4de380601c9a212602e57730c3241f53ad37d720471bb9f835076abe67a555"
+    },
+    {
+      "path": "packages/domain/src/prologue-v1-rules.ts",
+      "sha256": "c8b68595c1c3f38da660c6781edbdde77eb1111a8be0a684440167a8c929319f",
+      "expected": "c8b68595c1c3f38da660c6781edbdde77eb1111a8be0a684440167a8c929319f"
+    },
+    {
+      "path": "packages/domain/src/prologue-v1-time.ts",
+      "sha256": "480171d4e2117024b593bacbd93521149c3e972ade693083f5c2813095d06ffe",
+      "expected": "480171d4e2117024b593bacbd93521149c3e972ade693083f5c2813095d06ffe"
+    },
+    {
+      "path": "packages/domain/src/rules.ts",
+      "sha256": "62d09f33ee9a14a7bdaf9f29c064319d723dd51422fbd19104f33da37bcbcc06",
+      "expected": "62d09f33ee9a14a7bdaf9f29c064319d723dd51422fbd19104f33da37bcbcc06"
+    },
+    {
+      "path": "packages/domain/src/state-delta.ts",
+      "sha256": "f7e8d143f125a06300d73154a17073697b91bccff0a2f8c2772b77f6a33ad142",
+      "expected": "f7e8d143f125a06300d73154a17073697b91bccff0a2f8c2772b77f6a33ad142"
+    }
+  ]
+}

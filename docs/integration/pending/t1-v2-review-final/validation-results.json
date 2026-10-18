@@ -1,0 +1,29 @@
+[
+  {
+    "name": "compile-final",
+    "command": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "node_modules/typescript/bin/tsc",
+      "-p",
+      "apps/api/tsconfig.json"
+    ],
+    "started": "2026-10-16T10:30:01.514Z",
+    "finished": "2026-10-16T10:30:01.859Z",
+    "exitCode": 0,
+    "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "kind": "isolated-draft-unit-not-official-gameplay"
+  },
+  {
+    "name": "unit-final",
+    "command": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "--test",
+      "scripts/t1-v2-draft-tests.cjs"
+    ],
+    "started": "2026-10-16T10:30:01.859Z",
+    "finished": "2026-10-16T10:30:02.126Z",
+    "exitCode": 0,
+    "logSha256": "4e4c5b109a9f80b91446c2cffc381d0fbde2cc3a5a22b69b42c943dab3ea7526",
+    "kind": "isolated-draft-unit-not-official-gameplay"
+  }
+]

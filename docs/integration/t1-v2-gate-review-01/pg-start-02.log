@@ -1,0 +1,13 @@
+waiting for server to start.... done
+server started
+Error: spawnSync J:/pg18/pgsql/bin/pg_ctl.exe ETIMEDOUT
+    at Object.spawnSync (node:internal/child_process:1160:20)
+    at Object.spawnSync (node:child_process:928:24)
+    at run (C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-t1-v2-gate-review-01-20261016\scripts\gate-review\pg.cjs:8:41)
+    at C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-t1-v2-gate-review-01-20261016\scripts\gate-review\pg.cjs:24:3
+    at Object.<anonymous> (C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-t1-v2-gate-review-01-20261016\scripts\gate-review\pg.cjs:34:3)
+    at Module._compile (node:internal/modules/cjs/loader:1872:14)
+    at Object..js (node:internal/modules/cjs/loader:2003:10)
+    at Module.load (node:internal/modules/cjs/loader:1594:32)
+    at Module._load (node:internal/modules/cjs/loader:1396:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)

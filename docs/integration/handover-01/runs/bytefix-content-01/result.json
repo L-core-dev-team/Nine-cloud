@@ -1,0 +1,13 @@
+{
+  "name": "bytefix-content-01",
+  "baselineOrCandidate": "9587d05da09171e3bc75de309a8f65b8d601b8a6",
+  "command": [
+    "pnpm",
+    "--filter",
+    "@jiuxiao/content",
+    "test"
+  ],
+  "started": "2026-10-15T04:39:36.394Z",
+  "finished": "2026-10-15T04:39:37.928Z",
+  "exitCode": 0
+}

@@ -1,0 +1,665 @@
+2026-10-14 10:09:47.238 CST [29152] ��־:  �������� PostgreSQL 18.4 on x86_64-windows, compiled by msvc-19.44.35226, 64-bit
+2026-10-14 10:09:47.239 CST [29152] ��־:  ���ڼ���IPv4��ַ"127.0.0.1"���˿� 55441
+2026-10-14 10:09:47.449 CST [38056] ��־:  ���ݿ��ϴιر�ʱ��Ϊ 2026-10-14 10:09:42 CST
+2026-10-14 10:09:47.456 CST [29152] ��־:  ���ݿ�ϵͳ׼����������
+2026-10-14 10:10:49.850 CST [14916] 错误:  关系 "game_saves" 的新列违反了检查约束 "game_saves_canon_artifact_hash_check"
+2026-10-14 10:10:49.850 CST [14916] 详细信息:  失败, 行包含(keep-v3, keep-owner, 0, 3, fixture, fixture, fixture, {"facts": {"original": "unchanged"}, "playerId": "p", "locationI..., 2026-10-14 10:10:49.846299+08, 2026-10-14 10:10:49.846299+08, null, null, null, null, null, null, null, null).
+2026-10-14 10:10:49.850 CST [14916] 语句:  INSERT INTO game_saves(id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,snapshot)
+	      VALUES($1,'keep-owner',0,$2,'fixture','fixture','fixture',$3::jsonb)
+2026-10-14 10:11:18.478 CST [17440] 错误:  关系 "game_saves" 的新列违反了检查约束 "game_saves_memory_policy_check"
+2026-10-14 10:11:18.478 CST [17440] 详细信息:  失败, 行包含(keep-v3, keep-owner, 0, 3, fixture, fixture, fixture, {"facts": {"original": "unchanged"}, "playerId": "p", "locationI..., 2026-10-14 10:11:18.4772+08, 2026-10-14 10:11:18.4772+08, null, null, null, null, null, null, null, sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...).
+2026-10-14 10:11:18.478 CST [17440] 语句:  INSERT INTO game_saves(id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,snapshot,canon_artifact_hash)
+	      VALUES($1,'keep-owner',0,$2,'fixture','fixture','fixture',$3::jsonb,$4)
+2026-10-14 10:11:54.739 CST [2548] 错误:  关系 "narrative_sources" 已经存在
+2026-10-14 10:11:54.739 CST [2548] 语句:  
+	CREATE TABLE narrative_sources (
+	 id uuid PRIMARY KEY, generation_id uuid NOT NULL REFERENCES narrative_generation_requests(id),
+	 attempt_id uuid NOT NULL UNIQUE, body bytea NOT NULL, body_sha text NOT NULL,
+	 utf16_length integer NOT NULL CHECK(utf16_length>0), utf8_length integer NOT NULL CHECK(utf8_length>0),
+	 generator_source text NOT NULL CHECK(generator_source='deterministic'),
+	 created_at timestamptz NOT NULL DEFAULT now(), UNIQUE(id,generation_id),
+	 FOREIGN KEY(attempt_id,generation_id) REFERENCES narrative_attempts(id,generation_id),
+	 CHECK(utf8_length=octet_length(body)), CHECK(body_sha=encode(sha256(body),'hex'))
+	);
+	
+2026-10-14 10:14:47.376 CST [32964] ��־:  checkpoint starting: time
+2026-10-14 10:15:55.876 CST [7256] 错误:  语法错误 在 "$" 或附近的 第 96 个字符处
+2026-10-14 10:15:55.876 CST [7256] 语句:  
+	CREATE FUNCTION narrative_erasure_allowed(row_data jsonb) RETURNS boolean LANGUAGE plpgsql AS $
+	DECLARE owner_value text;
+	BEGIN
+	 IF current_database() ~* '^jiuxiao_test(_[a-z0-9-]+)? RETURNS trigger LANGUAGE plpgsql AS $$
+	BEGIN
+	 IF TG_OP='DELETE' AND narrative_erasure_allowed(to_jsonb(OLD)) THEN RETURN OLD; END IF;
+	 RAISE EXCEPTION 'NARRATIVE_IMMUTABLE';
+	END $$;
+	CREATE TRIGGER narrative_context_immutable BEFORE UPDATE OR DELETE ON narrative_context_snapshots FOR EACH ROW EXECUTE FUNCTION protect_narrative_immutable();
+	CREATE TRIGGER narrative_source_immutable BEFORE UPDATE OR DELETE ON narrative_sources FOR EACH ROW EXECUTE FUNCTION protect_narrative_immutable();
+	CREATE TRIGGER narrative_publication_immutable BEFORE UPDATE OR DELETE ON narrative_publications FOR EACH ROW EXECUTE FUNCTION protect_narrative_immutable();
+	CREATE TRIGGER narrative_segment_immutable BEFORE UPDATE OR DELETE ON narrative_segments FOR EACH ROW EXECUTE FUNCTION protect_narrative_immutable();
+	CREATE TRIGGER narrative_link_immutable BEFORE UPDATE OR DELETE ON source_event_links FOR EACH ROW EXECUTE FUNCTION protect_narrative_immutable();
+	
+2026-10-14 10:17:08.567 CST [18076] 错误:  关系 "narrative_sources" 已经存在
+2026-10-14 10:17:08.567 CST [18076] 语句:  
+	CREATE TABLE narrative_sources (
+	 id uuid PRIMARY KEY, generation_id uuid NOT NULL REFERENCES narrative_generation_requests(id),
+	 attempt_id uuid NOT NULL UNIQUE, body bytea NOT NULL, body_sha text NOT NULL,
+	 utf16_length integer NOT NULL CHECK(utf16_length>0), utf8_length integer NOT NULL CHECK(utf8_length>0),
+	 generator_source text NOT NULL CHECK(generator_source='deterministic'),
+	 created_at timestamptz NOT NULL DEFAULT now(), UNIQUE(id,generation_id),
+	 FOREIGN KEY(attempt_id,generation_id) REFERENCES narrative_attempts(id,generation_id),
+	 CHECK(utf8_length=octet_length(body)), CHECK(body_sha=encode(sha256(body),'hex'))
+	);
+	
+2026-10-14 10:17:46.805 CST [26400] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 10:17:46.805 CST [26400] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_narrative_immutable()
+2026-10-14 10:17:46.805 CST [26400] 语句:  UPDATE narrative_sources SET body=$2 WHERE id=$1
+2026-10-14 10:17:46.816 CST [36728] 错误:  在 "narrative_segments" 上的更新或删除操作违反了在 "source_event_links" 上的外键约束 "source_event_links_source_id_segment_id_fkey"
+2026-10-14 10:17:46.816 CST [36728] 详细信息:  键值对(source_id, segment_id)=(2ec392e1-df63-4697-adec-7ff79dd16a96, 0)仍然是从表"source_event_links"引用的.
+2026-10-14 10:17:46.816 CST [36728] 语句:  DELETE FROM narrative_segments WHERE source_id=$1
+2026-10-14 10:17:46.926 CST [36728] 错误:  null value in column "deleted_revision" of relation "cloud_archive_trash" violates not-null constraint
+2026-10-14 10:17:46.926 CST [36728] 详细信息:  失败, 行包含(narrative-e617d507-2d1f-40db-94f1-7469f09c2b24, 36db8dcf-aeb4-418e-baa1-c07b34a072c3, null, null, null, 2026-10-14 10:17:46.926396+08).
+2026-10-14 10:17:46.926 CST [36728] 语句:  INSERT INTO cloud_archive_trash(save_id,owner_id) VALUES($1,$2)
+2026-10-14 10:17:47.048 CST [40736] 错误:  语法错误 在 "$" 或附近的 第 80 个字符处
+2026-10-14 10:17:47.048 CST [40736] 语句:  CREATE FUNCTION narrative_test_failpoint() RETURNS trigger LANGUAGE plpgsql AS $ BEGIN
+	      IF NEW.generation_id='0f67baf2-3504-4206-991c-96558c0c11f6'::uuid AND NEW.kind='index' THEN RAISE EXCEPTION 'INJECTED_PUBLICATION_FAILURE'; END IF; RETURN NEW; END $
+2026-10-14 10:19:24.238 CST [32964] ��־:  checkpoint complete: wrote 8747 buffers (53.4%), wrote 3 SLRU buffers; 0 WAL file(s) added, 0 removed, 3 recycled; write=269.689 s, sync=7.142 s, total=276.866 s; sync files=5845, longest=0.013 s, average=0.002 s; distance=47354 kB, estimate=47354 kB; lsn=0/63541F0, redo lsn=0/462FD90
+2026-10-14 10:27:06.390 CST [15908] 错误:  关系 "narrative_sources" 已经存在
+2026-10-14 10:27:06.390 CST [15908] 语句:  
+	CREATE TABLE narrative_sources (
+	 id uuid PRIMARY KEY, generation_id uuid NOT NULL REFERENCES narrative_generation_requests(id),
+	 attempt_id uuid NOT NULL UNIQUE, body bytea NOT NULL, body_sha text NOT NULL,
+	 utf16_length integer NOT NULL CHECK(utf16_length>0), utf8_length integer NOT NULL CHECK(utf8_length>0),
+	 generator_source text NOT NULL CHECK(generator_source='deterministic'),
+	 created_at timestamptz NOT NULL DEFAULT now(), UNIQUE(id,generation_id),
+	 FOREIGN KEY(attempt_id,generation_id) REFERENCES narrative_attempts(id,generation_id),
+	 CHECK(utf8_length=octet_length(body)), CHECK(body_sha=encode(sha256(body),'hex'))
+	);
+	
+2026-10-14 10:27:13.507 CST [6140] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 10:27:13.507 CST [6140] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_narrative_immutable()
+2026-10-14 10:27:13.507 CST [6140] 语句:  UPDATE narrative_sources SET body=$2 WHERE id=$1
+2026-10-14 10:27:13.518 CST [26984] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 10:27:13.518 CST [26984] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_narrative_immutable()
+2026-10-14 10:27:13.518 CST [26984] 语句:  DELETE FROM narrative_segments WHERE source_id=$1
+2026-10-14 10:27:13.520 CST [26984] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 10:27:13.520 CST [26984] 上下文:  在RAISE的第9行的PL/pgSQL函数protect_narrative_identity()
+2026-10-14 10:27:13.520 CST [26984] 语句:  UPDATE narrative_generation_requests SET request_key=$2 WHERE id=$1
+2026-10-14 10:27:13.528 CST [5468] 错误:  NARRATIVE_EVENT_SCOPE_INVALID
+2026-10-14 10:27:13.528 CST [5468] 上下文:  在RAISE的第6行的PL/pgSQL函数validate_narrative_link()
+2026-10-14 10:27:13.528 CST [5468] 语句:  INSERT INTO source_event_links(id,source_id,segment_id,save_id,event_id,kind) VALUES($1,$2,0,$3,$4,'provenance_only')
+2026-10-14 10:27:13.634 CST [37068] 错误:  null value in column "backup" of relation "cloud_archive_trash" violates not-null constraint
+2026-10-14 10:27:13.634 CST [37068] 详细信息:  失败, 行包含(narrative-8ac9e0d8-150b-41d7-9069-3b39aeacbeea, b9da3090-9e37-4ad9-80ff-038c137ff59f, 1, null, null, 2026-10-14 10:27:13.633367+08).
+2026-10-14 10:27:13.634 CST [37068] 语句:  INSERT INTO cloud_archive_trash(save_id,owner_id,deleted_revision) VALUES($1,$2,1)
+2026-10-14 10:27:13.768 CST [9632] 错误:  INJECTED_PUBLICATION_FAILURE
+2026-10-14 10:27:13.768 CST [9632] 上下文:  在RAISE的第2行的PL/pgSQL函数narrative_test_failpoint()
+2026-10-14 10:27:13.768 CST [9632] 语句:  INSERT INTO narrative_outbox(id,generation_id,source_id,kind) VALUES($1,$2,$3,'index')
+2026-10-14 10:29:47.267 CST [32964] ��־:  checkpoint starting: time
+2026-10-14 10:34:23.055 CST [32964] ��־:  checkpoint complete: wrote 6386 buffers (39.0%), wrote 3 SLRU buffers; 0 WAL file(s) added, 0 removed, 3 recycled; write=269.804 s, sync=5.904 s, total=275.789 s; sync files=3192, longest=0.041 s, average=0.002 s; distance=53788 kB, estimate=53788 kB; lsn=0/7AB7198, redo lsn=0/7AB7108
+2026-10-14 10:40:22.389 CST [30388] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 10:40:22.389 CST [30388] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_narrative_immutable()
+2026-10-14 10:40:22.389 CST [30388] 语句:  UPDATE narrative_sources SET body=$2 WHERE id=$1
+2026-10-14 10:40:22.401 CST [15132] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 10:40:22.401 CST [15132] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_narrative_immutable()
+2026-10-14 10:40:22.401 CST [15132] 语句:  DELETE FROM narrative_segments WHERE source_id=$1
+2026-10-14 10:40:22.402 CST [15132] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 10:40:22.402 CST [15132] 上下文:  在RAISE的第9行的PL/pgSQL函数protect_narrative_identity()
+2026-10-14 10:40:22.402 CST [15132] 语句:  UPDATE narrative_generation_requests SET request_key=$2 WHERE id=$1
+2026-10-14 10:40:22.410 CST [19344] 错误:  NARRATIVE_EVENT_SCOPE_INVALID
+2026-10-14 10:40:22.410 CST [19344] 上下文:  在RAISE的第6行的PL/pgSQL函数validate_narrative_link()
+2026-10-14 10:40:22.410 CST [19344] 语句:  INSERT INTO source_event_links(id,source_id,segment_id,save_id,event_id,kind) VALUES($1,$2,0,$3,$4,'provenance_only')
+2026-10-14 10:40:22.612 CST [29176] 错误:  INJECTED_PUBLICATION_FAILURE
+2026-10-14 10:40:22.612 CST [29176] 上下文:  在RAISE的第2行的PL/pgSQL函数narrative_test_failpoint()
+2026-10-14 10:40:22.612 CST [29176] 语句:  INSERT INTO narrative_outbox(id,generation_id,source_id,kind) VALUES($1,$2,$3,'index')
+2026-10-14 10:44:47.099 CST [32964] ��־:  checkpoint starting: time
+2026-10-14 10:44:57.994 CST [32964] ��־:  checkpoint complete: wrote 99 buffers (0.6%), wrote 3 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=10.826 s, sync=0.049 s, total=10.895 s; sync files=82, longest=0.002 s, average=0.001 s; distance=417 kB, estimate=48451 kB; lsn=0/7B1F928, redo lsn=0/7B1F898
+2026-10-14 10:48:37.179 CST [29152] ��־:  could not reserve shared memory region (addr=000001F600000000) for child 00000000000018D4: error code 487
+2026-10-14 13:12:54.548 CST [29152] ��־:  could not reserve shared memory region (addr=000001F600000000) for child 0000000000000FF8: error code 487
+2026-10-14 18:49:48.703 CST [32964] ��־:  checkpoint starting: time
+2026-10-14 18:49:55.040 CST [32964] ��־:  checkpoint complete: wrote 58 buffers (0.4%), wrote 1 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=6.283 s, sync=0.030 s, total=6.338 s; sync files=56, longest=0.002 s, average=0.001 s; distance=161 kB, estimate=43622 kB; lsn=0/7B48068, redo lsn=0/7B47FC0
+2026-10-14 18:52:27.044 CST [29080] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 18:52:27.044 CST [29080] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_narrative_immutable()
+2026-10-14 18:52:27.044 CST [29080] 语句:  UPDATE narrative_sources SET body=$2 WHERE id=$1
+2026-10-14 18:52:27.063 CST [3096] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 18:52:27.063 CST [3096] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_narrative_immutable()
+2026-10-14 18:52:27.063 CST [3096] 语句:  DELETE FROM narrative_segments WHERE source_id=$1
+2026-10-14 18:52:27.065 CST [3096] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 18:52:27.065 CST [3096] 上下文:  在RAISE的第9行的PL/pgSQL函数protect_narrative_identity()
+2026-10-14 18:52:27.065 CST [3096] 语句:  UPDATE narrative_generation_requests SET request_key=$2 WHERE id=$1
+2026-10-14 18:52:27.073 CST [43444] 错误:  NARRATIVE_EVENT_SCOPE_INVALID
+2026-10-14 18:52:27.073 CST [43444] 上下文:  在RAISE的第6行的PL/pgSQL函数validate_narrative_link()
+2026-10-14 18:52:27.073 CST [43444] 语句:  INSERT INTO source_event_links(id,source_id,segment_id,save_id,event_id,kind) VALUES($1,$2,0,$3,$4,'provenance_only')
+2026-10-14 18:52:27.298 CST [19560] 错误:  INJECTED_PUBLICATION_FAILURE
+2026-10-14 18:52:27.298 CST [19560] 上下文:  在RAISE的第2行的PL/pgSQL函数narrative_test_failpoint()
+2026-10-14 18:52:27.298 CST [19560] 语句:  INSERT INTO narrative_outbox(id,generation_id,source_id,kind) VALUES($1,$2,$3,'index')
+2026-10-14 18:52:50.766 CST [25312] 错误:  重复键违反唯一约束"auth_external_identity_digest_idx"
+2026-10-14 18:52:50.766 CST [25312] 详细信息:  键值"(identity_kind, identifier_digest)=(phone, d6e1aa9c8ced9287571149ffa4fdb076407a01189e1651f6d9f75de4db230f97)" 已经存在
+2026-10-14 18:52:50.766 CST [25312] 语句:  INSERT INTO auth_external_identities(provider_subject,identity_kind,identifier_digest,owner_id,verified_at)
+	        VALUES($1,$2,$3,$4,$5) ON CONFLICT(provider_subject,identity_kind) DO UPDATE SET
+	        identifier_digest=EXCLUDED.identifier_digest,owner_id=EXCLUDED.owner_id,verified_at=EXCLUDED.verified_at,
+	        revoked_at=NULL,last_used_at=now() WHERE auth_external_identities.revoked_at IS NOT NULL
+	        OR (auth_external_identities.owner_id=EXCLUDED.owner_id AND auth_external_identities.identity_kind=EXCLUDED.identity_kind)
+2026-10-14 18:52:50.797 CST [33532] 错误:  插入或更新表 "game_saves" 违反外键约束 "game_saves_account_fk"
+2026-10-14 18:52:50.797 CST [33532] 详细信息:  键值对(owner_id)=(f60c7a31-488f-4eec-aad8-43d0b02c7a3b)没有在表"auth_accounts"中出现.
+2026-10-14 18:52:50.797 CST [33532] 语句:  INSERT INTO game_saves(id,owner_id,schema_version,canon_version,rule_version,memory_policy_version,snapshot) VALUES($1,$2,1,'test','test','test','{}')
+2026-10-14 18:52:50.984 CST [38496] 错误:  game_saves rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-14 18:52:50.984 CST [38496] 上下文:  在RAISE的第34行的PL/pgSQL函数reject_protected_archive_delete()
+2026-10-14 18:52:50.984 CST [38496] 语句:  DELETE FROM game_saves WHERE id=$1 AND owner_id=$2
+2026-10-14 18:52:51.025 CST [11900] 错误:  entitlement ledger is append-only
+2026-10-14 18:52:51.025 CST [11900] 上下文:  在RAISE的第3行的PL/pgSQL函数reject_entitlement_ledger_mutation()
+2026-10-14 18:52:51.025 CST [11900] 语句:  UPDATE entitlement_ledger_entries SET delta_units = 5 WHERE id = $1
+2026-10-14 18:52:51.030 CST [22028] 错误:  entitlement ledger is append-only
+2026-10-14 18:52:51.030 CST [22028] 上下文:  在RAISE的第3行的PL/pgSQL函数reject_entitlement_ledger_mutation()
+2026-10-14 18:52:51.030 CST [22028] 语句:  DELETE FROM entitlement_ledger_entries WHERE id = $1
+2026-10-14 18:52:51.231 CST [456] 错误:  关系 "game_saves" 的新列违反了检查约束 "game_saves_memory_policy_check"
+2026-10-14 18:52:51.231 CST [456] 详细信息:  失败, 行包含(s6-v2-incomplete-eb7ceb01-8ddd-4f58-a19f-cf7748e620a0, s6-a-99286515-07ee-42ec-bb4b-03b39012a411, 0, 2, canon-test, rules-test, forgetting-v1, {}, 2026-10-14 18:52:51.229217+08, 2026-10-14 18:52:51.229217+08, forgetting, null, null, null, null, null, null, null).
+2026-10-14 18:52:51.231 CST [456] 语句:  INSERT INTO game_saves (id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,memory_mode,memory_policy,snapshot)
+	       VALUES ($1,$2,0,2,'canon-test','rules-test','forgetting-v1','forgetting',NULL,'{}'::jsonb)
+2026-10-14 18:52:51.237 CST [6232] 错误:  关系 "game_saves" 的新列违反了检查约束 "game_saves_memory_policy_check"
+2026-10-14 18:52:51.237 CST [6232] 详细信息:  失败, 行包含(s6-v2-null-field-5e57b0a7-0b28-476c-979e-f7a46c3692ab, s6-a-99286515-07ee-42ec-bb4b-03b39012a411, 0, 2, canon-test, rules-test, forgetting-v1, {}, 2026-10-14 18:52:51.235254+08, 2026-10-14 18:52:51.235254+08, forgetting, {"mode": "forgetting", "clockBasis": "game-minute+npc-grant-sequ..., null, null, null, null, null, null).
+2026-10-14 18:52:51.237 CST [6232] 语句:  INSERT INTO game_saves (id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,memory_mode,memory_policy,snapshot)
+	       VALUES ($1,$2,0,2,'canon-test','rules-test','forgetting-v1','forgetting',$3::jsonb,'{}'::jsonb)
+2026-10-14 18:52:51.272 CST [23396] 错误:  关系 "turn_events" 的新列违反了检查约束 "turn_events_branch_id_check"
+2026-10-14 18:52:51.272 CST [23396] 详细信息:  失败, 行包含(invalid-branch-81245893-3ee4-4b35-85f3-db865593fb8f, s4-save-6c0142aa-de7c-499d-889b-d2925fa34dbd, 7e0970bc-c8ff-4764-873e-a87f642b764c-invalid-branch, 1, travel.completed, 0, 1, {"destinationId": "gate-1"}, 2026-10-14 18:52:51.222+08, RULES, rules-test-v1, 7a3b5e06a20deb3a2f1e1c38868269bc9fd876e55a5934a08e4b21af490de635, e223f9dc755342392030058e906cf0d4acf14be98fde9c1c2b9522f5013f0b24, branch-preview).
+2026-10-14 18:52:51.272 CST [23396] 语句:  INSERT INTO turn_events (id,save_id,idempotency_key,sequence,event_type,source,rule_version,before_revision,after_revision,payload,occurred_at,branch_id)
+	       SELECT $1,save_id,idempotency_key || '-invalid-branch',sequence+1,event_type,source,rule_version,before_revision,after_revision,payload,occurred_at,'branch-preview'
+	       FROM turn_events WHERE save_id=$2 LIMIT 1
+2026-10-14 18:52:51.397 CST [43652] 错误:  SAVE_MEMORY_POLICY_PINNED
+2026-10-14 18:52:51.397 CST [43652] 上下文:  在RAISE的第11行的PL/pgSQL函数protect_game_save_memory_policy()
+2026-10-14 18:52:51.397 CST [43652] 语句:  UPDATE game_saves SET memory_mode='continue' WHERE id=$1
+2026-10-14 18:52:51.445 CST [28480] 错误:  AUTHORIZED_OBSERVATION_IMMUTABLE
+2026-10-14 18:52:51.445 CST [28480] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_npc_authorized_observation_outbox()
+2026-10-14 18:52:51.445 CST [28480] 语句:  UPDATE npc_authorized_observation_outbox SET summary=$2 WHERE grant_id=$1
+2026-10-14 18:52:51.526 CST [42904] 错误:  entitlement ledger is append-only
+2026-10-14 18:52:51.526 CST [42904] 上下文:  在RAISE的第11行的PL/pgSQL函数reject_entitlement_ledger_mutation()
+2026-10-14 18:52:51.526 CST [42904] 语句:  DELETE FROM entitlement_ledger_entries WHERE owner_id=$1
+2026-10-14 18:52:51.538 CST [25860] 错误:  SAVE_MEMORY_POLICY_PINNED
+2026-10-14 18:52:51.538 CST [25860] 上下文:  在RAISE的第11行的PL/pgSQL函数protect_game_save_memory_policy()
+2026-10-14 18:52:51.538 CST [25860] 语句:  UPDATE game_saves SET memory_policy = jsonb_set(memory_policy, '{retrievalVersion}', '"recall-decay-v2"') WHERE id=$1
+2026-10-14 18:52:51.557 CST [3864] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 18:52:51.557 CST [3864] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_narrative_immutable()
+2026-10-14 18:52:51.557 CST [3864] 语句:  UPDATE narrative_sources SET body=$2 WHERE id=$1
+2026-10-14 18:52:51.569 CST [19616] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 18:52:51.569 CST [19616] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_narrative_immutable()
+2026-10-14 18:52:51.569 CST [19616] 语句:  DELETE FROM narrative_segments WHERE source_id=$1
+2026-10-14 18:52:51.570 CST [19616] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 18:52:51.570 CST [19616] 上下文:  在RAISE的第9行的PL/pgSQL函数protect_narrative_identity()
+2026-10-14 18:52:51.570 CST [19616] 语句:  UPDATE narrative_generation_requests SET request_key=$2 WHERE id=$1
+2026-10-14 18:52:51.571 CST [37008] 错误:  AUTHORIZED_OBSERVATION_ERASURE_REQUIRED
+2026-10-14 18:52:51.571 CST [37008] 上下文:  在RAISE的第16行的PL/pgSQL函数protect_npc_authorized_observation_outbox()
+2026-10-14 18:52:51.571 CST [37008] 语句:  DELETE FROM npc_authorized_observation_outbox WHERE grant_id=$1
+2026-10-14 18:52:51.580 CST [26264] 错误:  NARRATIVE_EVENT_SCOPE_INVALID
+2026-10-14 18:52:51.580 CST [26264] 上下文:  在RAISE的第6行的PL/pgSQL函数validate_narrative_link()
+2026-10-14 18:52:51.580 CST [26264] 语句:  INSERT INTO source_event_links(id,source_id,segment_id,save_id,event_id,kind) VALUES($1,$2,0,$3,$4,'provenance_only')
+2026-10-14 18:52:51.615 CST [36556] 错误:  SAVE_SCHEMA_VERSION_IMMUTABLE
+2026-10-14 18:52:51.615 CST [36556] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_game_save_memory_policy()
+2026-10-14 18:52:51.615 CST [36556] 语句:  UPDATE game_saves SET schema_version=1 WHERE id=$1
+2026-10-14 18:52:51.725 CST [8972] 错误:  SAVE_LINEAGE_IMMUTABLE
+2026-10-14 18:52:51.725 CST [8972] 上下文:  在RAISE的第20行的PL/pgSQL函数protect_game_save_memory_policy()
+2026-10-14 18:52:51.725 CST [8972] 语句:  UPDATE game_saves SET created_policy_version='changed' WHERE id=$1
+2026-10-14 18:52:51.766 CST [13812] 错误:  AUTHORIZED_OBSERVATION_ERASURE_REQUIRED
+2026-10-14 18:52:51.766 CST [13812] 上下文:  在RAISE的第16行的PL/pgSQL函数protect_npc_authorized_observation_outbox()
+2026-10-14 18:52:51.766 CST [13812] 语句:  DELETE FROM npc_authorized_observation_outbox WHERE grant_id=$1
+2026-10-14 18:52:51.792 CST [13812] 错误:  forced journal failure
+2026-10-14 18:52:51.792 CST [13812] 上下文:  在RAISE的第1行的PL/pgSQL函数jiuxiao_test_reject_memory_write()
+2026-10-14 18:52:51.792 CST [13812] 语句:  INSERT INTO npc_memory_journals (save_id, schema_version, revision, payload, updated_at) VALUES ($1, 1, $2, $3::jsonb, now()) ON CONFLICT (save_id) DO UPDATE SET schema_version = EXCLUDED.schema_version, revision = EXCLUDED.revision, payload = EXCLUDED.payload, updated_at = now()
+2026-10-14 18:52:51.802 CST [38432] 错误:  SAVE_CANON_ARTIFACT_PINNED
+2026-10-14 18:52:51.802 CST [38432] 上下文:  在RAISE的第23行的PL/pgSQL函数protect_game_save_memory_policy()
+2026-10-14 18:52:51.802 CST [38432] 语句:  UPDATE game_saves SET canon_artifact_hash=$2 WHERE id=$1
+2026-10-14 18:52:51.807 CST [34388] 错误:  INJECTED_PUBLICATION_FAILURE
+2026-10-14 18:52:51.807 CST [34388] 上下文:  在RAISE的第2行的PL/pgSQL函数narrative_test_failpoint()
+2026-10-14 18:52:51.807 CST [34388] 语句:  INSERT INTO narrative_outbox(id,generation_id,source_id,kind) VALUES($1,$2,$3,'index')
+2026-10-14 18:52:51.828 CST [19280] 错误:  turn events are append-only
+2026-10-14 18:52:51.828 CST [19280] 上下文:  在RAISE的第3行的PL/pgSQL函数reject_turn_event_update()
+2026-10-14 18:52:51.828 CST [19280] 语句:  UPDATE turn_events SET payload=$1::jsonb WHERE save_id=$2
+2026-10-14 18:52:51.929 CST [32192] 错误:  turn_events rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-14 18:52:51.929 CST [32192] 上下文:  在RAISE的第34行的PL/pgSQL函数reject_protected_archive_delete()
+2026-10-14 18:52:51.929 CST [32192] 语句:  DELETE FROM turn_events WHERE save_id=$1
+2026-10-14 18:52:52.000 CST [15248] 错误:  game_saves rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-14 18:52:52.000 CST [15248] 上下文:  在RAISE的第34行的PL/pgSQL函数reject_protected_archive_delete()
+2026-10-14 18:52:52.000 CST [15248] 语句:  DELETE FROM game_saves WHERE id=$1
+2026-10-14 18:52:52.016 CST [39232] 错误:  在 "game_saves" 上的更新或删除操作违反了在 "turn_events" 上的外键约束 "turn_events_save_id_game_saves_id_fk"
+2026-10-14 18:52:52.016 CST [39232] 详细信息:  键值对(id)=(s4-save-0d76264d-46b0-433a-a301-b13ed8fc743b)仍然是从表"turn_events"引用的.
+2026-10-14 18:52:52.016 CST [39232] 语句:  DELETE FROM game_saves WHERE id=$1 AND owner_id=$2
+2026-10-14 18:52:52.071 CST [42924] 错误:  turn_events rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-14 18:52:52.071 CST [42924] 上下文:  在RAISE的第34行的PL/pgSQL函数reject_protected_archive_delete()
+2026-10-14 18:52:52.071 CST [42924] 语句:  DELETE FROM turn_events WHERE save_id=$1
+2026-10-14 18:52:52.072 CST [42924] 错误:  game_saves identity is immutable and revision must be monotonic
+2026-10-14 18:52:52.072 CST [42924] 上下文:  在RAISE的第6行的PL/pgSQL函数guard_game_saves_update()
+2026-10-14 18:52:52.072 CST [42924] 语句:  UPDATE game_saves SET owner_id=$2 WHERE id=$1
+2026-10-14 18:52:52.133 CST [4564] 错误:  game_saves identity is immutable and revision must be monotonic
+2026-10-14 18:52:52.133 CST [4564] 上下文:  在RAISE的第6行的PL/pgSQL函数guard_game_saves_update()
+2026-10-14 18:52:52.133 CST [4564] 语句:  UPDATE game_saves SET revision=0 WHERE id=$1
+2026-10-14 18:54:48.050 CST [32964] ��־:  checkpoint starting: time
+2026-10-14 18:55:22.730 CST [32964] ��־:  checkpoint complete: wrote 317 buffers (1.9%), wrote 3 SLRU buffers; 0 WAL file(s) added, 0 removed, 0 recycled; write=34.581 s, sync=0.087 s, total=34.680 s; sync files=169, longest=0.002 s, average=0.001 s; distance=2924 kB, estimate=39552 kB; lsn=0/7E23068, redo lsn=0/7E22FD8
+2026-10-14 18:55:56.002 CST [14668] 错误:  插入或更新表 "game_saves" 违反外键约束 "game_saves_account_fk"
+2026-10-14 18:55:56.002 CST [14668] 详细信息:  键值对(owner_id)=(71a6ca6d-dc3a-4acd-9ba9-46a75a64a417)没有在表"auth_accounts"中出现.
+2026-10-14 18:55:56.002 CST [14668] 语句:  INSERT INTO game_saves(id,owner_id,schema_version,canon_version,rule_version,memory_policy_version,snapshot) VALUES($1,$2,1,'test','test','test','{}')
+2026-10-14 18:55:56.002 CST [15180] 错误:  重复键违反唯一约束"auth_external_identity_digest_idx"
+2026-10-14 18:55:56.002 CST [15180] 详细信息:  键值"(identity_kind, identifier_digest)=(phone, d6e1aa9c8ced9287571149ffa4fdb076407a01189e1651f6d9f75de4db230f97)" 已经存在
+2026-10-14 18:55:56.002 CST [15180] 语句:  INSERT INTO auth_external_identities(provider_subject,identity_kind,identifier_digest,owner_id,verified_at)
+	        VALUES($1,$2,$3,$4,$5) ON CONFLICT(provider_subject,identity_kind) DO UPDATE SET
+	        identifier_digest=EXCLUDED.identifier_digest,owner_id=EXCLUDED.owner_id,verified_at=EXCLUDED.verified_at,
+	        revoked_at=NULL,last_used_at=now() WHERE auth_external_identities.revoked_at IS NOT NULL
+	        OR (auth_external_identities.owner_id=EXCLUDED.owner_id AND auth_external_identities.identity_kind=EXCLUDED.identity_kind)
+2026-10-14 18:55:56.209 CST [26428] 错误:  entitlement ledger is append-only
+2026-10-14 18:55:56.209 CST [26428] 上下文:  在RAISE的第3行的PL/pgSQL函数reject_entitlement_ledger_mutation()
+2026-10-14 18:55:56.209 CST [26428] 语句:  UPDATE entitlement_ledger_entries SET delta_units = 5 WHERE id = $1
+2026-10-14 18:55:56.214 CST [15140] 错误:  entitlement ledger is append-only
+2026-10-14 18:55:56.214 CST [15140] 上下文:  在RAISE的第3行的PL/pgSQL函数reject_entitlement_ledger_mutation()
+2026-10-14 18:55:56.214 CST [15140] 语句:  DELETE FROM entitlement_ledger_entries WHERE id = $1
+2026-10-14 18:55:56.830 CST [14012] 错误:  game_saves rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-14 18:55:56.830 CST [14012] 上下文:  在RAISE的第34行的PL/pgSQL函数reject_protected_archive_delete()
+2026-10-14 18:55:56.830 CST [14012] 语句:  DELETE FROM game_saves WHERE id=$1 AND owner_id=$2
+2026-10-14 18:55:56.929 CST [18784] 错误:  关系 "game_saves" 的新列违反了检查约束 "game_saves_memory_policy_check"
+2026-10-14 18:55:56.929 CST [18784] 详细信息:  失败, 行包含(s6-v2-incomplete-7becdbcb-5b57-4426-a980-fa1042df5cef, s6-a-bddfa130-c38f-45da-8263-6ca3fb7c4e70, 0, 2, canon-test, rules-test, forgetting-v1, {}, 2026-10-14 18:55:56.927636+08, 2026-10-14 18:55:56.927636+08, forgetting, null, null, null, null, null, null, null).
+2026-10-14 18:55:56.929 CST [18784] 语句:  INSERT INTO game_saves (id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,memory_mode,memory_policy,snapshot)
+	       VALUES ($1,$2,0,2,'canon-test','rules-test','forgetting-v1','forgetting',NULL,'{}'::jsonb)
+2026-10-14 18:55:56.934 CST [43944] 错误:  关系 "game_saves" 的新列违反了检查约束 "game_saves_memory_policy_check"
+2026-10-14 18:55:56.934 CST [43944] 详细信息:  失败, 行包含(s6-v2-null-field-bbcfb0f4-c1e1-47c9-b136-de23f46f785b, s6-a-bddfa130-c38f-45da-8263-6ca3fb7c4e70, 0, 2, canon-test, rules-test, forgetting-v1, {}, 2026-10-14 18:55:56.93231+08, 2026-10-14 18:55:56.93231+08, forgetting, {"mode": "forgetting", "clockBasis": "game-minute+npc-grant-sequ..., null, null, null, null, null, null).
+2026-10-14 18:55:56.934 CST [43944] 语句:  INSERT INTO game_saves (id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,memory_mode,memory_policy,snapshot)
+	       VALUES ($1,$2,0,2,'canon-test','rules-test','forgetting-v1','forgetting',$3::jsonb,'{}'::jsonb)
+2026-10-14 18:55:57.129 CST [18416] 错误:  SAVE_MEMORY_POLICY_PINNED
+2026-10-14 18:55:57.129 CST [18416] 上下文:  在RAISE的第11行的PL/pgSQL函数protect_game_save_memory_policy()
+2026-10-14 18:55:57.129 CST [18416] 语句:  UPDATE game_saves SET memory_mode='continue' WHERE id=$1
+2026-10-14 18:55:57.232 CST [37556] 错误:  SAVE_MEMORY_POLICY_PINNED
+2026-10-14 18:55:57.232 CST [37556] 上下文:  在RAISE的第11行的PL/pgSQL函数protect_game_save_memory_policy()
+2026-10-14 18:55:57.232 CST [37556] 语句:  UPDATE game_saves SET memory_policy = jsonb_set(memory_policy, '{retrievalVersion}', '"recall-decay-v2"') WHERE id=$1
+2026-10-14 18:55:57.240 CST [31692] 错误:  关系 "turn_events" 的新列违反了检查约束 "turn_events_branch_id_check"
+2026-10-14 18:55:57.240 CST [31692] 详细信息:  失败, 行包含(invalid-branch-bae1c062-70e3-4bb6-977c-1a059ee2992a, s4-save-178b1379-f555-4988-96ed-9714c58e5a1b, 61fc0d19-7e39-4b40-a5a5-8c7766b91f27-invalid-branch, 1, travel.completed, 0, 1, {"destinationId": "gate-1"}, 2026-10-14 18:55:57.187+08, RULES, rules-test-v1, 0f94389c921a9576da07ebc8660018a3ba176ddee1f4751b71667dc6197c338e, ea75158d2c4922c7e8efbb702ea33551a2556399a8c93b6e663cd580b443f195, branch-preview).
+2026-10-14 18:55:57.240 CST [31692] 语句:  INSERT INTO turn_events (id,save_id,idempotency_key,sequence,event_type,source,rule_version,before_revision,after_revision,payload,occurred_at,branch_id)
+	       SELECT $1,save_id,idempotency_key || '-invalid-branch',sequence+1,event_type,source,rule_version,before_revision,after_revision,payload,occurred_at,'branch-preview'
+	       FROM turn_events WHERE save_id=$2 LIMIT 1
+2026-10-14 18:55:57.378 CST [6264] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 18:55:57.378 CST [6264] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_narrative_immutable()
+2026-10-14 18:55:57.378 CST [6264] 语句:  UPDATE narrative_sources SET body=$2 WHERE id=$1
+2026-10-14 18:55:57.393 CST [42824] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 18:55:57.393 CST [42824] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_narrative_immutable()
+2026-10-14 18:55:57.393 CST [42824] 语句:  DELETE FROM narrative_segments WHERE source_id=$1
+2026-10-14 18:55:57.395 CST [42824] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 18:55:57.395 CST [42824] 上下文:  在RAISE的第9行的PL/pgSQL函数protect_narrative_identity()
+2026-10-14 18:55:57.395 CST [42824] 语句:  UPDATE narrative_generation_requests SET request_key=$2 WHERE id=$1
+2026-10-14 18:55:57.404 CST [31408] 错误:  NARRATIVE_EVENT_SCOPE_INVALID
+2026-10-14 18:55:57.404 CST [31408] 上下文:  在RAISE的第6行的PL/pgSQL函数validate_narrative_link()
+2026-10-14 18:55:57.404 CST [31408] 语句:  INSERT INTO source_event_links(id,source_id,segment_id,save_id,event_id,kind) VALUES($1,$2,0,$3,$4,'provenance_only')
+2026-10-14 18:55:57.432 CST [28748] 错误:  SAVE_SCHEMA_VERSION_IMMUTABLE
+2026-10-14 18:55:57.432 CST [28748] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_game_save_memory_policy()
+2026-10-14 18:55:57.432 CST [28748] 语句:  UPDATE game_saves SET schema_version=1 WHERE id=$1
+2026-10-14 18:55:57.452 CST [31956] 错误:  AUTHORIZED_OBSERVATION_IMMUTABLE
+2026-10-14 18:55:57.452 CST [31956] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_npc_authorized_observation_outbox()
+2026-10-14 18:55:57.452 CST [31956] 语句:  UPDATE npc_authorized_observation_outbox SET summary=$2 WHERE grant_id=$1
+2026-10-14 18:55:57.527 CST [9932] 错误:  entitlement ledger is append-only
+2026-10-14 18:55:57.527 CST [9932] 上下文:  在RAISE的第11行的PL/pgSQL函数reject_entitlement_ledger_mutation()
+2026-10-14 18:55:57.527 CST [9932] 语句:  DELETE FROM entitlement_ledger_entries WHERE owner_id=$1
+2026-10-14 18:55:57.549 CST [16756] 错误:  SAVE_LINEAGE_IMMUTABLE
+2026-10-14 18:55:57.549 CST [16756] 上下文:  在RAISE的第20行的PL/pgSQL函数protect_game_save_memory_policy()
+2026-10-14 18:55:57.549 CST [16756] 语句:  UPDATE game_saves SET created_policy_version='changed' WHERE id=$1
+2026-10-14 18:55:57.565 CST [17756] 错误:  AUTHORIZED_OBSERVATION_ERASURE_REQUIRED
+2026-10-14 18:55:57.565 CST [17756] 上下文:  在RAISE的第16行的PL/pgSQL函数protect_npc_authorized_observation_outbox()
+2026-10-14 18:55:57.565 CST [17756] 语句:  DELETE FROM npc_authorized_observation_outbox WHERE grant_id=$1
+2026-10-14 18:55:57.629 CST [3056] 错误:  SAVE_CANON_ARTIFACT_PINNED
+2026-10-14 18:55:57.629 CST [3056] 上下文:  在RAISE的第23行的PL/pgSQL函数protect_game_save_memory_policy()
+2026-10-14 18:55:57.629 CST [3056] 语句:  UPDATE game_saves SET canon_artifact_hash=$2 WHERE id=$1
+2026-10-14 18:55:57.647 CST [43084] 错误:  AUTHORIZED_OBSERVATION_ERASURE_REQUIRED
+2026-10-14 18:55:57.647 CST [43084] 上下文:  在RAISE的第16行的PL/pgSQL函数protect_npc_authorized_observation_outbox()
+2026-10-14 18:55:57.647 CST [43084] 语句:  DELETE FROM npc_authorized_observation_outbox WHERE grant_id=$1
+2026-10-14 18:55:57.649 CST [8128] 错误:  INJECTED_PUBLICATION_FAILURE
+2026-10-14 18:55:57.649 CST [8128] 上下文:  在RAISE的第2行的PL/pgSQL函数narrative_test_failpoint()
+2026-10-14 18:55:57.649 CST [8128] 语句:  INSERT INTO narrative_outbox(id,generation_id,source_id,kind) VALUES($1,$2,$3,'index')
+2026-10-14 18:55:57.699 CST [43084] 错误:  forced journal failure
+2026-10-14 18:55:57.699 CST [43084] 上下文:  在RAISE的第1行的PL/pgSQL函数jiuxiao_test_reject_memory_write()
+2026-10-14 18:55:57.699 CST [43084] 语句:  INSERT INTO npc_memory_journals (save_id, schema_version, revision, payload, updated_at) VALUES ($1, 1, $2, $3::jsonb, now()) ON CONFLICT (save_id) DO UPDATE SET schema_version = EXCLUDED.schema_version, revision = EXCLUDED.revision, payload = EXCLUDED.payload, updated_at = now()
+2026-10-14 18:55:57.805 CST [9072] 错误:  turn events are append-only
+2026-10-14 18:55:57.805 CST [9072] 上下文:  在RAISE的第3行的PL/pgSQL函数reject_turn_event_update()
+2026-10-14 18:55:57.805 CST [9072] 语句:  UPDATE turn_events SET payload=$1::jsonb WHERE save_id=$2
+2026-10-14 18:55:57.873 CST [29224] 错误:  turn_events rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-14 18:55:57.873 CST [29224] 上下文:  在RAISE的第34行的PL/pgSQL函数reject_protected_archive_delete()
+2026-10-14 18:55:57.873 CST [29224] 语句:  DELETE FROM turn_events WHERE save_id=$1
+2026-10-14 18:55:57.901 CST [19320] 错误:  在 "game_saves" 上的更新或删除操作违反了在 "turn_events" 上的外键约束 "turn_events_save_id_game_saves_id_fk"
+2026-10-14 18:55:57.901 CST [19320] 详细信息:  键值对(id)=(s4-save-69f9c058-e7ad-4f95-8752-7699de47e448)仍然是从表"turn_events"引用的.
+2026-10-14 18:55:57.901 CST [19320] 语句:  DELETE FROM game_saves WHERE id=$1 AND owner_id=$2
+2026-10-14 18:55:57.945 CST [22448] 错误:  game_saves rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-14 18:55:57.945 CST [22448] 上下文:  在RAISE的第34行的PL/pgSQL函数reject_protected_archive_delete()
+2026-10-14 18:55:57.945 CST [22448] 语句:  DELETE FROM game_saves WHERE id=$1
+2026-10-14 18:55:58.011 CST [20432] 错误:  turn_events rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-14 18:55:58.011 CST [20432] 上下文:  在RAISE的第34行的PL/pgSQL函数reject_protected_archive_delete()
+2026-10-14 18:55:58.011 CST [20432] 语句:  DELETE FROM turn_events WHERE save_id=$1
+2026-10-14 18:55:58.013 CST [20432] 错误:  game_saves identity is immutable and revision must be monotonic
+2026-10-14 18:55:58.013 CST [20432] 上下文:  在RAISE的第6行的PL/pgSQL函数guard_game_saves_update()
+2026-10-14 18:55:58.013 CST [20432] 语句:  UPDATE game_saves SET owner_id=$2 WHERE id=$1
+2026-10-14 18:55:58.075 CST [16412] 错误:  game_saves identity is immutable and revision must be monotonic
+2026-10-14 18:55:58.075 CST [16412] 上下文:  在RAISE的第6行的PL/pgSQL函数guard_game_saves_update()
+2026-10-14 18:55:58.075 CST [16412] 语句:  UPDATE game_saves SET revision=0 WHERE id=$1
+2026-10-14 18:59:48.750 CST [32964] ��־:  checkpoint starting: time
+2026-10-14 19:00:23.543 CST [31092] 错误:  插入或更新表 "game_saves" 违反外键约束 "game_saves_account_fk"
+2026-10-14 19:00:23.543 CST [31092] 详细信息:  键值对(owner_id)=(fa0eae17-5768-4048-978a-71bf6da11614)没有在表"auth_accounts"中出现.
+2026-10-14 19:00:23.543 CST [31092] 语句:  INSERT INTO game_saves(id,owner_id,schema_version,canon_version,rule_version,memory_policy_version,snapshot) VALUES($1,$2,1,'test','test','test','{}')
+2026-10-14 19:00:23.629 CST [30636] 错误:  重复键违反唯一约束"auth_external_identity_digest_idx"
+2026-10-14 19:00:23.629 CST [30636] 详细信息:  键值"(identity_kind, identifier_digest)=(phone, d6e1aa9c8ced9287571149ffa4fdb076407a01189e1651f6d9f75de4db230f97)" 已经存在
+2026-10-14 19:00:23.629 CST [30636] 语句:  INSERT INTO auth_external_identities(provider_subject,identity_kind,identifier_digest,owner_id,verified_at)
+	        VALUES($1,$2,$3,$4,$5) ON CONFLICT(provider_subject,identity_kind) DO UPDATE SET
+	        identifier_digest=EXCLUDED.identifier_digest,owner_id=EXCLUDED.owner_id,verified_at=EXCLUDED.verified_at,
+	        revoked_at=NULL,last_used_at=now() WHERE auth_external_identities.revoked_at IS NOT NULL
+	        OR (auth_external_identities.owner_id=EXCLUDED.owner_id AND auth_external_identities.identity_kind=EXCLUDED.identity_kind)
+2026-10-14 19:00:23.801 CST [21988] 错误:  entitlement ledger is append-only
+2026-10-14 19:00:23.801 CST [21988] 上下文:  在RAISE的第3行的PL/pgSQL函数reject_entitlement_ledger_mutation()
+2026-10-14 19:00:23.801 CST [21988] 语句:  UPDATE entitlement_ledger_entries SET delta_units = 5 WHERE id = $1
+2026-10-14 19:00:23.806 CST [3212] 错误:  entitlement ledger is append-only
+2026-10-14 19:00:23.806 CST [3212] 上下文:  在RAISE的第3行的PL/pgSQL函数reject_entitlement_ledger_mutation()
+2026-10-14 19:00:23.806 CST [3212] 语句:  DELETE FROM entitlement_ledger_entries WHERE id = $1
+2026-10-14 19:00:23.827 CST [4676] 错误:  game_saves rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-14 19:00:23.827 CST [4676] 上下文:  在RAISE的第34行的PL/pgSQL函数reject_protected_archive_delete()
+2026-10-14 19:00:23.827 CST [4676] 语句:  DELETE FROM game_saves WHERE id=$1 AND owner_id=$2
+2026-10-14 19:00:23.916 CST [27232] 错误:  关系 "game_saves" 的新列违反了检查约束 "game_saves_memory_policy_check"
+2026-10-14 19:00:23.916 CST [27232] 详细信息:  失败, 行包含(s6-v2-incomplete-50b8863b-9cf9-49de-8472-b4a7cfa8e6e1, s6-a-bd7a9ded-5765-49ef-87e3-4334064c4c43, 0, 2, canon-test, rules-test, forgetting-v1, {}, 2026-10-14 19:00:23.914626+08, 2026-10-14 19:00:23.914626+08, forgetting, null, null, null, null, null, null, null).
+2026-10-14 19:00:23.916 CST [27232] 语句:  INSERT INTO game_saves (id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,memory_mode,memory_policy,snapshot)
+	       VALUES ($1,$2,0,2,'canon-test','rules-test','forgetting-v1','forgetting',NULL,'{}'::jsonb)
+2026-10-14 19:00:23.921 CST [2436] 错误:  关系 "game_saves" 的新列违反了检查约束 "game_saves_memory_policy_check"
+2026-10-14 19:00:23.921 CST [2436] 详细信息:  失败, 行包含(s6-v2-null-field-511a6713-bd73-4b2e-8e20-35e37b2c182d, s6-a-bd7a9ded-5765-49ef-87e3-4334064c4c43, 0, 2, canon-test, rules-test, forgetting-v1, {}, 2026-10-14 19:00:23.919473+08, 2026-10-14 19:00:23.919473+08, forgetting, {"mode": "forgetting", "clockBasis": "game-minute+npc-grant-sequ..., null, null, null, null, null, null).
+2026-10-14 19:00:23.921 CST [2436] 语句:  INSERT INTO game_saves (id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,memory_mode,memory_policy,snapshot)
+	       VALUES ($1,$2,0,2,'canon-test','rules-test','forgetting-v1','forgetting',$3::jsonb,'{}'::jsonb)
+2026-10-14 19:00:24.182 CST [11868] 错误:  关系 "turn_events" 的新列违反了检查约束 "turn_events_branch_id_check"
+2026-10-14 19:00:24.182 CST [11868] 详细信息:  失败, 行包含(invalid-branch-a5244535-d92d-45d3-b32f-f607fbbfd268, s4-save-250276cf-baca-4e4b-bd21-b7a9b80ed5a1, de72fdc7-54e2-422f-8ae9-2e332e2eb710-invalid-branch, 1, travel.completed, 0, 1, {"destinationId": "gate-1"}, 2026-10-14 19:00:24.106+08, RULES, rules-test-v1, c1ff2465fee7e857c6dfe2cb96faad15f5833602acd29be1253d0cc3c27499b3, 4b62d47647933aa21cf6300daa6653dc5e72c4d969d825e0b897233b8a90e849, branch-preview).
+2026-10-14 19:00:24.182 CST [11868] 语句:  INSERT INTO turn_events (id,save_id,idempotency_key,sequence,event_type,source,rule_version,before_revision,after_revision,payload,occurred_at,branch_id)
+	       SELECT $1,save_id,idempotency_key || '-invalid-branch',sequence+1,event_type,source,rule_version,before_revision,after_revision,payload,occurred_at,'branch-preview'
+	       FROM turn_events WHERE save_id=$2 LIMIT 1
+2026-10-14 19:00:24.221 CST [32660] 错误:  SAVE_MEMORY_POLICY_PINNED
+2026-10-14 19:00:24.221 CST [32660] 上下文:  在RAISE的第11行的PL/pgSQL函数protect_game_save_memory_policy()
+2026-10-14 19:00:24.221 CST [32660] 语句:  UPDATE game_saves SET memory_mode='continue' WHERE id=$1
+2026-10-14 19:00:24.415 CST [29224] 错误:  entitlement ledger is append-only
+2026-10-14 19:00:24.415 CST [29224] 上下文:  在RAISE的第11行的PL/pgSQL函数reject_entitlement_ledger_mutation()
+2026-10-14 19:00:24.415 CST [29224] 语句:  DELETE FROM entitlement_ledger_entries WHERE owner_id=$1
+2026-10-14 19:00:24.421 CST [26512] 错误:  SAVE_MEMORY_POLICY_PINNED
+2026-10-14 19:00:24.421 CST [26512] 上下文:  在RAISE的第11行的PL/pgSQL函数protect_game_save_memory_policy()
+2026-10-14 19:00:24.421 CST [26512] 语句:  UPDATE game_saves SET memory_policy = jsonb_set(memory_policy, '{retrievalVersion}', '"recall-decay-v2"') WHERE id=$1
+2026-10-14 19:00:24.434 CST [14160] 错误:  AUTHORIZED_OBSERVATION_IMMUTABLE
+2026-10-14 19:00:24.434 CST [14160] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_npc_authorized_observation_outbox()
+2026-10-14 19:00:24.434 CST [14160] 语句:  UPDATE npc_authorized_observation_outbox SET summary=$2 WHERE grant_id=$1
+2026-10-14 19:00:24.469 CST [32964] ��־:  checkpoint complete: wrote 329 buffers (2.0%), wrote 4 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=35.605 s, sync=0.098 s, total=35.719 s; sync files=177, longest=0.002 s, average=0.001 s; distance=3253 kB, estimate=35922 kB; lsn=0/82200C0, redo lsn=0/8150588
+2026-10-14 19:00:24.521 CST [27584] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 19:00:24.521 CST [27584] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_narrative_immutable()
+2026-10-14 19:00:24.521 CST [27584] 语句:  UPDATE narrative_sources SET body=$2 WHERE id=$1
+2026-10-14 19:00:24.533 CST [15752] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 19:00:24.533 CST [15752] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_narrative_immutable()
+2026-10-14 19:00:24.533 CST [15752] 语句:  DELETE FROM narrative_segments WHERE source_id=$1
+2026-10-14 19:00:24.535 CST [15752] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 19:00:24.535 CST [15752] 上下文:  在RAISE的第9行的PL/pgSQL函数protect_narrative_identity()
+2026-10-14 19:00:24.535 CST [15752] 语句:  UPDATE narrative_generation_requests SET request_key=$2 WHERE id=$1
+2026-10-14 19:00:24.538 CST [35504] 错误:  SAVE_SCHEMA_VERSION_IMMUTABLE
+2026-10-14 19:00:24.538 CST [35504] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_game_save_memory_policy()
+2026-10-14 19:00:24.538 CST [35504] 语句:  UPDATE game_saves SET schema_version=1 WHERE id=$1
+2026-10-14 19:00:24.540 CST [7324] 错误:  AUTHORIZED_OBSERVATION_ERASURE_REQUIRED
+2026-10-14 19:00:24.540 CST [7324] 上下文:  在RAISE的第16行的PL/pgSQL函数protect_npc_authorized_observation_outbox()
+2026-10-14 19:00:24.540 CST [7324] 语句:  DELETE FROM npc_authorized_observation_outbox WHERE grant_id=$1
+2026-10-14 19:00:24.545 CST [25688] 错误:  NARRATIVE_EVENT_SCOPE_INVALID
+2026-10-14 19:00:24.545 CST [25688] 上下文:  在RAISE的第6行的PL/pgSQL函数validate_narrative_link()
+2026-10-14 19:00:24.545 CST [25688] 语句:  INSERT INTO source_event_links(id,source_id,segment_id,save_id,event_id,kind) VALUES($1,$2,0,$3,$4,'provenance_only')
+2026-10-14 19:00:24.639 CST [22644] 错误:  AUTHORIZED_OBSERVATION_ERASURE_REQUIRED
+2026-10-14 19:00:24.639 CST [22644] 上下文:  在RAISE的第16行的PL/pgSQL函数protect_npc_authorized_observation_outbox()
+2026-10-14 19:00:24.639 CST [22644] 语句:  DELETE FROM npc_authorized_observation_outbox WHERE grant_id=$1
+2026-10-14 19:00:24.652 CST [40544] 错误:  SAVE_LINEAGE_IMMUTABLE
+2026-10-14 19:00:24.652 CST [40544] 上下文:  在RAISE的第20行的PL/pgSQL函数protect_game_save_memory_policy()
+2026-10-14 19:00:24.652 CST [40544] 语句:  UPDATE game_saves SET created_policy_version='changed' WHERE id=$1
+2026-10-14 19:00:24.672 CST [22644] 错误:  forced journal failure
+2026-10-14 19:00:24.672 CST [22644] 上下文:  在RAISE的第1行的PL/pgSQL函数jiuxiao_test_reject_memory_write()
+2026-10-14 19:00:24.672 CST [22644] 语句:  INSERT INTO npc_memory_journals (save_id, schema_version, revision, payload, updated_at) VALUES ($1, 1, $2, $3::jsonb, now()) ON CONFLICT (save_id) DO UPDATE SET schema_version = EXCLUDED.schema_version, revision = EXCLUDED.revision, payload = EXCLUDED.payload, updated_at = now()
+2026-10-14 19:00:24.728 CST [12772] 错误:  turn events are append-only
+2026-10-14 19:00:24.728 CST [12772] 上下文:  在RAISE的第3行的PL/pgSQL函数reject_turn_event_update()
+2026-10-14 19:00:24.728 CST [12772] 语句:  UPDATE turn_events SET payload=$1::jsonb WHERE save_id=$2
+2026-10-14 19:00:24.750 CST [31808] 错误:  SAVE_CANON_ARTIFACT_PINNED
+2026-10-14 19:00:24.750 CST [31808] 上下文:  在RAISE的第23行的PL/pgSQL函数protect_game_save_memory_policy()
+2026-10-14 19:00:24.750 CST [31808] 语句:  UPDATE game_saves SET canon_artifact_hash=$2 WHERE id=$1
+2026-10-14 19:00:24.788 CST [11520] 错误:  INJECTED_PUBLICATION_FAILURE
+2026-10-14 19:00:24.788 CST [11520] 上下文:  在RAISE的第2行的PL/pgSQL函数narrative_test_failpoint()
+2026-10-14 19:00:24.788 CST [11520] 语句:  INSERT INTO narrative_outbox(id,generation_id,source_id,kind) VALUES($1,$2,$3,'index')
+2026-10-14 19:00:24.816 CST [25448] 错误:  turn_events rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-14 19:00:24.816 CST [25448] 上下文:  在RAISE的第34行的PL/pgSQL函数reject_protected_archive_delete()
+2026-10-14 19:00:24.816 CST [25448] 语句:  DELETE FROM turn_events WHERE save_id=$1
+2026-10-14 19:00:24.886 CST [24064] 错误:  在 "game_saves" 上的更新或删除操作违反了在 "turn_events" 上的外键约束 "turn_events_save_id_game_saves_id_fk"
+2026-10-14 19:00:24.886 CST [24064] 详细信息:  键值对(id)=(s4-save-f769a821-b953-4d97-ad84-55c39b6104e1)仍然是从表"turn_events"引用的.
+2026-10-14 19:00:24.886 CST [24064] 语句:  DELETE FROM game_saves WHERE id=$1 AND owner_id=$2
+2026-10-14 19:00:24.890 CST [32156] 错误:  game_saves rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-14 19:00:24.890 CST [32156] 上下文:  在RAISE的第34行的PL/pgSQL函数reject_protected_archive_delete()
+2026-10-14 19:00:24.890 CST [32156] 语句:  DELETE FROM game_saves WHERE id=$1
+2026-10-14 19:00:24.976 CST [43452] 错误:  turn_events rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-14 19:00:24.976 CST [43452] 上下文:  在RAISE的第34行的PL/pgSQL函数reject_protected_archive_delete()
+2026-10-14 19:00:24.976 CST [43452] 语句:  DELETE FROM turn_events WHERE save_id=$1
+2026-10-14 19:00:24.977 CST [43452] 错误:  game_saves identity is immutable and revision must be monotonic
+2026-10-14 19:00:24.977 CST [43452] 上下文:  在RAISE的第6行的PL/pgSQL函数guard_game_saves_update()
+2026-10-14 19:00:24.977 CST [43452] 语句:  UPDATE game_saves SET owner_id=$2 WHERE id=$1
+2026-10-14 19:00:25.045 CST [14480] 错误:  game_saves identity is immutable and revision must be monotonic
+2026-10-14 19:00:25.045 CST [14480] 上下文:  在RAISE的第6行的PL/pgSQL函数guard_game_saves_update()
+2026-10-14 19:00:25.045 CST [14480] 语句:  UPDATE game_saves SET revision=0 WHERE id=$1
+2026-10-14 19:02:29.258 CST [42628] 日志:  无法从客户端获得数据: An existing connection was forcibly closed by the remote host.
+	
+2026-10-14 19:02:29.258 CST [6972] 日志:  无法从客户端获得数据: An existing connection was forcibly closed by the remote host.
+	
+2026-10-14 19:02:29.258 CST [11868] 日志:  无法从客户端获得数据: An existing connection was forcibly closed by the remote host.
+	
+2026-10-14 19:02:36.783 CST [42392] 日志:  无法从客户端获得数据: An existing connection was forcibly closed by the remote host.
+	
+2026-10-14 19:03:03.624 CST [15660] 日志:  无法从客户端获得数据: An existing connection was forcibly closed by the remote host.
+	
+2026-10-14 19:03:22.981 CST [19700] 错误:  关系 "narrative_sources" 已经存在
+2026-10-14 19:03:22.981 CST [19700] 语句:  
+	CREATE TABLE narrative_sources (
+	 id uuid PRIMARY KEY, generation_id uuid NOT NULL REFERENCES narrative_generation_requests(id),
+	 attempt_id uuid NOT NULL UNIQUE, body bytea NOT NULL, body_sha text NOT NULL,
+	 utf16_length integer NOT NULL CHECK(utf16_length>0), utf8_length integer NOT NULL CHECK(utf8_length>0),
+	 generator_source text NOT NULL CHECK(generator_source='deterministic'),
+	 created_at timestamptz NOT NULL DEFAULT now(), UNIQUE(id,generation_id),
+	 FOREIGN KEY(attempt_id,generation_id) REFERENCES narrative_attempts(id,generation_id),
+	 CHECK(utf8_length=octet_length(body)), CHECK(body_sha=encode(sha256(body),'hex'))
+	);
+	
+2026-10-14 19:03:26.124 CST [8376] 错误:  插入或更新表 "game_saves" 违反外键约束 "game_saves_account_fk"
+2026-10-14 19:03:26.124 CST [8376] 详细信息:  键值对(owner_id)=(26dfdd6f-d4fb-4e8e-bd85-e967c72dc032)没有在表"auth_accounts"中出现.
+2026-10-14 19:03:26.124 CST [8376] 语句:  INSERT INTO game_saves(id,owner_id,schema_version,canon_version,rule_version,memory_policy_version,snapshot) VALUES($1,$2,1,'test','test','test','{}')
+2026-10-14 19:03:26.147 CST [43364] 错误:  重复键违反唯一约束"auth_external_identity_digest_idx"
+2026-10-14 19:03:26.147 CST [43364] 详细信息:  键值"(identity_kind, identifier_digest)=(phone, d6e1aa9c8ced9287571149ffa4fdb076407a01189e1651f6d9f75de4db230f97)" 已经存在
+2026-10-14 19:03:26.147 CST [43364] 语句:  INSERT INTO auth_external_identities(provider_subject,identity_kind,identifier_digest,owner_id,verified_at)
+	        VALUES($1,$2,$3,$4,$5) ON CONFLICT(provider_subject,identity_kind) DO UPDATE SET
+	        identifier_digest=EXCLUDED.identifier_digest,owner_id=EXCLUDED.owner_id,verified_at=EXCLUDED.verified_at,
+	        revoked_at=NULL,last_used_at=now() WHERE auth_external_identities.revoked_at IS NOT NULL
+	        OR (auth_external_identities.owner_id=EXCLUDED.owner_id AND auth_external_identities.identity_kind=EXCLUDED.identity_kind)
+2026-10-14 19:03:26.389 CST [11840] 错误:  game_saves rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-14 19:03:26.389 CST [11840] 上下文:  在RAISE的第34行的PL/pgSQL函数reject_protected_archive_delete()
+2026-10-14 19:03:26.389 CST [11840] 语句:  DELETE FROM game_saves WHERE id=$1 AND owner_id=$2
+2026-10-14 19:03:26.439 CST [16320] 错误:  entitlement ledger is append-only
+2026-10-14 19:03:26.439 CST [16320] 上下文:  在RAISE的第3行的PL/pgSQL函数reject_entitlement_ledger_mutation()
+2026-10-14 19:03:26.439 CST [16320] 语句:  UPDATE entitlement_ledger_entries SET delta_units = 5 WHERE id = $1
+2026-10-14 19:03:26.444 CST [17300] 错误:  关系 "game_saves" 的新列违反了检查约束 "game_saves_memory_policy_check"
+2026-10-14 19:03:26.444 CST [17300] 详细信息:  失败, 行包含(s6-v2-incomplete-7c8e156c-9198-4515-aa9a-1f9e87b6edc2, s6-a-0b9e22db-5d35-4453-bc4d-0649e74c0751, 0, 2, canon-test, rules-test, forgetting-v1, {}, 2026-10-14 19:03:26.442265+08, 2026-10-14 19:03:26.442265+08, forgetting, null, null, null, null, null, null, null).
+2026-10-14 19:03:26.444 CST [17300] 语句:  INSERT INTO game_saves (id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,memory_mode,memory_policy,snapshot)
+	       VALUES ($1,$2,0,2,'canon-test','rules-test','forgetting-v1','forgetting',NULL,'{}'::jsonb)
+2026-10-14 19:03:26.445 CST [9132] 错误:  entitlement ledger is append-only
+2026-10-14 19:03:26.445 CST [9132] 上下文:  在RAISE的第3行的PL/pgSQL函数reject_entitlement_ledger_mutation()
+2026-10-14 19:03:26.445 CST [9132] 语句:  DELETE FROM entitlement_ledger_entries WHERE id = $1
+2026-10-14 19:03:26.449 CST [15128] 错误:  关系 "game_saves" 的新列违反了检查约束 "game_saves_memory_policy_check"
+2026-10-14 19:03:26.449 CST [15128] 详细信息:  失败, 行包含(s6-v2-null-field-00fae729-533a-486a-847e-60ff7729c84f, s6-a-0b9e22db-5d35-4453-bc4d-0649e74c0751, 0, 2, canon-test, rules-test, forgetting-v1, {}, 2026-10-14 19:03:26.447507+08, 2026-10-14 19:03:26.447507+08, forgetting, {"mode": "forgetting", "clockBasis": "game-minute+npc-grant-sequ..., null, null, null, null, null, null).
+2026-10-14 19:03:26.449 CST [15128] 语句:  INSERT INTO game_saves (id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,memory_mode,memory_policy,snapshot)
+	       VALUES ($1,$2,0,2,'canon-test','rules-test','forgetting-v1','forgetting',$3::jsonb,'{}'::jsonb)
+2026-10-14 19:03:26.735 CST [27896] 错误:  SAVE_MEMORY_POLICY_PINNED
+2026-10-14 19:03:26.735 CST [27896] 上下文:  在RAISE的第11行的PL/pgSQL函数protect_game_save_memory_policy()
+2026-10-14 19:03:26.735 CST [27896] 语句:  UPDATE game_saves SET memory_mode='continue' WHERE id=$1
+2026-10-14 19:03:26.767 CST [30432] 错误:  关系 "turn_events" 的新列违反了检查约束 "turn_events_branch_id_check"
+2026-10-14 19:03:26.767 CST [30432] 详细信息:  失败, 行包含(invalid-branch-4375e4aa-0229-4bca-b90b-d37bd3389b94, s4-save-5fdce96f-677b-47ae-bf9c-08dd4dbae955, fb0bfca4-f0ce-475f-952a-3fb1e8d758ec-invalid-branch, 1, travel.completed, 0, 1, {"destinationId": "gate-1"}, 2026-10-14 19:03:26.7+08, RULES, rules-test-v1, aea3a9b01009163fb8a08bdee013de24bb5853aa9bfcb54242cd09d701f6b689, 258ea67813a941a1e81523d79203e1cba55ca12970f2b8fb8af60187f878a4ea, branch-preview).
+2026-10-14 19:03:26.767 CST [30432] 语句:  INSERT INTO turn_events (id,save_id,idempotency_key,sequence,event_type,source,rule_version,before_revision,after_revision,payload,occurred_at,branch_id)
+	       SELECT $1,save_id,idempotency_key || '-invalid-branch',sequence+1,event_type,source,rule_version,before_revision,after_revision,payload,occurred_at,'branch-preview'
+	       FROM turn_events WHERE save_id=$2 LIMIT 1
+2026-10-14 19:03:27.010 CST [25316] 错误:  entitlement ledger is append-only
+2026-10-14 19:03:27.010 CST [25316] 上下文:  在RAISE的第11行的PL/pgSQL函数reject_entitlement_ledger_mutation()
+2026-10-14 19:03:27.010 CST [25316] 语句:  DELETE FROM entitlement_ledger_entries WHERE owner_id=$1
+2026-10-14 19:03:27.066 CST [18248] 错误:  SAVE_MEMORY_POLICY_PINNED
+2026-10-14 19:03:27.066 CST [18248] 上下文:  在RAISE的第11行的PL/pgSQL函数protect_game_save_memory_policy()
+2026-10-14 19:03:27.066 CST [18248] 语句:  UPDATE game_saves SET memory_policy = jsonb_set(memory_policy, '{retrievalVersion}', '"recall-decay-v2"') WHERE id=$1
+2026-10-14 19:03:27.090 CST [23668] 错误:  AUTHORIZED_OBSERVATION_IMMUTABLE
+2026-10-14 19:03:27.090 CST [23668] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_npc_authorized_observation_outbox()
+2026-10-14 19:03:27.090 CST [23668] 语句:  UPDATE npc_authorized_observation_outbox SET summary=$2 WHERE grant_id=$1
+2026-10-14 19:03:27.162 CST [9452] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 19:03:27.162 CST [9452] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_narrative_immutable()
+2026-10-14 19:03:27.162 CST [9452] 语句:  UPDATE narrative_sources SET body=$2 WHERE id=$1
+2026-10-14 19:03:27.176 CST [42408] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 19:03:27.176 CST [42408] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_narrative_immutable()
+2026-10-14 19:03:27.176 CST [42408] 语句:  DELETE FROM narrative_segments WHERE source_id=$1
+2026-10-14 19:03:27.178 CST [42408] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 19:03:27.178 CST [42408] 上下文:  在RAISE的第9行的PL/pgSQL函数protect_narrative_identity()
+2026-10-14 19:03:27.178 CST [42408] 语句:  UPDATE narrative_generation_requests SET request_key=$2 WHERE id=$1
+2026-10-14 19:03:27.179 CST [42012] 错误:  SAVE_SCHEMA_VERSION_IMMUTABLE
+2026-10-14 19:03:27.179 CST [42012] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_game_save_memory_policy()
+2026-10-14 19:03:27.179 CST [42012] 语句:  UPDATE game_saves SET schema_version=1 WHERE id=$1
+2026-10-14 19:03:27.185 CST [1952] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 19:03:27.185 CST [1952] 上下文:  在RAISE的第11行的PL/pgSQL函数protect_narrative_identity()
+2026-10-14 19:03:27.185 CST [1952] 语句:  UPDATE narrative_outbox SET generation_id=$2 WHERE generation_id=$1
+2026-10-14 19:03:27.197 CST [32048] 错误:  NARRATIVE_EVENT_SCOPE_INVALID
+2026-10-14 19:03:27.197 CST [32048] 上下文:  在RAISE的第6行的PL/pgSQL函数validate_narrative_link()
+2026-10-14 19:03:27.197 CST [32048] 语句:  INSERT INTO source_event_links(id,source_id,segment_id,save_id,event_id,kind) VALUES($1,$2,0,$3,$4,'provenance_only')
+2026-10-14 19:03:27.213 CST [35452] 错误:  AUTHORIZED_OBSERVATION_ERASURE_REQUIRED
+2026-10-14 19:03:27.213 CST [35452] 上下文:  在RAISE的第16行的PL/pgSQL函数protect_npc_authorized_observation_outbox()
+2026-10-14 19:03:27.213 CST [35452] 语句:  DELETE FROM npc_authorized_observation_outbox WHERE grant_id=$1
+2026-10-14 19:03:27.265 CST [24268] 错误:  turn events are append-only
+2026-10-14 19:03:27.265 CST [24268] 上下文:  在RAISE的第3行的PL/pgSQL函数reject_turn_event_update()
+2026-10-14 19:03:27.265 CST [24268] 语句:  UPDATE turn_events SET payload=$1::jsonb WHERE save_id=$2
+2026-10-14 19:03:27.311 CST [19512] 错误:  SAVE_LINEAGE_IMMUTABLE
+2026-10-14 19:03:27.311 CST [19512] 上下文:  在RAISE的第20行的PL/pgSQL函数protect_game_save_memory_policy()
+2026-10-14 19:03:27.311 CST [19512] 语句:  UPDATE game_saves SET created_policy_version='changed' WHERE id=$1
+2026-10-14 19:03:27.315 CST [29996] 错误:  AUTHORIZED_OBSERVATION_ERASURE_REQUIRED
+2026-10-14 19:03:27.315 CST [29996] 上下文:  在RAISE的第16行的PL/pgSQL函数protect_npc_authorized_observation_outbox()
+2026-10-14 19:03:27.315 CST [29996] 语句:  DELETE FROM npc_authorized_observation_outbox WHERE grant_id=$1
+2026-10-14 19:03:27.362 CST [29996] 错误:  forced journal failure
+2026-10-14 19:03:27.362 CST [29996] 上下文:  在RAISE的第1行的PL/pgSQL函数jiuxiao_test_reject_memory_write()
+2026-10-14 19:03:27.362 CST [29996] 语句:  INSERT INTO npc_memory_journals (save_id, schema_version, revision, payload, updated_at) VALUES ($1, 1, $2, $3::jsonb, now()) ON CONFLICT (save_id) DO UPDATE SET schema_version = EXCLUDED.schema_version, revision = EXCLUDED.revision, payload = EXCLUDED.payload, updated_at = now()
+2026-10-14 19:03:27.366 CST [17616] 错误:  turn_events rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-14 19:03:27.366 CST [17616] 上下文:  在RAISE的第34行的PL/pgSQL函数reject_protected_archive_delete()
+2026-10-14 19:03:27.366 CST [17616] 语句:  DELETE FROM turn_events WHERE save_id=$1
+2026-10-14 19:03:27.414 CST [23632] 错误:  SAVE_CANON_ARTIFACT_PINNED
+2026-10-14 19:03:27.414 CST [23632] 上下文:  在RAISE的第23行的PL/pgSQL函数protect_game_save_memory_policy()
+2026-10-14 19:03:27.414 CST [23632] 语句:  UPDATE game_saves SET canon_artifact_hash=$2 WHERE id=$1
+2026-10-14 19:03:27.483 CST [9196] 错误:  INJECTED_PUBLICATION_FAILURE
+2026-10-14 19:03:27.483 CST [9196] 上下文:  在RAISE的第2行的PL/pgSQL函数narrative_test_failpoint()
+2026-10-14 19:03:27.483 CST [9196] 语句:  INSERT INTO narrative_outbox(id,generation_id,source_id,kind) VALUES($1,$2,$3,'index')
+2026-10-14 19:03:27.492 CST [17800] 错误:  game_saves rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-14 19:03:27.492 CST [17800] 上下文:  在RAISE的第34行的PL/pgSQL函数reject_protected_archive_delete()
+2026-10-14 19:03:27.492 CST [17800] 语句:  DELETE FROM game_saves WHERE id=$1
+2026-10-14 19:03:27.588 CST [13700] 错误:  turn_events rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-14 19:03:27.588 CST [13700] 上下文:  在RAISE的第34行的PL/pgSQL函数reject_protected_archive_delete()
+2026-10-14 19:03:27.588 CST [13700] 语句:  DELETE FROM turn_events WHERE save_id=$1
+2026-10-14 19:03:27.590 CST [13700] 错误:  game_saves identity is immutable and revision must be monotonic
+2026-10-14 19:03:27.590 CST [13700] 上下文:  在RAISE的第6行的PL/pgSQL函数guard_game_saves_update()
+2026-10-14 19:03:27.590 CST [13700] 语句:  UPDATE game_saves SET owner_id=$2 WHERE id=$1
+2026-10-14 19:03:27.646 CST [22408] 错误:  在 "game_saves" 上的更新或删除操作违反了在 "turn_events" 上的外键约束 "turn_events_save_id_game_saves_id_fk"
+2026-10-14 19:03:27.646 CST [22408] 详细信息:  键值对(id)=(s4-save-a1e442d1-49d9-4532-9627-d1c56d4e2c3a)仍然是从表"turn_events"引用的.
+2026-10-14 19:03:27.646 CST [22408] 语句:  DELETE FROM game_saves WHERE id=$1 AND owner_id=$2
+2026-10-14 19:03:27.676 CST [12772] 错误:  game_saves identity is immutable and revision must be monotonic
+2026-10-14 19:03:27.676 CST [12772] 上下文:  在RAISE的第6行的PL/pgSQL函数guard_game_saves_update()
+2026-10-14 19:03:27.676 CST [12772] 语句:  UPDATE game_saves SET revision=0 WHERE id=$1
+2026-10-14 19:04:48.490 CST [32964] ��־:  checkpoint starting: time
+2026-10-14 19:05:58.398 CST [15124] 错误:  插入或更新表 "game_saves" 违反外键约束 "game_saves_account_fk"
+2026-10-14 19:05:58.398 CST [15124] 详细信息:  键值对(owner_id)=(415a5f84-f1e4-4488-a481-b43a6d6297d7)没有在表"auth_accounts"中出现.
+2026-10-14 19:05:58.398 CST [15124] 语句:  INSERT INTO game_saves(id,owner_id,schema_version,canon_version,rule_version,memory_policy_version,snapshot) VALUES($1,$2,1,'test','test','test','{}')
+2026-10-14 19:05:58.419 CST [11868] 错误:  重复键违反唯一约束"auth_external_identity_digest_idx"
+2026-10-14 19:05:58.419 CST [11868] 详细信息:  键值"(identity_kind, identifier_digest)=(phone, d6e1aa9c8ced9287571149ffa4fdb076407a01189e1651f6d9f75de4db230f97)" 已经存在
+2026-10-14 19:05:58.419 CST [11868] 语句:  INSERT INTO auth_external_identities(provider_subject,identity_kind,identifier_digest,owner_id,verified_at)
+	        VALUES($1,$2,$3,$4,$5) ON CONFLICT(provider_subject,identity_kind) DO UPDATE SET
+	        identifier_digest=EXCLUDED.identifier_digest,owner_id=EXCLUDED.owner_id,verified_at=EXCLUDED.verified_at,
+	        revoked_at=NULL,last_used_at=now() WHERE auth_external_identities.revoked_at IS NOT NULL
+	        OR (auth_external_identities.owner_id=EXCLUDED.owner_id AND auth_external_identities.identity_kind=EXCLUDED.identity_kind)
+2026-10-14 19:05:58.591 CST [41428] 错误:  entitlement ledger is append-only
+2026-10-14 19:05:58.591 CST [41428] 上下文:  在RAISE的第3行的PL/pgSQL函数reject_entitlement_ledger_mutation()
+2026-10-14 19:05:58.591 CST [41428] 语句:  UPDATE entitlement_ledger_entries SET delta_units = 5 WHERE id = $1
+2026-10-14 19:05:58.597 CST [37872] 错误:  entitlement ledger is append-only
+2026-10-14 19:05:58.597 CST [37872] 上下文:  在RAISE的第3行的PL/pgSQL函数reject_entitlement_ledger_mutation()
+2026-10-14 19:05:58.597 CST [37872] 语句:  DELETE FROM entitlement_ledger_entries WHERE id = $1
+2026-10-14 19:05:58.656 CST [15392] 错误:  game_saves rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-14 19:05:58.656 CST [15392] 上下文:  在RAISE的第34行的PL/pgSQL函数reject_protected_archive_delete()
+2026-10-14 19:05:58.656 CST [15392] 语句:  DELETE FROM game_saves WHERE id=$1 AND owner_id=$2
+2026-10-14 19:05:58.715 CST [27476] 错误:  关系 "game_saves" 的新列违反了检查约束 "game_saves_memory_policy_check"
+2026-10-14 19:05:58.715 CST [27476] 详细信息:  失败, 行包含(s6-v2-incomplete-74b702ac-2508-43c1-8c0a-7e1388acd8f7, s6-a-43549ad7-314e-4474-bb7a-0c3c1e29e700, 0, 2, canon-test, rules-test, forgetting-v1, {}, 2026-10-14 19:05:58.713312+08, 2026-10-14 19:05:58.713312+08, forgetting, null, null, null, null, null, null, null).
+2026-10-14 19:05:58.715 CST [27476] 语句:  INSERT INTO game_saves (id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,memory_mode,memory_policy,snapshot)
+	       VALUES ($1,$2,0,2,'canon-test','rules-test','forgetting-v1','forgetting',NULL,'{}'::jsonb)
+2026-10-14 19:05:58.720 CST [43148] 错误:  关系 "game_saves" 的新列违反了检查约束 "game_saves_memory_policy_check"
+2026-10-14 19:05:58.720 CST [43148] 详细信息:  失败, 行包含(s6-v2-null-field-b5dd07fa-5137-49da-b064-bfae3f65aefa, s6-a-43549ad7-314e-4474-bb7a-0c3c1e29e700, 0, 2, canon-test, rules-test, forgetting-v1, {}, 2026-10-14 19:05:58.718692+08, 2026-10-14 19:05:58.718692+08, forgetting, {"mode": "forgetting", "clockBasis": "game-minute+npc-grant-sequ..., null, null, null, null, null, null).
+2026-10-14 19:05:58.720 CST [43148] 语句:  INSERT INTO game_saves (id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,memory_mode,memory_policy,snapshot)
+	       VALUES ($1,$2,0,2,'canon-test','rules-test','forgetting-v1','forgetting',$3::jsonb,'{}'::jsonb)
+2026-10-14 19:05:58.941 CST [32172] 错误:  SAVE_MEMORY_POLICY_PINNED
+2026-10-14 19:05:58.941 CST [32172] 上下文:  在RAISE的第11行的PL/pgSQL函数protect_game_save_memory_policy()
+2026-10-14 19:05:58.941 CST [32172] 语句:  UPDATE game_saves SET memory_mode='continue' WHERE id=$1
+2026-10-14 19:05:58.979 CST [20168] 错误:  关系 "turn_events" 的新列违反了检查约束 "turn_events_branch_id_check"
+2026-10-14 19:05:58.979 CST [20168] 详细信息:  失败, 行包含(invalid-branch-36173c0c-9640-491d-8ae6-46dfc32c2b23, s4-save-b53cdc1b-fe6f-42e9-838e-d7552ff72357, b7fbdbff-9ee8-4e07-93d9-9a65012ebbfc-invalid-branch, 1, travel.completed, 0, 1, {"destinationId": "gate-1"}, 2026-10-14 19:05:58.924+08, RULES, rules-test-v1, 5244d094a7dc3a79651d396ca749b588c2024ee2e0257a03dc6a0184b93deaa6, 277fbf050430fd0e7049b57c1f82bf59975f0128c06c34986967f9cc8838e48e, branch-preview).
+2026-10-14 19:05:58.979 CST [20168] 语句:  INSERT INTO turn_events (id,save_id,idempotency_key,sequence,event_type,source,rule_version,before_revision,after_revision,payload,occurred_at,branch_id)
+	       SELECT $1,save_id,idempotency_key || '-invalid-branch',sequence+1,event_type,source,rule_version,before_revision,after_revision,payload,occurred_at,'branch-preview'
+	       FROM turn_events WHERE save_id=$2 LIMIT 1
+2026-10-14 19:05:59.198 CST [39980] 错误:  entitlement ledger is append-only
+2026-10-14 19:05:59.198 CST [39980] 上下文:  在RAISE的第11行的PL/pgSQL函数reject_entitlement_ledger_mutation()
+2026-10-14 19:05:59.198 CST [39980] 语句:  DELETE FROM entitlement_ledger_entries WHERE owner_id=$1
+2026-10-14 19:05:59.209 CST [27740] 错误:  SAVE_MEMORY_POLICY_PINNED
+2026-10-14 19:05:59.209 CST [27740] 上下文:  在RAISE的第11行的PL/pgSQL函数protect_game_save_memory_policy()
+2026-10-14 19:05:59.209 CST [27740] 语句:  UPDATE game_saves SET memory_policy = jsonb_set(memory_policy, '{retrievalVersion}', '"recall-decay-v2"') WHERE id=$1
+2026-10-14 19:05:59.227 CST [27952] 错误:  AUTHORIZED_OBSERVATION_IMMUTABLE
+2026-10-14 19:05:59.227 CST [27952] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_npc_authorized_observation_outbox()
+2026-10-14 19:05:59.227 CST [27952] 语句:  UPDATE npc_authorized_observation_outbox SET summary=$2 WHERE grant_id=$1
+2026-10-14 19:05:59.244 CST [21704] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 19:05:59.244 CST [21704] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_narrative_immutable()
+2026-10-14 19:05:59.244 CST [21704] 语句:  UPDATE narrative_sources SET body=$2 WHERE id=$1
+2026-10-14 19:05:59.257 CST [5396] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 19:05:59.257 CST [5396] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_narrative_immutable()
+2026-10-14 19:05:59.257 CST [5396] 语句:  DELETE FROM narrative_segments WHERE source_id=$1
+2026-10-14 19:05:59.260 CST [5396] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 19:05:59.260 CST [5396] 上下文:  在RAISE的第9行的PL/pgSQL函数protect_narrative_identity()
+2026-10-14 19:05:59.260 CST [5396] 语句:  UPDATE narrative_generation_requests SET request_key=$2 WHERE id=$1
+2026-10-14 19:05:59.266 CST [2592] 错误:  NARRATIVE_IMMUTABLE
+2026-10-14 19:05:59.266 CST [2592] 上下文:  在RAISE的第11行的PL/pgSQL函数protect_narrative_identity()
+2026-10-14 19:05:59.266 CST [2592] 语句:  UPDATE narrative_outbox SET generation_id=$2 WHERE generation_id=$1
+2026-10-14 19:05:59.277 CST [7544] 错误:  NARRATIVE_EVENT_SCOPE_INVALID
+2026-10-14 19:05:59.277 CST [7544] 上下文:  在RAISE的第6行的PL/pgSQL函数validate_narrative_link()
+2026-10-14 19:05:59.277 CST [7544] 语句:  INSERT INTO source_event_links(id,source_id,segment_id,save_id,event_id,kind) VALUES($1,$2,0,$3,$4,'provenance_only')
+2026-10-14 19:05:59.315 CST [38064] 错误:  SAVE_SCHEMA_VERSION_IMMUTABLE
+2026-10-14 19:05:59.315 CST [38064] 上下文:  在RAISE的第4行的PL/pgSQL函数protect_game_save_memory_policy()
+2026-10-14 19:05:59.315 CST [38064] 语句:  UPDATE game_saves SET schema_version=1 WHERE id=$1
+2026-10-14 19:05:59.330 CST [30976] 错误:  AUTHORIZED_OBSERVATION_ERASURE_REQUIRED
+2026-10-14 19:05:59.330 CST [30976] 上下文:  在RAISE的第16行的PL/pgSQL函数protect_npc_authorized_observation_outbox()
+2026-10-14 19:05:59.330 CST [30976] 语句:  DELETE FROM npc_authorized_observation_outbox WHERE grant_id=$1
+2026-10-14 19:05:59.404 CST [32888] 错误:  turn events are append-only
+2026-10-14 19:05:59.404 CST [32888] 上下文:  在RAISE的第3行的PL/pgSQL函数reject_turn_event_update()
+2026-10-14 19:05:59.404 CST [32888] 语句:  UPDATE turn_events SET payload=$1::jsonb WHERE save_id=$2
+2026-10-14 19:05:59.427 CST [23700] 错误:  AUTHORIZED_OBSERVATION_ERASURE_REQUIRED
+2026-10-14 19:05:59.427 CST [23700] 上下文:  在RAISE的第16行的PL/pgSQL函数protect_npc_authorized_observation_outbox()
+2026-10-14 19:05:59.427 CST [23700] 语句:  DELETE FROM npc_authorized_observation_outbox WHERE grant_id=$1
+2026-10-14 19:05:59.429 CST [26668] 错误:  SAVE_LINEAGE_IMMUTABLE
+2026-10-14 19:05:59.429 CST [26668] 上下文:  在RAISE的第20行的PL/pgSQL函数protect_game_save_memory_policy()
+2026-10-14 19:05:59.429 CST [26668] 语句:  UPDATE game_saves SET created_policy_version='changed' WHERE id=$1
+2026-10-14 19:05:59.455 CST [23700] 错误:  forced journal failure
+2026-10-14 19:05:59.455 CST [23700] 上下文:  在RAISE的第1行的PL/pgSQL函数jiuxiao_test_reject_memory_write()
+2026-10-14 19:05:59.455 CST [23700] 语句:  INSERT INTO npc_memory_journals (save_id, schema_version, revision, payload, updated_at) VALUES ($1, 1, $2, $3::jsonb, now()) ON CONFLICT (save_id) DO UPDATE SET schema_version = EXCLUDED.schema_version, revision = EXCLUDED.revision, payload = EXCLUDED.payload, updated_at = now()
+2026-10-14 19:05:59.514 CST [40272] 错误:  turn_events rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-14 19:05:59.514 CST [40272] 上下文:  在RAISE的第34行的PL/pgSQL函数reject_protected_archive_delete()
+2026-10-14 19:05:59.514 CST [40272] 语句:  DELETE FROM turn_events WHERE save_id=$1
+2026-10-14 19:05:59.529 CST [27012] 错误:  INJECTED_PUBLICATION_FAILURE
+2026-10-14 19:05:59.529 CST [27012] 上下文:  在RAISE的第2行的PL/pgSQL函数narrative_test_failpoint()
+2026-10-14 19:05:59.529 CST [27012] 语句:  INSERT INTO narrative_outbox(id,generation_id,source_id,kind) VALUES($1,$2,$3,'index')
+2026-10-14 19:05:59.539 CST [37532] 错误:  SAVE_CANON_ARTIFACT_PINNED
+2026-10-14 19:05:59.539 CST [37532] 上下文:  在RAISE的第23行的PL/pgSQL函数protect_game_save_memory_policy()
+2026-10-14 19:05:59.539 CST [37532] 语句:  UPDATE game_saves SET canon_artifact_hash=$2 WHERE id=$1
+2026-10-14 19:05:59.632 CST [13704] 错误:  game_saves rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-14 19:05:59.632 CST [13704] 上下文:  在RAISE的第34行的PL/pgSQL函数reject_protected_archive_delete()
+2026-10-14 19:05:59.632 CST [13704] 语句:  DELETE FROM game_saves WHERE id=$1
+2026-10-14 19:05:59.690 CST [12296] 错误:  在 "game_saves" 上的更新或删除操作违反了在 "turn_events" 上的外键约束 "turn_events_save_id_game_saves_id_fk"
+2026-10-14 19:05:59.690 CST [12296] 详细信息:  键值对(id)=(s4-save-f96db580-4cd2-4b50-8da7-7ef6588a8a97)仍然是从表"turn_events"引用的.
+2026-10-14 19:05:59.690 CST [12296] 语句:  DELETE FROM game_saves WHERE id=$1 AND owner_id=$2
+2026-10-14 19:05:59.718 CST [26124] 错误:  turn_events rows can only be deleted during a verified account erasure or archive retention purge
+2026-10-14 19:05:59.718 CST [26124] 上下文:  在RAISE的第34行的PL/pgSQL函数reject_protected_archive_delete()
+2026-10-14 19:05:59.718 CST [26124] 语句:  DELETE FROM turn_events WHERE save_id=$1
+2026-10-14 19:05:59.720 CST [26124] 错误:  game_saves identity is immutable and revision must be monotonic
+2026-10-14 19:05:59.720 CST [26124] 上下文:  在RAISE的第6行的PL/pgSQL函数guard_game_saves_update()
+2026-10-14 19:05:59.720 CST [26124] 语句:  UPDATE game_saves SET owner_id=$2 WHERE id=$1
+2026-10-14 19:05:59.784 CST [29032] 错误:  game_saves identity is immutable and revision must be monotonic
+2026-10-14 19:05:59.784 CST [29032] 上下文:  在RAISE的第6行的PL/pgSQL函数guard_game_saves_update()
+2026-10-14 19:05:59.784 CST [29032] 语句:  UPDATE game_saves SET revision=0 WHERE id=$1
+2026-10-14 19:06:47.738 CST [29152] ��־:  ���յ����� (fast) ֹͣ����
+2026-10-14 19:06:47.740 CST [29152] ��־:  �ж��κμ�������
+2026-10-14 19:06:47.749 CST [29152] ��־:  ��̨�������� "logical replication launcher" (PID 15940) ���˳�, �˳����� 1
+2026-10-14 19:06:49.683 CST [32964] ��־:  checkpoint complete: wrote 4964 buffers (30.3%), wrote 3 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=119.730 s, sync=1.438 s, total=121.193 s; sync files=2046, longest=0.005 s, average=0.001 s; distance=29409 kB, estimate=35271 kB; lsn=0/A0AAAE0, redo lsn=0/9E08C48
+2026-10-14 19:06:49.714 CST [32964] ��־:  ���ڹر�
+2026-10-14 19:06:49.716 CST [32964] ��־:  checkpoint starting: shutdown immediate
+2026-10-14 19:06:49.789 CST [32964] ��־:  checkpoint complete: wrote 85 buffers (0.5%), wrote 4 SLRU buffers; 0 WAL file(s) added, 0 removed, 1 recycled; write=0.023 s, sync=0.026 s, total=0.075 s; sync files=36, longest=0.002 s, average=0.001 s; distance=2695 kB, estimate=32014 kB; lsn=0/A0AAB58, redo lsn=0/A0AAB58
+2026-10-14 19:06:49.914 CST [29152] ��־:  ���ݿ�ϵͳ�ѹر�

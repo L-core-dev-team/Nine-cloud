@@ -1,0 +1,290 @@
+[
+  {
+    "name": "api-01",
+    "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+    "command": [
+      "pnpm",
+      "--filter",
+      "@jiuxiao/api",
+      "test"
+    ],
+    "started": "2026-10-16T10:16:36.843Z",
+    "finished": "2026-10-16T10:16:43.760Z",
+    "exitCode": 0,
+    "logSha256": "c7a25d39f95d48fdb4a0713cbf297eff88d635ddeedfc92fbb387eb799777730"
+  },
+  {
+    "name": "backup-01",
+    "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+    "dirtyState": " M docs/integration/handover-02/postgres-handover-02.log\n?? docs/integration/handover-02/audit-handover03-start/summary.json\n?? docs/integration/handover-02/handover03-browser-01/account-isolation.png\n?? docs/integration/handover-02/handover03-browser-01/summary.json\n?? docs/integration/handover-02/handover03-shell-01/1440-day.png\n?? docs/integration/handover-02/handover03-shell-01/1440-night.png\n?? docs/integration/handover-02/handover03-shell-01/320-day.png\n?? docs/integration/handover-02/handover03-shell-01/320-night.png\n?? docs/integration/handover-02/handover03-shell-01/390-day.png\n?? docs/integration/handover-02/handover03-shell-01/390-night.png\n?? docs/integration/handover-02/handover03-shell-01/844-day.png\n?? docs/integration/handover-02/handover03-shell-01/844-night.png\n?? docs/integration/handover-02/handover03-shell-01/results.json\n?? docs/integration/handover-03/bin/pnpm.cmd\n?? docs/integration/handover-03/inherited-postgres-log.bin\n?? docs/integration/handover-03/initial-state.json\n?? docs/integration/handover-03/pg-inspect-failure-1792145768827.log\n?? docs/integration/handover-03/pg-start-failure-1792145744600.log\n?? docs/integration/handover-03/pg-start-failure-1792145768724.log\n?? docs/integration/handover-03/pg-start.json\n?? docs/integration/handover-03/runs/api-01/result.json\n?? docs/integration/handover-03/runs/api-01/run.log\n?? docs/integration/handover-03/runs/backup-01/run.log\n?? docs/integration/handover-03/runs/browser-01/result.json\n?? docs/integration/handover-03/runs/browser-01/run.log\n?? docs/integration/handover-03/runs/build-01/result.json\n?? docs/integration/handover-03/runs/build-01/run.log\n?? docs/integration/handover-03/runs/build-02/result.json\n?? docs/integration/handover-03/runs/build-02/run.log\n?? docs/integration/handover-03/runs/concurrency-01/result.json\n?? docs/integration/handover-03/runs/concurrency-01/run.log\n?? docs/integration/handover-03/runs/content-01/result.json\n?? docs/integration/handover-03/runs/content-01/run.log\n?? docs/integration/handover-03/runs/full-test-01/result.json\n?? docs/integration/handover-03/runs/full-test-01/run.log\n?? docs/integration/handover-03/runs/full-test-02/result.json\n?? docs/integration/handover-03/runs/full-test-02/run.log\n?? docs/integration/handover-03/runs/integration-01/result.json\n?? docs/integration/handover-03/runs/integration-01/run.log\n?? docs/integration/handover-03/runs/integration-02/result.json\n?? docs/integration/handover-03/runs/integration-02/run.log\n?? docs/integration/handover-03/runs/shell-01/result.json\n?? docs/integration/handover-03/runs/shell-01/run.log\n?? docs/integration/handover-03/runs/typecheck-01/result.json\n?? docs/integration/handover-03/runs/typecheck-01/run.log\n?? docs/integration/handover-03/runs/typecheck-02/result.json\n?? docs/integration/handover-03/runs/typecheck-02/run.log\n?? scripts/handover-03-pg.cjs\n?? scripts/handover-03-run.cjs\n",
+    "command": [
+      "node",
+      "scripts/handover-backup.cjs",
+      "handover03-restore-01"
+    ],
+    "started": "2026-10-16T10:17:13.698Z",
+    "finished": "2026-10-16T10:17:13.903Z",
+    "exitCode": 1,
+    "logSha256": "964c5f9b1201f372cf9aff3e8976212936ec09fad26d206a852cef92922550a3"
+  },
+  {
+    "name": "backup-02",
+    "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+    "dirtyState": " M docs/integration/handover-02/postgres-handover-02.log\n?? docs/integration/handover-01/backups/handover03-restore-02/failure.log\n?? docs/integration/handover-01/backups/handover03-restore-02/pg-dump.log\n?? docs/integration/handover-01/backups/handover03-restore-02/pg-restore.log\n?? docs/integration/handover-02/audit-handover03-start/summary.json\n?? docs/integration/handover-02/handover03-browser-01/account-isolation.png\n?? docs/integration/handover-02/handover03-browser-01/summary.json\n?? docs/integration/handover-02/handover03-shell-01/1440-day.png\n?? docs/integration/handover-02/handover03-shell-01/1440-night.png\n?? docs/integration/handover-02/handover03-shell-01/320-day.png\n?? docs/integration/handover-02/handover03-shell-01/320-night.png\n?? docs/integration/handover-02/handover03-shell-01/390-day.png\n?? docs/integration/handover-02/handover03-shell-01/390-night.png\n?? docs/integration/handover-02/handover03-shell-01/844-day.png\n?? docs/integration/handover-02/handover03-shell-01/844-night.png\n?? docs/integration/handover-02/handover03-shell-01/results.json\n?? docs/integration/handover-03/bin/pnpm.cmd\n?? docs/integration/handover-03/inherited-postgres-log.bin\n?? docs/integration/handover-03/initial-state.json\n?? docs/integration/handover-03/pg-inspect-failure-1792145768827.log\n?? docs/integration/handover-03/pg-start-failure-1792145744600.log\n?? docs/integration/handover-03/pg-start-failure-1792145768724.log\n?? docs/integration/handover-03/pg-start.json\n?? docs/integration/handover-03/runs/api-01/result.json\n?? docs/integration/handover-03/runs/api-01/run.log\n?? docs/integration/handover-03/runs/backup-01/result.json\n?? docs/integration/handover-03/runs/backup-01/run.log\n?? docs/integration/handover-03/runs/backup-02/run.log\n?? docs/integration/handover-03/runs/browser-01/result.json\n?? docs/integration/handover-03/runs/browser-01/run.log\n?? docs/integration/handover-03/runs/build-01/result.json\n?? docs/integration/handover-03/runs/build-01/run.log\n?? docs/integration/handover-03/runs/build-02/result.json\n?? docs/integration/handover-03/runs/build-02/run.log\n?? docs/integration/handover-03/runs/build-03/result.json\n?? docs/integration/handover-03/runs/build-03/run.log\n?? docs/integration/handover-03/runs/concurrency-01/result.json\n?? docs/integration/handover-03/runs/concurrency-01/run.log\n?? docs/integration/handover-03/runs/content-01/result.json\n?? docs/integration/handover-03/runs/content-01/run.log\n?? docs/integration/handover-03/runs/full-test-01/result.json\n?? docs/integration/handover-03/runs/full-test-01/run.log\n?? docs/integration/handover-03/runs/full-test-02/result.json\n?? docs/integration/handover-03/runs/full-test-02/run.log\n?? docs/integration/handover-03/runs/full-test-03/result.json\n?? docs/integration/handover-03/runs/full-test-03/run.log\n?? docs/integration/handover-03/runs/integration-01/result.json\n?? docs/integration/handover-03/runs/integration-01/run.log\n?? docs/integration/handover-03/runs/integration-02/result.json\n?? docs/integration/handover-03/runs/integration-02/run.log\n?? docs/integration/handover-03/runs/integration-03/result.json\n?? docs/integration/handover-03/runs/integration-03/run.log\n?? docs/integration/handover-03/runs/shell-01/result.json\n?? docs/integration/handover-03/runs/shell-01/run.log\n?? docs/integration/handover-03/runs/typecheck-01/result.json\n?? docs/integration/handover-03/runs/typecheck-01/run.log\n?? docs/integration/handover-03/runs/typecheck-02/result.json\n?? docs/integration/handover-03/runs/typecheck-02/run.log\n?? docs/integration/handover-03/runs/typecheck-03/result.json\n?? docs/integration/handover-03/runs/typecheck-03/run.log\n?? scripts/handover-03-pg.cjs\n?? scripts/handover-03-run.cjs\n",
+    "command": [
+      "node",
+      "scripts/handover-backup.cjs",
+      "handover03-restore-02"
+    ],
+    "started": "2026-10-16T10:18:00.982Z",
+    "finished": "2026-10-16T10:18:02.645Z",
+    "exitCode": 1,
+    "logSha256": "a9f78dbd78d9498ceaebf6c58239d22d60cfefce61866539cebd245ec1b21aba"
+  },
+  {
+    "name": "backup-03",
+    "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+    "dirtyState": " M docs/integration/handover-02/postgres-handover-02.log\n?? docs/integration/handover-01/backups/handover03-restore-02/failure.log\n?? docs/integration/handover-01/backups/handover03-restore-02/pg-dump.log\n?? docs/integration/handover-01/backups/handover03-restore-02/pg-restore.log\n?? docs/integration/handover-01/backups/handover03-restore-03/consistent.dump\n?? docs/integration/handover-01/backups/handover03-restore-03/pg-dump.log\n?? docs/integration/handover-01/backups/handover03-restore-03/pg-restore.log\n?? docs/integration/handover-01/backups/handover03-restore-03/summary.json\n?? docs/integration/handover-02/audit-handover03-start/summary.json\n?? docs/integration/handover-02/handover03-browser-01/account-isolation.png\n?? docs/integration/handover-02/handover03-browser-01/summary.json\n?? docs/integration/handover-02/handover03-shell-01/1440-day.png\n?? docs/integration/handover-02/handover03-shell-01/1440-night.png\n?? docs/integration/handover-02/handover03-shell-01/320-day.png\n?? docs/integration/handover-02/handover03-shell-01/320-night.png\n?? docs/integration/handover-02/handover03-shell-01/390-day.png\n?? docs/integration/handover-02/handover03-shell-01/390-night.png\n?? docs/integration/handover-02/handover03-shell-01/844-day.png\n?? docs/integration/handover-02/handover03-shell-01/844-night.png\n?? docs/integration/handover-02/handover03-shell-01/results.json\n?? docs/integration/handover-03/bin/pnpm.cmd\n?? docs/integration/handover-03/inherited-postgres-log.bin\n?? docs/integration/handover-03/initial-state.json\n?? docs/integration/handover-03/pg-inspect-failure-1792145768827.log\n?? docs/integration/handover-03/pg-inspect.json\n?? docs/integration/handover-03/pg-start-failure-1792145744600.log\n?? docs/integration/handover-03/pg-start-failure-1792145768724.log\n?? docs/integration/handover-03/pg-start.json\n?? docs/integration/handover-03/runs/api-01/result.json\n?? docs/integration/handover-03/runs/api-01/run.log\n?? docs/integration/handover-03/runs/backup-01/result.json\n?? docs/integration/handover-03/runs/backup-01/run.log\n?? docs/integration/handover-03/runs/backup-02/result.json\n?? docs/integration/handover-03/runs/backup-02/run.log\n?? docs/integration/handover-03/runs/backup-03/run.log\n?? docs/integration/handover-03/runs/browser-01/result.json\n?? docs/integration/handover-03/runs/browser-01/run.log\n?? docs/integration/handover-03/runs/build-01/result.json\n?? docs/integration/handover-03/runs/build-01/run.log\n?? docs/integration/handover-03/runs/build-02/result.json\n?? docs/integration/handover-03/runs/build-02/run.log\n?? docs/integration/handover-03/runs/build-03/result.json\n?? docs/integration/handover-03/runs/build-03/run.log\n?? docs/integration/handover-03/runs/concurrency-01/result.json\n?? docs/integration/handover-03/runs/concurrency-01/run.log\n?? docs/integration/handover-03/runs/content-01/result.json\n?? docs/integration/handover-03/runs/content-01/run.log\n?? docs/integration/handover-03/runs/database-backup-01/result.json\n?? docs/integration/handover-03/runs/database-backup-01/run.log\n?? docs/integration/handover-03/runs/full-test-01/result.json\n?? docs/integration/handover-03/runs/full-test-01/run.log\n?? docs/integration/handover-03/runs/full-test-02/result.json\n?? docs/integration/handover-03/runs/full-test-02/run.log\n?? docs/integration/handover-03/runs/full-test-03/result.json\n?? docs/integration/handover-03/runs/full-test-03/run.log\n?? docs/integration/handover-03/runs/integration-01/result.json\n?? docs/integration/handover-03/runs/integration-01/run.log\n?? docs/integration/handover-03/runs/integration-02/result.json\n?? docs/integration/handover-03/runs/integration-02/run.log\n?? docs/integration/handover-03/runs/integration-03/result.json\n?? docs/integration/handover-03/runs/integration-03/run.log\n?? docs/integration/handover-03/runs/migrate-backup-01/result.json\n?? docs/integration/handover-03/runs/migrate-backup-01/run.log\n?? docs/integration/handover-03/runs/shell-01/result.json\n?? docs/integration/handover-03/runs/shell-01/run.log\n?? docs/integration/handover-03/runs/typecheck-01/result.json\n?? docs/integration/handover-03/runs/typecheck-01/run.log\n?? docs/integration/handover-03/runs/typecheck-02/result.json\n?? docs/integration/handover-03/runs/typecheck-02/run.log\n?? docs/integration/handover-03/runs/typecheck-03/result.json\n?? docs/integration/handover-03/runs/typecheck-03/run.log\n?? scripts/handover-03-pg.cjs\n?? scripts/handover-03-run.cjs\n",
+    "command": [
+      "node",
+      "scripts/handover-backup.cjs",
+      "handover03-restore-03"
+    ],
+    "started": "2026-10-16T10:18:15.725Z",
+    "finished": "2026-10-16T10:18:17.129Z",
+    "exitCode": 0,
+    "logSha256": "97300c542152911b783af5e895c6b849df703263d94977cbfd6bcbcd4f265c7b"
+  },
+  {
+    "name": "browser-01",
+    "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+    "command": [
+      "node",
+      "scripts/handover-browser.cjs",
+      "handover03-browser-01"
+    ],
+    "started": "2026-10-16T10:16:48.569Z",
+    "finished": "2026-10-16T10:16:53.149Z",
+    "exitCode": 0,
+    "logSha256": "6d5ea16c834645cddedff7d596fd520a0a4852641af26ff2a98590df60209e7f"
+  },
+  {
+    "name": "build-01",
+    "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+    "command": [
+      "pnpm",
+      "build"
+    ],
+    "started": "2026-10-16T10:16:45.094Z",
+    "finished": "2026-10-16T10:16:45.629Z",
+    "exitCode": 1,
+    "logSha256": "2068066a54d2d87d42bd1f508717856dd432a7cbc5d00ccfba440e9338c95c40"
+  },
+  {
+    "name": "build-02",
+    "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+    "dirtyState": " M docs/integration/handover-02/postgres-handover-02.log\n?? docs/integration/handover-02/audit-handover03-start/summary.json\n?? docs/integration/handover-02/handover03-browser-01/account-isolation.png\n?? docs/integration/handover-02/handover03-browser-01/summary.json\n?? docs/integration/handover-02/handover03-shell-01/1440-day.png\n?? docs/integration/handover-02/handover03-shell-01/1440-night.png\n?? docs/integration/handover-02/handover03-shell-01/320-day.png\n?? docs/integration/handover-02/handover03-shell-01/320-night.png\n?? docs/integration/handover-02/handover03-shell-01/390-day.png\n?? docs/integration/handover-02/handover03-shell-01/390-night.png\n?? docs/integration/handover-02/handover03-shell-01/844-day.png\n?? docs/integration/handover-02/handover03-shell-01/844-night.png\n?? docs/integration/handover-02/handover03-shell-01/results.json\n?? docs/integration/handover-03/bin/pnpm.cmd\n?? docs/integration/handover-03/inherited-postgres-log.bin\n?? docs/integration/handover-03/initial-state.json\n?? docs/integration/handover-03/pg-inspect-failure-1792145768827.log\n?? docs/integration/handover-03/pg-start-failure-1792145744600.log\n?? docs/integration/handover-03/pg-start-failure-1792145768724.log\n?? docs/integration/handover-03/pg-start.json\n?? docs/integration/handover-03/runs/api-01/result.json\n?? docs/integration/handover-03/runs/api-01/run.log\n?? docs/integration/handover-03/runs/browser-01/result.json\n?? docs/integration/handover-03/runs/browser-01/run.log\n?? docs/integration/handover-03/runs/build-01/result.json\n?? docs/integration/handover-03/runs/build-01/run.log\n?? docs/integration/handover-03/runs/build-02/run.log\n?? docs/integration/handover-03/runs/concurrency-01/result.json\n?? docs/integration/handover-03/runs/concurrency-01/run.log\n?? docs/integration/handover-03/runs/content-01/result.json\n?? docs/integration/handover-03/runs/content-01/run.log\n?? docs/integration/handover-03/runs/full-test-01/result.json\n?? docs/integration/handover-03/runs/full-test-01/run.log\n?? docs/integration/handover-03/runs/full-test-02/result.json\n?? docs/integration/handover-03/runs/full-test-02/run.log\n?? docs/integration/handover-03/runs/integration-01/result.json\n?? docs/integration/handover-03/runs/integration-01/run.log\n?? docs/integration/handover-03/runs/shell-01/result.json\n?? docs/integration/handover-03/runs/shell-01/run.log\n?? docs/integration/handover-03/runs/typecheck-01/result.json\n?? docs/integration/handover-03/runs/typecheck-01/run.log\n?? docs/integration/handover-03/runs/typecheck-02/result.json\n?? docs/integration/handover-03/runs/typecheck-02/run.log\n?? scripts/handover-03-pg.cjs\n?? scripts/handover-03-run.cjs\n",
+    "command": [
+      "pnpm",
+      "build"
+    ],
+    "started": "2026-10-16T10:17:12.375Z",
+    "finished": "2026-10-16T10:17:12.984Z",
+    "exitCode": 1,
+    "logSha256": "2068066a54d2d87d42bd1f508717856dd432a7cbc5d00ccfba440e9338c95c40"
+  },
+  {
+    "name": "build-03",
+    "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+    "dirtyState": " M docs/integration/handover-02/postgres-handover-02.log\n?? docs/integration/handover-02/audit-handover03-start/summary.json\n?? docs/integration/handover-02/handover03-browser-01/account-isolation.png\n?? docs/integration/handover-02/handover03-browser-01/summary.json\n?? docs/integration/handover-02/handover03-shell-01/1440-day.png\n?? docs/integration/handover-02/handover03-shell-01/1440-night.png\n?? docs/integration/handover-02/handover03-shell-01/320-day.png\n?? docs/integration/handover-02/handover03-shell-01/320-night.png\n?? docs/integration/handover-02/handover03-shell-01/390-day.png\n?? docs/integration/handover-02/handover03-shell-01/390-night.png\n?? docs/integration/handover-02/handover03-shell-01/844-day.png\n?? docs/integration/handover-02/handover03-shell-01/844-night.png\n?? docs/integration/handover-02/handover03-shell-01/results.json\n?? docs/integration/handover-03/bin/pnpm.cmd\n?? docs/integration/handover-03/inherited-postgres-log.bin\n?? docs/integration/handover-03/initial-state.json\n?? docs/integration/handover-03/pg-inspect-failure-1792145768827.log\n?? docs/integration/handover-03/pg-start-failure-1792145744600.log\n?? docs/integration/handover-03/pg-start-failure-1792145768724.log\n?? docs/integration/handover-03/pg-start.json\n?? docs/integration/handover-03/runs/api-01/result.json\n?? docs/integration/handover-03/runs/api-01/run.log\n?? docs/integration/handover-03/runs/backup-01/result.json\n?? docs/integration/handover-03/runs/backup-01/run.log\n?? docs/integration/handover-03/runs/browser-01/result.json\n?? docs/integration/handover-03/runs/browser-01/run.log\n?? docs/integration/handover-03/runs/build-01/result.json\n?? docs/integration/handover-03/runs/build-01/run.log\n?? docs/integration/handover-03/runs/build-02/result.json\n?? docs/integration/handover-03/runs/build-02/run.log\n?? docs/integration/handover-03/runs/build-03/run.log\n?? docs/integration/handover-03/runs/concurrency-01/result.json\n?? docs/integration/handover-03/runs/concurrency-01/run.log\n?? docs/integration/handover-03/runs/content-01/result.json\n?? docs/integration/handover-03/runs/content-01/run.log\n?? docs/integration/handover-03/runs/full-test-01/result.json\n?? docs/integration/handover-03/runs/full-test-01/run.log\n?? docs/integration/handover-03/runs/full-test-02/result.json\n?? docs/integration/handover-03/runs/full-test-02/run.log\n?? docs/integration/handover-03/runs/full-test-03/result.json\n?? docs/integration/handover-03/runs/full-test-03/run.log\n?? docs/integration/handover-03/runs/integration-01/result.json\n?? docs/integration/handover-03/runs/integration-01/run.log\n?? docs/integration/handover-03/runs/integration-02/result.json\n?? docs/integration/handover-03/runs/integration-02/run.log\n?? docs/integration/handover-03/runs/shell-01/result.json\n?? docs/integration/handover-03/runs/shell-01/run.log\n?? docs/integration/handover-03/runs/typecheck-01/result.json\n?? docs/integration/handover-03/runs/typecheck-01/run.log\n?? docs/integration/handover-03/runs/typecheck-02/result.json\n?? docs/integration/handover-03/runs/typecheck-02/run.log\n?? docs/integration/handover-03/runs/typecheck-03/result.json\n?? docs/integration/handover-03/runs/typecheck-03/run.log\n?? scripts/handover-03-pg.cjs\n?? scripts/handover-03-run.cjs\n",
+    "command": [
+      "pnpm",
+      "build"
+    ],
+    "started": "2026-10-16T10:17:43.725Z",
+    "finished": "2026-10-16T10:17:47.764Z",
+    "exitCode": 0,
+    "logSha256": "48e6007c6556a0a491203ca6cba0d69755d5f76de722ccb580f34171a1798cf5"
+  },
+  {
+    "name": "concurrency-01",
+    "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+    "command": [
+      "node",
+      "--test",
+      "scripts/handover-concurrency.cjs"
+    ],
+    "started": "2026-10-16T10:16:46.302Z",
+    "finished": "2026-10-16T10:16:48.505Z",
+    "exitCode": 0,
+    "logSha256": "e355a14665cc4317be77dbe3162b41d5abf5cc62a7f48d33b98fde39fa688aca"
+  },
+  {
+    "name": "content-01",
+    "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+    "command": [
+      "pnpm",
+      "--filter",
+      "@jiuxiao/content",
+      "test"
+    ],
+    "started": "2026-10-16T10:16:34.916Z",
+    "finished": "2026-10-16T10:16:36.772Z",
+    "exitCode": 0,
+    "logSha256": "24b87c99c38c5e97a07cfa044fdd2525ef1c3d5ae52dbf6dc89e680841fc4b04"
+  },
+  {
+    "name": "database-backup-01",
+    "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+    "dirtyState": " M docs/integration/handover-02/postgres-handover-02.log\n?? docs/integration/handover-01/backups/handover03-restore-02/failure.log\n?? docs/integration/handover-01/backups/handover03-restore-02/pg-dump.log\n?? docs/integration/handover-01/backups/handover03-restore-02/pg-restore.log\n?? docs/integration/handover-02/audit-handover03-start/summary.json\n?? docs/integration/handover-02/handover03-browser-01/account-isolation.png\n?? docs/integration/handover-02/handover03-browser-01/summary.json\n?? docs/integration/handover-02/handover03-shell-01/1440-day.png\n?? docs/integration/handover-02/handover03-shell-01/1440-night.png\n?? docs/integration/handover-02/handover03-shell-01/320-day.png\n?? docs/integration/handover-02/handover03-shell-01/320-night.png\n?? docs/integration/handover-02/handover03-shell-01/390-day.png\n?? docs/integration/handover-02/handover03-shell-01/390-night.png\n?? docs/integration/handover-02/handover03-shell-01/844-day.png\n?? docs/integration/handover-02/handover03-shell-01/844-night.png\n?? docs/integration/handover-02/handover03-shell-01/results.json\n?? docs/integration/handover-03/bin/pnpm.cmd\n?? docs/integration/handover-03/inherited-postgres-log.bin\n?? docs/integration/handover-03/initial-state.json\n?? docs/integration/handover-03/pg-inspect-failure-1792145768827.log\n?? docs/integration/handover-03/pg-inspect.json\n?? docs/integration/handover-03/pg-start-failure-1792145744600.log\n?? docs/integration/handover-03/pg-start-failure-1792145768724.log\n?? docs/integration/handover-03/pg-start.json\n?? docs/integration/handover-03/runs/api-01/result.json\n?? docs/integration/handover-03/runs/api-01/run.log\n?? docs/integration/handover-03/runs/backup-01/result.json\n?? docs/integration/handover-03/runs/backup-01/run.log\n?? docs/integration/handover-03/runs/backup-02/result.json\n?? docs/integration/handover-03/runs/backup-02/run.log\n?? docs/integration/handover-03/runs/browser-01/result.json\n?? docs/integration/handover-03/runs/browser-01/run.log\n?? docs/integration/handover-03/runs/build-01/result.json\n?? docs/integration/handover-03/runs/build-01/run.log\n?? docs/integration/handover-03/runs/build-02/result.json\n?? docs/integration/handover-03/runs/build-02/run.log\n?? docs/integration/handover-03/runs/build-03/result.json\n?? docs/integration/handover-03/runs/build-03/run.log\n?? docs/integration/handover-03/runs/concurrency-01/result.json\n?? docs/integration/handover-03/runs/concurrency-01/run.log\n?? docs/integration/handover-03/runs/content-01/result.json\n?? docs/integration/handover-03/runs/content-01/run.log\n?? docs/integration/handover-03/runs/database-backup-01/run.log\n?? docs/integration/handover-03/runs/full-test-01/result.json\n?? docs/integration/handover-03/runs/full-test-01/run.log\n?? docs/integration/handover-03/runs/full-test-02/result.json\n?? docs/integration/handover-03/runs/full-test-02/run.log\n?? docs/integration/handover-03/runs/full-test-03/result.json\n?? docs/integration/handover-03/runs/full-test-03/run.log\n?? docs/integration/handover-03/runs/integration-01/result.json\n?? docs/integration/handover-03/runs/integration-01/run.log\n?? docs/integration/handover-03/runs/integration-02/result.json\n?? docs/integration/handover-03/runs/integration-02/run.log\n?? docs/integration/handover-03/runs/integration-03/result.json\n?? docs/integration/handover-03/runs/integration-03/run.log\n?? docs/integration/handover-03/runs/shell-01/result.json\n?? docs/integration/handover-03/runs/shell-01/run.log\n?? docs/integration/handover-03/runs/typecheck-01/result.json\n?? docs/integration/handover-03/runs/typecheck-01/run.log\n?? docs/integration/handover-03/runs/typecheck-02/result.json\n?? docs/integration/handover-03/runs/typecheck-02/run.log\n?? docs/integration/handover-03/runs/typecheck-03/result.json\n?? docs/integration/handover-03/runs/typecheck-03/run.log\n?? scripts/handover-03-pg.cjs\n?? scripts/handover-03-run.cjs\n",
+    "command": [
+      "node",
+      "scripts/handover-database.cjs",
+      "jiuxiao_test_handover-03-backup-20261016"
+    ],
+    "started": "2026-10-16T10:18:14.442Z",
+    "finished": "2026-10-16T10:18:14.920Z",
+    "exitCode": 0,
+    "logSha256": "0ec15a060b9d25a09c477b12b891d1d2bf945b4d6d55474de53b7a5d19f4bdf8"
+  },
+  {
+    "name": "full-test-01",
+    "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+    "command": [
+      "pnpm",
+      "test"
+    ],
+    "started": "2026-10-16T10:16:43.816Z",
+    "finished": "2026-10-16T10:16:44.369Z",
+    "exitCode": 1,
+    "logSha256": "bd5546bbb88add98140715b4fe6553dc60c0662d1ca328a1c5493fc7bd2c5853"
+  },
+  {
+    "name": "full-test-02",
+    "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+    "dirtyState": " M docs/integration/handover-02/postgres-handover-02.log\n?? docs/integration/handover-02/audit-handover03-start/summary.json\n?? docs/integration/handover-02/handover03-browser-01/account-isolation.png\n?? docs/integration/handover-02/handover03-browser-01/summary.json\n?? docs/integration/handover-02/handover03-shell-01/1440-day.png\n?? docs/integration/handover-02/handover03-shell-01/1440-night.png\n?? docs/integration/handover-02/handover03-shell-01/320-day.png\n?? docs/integration/handover-02/handover03-shell-01/320-night.png\n?? docs/integration/handover-02/handover03-shell-01/390-day.png\n?? docs/integration/handover-02/handover03-shell-01/390-night.png\n?? docs/integration/handover-02/handover03-shell-01/844-day.png\n?? docs/integration/handover-02/handover03-shell-01/844-night.png\n?? docs/integration/handover-02/handover03-shell-01/results.json\n?? docs/integration/handover-03/bin/pnpm.cmd\n?? docs/integration/handover-03/inherited-postgres-log.bin\n?? docs/integration/handover-03/initial-state.json\n?? docs/integration/handover-03/pg-inspect-failure-1792145768827.log\n?? docs/integration/handover-03/pg-start-failure-1792145744600.log\n?? docs/integration/handover-03/pg-start-failure-1792145768724.log\n?? docs/integration/handover-03/pg-start.json\n?? docs/integration/handover-03/runs/api-01/result.json\n?? docs/integration/handover-03/runs/api-01/run.log\n?? docs/integration/handover-03/runs/browser-01/result.json\n?? docs/integration/handover-03/runs/browser-01/run.log\n?? docs/integration/handover-03/runs/build-01/result.json\n?? docs/integration/handover-03/runs/build-01/run.log\n?? docs/integration/handover-03/runs/concurrency-01/result.json\n?? docs/integration/handover-03/runs/concurrency-01/run.log\n?? docs/integration/handover-03/runs/content-01/result.json\n?? docs/integration/handover-03/runs/content-01/run.log\n?? docs/integration/handover-03/runs/full-test-01/result.json\n?? docs/integration/handover-03/runs/full-test-01/run.log\n?? docs/integration/handover-03/runs/full-test-02/run.log\n?? docs/integration/handover-03/runs/integration-01/result.json\n?? docs/integration/handover-03/runs/integration-01/run.log\n?? docs/integration/handover-03/runs/shell-01/result.json\n?? docs/integration/handover-03/runs/shell-01/run.log\n?? docs/integration/handover-03/runs/typecheck-01/result.json\n?? docs/integration/handover-03/runs/typecheck-01/run.log\n?? scripts/handover-03-pg.cjs\n?? scripts/handover-03-run.cjs\n",
+    "command": [
+      "pnpm",
+      "test"
+    ],
+    "started": "2026-10-16T10:17:11.061Z",
+    "finished": "2026-10-16T10:17:11.645Z",
+    "exitCode": 1,
+    "logSha256": "bd5546bbb88add98140715b4fe6553dc60c0662d1ca328a1c5493fc7bd2c5853"
+  },
+  {
+    "name": "full-test-03",
+    "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+    "dirtyState": " M docs/integration/handover-02/postgres-handover-02.log\n?? docs/integration/handover-02/audit-handover03-start/summary.json\n?? docs/integration/handover-02/handover03-browser-01/account-isolation.png\n?? docs/integration/handover-02/handover03-browser-01/summary.json\n?? docs/integration/handover-02/handover03-shell-01/1440-day.png\n?? docs/integration/handover-02/handover03-shell-01/1440-night.png\n?? docs/integration/handover-02/handover03-shell-01/320-day.png\n?? docs/integration/handover-02/handover03-shell-01/320-night.png\n?? docs/integration/handover-02/handover03-shell-01/390-day.png\n?? docs/integration/handover-02/handover03-shell-01/390-night.png\n?? docs/integration/handover-02/handover03-shell-01/844-day.png\n?? docs/integration/handover-02/handover03-shell-01/844-night.png\n?? docs/integration/handover-02/handover03-shell-01/results.json\n?? docs/integration/handover-03/bin/pnpm.cmd\n?? docs/integration/handover-03/inherited-postgres-log.bin\n?? docs/integration/handover-03/initial-state.json\n?? docs/integration/handover-03/pg-inspect-failure-1792145768827.log\n?? docs/integration/handover-03/pg-start-failure-1792145744600.log\n?? docs/integration/handover-03/pg-start-failure-1792145768724.log\n?? docs/integration/handover-03/pg-start.json\n?? docs/integration/handover-03/runs/api-01/result.json\n?? docs/integration/handover-03/runs/api-01/run.log\n?? docs/integration/handover-03/runs/backup-01/result.json\n?? docs/integration/handover-03/runs/backup-01/run.log\n?? docs/integration/handover-03/runs/browser-01/result.json\n?? docs/integration/handover-03/runs/browser-01/run.log\n?? docs/integration/handover-03/runs/build-01/result.json\n?? docs/integration/handover-03/runs/build-01/run.log\n?? docs/integration/handover-03/runs/build-02/result.json\n?? docs/integration/handover-03/runs/build-02/run.log\n?? docs/integration/handover-03/runs/concurrency-01/result.json\n?? docs/integration/handover-03/runs/concurrency-01/run.log\n?? docs/integration/handover-03/runs/content-01/result.json\n?? docs/integration/handover-03/runs/content-01/run.log\n?? docs/integration/handover-03/runs/full-test-01/result.json\n?? docs/integration/handover-03/runs/full-test-01/run.log\n?? docs/integration/handover-03/runs/full-test-02/result.json\n?? docs/integration/handover-03/runs/full-test-02/run.log\n?? docs/integration/handover-03/runs/full-test-03/run.log\n?? docs/integration/handover-03/runs/integration-01/result.json\n?? docs/integration/handover-03/runs/integration-01/run.log\n?? docs/integration/handover-03/runs/integration-02/result.json\n?? docs/integration/handover-03/runs/integration-02/run.log\n?? docs/integration/handover-03/runs/shell-01/result.json\n?? docs/integration/handover-03/runs/shell-01/run.log\n?? docs/integration/handover-03/runs/typecheck-01/result.json\n?? docs/integration/handover-03/runs/typecheck-01/run.log\n?? docs/integration/handover-03/runs/typecheck-02/result.json\n?? docs/integration/handover-03/runs/typecheck-02/run.log\n?? scripts/handover-03-pg.cjs\n?? scripts/handover-03-run.cjs\n",
+    "command": [
+      "pnpm",
+      "test"
+    ],
+    "started": "2026-10-16T10:17:27.070Z",
+    "finished": "2026-10-16T10:17:38.799Z",
+    "exitCode": 0,
+    "logSha256": "f2736cf054f1d58427b6a352a1876301301d29bd580e1b82b1207ba930e4eea1"
+  },
+  {
+    "name": "integration-01",
+    "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+    "command": [
+      "pnpm",
+      "test:integration"
+    ],
+    "started": "2026-10-16T10:16:45.695Z",
+    "finished": "2026-10-16T10:16:46.235Z",
+    "exitCode": 1,
+    "logSha256": "14f4611d93f884938729b2904c429d15e66f627453511c60db6f065e123c4ee6"
+  },
+  {
+    "name": "integration-02",
+    "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+    "dirtyState": " M docs/integration/handover-02/postgres-handover-02.log\n?? docs/integration/handover-02/audit-handover03-start/summary.json\n?? docs/integration/handover-02/handover03-browser-01/account-isolation.png\n?? docs/integration/handover-02/handover03-browser-01/summary.json\n?? docs/integration/handover-02/handover03-shell-01/1440-day.png\n?? docs/integration/handover-02/handover03-shell-01/1440-night.png\n?? docs/integration/handover-02/handover03-shell-01/320-day.png\n?? docs/integration/handover-02/handover03-shell-01/320-night.png\n?? docs/integration/handover-02/handover03-shell-01/390-day.png\n?? docs/integration/handover-02/handover03-shell-01/390-night.png\n?? docs/integration/handover-02/handover03-shell-01/844-day.png\n?? docs/integration/handover-02/handover03-shell-01/844-night.png\n?? docs/integration/handover-02/handover03-shell-01/results.json\n?? docs/integration/handover-03/bin/pnpm.cmd\n?? docs/integration/handover-03/inherited-postgres-log.bin\n?? docs/integration/handover-03/initial-state.json\n?? docs/integration/handover-03/pg-inspect-failure-1792145768827.log\n?? docs/integration/handover-03/pg-start-failure-1792145744600.log\n?? docs/integration/handover-03/pg-start-failure-1792145768724.log\n?? docs/integration/handover-03/pg-start.json\n?? docs/integration/handover-03/runs/api-01/result.json\n?? docs/integration/handover-03/runs/api-01/run.log\n?? docs/integration/handover-03/runs/browser-01/result.json\n?? docs/integration/handover-03/runs/browser-01/run.log\n?? docs/integration/handover-03/runs/build-01/result.json\n?? docs/integration/handover-03/runs/build-01/run.log\n?? docs/integration/handover-03/runs/build-02/result.json\n?? docs/integration/handover-03/runs/build-02/run.log\n?? docs/integration/handover-03/runs/concurrency-01/result.json\n?? docs/integration/handover-03/runs/concurrency-01/run.log\n?? docs/integration/handover-03/runs/content-01/result.json\n?? docs/integration/handover-03/runs/content-01/run.log\n?? docs/integration/handover-03/runs/full-test-01/result.json\n?? docs/integration/handover-03/runs/full-test-01/run.log\n?? docs/integration/handover-03/runs/full-test-02/result.json\n?? docs/integration/handover-03/runs/full-test-02/run.log\n?? docs/integration/handover-03/runs/integration-01/result.json\n?? docs/integration/handover-03/runs/integration-01/run.log\n?? docs/integration/handover-03/runs/integration-02/run.log\n?? docs/integration/handover-03/runs/shell-01/result.json\n?? docs/integration/handover-03/runs/shell-01/run.log\n?? docs/integration/handover-03/runs/typecheck-01/result.json\n?? docs/integration/handover-03/runs/typecheck-01/run.log\n?? docs/integration/handover-03/runs/typecheck-02/result.json\n?? docs/integration/handover-03/runs/typecheck-02/run.log\n?? scripts/handover-03-pg.cjs\n?? scripts/handover-03-run.cjs\n",
+    "command": [
+      "pnpm",
+      "test:integration"
+    ],
+    "started": "2026-10-16T10:17:13.040Z",
+    "finished": "2026-10-16T10:17:13.637Z",
+    "exitCode": 1,
+    "logSha256": "14f4611d93f884938729b2904c429d15e66f627453511c60db6f065e123c4ee6"
+  },
+  {
+    "name": "integration-03",
+    "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+    "dirtyState": " M docs/integration/handover-02/postgres-handover-02.log\n?? docs/integration/handover-02/audit-handover03-start/summary.json\n?? docs/integration/handover-02/handover03-browser-01/account-isolation.png\n?? docs/integration/handover-02/handover03-browser-01/summary.json\n?? docs/integration/handover-02/handover03-shell-01/1440-day.png\n?? docs/integration/handover-02/handover03-shell-01/1440-night.png\n?? docs/integration/handover-02/handover03-shell-01/320-day.png\n?? docs/integration/handover-02/handover03-shell-01/320-night.png\n?? docs/integration/handover-02/handover03-shell-01/390-day.png\n?? docs/integration/handover-02/handover03-shell-01/390-night.png\n?? docs/integration/handover-02/handover03-shell-01/844-day.png\n?? docs/integration/handover-02/handover03-shell-01/844-night.png\n?? docs/integration/handover-02/handover03-shell-01/results.json\n?? docs/integration/handover-03/bin/pnpm.cmd\n?? docs/integration/handover-03/inherited-postgres-log.bin\n?? docs/integration/handover-03/initial-state.json\n?? docs/integration/handover-03/pg-inspect-failure-1792145768827.log\n?? docs/integration/handover-03/pg-start-failure-1792145744600.log\n?? docs/integration/handover-03/pg-start-failure-1792145768724.log\n?? docs/integration/handover-03/pg-start.json\n?? docs/integration/handover-03/runs/api-01/result.json\n?? docs/integration/handover-03/runs/api-01/run.log\n?? docs/integration/handover-03/runs/backup-01/result.json\n?? docs/integration/handover-03/runs/backup-01/run.log\n?? docs/integration/handover-03/runs/browser-01/result.json\n?? docs/integration/handover-03/runs/browser-01/run.log\n?? docs/integration/handover-03/runs/build-01/result.json\n?? docs/integration/handover-03/runs/build-01/run.log\n?? docs/integration/handover-03/runs/build-02/result.json\n?? docs/integration/handover-03/runs/build-02/run.log\n?? docs/integration/handover-03/runs/build-03/result.json\n?? docs/integration/handover-03/runs/build-03/run.log\n?? docs/integration/handover-03/runs/concurrency-01/result.json\n?? docs/integration/handover-03/runs/concurrency-01/run.log\n?? docs/integration/handover-03/runs/content-01/result.json\n?? docs/integration/handover-03/runs/content-01/run.log\n?? docs/integration/handover-03/runs/full-test-01/result.json\n?? docs/integration/handover-03/runs/full-test-01/run.log\n?? docs/integration/handover-03/runs/full-test-02/result.json\n?? docs/integration/handover-03/runs/full-test-02/run.log\n?? docs/integration/handover-03/runs/full-test-03/result.json\n?? docs/integration/handover-03/runs/full-test-03/run.log\n?? docs/integration/handover-03/runs/integration-01/result.json\n?? docs/integration/handover-03/runs/integration-01/run.log\n?? docs/integration/handover-03/runs/integration-02/result.json\n?? docs/integration/handover-03/runs/integration-02/run.log\n?? docs/integration/handover-03/runs/integration-03/run.log\n?? docs/integration/handover-03/runs/shell-01/result.json\n?? docs/integration/handover-03/runs/shell-01/run.log\n?? docs/integration/handover-03/runs/typecheck-01/result.json\n?? docs/integration/handover-03/runs/typecheck-01/run.log\n?? docs/integration/handover-03/runs/typecheck-02/result.json\n?? docs/integration/handover-03/runs/typecheck-02/run.log\n?? docs/integration/handover-03/runs/typecheck-03/result.json\n?? docs/integration/handover-03/runs/typecheck-03/run.log\n?? scripts/handover-03-pg.cjs\n?? scripts/handover-03-run.cjs\n",
+    "command": [
+      "pnpm",
+      "test:integration"
+    ],
+    "started": "2026-10-16T10:17:47.824Z",
+    "finished": "2026-10-16T10:17:53.162Z",
+    "exitCode": 0,
+    "logSha256": "80e473207fd0becacfe6d2a8ff2c5668b823a0c0d81cf6d2d7e44721b00abac5"
+  },
+  {
+    "name": "migrate-backup-01",
+    "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+    "dirtyState": " M docs/integration/handover-02/postgres-handover-02.log\n?? docs/integration/handover-01/backups/handover03-restore-02/failure.log\n?? docs/integration/handover-01/backups/handover03-restore-02/pg-dump.log\n?? docs/integration/handover-01/backups/handover03-restore-02/pg-restore.log\n?? docs/integration/handover-02/audit-handover03-start/summary.json\n?? docs/integration/handover-02/handover03-browser-01/account-isolation.png\n?? docs/integration/handover-02/handover03-browser-01/summary.json\n?? docs/integration/handover-02/handover03-shell-01/1440-day.png\n?? docs/integration/handover-02/handover03-shell-01/1440-night.png\n?? docs/integration/handover-02/handover03-shell-01/320-day.png\n?? docs/integration/handover-02/handover03-shell-01/320-night.png\n?? docs/integration/handover-02/handover03-shell-01/390-day.png\n?? docs/integration/handover-02/handover03-shell-01/390-night.png\n?? docs/integration/handover-02/handover03-shell-01/844-day.png\n?? docs/integration/handover-02/handover03-shell-01/844-night.png\n?? docs/integration/handover-02/handover03-shell-01/results.json\n?? docs/integration/handover-03/bin/pnpm.cmd\n?? docs/integration/handover-03/inherited-postgres-log.bin\n?? docs/integration/handover-03/initial-state.json\n?? docs/integration/handover-03/pg-inspect-failure-1792145768827.log\n?? docs/integration/handover-03/pg-inspect.json\n?? docs/integration/handover-03/pg-start-failure-1792145744600.log\n?? docs/integration/handover-03/pg-start-failure-1792145768724.log\n?? docs/integration/handover-03/pg-start.json\n?? docs/integration/handover-03/runs/api-01/result.json\n?? docs/integration/handover-03/runs/api-01/run.log\n?? docs/integration/handover-03/runs/backup-01/result.json\n?? docs/integration/handover-03/runs/backup-01/run.log\n?? docs/integration/handover-03/runs/backup-02/result.json\n?? docs/integration/handover-03/runs/backup-02/run.log\n?? docs/integration/handover-03/runs/browser-01/result.json\n?? docs/integration/handover-03/runs/browser-01/run.log\n?? docs/integration/handover-03/runs/build-01/result.json\n?? docs/integration/handover-03/runs/build-01/run.log\n?? docs/integration/handover-03/runs/build-02/result.json\n?? docs/integration/handover-03/runs/build-02/run.log\n?? docs/integration/handover-03/runs/build-03/result.json\n?? docs/integration/handover-03/runs/build-03/run.log\n?? docs/integration/handover-03/runs/concurrency-01/result.json\n?? docs/integration/handover-03/runs/concurrency-01/run.log\n?? docs/integration/handover-03/runs/content-01/result.json\n?? docs/integration/handover-03/runs/content-01/run.log\n?? docs/integration/handover-03/runs/database-backup-01/result.json\n?? docs/integration/handover-03/runs/database-backup-01/run.log\n?? docs/integration/handover-03/runs/full-test-01/result.json\n?? docs/integration/handover-03/runs/full-test-01/run.log\n?? docs/integration/handover-03/runs/full-test-02/result.json\n?? docs/integration/handover-03/runs/full-test-02/run.log\n?? docs/integration/handover-03/runs/full-test-03/result.json\n?? docs/integration/handover-03/runs/full-test-03/run.log\n?? docs/integration/handover-03/runs/integration-01/result.json\n?? docs/integration/handover-03/runs/integration-01/run.log\n?? docs/integration/handover-03/runs/integration-02/result.json\n?? docs/integration/handover-03/runs/integration-02/run.log\n?? docs/integration/handover-03/runs/integration-03/result.json\n?? docs/integration/handover-03/runs/integration-03/run.log\n?? docs/integration/handover-03/runs/migrate-backup-01/run.log\n?? docs/integration/handover-03/runs/shell-01/result.json\n?? docs/integration/handover-03/runs/shell-01/run.log\n?? docs/integration/handover-03/runs/typecheck-01/result.json\n?? docs/integration/handover-03/runs/typecheck-01/run.log\n?? docs/integration/handover-03/runs/typecheck-02/result.json\n?? docs/integration/handover-03/runs/typecheck-02/run.log\n?? docs/integration/handover-03/runs/typecheck-03/result.json\n?? docs/integration/handover-03/runs/typecheck-03/run.log\n?? scripts/handover-03-pg.cjs\n?? scripts/handover-03-run.cjs\n",
+    "command": [
+      "node",
+      "scripts/handover-migrate.cjs"
+    ],
+    "started": "2026-10-16T10:18:14.980Z",
+    "finished": "2026-10-16T10:18:15.668Z",
+    "exitCode": 0,
+    "logSha256": "6a43e9cb0c13a0447a1a37af165318bd69069736a5c9c14ca2eb2ba571398f13"
+  },
+  {
+    "name": "shell-01",
+    "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+    "command": [
+      "node",
+      "tests/e2e/cloud-game-shell.cjs",
+      "handover03-shell-01"
+    ],
+    "started": "2026-10-16T10:16:53.210Z",
+    "finished": "2026-10-16T10:17:02.618Z",
+    "exitCode": 0,
+    "logSha256": "61465906bc913e943f2c9e39f751e626cf3ed0c519d0922506863590a0f79f15"
+  },
+  {
+    "name": "typecheck-01",
+    "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+    "command": [
+      "pnpm",
+      "typecheck"
+    ],
+    "started": "2026-10-16T10:16:44.437Z",
+    "finished": "2026-10-16T10:16:45.022Z",
+    "exitCode": 1,
+    "logSha256": "52ac9f0536d5b672f8ac57790e7095eda54cead03d42b0e43d4d0ce2d15f10cf"
+  },
+  {
+    "name": "typecheck-02",
+    "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+    "dirtyState": " M docs/integration/handover-02/postgres-handover-02.log\n?? docs/integration/handover-02/audit-handover03-start/summary.json\n?? docs/integration/handover-02/handover03-browser-01/account-isolation.png\n?? docs/integration/handover-02/handover03-browser-01/summary.json\n?? docs/integration/handover-02/handover03-shell-01/1440-day.png\n?? docs/integration/handover-02/handover03-shell-01/1440-night.png\n?? docs/integration/handover-02/handover03-shell-01/320-day.png\n?? docs/integration/handover-02/handover03-shell-01/320-night.png\n?? docs/integration/handover-02/handover03-shell-01/390-day.png\n?? docs/integration/handover-02/handover03-shell-01/390-night.png\n?? docs/integration/handover-02/handover03-shell-01/844-day.png\n?? docs/integration/handover-02/handover03-shell-01/844-night.png\n?? docs/integration/handover-02/handover03-shell-01/results.json\n?? docs/integration/handover-03/bin/pnpm.cmd\n?? docs/integration/handover-03/inherited-postgres-log.bin\n?? docs/integration/handover-03/initial-state.json\n?? docs/integration/handover-03/pg-inspect-failure-1792145768827.log\n?? docs/integration/handover-03/pg-start-failure-1792145744600.log\n?? docs/integration/handover-03/pg-start-failure-1792145768724.log\n?? docs/integration/handover-03/pg-start.json\n?? docs/integration/handover-03/runs/api-01/result.json\n?? docs/integration/handover-03/runs/api-01/run.log\n?? docs/integration/handover-03/runs/browser-01/result.json\n?? docs/integration/handover-03/runs/browser-01/run.log\n?? docs/integration/handover-03/runs/build-01/result.json\n?? docs/integration/handover-03/runs/build-01/run.log\n?? docs/integration/handover-03/runs/concurrency-01/result.json\n?? docs/integration/handover-03/runs/concurrency-01/run.log\n?? docs/integration/handover-03/runs/content-01/result.json\n?? docs/integration/handover-03/runs/content-01/run.log\n?? docs/integration/handover-03/runs/full-test-01/result.json\n?? docs/integration/handover-03/runs/full-test-01/run.log\n?? docs/integration/handover-03/runs/full-test-02/result.json\n?? docs/integration/handover-03/runs/full-test-02/run.log\n?? docs/integration/handover-03/runs/integration-01/result.json\n?? docs/integration/handover-03/runs/integration-01/run.log\n?? docs/integration/handover-03/runs/shell-01/result.json\n?? docs/integration/handover-03/runs/shell-01/run.log\n?? docs/integration/handover-03/runs/typecheck-01/result.json\n?? docs/integration/handover-03/runs/typecheck-01/run.log\n?? docs/integration/handover-03/runs/typecheck-02/run.log\n?? scripts/handover-03-pg.cjs\n?? scripts/handover-03-run.cjs\n",
+    "command": [
+      "pnpm",
+      "typecheck"
+    ],
+    "started": "2026-10-16T10:17:11.706Z",
+    "finished": "2026-10-16T10:17:12.318Z",
+    "exitCode": 1,
+    "logSha256": "52ac9f0536d5b672f8ac57790e7095eda54cead03d42b0e43d4d0ce2d15f10cf"
+  },
+  {
+    "name": "typecheck-03",
+    "head": "e70469ee36f568283ec1e8f11c4fa2adea25710c",
+    "dirtyState": " M docs/integration/handover-02/postgres-handover-02.log\n?? docs/integration/handover-02/audit-handover03-start/summary.json\n?? docs/integration/handover-02/handover03-browser-01/account-isolation.png\n?? docs/integration/handover-02/handover03-browser-01/summary.json\n?? docs/integration/handover-02/handover03-shell-01/1440-day.png\n?? docs/integration/handover-02/handover03-shell-01/1440-night.png\n?? docs/integration/handover-02/handover03-shell-01/320-day.png\n?? docs/integration/handover-02/handover03-shell-01/320-night.png\n?? docs/integration/handover-02/handover03-shell-01/390-day.png\n?? docs/integration/handover-02/handover03-shell-01/390-night.png\n?? docs/integration/handover-02/handover03-shell-01/844-day.png\n?? docs/integration/handover-02/handover03-shell-01/844-night.png\n?? docs/integration/handover-02/handover03-shell-01/results.json\n?? docs/integration/handover-03/bin/pnpm.cmd\n?? docs/integration/handover-03/inherited-postgres-log.bin\n?? docs/integration/handover-03/initial-state.json\n?? docs/integration/handover-03/pg-inspect-failure-1792145768827.log\n?? docs/integration/handover-03/pg-start-failure-1792145744600.log\n?? docs/integration/handover-03/pg-start-failure-1792145768724.log\n?? docs/integration/handover-03/pg-start.json\n?? docs/integration/handover-03/runs/api-01/result.json\n?? docs/integration/handover-03/runs/api-01/run.log\n?? docs/integration/handover-03/runs/backup-01/result.json\n?? docs/integration/handover-03/runs/backup-01/run.log\n?? docs/integration/handover-03/runs/browser-01/result.json\n?? docs/integration/handover-03/runs/browser-01/run.log\n?? docs/integration/handover-03/runs/build-01/result.json\n?? docs/integration/handover-03/runs/build-01/run.log\n?? docs/integration/handover-03/runs/build-02/result.json\n?? docs/integration/handover-03/runs/build-02/run.log\n?? docs/integration/handover-03/runs/concurrency-01/result.json\n?? docs/integration/handover-03/runs/concurrency-01/run.log\n?? docs/integration/handover-03/runs/content-01/result.json\n?? docs/integration/handover-03/runs/content-01/run.log\n?? docs/integration/handover-03/runs/full-test-01/result.json\n?? docs/integration/handover-03/runs/full-test-01/run.log\n?? docs/integration/handover-03/runs/full-test-02/result.json\n?? docs/integration/handover-03/runs/full-test-02/run.log\n?? docs/integration/handover-03/runs/full-test-03/result.json\n?? docs/integration/handover-03/runs/full-test-03/run.log\n?? docs/integration/handover-03/runs/integration-01/result.json\n?? docs/integration/handover-03/runs/integration-01/run.log\n?? docs/integration/handover-03/runs/integration-02/result.json\n?? docs/integration/handover-03/runs/integration-02/run.log\n?? docs/integration/handover-03/runs/shell-01/result.json\n?? docs/integration/handover-03/runs/shell-01/run.log\n?? docs/integration/handover-03/runs/typecheck-01/result.json\n?? docs/integration/handover-03/runs/typecheck-01/run.log\n?? docs/integration/handover-03/runs/typecheck-02/result.json\n?? docs/integration/handover-03/runs/typecheck-02/run.log\n?? docs/integration/handover-03/runs/typecheck-03/run.log\n?? scripts/handover-03-pg.cjs\n?? scripts/handover-03-run.cjs\n",
+    "command": [
+      "pnpm",
+      "typecheck"
+    ],
+    "started": "2026-10-16T10:17:38.855Z",
+    "finished": "2026-10-16T10:17:43.664Z",
+    "exitCode": 0,
+    "logSha256": "211c5ec2e56ae47b6f732292b68f620e8608370f1d5c974a045d4a7d08775c67"
+  }
+]

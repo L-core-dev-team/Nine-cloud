@@ -1,3 +1,4 @@
+import type { NarrativeV2Port } from './narrative-ownership-v2.js';
 import {assertDataPolicy,checkQuota,type DataPolicy} from './data-policy.js';
 import type { Pool } from 'pg';
 import { PostgresCloudSaveRepository } from './postgres-cloud-save-repository.js';
@@ -5,7 +6,7 @@ import { PostgresNpcMemoryTurnRepository } from './npc-memory-turn-transaction.j
 import type { ServerTurnRepository } from './server-turn.js';
 
 /** Host-side adapter only: it does not publish or supply gameplay rules. */
-export function createPostgresServerTurnRepository(pool: Pool, requiresLiveAccount = false,policy?:()=>DataPolicy|undefined): ServerTurnRepository {
+export function createPostgresServerTurnRepository(pool: Pool, requiresLiveAccount = false,policy?:()=>DataPolicy|undefined,narrativeV2?:NarrativeV2Port): ServerTurnRepository {
   const saves = new PostgresCloudSaveRepository(pool);
   const turns = new PostgresNpcMemoryTurnRepository(pool, requiresLiveAccount,policy?async(c,commit)=>{
     const p=policy();assertDataPolicy(p);
@@ -14,7 +15,7 @@ export function createPostgresServerTurnRepository(pool: Pool, requiresLiveAccou
     const memoryPolicyJson=commit.save.schemaVersion===1?null:JSON.stringify(commit.save.memoryPolicy);
     const next=Number((await c.query('SELECT octet_length($1::jsonb::text)+coalesce(octet_length($2::jsonb::text),0) AS bytes',[JSON.stringify(commit.save.state),memoryPolicyJson])).rows[0].bytes);
     checkQuota(p,{count:current.count,bytes:Number(current.bytes)},next,Number(before.bytes));
-  }:undefined);
+  }:undefined,narrativeV2?.register);
   return {
     loadSave: async(owner,id)=>{const save=await saves.getForOwner(owner,id);if(save&&!((await pool.query('SELECT verify_turn_event_chain($1) AS ok',[id])).rows[0].ok))throw new Error('EVENT_INTEGRITY_FAILED');return save;},
     getReceiptForOwner: (owner, id, key) => turns.getReceiptForOwner(owner, id, key),

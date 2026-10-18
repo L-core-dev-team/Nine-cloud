@@ -1,0 +1,17 @@
+Scope: 6 of 9 workspace projects
+packages/db typecheck$ tsc -p tsconfig.json --noEmit
+packages/content typecheck$ tsc -p tsconfig.json --noEmit
+packages/contracts typecheck$ tsc -p tsconfig.json --noEmit
+packages/content typecheck: Done
+packages/contracts typecheck: Done
+packages/db typecheck: Done
+packages/domain typecheck$ tsc -p tsconfig.json --noEmit
+packages/domain typecheck: Done
+apps/api typecheck$ tsc -p tsconfig.json --noEmit
+apps/web typecheck$ tsc -p tsconfig.json --noEmit
+apps/api typecheck: Done
+apps/web typecheck: Done
+$ pnpm --filter @jiuxiao/contracts build && pnpm --filter @jiuxiao/content build && pnpm --filter @jiuxiao/domain build && pnpm -r --filter=!@jiuxiao/scene-studio --filter=!@jiuxiao/scene-gate typecheck
+$ tsc -p tsconfig.json
+$ tsc -p tsconfig.json
+$ tsc -p tsconfig.json

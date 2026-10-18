@@ -1,0 +1,13 @@
+{
+  "name": "domain-unit-resume-01",
+  "baselineOrCandidate": "500a85c458e4428ea9b8747f05ceac7d05bc527f",
+  "command": [
+    "pnpm",
+    "--filter",
+    "@jiuxiao/domain",
+    "test"
+  ],
+  "started": "2026-10-15T04:26:32.306Z",
+  "finished": "2026-10-15T04:26:34.146Z",
+  "exitCode": 0
+}

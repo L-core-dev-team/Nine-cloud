@@ -1,0 +1,13 @@
+{
+  "name": "build-api-02",
+  "baselineOrCandidate": "500a85c458e4428ea9b8747f05ceac7d05bc527f",
+  "command": [
+    "pnpm",
+    "--filter",
+    "@jiuxiao/api",
+    "build"
+  ],
+  "started": "2026-10-14T12:51:01.716Z",
+  "finished": "2026-10-14T12:51:02.903Z",
+  "exitCode": 0
+}

@@ -1,0 +1,3 @@
+PR-6 phase 1 passed: the unrecognized rulebook module was rejected before the API could listen; nothing was written.
+PR-6 fail-closed preflight passed: with no approved rules the API served but refused every gameplay request; no save, receipt, event, or NPC-memory write occurred.
+This is only a negative gate check; authenticated non-production gameplay is covered by p1-authenticated-candidate.cjs.

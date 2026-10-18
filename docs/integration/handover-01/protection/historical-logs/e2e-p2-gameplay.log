@@ -1,0 +1,18 @@
+{
+  "journey": "built web -> unseeded zero-identity guest -> server game create -> parseActionText -> PostgreSQL turn -> narrative and receipt -> refresh restore",
+  "saveId": "game-d474a5950d1e719c56e56df58e8f814247ab33567ba86a2ee404e96db1c9fed7",
+  "memoryMode": "forgetting",
+  "revision": 1,
+  "gameMinute": 315,
+  "turnRequests": 7,
+  "committedEvents": 5,
+  "eventType": "observe.result",
+  "refreshedRevision": "4",
+  "firstQuestCompleted": "completed",
+  "pageErrors": 0,
+  "screenshot": "C:\\Users\\11954\\Documents\\Codex\\Nine-cloud-p3-p6-stage1-20261013\\test-results\\e2e\\p1-guest-gameplay-turn.png",
+  "accountKind": "guest",
+  "otpRequests": 0,
+  "guestEntryAndOriginalEmailControlsVisible": true,
+  "server": "real PostgreSQL transaction; isolated test database; no seeded session or email OTP; non-production approved review plugin"
+}

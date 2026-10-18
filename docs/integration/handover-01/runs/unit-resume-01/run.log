@@ -1,0 +1,167 @@
+PASS 预先取消时零请求、零草稿写入
+PASS 草稿保存期间取消不返回可提交状态
+PASS 刷新后复用已整理回复，零额外请求
+PASS 整理响应保存失败仍保留原文和待行动
+PASS 十回合模拟推进，每轮导出导入，六轮记忆归档
+PASS 原始回复随待处理存档完整导入导出
+PASS NPC部分关系更新保留其余关系及人物资料
+PASS 拒绝越界关系后保留旧值且不改写原始提案
+PASS 关系更新经过存档导入导出保持一致
+PASS 无效存档库不能覆盖原存档
+PASS 导入拒绝重复事件及已提交的待处理行动
+PASS 三十回合持久化、刷新、导入、跨档案周期
+PASS 损坏配置字段不再导致首页状态检查崩溃
+PASS 错误配置结构显示可识别错误
+PASS 个人预设使用作者确认的主模型名称
+PASS 中文死亡标记不能通过英文属性绕过
+PASS 英文死亡标记不能通过中文属性绕过
+PASS 导入拒绝字符串 GM 标记但兼容旧版缺省值
+PASS 模型不得把主角保留 ID 当作新 NPC
+PASS 旧标签页不能覆盖另一标签页刚保存的进度
+PASS 本标签页连续保存及原始格式存档可正常续写
+PASS 真实临江仙旧HTML迁移角色、人物、物品和记忆
+PASS 旧HTML正文提取不混入面板与行动建议
+PASS 旧HTML注释和脚本不能伪造迁移分区
+PASS 空文件和畸形旧JSON不会伪装成成功导入
+PASS 原生JSON拒绝空白ID、保留ID人物及畸形扩展字段
+PASS 合法补充资料与档案审阅可完整往返
+PASS 冲突后只载入磁盘最新版且不合并旧标签页内容
+28/28 core regressions passed
+PASS Base URL与完整地址兼容
+PASS 拒绝URL携带密钥与非HTTP协议
+PASS 普通回合仅调用剧情和状态岗位
+PASS 重要剧情导演失败回退主剧情
+PASS 高级导演失败后普通导演接管
+PASS 状态模型失败由主模型提取状态
+PASS 双重状态失败保留正文且不推进世界
+PASS 重试未结算正文不重新生成剧情
+PASS 单AI模式一次返回完整回合且存档通用
+PASS 模式切换后仍可恢复未结算正文
+PASS 主模型失败不会创建正文或状态
+PASS 取消不会触发辅助模型回退
+PASS 拒绝非法字段同时保留正文与合法地点
+PASS 越界关系和未经授权复活不写入
+PASS 世界事件去重，伏笔更新可兼容导入
+PASS 档案只在周期调用，建议不删除记忆
+PASS 档案失败不抛错也不更改已结算回合
+PASS 调用器读取真实usage并隐藏认证头
+PASS HTTP错误可区分且服务端回显密钥脱敏
+PASS 缺少usage不伪造零tokens
+PASS 被截断响应拒绝提交
+PASS 非法状态JSON触发备用结算
+PASS 导演方案格式异常时不阻止正文
+PASS 未结算正文及待行动可导出再导入
+PASS 每岗位使用独立提示词
+PASS 无AI配置不可发出调用
+PASS 提供商超时有明确错误并停止请求
+PASS 未知上下文用量不会变成价格或估算费用
+PASS 未知人物引用只拒绝对应条目
+PASS 允许事件引用本轮合法新增NPC
+PASS 已拒绝的NPC不能被伏笔引用
+PASS 旧世界事件不能通过同ID被改写
+PASS 被截断回复仍统计提供商报告的usage
+PASS 提供商负数用量按未知处理
+PASS JSON BOM和标准文本保持原值
+PASS 围栏前后说明文字
+PASS 说明文字包裹嵌套JSON
+PASS 修复字符串内真实换行和制表符
+PASS 修复对象数组尾逗号且不改变正文
+PASS 拒绝多个不同根对象
+PASS 拒绝截断根对象而不提取内部状态
+PASS 拒绝根数组且不提取其子对象
+PASS 拒绝嵌套危险键
+PASS 拒绝JS执行表达式
+PASS 普通文本中的键名引用不误判
+PASS 单模型兼容响应完成提交且只调用一次
+PASS 纯文本回复只整理一次并保留原文
+PASS 整理失败不提交状态且保留两次响应
+PASS 重试复用已保存原文不重写场景
+PASS 单模型正文有效但缺状态时独立结算
+PASS 原文保存失败停止后续模型调用
+PASS 截断文本保留但不整理不结算
+PASS content文本块兼容
+PASS 原文脱敏不截断正文
+
+54/54 通过
+Scope: 6 of 9 workspace projects
+packages/content test$ vitest run src
+packages/contracts test$ vitest run
+packages/content test:  RUN  v5.0.3 C:/Users/11954/Desktop/水龙吟专用/项目/Nine-cloud-p3-p6-handover-01-20261014/packages/content
+packages/contracts test:  RUN  v5.0.3 C:/Users/11954/Desktop/水龙吟专用/项目/Nine-cloud-p3-p6-handover-01-20261014/packages/contracts
+packages/content test:  ❯ src/prologue/prologue-v1.test.ts (6 tests | 2 failed) 25ms
+packages/content test:    ❯ P1 prologue candidate pack (6)
+packages/content test:      × binds candidate content and signoff history to the exact current source files 15ms
+packages/content test:      × binds every author-original intake digest to its exact repository source 3ms
+packages/contracts test:  Test Files  2 passed (2)
+packages/contracts test:       Tests  17 passed (17)
+packages/contracts test:    Start at  12:24:38
+packages/contracts test:    Duration  595ms (import 50%, transform 37%, tests 9%, worker 4%)
+packages/contracts test: Done
+packages/content test: file:///C:/Users/11954/Desktop/%E6%B0%B4%E9%BE%99%E5%90%9F%E4%B8%93%E7%94%A8/%E9%A1%B9%E7%9B%AE/Nine-cloud-p3-p6-handover-01-20261014/scripts/audit/build-worldbook-draft-index.mjs:90
+packages/content test:   if (existing !== output) throw new Error(`${indexRelative} is stale; run pnpm worldbook:index:write.`);
+packages/content test:                                  ^
+packages/content test: Error: docs/sources/worldbook-draft-index.json is stale; run pnpm worldbook:index:write.
+packages/content test:     at file:///C:/Users/11954/Desktop/%E6%B0%B4%E9%BE%99%E5%90%9F%E4%B8%93%E7%94%A8/%E9%A1%B9%E7%9B%AE/Nine-cloud-p3-p6-handover-01-20261014/scripts/audit/build-worldbook-draft-index.mjs:90:34
+packages/content test:     at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+packages/content test:     at async node:internal/modules/esm/loader:643:26
+packages/content test:     at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+packages/content test: Node.js v24.19.0
+packages/content test:  ❯ src/worldbook.test.ts (5 tests | 1 failed) 274ms
+packages/content test:    ❯ public Canon runtime (5)
+packages/content test:      × keeps the author-only draft index source-bound and outside player search 79ms
+packages/content test: ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+packages/content test:  FAIL  src/worldbook.test.ts > public Canon runtime > keeps the author-only draft index source-bound and outside player search
+packages/content test: Error: Command failed: C:\Program Files\nodejs\node.exe C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-p3-p6-handover-01-20261014\scripts\audit\build-worldbook-draft-index.mjs --check
+packages/content test: file:///C:/Users/11954/Desktop/%E6%B0%B4%E9%BE%99%E5%90%9F%E4%B8%93%E7%94%A8/%E9%A1%B9%E7%9B%AE/Nine-cloud-p3-p6-handover-01-20261014/scripts/audit/build-worldbook-draft-index.mjs:90
+packages/content test:   if (existing !== output) throw new Error(`${indexRelative} is stale; run pnpm worldbook:index:write.`);
+packages/content test:                                  ^
+packages/content test: Error: docs/sources/worldbook-draft-index.json is stale; run pnpm worldbook:index:write.
+packages/content test:     at file:///C:/Users/11954/Desktop/%E6%B0%B4%E9%BE%99%E5%90%9F%E4%B8%93%E7%94%A8/%E9%A1%B9%E7%9B%AE/Nine-cloud-p3-p6-handover-01-20261014/scripts/audit/build-worldbook-draft-index.mjs:90:34
+packages/content test:     at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+packages/content test:     at async node:internal/modules/esm/loader:643:26
+packages/content test:     at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+packages/content test: Node.js v24.19.0
+packages/content test:  ❯ ../../../../../%E6%B0%B4%E9%BE%99%E5%90%9F%E4%B8%93%E7%94%A8/%E9%A1%B9%E7%9B%AE/Nine-cloud-p3-p6-handover-01-20261014/scripts/audit/build-worldbook-draft-index.mjs:90:34
+packages/content test:  ❯ src/worldbook.test.ts:77:12
+packages/content test:      75|
+packages/content test:      76|     const scriptPath = fileURLToPath(new URL('../../../scripts/audit/b…
+packages/content test:      77|     expect(execFileSync(process.execPath, [scriptPath, '--check'], { e…
+packages/content test:        |            ^
+packages/content test:      78|   });
+packages/content test:      79| });
+packages/content test: ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+packages/content test:  FAIL  src/prologue/prologue-v1.test.ts > P1 prologue candidate pack > binds candidate content and signoff history to the exact current source files
+packages/content test: AssertionError: expected '7677776d40825889694abeff4cb51c33d4fcd…' to be '7083693353002d07d7da9b5880db1c9269058…' // Object.is equality
+packages/content test: Expected: "7083693353002d07d7da9b5880db1c9269058cf8f11be06752304c7795aaa41e"
+packages/content test: Received: "7677776d40825889694abeff4cb51c33d4fcd4a91e70eafcf8baae491635259e"
+packages/content test:  ❯ src/prologue/prologue-v1.test.ts:30:42
+packages/content test:      28|     if (!intake.approvalRecord) throw new Error('P1_CANDIDATE_APPROVAL…
+packages/content test:      29|
+packages/content test:      30|     expect(intake.sourceArtifact.sha256).toBe(sourceHash('../../docs/九…
+packages/content test:        |                                          ^
+packages/content test:      31|     expect(intake.approvalRecord.sha256).toBe(sourceHash('../../docs/a…
+packages/content test:      32|     if (!('priorSignoffEvidence' in intake) || !intake.priorSignoffEvi…
+packages/content test: ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+packages/content test:  FAIL  src/prologue/prologue-v1.test.ts > P1 prologue candidate pack > binds every author-original intake digest to its exact repository source
+packages/content test: AssertionError: expected 'd17911b4b9a7f18c09db7d90636834b965522…' to be '6c390226f731f71c19c7c29d246ffff59d1a9…' // Object.is equality
+packages/content test: Expected: "6c390226f731f71c19c7c29d246ffff59d1a971c28c8da807bace6e613bcc052"
+packages/content test: Received: "d17911b4b9a7f18c09db7d90636834b9655228301e17b34c3548e07e24e36da6"
+packages/content test:  ❯ src/prologue/prologue-v1.test.ts:53:56
+packages/content test:      51|         expect(repoSourceHash(intake.priorSignoffEvidence.path)).toBe(…
+packages/content test:      52|       }
+packages/content test:      53|       expect(repoSourceHash(intake.candidateDocument)).toBe(intake.can…
+packages/content test:        |                                                        ^
+packages/content test:      54|     }
+packages/content test:      55|   });
+packages/content test:  Test Files  2 failed | 4 passed (6)
+packages/content test:       Tests  3 failed | 22 passed (25)
+packages/content test: ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+packages/content test:    Start at  12:24:38
+packages/content test:    Duration  717ms (transform 54%, tests 25%, import 16%, worker 5%)
+packages/content test: Failed
+C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-p3-p6-handover-01-20261014\packages\content:
+[ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL] @jiuxiao/content@1.0.0-alpha.0 test: `vitest run src`
+Exit status 1
+[ELIFECYCLE] Test failed. See above for more details.
+$ pnpm --filter @jiuxiao/domain build && node work/core-regression.cjs && pnpm -r --filter=!@jiuxiao/scene-studio --filter=!@jiuxiao/scene-gate test
+$ tsc -p tsconfig.json

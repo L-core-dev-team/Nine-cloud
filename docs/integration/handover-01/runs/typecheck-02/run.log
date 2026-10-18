@@ -1,0 +1,16 @@
+Scope: 6 of 9 workspace projects
+packages/content typecheck$ tsc -p tsconfig.json --noEmit
+packages/contracts typecheck$ tsc -p tsconfig.json --noEmit
+packages/db typecheck$ tsc -p tsconfig.json --noEmit
+packages/content typecheck: Done
+packages/contracts typecheck: Done
+packages/db typecheck: src/schema.ts(2,29): error TS2591: Cannot find name 'node:buffer'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+packages/db typecheck: Failed
+C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-p3-p6-handover-01-20261014\packages\db:
+[ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL] @jiuxiao/db@1.0.0-alpha.0 typecheck: `tsc -p tsconfig.json --noEmit`
+Exit status 1
+[ELIFECYCLE] Command failed with exit code 1.
+$ pnpm --filter @jiuxiao/contracts build && pnpm --filter @jiuxiao/content build && pnpm --filter @jiuxiao/domain build && pnpm -r --filter=!@jiuxiao/scene-studio --filter=!@jiuxiao/scene-gate typecheck
+$ tsc -p tsconfig.json
+$ tsc -p tsconfig.json
+$ tsc -p tsconfig.json

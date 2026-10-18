@@ -1,0 +1,11 @@
+{
+  "name": "bytefix-final-db-state-01",
+  "baselineOrCandidate": "9587d05da09171e3bc75de309a8f65b8d601b8a6",
+  "command": [
+    "node",
+    "scripts/handover-diagnose.cjs"
+  ],
+  "started": "2026-10-15T04:41:36.048Z",
+  "finished": "2026-10-15T04:41:36.233Z",
+  "exitCode": 0
+}

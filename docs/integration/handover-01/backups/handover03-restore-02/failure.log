@@ -1,0 +1,15 @@
+Error: Command failed: J:/pg18/pgsql/bin/pg_restore.exe -h 127.0.0.1 -p 55461 -U handover_tester --no-password --exit-on-error --single-transaction --no-owner --no-privileges -d jiuxiao_test_handover-restore-1792145881782 J:\backups\handover03-restore-02\consistent.dump
+pg_restore: error: could not execute query: ERROR:  insert or update on table "narrative_generation_requests" violates foreign key constraint "narrative_generation_requests_context_id_save_id_request_k_fkey"
+DETAIL:  Key (context_id, save_id, request_key)=(e8b87176-cb89-437c-aa44-8d05b7fd7ddd, handover-8c5ae328-aa8a-40fa-ad54-174d5be69ec6, 35da402a-eb89-4916-b0a8-29416fb8cd33) is not present in table "narrative_context_snapshots".
+Command was: ALTER TABLE ONLY public.narrative_generation_requests
+    ADD CONSTRAINT narrative_generation_requests_context_id_save_id_request_k_fkey FOREIGN KEY (context_id, save_id, request_key) REFERENCES public.narrative_context_snapshots(id, save_id, request_key);
+
+
+
+    at genericNodeError (node:internal/errors:985:15)
+    at wrappedFn (node:internal/errors:539:14)
+    at checkExecSyncError (node:child_process:942:11)
+    at execFileSync (node:child_process:978:15)
+    at tool (C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-p3-p6-handover-01-20261014\scripts\handover-backup.cjs:7:71)
+    at C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-p3-p6-handover-01-20261014\scripts\handover-backup.cjs:18:18
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)

@@ -320,6 +320,8 @@ async function ready(url) {
       assert.equal(await page.locator('h2').innerText(), `测试修士-${width}`);
       assert.match(await page.locator('body').innerText(), /\d+ 项待处理/);
       const beforeMissingLink = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      // CloudGame verifies the current owner before opening its isolated display cache.
+      await page.route('**/api/auth/session', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ account: { id: 'missing-link-fixture-owner', kind: 'guest' } }) }));
       for (const invalidId of ['missing-save-link', 'missing-save-%E4%B8%AD%E6%96%87']) {
         await page.goto(`http://127.0.0.1:${webPort}/game/${invalidId}`);
         await page.waitForFunction(() => document.documentElement.dataset.jxStorageHydrated === 'true');
@@ -331,6 +333,7 @@ async function ready(url) {
         await page.getByRole('button', { name: '进入世界', exact: true }).waitFor();
         assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), beforeMissingLink, 'invalid link navigation and refresh must not create or modify saves');
       }
+      await page.unroute('**/api/auth/session');
       await page.goto(`http://127.0.0.1:${webPort}/game/${onceCreated[0].saveId}`);
       await page.locator('.game-topline h1').filter({ hasText: `测试修士-${width}` }).waitFor();
       const supplementInput = page.locator('.game-tools input[type="file"]');
