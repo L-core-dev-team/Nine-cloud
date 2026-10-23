@@ -1,5 +1,5 @@
 import type { Hono } from 'hono';
-import { ActionIntentSchema, type TurnReceipt } from '@jiuxiao/contracts';
+import { ActionIntentSchema, TurnReceiptSchema, type TurnReceipt } from '@jiuxiao/contracts';
 import { readGameMinute } from '@jiuxiao/domain';
 import { readJson, type CloudSaveRouteAuth } from './saves.js';
 import { serverTurnHttpResponse } from './turn-http.js';
@@ -16,7 +16,22 @@ export function mountGames(
   auth: CloudSaveRouteAuth,
   turns?: ServerTurnService,
   memoryRecall?: { reader: AuthorizedRecallPageReader },
+  readReceipt?: (owner: string, saveId: string, key: string) => Promise<TurnReceipt | null>,
 ) {
+  // Recovery is read-only. Absence is NOT proof that an in-flight turn was never sent.
+  if (readReceipt) app.get('/api/games/:saveId/receipts/:key', async c => {
+    const owner = await resolveOwner(c.req.raw, c.req.header('x-jiuxiao-account'), auth);
+    if (!owner) return c.json({ code: 'UNAUTHENTICATED' }, 401);
+    if (!/^[a-f\d]{8}(-[a-f\d]{4}){3}-[a-f\d]{12}$/i.test(c.req.param('key'))) return c.json({ code: 'INVALID_TURN' }, 400);
+    try {
+      const game = await service.read(owner, c.req.param('saveId'));
+      if (game.status === 'not_found') return c.json({ code: 'NOT_FOUND' }, 404);
+      const raw = await readReceipt(owner, game.save.saveId, c.req.param('key'));
+      const receipt = raw ? TurnReceiptSchema.parse(raw) : null;
+      if (receipt && (receipt.saveId !== game.save.saveId || receipt.idempotencyKey !== c.req.param('key'))) throw Error('INVALID_RECEIPT');
+      return c.json({ status: receipt ? 'confirmed' : 'unknown', receipt, revision: game.save.revision });
+    } catch { return c.json({ code: 'GAME_UNAVAILABLE' }, 503); }
+  });
   app.get('/api/games/:saveId', async c => {
     const owner = await resolveOwner(c.req.raw, c.req.header('x-jiuxiao-account'), auth);
     if (!owner) return c.json({ code: 'UNAUTHENTICATED' }, 401);
