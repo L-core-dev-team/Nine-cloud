@@ -110,7 +110,15 @@ jobs:
         run: pnpm test:integration
         env:
           TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jiuxiao_test
+      - name: Test read-only game receipt recovery with PostgreSQL
+        run: pnpm --filter @jiuxiao/api exec vitest run src/routes/game-recovery.integration.test.ts
+        env:
+          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jiuxiao_test
       - run: pnpm exec playwright install --with-deps chromium
+      - name: Test local history provenance in Chromium
+        run: |
+          export PLAYWRIGHT_BROWSER_EXECUTABLE="$(node -p "require('playwright').chromium.executablePath()")"
+          node tests/e2e/local-history-provenance.cjs
       - run: pnpm test:e2e
         env:
           TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jiuxiao_test
@@ -149,6 +157,7 @@ jobs:
             test-results/review-bundle/
             test-results/cloud/
             test-results/turns/
+            test-results/r3-minimal/
 
   badge:
     # The repository is private, so the native Actions badge 404s for
