@@ -19,6 +19,7 @@ body:has(.game-frame) { overflow: hidden; }
 .game-frame .story-reading { min-height: 0; overflow-y: auto; overscroll-behavior-y: contain; scrollbar-gutter: stable; padding: var(--jx-space-4); }
 .game-frame .cloud-game-state { display: flex; flex-wrap: wrap; gap: var(--jx-space-2) var(--jx-space-4); }
 .game-frame .cloud-game-state p { margin: 0; }
+.game-frame .cloud-game [aria-label='行动叙述'] > p { white-space: pre-wrap; overflow-wrap: anywhere; word-break: normal; }
 .game-frame .cloud-game code { overflow-wrap: anywhere; }
 .game-frame .cloud-game-suggestions { max-height: 120px; overflow-y: auto; color: var(--jx-text-body); background: #0b1b29; border-radius: var(--jx-radius-control); padding: var(--jx-space-2); }
 :root[data-theme='day'] .game-frame .cloud-game-suggestions { color: #283c49; background: #faf9f4; }
