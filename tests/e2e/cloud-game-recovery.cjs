@@ -22,11 +22,22 @@ let server, browser;
   await context.route('**/*', route => new URL(route.request().url()).origin === base ? route.continue() : route.abort());
   context.on('page', tab => tab.on('pageerror', error => errors.push(error.message)));
   let owner = 'owner-a', mode = 'lost', posts = [], confirmed = null;
+  let listMode = 'normal', releaseList, gameReadStatus = 200;
   const save = { schemaVersion: 1, saveId: 'recovery-fixture', canonVersion: 'fixture', ruleVersion: 'fixture', memoryPolicyVersion: 'fixture', revision: 0, state: { playerId: 'fixture', locationId: 'fixture', elapsedMinutes: 0, facts: {} } };
+  const policy = { mode: 'continue', policyVersion: 'fixture', schemaVersion: 1, clockBasis: 'game-minute+npc-grant-sequence-v1', policyArtifactHash: 'sha256:' + 'a'.repeat(64), cueDictionaryHash: 'sha256:' + 'b'.repeat(64), normalizerVersion: 'fixture', retrievalVersion: 'fixture', visibilityPolicyVersion: 'fixture', visibilityPolicyHash: 'sha256:' + 'c'.repeat(64), createdAtRevision: 0 };
+  const lobbyA = [
+    { ...save, saveId: 'native-v1' },
+    { ...save, schemaVersion: 2, saveId: 'native-v2', memoryMode: 'continue', memoryPolicy: policy },
+    { ...save, schemaVersion: 3, saveId: 'native-v3', memoryMode: 'continue', memoryPolicy: policy, canonArtifactHash: 'sha256:' + 'd'.repeat(64), branchId: 'root', parentBranchId: null, forkRevision: 0, createdPolicyVersion: 'fixture', sourceMigrationId: null },
+    { ...save, saveId: 'backup-only', state: { ...save.state, facts: { archiveKind: 'local-untrusted-v1' } } },
+    { ...save, saveId: 'rules-off' },
+  ];
   const receipt = request => ({ idempotencyKey: request.idempotencyKey, saveId: save.saveId, requestFingerprint: require('./game-receipt-fixture.cjs')(save, request), resultingRevision: 0, decision: { status: 'rejected', revision: 0, code: 'FIXTURE', message: '未推进世界。'.repeat(500) } });
   await context.route('**/api/**', async route => {
     const path = new URL(route.request().url()).pathname;
     traffic.push({ path, method: route.request().method() });
+    if (path === '/api/auth/session' && owner === null) return route.fulfill({ status: 401, contentType: 'application/json', body: '{"code":"UNAUTHENTICATED"}' });
+    if ((path === '/api/saves' || path.startsWith('/api/games/')) && route.request().headers()['x-jiuxiao-account'] && route.request().headers()['x-jiuxiao-account'] !== owner) return route.fulfill({ status: 401, contentType: 'application/json', body: '{"code":"UNAUTHENTICATED"}' });
     const readError = /^\/api\/games\/http-(401|404|503)$/.exec(path);
     if (readError) return route.fulfill({ status: Number(readError[1]), contentType: 'application/json', body: JSON.stringify({ code: readError[1] === '401' ? 'UNAUTHENTICATED' : readError[1] === '404' ? 'NOT_FOUND' : 'GAME_UNAVAILABLE' }) });
     if (path === '/api/games/rules-off/action-suggestions') return route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ code: 'RULES_NOT_READY' }) });
@@ -39,7 +50,12 @@ let server, browser;
     else if (path === '/api/account/operation/verify') body = { phase: 'ready' };
     else if (path === '/api/account/operation/complete') body = { ok: true };
     else if (path === '/api/save-index') body = { items: [], nextOffset: null };
-    else if (path === '/api/saves') body = { saves: [] };
+    else if (path === '/api/saves') {
+      if (listMode === 'failure') return route.fulfill({ status: 503, contentType: 'application/json', body: '{"code":"CLOUD_UNAVAILABLE"}' });
+      const snapshot = owner === 'lobby-a' ? lobbyA : owner === 'lobby-b' ? [{ ...save, saveId: 'owner-b-save' }] : [];
+      if (listMode === 'delayed') await new Promise(resolve => { releaseList = resolve; });
+      body = { saves: snapshot };
+    }
     else if (path.includes('/trash')) body = { archives: [] };
     else if (path.endsWith('/action-suggestions')) body = { actions: [] };
     else if (path.includes('/receipts/')) body = { status: confirmed ? 'confirmed' : 'unknown', receipt: confirmed, revision: 0 };
@@ -48,10 +64,76 @@ let server, browser;
       if (mode === 'lost') return route.abort('failed');
       if (mode === 'revision') { save.revision = 1; return route.fulfill({ status: 409, contentType: 'application/json', body: JSON.stringify({code:'REVISION_CONFLICT',currentRevision:1}) }); }
       body = { receipt: receipt(request) };
-    } else body = { save: { ...save, saveId: path.split('/').at(-1) } };
+    } else {
+      const id = path.split('/').at(-1);
+      if (gameReadStatus !== 200 && path.startsWith('/api/games/')) return route.fulfill({ status: gameReadStatus, contentType: 'application/json', body: JSON.stringify({ code: gameReadStatus === 404 ? 'NOT_FOUND' : 'GAME_UNAVAILABLE' }) });
+      body = { save: lobbyA.find(item => item.saveId === id) || { ...save, saveId: id } };
+    }
     await route.fulfill({ contentType: 'application/json', body: JSON.stringify(body) });
   });
   const page = await context.newPage(); const input = page.getByTestId('p2-action-input');
+  if (process.env.UI_RECOVERY_SCOPE === 'lobby') {
+    owner = 'lobby-a';
+    const localCollision = { schemaVersion: 1, saveId: 'native-v1', name: '合成本地同号', createdAt: '2026-10-25T00:00:00.000Z', updatedAt: '2026-10-25T00:00:00.000Z', revision: 0, canonVersion: 'fixture', ruleVersion: 'fixture', memoryPolicyVersion: 'fixture', character: {}, location: 'fixture', status: 'pending_rules', messages: [] };
+    await context.addInitScript(value => { if (!localStorage.getItem('jiuxiao_1_local_saves')) localStorage.setItem('jiuxiao_1_local_saves', JSON.stringify([value])); }, localCollision);
+    const region = page.getByRole('region', { name: '云端规则存档', exact: true });
+    const continueButton = id => region.getByRole('button', { name: '继续云端存档 ' + id, exact: true });
+    const refresh = () => region.getByRole('button', { name: '重新读取云端存档', exact: true }).click();
+    await page.goto(base + '/lobby'); await continueButton('native-v3').waitFor();
+    assert.equal(await region.locator('.home-save').count(), 4);
+    assert.equal(await continueButton('backup-only').count(), 0);
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
+    if (output) { fs.mkdirSync(output, { recursive: true }); await region.scrollIntoViewIfNeeded(); await page.screenshot({ path: join(output, 'lobby-' + width + '.png') }); }
+    for (const id of ['native-v1', 'native-v2', 'native-v3']) {
+      await continueButton(id).click(); await page.waitForURL(base + '/game/' + id);
+      await page.getByTestId('p2-revision').waitFor();
+      if (id === 'native-v1') {
+        await page.reload(); await page.getByTestId('p2-revision').waitFor(); assert.equal(await page.locator('#player-intent').count(), 0, 'Explicit cloud entry and reload do not open a same-ID local save');
+        await page.locator('.game-rail').getByRole('button', { name: '世界设定', exact: true }).click();
+        await page.waitForURL(base + '/world'); assert.equal(await page.locator('.world-return-bar strong').count(), 0, 'Cloud reader does not attach same-ID local character metadata');
+        await page.getByRole('button', { name: '返回当前行旅', exact: true }).click(); await page.getByTestId('p2-revision').waitFor();
+      }
+      await page.getByRole('button', { name: '返回山门', exact: true }).click();
+      await page.waitForURL(base + '/lobby'); await continueButton(id).waitFor();
+    }
+    await page.locator('.lobby-actions').getByRole('button', { name: /继续游玩/ }).click();
+    await page.locator('#player-intent').waitFor(); assert.equal(await page.getByTestId('p2-cloud-game').count(), 0);
+    await page.goto(base + '/lobby'); await continueButton('rules-off').waitFor();
+    await continueButton('rules-off').click();
+    await page.getByText('服务器规则尚未就绪，行动输入已停用。', { exact: true }).waitFor();
+    assert.equal(await input.isDisabled(), true);
+    await page.getByRole('button', { name: '返回山门', exact: true }).click(); await continueButton('native-v1').waitFor();
+    gameReadStatus = 404; await continueButton('native-v1').click();
+    await region.getByRole('status').filter({ hasText: '当前账号下找不到这份存档' }).waitFor();
+    assert.equal(new URL(page.url()).pathname, '/lobby'); assert.equal(await region.locator('.home-save').count(), 0);
+    gameReadStatus = 503; await refresh(); await continueButton('native-v1').waitFor(); await continueButton('native-v1').click();
+    await region.getByRole('status').filter({ hasText: '暂时无法进入' }).waitFor();
+    gameReadStatus = 200; await refresh(); await continueButton('native-v1').waitFor();
+    owner = 'lobby-b'; await continueButton('native-v1').click();
+    await region.getByRole('status').filter({ hasText: '账号已改变' }).waitFor();
+    assert.equal(await region.locator('.home-save').count(), 0); assert.equal(new URL(page.url()).pathname, '/lobby');
+    await refresh(); await continueButton('owner-b-save').waitFor(); assert.equal(await continueButton('native-v1').count(), 0);
+    owner = 'lobby-a'; await page.evaluate(() => dispatchEvent(new Event('focus'))); await continueButton('native-v1').waitFor();
+    assert.equal(await continueButton('owner-b-save').count(), 0);
+    listMode = 'delayed'; await refresh();
+    await page.waitForFunction(() => document.querySelector('[aria-label="云端规则存档"] .home-save') === null);
+    for (let attempt = 0; attempt < 100 && !releaseList; attempt++) await new Promise(resolve => setTimeout(resolve, 20));
+    assert.equal(typeof releaseList, 'function');
+    owner = 'lobby-b'; releaseList(); listMode = 'normal';
+    await region.getByRole('status').filter({ hasText: '请登录创建存档时的账号' }).waitFor();
+    assert.equal(await region.locator('.home-save').count(), 0, 'Late A list cannot render after account changed to B');
+    owner = 'lobby-empty'; await refresh(); await region.getByRole('status').filter({ hasText: '暂无云端规则存档' }).waitFor();
+    listMode = 'failure'; await refresh(); await region.getByRole('status').filter({ hasText: '列表暂时无法读取' }).waitFor();
+    assert.equal(await region.locator('.home-save').count(), 0);
+    listMode = 'normal'; owner = null; await refresh(); await region.getByRole('status').filter({ hasText: '请登录创建存档时的账号' }).waitFor();
+    const local = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+    assert.deepEqual(JSON.parse(local).saves, [localCollision], 'Cloud games are not converted to local saves; original same-ID local save stays intact');
+    assert.ok(traffic.every(request => request.method === 'GET'));
+    assert.deepEqual(errors, []);
+    if (output) fs.writeFileSync(join(output, 'lobby-results-' + width + '.json'), JSON.stringify({ status: 'PASS', width, browser: browser.version(), scope: 'SYNTHETIC_EXISTING_API', v1v2v3: true, backupExcluded: true, gameGetBeforeNavigation: true, accountSwitchAndLateResponse: true, read404503: true, rulesUnavailable: true, emptyAndSignedOut: true, localSavesUntouched: true, requests: traffic, posts: 0, errors }, null, 2) + '\n');
+    console.log('PASS: existing /api/saves lobby continuation, v1/v2/v3, backup exclusion, owner changes, late response, 404/503, empty, rules gate; zero POST.');
+    await context.close(); return;
+  }
   const open = async (tab, id = save.saveId) => { await tab.goto(`${base}/game/${id}`); await tab.waitForFunction(() => { const t = document.querySelector('[data-testid="p2-action-input"]'); return t && !t.disabled; }); };
   const draftSaved = async (tab, text) => {
     await tab.waitForFunction(async text => {

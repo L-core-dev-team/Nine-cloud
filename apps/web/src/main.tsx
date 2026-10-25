@@ -1,7 +1,7 @@
 import {claimCharacterDraftId} from './idb';
 import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { SAVE_SCHEMA_VERSION, SaveEnvelopeSchema, type MemoryMode } from '@jiuxiao/contracts';
+import { SAVE_SCHEMA_VERSION, SaveEnvelopeSchema, type MemoryMode, type SaveEnvelope } from '@jiuxiao/contracts';
 import { SCENE_MANIFEST, sceneForLocation, type SceneId } from '@jiuxiao/content/scenes';
 import type { CanonRuntimeEntry } from '@jiuxiao/content/worldbook';
 import { AiSettings } from './ai-settings';
@@ -55,7 +55,7 @@ function canonCategoryLabel(category: string): string {
 }
 
 const route = () => window.location.pathname.replace(/\/+$/, '') || '/';
-const go = (path: string) => {
+const go = (path: string, navigationState: Record<string, unknown> = {}) => {
   const sourceRoute = route();
   if (sourceRoute.startsWith('/game/')) {
     const sourceSaveId = sourceRoute.slice('/game/'.length);
@@ -67,7 +67,8 @@ const go = (path: string) => {
     try { sessionStorage.setItem('jiuxiao_active_save_id', decodeURIComponent(destination.slice('/game/'.length))); } catch { /* Route navigation does not depend on this preference. */ }
   }
   const returnTo = sourceRoute;
-  history.pushState(destination === '/world' || destination === '/settings/ai' ? { returnTo } : {}, '', destination);
+  const returnToCloudGame = sourceRoute.startsWith('/game/') && history.state?.cloudGame === true;
+  history.pushState(destination === '/world' || destination === '/settings/ai' ? { ...navigationState, returnTo, returnToCloudGame } : navigationState, '', destination);
   // Forward navigation starts at the top; returning via history.back() keeps
   // the browser's native per-entry scroll restoration for the reader flow.
   window.scrollTo(0, 0);
@@ -164,6 +165,56 @@ function Landing() {
 }
 
 function WorldHub({ saves }: { saves: LocalSave[] }) {
+  const [cloudGames, setCloudGames] = useState<SaveEnvelope[]>([]);
+  const [cloudOwner, setCloudOwner] = useState<string | null>(null);
+  const [cloudNotice, setCloudNotice] = useState('正在读取云端存档……');
+  const [cloudVersion, setCloudVersion] = useState(0);
+  const [cloudBusy, setCloudBusy] = useState(false);
+  const cloudLoad = useRef<AbortController | null>(null);
+  const openingCloud = useRef(false);
+  useEffect(() => {
+    const abort = new AbortController(); cloudLoad.current = abort;
+    setCloudGames([]); setCloudOwner(null); setCloudNotice('正在读取云端存档……');
+    void (async () => {
+      const session = await cloudRequest('/api/auth/session', 'GET', undefined, undefined, abort.signal);
+      const owner = (session.account as { id?: unknown } | undefined)?.id;
+      if (typeof owner !== 'string' || !owner) throw new CloudHttpError(401, 'UNAUTHENTICATED');
+      const result = await cloudRequest('/api/saves', 'GET', undefined, owner, abort.signal, 32_000_000);
+      if (!Array.isArray(result.saves)) throw new Error('INVALID_CLOUD_RESPONSE');
+      const games = result.saves.map(value => SaveEnvelopeSchema.parse(value)).filter(value => value.state.facts.archiveKind !== 'local-untrusted-v1');
+      const current = await cloudRequest('/api/auth/session', 'GET', undefined, undefined, abort.signal);
+      if ((current.account as { id?: unknown } | undefined)?.id !== owner) throw new CloudHttpError(401, 'UNAUTHENTICATED');
+      if (abort.signal.aborted) return;
+      setCloudOwner(owner); setCloudGames(games);
+      setCloudNotice(games.length ? '当前账号的云端规则存档。进入后将重新核对存档状态。' : '当前账号暂无云端规则存档。');
+    })().catch(error => {
+      if (!abort.signal.aborted) setCloudNotice(error instanceof CloudHttpError && error.status === 401 ? '请登录创建存档时的账号，再读取云端存档。' : '云端存档列表暂时无法读取，请稍后重试。');
+    });
+    const refresh = () => setCloudVersion(value => value + 1);
+    const visible = () => { if (document.visibilityState === 'visible') refresh(); };
+    const channel = typeof BroadcastChannel === 'undefined' ? null : new BroadcastChannel('jiuxiao-cloud-game-session');
+    if (channel) channel.onmessage = refresh;
+    window.addEventListener('focus', refresh); document.addEventListener('visibilitychange', visible);
+    return () => { abort.abort(); channel?.close(); window.removeEventListener('focus', refresh); document.removeEventListener('visibilitychange', visible); };
+  }, [cloudVersion]);
+  async function continueCloudGame(saveId: string) {
+    const abort = cloudLoad.current;
+    if (!cloudOwner || !abort || abort.signal.aborted || openingCloud.current) return;
+    openingCloud.current = true; setCloudBusy(true);
+    try {
+      const session = await cloudRequest('/api/auth/session', 'GET', undefined, undefined, abort.signal);
+      if ((session.account as { id?: unknown } | undefined)?.id !== cloudOwner) throw new CloudHttpError(401, 'UNAUTHENTICATED');
+      const result = await cloudRequest(`/api/games/${encodeURIComponent(saveId)}`, 'GET', undefined, cloudOwner, abort.signal);
+      const game = SaveEnvelopeSchema.parse(result.save);
+      if (game.saveId !== saveId || game.state.facts.archiveKind === 'local-untrusted-v1') throw new Error('INVALID_GAME_RESPONSE');
+      if (!abort.signal.aborted) go(`/game/${encodeURIComponent(saveId)}`, { cloudGame: true });
+    } catch (error) {
+      if (!abort.signal.aborted) {
+        setCloudGames([]); setCloudOwner(null);
+        setCloudNotice(error instanceof CloudHttpError && error.status === 401 ? '账号已改变，请重新读取当前账号的云端存档。' : error instanceof CloudHttpError && error.status === 404 ? '当前账号下找不到这份存档，请重新读取列表。' : '暂时无法进入这份存档，请稍后重新读取。');
+      }
+    } finally { openingCloud.current = false; setCloudBusy(false); }
+  }
   let activeSaveId = '';
   try { activeSaveId = sessionStorage.getItem('jiuxiao_active_save_id') || ''; } catch { /* Use the first available save. */ }
   const save = saves.find(item => item.saveId === activeSaveId) || saves[0];
@@ -181,6 +232,11 @@ function WorldHub({ saves }: { saves: LocalSave[] }) {
         {saves.length > 0 && <button className="secondary" onClick={() => go('/saves')}>管理存档<span>改名、导出或删除本地档案</span></button>}
         <button className="quiet-action" onClick={() => save ? go(`/game/${save.saveId}`) : go('/new')}>跳过设置<span>{save ? '不调整 AI，直接回到最近存档' : '不配置 AI，先创建角色'}</span></button>
       </div>
+    </section>
+    <section className="home-saves" aria-label="云端规则存档">
+      <h2>继续云端行旅</h2><p role="status">{cloudNotice}</p>
+      <div className="home-save-grid">{cloudGames.map(game => <button className="home-save" key={game.saveId} disabled={cloudBusy} aria-label={`继续云端存档 ${game.saveId}`} onClick={() => void continueCloudGame(game.saveId)}><strong>云端规则存档</strong><span>编号 <code style={{ overflowWrap: 'anywhere' }}>{game.saveId}</code></span><span>存档版本 {game.revision}</span></button>)}</div>
+      <div className="actions"><button className="secondary" disabled={cloudBusy} onClick={() => setCloudVersion(value => value + 1)}>重新读取云端存档</button><button className="secondary" onClick={() => go('/settings/cloud')}>账号与云档</button></div>
     </section>
     {saves.length > 1 && <section className="home-saves">
       <h2>其他行囊 <small>{saves.length - 1} 份本地存档</small></h2>
@@ -804,7 +860,7 @@ function App() {
     }).catch(() => setNotice('无法读取该补充资料，存档未修改。')).finally(() => supplementBusySaveIdsRef.current.delete(save.saveId));
   }
   const currentRoute = route();
-  const game = currentRoute.startsWith('/game/') ? saves.find(save => save.saveId === currentRoute.split('/')[2]) : undefined;
+  const game = currentRoute.startsWith('/game/') && history.state?.cloudGame !== true ? saves.find(save => save.saveId === currentRoute.split('/')[2]) : undefined;
   let cloudSaveId: string | null = null;
   if (currentRoute.startsWith('/game/') && !game) {
     try { cloudSaveId = decodeURIComponent(currentRoute.slice('/game/'.length)); }
@@ -870,8 +926,8 @@ function App() {
       if (save.schemaVersion !== 3 || save.memoryMode !== memoryMode || save.revision !== 0) throw new Error('INVALID_GAME_RESPONSE');
       setNotice(createdGuest ? '本局游客会话已建立，有效期 7 天。请在到期前刷新或升级邮箱；丢失会话后无法凭存档编号找回云档。'
         : '服务端规则存档已建立。事实状态保存在服务端数据库。');
-      go(`/game/${encodeURIComponent(save.saveId)}`);
-    }} onBack={() => go('/lobby')} /> : currentRoute === '/intro' ? <Introduction onStart={() => go('/new')} onWorld={() => go('/world')} /> : currentRoute === '/world' ? <World onClose={returnFromReading} save={returningToJourney ? saves.find(item => worldReturnTarget === `/game/${item.saveId}`) : activeSave} onImportSupplement={importSupplement} isReturningToJourney={returningToJourney} /> : currentRoute === '/settings/ai' ? <AiSettings onClose={returnFromReading} /> : currentRoute === '/settings/cloud' ? <CloudSettings saves={saves} onRestore={async archive => {
+      go(`/game/${encodeURIComponent(save.saveId)}`, { cloudGame: true });
+    }} onBack={() => go('/lobby')} /> : currentRoute === '/intro' ? <Introduction onStart={() => go('/new')} onWorld={() => go('/world')} /> : currentRoute === '/world' ? <World onClose={returnFromReading} save={returningToJourney ? history.state?.returnToCloudGame === true ? undefined : saves.find(item => worldReturnTarget === `/game/${item.saveId}`) : activeSave} onImportSupplement={importSupplement} isReturningToJourney={returningToJourney} /> : currentRoute === '/settings/ai' ? <AiSettings onClose={returnFromReading} /> : currentRoute === '/settings/cloud' ? <CloudSettings saves={saves} onRestore={async archive => {
     const copied = { ...archive, saveId: createSaveId(), name: `${archive.name}（云端副本）`, updatedAt: new Date().toISOString() };
     const expected = readSaves(); const result = await commitSaves(expected, [copied, ...expected]);
     setSaves(result.saves); if (result.ok) setNotice(commitSuccessMessage(result, '云端档已恢复为新副本。')); return result.ok ? copied : null;
