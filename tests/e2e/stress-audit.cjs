@@ -123,25 +123,156 @@ async function mobile(base){
     await ctx.close();
   }
 }
-async function recovery(base){
+async function recovery(base,localOnly=false){
   const {ctx,page}=await context();const game=await seed(page,base,'合成恢复存档');
   const key='jiuxiao_1_local_saves_v2';
   await page.locator('#player-intent').fill('合成未提交草稿');await page.locator('#player-intent').blur();await page.waitForTimeout(400);
   const snapshot=await page.evaluate(key=>localStorage.getItem(key),key);assert.ok(snapshot);
-  for(let n=0;n<12;n++)await test(`save-refresh-${n}`,async()=>{await page.reload();await page.locator('#player-intent').waitFor();assert.equal(await page.evaluate(key=>localStorage.getItem(key),key),snapshot);assert.equal(await page.locator('#player-intent').inputValue(),'合成未提交草稿');},page);
-  for(let n=0;n<3;n++)await test(`invalid-import-${n}`,async()=>{
+  for(let n=0;n<(localOnly?2:20);n++)await test(`save-refresh-${n}`,async()=>{await page.reload();await page.locator('#player-intent').waitFor();assert.equal(await page.evaluate(key=>localStorage.getItem(key),key),snapshot);assert.equal(await page.locator('#player-intent').inputValue(),'合成未提交草稿');},page);
+  for(let n=0;n<(localOnly?0:3);n++)await test(`invalid-import-${n}`,async()=>{
     await page.getByRole('button',{name:'菜单',exact:true}).click();await page.locator('aside input[type=file]').setInputFiles({name:`synthetic-invalid-${n}.json`,mimeType:'application/json',buffer:Buffer.from('{ invalid synthetic json')});
     await page.waitForTimeout(300);assert.equal(await page.locator('.import-preview').count(),0);assert.equal(await page.evaluate(key=>localStorage.getItem(key),key),snapshot);
     const text=await page.locator('body').innerText();assert.match(text,/失败|无法|错误|不是|解析/);return {protected:true};
   },page);
   let active=page;
-  for(let n=0;n<3;n++) {
+  for(let n=0;n<(localOnly?2:10);n++) {
     await active.locator('#player-intent').fill('合成未提交草稿');await active.close();
     active=await ctx.newPage();await active.goto(game);await active.locator('#player-intent').waitFor();
     await test(`tab-interruption-save-${n}`,async()=>{assert.equal(await active.evaluate(key=>localStorage.getItem(key),key),snapshot);return {saveProtected:true};},active);
     await test(`tab-interruption-draft-${n}`,async()=>{assert.equal(await active.locator('#player-intent').inputValue(),'合成未提交草稿');},active);
   }
+  const draftPrefix='jiuxiao_1_action_drafts_v2_';
+  const input=()=>active.locator('#player-intent');
+  await test('draft-two-save-isolation',async()=>{
+    await input().fill('存档甲独立草稿');
+    const otherGame=await seed(active,base,'合成另一个本地存档');await input().fill('存档乙独立草稿');
+    for(let n=0;n<3;n++){
+      await active.goto(game);await input().waitFor();assert.equal(await input().inputValue(),'存档甲独立草稿');
+      await active.goto(otherGame);await input().waitFor();assert.equal(await input().inputValue(),'存档乙独立草稿');
+    }
+    await active.goto(game);await input().waitFor();
+  },active);
+  await test('draft-two-tabs-preserve-both-editors',async()=>{
+    await input().fill('标签甲未提交文本');
+    const other=await ctx.newPage();await other.goto(game);await other.locator('#player-intent').waitFor();
+    assert.equal(await other.locator('#player-intent').inputValue(),'标签甲未提交文本');
+    await other.locator('#player-intent').fill('标签乙未提交文本');
+    await input().fill('标签甲第二版文本');
+    assert.equal(await other.locator('#player-intent').inputValue(),'标签乙未提交文本');
+    await other.getByRole('region',{name:'其他未提交草稿'}).waitFor();
+    assert.equal(await input().inputValue(),'标签甲第二版文本');
+    await other.close();await active.close();active=await ctx.newPage();await active.goto(game);await input().waitFor();
+    const texts=await active.evaluate(prefix=>Object.keys(localStorage).filter(k=>k.startsWith(prefix)).map(k=>JSON.parse(localStorage.getItem(k)).text),draftPrefix);
+    assert.ok(texts.includes('标签甲第二版文本'));assert.ok(texts.includes('标签乙未提交文本'));
+    await active.getByRole('region',{name:'其他未提交草稿'}).locator('summary').first().click();
+    await active.getByRole('button',{name:'恢复这份草稿'}).first().click();assert.equal(await input().inputValue(),'标签乙未提交文本');
+  },active);
+  const isolatedGame=await seed(active,base,'合成草稿异常与队列');
+  await test('draft-write-failure-retains-input-and-recovery-copy',async()=>{
+    await input().fill('上次可靠草稿');
+    await active.evaluate(()=>{window.__draftSet=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(k.startsWith('jiuxiao_1_action_drafts_v2_'))throw new DOMException('synthetic quota','QuotaExceededError');return window.__draftSet.call(this,k,v);};});
+    await input().fill('写入失败仍在输入框');assert.equal(await input().inputValue(),'写入失败仍在输入框');
+    await active.getByRole('status').filter({hasText:'草稿未能可靠保存'}).waitFor();
+    const texts=await active.evaluate(prefix=>Object.keys(localStorage).filter(k=>k.startsWith(prefix)).map(k=>JSON.parse(localStorage.getItem(k)).text),draftPrefix);
+    assert.ok(texts.includes('上次可靠草稿'));
+    await active.evaluate(()=>{Storage.prototype.setItem=window.__draftSet;});await input().fill('恢复写入后的草稿');
+  },active);
+  await test('draft-corruption-preserves-formal-save',async()=>{
+    // Establish the existing IDB hydration order before comparing exact mirror bytes.
+    await active.reload();await input().waitFor();await active.waitForFunction(()=>document.documentElement.dataset.jxStorageHydrated==='true');
+    const before=await active.evaluate(key=>localStorage.getItem(key),key);
+    const saveId=decodeURIComponent(new URL(isolatedGame).pathname.split('/').pop());
+    await active.evaluate(({prefix,saveId})=>localStorage.setItem(prefix+encodeURIComponent(saveId)+':broken','{invalid'),{prefix:draftPrefix,saveId});
+    try {
+      await active.reload();await input().waitFor();await active.waitForFunction(()=>document.documentElement.dataset.jxStorageHydrated==='true');assert.equal(await input().inputValue(),'恢复写入后的草稿');
+      await active.getByRole('status').filter({hasText:'草稿记录损坏'}).waitFor();assert.equal(await active.evaluate(key=>localStorage.getItem(key),key),before);
+      assert.equal(await active.evaluate(({prefix,saveId})=>localStorage.getItem(prefix+encodeURIComponent(saveId)+':broken'),{prefix:draftPrefix,saveId}),'{invalid');
+    } finally {await active.evaluate(({prefix,saveId})=>localStorage.removeItem(prefix+encodeURIComponent(saveId)+':broken'),{prefix:draftPrefix,saveId});}
+  },active);
+  await test('draft-legacy-conflict-retains-both',async()=>{
+    const saveId=decodeURIComponent(new URL(isolatedGame).pathname.split('/').pop());
+    await active.evaluate(saveId=>sessionStorage.setItem('jiuxiao_1_action_draft_'+saveId,'旧标签页有效草稿'),saveId);
+    await active.reload();await input().waitFor();assert.equal(await input().inputValue(),'恢复写入后的草稿');
+    await active.getByRole('region',{name:'其他未提交草稿'}).waitFor();
+    assert.equal(await active.evaluate(saveId=>sessionStorage.getItem('jiuxiao_1_action_draft_'+saveId),saveId),null);
+    const texts=await active.evaluate(prefix=>Object.keys(localStorage).filter(k=>k.startsWith(prefix)).map(k=>JSON.parse(localStorage.getItem(k)).text),draftPrefix);
+    assert.ok(texts.includes('旧标签页有效草稿'));assert.ok(texts.includes('恢复写入后的草稿'));
+  },active);
+  const queueGame=await seed(active,base,'合成队列提交草稿');
+  await test('draft-queue-failure-keeps-text-and-durable-copy',async()=>{
+    await input().fill('队列失败仍保留');
+    await active.evaluate(()=>{window.__draftDbOpen=indexedDB.open.bind(indexedDB);indexedDB.open=()=>{throw new Error('synthetic unavailable');};});
+    try {
+      await active.getByRole('button',{name:'收入待处理',exact:true}).click();
+      await active.getByRole('status').filter({hasText:'本地数据库暂不可写'}).waitFor();assert.equal(await input().inputValue(),'队列失败仍保留');
+      const saveId=decodeURIComponent(new URL(queueGame).pathname.split('/').pop());
+      const data=await active.evaluate(({key,prefix,saveId})=>({save:JSON.parse(localStorage.getItem(key)).saves.find(s=>s.saveId===saveId),drafts:Object.keys(localStorage).filter(k=>k.startsWith(prefix+encodeURIComponent(saveId)+':')).map(k=>JSON.parse(localStorage.getItem(k)).text)}),{key,prefix:draftPrefix,saveId});
+      assert.equal(data.save.pendingQueue?.length||0,0);assert.ok(data.drafts.includes('队列失败仍保留'));
+    } finally {await active.evaluate(()=>{indexedDB.open=window.__draftDbOpen;});}
+  },active);
+  await test('draft-queue-success-clears-without-duplicate',async()=>{
+    await input().fill('仅提交一次的待处理行动');
+    for(let n=0;n<3;n++) {await active.close();active=await ctx.newPage();await active.goto(queueGame);await input().waitFor();await input().fill('仅提交一次的待处理行动');}
+    await active.getByRole('button',{name:'收入待处理',exact:true}).click();
+    await active.getByRole('status').filter({hasText:'行动已加入本地待处理队列'}).waitFor();assert.equal(await input().inputValue(),'');
+    await active.reload();await input().waitFor();assert.equal(await input().inputValue(),'');
+    await active.locator('.intent-composer').evaluate(form=>form.requestSubmit());
+    const saved=await active.evaluate(({key,id})=>JSON.parse(localStorage.getItem(key)).saves.find(s=>s.saveId===id),{key,id:decodeURIComponent(new URL(queueGame).pathname.split('/').pop())});
+    assert.equal(saved.pendingQueue.length,1);assert.equal(saved.pendingQueue[0].text,'仅提交一次的待处理行动');assert.equal(saved.revision,0);assert.deepEqual(saved.messages,[]);
+  },active);
+  for(const width of (localOnly?[360,390]:[320,390,430]))await test(`draft-viewport-${width}`,async()=>{
+    await active.goto(game);await input().waitFor();await active.setViewportSize({width,height:844});
+    await active.getByRole('region',{name:'其他未提交草稿'}).locator('summary').first().click();
+    await input().fill('窄屏草稿'+width);
+    const layout=await active.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth,boxes:[...document.querySelectorAll('.intent-composer textarea,.intent-composer button')].map(e=>{const r=e.getBoundingClientRect();return {left:r.left,right:r.right};})}));
+    assert.ok(layout.scroll<=layout.width+1,JSON.stringify(layout));assert.ok(layout.boxes.every(r=>r.left>=-1&&r.right<=width+1),JSON.stringify(layout));
+    await active.screenshot({path:path.join(out,`draft-${width}.png`)});return layout;
+  },active);
+  if(localOnly)await test('draft-short-screen-input-and-dialog',async()=>{
+    await active.setViewportSize({width:390,height:568});await input().fill('短屏草稿');await input().focus();
+    await input().evaluate(element=>element.scrollIntoView({block:'center'}));
+    const box=await input().boundingBox();assert.ok(box&&box.y>=0&&box.y+box.height<=568);
+    const trigger=active.getByRole('button',{name:'角色状态',exact:true});await trigger.click();
+    const dialog=active.getByRole('dialog');await dialog.waitFor();await active.keyboard.press('Escape');
+    await dialog.waitFor({state:'detached'});assert.ok(await trigger.evaluate(element=>element===document.activeElement));
+    assert.equal(await input().inputValue(),'短屏草稿');
+    await active.screenshot({path:path.join(out,'draft-short-390.png')});
+    await active.setViewportSize({width:390,height:844});
+  },active);
+  await test('draft-legacy-only-migrates-across-tabs',async()=>{
+    const legacyGame=await seed(active,base,'合成仅旧草稿存档');const saveId=decodeURIComponent(new URL(legacyGame).pathname.split('/').pop());
+    await active.evaluate(saveId=>sessionStorage.setItem('jiuxiao_1_action_draft_'+saveId,'仅旧草稿可靠迁移'),saveId);
+    await active.reload();await input().waitFor();assert.equal(await input().inputValue(),'仅旧草稿可靠迁移');
+    await active.close();active=await ctx.newPage();await active.goto(legacyGame);await input().waitFor();assert.equal(await input().inputValue(),'仅旧草稿可靠迁移');
+  },active);
+  await test('draft-deleted-save-cleans-orphans',async()=>{
+    const deleteGame=await seed(active,base,'合成删除草稿存档');const saveId=decodeURIComponent(new URL(deleteGame).pathname.split('/').pop());
+    await input().fill('随存档删除的草稿');
+    await active.goto(base+'/saves');const card=active.locator('.save-manager-list article').filter({has:active.getByRole('heading',{name:'合成删除草稿存档',exact:true})});
+    await card.getByRole('button',{name:'删除',exact:true}).click();await card.getByLabel('确认名称').fill('合成删除草稿存档');await card.getByRole('button',{name:'确认删除',exact:true}).click();
+    await active.getByRole('status').filter({hasText:'本地存档已删除'}).waitFor();
+    assert.deepEqual(await active.evaluate(({prefix,saveId})=>Object.keys(localStorage).filter(k=>k.startsWith(prefix+encodeURIComponent(saveId)+':')),{prefix:draftPrefix,saveId}),[]);
+  },active);
+  await test('draft-identical-legacy-copy-clears-after-submit',async()=>{
+    const sameGame=await seed(active,base,'合成相同新旧草稿');const saveId=decodeURIComponent(new URL(sameGame).pathname.split('/').pop());
+    await input().fill('相同新旧草稿只保留一份');await active.evaluate(saveId=>sessionStorage.setItem('jiuxiao_1_action_draft_'+saveId,'相同新旧草稿只保留一份'),saveId);
+    await active.reload();await input().waitFor();assert.equal(await input().inputValue(),'相同新旧草稿只保留一份');
+    assert.equal(await active.evaluate(({prefix,saveId})=>Object.keys(localStorage).filter(k=>k.startsWith(prefix+encodeURIComponent(saveId)+':')).length,{prefix:draftPrefix,saveId}),1);
+    await active.getByRole('button',{name:'收入待处理',exact:true}).click();await active.getByRole('status').filter({hasText:'行动已加入本地待处理队列'}).waitFor();
+    await active.close();active=await ctx.newPage();await active.goto(sameGame);await input().waitFor();assert.equal(await input().inputValue(),'');
+  },active);
   await ctx.close();
+  await test('draft-normal-browser-restart',async()=>{
+    const profile=path.join(out,'synthetic-browser-profile');
+    let persistent;
+    try {
+      persistent=await chromium.launchPersistentContext(profile,{executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'});
+      const first=await persistent.newPage();const restartGame=await seed(first,base,'合成浏览器重启草稿');await first.locator('#player-intent').fill('正常重启后恢复');
+      await persistent.close();persistent=await chromium.launchPersistentContext(profile,{executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'});
+      const reopened=await persistent.newPage();await reopened.goto(restartGame);await reopened.locator('#player-intent').waitFor();assert.equal(await reopened.locator('#player-intent').inputValue(),'正常重启后恢复');
+    } finally {await persistent?.close();}
+  });
+  if(localOnly)return;
   const cloud=await context();const p=cloud.page;
   const save={schemaVersion:1,saveId:'cloud-stress-synthetic',canonVersion:'synthetic-canon',ruleVersion:'synthetic-rules',memoryPolicyVersion:'synthetic-memory',revision:0,state:{playerId:'synthetic-player',locationId:'synthetic-location',elapsedMinutes:0,facts:{gameMinute:0}}};
   let submissions=0,delay=200,fail=true;
@@ -190,6 +321,6 @@ async function renderer(base){
   server=spawn(process.execPath,[path.join(root,'apps/web/node_modules/vite/bin/vite.js'),'preview','--host','127.0.0.1','--port',String(port),'--strictPort'],{cwd:path.join(root,'apps/web'),windowsHide:true,stdio:'ignore'});
   const base=`http://127.0.0.1:${port}`;let ready=false;for(let n=0;n<100;n++){try{if((await fetch(base)).ok){ready=true;break;}}catch{}await new Promise(r=>setTimeout(r,100));}assert.ok(ready);
   browser=await chromium.launch({executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'});report.browser=browser.version();
-  if(mode==='navigation'||mode==='smoke')await navigation(base,mode==='smoke');else if(mode==='mobile')await mobile(base);else if(mode==='recovery')await recovery(base);else if(mode==='renderer')await renderer(base);else throw Error('Unknown mode');
+  if(mode==='navigation'||mode==='smoke')await navigation(base,mode==='smoke');else if(mode==='mobile')await mobile(base);else if(mode==='recovery'||mode==='draft-integration')await recovery(base,mode==='draft-integration');else if(mode==='renderer')await renderer(base);else throw Error('Unknown mode');
   await test('no-runtime-crash-or-pageerror',()=>{assert.deepEqual(report.errors,[]);assert.deepEqual(report.crashes,[]);});
 })().catch(e=>{report.results.push({name:'harness-or-setup',status:'FAIL',error:String(e.stack)});}).finally(async()=>{report.seconds=(Date.now()-started)/1000;persist();await browser?.close();server?.kill();process.exitCode=report.results.some(x=>x.status==='FAIL')?1:0;process.stdout.write(JSON.stringify({mode,seconds:report.seconds,pass:report.results.filter(x=>x.status==='PASS').length,fail:report.results.filter(x=>x.status==='FAIL').length,blocked:report.blocked.length})+'\n');});
