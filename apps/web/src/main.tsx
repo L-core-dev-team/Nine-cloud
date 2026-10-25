@@ -734,6 +734,11 @@ function App() {
   }
   const currentRoute = route();
   const game = currentRoute.startsWith('/game/') ? saves.find(save => save.saveId === currentRoute.split('/')[2]) : undefined;
+  let cloudSaveId: string | null = null;
+  if (currentRoute.startsWith('/game/') && !game) {
+    try { cloudSaveId = decodeURIComponent(currentRoute.slice('/game/'.length)); }
+    catch { /* Malformed links render a recoverable page instead of throwing during render. */ }
+  }
   let activeSaveId = '';
   try { activeSaveId = sessionStorage.getItem('jiuxiao_active_save_id') || ''; } catch { /* Use the first available save. */ }
   const activeSave = saves.find(item => item.saveId === activeSaveId) || saves[0];
@@ -834,7 +839,7 @@ function App() {
       const branch = { ...stale, saveId: createSaveId(), name: `${stale.name}（冲突分支）`, createdAt: now, updatedAt: now };
       const result = await commitSaves(saves, [branch, ...saves]);
       setSaves(result.saves); if (result.ok && result.warning) setNotice(commitSuccessMessage(result, '冲突内容已另存为独立分支；原存档保持不变。')); return result.ok;
-    }} /> : <CloudGame saveId={decodeURIComponent(currentRoute.slice('/game/'.length))} onBack={() => go('/lobby')} onHome={() => go('/')} onLogin={() => go('/settings/cloud')} onWorld={() => go('/world')} /> : <Landing />;
+    }} /> : cloudSaveId === null ? <section className="card" role="alert" aria-labelledby="invalid-game-link-title"><h2 id="invalid-game-link-title">游戏链接无效</h2><p>链接可能不完整或已损坏，请返回大厅重新选择存档。</p><button className="primary" onClick={() => go('/lobby')}>返回大厅</button></section> : <CloudGame saveId={cloudSaveId} onBack={() => go('/lobby')} onHome={() => go('/')} onLogin={() => go('/settings/cloud')} onWorld={() => go('/world')} /> : <Landing />;
   const migrationAction = legacyText ? <button className="notice-action" onClick={migrateLegacyLibrary}>下载原文备份并迁移</button> : undefined;
   const storageNotice = indexedDbReady ? notice : `${notice} IndexedDB 回退模式。`;
   const activeScene = scenePreview ?? (game ? sceneForLocation(game.location) : 'mountain-gate');
