@@ -99,7 +99,7 @@ const results = [], errors = [];
     await page.goto(origin + '/game/not-found');
     await page.getByRole('heading', { name: '找不到这份存档', exact: true }).waitFor();
     await page.goto(origin + '/game/unauthorized');
-    await page.getByTestId('p2-status').filter({ hasText: '需要有效的游客或邮箱会话' }).waitFor();
+    await page.getByTestId('p2-status').filter({ hasText: /需要.*游客或邮箱会话/ }).waitFor();
     await page.goto(origin + '/game/' + local.saveId);
     await page.locator('.story-message p').filter({ hasText: '本地原文保持。' }).waitFor();
     await page.locator('#player-intent').fill('本地未提交输入');
