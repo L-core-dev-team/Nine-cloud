@@ -1,0 +1,15 @@
+{
+  "task": "NINE-CLOUD-B-F01-E01-MINIMAL-FIX-01",
+  "date": "2026-10-26",
+  "baseCommit": "d4eda3af15b13a3e166af7a48c7c004ed31ec877",
+  "path": "tests/e2e/cloud-game-recovery.cjs",
+  "field": "finalBlob",
+  "before": "75ebfeaf1c9ab7214764dab0387e2f4c6eb55e67",
+  "after": "123fbb7c337a2f27aade43d3df6d93a45de6df79",
+  "affectedRecords": ["RECEIPT.json/sourceReuse", "source-reuse.json"],
+  "originalPacket": "交接/NINE-CLOUD-DUAL-TRACK-NO-DUP-20261025",
+  "correctedPacket": "交接/NINE-CLOUD-B-F01-E01-MINIMAL-FIX-01",
+  "correctedRecords": ["RECEIPT.corrected.json", "source-reuse.corrected.json"],
+  "checksumIndex": "SHA256.json in correctedPacket",
+  "policy": "Original receipts and their SHA256 index remain unchanged. Corrected copies change only this finalBlob field. Historical tests retain their original dates and scope. The recovery script is unchanged; its current limited F01 regression run is separately recorded in the new HANDOFF and validation.json."
+}

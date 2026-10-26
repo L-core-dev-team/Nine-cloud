@@ -11,13 +11,24 @@ export type GameActionSuggestion = { id: string; kind: string; label: string; te
 export function gameCacheScope(ownerId: string, saveId: string): GameCacheScope {
   return { apiBase: new URL(apiRequestUrl('/api'), window.location.href).href, ownerId, saveId };
 }
+export class CloudGameAccountCleanupError extends Error {
+  constructor(public cacheCleared: boolean, public notified: boolean) {
+    super('GAME_ACCOUNT_CLEANUP_INCOMPLETE');
+  }
+}
 export async function clearCloudGameAccount(ownerId: string) {
   const scope = gameCacheScope(ownerId, 'account-cleanup');
-  await store.clearAccount(scope);
-  if (typeof BroadcastChannel !== 'undefined') {
-    const channel = new BroadcastChannel('jiuxiao-cloud-game-session');
-    channel.postMessage({ ownerId, apiBase: scope.apiBase }); channel.close();
-  }
+  let cacheCleared = false, notified = false;
+  try { await store.clearAccount(scope); cacheCleared = true; } catch { /* Still invalidate other tabs. */ }
+  let channel: BroadcastChannel | undefined;
+  try {
+    if (typeof BroadcastChannel !== 'undefined') {
+      channel = new BroadcastChannel('jiuxiao-cloud-game-session');
+      channel.postMessage({ ownerId, apiBase: scope.apiBase }); notified = true;
+    }
+  } catch { /* Notification failure must not prevent server logout. */ }
+  finally { try { channel?.close(); } catch { /* Sending and closing are independent. */ } }
+  if (!cacheCleared || !notified) throw new CloudGameAccountCleanupError(cacheCleared, notified);
 }
 export function useCloudGameSession(saveId: string) {
   const [save, setSave] = useState<SaveEnvelope | null>(null);
