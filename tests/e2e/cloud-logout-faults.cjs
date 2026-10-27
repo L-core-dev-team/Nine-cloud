@@ -109,13 +109,13 @@ let server, browser;
     assert.equal(message.includes('已安全退出'), false);
     if (!notificationFailed) {
       await game.getByTestId('p2-status').filter({ hasText: '账号已改变' }).waitFor();
-      assert.equal(await game.locator('#player-intent').count(), 0);
+      assert.equal(await game.getByTestId('p2-action-input').count(), 0);
     }
     if (test.late) {
       releaseGame.release();
       // Drain the delayed response before checking that the invalidated view stays empty.
       await game.waitForLoadState('networkidle');
-      assert.equal(await game.locator('#player-intent').count(), 0);
+      assert.equal(await game.getByTestId('p2-action-input').count(), 0);
       assert.match(await game.getByTestId('p2-status').innerText(), /账号已改变/);
     }
     const remaining = await game.evaluate(async () => {

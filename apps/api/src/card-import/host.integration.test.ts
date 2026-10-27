@@ -1,0 +1,85 @@
+import { beforeAll, afterAll, describe, it, expect } from 'vitest';
+import { readFile, readdir } from 'node:fs/promises';
+import { randomUUID } from 'node:crypto';
+import { Pool } from 'pg';
+import { createApp } from '../app.js';
+import { EmailAuthService, hashToken } from '../services/email-auth.js';
+import { PostgresEmailAuthRepository } from '../services/postgres-email-auth.js';
+import { AccountLifecycle } from '../services/account-lifecycle.js';
+import { eraseCardImports } from './host.js';
+import type { CardModel } from './service.js';
+
+const url=process.env.CARD_IMPORT_HOST_TEST_DATABASE_URL;
+if(url){const u=new URL(url);if(u.hostname!=='127.0.0.1'||!/^\/jiuxiao_test_card_host_[0-9_]+$/.test(u.pathname))throw Error('ISOLATED_HOST_TEST_DATABASE_REQUIRED');}
+const pool=new Pool({connectionString:url,max:6});
+const origin='https://card.example.invalid', secret='synthetic-local-card-host-test-secret-no-production';
+const mail=new Map<string,string>();
+const auth=new EmailAuthService(new PostgresEmailAuthRepository(pool,secret),async(email,code)=>{mail.set(email,code);},secret);
+let model: CardModel=async()=> 'simulated model';
+const app=createApp(undefined,undefined,{service:auth,origin},undefined,{pool,model:(input,signal)=>model(input,signal)});
+const path='/api/card-import';
+const request=(p:string,method='GET',data?:unknown,cookie='')=>app.request(p,{method,headers:{origin,cookie,'content-type':'application/json'},...(data===undefined?{}:{body:JSON.stringify(data)})});
+async function login(){const email=`card-${randomUUID()}@example.invalid`;expect((await request('/api/auth/code','POST',{email})).status).toBe(202);const r=await request('/api/auth/verify','POST',{email,code:mail.get(email)});expect(r.status).toBe(200);const cookie=r.headers.get('set-cookie')!.split(';')[0]!;const body=await r.json();return{email,cookie,owner:body.account.id as string,hash:hashToken(cookie.slice('jx_session='.length))};}
+async function fixture(cookie:string){const source={name:randomUUID(),description:'synthetic',personality:'kind',scenario:'fixture',first_mes:'hello',mes_example:'example'};const p=await(await request(path+'/imports','POST',{filename:'card.json',kind:'card',bytesBase64:Buffer.from(JSON.stringify(source)).toString('base64'),rightsConfirmed:true},cookie)).json();const c=await(await request(path+'/cards','POST',{importId:p.id,parentId:null,source:'fixture',notes:'',links:[]},cookie)).json();const id=randomUUID();expect((await request(path+'/sessions','POST',{id,cardId:c.id},cookie)).status).toBe(200);return{id,card:c.id,importId:p.id};}
+async function operation(f:Awaited<ReturnType<typeof login>>,type:'close'|'delete',lifecycle:AccountLifecycle){const op=await lifecycle.begin(f.owner,f.hash,type);await lifecycle.verify(f.owner,f.hash,op.operationId,mail.get(f.email));return lifecycle.complete(f.owner,f.hash,op.operationId,type==='close'?'CLOSE_ACCOUNT':'DELETE_ACCOUNT');}
+const lifecycle=new AccountLifecycle(pool,async(email,code)=>{mail.set(email,code);},secret,'local-card-test',true,()=>true,undefined,eraseCardImports);
+const native=async()=>{const out:Record<string,unknown>={};for(const t of ['game_saves','turn_events','turn_requests','npc_memory_journals','npc_authorized_observation_outbox'])out[t]=(await pool.query(`SELECT to_jsonb(t) FROM ${t} t ORDER BY to_jsonb(t)::text`)).rows;return out;};
+
+describe.skipIf(!url)('existing host + real PostgreSQL session integration',()=>{
+ beforeAll(async()=>{
+  const migrationRoot=new URL('../../../../packages/db/drizzle/',import.meta.url);
+  for(const f of (await readdir(migrationRoot)).filter(f=>/^\d{4}_.*\.sql$/.test(f)).sort())await pool.query(await readFile(new URL(f,migrationRoot),'utf8'));
+  const sql=await readFile(new URL('./schema.sql',import.meta.url),'utf8');
+  const install=await pool.connect();try {
+   await install.query('BEGIN');await expect(install.query(sql.replace('CREATE TABLE card_import.cards','SELECT 1/0; CREATE TABLE card_import.cards'))).rejects.toThrow();await install.query('ROLLBACK');
+   expect((await install.query("SELECT to_regnamespace('card_import') AS n")).rows[0].n).toBeNull();
+   await install.query('BEGIN');await install.query(sql);await install.query('COMMIT');
+   await install.query('BEGIN');await expect(install.query(sql)).rejects.toThrow();await install.query('ROLLBACK');
+  } finally { install.release(); }
+ });
+ afterAll(async()=>{await pool.end();});
+ it('is disabled by default, refuses mount without auth; same host rejects anonymous and foreign Origin',async()=>{
+  expect((await createApp().request(path+'/cards')).status).toBe(404);
+  expect(()=>createApp(undefined,undefined,undefined,undefined,{pool})).toThrow('CARD_AUTH_REQUIRED');
+  expect((await request(path+'/cards')).status).toBe(401);
+  const f=await login();expect((await app.request(path+'/imports',{method:'POST',headers:{cookie:f.cookie,origin:'https://evil.invalid'}})).status).toBe(403);
+  const preflight=await app.request(path+'/imports',{method:'OPTIONS',headers:{origin,'access-control-request-method':'POST','access-control-request-headers':'content-type,x-jiuxiao-account'}});expect(preflight.status).toBe(204);
+ });
+ it('uses real email/session ownership across import/play/history and logout with unchanged native gameplay',async()=>{
+  const before=await native(),a=await login(),b=await login();const f=await fixture(a.cookie);let calls=0;
+  model=async input=>{calls++;expect(input.history).toEqual([]);return 'first';};
+  const key=randomUUID(),action={action:'hello',expectedRevision:0,idempotencyKey:key};
+  expect((await(await request(path+`/sessions/${f.id}/actions`,'POST',action,a.cookie)).json()).status).toBe('completed');
+  expect((await(await request(path+`/sessions/${f.id}/actions`,'POST',action,a.cookie)).json()).status).toBe('completed');expect(calls).toBe(1);
+  for(const p of [`/cards/${f.card}`,`/sessions/${f.id}`,`/sessions/${f.id}/requests/${key}`,`/imports/${f.importId}/original`])expect((await request(path+p,'GET',undefined,b.cookie)).status).toBe(404);
+  model=async input=>{expect(input.history).toEqual([{action:'hello',narrative:'first'}]);return 'second';};
+  await request(path+`/sessions/${f.id}/actions`,'POST',{action:'next',expectedRevision:1,idempotencyKey:randomUUID()},a.cookie);
+  expect((await(await request(path+`/sessions/${f.id}/history`,'GET',undefined,a.cookie)).json()).length).toBe(2);
+  await request('/api/auth/logout','POST',{},a.cookie);expect((await request(path+'/cards','GET',undefined,a.cookie)).status).toBe(401);
+  expect(await native()).toEqual(before);
+ });
+ it('closure blocks late generated text and preserves data for explicit account recovery',async()=>{
+  const a=await login(),f=await fixture(a.cookie);let release!:(s:string)=>void,started!:()=>void;const ready=new Promise<void>(r=>{started=r;});
+  model=async()=>{started();return new Promise<string>(r=>{release=r;});};
+  const key=randomUUID(),running=request(path+`/sessions/${f.id}/actions`,'POST',{action:'wait',expectedRevision:0,idempotencyKey:key},a.cookie);await ready;
+  expect((await operation(a,'close',lifecycle)).status).toBe('account_closed');release('must-not-persist');const result=await(await running).json();expect(result.status).toBe('failed');expect(result.error).toBe('ACCOUNT_UNAVAILABLE');
+  expect((await pool.query('SELECT revision FROM card_import.sessions WHERE id=$1',[f.id])).rows[0].revision).toBe(0);
+  expect((await request(path+'/cards','GET',undefined,a.cookie)).status).toBe(401);
+  expect((await pool.query('SELECT id FROM card_import.imports WHERE owner_id=$1',[a.owner])).rowCount).toBe(1);
+ });
+ it('existing beforeDelete callback cleans only owner data; rollback preserves it',async()=>{
+  const a=await login(),b=await login(),f=await fixture(a.cookie),other=await fixture(b.cookie);
+  const client=await pool.connect();try{await client.query('BEGIN');await client.query('SELECT id FROM auth_accounts WHERE id=$1 FOR UPDATE',[a.owner]);await eraseCardImports(client,a.owner);await client.query('ROLLBACK');}finally{client.release();}
+  expect((await request(path+`/cards/${f.card}`,'GET',undefined,a.cookie)).status).toBe(200);
+  expect((await operation(a,'delete',lifecycle)).status).toBe('account_deleted');
+  for(const table of ['imports','cards','sessions','links','requests'])expect((await pool.query(`SELECT 1 FROM card_import.${table} WHERE owner_id=$1`,[a.owner])).rowCount).toBe(0);
+  expect((await request(path+`/cards/${other.card}`,'GET',undefined,b.cookie)).status).toBe(200);
+ });
+ it('provider failure and read-only unknown lookup do not advance revision or regenerate',async()=>{
+  const a=await login(),f=await fixture(a.cookie);let n=0;model=async()=>{n++;throw Error('synthetic-private-provider-error');};
+  const key=randomUUID(),action={action:'fail',expectedRevision:0,idempotencyKey:key};const r=await(await request(path+`/sessions/${f.id}/actions`,'POST',action,a.cookie)).json();expect(r.error).toBe('GENERATION_FAILED');
+  await request(path+`/sessions/${f.id}/actions`,'POST',action,a.cookie);expect(n).toBe(1);
+  expect((await(await request(path+`/sessions/${f.id}/requests/${randomUUID()}`,'GET',undefined,a.cookie)).json()).status).toBe('unknown');expect(n).toBe(1);
+  expect((await pool.query('SELECT revision FROM card_import.sessions WHERE id=$1',[f.id])).rows[0].revision).toBe(0);
+ });
+});
