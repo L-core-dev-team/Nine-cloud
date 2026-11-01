@@ -46,8 +46,8 @@ importers:
         specifier: 4.13.12
         version: 4.13.12
       nodemailer:
-        specifier: 10.0.13
-        version: 10.0.13
+        specifier: 10.1.4
+        version: 10.1.4
       pg:
         specifier: 8.23.1
         version: 8.23.1
@@ -1136,8 +1136,8 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
-  nodemailer@10.0.13:
-    resolution: {integrity: sha512-SzG86OlvcW/NNhUFC6uROMwRTL4n7MswfQqC/T8mhkmnY1YVa23zUEMYi4ijSeXSl9GLz9ZeTJDUatEDuY5FeQ==}
+  nodemailer@10.1.4:
+    resolution: {integrity: sha512-EsMnOR2oRv4LGnWvHgcVYkkQ4O2j8KO4WTw6l+PHR4sOXo8SAgIraxtEnGDmotjbhv0hDsu3IuDIFZm8iXwO4A==}
     engines: {node: '>=20.0.0'}
 
   obug@2.2.1:
@@ -2096,7 +2096,7 @@ snapshots:
 
   nanoid@3.3.19: {}
 
-  nodemailer@10.0.13: {}
+  nodemailer@10.1.4: {}
 
   obug@2.2.1: {}
 
