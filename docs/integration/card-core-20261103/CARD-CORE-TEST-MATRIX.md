@@ -1,0 +1,2 @@
+# 测试矩阵
+环境：独立本地副本、pnpm offline、合成数据。命令 pnpm exec vitest run apps/api/src/card-import/context-service.test.ts apps/api/src/card-import/context.test.ts apps/api/src/card-import/worldbook.test.ts apps/api/src/card-import/parser.test.ts apps/api/src/card-import/router.test.ts：PASS 5文件18项（2026-11-03；context-service 使用模拟 pool 与模型）。pnpm --filter @jiuxiao/api typecheck：PASS；pnpm --filter @jiuxiao/api build：PASS。最初沙箱运行因临时目录 ENOENT 失败，后授权在独立目录重跑通过。独立 PG 端到端 NOT RUN；真实 Provider NOT RUN；真机和生产 NOT VERIFIED。上述未覆盖完整开场、跨账号真实数据库、真实失败恢复、三卡真实模型端到端；历史证据不冒充本轮。
