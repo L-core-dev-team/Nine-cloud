@@ -16,4 +16,9 @@ describe('card context boundary', () => {
   it('rejects excessive output before dispatch', () => {
     expect(() => buildCardMessages({ instructions:'x', character:{description:'x'.repeat(100_001)}, worldbooks:[], history:[], action:'x' })).toThrow('CONTEXT_TOO_LARGE');
   });
+  it('includes the default opening before saved turns without choosing an alternate', () => {
+    const messages=buildCardMessages({instructions:'safe',character:{first_mes:'opening',alternate_greetings:['alternate']},worldbooks:[],history:[{action:'past',narrative:'answer'}],action:'next'});
+    expect(messages.slice(2).map(m=>m.content)).toEqual(['opening','past','answer','next']);
+    expect(JSON.stringify(messages)).not.toContain('alternate');
+  });
 });

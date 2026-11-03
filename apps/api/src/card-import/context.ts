@@ -22,6 +22,9 @@ export function buildCardMessages(input: CardContext): CardMessage[] {
     { role: 'system', content: input.instructions },
     { role: 'user', content: JSON.stringify(data) },
   ];
+  // The default opening is part of the conversation, not a platform instruction.
+  // Alternate greeting selection is not yet persisted and is deliberately not guessed.
+  if (text(c.first_mes)) messages.push({ role: 'assistant', content: text(c.first_mes) });
   for (const turn of input.history) {
     messages.push({ role: 'user', content: turn.action }, { role: 'assistant', content: turn.narrative });
   }
