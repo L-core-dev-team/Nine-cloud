@@ -8,6 +8,9 @@ import { PostgresEmailAuthRepository } from '../services/postgres-email-auth.js'
 import { AccountLifecycle } from '../services/account-lifecycle.js';
 import { eraseCardImports } from './host.js';
 import type { CardModel } from './service.js';
+import { createCardModel } from './card-model-provider.js';
+import { createProviderTransport } from '@jiuxiao/domain/provider-narrative';
+import { createCardEgressFetch } from './provider-egress.js';
 
 const url=process.env.CARD_IMPORT_HOST_TEST_DATABASE_URL;
 if(url){const u=new URL(url);if(u.hostname!=='127.0.0.1'||!/^\/jiuxiao_test_card_host_[0-9_]+$/.test(u.pathname))throw Error('ISOLATED_HOST_TEST_DATABASE_REQUIRED');}
@@ -38,6 +41,20 @@ describe.skipIf(!url)('existing host + real PostgreSQL session integration',()=>
   } finally { install.release(); }
  });
  afterAll(async()=>{await pool.end();});
+ it('composes session, saved card, triggered lore, provider adapter and history without duplicate calls',async()=>{
+  const a=await login();const doc={spec:'chara_card_v2',spec_version:'2.0',data:{name:'fixture',description:'desc',personality:'kind',scenario:'night',first_mes:'hello',mes_example:'example',system_prompt:'format',post_history_instructions:'post',character_book:{entries:[{keys:['moon'],content:'moon lore'},{keys:['sun'],content:'sun lore'}]}}};
+  const imported=await(await request(path+'/imports','POST',{filename:'card.json',kind:'card',bytesBase64:Buffer.from(JSON.stringify(doc)).toString('base64'),rightsConfirmed:true},a.cookie)).json();
+  const card=await(await request(path+'/cards','POST',{importId:imported.id,parentId:null,source:'fixture',notes:'',links:[]},a.cookie)).json();const id=randomUUID();
+  expect((await request(path+'/sessions','POST',{id,cardId:card.id},a.cookie)).status).toBe(200);
+  const sent:string[]=[];const guarded=createCardEgressFetch({allowedHosts:['provider.example.invalid']},async()=>[{address:'8.8.8.8',family:4}],async(_url,init,address)=>{expect(address).toBe('8.8.8.8');sent.push(String(init.body));return Response.json({choices:[{message:{content:'synthetic reply'}}]});});
+  const transport=createProviderTransport({protocol:'openai-chat',baseUrl:'https://provider.example.invalid',model:'synthetic',keyEnv:'NARRATIVE_KEY_STORY'},{NARRATIVE_KEY_STORY:'synthetic'},guarded);
+  model=createCardModel(transport,100);const key=randomUUID(),action={action:'moon',expectedRevision:0,idempotencyKey:key};
+  expect((await(await request(path+`/sessions/${id}/actions`,'POST',action,a.cookie)).json()).status).toBe('completed');
+  expect((await(await request(path+`/sessions/${id}/actions`,'POST',action,a.cookie)).json()).status).toBe('completed');expect(sent).toHaveLength(1);
+  expect(sent[0]).toContain('moon lore');expect(sent[0]).not.toContain('sun lore');expect(sent[0]).toContain('post');
+  const history=await(await request(path+`/sessions/${id}/history`,'GET',undefined,a.cookie)).json();expect(history).toHaveLength(1);expect(history[0].narrative).toBe('synthetic reply');
+  const b=await login();expect((await request(path+`/sessions/${id}/history`,'GET',undefined,b.cookie)).status).toBe(404);
+ });
  it('is disabled by default, refuses mount without auth; same host rejects anonymous and foreign Origin',async()=>{
   expect((await createApp().request(path+'/cards')).status).toBe(404);
   expect(()=>createApp(undefined,undefined,undefined,undefined,{pool})).toThrow('CARD_AUTH_REQUIRED');
