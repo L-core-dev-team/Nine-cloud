@@ -16,7 +16,7 @@ CREATE TABLE card_import.cards (
 );
 CREATE TABLE card_import.sessions (
  owner_id text NOT NULL, id uuid NOT NULL, card_id uuid NOT NULL,
- revision integer NOT NULL DEFAULT 0, created_at timestamptz NOT NULL DEFAULT now(),
+ revision integer NOT NULL DEFAULT 0, greeting_index integer NOT NULL DEFAULT -1 CHECK (greeting_index >= -1), created_at timestamptz NOT NULL DEFAULT now(),
  PRIMARY KEY(owner_id,id), FOREIGN KEY(owner_id,card_id) REFERENCES card_import.cards(owner_id,id)
 );
 CREATE TABLE card_import.links (

@@ -41,19 +41,40 @@ describe.skipIf(!url)('existing host + real PostgreSQL session integration',()=>
   } finally { install.release(); }
  });
  afterAll(async()=>{await pool.end();});
+ it('preserves legacy session rows when the local-only greeting column is added',async()=>{
+  const c=await pool.connect();try {
+   await c.query('BEGIN');await c.query('CREATE TEMP TABLE legacy_session (owner_id text, id uuid, revision integer) ON COMMIT DROP');
+   const id=randomUUID();await c.query('INSERT INTO legacy_session VALUES ($1,$2,7)',['synthetic-owner',id]);
+   await c.query('ALTER TABLE legacy_session ADD COLUMN greeting_index integer NOT NULL DEFAULT -1 CHECK(greeting_index >= -1)');
+   expect((await c.query('SELECT * FROM legacy_session WHERE id=$1',[id])).rows[0]).toMatchObject({owner_id:'synthetic-owner',revision:7,greeting_index:-1});
+   await c.query('ROLLBACK');
+  } finally {c.release();}
+ });
  it('composes session, saved card, triggered lore, provider adapter and history without duplicate calls',async()=>{
-  const a=await login();const doc={spec:'chara_card_v2',spec_version:'2.0',data:{name:'fixture',description:'desc',personality:'kind',scenario:'night',first_mes:'hello',mes_example:'example',system_prompt:'format',post_history_instructions:'post',character_book:{entries:[{keys:['moon'],content:'moon lore'},{keys:['sun'],content:'sun lore'}]}}};
+  const a=await login();const doc={spec:'chara_card_v2',spec_version:'2.0',data:{name:'fixture',description:'desc',personality:'kind',scenario:'night',first_mes:'hello',alternate_greetings:['alternate opening'],mes_example:'example',system_prompt:'format',post_history_instructions:'post',character_book:{entries:[{keys:['moon'],content:'moon lore'},{keys:['sun'],content:'sun lore'}]}}};
   const imported=await(await request(path+'/imports','POST',{filename:'card.json',kind:'card',bytesBase64:Buffer.from(JSON.stringify(doc)).toString('base64'),rightsConfirmed:true},a.cookie)).json();
   const card=await(await request(path+'/cards','POST',{importId:imported.id,parentId:null,source:'fixture',notes:'',links:[]},a.cookie)).json();const id=randomUUID();
-  expect((await request(path+'/sessions','POST',{id,cardId:card.id},a.cookie)).status).toBe(200);
+  expect((await request(path+'/sessions','POST',{id,cardId:card.id,greetingIndex:0},a.cookie)).status).toBe(200);
+  expect((await request(path+'/sessions','POST',{id,cardId:card.id,greetingIndex:-1},a.cookie)).status).toBe(409);
+  expect((await request(path+'/sessions','POST',{id:randomUUID(),cardId:card.id,greetingIndex:1},a.cookie)).status).toBe(400);
   const sent:string[]=[];const guarded=createCardEgressFetch({allowedHosts:['provider.example.invalid']},async()=>[{address:'8.8.8.8',family:4}],async(_url,init,address)=>{expect(address).toBe('8.8.8.8');sent.push(String(init.body));return Response.json({choices:[{message:{content:'synthetic reply'}}]});});
   const transport=createProviderTransport({protocol:'openai-chat',baseUrl:'https://provider.example.invalid',model:'synthetic',keyEnv:'NARRATIVE_KEY_STORY'},{NARRATIVE_KEY_STORY:'synthetic'},guarded);
   model=createCardModel(transport,100);const key=randomUUID(),action={action:'moon',expectedRevision:0,idempotencyKey:key};
   expect((await(await request(path+`/sessions/${id}/actions`,'POST',action,a.cookie)).json()).status).toBe('completed');
   expect((await(await request(path+`/sessions/${id}/actions`,'POST',action,a.cookie)).json()).status).toBe('completed');expect(sent).toHaveLength(1);
-  expect(sent[0]).toContain('moon lore');expect(sent[0]).not.toContain('sun lore');expect(sent[0]).toContain('post');
+  expect(sent[0]).toContain('moon lore');expect(sent[0]).not.toContain('sun lore');expect(sent[0]).toContain('post');expect(sent[0]).toContain('alternate opening');
   const history=await(await request(path+`/sessions/${id}/history`,'GET',undefined,a.cookie)).json();expect(history).toHaveLength(1);expect(history[0].narrative).toBe('synthetic reply');
   const b=await login();expect((await request(path+`/sessions/${id}/history`,'GET',undefined,b.cookie)).status).toBe(404);
+  await request('/api/auth/logout','POST',{},a.cookie);
+  // Synthetic test clock advance for the normal one-minute email throttle.
+  await pool.query("UPDATE auth_challenges SET issued_at=issued_at-interval '2 minutes' WHERE email=$1",[a.email]);
+  expect((await request('/api/auth/code','POST',{email:a.email})).status).toBe(202);const verified=await request('/api/auth/verify','POST',{email:a.email,code:mail.get(a.email)});expect(verified.status).toBe(200);
+  const newCookie=verified.headers.get('set-cookie')!.split(';')[0]!;
+  expect((await(await request(path+`/sessions/${id}`,'GET',undefined,newCookie)).json())).toMatchObject({greeting_index:0,greeting:'alternate opening'});
+  expect((await(await request(path+`/sessions/${id}/history`,'GET',undefined,newCookie)).json())).toHaveLength(1);
+  const second={action:'moon again',expectedRevision:1,idempotencyKey:randomUUID()};
+  expect((await(await request(path+`/sessions/${id}/actions`,'POST',second,newCookie)).json()).status).toBe('completed');
+  expect(sent).toHaveLength(2);expect(sent[1]).toContain('alternate opening');
  });
  it('is disabled by default, refuses mount without auth; same host rejects anonymous and foreign Origin',async()=>{
   expect((await createApp().request(path+'/cards')).status).toBe(404);
@@ -98,5 +119,32 @@ describe.skipIf(!url)('existing host + real PostgreSQL session integration',()=>
   await request(path+`/sessions/${f.id}/actions`,'POST',action,a.cookie);expect(n).toBe(1);
   expect((await(await request(path+`/sessions/${f.id}/requests/${randomUUID()}`,'GET',undefined,a.cookie)).json()).status).toBe('unknown');expect(n).toBe(1);
   expect((await pool.query('SELECT revision FROM card_import.sessions WHERE id=$1',[f.id])).rows[0].revision).toBe(0);
+ });
+ it('allows the owner to find a lost request key, without exposing it to another account',async()=>{
+  const a=await login(),b=await login(),f=await fixture(a.cookie),key=randomUUID();model=async()=> 'done';
+  await request(path+`/sessions/${f.id}/actions`,'POST',{action:'known action',expectedRevision:0,idempotencyKey:key},a.cookie);
+  const list=await(await request(path+`/sessions/${f.id}/requests`,'GET',undefined,a.cookie)).json();
+  expect(list[0]).toMatchObject({key,status:'completed',action:'known action',resulting_revision:1});
+  expect((await request(path+`/sessions/${f.id}/requests`,'GET',undefined,b.cookie)).status).toBe(404);
+ });
+ it('records timeout without history or revision advance and same key cannot regenerate',async()=>{
+  const a=await login(),f=await fixture(a.cookie),key=randomUUID();let calls=0;model=async()=>{calls++;return new Promise<string>(()=>{});};
+  const timeoutApp=createApp(undefined,undefined,{service:auth,origin},undefined,{pool,timeoutMs:20,model:(input,signal)=>model(input,signal)});
+  const action={action:'wait',expectedRevision:0,idempotencyKey:key};
+  const invoke=()=>timeoutApp.request(path+`/sessions/${f.id}/actions`,{method:'POST',headers:{origin,cookie:a.cookie,'content-type':'application/json'},body:JSON.stringify(action)});
+  expect((await(await invoke()).json()).error).toBe('GENERATION_TIMEOUT');
+  expect((await(await invoke()).json()).error).toBe('GENERATION_TIMEOUT');expect(calls).toBe(1);
+  expect((await(await request(path+`/sessions/${f.id}/history`,'GET',undefined,a.cookie)).json())).toHaveLength(0);
+  expect((await pool.query('SELECT revision FROM card_import.sessions WHERE id=$1',[f.id])).rows[0].revision).toBe(0);
+ });
+ it('cancels an in-flight model without recording late text or repeating the key',async()=>{
+  const a=await login(),f=await fixture(a.cookie),key=randomUUID(),abort=new AbortController();let release!:(s:string)=>void,started!:()=>void,calls=0;
+  const ready=new Promise<void>(r=>{started=r;});model=async()=>{calls++;started();return new Promise<string>(r=>{release=r;});};
+  const action={action:'cancel',expectedRevision:0,idempotencyKey:key};
+  const running=app.request(path+`/sessions/${f.id}/actions`,{method:'POST',headers:{origin,cookie:a.cookie,'content-type':'application/json'},body:JSON.stringify(action),signal:abort.signal});
+  await ready;abort.abort();expect((await(await running).json()).error).toBe('GENERATION_CANCELLED');release('late');
+  expect((await(await request(path+`/sessions/${f.id}/requests/${key}`,'GET',undefined,a.cookie)).json()).status).toBe('failed');
+  await request(path+`/sessions/${f.id}/actions`,'POST',action,a.cookie);expect(calls).toBe(1);
+  expect((await(await request(path+`/sessions/${f.id}/history`,'GET',undefined,a.cookie)).json())).toHaveLength(0);
  });
 });

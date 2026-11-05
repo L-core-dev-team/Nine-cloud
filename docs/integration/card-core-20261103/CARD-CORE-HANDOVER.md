@@ -1,5 +1,13 @@
 # 交接
+
+> 以下原段落是早期历史断点；与本文件末尾 CARD-CORE-CLOSE-02 记录不一致时，以后者为准。
 本轮为局部候选，任务未完成。已接入角色上下文和限定世界书选择；模型采用注入式接口，没有真实传输适配，开场选择、正式 Provider、真实 PG 及三种素材端到端仍未完成。主要变更 apps/api/src/card-import/service.ts、context.ts、worldbook.ts 与对应测试。下一步先审阅 Provider 独立 transport 抽取的精确补丁及授权，之后在隔离 PG 和合法测试素材上验证；不可启用生产路由或改签名。查看本地 HEAD、git status 与测试矩阵确定精确断点。模型安全优先级依赖 provider 消息角色与模型行为，尚不能视为已证明。
 
 ## 后续增量（2026-11-03）
 独立测试加入域名白名单、DNS 公网验证和固定 IP 连接，以及真实隔离 PG、真实 Cookie/Session 与模拟 Provider 组合。DNS/连接的本机实际 TLS、外部 Provider 和生产安全验收仍未验证；默认 IPv6 及任何含 IPv6 的 DNS 响应拒绝。出站策略不自动启用生产路由。
+
+
+## CARD-CORE-CLOSE-02 当前断点（2026-11-03）
+角色卡 session 建立支持 greetingIndex=-1 默认开场或 >=0 备用开场。已有相同会话ID如传不同选项返回 IDEMPOTENCY_CONFLICT；GET session 返回已选文本。新增请求列表 GET /sessions/:id/requests，仅返回该 owner、该会话最近20条，不会自动重新提交；超出窗口、无请求数据或多条不确定情形仍需用户识别，不能断言未知请求未到达。act 接入 Request.signal：生成前取消/超时标失败，迟到文本不写入；已进入或完成提交时结果仍以服务端请求查询为准，不能声称取消一定回滚已提交结果。框架的真实网络断线信号传播尚未验证。
+
+本地 schema.sql 增加 greeting_index；正式迁移未实施。旧本地数据库不含该列时需隔离升级方案，部署必须先审查新旧版本兼容、备份与回滚；正式迁移及生产启用均待独立批准。详见 CARD-CORE-CLOSE-02.md。TLS 测试使用临时测试专用副本（仅增加回环地址和测试端口放行）及独立测试CA，证书校验没有关闭；真实外部模型、生产DNS策略与真实网络断线仍未验证。

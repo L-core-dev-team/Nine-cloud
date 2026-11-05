@@ -58,15 +58,16 @@ export function createCardImportRouter(service: CardImportService, auth: CloudSa
   });
   app.get('/cards', async c => c.json(await service.cards(c.get('owner'))));
   app.get('/cards/:id', async c => c.json(await service.card(c.get('owner'), uuid(c.req.param('id')))));
-  app.post('/sessions', async c => { const b = await body(c.req.raw); return c.json(await service.createSession(c.get('owner'), uuid(b.id), uuid(b.cardId))); });
-  app.get('/sessions/:id', async c => c.json(await service.session(c.get('owner'), uuid(c.req.param('id')))));
+  app.post('/sessions', async c => { const b = await body(c.req.raw); const index=b.greetingIndex === undefined ? -1 : b.greetingIndex; if (typeof index !== 'number' || !Number.isSafeInteger(index) || index < -1) throw new CardError('INVALID_GREETING'); return c.json(await service.createSession(c.get('owner'), uuid(b.id), uuid(b.cardId), index)); });
+  app.get('/sessions/:id', async c => c.json(await service.sessionWithGreeting(c.get('owner'), uuid(c.req.param('id')))));
   app.get('/sessions/:id/history', async c => c.json(await service.history(c.get('owner'), uuid(c.req.param('id')), integer(Number(c.req.query('after') ?? 0)))));
   app.post('/sessions/:id/actions', async c => {
     const b = await body(c.req.raw), action = str(b.action, 8000);
     if (!action.trim()) throw new CardError('EMPTY_ACTION');
     if (allowAction && !await allowAction(c.get('owner'))) throw new CardError('RATE_LIMITED', 429);
-    return c.json(await service.act(c.get('owner'), uuid(c.req.param('id')), uuid(b.idempotencyKey), integer(b.expectedRevision), action));
+    return c.json(await service.act(c.get('owner'), uuid(c.req.param('id')), uuid(b.idempotencyKey), integer(b.expectedRevision), action, c.req.raw.signal));
   });
+  app.get('/sessions/:id/requests', async c => c.json(await service.recentRequests(c.get('owner'), uuid(c.req.param('id')))));
   app.get('/sessions/:id/requests/:key', async c => c.json(await service.request(c.get('owner'), uuid(c.req.param('id')), uuid(c.req.param('key')))));
   app.post('/sessions/:id/requests/:key/recover', async c => c.json(await service.recover(c.get('owner'), uuid(c.req.param('id')), uuid(c.req.param('key')))));
   for (const type of ['imports', 'cards', 'sessions'] as const) app.delete(`/${type}/:id`, async c => { await service.remove(c.get('owner'), type, uuid(c.req.param('id'))); return c.body(null, 204); });
