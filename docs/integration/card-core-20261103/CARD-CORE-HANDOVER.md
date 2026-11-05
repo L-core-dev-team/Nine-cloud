@@ -48,3 +48,9 @@ POST /cards/duplicates 接收 idempotencyKey、strategy=skip|update|copy、impor
 ## CARD-PERSONA-GROUP-04B 本地阶段成果（未完成验收）
 基线 b8206217aabb4171a0079127a01aa2ae89866a40。新增本地测试 schema：group_participants、group_participant_worldbooks、group_turns、group_messages；会话创建固定参与卡版本、其世界书引用、现有 Persona 和全局世界书快照。新增 POST /group-sessions、GET /sessions/:id/group、GET /sessions/:id/group-history、POST /sessions/:id/group-actions。手动与轮询选择由服务端验证，multi 仅接收结构化 JSON 且检查参与者及长度；请求复用现有键和状态，段消息与请求完成和 revision 更新共用事务。读取历史使用可信 participant ID。测试用 host 删除挂钩按外键顺序增加新表。
 未完成：用户要求的会话级默认策略存储与切换；群聊专属世界书触发与去重的端到端测试、并发同键、真实断线取消与迟到结果的群聊专项验证；多段数量限制、分页边界和预算优先策略尚需深入验证；生产级迁移、真实模型、真实浏览器/网络断开尚未验证。现有上下文超预算时拒绝，并未实现按当前发言者和历史的优先裁剪。不能声明 04B 完整验收。不得启用生产。
+
+
+## CARD-PERSONA-GROUP-04B-CLOSEOUT（2026-11-05）
+基线 f3f703b887ee170798eb68546e69aa69cb4e39ac。新增本地 group_settings，GET/PUT /sessions/:id/group-strategy 分别读取/设置 manual 或 auto；group-actions 省略 mode 时由事务内读取当前策略并固定到本次 group_turns，已存在 key 先校验并返回原状态，不随策略变化重新选人。手动、自动、multi 可显式指定；重复参与者输出允许并保留顺序，未知字段忽略、身份及文字严校验。group-history 先按回合分页，避免多段响应被截断。
+群聊选择已固定在会话的全局书和选中发言者的专属书，复用既有选择器及内容去重；旧会话不跟随卡新版本或全局开关。群聊上下文最多 100000 字节（含模型输入结构），先移除最早完整对话，再移除选择器末尾世界书条目，不裁剪系统约束、Persona、参与者身份和当前输入，仍超限则拒绝。选择器本身仍有 50000 字节条目上限，超过即拒绝；此字节预算并非针对真实模型 tokenizer 的保证。单人路径不启用群聊裁剪。
+本地测试 schema 增加 group_settings，正式迁移未设计或执行。升级旧 04B 数据时需在独立审查后的同一事务为既有群聊补默认 manual，核对旧新应用并发和回滚；缺失设置时请求失败关闭。未执行真实网络断开、真实付费模型或生产验证，仍不得启用生产。取消检查仅能保证观察到的取消在提交前触发回滚；提交后及 COMMIT 与取消竞争结果以服务端请求记录为准。

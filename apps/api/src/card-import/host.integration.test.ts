@@ -73,6 +73,72 @@ describe.skipIf(!url)('existing host + real PostgreSQL session integration',()=>
   expect((await(await request(path+`/sessions/${two}`,'GET',undefined,a.cookie)).json()).revision).toBe(0);
 
  });
+ it('group settings, concurrency, output validation and cancellation retain authoritative state',async()=>{
+  const a=await login(),b=await login(),cards=await Promise.all([fixture(a.cookie),fixture(a.cookie)]),id=randomUUID();
+  expect((await request(path+'/group-sessions','POST',{id,cardIds:cards.map(x=>x.card)},a.cookie)).status).toBe(200);
+  const ps=await(await request(path+`/sessions/${id}/group`,'GET',undefined,a.cookie)).json();
+  expect((await(await request(path+`/sessions/${id}/group-strategy`,'GET',undefined,a.cookie)).json()).strategy).toBe('manual');
+  expect((await request(path+`/sessions/${id}/group-strategy`,'PUT',{strategy:'auto'},b.cookie)).status).toBe(404);
+  expect((await request(path+`/sessions/${id}/group-strategy`,'PUT',{strategy:'auto'},a.cookie)).status).toBe(200);
+  let release!:(v:string)=>void,ready!:()=>void,calls=0;const started=new Promise<void>(r=>{ready=r;});model=async()=>{calls++;ready();return new Promise<string>(r=>{release=r;});};
+  const key=randomUUID(),body={action:'concurrent',expectedRevision:0,idempotencyKey:key};const first=request(path+`/sessions/${id}/group-actions`,'POST',body,a.cookie);await started;
+  expect((await(await request(path+`/sessions/${id}/group-actions`,'POST',body,a.cookie)).json()).status).toBe('pending');
+  expect((await request(path+`/sessions/${id}/group-actions`,'POST',{...body,action:'different'},a.cookie)).status).toBe(409);
+  await request(path+`/sessions/${id}/group-strategy`,'PUT',{strategy:'manual'},a.cookie);release('one');expect((await(await first).json()).status).toBe('completed');expect(calls).toBe(1);
+  expect((await(await request(path+`/sessions/${id}/group-actions`,'POST',body,a.cookie)).json()).status).toBe('completed');
+  expect((await(await request(path+`/sessions/${id}/group-history`,'GET',undefined,a.cookie)).json())[0].participant_id).toBe(ps[0].id);
+  const invalid=['not json',JSON.stringify({}),JSON.stringify({messages:[{participantId:randomUUID(),text:'x'}]}),JSON.stringify({messages:[{participantId:ps[0].id,text:''}]}),JSON.stringify({messages:[{participantId:ps[0].id,text:'x'.repeat(8001)}]}),JSON.stringify({messages:Array.from({length:13},()=>({participantId:ps[0].id,text:'x'}))}),JSON.stringify({messages:[{participantId:ps[0].id,text:'valid'},{participantId:randomUUID(),text:'invalid'}]})];
+  for(const value of invalid){model=async()=>value;const res=await(await request(path+`/sessions/${id}/group-actions`,'POST',{action:'invalid',expectedRevision:1,idempotencyKey:randomUUID(),mode:'multi',participantIds:ps.map((x:{id:string})=>x.id)},a.cookie)).json();expect(res.status).toBe('failed');}
+  model=async()=>JSON.stringify({extra:'ignored',messages:[{participantId:ps[0].id,text:'one',extra:'ignored'},{participantId:ps[0].id,text:'two'}]});
+  expect((await(await request(path+`/sessions/${id}/group-actions`,'POST',{action:'repeat speaker',expectedRevision:1,idempotencyKey:randomUUID(),mode:'multi',participantIds:ps.map((x:{id:string})=>x.id)},a.cookie)).json()).status).toBe('completed');
+  const cancel=new AbortController();let late!:(v:string)=>void,wake!:()=>void;const waiting=new Promise<void>(r=>{wake=r;});model=async()=>{wake();return new Promise<string>(r=>{late=r;});};
+  const cancelKey=randomUUID(),cancelBody={action:'cancel',expectedRevision:2,idempotencyKey:cancelKey,mode:'manual',participantIds:[ps[0].id]};
+  const running=app.request(path+`/sessions/${id}/group-actions`,{method:'POST',headers:{origin,cookie:a.cookie,'content-type':'application/json'},body:JSON.stringify(cancelBody),signal:cancel.signal});await waiting;cancel.abort();expect((await(await running).json()).error).toBe('GENERATION_CANCELLED');late('late');
+  expect((await(await request(path+`/sessions/${id}/requests/${cancelKey}`,'GET',undefined,a.cookie)).json()).status).toBe('failed');
+  expect((await(await request(path+`/sessions/${id}/group-history`,'GET',undefined,a.cookie)).json())).toHaveLength(3);
+ });
+ it('group lore snapshots combine selected participant and global books without duplicate or cross-owner leakage',async()=>{
+  const a=await login(),b=await login();const upload=async(cookie:string,kind:string,data:unknown)=>await(await request(path+'/imports','POST',{filename:'synthetic.json',kind,bytesBase64:Buffer.from(JSON.stringify(data)).toString('base64'),rightsConfirmed:true},cookie)).json();
+  const world=async(cookie:string,text:string)=>upload(cookie,'worldbook',{name:text,entries:[{keys:['moon'],content:text}]});
+  const shared=await world(a.cookie,'shared lore'),privateBook=await world(a.cookie,'second lore'),foreign=await world(b.cookie,'foreign secret');
+  const makeCard=async(name:string,links:unknown[])=>{const raw=await upload(a.cookie,'card',{name,description:name,personality:'kind',scenario:'test',first_mes:'hello',mes_example:'hi'});return await(await request(path+'/cards','POST',{importId:raw.id,parentId:null,source:'test',notes:'',links},a.cookie)).json();};
+  const one=await makeCard('first',[{importId:shared.id,uri:'local:shared'}]),two=await makeCard('second',[{importId:shared.id,uri:'local:shared'},{importId:privateBook.id,uri:'local:private'}]);
+  expect((await request(path+`/worldbooks/${foreign.id}/global`,'PUT',{enabled:true},a.cookie)).status).toBe(404);
+  await request(path+`/worldbooks/${shared.id}/global`,'PUT',{enabled:true},a.cookie);const id=randomUUID();await request(path+'/group-sessions','POST',{id,cardIds:[one.id,two.id]},a.cookie);
+  const ps=await(await request(path+`/sessions/${id}/group`,'GET',undefined,a.cookie)).json();await request(path+`/worldbooks/${shared.id}/global`,'PUT',{enabled:false},a.cookie);
+  const newer=await(await request(path+`/imports/${shared.id}/worldbook-versions`,'POST',{changes:{name:'changed book',entries:[{keys:['moon'],content:'new lore'}]}},a.cookie)).json();expect(newer.id).toBeTruthy();await request(path+`/worldbooks/${newer.id}/global`,'PUT',{enabled:true},a.cookie);
+  const changed=await(await request(path+`/cards/${two.id}/versions`,'POST',{changes:{description:'updated'},links:[]},a.cookie)).json();expect(changed.id).toBeTruthy();
+  let captured='';model=async input=>{captured=JSON.stringify(input.messages);return 'ok';};
+  expect((await(await request(path+`/sessions/${id}/group-actions`,'POST',{action:'moon',expectedRevision:0,idempotencyKey:randomUUID(),mode:'manual',participantIds:[ps[1].id]},a.cookie)).json()).status).toBe('completed');
+  expect(captured.match(/shared lore/g)).toHaveLength(1);expect(captured).toContain('second lore');expect(captured).not.toContain('foreign secret');expect(captured).not.toContain('new lore');expect(captured).toContain('second');expect(captured).not.toContain('updated');
+  expect((await request(path+`/sessions/${id}/group-history`,'GET',undefined,b.cookie)).status).toBe(404);
+ });
+ it('group timeout and budget preserve identity, recent turns, and trusted constraints',async()=>{
+  const a=await login(),cards=await Promise.all([fixture(a.cookie),fixture(a.cookie)]),id=randomUUID();await request(path+'/group-sessions','POST',{id,cardIds:cards.map(x=>x.card)},a.cookie);
+  const ps=await(await request(path+`/sessions/${id}/group`,'GET',undefined,a.cookie)).json();let n=0;model=async()=>{n++;return new Promise<string>(()=>{});};
+  const timeoutApp=createApp(undefined,undefined,{service:auth,origin},undefined,{pool,timeoutMs:20,model:(input,signal)=>model(input,signal)}),key=randomUUID();
+  const invoke=()=>timeoutApp.request(path+`/sessions/${id}/group-actions`,{method:'POST',headers:{origin,cookie:a.cookie,'content-type':'application/json'},body:JSON.stringify({action:'wait',expectedRevision:0,idempotencyKey:key,mode:'manual',participantIds:[ps[0].id]})});
+  expect((await(await invoke()).json()).error).toBe('GENERATION_TIMEOUT');expect((await(await invoke()).json()).error).toBe('GENERATION_TIMEOUT');expect(n).toBe(1);
+  model=async()=> 'x'.repeat(7900);for(let rev=0;rev<8;rev++){const res=await(await request(path+`/sessions/${id}/group-actions`,'POST',{action:`turn ${rev}`,expectedRevision:rev,idempotencyKey:randomUUID(),mode:'manual',participantIds:[ps[0].id]},a.cookie)).json();expect(res.status).toBe('completed');}
+  let seen='';model=async input=>{seen=JSON.stringify(input);expect(input.messages[0].role).toBe('system');expect(input.history.at(-1)?.action).toBe('turn 7');expect(input.history.length).toBeLessThan(8);expect(Buffer.byteLength(JSON.stringify(input))).toBeLessThanOrEqual(100000);return 'last';};
+  expect((await(await request(path+`/sessions/${id}/group-actions`,'POST',{action:'current request',expectedRevision:8,idempotencyKey:randomUUID(),mode:'manual',participantIds:[ps[1].id]},a.cookie)).json()).status).toBe('completed');expect(seen).toContain(ps[1].id);expect(seen).toContain('current request');
+ });
+ it('group cancellation around commit and relogin preserve request boundaries',async()=>{
+  const a=await login(),cards=await Promise.all([fixture(a.cookie),fixture(a.cookie)]),id=randomUUID();await request(path+'/group-sessions','POST',{id,cardIds:cards.map(x=>x.card)},a.cookie);
+  const ps=await(await request(path+`/sessions/${id}/group`,'GET',undefined,a.cookie)).json(),headers={origin,cookie:a.cookie,'content-type':'application/json'};
+  const pre=new AbortController();pre.abort();const preKey=randomUUID();const preResponse=await app.request(path+`/sessions/${id}/group-actions`,{method:'POST',headers,signal:pre.signal,body:JSON.stringify({action:'pre',expectedRevision:0,idempotencyKey:preKey,mode:'manual',participantIds:[ps[0].id]})});expect(preResponse.status).toBe(409);
+  expect((await(await request(path+`/sessions/${id}/requests/${preKey}`,'GET',undefined,a.cookie)).json()).status).toBe('unknown');
+  let release!:(v:string)=>void,started!:()=>void;const ready=new Promise<void>(r=>{started=r;});model=async()=>{started();return new Promise<string>(r=>{release=r;});};const abort=new AbortController(),key=randomUUID();
+  const pending=app.request(path+`/sessions/${id}/group-actions`,{method:'POST',headers,signal:abort.signal,body:JSON.stringify({action:'precommit',expectedRevision:0,idempotencyKey:key,mode:'manual',participantIds:[ps[0].id]})});await ready;
+  const blocker=await pool.connect();await blocker.query('BEGIN');await blocker.query('SELECT 1 FROM card_import.sessions WHERE owner_id=$1 AND id=$2 FOR UPDATE',[a.owner,id]);release('before commit');await new Promise(r=>setTimeout(r,50));abort.abort();await blocker.query('ROLLBACK');blocker.release();expect((await(await pending).json()).status).toBe('failed');
+  expect((await(await request(path+`/sessions/${id}/group-history`,'GET',undefined,a.cookie)).json())).toEqual([]);expect((await(await request(path+`/sessions/${id}`,'GET',undefined,a.cookie)).json()).revision).toBe(0);
+  model=async()=> 'committed';const completedKey=randomUUID();const after=new AbortController();const response=await app.request(path+`/sessions/${id}/group-actions`,{method:'POST',headers,signal:after.signal,body:JSON.stringify({action:'done',expectedRevision:0,idempotencyKey:completedKey,mode:'manual',participantIds:[ps[1].id]})});expect((await response.json()).status).toBe('completed');after.abort();
+  await request(path+`/sessions/${id}/group-strategy`,'PUT',{strategy:'auto'},a.cookie);await request('/api/auth/logout','POST',{},a.cookie);expect((await request(path+`/sessions/${id}/group-history`,'GET',undefined,a.cookie)).status).toBe(401);
+  await pool.query("UPDATE auth_challenges SET issued_at=issued_at-interval '2 minutes' WHERE email=$1",[a.email]);await request('/api/auth/code','POST',{email:a.email});const relogin=await request('/api/auth/verify','POST',{email:a.email,code:mail.get(a.email)});const cookie=relogin.headers.get('set-cookie')!.split(';')[0]!;
+  expect((await(await request(path+`/sessions/${id}/group-history`,'GET',undefined,cookie)).json())).toHaveLength(1);expect((await(await request(path+`/sessions/${id}/group-strategy`,'GET',undefined,cookie)).json()).strategy).toBe('auto');
+  const other=randomUUID();await request(path+'/group-sessions','POST',{id:other,cardIds:cards.map(x=>x.card)},cookie);expect((await(await request(path+`/sessions/${other}/group-history`,'GET',undefined,cookie)).json())).toEqual([]);
+  expect((await(await request(path+`/sessions/${id}/group-actions`,'POST',{action:'continue',expectedRevision:1,idempotencyKey:randomUUID(),mode:'manual',participantIds:[ps[0].id]},cookie)).json()).status).toBe('completed');
+ });
  it('pins persona versions to sessions and prevents cross-account access and deletion',async()=>{
   const a=await login(),b=await login(),f=await fixture(a.cookie),id=randomUUID();
   const v1=await(await request(path+'/personas','POST',{id,name:'first',description:'old identity',extensions:{role:'fixture'}},a.cookie)).json();

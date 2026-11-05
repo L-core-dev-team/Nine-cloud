@@ -24,7 +24,7 @@ export function cardImportHost(options: CardImportHostOptions, auth: AuthSession
  */
 export async function eraseCardImports(client: PoolClient, owner: string): Promise<void> {
   // Must run under the lifecycle's account lock, before deleting auth_accounts.
-  for (const table of ['group_messages', 'group_turns', 'group_participant_worldbooks', 'group_participants', 'requests', 'session_worldbooks', 'session_personas', 'sessions', 'persona_versions', 'personas', 'global_worldbooks', 'duplicate_requests', 'links', 'cards', 'imports']) {
+  for (const table of ['group_settings', 'group_messages', 'group_turns', 'group_participant_worldbooks', 'group_participants', 'requests', 'session_worldbooks', 'session_personas', 'sessions', 'persona_versions', 'personas', 'global_worldbooks', 'duplicate_requests', 'links', 'cards', 'imports']) {
     await client.query(`DELETE FROM card_import.${table} WHERE owner_id=$1`, [owner]);
   }
 }

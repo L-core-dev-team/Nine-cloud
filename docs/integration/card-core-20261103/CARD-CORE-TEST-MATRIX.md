@@ -32,3 +32,8 @@
 ## CARD-PERSONA-GROUP-04B 本地定向验证（2026-11-05）
 真实 PostgreSQL 隔离实例、真实 Email Cookie/Session、合成模型：`pnpm exec vitest run apps/api/src/card-import/host.integration.test.ts apps/api/src/card-import/context.test.ts apps/api/src/card-import/worldbook.test.ts apps/api/src/card-import/card-model-provider.test.ts`，4 文件 34 项 PASS。覆盖 2/3 人创建、指定/轮询、合法多段、伪造参与者拒绝、重复键、历史、跨账号读取、Persona 选定、第二段插入故障回滚、单人已有回归。首次 SQL 类型错误和单人历史内部键泄露引起失败，修正后新空库复测通过。API `pnpm --filter @jiuxiao/api typecheck`、`pnpm --filter @jiuxiao/api build`、`git diff --check` PASS。
 群聊世界书实际触发和固定版本专项、并发同键、取消/迟到及跨会话恢复专项 NOT RUN；结构错误专项仅验证了非法参与者，非 JSON 样本 NOT RUN。真实模型和生产 NOT VERIFIED；正式迁移 NOT RUN。上述未完成项不得标为 PASS。
+
+
+## CARD-PERSONA-GROUP-04B-CLOSEOUT（2026-11-05）
+本机独立 PostgreSQL、Hono app.request + 真实 Email Cookie/Session、合成 Provider：`pnpm exec vitest run apps/api/src/card-import/host.integration.test.ts apps/api/src/card-import/context.test.ts apps/api/src/card-import/worldbook.test.ts apps/api/src/card-import/card-model-provider.test.ts apps/api/src/services/provider-golden.test.ts`：5 文件 46 项 PASS。包括群聊书快照/去重/账号隔离；策略切换与重登录恢复；同键并发及内容冲突；超时与生成中取消、迟到结果；生成前、事务行锁等待中的提交前取消与提交后取消；模拟多段第二条插入失败回滚；模型非法 JSON、缺失字段、伪造身份、空/过长/过多/混合段拒绝，重复发言及额外字段处理；旧单人及 Persona 回归、预算裁剪。重登录为避免等待测试通过数据库调整了合成验证码请求的时间，不是生产认证行为变更。
+API `pnpm --filter @jiuxiao/api typecheck`、`pnpm --filter @jiuxiao/api build`、`git diff --check` PASS。此前一次重新登录测试因真实认证冷却 FAIL，经合成时间调整后在新库复测 PASS。请求通过应用内 HTTP 接口而非真实 TCP；客户端真实断线到服务器的取消传播 NOT VERIFIED。COMMIT 未知结果、正式迁移、真实模型及生产 NOT VERIFIED/NOT RUN；不将测试授权解释为生产签收。

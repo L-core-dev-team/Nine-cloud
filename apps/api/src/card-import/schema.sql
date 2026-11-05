@@ -91,3 +91,9 @@ CREATE TABLE card_import.group_messages (
  FOREIGN KEY(owner_id,session_id,key) REFERENCES card_import.group_turns(owner_id,session_id,key) ON DELETE CASCADE,
  FOREIGN KEY(owner_id,session_id,participant_id) REFERENCES card_import.group_participants(owner_id,session_id,id)
 );
+
+-- Local-only session preference; not a production migration.
+CREATE TABLE card_import.group_settings (
+ owner_id text NOT NULL, session_id uuid NOT NULL, strategy text NOT NULL DEFAULT 'manual' CHECK(strategy IN ('manual','auto')),
+ PRIMARY KEY(owner_id,session_id), FOREIGN KEY(owner_id,session_id) REFERENCES card_import.sessions(owner_id,id) ON DELETE CASCADE
+);
