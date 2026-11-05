@@ -10,7 +10,7 @@ CREATE TABLE card_import.imports (
 CREATE TABLE card_import.cards (
  owner_id text NOT NULL, id uuid NOT NULL, import_id uuid NOT NULL, parent_id uuid,
  metadata jsonb NOT NULL, created_at timestamptz NOT NULL DEFAULT now(),
- PRIMARY KEY(owner_id,id), UNIQUE(owner_id,import_id),
+ PRIMARY KEY(owner_id,id),
  FOREIGN KEY(owner_id,import_id) REFERENCES card_import.imports(owner_id,id),
  FOREIGN KEY(owner_id,parent_id) REFERENCES card_import.cards(owner_id,id)
 );

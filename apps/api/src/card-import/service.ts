@@ -61,7 +61,7 @@ export class CardImportService {
   async confirm(owner: string, input: ConfirmCard) {
     return this.transaction(owner, async c => {
       await this.lock(c, owner);
-      const existing = (await c.query('SELECT * FROM card_import.cards WHERE owner_id=$1 AND import_id=$2', [owner, input.importId])).rows[0];
+      const existing = (await c.query('SELECT * FROM card_import.cards WHERE owner_id=$1 AND import_id=$2 AND parent_id IS NOT DISTINCT FROM $3 ORDER BY created_at,id LIMIT 1', [owner, input.importId,input.parentId])).rows[0];
       if (existing) {
         const links = existing.metadata.links as Link[];
         if (existing.metadata.source !== input.source || existing.metadata.notes !== input.notes || existing.metadata.parentId !== input.parentId || links.length !== input.links.length || links.some((l, i) => l.uri !== input.links[i]?.uri || l.importId !== input.links[i]?.importId)) throw new CardError('CONFIRMATION_CONFLICT', 409);
@@ -82,8 +82,8 @@ export class CardImportService {
     });
   }
   async cards(owner: string) { return (await this.pool.query('SELECT id,import_id,parent_id,metadata,created_at FROM card_import.cards WHERE owner_id=$1 ORDER BY created_at,id LIMIT 100', [owner])).rows; }
-  async library(owner:string, filter:{query:string;folder:string;tag:string;favorite:boolean}) {
-    return (await this.pool.query(`SELECT c.id,c.import_id,c.parent_id,c.metadata,c.created_at,i.parsed->>'name' AS name FROM card_import.cards c JOIN card_import.imports i ON i.owner_id=c.owner_id AND i.id=c.import_id WHERE c.owner_id=$1 AND ($2='' OR position(lower($2) in lower(coalesce(i.parsed->>'name',''))) > 0) AND ($3='' OR coalesce(c.metadata->'library'->>'folder','')=$3) AND ($4='' OR coalesce(c.metadata->'library'->'tags','[]'::jsonb) ? $4) AND (NOT $5::boolean OR c.metadata->'library'->'favorite'='true'::jsonb) ORDER BY c.created_at,c.id LIMIT 100`,[owner,filter.query,filter.folder,filter.tag,filter.favorite])).rows;
+  async library(owner:string, filter:{query:string;folder:string;tag:string;favorite:boolean},after?:{created:string;id:string}) {
+    return (await this.pool.query(`SELECT c.id,c.import_id,c.parent_id,c.metadata,c.created_at,to_char(c.created_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"') AS cursor_created,i.parsed->>'name' AS name FROM card_import.cards c JOIN card_import.imports i ON i.owner_id=c.owner_id AND i.id=c.import_id WHERE c.owner_id=$1 AND ($2='' OR position(lower($2) in lower(coalesce(i.parsed->>'name',''))) > 0) AND ($3='' OR coalesce(c.metadata->'library'->>'folder','')=$3) AND ($4='' OR coalesce(c.metadata->'library'->'tags','[]'::jsonb) ? $4) AND (NOT $5::boolean OR c.metadata->'library'->'favorite'='true'::jsonb) AND ($6::timestamptz IS NULL OR (c.created_at,c.id)>($6::timestamptz,$7::uuid)) ORDER BY c.created_at,c.id LIMIT 100`,[owner,filter.query,filter.folder,filter.tag,filter.favorite,after?.created??null,after?.id??null])).rows;
   }
   async updateLibrary(owner:string,id:string,library:{folder:string;tags:string[];favorite:boolean}) {
     if (library.folder.length>100 || library.tags.length>30 || library.tags.some(t=>!t.trim()||t.length>100) || new Set(library.tags).size!==library.tags.length) throw new CardError('INVALID_LIBRARY');
@@ -96,25 +96,36 @@ export class CardImportService {
     const row = (await this.pool.query('SELECT c.*,i.parsed FROM card_import.cards c JOIN card_import.imports i ON i.owner_id=c.owner_id AND i.id=c.import_id WHERE c.owner_id=$1 AND c.id=$2', [owner, id])).rows[0];
     if (!row) throw new CardError('NOT_FOUND', 404); return row;
   }
+  async originalPngCover(owner:string,id:string):Promise<Buffer|undefined> {
+    const rows=(await this.pool.query(`WITH RECURSIVE lineage AS (SELECT owner_id,id,parent_id,import_id,0 AS depth FROM card_import.cards WHERE owner_id=$1 AND id=$2 UNION ALL SELECT c.owner_id,c.id,c.parent_id,c.import_id,l.depth+1 FROM lineage l JOIN card_import.cards c ON c.owner_id=l.owner_id AND c.id=l.parent_id WHERE l.depth<100) SELECT i.original FROM lineage l JOIN card_import.imports i ON i.owner_id=l.owner_id AND i.id=l.import_id ORDER BY l.depth`,[owner,id])).rows;
+    for(const row of rows){const bytes=row.original as Buffer;if(bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])))return bytes;}
+    return undefined;
+  }
   /** Editing creates a new immutable imported document and card version. Existing sessions keep their card id. */
-  async editCard(owner: string, id: string, changes: Record<string, unknown>) {
+  async editCard(owner: string, id: string, changes: Record<string, unknown>, replacementLinks?:Link[]) {
     const allowed = new Set(['name','description','personality','scenario','first_mes','alternate_greetings','mes_example','system_prompt','post_history_instructions','character_book']);
-    if (!Object.keys(changes).length || Object.keys(changes).some(k => !allowed.has(k))) throw new CardError('INVALID_CARD_EDIT');
+    if ((!Object.keys(changes).length && !replacementLinks) || Object.keys(changes).some(k => !allowed.has(k))) throw new CardError('INVALID_CARD_EDIT');
     for (const [key,value] of Object.entries(changes)) {
       if (key === 'alternate_greetings') { if (!Array.isArray(value) || value.length > 100 || value.some(v => typeof v !== 'string' || v.length > 8000)) throw new CardError('INVALID_CARD_EDIT'); }
       else if (key === 'character_book') { if (!record(value) || !(Array.isArray(value.entries) || record(value.entries))) throw new CardError('INVALID_CARD_EDIT'); }
       else if (typeof value !== 'string' || value.length > 32000) throw new CardError('INVALID_CARD_EDIT');
     }
-    const old=await this.card(owner,id), parsed=old.parsed as ParsedFile;
-    if (!parsed.document) throw new CardError('CARD_NOT_READY',409);
-    const doc=structuredClone(parsed.document), data=record(doc.data)?doc.data:doc;
-    Object.assign(data,changes);
-    const bytes=Buffer.from(JSON.stringify(doc),'utf8');
-    // Parse before persisting; the original import remains unchanged.
-    parseFile(bytes,'card');
-    const imported=await this.preview(owner,'edited-card.json','card',bytes);
-    if (imported.duplicate) throw new CardError('CARD_VERSION_EXISTS',409);
-    return this.confirm(owner,{importId:imported.id,parentId:id,source:old.metadata.source,notes:old.metadata.notes,links:old.metadata.links});
+    return this.transaction(owner,async c=>{
+      await this.lock(c,owner);
+      const old=(await c.query('SELECT c.*,i.parsed,i.original,i.sha256 FROM card_import.cards c JOIN card_import.imports i ON i.owner_id=c.owner_id AND i.id=c.import_id WHERE c.owner_id=$1 AND c.id=$2 FOR UPDATE OF c',[owner,id])).rows[0];
+      if(!old?.parsed?.document)throw new CardError('NOT_FOUND',404);
+      const doc=structuredClone(old.parsed.document),data=record(doc.data)?doc.data:doc;Object.assign(data,changes);
+      const bytes=Object.keys(changes).length?Buffer.from(JSON.stringify(doc),'utf8'):old.original as Buffer;
+      const parsed=parseFile(bytes,'card'),digest=hash(bytes),links=replacementLinks??old.metadata.links as Link[];
+      if(links.length>32 || new Set(links.map(l=>l.uri)).size!==links.length || parsed.assetRefs.some(ref=>!links.some(l=>l.uri===ref)))throw new CardError('MISSING_OR_DUPLICATE_ASSET',409);
+      for(const link of links){const row=(await c.query('SELECT error,kind FROM card_import.imports WHERE owner_id=$1 AND id=$2',[owner,link.importId])).rows[0];if(!row||row.error||row.kind==='card')throw new CardError('ATTACHMENT_NOT_FOUND',409);}
+      let imported=(await c.query("SELECT id FROM card_import.imports WHERE owner_id=$1 AND kind='card' AND sha256=$2",[owner,digest])).rows[0];
+      if(!imported){const usage=(await c.query('SELECT count(*)::int AS count,coalesce(sum(octet_length(original)),0)::bigint AS bytes FROM card_import.imports WHERE owner_id=$1',[owner])).rows[0];if(usage.count>=100||Number(usage.bytes)+bytes.length>32*1024*1024)throw new CardError('IMPORT_QUOTA',413);imported=(await c.query("INSERT INTO card_import.imports(owner_id,id,sha256,kind,filename,original,parsed,error) VALUES($1,$2,$3,'card','edited-card.json',$4,$5,NULL) RETURNING id",[owner,randomUUID(),digest,bytes,parsed])).rows[0];}
+      const metadata={importId:imported.id,parentId:id,source:old.metadata.source,notes:old.metadata.notes,links};
+      const card=(await c.query('INSERT INTO card_import.cards(owner_id,id,import_id,parent_id,metadata) VALUES($1,$2,$3,$4,$5) RETURNING *',[owner,randomUUID(),imported.id,id,metadata])).rows[0];
+      for(const link of links)await c.query('INSERT INTO card_import.links(owner_id,card_id,import_id,uri) VALUES($1,$2,$3,$4)',[owner,card.id,link.importId,link.uri]);
+      return card;
+    });
   }
   async remove(owner: string, type: 'cards' | 'imports' | 'sessions', id: string) {
     // Closed enum is supplied by routes, never an identifier supplied by a client.

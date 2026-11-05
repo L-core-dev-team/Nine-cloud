@@ -11,6 +11,7 @@ import type { CardModel } from './service.js';
 import { createCardModel } from './card-model-provider.js';
 import { createProviderTransport } from '@jiuxiao/domain/provider-narrative';
 import { createCardEgressFetch } from './provider-egress.js';
+import { exportCard } from './export.js';
 
 const url=process.env.CARD_IMPORT_HOST_TEST_DATABASE_URL;
 if(url){const u=new URL(url);if(u.hostname!=='127.0.0.1'||!/^\/jiuxiao_test_card_host_[0-9_]+$/.test(u.pathname))throw Error('ISOLATED_HOST_TEST_DATABASE_REQUIRED');}
@@ -41,6 +42,19 @@ describe.skipIf(!url)('existing host + real PostgreSQL session integration',()=>
   } finally { install.release(); }
  });
  afterAll(async()=>{await pool.end();});
+ it('preserves the imported PNG cover when exporting an edited descendant',async()=>{
+  const a=await login(),doc={name:'png',description:'old',personality:'kind',scenario:'test',first_mes:'hi',mes_example:'sample'},original=exportCard(doc,'png');
+  const imported=await(await request(path+'/imports','POST',{filename:'cover.png',kind:'card',bytesBase64:original.toString('base64'),rightsConfirmed:true},a.cookie)).json();
+  const card=await(await request(path+'/cards','POST',{importId:imported.id,parentId:null,source:'test',notes:'',links:[]},a.cookie)).json();const edited=await(await request(path+`/cards/${card.id}/versions`,'POST',{changes:{description:'changed'}},a.cookie)).json();
+  const response=await request(path+`/cards/${edited.id}/export?format=png`,'GET',undefined,a.cookie);expect(response.status).toBe(200);expect(response.headers.get('X-Card-Cover')).toBe('original');const output=Buffer.from(await response.arrayBuffer());
+  const chunks=(bytes:Buffer)=>{const parts:Buffer[]=[];for(let i=8;i<bytes.length;){const end=i+bytes.readUInt32BE(i)+12;if(bytes.toString('ascii',i+4,i+8)!=='tEXt')parts.push(bytes.subarray(i,end));i=end;}return parts;};expect(chunks(output)).toEqual(chunks(original));
+ });
+ it('pages deterministically across equal timestamps without leaking another account',async()=>{
+  const a=await login(),b=await login(),f=await fixture(a.cookie);for(let i=0;i<101;i++)await pool.query('INSERT INTO card_import.cards(owner_id,id,import_id,parent_id,metadata,created_at) VALUES($1,$2,$3,NULL,$4,$5)',[a.owner,randomUUID(),f.importId,{library:{folder:'page',tags:['t'],favorite:true}},'2026-01-01T00:00:00.123456Z']);
+  const first=await(await request(path+'/library/page?folder=page&tag=t&favorite=true','GET',undefined,a.cookie)).json();expect(first.items).toHaveLength(100);expect(first.nextCursor).toBeTruthy();
+  const second=await(await request(path+'/library/page?folder=page&tag=t&favorite=true&after='+encodeURIComponent(first.nextCursor),'GET',undefined,a.cookie)).json();expect(second.items).toHaveLength(1);expect(new Set([...first.items,...second.items].map((v:{id:string})=>v.id)).size).toBe(101);
+  const foreign=await(await request(path+'/library/page?folder=page','GET',undefined,b.cookie)).json();expect(foreign.items).toHaveLength(0);
+ });
  it('creates an edited card version without changing original bytes or old session context',async()=>{
   const a=await login(),b=await login();const doc={spec:'chara_card_v2',spec_version:'2.0',data:{name:'old',description:'old description',personality:'kind',scenario:'place',first_mes:'hello',mes_example:'example',extensions:{unknown:'preserved'}}};
   const original=JSON.stringify(doc);const imported=await(await request(path+'/imports','POST',{filename:'card.json',kind:'card',bytesBase64:Buffer.from(original).toString('base64'),rightsConfirmed:true},a.cookie)).json();
@@ -57,6 +71,23 @@ describe.skipIf(!url)('existing host + real PostgreSQL session integration',()=>
   const newSession=randomUUID();await request(path+'/sessions','POST',{id:newSession,cardId:version.id},a.cookie);const contexts:string[]=[];model=async input=>{contexts.push(JSON.stringify(input.messages));return 'reply';};
   for(const id of [oldSession,newSession])expect((await(await request(path+`/sessions/${id}/actions`,'POST',{action:'hi',expectedRevision:0,idempotencyKey:randomUUID()},a.cookie)).json()).status).toBe('completed');
   expect(contexts[0]).toContain('old description');expect(contexts[1]).toContain('new description');
+ });
+ it('atomically creates a link-only version, rejects invalid links and preserves old session',async()=>{
+  const a=await login(),f=await fixture(a.cookie),other=await login();
+  const world={name:'moon',entries:[{keys:['moon'],content:'world lore'}]};
+  const imported=await(await request(path+'/imports','POST',{filename:'book.json',kind:'worldbook',bytesBase64:Buffer.from(JSON.stringify(world)).toString('base64'),rightsConfirmed:true},a.cookie)).json();
+  const initial=(await pool.query('SELECT count(*)::int AS n FROM card_import.imports WHERE owner_id=$1',[a.owner])).rows[0].n;
+  expect((await request(path+`/cards/${f.card}/versions`,'POST',{changes:{description:'changed'},links:[{importId:randomUUID(),uri:'book'}]},a.cookie)).status).toBe(409);
+  expect((await pool.query('SELECT count(*)::int AS n FROM card_import.imports WHERE owner_id=$1',[a.owner])).rows[0].n).toBe(initial);
+  await pool.query("CREATE FUNCTION card_import.test_fail_link() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'synthetic failure'; END $$");
+  await pool.query('CREATE TRIGGER test_fail_link BEFORE INSERT ON card_import.links FOR EACH ROW EXECUTE FUNCTION card_import.test_fail_link()');
+  try {expect((await request(path+`/cards/${f.card}/versions`,'POST',{changes:{description:'rollback'},links:[{importId:imported.id,uri:'book'}]},a.cookie)).status).toBe(500);} finally {await pool.query('DROP TRIGGER test_fail_link ON card_import.links');await pool.query('DROP FUNCTION card_import.test_fail_link()');}
+  expect((await pool.query('SELECT count(*)::int AS n FROM card_import.imports WHERE owner_id=$1',[a.owner])).rows[0].n).toBe(initial);
+  expect((await request(path+`/cards/${f.card}/versions`,'POST',{changes:{},links:[{importId:imported.id,uri:'book'}]},other.cookie)).status).toBe(404);
+  const response=await request(path+`/cards/${f.card}/versions`,'POST',{changes:{},links:[{importId:imported.id,uri:'book'}]},a.cookie);expect(response.status).toBe(200);const version=await response.json();expect(version.import_id).toBe(f.importId);
+  const session=randomUUID();await request(path+'/sessions','POST',{id:session,cardId:version.id},a.cookie);const contexts:string[]=[];model=async input=>{contexts.push(JSON.stringify(input.messages));return 'reply';};
+  for(const id of [f.id,session])await request(path+`/sessions/${id}/actions`,'POST',{action:'moon',expectedRevision:0,idempotencyKey:randomUUID()},a.cookie);
+  expect(contexts[0]).not.toContain('world lore');expect(contexts[1]).toContain('world lore');
  });
  it('plays cards without lore and with a linked standalone worldbook through authenticated sessions',async()=>{
   const a=await login(), sent:string[]=[];

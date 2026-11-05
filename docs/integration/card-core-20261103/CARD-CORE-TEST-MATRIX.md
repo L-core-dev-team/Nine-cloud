@@ -15,3 +15,6 @@
 
 ## CARD-FEATURE-COMPLETE-03 隔离回归（2026-11-05）
 独立 PostgreSQL、真实 Cookie/Session、合成账号和模型：`pnpm exec vitest run apps/api/src/card-import/host.integration.test.ts apps/api/src/card-import/export.test.ts apps/api/src/card-import/parser.test.ts apps/api/src/card-import/router.test.ts apps/api/src/card-import/worldbook.test.ts apps/api/src/card-import/card-model-provider.test.ts apps/api/src/services/provider-golden.test.ts`：7文件41项 PASS，含三种世界书场景、编辑版本原件/旧会话隔离、卡库过滤、V2/V3/PNG本机回读和世界书副本。API typecheck/build PASS。PNG初次使用固定图片发生 PNG_EXPORT_INVALID，改用正确生成分块并复测通过；真实ST导入和封面保持 NOT VERIFIED。真实Provider NOT RUN；生产部署、正式迁移 NOT RUN。测试数据库独立创建并已停止实例。
+
+## CARD-FEATURE-COMPLETE-03B 受影响回归（2026-11-05）
+隔离 PostgreSQL + 真实 Cookie/Session + 合成模型：`pnpm exec vitest run apps/api/src/card-import/host.integration.test.ts apps/api/src/card-import/export.test.ts apps/api/src/card-import/parser.test.ts apps/api/src/card-import/router.test.ts apps/api/src/card-import/worldbook.test.ts apps/api/src/card-import/card-model-provider.test.ts apps/api/src/services/provider-golden.test.ts`：7文件45项 PASS；包含关联写入失败触发器注入并检查导入计数回滚、关联版本和旧会话、101项相同微秒时间分页、PNG后代导出图片块与原件相等。API typecheck/build PASS。此测试没有证明所有回滚、旧库升级、真实供应商、固定ST互操作或生产安全；均 NOT VERIFIED / NOT RUN。
