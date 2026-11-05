@@ -24,3 +24,10 @@ A线唯一查重总表有别人的未提交修改，本候选未覆盖；以上�
 关联版本接口 POST /cards/:id/versions 可传 changes={} 与 links 数组；新卡的链接是快照，旧会话不变；链接存在且属于同一账号，必需资产仍需绑定。新增 GET /library/page，游标保存微秒精度时间与 UUID，并支持原搜索/目录/标签/收藏组合；旧 GET /library 保留。PNG 导出沿父链查找同账号原 PNG 并保留非角色元数据图片块，X-Card-Cover 标 original 或 default；JSON来源无原 PNG 时为默认图。原图片数据不重写。回读只验证现有 parser，尚未证明固定 SillyTavern 实际互操作。
 
 未完成：世界书全局启停及更新后会话语义、重复导入明确的跳过/更新/另存三策略及其幂等、共享世界书生命周期与完整删除引用检查、真实固定 ST 互操作、旧数据库升级和并发回滚证明。当前的链接版本可用于关联/替换/解除和同账号多卡引用，但不等同全局世界书管理完成。用户继续授权不应被误认为生产迁移、部署或真实模型授权。历史功能查重总表仍有他人未提交改动，本候选未触碰。
+
+## CARD-FEATURE-COMPLETE-03B-FINAL（2026-11-05）
+基线 ae92956989bf71baf411399d43124be21be6696d。新增仅账号范围全局设置 GET /worldbooks/global、PUT /worldbooks/:id/global；会话创建在 owner advisory lock 下将当时启用的世界书 import ID 快照到 session_worldbooks，旧会话不受后续启停及新版本更改；历史会话升级后快照为空，维持旧行为。卡专属链接与全局项同 import ID 只读取一次；同内容的完整书先按 JSON 字面去重，所选条目相同 content/position/order 去重，其余条目不合并。共享只指同账号内多个卡/会话引用，不跨账号。引用中的书删除因外键返回 RESOURCE_IN_USE；停用全局不删除已有会话引用。书更新创建新 import，不会自动切换设置，须显式停用旧 ID 并启用新 ID；设置间的两次调用不是原子替换。
+
+POST /cards/duplicates 接收 idempotencyKey、strategy=skip|update|copy、importId、可选 targetId；owner advisory lock 内查请求并绑定指纹和结果，重试原键返回同 cardId，内容变化冲突。skip 返回已有卡，update 从目标卡建立 parent 版本并复用导入原件，copy 新建独立卡；卡有未绑定附件时失败关闭。请求记录引用 card，删除被引用卡前会拒绝，以保留幂等。跨账号拒绝；同请求并发测试通过。新索引/数据库策略还须正式审核。
+
+本地 schema 增加 global_worldbooks、session_worldbooks、duplicate_requests，保留 owner 复合外键；账户删除挂钩依次清理。旧库在部署新代码前需要单独、经过批准的迁移；旧 session 的 global 快照不得通过当前设置补造。此前放宽 cards(owner_id,import_id) 的唯一约束测试在隔离临时表模拟，旧行保留、重复版本存在时重建旧唯一约束会失败并保留两条；正式回滚不得丢弃重复卡或直接重建约束。实际旧库全量升级、旧版并发及双版本兼容未验证；不能进入生产。固定 SillyTavern 06bde939fb1e9c4c8d8641d810f0a916b5bce127 未在本机发现，实际双向导入导出 NOT VERIFIED，不能以九霄 parser 回读冒充。真实 Provider、生产迁移、部署未执行。

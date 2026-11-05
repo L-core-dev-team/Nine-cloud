@@ -18,3 +18,6 @@
 
 ## CARD-FEATURE-COMPLETE-03B 受影响回归（2026-11-05）
 隔离 PostgreSQL + 真实 Cookie/Session + 合成模型：`pnpm exec vitest run apps/api/src/card-import/host.integration.test.ts apps/api/src/card-import/export.test.ts apps/api/src/card-import/parser.test.ts apps/api/src/card-import/router.test.ts apps/api/src/card-import/worldbook.test.ts apps/api/src/card-import/card-model-provider.test.ts apps/api/src/services/provider-golden.test.ts`：7文件45项 PASS；包含关联写入失败触发器注入并检查导入计数回滚、关联版本和旧会话、101项相同微秒时间分页、PNG后代导出图片块与原件相等。API typecheck/build PASS。此测试没有证明所有回滚、旧库升级、真实供应商、固定ST互操作或生产安全；均 NOT VERIFIED / NOT RUN。
+
+## CARD-FEATURE-COMPLETE-03B-FINAL 定向结果（2026-11-05）
+独立 PostgreSQL、真实 Cookie/Session、合成模型：`pnpm exec vitest run apps/api/src/card-import/host.integration.test.ts apps/api/src/card-import/export.test.ts apps/api/src/card-import/parser.test.ts apps/api/src/card-import/router.test.ts apps/api/src/card-import/worldbook.test.ts apps/api/src/card-import/card-model-provider.test.ts apps/api/src/services/provider-golden.test.ts`，7文件48项 PASS；新增启用/关闭时新旧会话隔离、跨账号拒绝、引用删除拒绝、三种重复策略并发同键、旧唯一约束模拟升级及失败回退保全。API typecheck/build PASS。全量旧库升级、生产迁移及固定 ST 实际互操作 NOT RUN/NOT VERIFIED。模拟临时表不能替代真实旧库生产迁移验证。

@@ -25,6 +25,22 @@ CREATE TABLE card_import.links (
  FOREIGN KEY(owner_id,card_id) REFERENCES card_import.cards(owner_id,id) ON DELETE CASCADE,
  FOREIGN KEY(owner_id,import_id) REFERENCES card_import.imports(owner_id,id)
 );
+-- Local test schema only; upgrade and rollback require separate review.
+CREATE TABLE card_import.global_worldbooks (
+ owner_id text NOT NULL, import_id uuid NOT NULL,
+ PRIMARY KEY(owner_id,import_id),
+ FOREIGN KEY(owner_id,import_id) REFERENCES card_import.imports(owner_id,id)
+);
+CREATE TABLE card_import.session_worldbooks (
+ owner_id text NOT NULL, session_id uuid NOT NULL, import_id uuid NOT NULL,
+ PRIMARY KEY(owner_id,session_id,import_id),
+ FOREIGN KEY(owner_id,session_id) REFERENCES card_import.sessions(owner_id,id) ON DELETE CASCADE,
+ FOREIGN KEY(owner_id,import_id) REFERENCES card_import.imports(owner_id,id)
+);
+CREATE TABLE card_import.duplicate_requests (
+ owner_id text NOT NULL, key uuid NOT NULL, fingerprint text NOT NULL, card_id uuid NOT NULL,
+ PRIMARY KEY(owner_id,key), FOREIGN KEY(owner_id,card_id) REFERENCES card_import.cards(owner_id,id)
+);
 CREATE TABLE card_import.requests (
  owner_id text NOT NULL, session_id uuid NOT NULL, key uuid NOT NULL,
  fingerprint text NOT NULL, expected_revision integer NOT NULL, action text NOT NULL,

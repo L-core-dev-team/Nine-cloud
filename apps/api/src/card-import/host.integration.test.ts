@@ -42,6 +42,37 @@ describe.skipIf(!url)('existing host + real PostgreSQL session integration',()=>
   } finally { install.release(); }
  });
  afterAll(async()=>{await pool.end();});
+ it('simulates old unique-constraint upgrade and preserves duplicate versions on rollback attempt',async()=>{
+  const c=await pool.connect();try {await c.query('BEGIN');await c.query('CREATE TEMP TABLE legacy_cards (owner_id text,id uuid,import_id uuid, UNIQUE(owner_id,import_id)) ON COMMIT DROP');const importId=randomUUID(),first=randomUUID(),second=randomUUID();
+   await c.query('INSERT INTO legacy_cards VALUES($1,$2,$3)',['owner',first,importId]);await c.query('ALTER TABLE legacy_cards DROP CONSTRAINT legacy_cards_owner_id_import_id_key');
+   await c.query('INSERT INTO legacy_cards VALUES($1,$2,$3)',['owner',second,importId]);await c.query('SAVEPOINT before_downgrade');
+   await expect(c.query('ALTER TABLE legacy_cards ADD UNIQUE(owner_id,import_id)')).rejects.toThrow();await c.query('ROLLBACK TO SAVEPOINT before_downgrade');
+   expect((await c.query('SELECT id FROM legacy_cards WHERE owner_id=$1 ORDER BY id',['owner'])).rowCount).toBe(2);await c.query('ROLLBACK');
+  }finally{c.release();}
+ });
+ it('snapshots global books per session and preserves references on disable',async()=>{
+  const a=await login(),b=await login(),f=await fixture(a.cookie),world={name:'global',entries:[{keys:['moon'],content:'global lore'}]};
+  const book=await(await request(path+'/imports','POST',{filename:'w.json',kind:'worldbook',bytesBase64:Buffer.from(JSON.stringify(world)).toString('base64'),rightsConfirmed:true},a.cookie)).json();
+  expect((await request(path+`/worldbooks/${book.id}/global`,'PUT',{enabled:true},b.cookie)).status).toBe(404);
+  expect((await request(path+`/worldbooks/${book.id}/global`,'PUT',{enabled:true},a.cookie)).status).toBe(200);
+  const enabled=randomUUID();await request(path+'/sessions','POST',{id:enabled,cardId:f.card},a.cookie);
+  expect((await request(path+`/worldbooks/${book.id}/global`,'PUT',{enabled:false},a.cookie)).status).toBe(200);
+  const disabled=randomUUID();await request(path+'/sessions','POST',{id:disabled,cardId:f.card},a.cookie);
+  const contexts:string[]=[];model=async input=>{contexts.push(JSON.stringify(input.messages));return 'reply';};
+  for(const id of [f.id,enabled,disabled])await request(path+`/sessions/${id}/actions`,'POST',{action:'moon',expectedRevision:0,idempotencyKey:randomUUID()},a.cookie);
+  expect(contexts[0]).not.toContain('global lore');expect(contexts[1]).toContain('global lore');expect(contexts[2]).not.toContain('global lore');
+  expect((await request(path+`/imports/${book.id}`,'DELETE',undefined,a.cookie)).status).toBe(409);
+ });
+ it('keeps duplicate import strategies idempotent across concurrent requests and owners',async()=>{
+  const a=await login(),b=await login(),f=await fixture(a.cookie);
+  for(const strategy of ['skip','copy','update']){
+   const body={strategy,idempotencyKey:randomUUID(),importId:f.importId,targetId:f.card};
+   const [one,two]=await Promise.all([request(path+'/cards/duplicates','POST',body,a.cookie),request(path+'/cards/duplicates','POST',body,a.cookie)]);
+   expect(one.status).toBe(200);expect(two.status).toBe(200);const x=await one.json(),y=await two.json();expect(x.cardId).toBe(y.cardId);if(strategy==='skip')expect(x.cardId).toBe(f.card);else expect(x.cardId).not.toBe(f.card);
+   expect((await request(path+'/cards/duplicates','POST',{...body,strategy:strategy==='skip'?'copy':'skip'},a.cookie)).status).toBe(409);
+   expect((await request(path+'/cards/duplicates','POST',{...body,idempotencyKey:randomUUID()},b.cookie)).status).toBe(404);
+  }
+ });
  it('preserves the imported PNG cover when exporting an edited descendant',async()=>{
   const a=await login(),doc={name:'png',description:'old',personality:'kind',scenario:'test',first_mes:'hi',mes_example:'sample'},original=exportCard(doc,'png');
   const imported=await(await request(path+'/imports','POST',{filename:'cover.png',kind:'card',bytesBase64:original.toString('base64'),rightsConfirmed:true},a.cookie)).json();
