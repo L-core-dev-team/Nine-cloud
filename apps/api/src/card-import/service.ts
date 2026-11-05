@@ -50,6 +50,14 @@ export class CardImportService {
     const row = (await this.pool.query('SELECT * FROM card_import.imports WHERE owner_id=$1 AND id=$2', [owner, id])).rows[0];
     if (!row) throw new CardError('NOT_FOUND', 404); return row;
   }
+  async editWorldbook(owner:string,id:string,changes:Record<string,unknown>) {
+    if(!Object.keys(changes).length||Object.keys(changes).some(k=>!['name','entries'].includes(k))) throw new CardError('INVALID_WORLDBOOK_EDIT');
+    if(changes.name!==undefined && (typeof changes.name!=='string'||changes.name.length>255))throw new CardError('INVALID_WORLDBOOK_EDIT');
+    if(changes.entries!==undefined && !Array.isArray(changes.entries) && !record(changes.entries))throw new CardError('INVALID_WORLDBOOK_EDIT');
+    const old=await this.readImport(owner,id);if(old.kind!=='worldbook'||!old.parsed?.document)throw new CardError('WORLDBOOK_NOT_READY',409);
+    const doc=structuredClone(old.parsed.document);Object.assign(doc,changes);const bytes=Buffer.from(JSON.stringify(doc),'utf8');parseFile(bytes,'worldbook');
+    return this.preview(owner,'edited-worldbook.json','worldbook',bytes);
+  }
   async confirm(owner: string, input: ConfirmCard) {
     return this.transaction(owner, async c => {
       await this.lock(c, owner);
@@ -74,9 +82,39 @@ export class CardImportService {
     });
   }
   async cards(owner: string) { return (await this.pool.query('SELECT id,import_id,parent_id,metadata,created_at FROM card_import.cards WHERE owner_id=$1 ORDER BY created_at,id LIMIT 100', [owner])).rows; }
+  async library(owner:string, filter:{query:string;folder:string;tag:string;favorite:boolean}) {
+    return (await this.pool.query(`SELECT c.id,c.import_id,c.parent_id,c.metadata,c.created_at,i.parsed->>'name' AS name FROM card_import.cards c JOIN card_import.imports i ON i.owner_id=c.owner_id AND i.id=c.import_id WHERE c.owner_id=$1 AND ($2='' OR position(lower($2) in lower(coalesce(i.parsed->>'name',''))) > 0) AND ($3='' OR coalesce(c.metadata->'library'->>'folder','')=$3) AND ($4='' OR coalesce(c.metadata->'library'->'tags','[]'::jsonb) ? $4) AND (NOT $5::boolean OR c.metadata->'library'->'favorite'='true'::jsonb) ORDER BY c.created_at,c.id LIMIT 100`,[owner,filter.query,filter.folder,filter.tag,filter.favorite])).rows;
+  }
+  async updateLibrary(owner:string,id:string,library:{folder:string;tags:string[];favorite:boolean}) {
+    if (library.folder.length>100 || library.tags.length>30 || library.tags.some(t=>!t.trim()||t.length>100) || new Set(library.tags).size!==library.tags.length) throw new CardError('INVALID_LIBRARY');
+    return this.transaction(owner,async c=>{
+      const updated=await c.query("UPDATE card_import.cards SET metadata=jsonb_set(metadata,'{library}',$3::jsonb,true) WHERE owner_id=$1 AND id=$2 RETURNING id,metadata",[owner,id,JSON.stringify(library)]);
+      if(!updated.rowCount)throw new CardError('NOT_FOUND',404);return updated.rows[0];
+    });
+  }
   async card(owner: string, id: string) {
     const row = (await this.pool.query('SELECT c.*,i.parsed FROM card_import.cards c JOIN card_import.imports i ON i.owner_id=c.owner_id AND i.id=c.import_id WHERE c.owner_id=$1 AND c.id=$2', [owner, id])).rows[0];
     if (!row) throw new CardError('NOT_FOUND', 404); return row;
+  }
+  /** Editing creates a new immutable imported document and card version. Existing sessions keep their card id. */
+  async editCard(owner: string, id: string, changes: Record<string, unknown>) {
+    const allowed = new Set(['name','description','personality','scenario','first_mes','alternate_greetings','mes_example','system_prompt','post_history_instructions','character_book']);
+    if (!Object.keys(changes).length || Object.keys(changes).some(k => !allowed.has(k))) throw new CardError('INVALID_CARD_EDIT');
+    for (const [key,value] of Object.entries(changes)) {
+      if (key === 'alternate_greetings') { if (!Array.isArray(value) || value.length > 100 || value.some(v => typeof v !== 'string' || v.length > 8000)) throw new CardError('INVALID_CARD_EDIT'); }
+      else if (key === 'character_book') { if (!record(value) || !(Array.isArray(value.entries) || record(value.entries))) throw new CardError('INVALID_CARD_EDIT'); }
+      else if (typeof value !== 'string' || value.length > 32000) throw new CardError('INVALID_CARD_EDIT');
+    }
+    const old=await this.card(owner,id), parsed=old.parsed as ParsedFile;
+    if (!parsed.document) throw new CardError('CARD_NOT_READY',409);
+    const doc=structuredClone(parsed.document), data=record(doc.data)?doc.data:doc;
+    Object.assign(data,changes);
+    const bytes=Buffer.from(JSON.stringify(doc),'utf8');
+    // Parse before persisting; the original import remains unchanged.
+    parseFile(bytes,'card');
+    const imported=await this.preview(owner,'edited-card.json','card',bytes);
+    if (imported.duplicate) throw new CardError('CARD_VERSION_EXISTS',409);
+    return this.confirm(owner,{importId:imported.id,parentId:id,source:old.metadata.source,notes:old.metadata.notes,links:old.metadata.links});
   }
   async remove(owner: string, type: 'cards' | 'imports' | 'sessions', id: string) {
     // Closed enum is supplied by routes, never an identifier supplied by a client.

@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { readJson, type CloudSaveRouteAuth } from '../routes/saves.js';
 import { base64, CardError, record } from './parser.js';
 import { CardImportService } from './service.js';
+import { exportCard } from './export.js';
 const uuid = (v: unknown): string => {
   if (typeof v !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v)) throw new CardError('INVALID_ID');
   return v;
@@ -50,6 +51,8 @@ export function createCardImportRouter(service: CardImportService, auth: CloudSa
     const r = await service.readImport(c.get('owner'), uuid(c.req.param('id')));
     return new Response(new Uint8Array(r.original), { headers: { 'Content-Type': 'application/octet-stream', 'Content-Disposition': 'attachment; filename="original.bin"', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' } });
   });
+  app.get('/imports/:id/worldbook-export', async c => { const r=await service.readImport(c.get('owner'),uuid(c.req.param('id')));if(r.kind!=='worldbook'||!r.parsed?.document)throw new CardError('WORLDBOOK_NOT_READY',409);return new Response(JSON.stringify(r.parsed.document),{headers:{'Content-Type':'application/json; charset=utf-8','Content-Disposition':'attachment; filename="worldbook.json"','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}}); });
+  app.post('/imports/:id/worldbook-versions', async c=>{const b=await body(c.req.raw);if(!record(b.changes))throw new CardError('INVALID_WORLDBOOK_EDIT');return c.json(await service.editWorldbook(c.get('owner'),uuid(c.req.param('id')),b.changes));});
   app.post('/cards', async c => {
     const b = await body(c.req.raw);
     if (!Array.isArray(b.links) || b.links.length > 32) throw new CardError('INVALID_LINKS');
@@ -57,7 +60,11 @@ export function createCardImportRouter(service: CardImportService, auth: CloudSa
     return c.json(await service.confirm(c.get('owner'), { importId: uuid(b.importId), parentId: b.parentId == null ? null : uuid(b.parentId), source: str(b.source, 2048), notes: str(b.notes, 8000), links }));
   });
   app.get('/cards', async c => c.json(await service.cards(c.get('owner'))));
+  app.get('/library', async c => c.json(await service.library(c.get('owner'),{query:str(c.req.query('q')??'',100),folder:str(c.req.query('folder')??'',100),tag:str(c.req.query('tag')??'',100),favorite:c.req.query('favorite')==='true'})));
+  app.put('/cards/:id/library', async c => {const b=await body(c.req.raw);if(typeof b.favorite!=='boolean'||!Array.isArray(b.tags)||b.tags.some(x=>typeof x!=='string'))throw new CardError('INVALID_LIBRARY');return c.json(await service.updateLibrary(c.get('owner'),uuid(c.req.param('id')),{folder:str(b.folder,100),tags:b.tags as string[],favorite:b.favorite}));});
   app.get('/cards/:id', async c => c.json(await service.card(c.get('owner'), uuid(c.req.param('id')))));
+  app.get('/cards/:id/export', async c => { const format=c.req.query('format'); if(format!=='v2'&&format!=='v3'&&format!=='png')throw new CardError('INVALID_EXPORT_FORMAT'); const row=await service.card(c.get('owner'),uuid(c.req.param('id'))); const doc=row.parsed?.document; if(!record(doc))throw new CardError('CARD_NOT_READY',409); const bytes=exportCard(doc,format); return new Response(new Uint8Array(bytes),{headers:{'Content-Type':format==='png'?'image/png':'application/json','Content-Disposition':`attachment; filename="card.${format==='png'?'png':'json'}"`,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}}); });
+  app.post('/cards/:id/versions', async c => { const b=await body(c.req.raw); if (!record(b.changes)) throw new CardError('INVALID_CARD_EDIT'); return c.json(await service.editCard(c.get('owner'),uuid(c.req.param('id')),b.changes)); });
   app.post('/sessions', async c => { const b = await body(c.req.raw); const index=b.greetingIndex === undefined ? -1 : b.greetingIndex; if (typeof index !== 'number' || !Number.isSafeInteger(index) || index < -1) throw new CardError('INVALID_GREETING'); return c.json(await service.createSession(c.get('owner'), uuid(b.id), uuid(b.cardId), index)); });
   app.get('/sessions/:id', async c => c.json(await service.sessionWithGreeting(c.get('owner'), uuid(c.req.param('id')))));
   app.get('/sessions/:id/history', async c => c.json(await service.history(c.get('owner'), uuid(c.req.param('id')), integer(Number(c.req.query('after') ?? 0)))));

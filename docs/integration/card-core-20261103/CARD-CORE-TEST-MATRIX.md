@@ -12,3 +12,6 @@
 - vitest 9文件37项 PASS；API typecheck/build PASS；git diff --check PASS。
 - 测试专用副本 + 本机真实 TLS：PASS，测试CA受信时校验 SNI/Host/连接回环IP，错误主机名、未受信自签名证书拒绝；重定向未跟随且 Provider 归一化失败；未授权域名、IPv6和私网拒绝。该副本额外允许 127.0.0.1 和57464端口；生产代码未开放，不能把该结果当公网/生产代理策略验收。
 - 真实外部模型 NOT RUN；生产迁移 NOT RUN；真实网络断线传播 NOT VERIFIED；生产出站防护、实机与内容审核 NOT VERIFIED。
+
+## CARD-FEATURE-COMPLETE-03 隔离回归（2026-11-05）
+独立 PostgreSQL、真实 Cookie/Session、合成账号和模型：`pnpm exec vitest run apps/api/src/card-import/host.integration.test.ts apps/api/src/card-import/export.test.ts apps/api/src/card-import/parser.test.ts apps/api/src/card-import/router.test.ts apps/api/src/card-import/worldbook.test.ts apps/api/src/card-import/card-model-provider.test.ts apps/api/src/services/provider-golden.test.ts`：7文件41项 PASS，含三种世界书场景、编辑版本原件/旧会话隔离、卡库过滤、V2/V3/PNG本机回读和世界书副本。API typecheck/build PASS。PNG初次使用固定图片发生 PNG_EXPORT_INVALID，改用正确生成分块并复测通过；真实ST导入和封面保持 NOT VERIFIED。真实Provider NOT RUN；生产部署、正式迁移 NOT RUN。测试数据库独立创建并已停止实例。

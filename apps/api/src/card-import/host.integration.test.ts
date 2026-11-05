@@ -41,6 +41,39 @@ describe.skipIf(!url)('existing host + real PostgreSQL session integration',()=>
   } finally { install.release(); }
  });
  afterAll(async()=>{await pool.end();});
+ it('creates an edited card version without changing original bytes or old session context',async()=>{
+  const a=await login(),b=await login();const doc={spec:'chara_card_v2',spec_version:'2.0',data:{name:'old',description:'old description',personality:'kind',scenario:'place',first_mes:'hello',mes_example:'example',extensions:{unknown:'preserved'}}};
+  const original=JSON.stringify(doc);const imported=await(await request(path+'/imports','POST',{filename:'card.json',kind:'card',bytesBase64:Buffer.from(original).toString('base64'),rightsConfirmed:true},a.cookie)).json();
+  const card=await(await request(path+'/cards','POST',{importId:imported.id,parentId:null,source:'test',notes:'',links:[]},a.cookie)).json();const oldSession=randomUUID();await request(path+'/sessions','POST',{id:oldSession,cardId:card.id},a.cookie);
+  expect((await request(path+`/cards/${card.id}/versions`,'POST',{changes:{description:'new description'}},b.cookie)).status).toBe(404);
+  const edit=await request(path+`/cards/${card.id}/versions`,'POST',{changes:{description:'new description'}},a.cookie);expect(edit.status).toBe(200);const version=await edit.json();expect(version.parent_id).toBe(card.id);
+  const loaded=await(await request(path+`/cards/${version.id}`,'GET',undefined,a.cookie)).json();expect(loaded.parsed.document.data.extensions.unknown).toBe('preserved');
+  for(const format of ['v2','v3','png']) { const exported=await request(path+`/cards/${version.id}/export?format=${format}`,'GET',undefined,a.cookie);expect(exported.status).toBe(200);const bytes=Buffer.from(await exported.arrayBuffer());const round=await(await request(path+'/imports','POST',{filename:`export.${format==='png'?'png':'json'}`,kind:'card',bytesBase64:bytes.toString('base64'),rightsConfirmed:true},a.cookie)).json();expect(round.parsed.document.data.description).toBe('new description');expect(round.parsed.document.data.extensions.unknown).toBe('preserved'); }
+  expect((await request(path+`/cards/${version.id}/export?format=v2`,'GET',undefined,b.cookie)).status).toBe(404);
+  expect((await request(path+`/cards/${version.id}/library`,'PUT',{folder:'favorites',tags:['moon'],favorite:true},a.cookie)).status).toBe(200);
+  expect((await request(path+`/cards/${version.id}/library`,'PUT',{folder:'x',tags:[],favorite:false},b.cookie)).status).toBe(404);
+  const found=await(await request(path+'/library?q=old&folder=favorites&tag=moon&favorite=true','GET',undefined,a.cookie)).json();expect(found.map((v:{id:string})=>v.id)).toContain(version.id);
+  expect(await(await request(path+`/imports/${imported.id}/original`,'GET',undefined,a.cookie)).text()).toBe(original);
+  const newSession=randomUUID();await request(path+'/sessions','POST',{id:newSession,cardId:version.id},a.cookie);const contexts:string[]=[];model=async input=>{contexts.push(JSON.stringify(input.messages));return 'reply';};
+  for(const id of [oldSession,newSession])expect((await(await request(path+`/sessions/${id}/actions`,'POST',{action:'hi',expectedRevision:0,idempotencyKey:randomUUID()},a.cookie)).json()).status).toBe('completed');
+  expect(contexts[0]).toContain('old description');expect(contexts[1]).toContain('new description');
+ });
+ it('plays cards without lore and with a linked standalone worldbook through authenticated sessions',async()=>{
+  const a=await login(), sent:string[]=[];
+  model=async input=>{sent.push(JSON.stringify(input.messages));return 'reply';};
+  for(const linked of [false,true]){
+   const data={name:randomUUID(),description:'desc',personality:'kind',scenario:'test',first_mes:'hello',mes_example:'sample'};
+   const uploaded=await(await request(path+'/imports','POST',{filename:'card.json',kind:'card',bytesBase64:Buffer.from(JSON.stringify(data)).toString('base64'),rightsConfirmed:true},a.cookie)).json();
+   const links=[];
+   if(linked){const world={name:'synthetic',entries:[{keys:['moon'],content:'standalone moon lore'},{keys:['sun'],content:'unmatched sun lore'}]};const w=await(await request(path+'/imports','POST',{filename:'world.json',kind:'worldbook',bytesBase64:Buffer.from(JSON.stringify(world)).toString('base64'),rightsConfirmed:true},a.cookie)).json();links.push({importId:w.id,uri:'local:book'});const exported=await request(path+`/imports/${w.id}/worldbook-export`,'GET',undefined,a.cookie);expect(await exported.json()).toEqual(world);const edit=await request(path+`/imports/${w.id}/worldbook-versions`,'POST',{changes:{name:'edited'}},a.cookie);expect(edit.status).toBe(200);expect((await edit.json()).parsed.document.name).toBe('edited');expect(await(await request(path+`/imports/${w.id}/worldbook-export`,'GET',undefined,a.cookie)).json()).toEqual(world);}
+   const card=await(await request(path+'/cards','POST',{importId:uploaded.id,parentId:null,source:'test',notes:'',links},a.cookie)).json();const id=randomUUID();
+   expect((await request(path+'/sessions','POST',{id,cardId:card.id},a.cookie)).status).toBe(200);
+   const key=randomUUID(), act={action:'moon',expectedRevision:0,idempotencyKey:key};
+   expect((await(await request(path+`/sessions/${id}/actions`,'POST',act,a.cookie)).json()).status).toBe('completed');
+   expect((await(await request(path+`/sessions/${id}/history`,'GET',undefined,a.cookie)).json())).toHaveLength(1);
+   if(linked){expect(sent.at(-1)).toContain('standalone moon lore');expect(sent.at(-1)).not.toContain('unmatched sun lore');}else expect(sent.at(-1)).not.toContain('standalone moon lore');
+  }
+ });
  it('preserves legacy session rows when the local-only greeting column is added',async()=>{
   const c=await pool.connect();try {
    await c.query('BEGIN');await c.query('CREATE TEMP TABLE legacy_session (owner_id text, id uuid, revision integer) ON COMMIT DROP');
