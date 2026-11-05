@@ -31,3 +31,10 @@ A线唯一查重总表有别人的未提交修改，本候选未覆盖；以上�
 POST /cards/duplicates 接收 idempotencyKey、strategy=skip|update|copy、importId、可选 targetId；owner advisory lock 内查请求并绑定指纹和结果，重试原键返回同 cardId，内容变化冲突。skip 返回已有卡，update 从目标卡建立 parent 版本并复用导入原件，copy 新建独立卡；卡有未绑定附件时失败关闭。请求记录引用 card，删除被引用卡前会拒绝，以保留幂等。跨账号拒绝；同请求并发测试通过。新索引/数据库策略还须正式审核。
 
 本地 schema 增加 global_worldbooks、session_worldbooks、duplicate_requests，保留 owner 复合外键；账户删除挂钩依次清理。旧库在部署新代码前需要单独、经过批准的迁移；旧 session 的 global 快照不得通过当前设置补造。此前放宽 cards(owner_id,import_id) 的唯一约束测试在隔离临时表模拟，旧行保留、重复版本存在时重建旧唯一约束会失败并保留两条；正式回滚不得丢弃重复卡或直接重建约束。实际旧库全量升级、旧版并发及双版本兼容未验证；不能进入生产。固定 SillyTavern 06bde939fb1e9c4c8d8641d810f0a916b5bce127 未在本机发现，实际双向导入导出 NOT VERIFIED，不能以九霄 parser 回读冒充。真实 Provider、生产迁移、部署未执行。
+
+## CARD-03B-CLOSEOUT（2026-11-05）
+基线 01e465ba2225e80be5765020afcaf2bf1b02e2d7。POST /worldbooks/global/replace 在同账号 owner advisory lock 的单个事务中校验新书、删除已启用旧书、启用新书；会话创建使用相同锁。旧会话快照不变；旧未启用、其他账号目标及同 ID 均拒绝。插入故障触发器验证回滚；并发会话只能观察前或后完整状态。与客户端重复请求的特殊结果：第一次成功后重试同请求会返回 GLOBAL_WORLDBOOK_NOT_ENABLED，不会二次更改；此接口没有 idempotencyKey。
+
+固定 SillyTavern 源码 06bde939fb1e9c4c8d8641d810f0a916b5bce127 在独立目录本机 127.0.0.1:57470 实际运行（禁用扩展自动更新和模型自动下载），使用合成素材与真实 /api/characters/import、/api/characters/export、/api/worldinfo/import、/api/worldinfo/get：九霄 V2、V3 JSON 和 PNG 导入成功，ST 分别导出 PNG/JSON 经九霄 parser 读取成功；测试的 unknown_synthetic 和 extensions.synthetic_extra 经 ST PNG 往返保留；世界书导入、读取后由九霄 parser 接受。范围仅该素材和接口，非完整字段兼容或真实账号验收。原 PNG 经 ST 导入再导出后非元数据图片块不相等，不能声称跨酒馆原封面字节保持；九霄本身的 PNG 后代导出保留原图片块由既有测试覆盖。
+
+仍有门禁：正式数据库迁移与真实旧库升级、跨版本并发/回滚未验证；PNG 跨 ST 保留原图字节失败；真实 Provider/生产环境及内容审核未验收。详见 CARD-03B-CLOSEOUT-MIGRATION-PLAN.md。ST 独立测试目录依赖已安装，测试服务与 PG 均已停止，未删除历史材料。

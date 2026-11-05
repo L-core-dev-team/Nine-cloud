@@ -62,6 +62,18 @@ export class CardImportService {
     return this.transaction(owner,async c=>{await this.lock(c,owner);const book=(await c.query("SELECT 1 FROM card_import.imports WHERE owner_id=$1 AND id=$2 AND kind='worldbook' AND parsed IS NOT NULL AND error IS NULL",[owner,id])).rowCount;if(!book)throw new CardError('NOT_FOUND',404);if(enabled)await c.query('INSERT INTO card_import.global_worldbooks(owner_id,import_id) VALUES($1,$2) ON CONFLICT DO NOTHING',[owner,id]);else await c.query('DELETE FROM card_import.global_worldbooks WHERE owner_id=$1 AND import_id=$2',[owner,id]);return {id,enabled};});
   }
   async globalWorldbooks(owner:string) {return (await this.pool.query('SELECT import_id FROM card_import.global_worldbooks WHERE owner_id=$1 ORDER BY import_id',[owner])).rows;}
+  async replaceGlobalWorldbook(owner:string,oldId:string,newId:string) {
+    if(oldId===newId)throw new CardError('INVALID_WORLDBOOK_REPLACEMENT');
+    return this.transaction(owner,async c=>{
+      await this.lock(c,owner);
+      const valid=(await c.query("SELECT 1 FROM card_import.imports WHERE owner_id=$1 AND id=$2 AND kind='worldbook' AND parsed IS NOT NULL AND error IS NULL",[owner,newId])).rowCount;
+      if(!valid)throw new CardError('NOT_FOUND',404);
+      const removed=await c.query('DELETE FROM card_import.global_worldbooks WHERE owner_id=$1 AND import_id=$2 RETURNING import_id',[owner,oldId]);
+      if(!removed.rowCount)throw new CardError('GLOBAL_WORLDBOOK_NOT_ENABLED',409);
+      await c.query('INSERT INTO card_import.global_worldbooks(owner_id,import_id) VALUES($1,$2) ON CONFLICT DO NOTHING',[owner,newId]);
+      return {oldId,newId};
+    });
+  }
   async duplicateCard(owner:string,key:string,strategy:'skip'|'update'|'copy',importId:string,targetId:string|null) {
     const fingerprint=hash(JSON.stringify({strategy,importId,targetId}));
     return this.transaction(owner,async c=>{

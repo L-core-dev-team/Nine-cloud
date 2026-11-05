@@ -42,6 +42,20 @@ describe.skipIf(!url)('existing host + real PostgreSQL session integration',()=>
   } finally { install.release(); }
  });
  afterAll(async()=>{await pool.end();});
+ it('replaces global books atomically with session creation and rolls back insert failure',async()=>{
+  const a=await login(),b=await login(),f=await fixture(a.cookie);
+  const upload=async(name:string)=>await(await request(path+'/imports','POST',{filename:'w.json',kind:'worldbook',bytesBase64:Buffer.from(JSON.stringify({name,entries:[]})).toString('base64'),rightsConfirmed:true},a.cookie)).json();
+  const old=await upload('old'),next=await upload('new');await request(path+`/worldbooks/${old.id}/global`,'PUT',{enabled:true},a.cookie);
+  const oldSession=randomUUID();await request(path+'/sessions','POST',{id:oldSession,cardId:f.card},a.cookie);
+  const replacement={oldId:old.id,newId:next.id};expect((await request(path+'/worldbooks/global/replace','POST',replacement,b.cookie)).status).toBe(404);
+  await pool.query("CREATE FUNCTION card_import.test_global_failure() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'synthetic'; END $$");await pool.query('CREATE TRIGGER test_global_failure BEFORE INSERT ON card_import.global_worldbooks FOR EACH ROW EXECUTE FUNCTION card_import.test_global_failure()');
+  try {expect((await request(path+'/worldbooks/global/replace','POST',replacement,a.cookie)).status).toBe(500);}finally{await pool.query('DROP TRIGGER test_global_failure ON card_import.global_worldbooks');await pool.query('DROP FUNCTION card_import.test_global_failure()');}
+  expect((await(await request(path+'/worldbooks/global','GET',undefined,a.cookie)).json()).map((x:{import_id:string})=>x.import_id)).toEqual([old.id]);
+  const ids=Array.from({length:8},()=>randomUUID());const actions=ids.map(id=>request(path+'/sessions','POST',{id,cardId:f.card},a.cookie));actions.push(request(path+'/worldbooks/global/replace','POST',replacement,a.cookie));expect((await Promise.all(actions)).every(r=>r.status===200)).toBe(true);
+  const newSession=randomUUID();await request(path+'/sessions','POST',{id:newSession,cardId:f.card},a.cookie);
+  const rows=(await pool.query('SELECT session_id,import_id FROM card_import.session_worldbooks WHERE owner_id=$1',[a.owner])).rows;const selected=(id:string)=>rows.filter(r=>r.session_id===id).map(r=>r.import_id);
+  expect(selected(oldSession)).toEqual([old.id]);expect(selected(newSession)).toEqual([next.id]);for(const id of ids)expect([[old.id],[next.id]]).toContainEqual(selected(id));
+ });
  it('simulates old unique-constraint upgrade and preserves duplicate versions on rollback attempt',async()=>{
   const c=await pool.connect();try {await c.query('BEGIN');await c.query('CREATE TEMP TABLE legacy_cards (owner_id text,id uuid,import_id uuid, UNIQUE(owner_id,import_id)) ON COMMIT DROP');const importId=randomUUID(),first=randomUUID(),second=randomUUID();
    await c.query('INSERT INTO legacy_cards VALUES($1,$2,$3)',['owner',first,importId]);await c.query('ALTER TABLE legacy_cards DROP CONSTRAINT legacy_cards_owner_id_import_id_key');

@@ -21,3 +21,6 @@
 
 ## CARD-FEATURE-COMPLETE-03B-FINAL 定向结果（2026-11-05）
 独立 PostgreSQL、真实 Cookie/Session、合成模型：`pnpm exec vitest run apps/api/src/card-import/host.integration.test.ts apps/api/src/card-import/export.test.ts apps/api/src/card-import/parser.test.ts apps/api/src/card-import/router.test.ts apps/api/src/card-import/worldbook.test.ts apps/api/src/card-import/card-model-provider.test.ts apps/api/src/services/provider-golden.test.ts`，7文件48项 PASS；新增启用/关闭时新旧会话隔离、跨账号拒绝、引用删除拒绝、三种重复策略并发同键、旧唯一约束模拟升级及失败回退保全。API typecheck/build PASS。全量旧库升级、生产迁移及固定 ST 实际互操作 NOT RUN/NOT VERIFIED。模拟临时表不能替代真实旧库生产迁移验证。
+
+## CARD-03B-CLOSEOUT 测试（2026-11-05）
+独立 PostgreSQL、真实 Cookie/Session、合成模型：`pnpm exec vitest run apps/api/src/card-import/host.integration.test.ts apps/api/src/card-import/export.test.ts apps/api/src/card-import/parser.test.ts apps/api/src/card-import/router.test.ts apps/api/src/card-import/worldbook.test.ts apps/api/src/card-import/card-model-provider.test.ts apps/api/src/services/provider-golden.test.ts`：7文件49项 PASS，含替换中会话并发、账号隔离、插入故障回滚、既有45项相关回归；API typecheck/build PASS。固定 SillyTavern 1.19.0（06bde939）本机 HTTP 合成 V2/V3/PNG 导入、PNG/JSON 导出到九霄解析、世界书导入与读取 PASS；测试样本未知字段/扩展保留 PASS，ST PNG 往返图片块逐字节一致 FAIL。真实旧库迁移、正式生产环境、真实模型 NOT RUN。
