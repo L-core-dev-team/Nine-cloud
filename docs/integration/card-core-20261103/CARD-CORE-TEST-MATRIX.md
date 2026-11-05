@@ -24,3 +24,6 @@
 
 ## CARD-03B-CLOSEOUT 测试（2026-11-05）
 独立 PostgreSQL、真实 Cookie/Session、合成模型：`pnpm exec vitest run apps/api/src/card-import/host.integration.test.ts apps/api/src/card-import/export.test.ts apps/api/src/card-import/parser.test.ts apps/api/src/card-import/router.test.ts apps/api/src/card-import/worldbook.test.ts apps/api/src/card-import/card-model-provider.test.ts apps/api/src/services/provider-golden.test.ts`：7文件49项 PASS，含替换中会话并发、账号隔离、插入故障回滚、既有45项相关回归；API typecheck/build PASS。固定 SillyTavern 1.19.0（06bde939）本机 HTTP 合成 V2/V3/PNG 导入、PNG/JSON 导出到九霄解析、世界书导入与读取 PASS；测试样本未知字段/扩展保留 PASS，ST PNG 往返图片块逐字节一致 FAIL。真实旧库迁移、正式生产环境、真实模型 NOT RUN。
+
+## CARD-PERSONA-GROUP-04 阶段测试（2026-11-05）
+隔离 PostgreSQL、真实 Cookie/Session 和合成模型：host.integration、context、export、worldbook、provider-golden 共5文件38项 PASS；Persona 不同版本的会话固定、跨账号拒绝、已引用时删除拒绝及模型不可信上下文通过。API typecheck/build PASS。Persona 多用户和正式迁移仍需进一步验证；群聊及所有群聊验收 NOT RUN；真实 Provider NOT RUN。

@@ -25,6 +25,21 @@ CREATE TABLE card_import.links (
  FOREIGN KEY(owner_id,card_id) REFERENCES card_import.cards(owner_id,id) ON DELETE CASCADE,
  FOREIGN KEY(owner_id,import_id) REFERENCES card_import.imports(owner_id,id)
 );
+CREATE TABLE card_import.personas (
+ owner_id text NOT NULL, id uuid NOT NULL, is_default boolean NOT NULL DEFAULT false,
+ PRIMARY KEY(owner_id,id)
+);
+CREATE UNIQUE INDEX card_import_one_default_persona ON card_import.personas(owner_id) WHERE is_default;
+CREATE TABLE card_import.persona_versions (
+ owner_id text NOT NULL, id uuid NOT NULL, persona_id uuid NOT NULL, name text NOT NULL, description text NOT NULL, extensions jsonb NOT NULL,
+ created_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY(owner_id,id),
+ FOREIGN KEY(owner_id,persona_id) REFERENCES card_import.personas(owner_id,id)
+);
+CREATE TABLE card_import.session_personas (
+ owner_id text NOT NULL, session_id uuid NOT NULL, version_id uuid NOT NULL,
+ PRIMARY KEY(owner_id,session_id), FOREIGN KEY(owner_id,session_id) REFERENCES card_import.sessions(owner_id,id) ON DELETE CASCADE,
+ FOREIGN KEY(owner_id,version_id) REFERENCES card_import.persona_versions(owner_id,id)
+);
 -- Local test schema only; upgrade and rollback require separate review.
 CREATE TABLE card_import.global_worldbooks (
  owner_id text NOT NULL, import_id uuid NOT NULL,

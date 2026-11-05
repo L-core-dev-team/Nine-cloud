@@ -42,6 +42,20 @@ describe.skipIf(!url)('existing host + real PostgreSQL session integration',()=>
   } finally { install.release(); }
  });
  afterAll(async()=>{await pool.end();});
+ it('pins persona versions to sessions and prevents cross-account access and deletion',async()=>{
+  const a=await login(),b=await login(),f=await fixture(a.cookie),id=randomUUID();
+  const v1=await(await request(path+'/personas','POST',{id,name:'first',description:'old identity',extensions:{role:'fixture'}},a.cookie)).json();
+  expect((await request(path+`/personas/${id}/default`,'PUT',{},a.cookie)).status).toBe(200);
+  const old=randomUUID();expect((await request(path+'/sessions','POST',{id:old,cardId:f.card},a.cookie)).status).toBe(200);
+  const v2=await(await request(path+`/personas/${id}/versions`,'POST',{name:'second',description:'new identity',extensions:{}},a.cookie)).json();
+  const newer=randomUUID();expect((await request(path+'/sessions','POST',{id:newer,cardId:f.card,personaVersionId:v2.id},a.cookie)).status).toBe(200);
+  expect((await(await request(path+`/sessions/${old}`,'GET',undefined,a.cookie)).json()).persona.id).toBe(v1.id);
+  expect((await request(path+'/sessions','POST',{id:randomUUID(),cardId:f.card,personaVersionId:v2.id},b.cookie)).status).toBe(404);
+  expect((await request(path+`/personas/${id}`,'DELETE',undefined,a.cookie)).status).toBe(409);
+  const inputs:string[]=[];model=async input=>{inputs.push(JSON.stringify(input.messages));return 'reply';};
+  for(const sid of [old,newer])await request(path+`/sessions/${sid}/actions`,'POST',{action:'hi',expectedRevision:0,idempotencyKey:randomUUID()},a.cookie);
+  expect(inputs[0]).toContain('old identity');expect(inputs[0]).not.toContain('new identity');expect(inputs[1]).toContain('new identity');
+ });
  it('replaces global books atomically with session creation and rolls back insert failure',async()=>{
   const a=await login(),b=await login(),f=await fixture(a.cookie);
   const upload=async(name:string)=>await(await request(path+'/imports','POST',{filename:'w.json',kind:'worldbook',bytesBase64:Buffer.from(JSON.stringify({name,entries:[]})).toString('base64'),rightsConfirmed:true},a.cookie)).json();

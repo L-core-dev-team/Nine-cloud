@@ -43,6 +43,11 @@ export function createCardImportRouter(service: CardImportService, auth: CloudSa
   });
   app.get('/imports', async c => c.json(await service.imports(c.get('owner'))));
   app.get('/sessions', async c => c.json(await service.sessions(c.get('owner'))));
+  app.get('/personas',async c=>c.json(await service.personas(c.get('owner'))));
+  app.post('/personas',async c=>{const b=await body(c.req.raw);if(!record(b.extensions))throw new CardError('INVALID_PERSONA');return c.json(await service.savePersona(c.get('owner'),uuid(b.id),str(b.name,256),str(b.description,8000),b.extensions,true));});
+  app.post('/personas/:id/versions',async c=>{const b=await body(c.req.raw);if(!record(b.extensions))throw new CardError('INVALID_PERSONA');return c.json(await service.savePersona(c.get('owner'),uuid(c.req.param('id')),str(b.name,256),str(b.description,8000),b.extensions,false));});
+  app.put('/personas/:id/default',async c=>c.json(await service.defaultPersona(c.get('owner'),uuid(c.req.param('id')))));
+  app.delete('/personas/:id',async c=>{await service.deletePersona(c.get('owner'),uuid(c.req.param('id')));return c.body(null,204);});
   app.get('/imports/:id', async c => {
     const r = await service.readImport(c.get('owner'), uuid(c.req.param('id')));
     return c.json({ id: r.id, sha256: r.sha256, filename: r.filename, kind: r.kind, parsed: r.parsed, error: r.error });
@@ -70,7 +75,7 @@ export function createCardImportRouter(service: CardImportService, auth: CloudSa
   app.get('/cards/:id', async c => c.json(await service.card(c.get('owner'), uuid(c.req.param('id')))));
   app.get('/cards/:id/export', async c => { const format=c.req.query('format'); if(format!=='v2'&&format!=='v3'&&format!=='png')throw new CardError('INVALID_EXPORT_FORMAT'); const owner=c.get('owner'),id=uuid(c.req.param('id')),row=await service.card(owner,id); const doc=row.parsed?.document; if(!record(doc))throw new CardError('CARD_NOT_READY',409); const cover=format==='png'?await service.originalPngCover(owner,id):undefined; const bytes=exportCard(doc,format,cover); return new Response(new Uint8Array(bytes),{headers:{'Content-Type':format==='png'?'image/png':'application/json','Content-Disposition':`attachment; filename="card.${format==='png'?'png':'json'}"`,...(format==='png'?{'X-Card-Cover':cover?'original':'default'}:{}),'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}}); });
   app.post('/cards/:id/versions', async c => { const b=await body(c.req.raw); if (!record(b.changes)) throw new CardError('INVALID_CARD_EDIT'); let links: {importId:string;uri:string}[]|undefined; if(b.links!==undefined){if(!Array.isArray(b.links)||b.links.length>32)throw new CardError('INVALID_LINKS');links=b.links.map(l=>{if(!record(l))throw new CardError('INVALID_LINKS');return {importId:uuid(l.importId),uri:str(l.uri,2048)};});} return c.json(await service.editCard(c.get('owner'),uuid(c.req.param('id')),b.changes,links)); });
-  app.post('/sessions', async c => { const b = await body(c.req.raw); const index=b.greetingIndex === undefined ? -1 : b.greetingIndex; if (typeof index !== 'number' || !Number.isSafeInteger(index) || index < -1) throw new CardError('INVALID_GREETING'); return c.json(await service.createSession(c.get('owner'), uuid(b.id), uuid(b.cardId), index)); });
+  app.post('/sessions', async c => { const b = await body(c.req.raw); const index=b.greetingIndex === undefined ? -1 : b.greetingIndex; if (typeof index !== 'number' || !Number.isSafeInteger(index) || index < -1) throw new CardError('INVALID_GREETING'); return c.json(await service.createSession(c.get('owner'), uuid(b.id), uuid(b.cardId), index,b.personaVersionId===undefined?undefined:uuid(b.personaVersionId))); });
   app.get('/sessions/:id', async c => c.json(await service.sessionWithGreeting(c.get('owner'), uuid(c.req.param('id')))));
   app.get('/sessions/:id/history', async c => c.json(await service.history(c.get('owner'), uuid(c.req.param('id')), integer(Number(c.req.query('after') ?? 0)))));
   app.post('/sessions/:id/actions', async c => {

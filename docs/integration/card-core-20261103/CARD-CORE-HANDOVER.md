@@ -38,3 +38,8 @@ POST /cards/duplicates 接收 idempotencyKey、strategy=skip|update|copy、impor
 固定 SillyTavern 源码 06bde939fb1e9c4c8d8641d810f0a916b5bce127 在独立目录本机 127.0.0.1:57470 实际运行（禁用扩展自动更新和模型自动下载），使用合成素材与真实 /api/characters/import、/api/characters/export、/api/worldinfo/import、/api/worldinfo/get：九霄 V2、V3 JSON 和 PNG 导入成功，ST 分别导出 PNG/JSON 经九霄 parser 读取成功；测试的 unknown_synthetic 和 extensions.synthetic_extra 经 ST PNG 往返保留；世界书导入、读取后由九霄 parser 接受。范围仅该素材和接口，非完整字段兼容或真实账号验收。原 PNG 经 ST 导入再导出后非元数据图片块不相等，不能声称跨酒馆原封面字节保持；九霄本身的 PNG 后代导出保留原图片块由既有测试覆盖。
 
 仍有门禁：正式数据库迁移与真实旧库升级、跨版本并发/回滚未验证；PNG 跨 ST 保留原图字节失败；真实 Provider/生产环境及内容审核未验收。详见 CARD-03B-CLOSEOUT-MIGRATION-PLAN.md。ST 独立测试目录依赖已安装，测试服务与 PG 均已停止，未删除历史材料。
+
+## CARD-PERSONA-GROUP-04 阶段断点（2026-11-05）
+本轮仅完成 Persona 本地第一阶段，群聊未实现，任务不能判完成。新增 personas、persona_versions、session_personas 三表仅在本地测试 schema；选中版本在 session 创建时固化，旧 session 不带 persona，缺省选当时默认 persona 的最新版本；Persona 以不可信玩家设定放入 user 内容，不是 system 指令。已引用的 persona 删除返回 RESOURCE_IN_USE。账号删除测试挂钩需按请求、session_personas、sessions、persona_versions、personas顺序清理。
+接口：GET/POST /personas；POST /personas/:id/versions；PUT /personas/:id/default；DELETE /personas/:id；POST /sessions 可传 personaVersionId；GET /sessions/:id 返回 persona 快照。正式迁移未设计/执行，历史生产环境不可直接启用。
+群聊尚未实现：现有 requests 一次只存一段 narrative，没有参与者/发言归属；下一步必须在现有事务和幂等流程上设计参与者卡片及每角色世界书快照、可信 speaker ID 和多段输出校验，不能把模型自由文本中的角色名作为权威身份或另造 Provider。用户允许隔离结构开发，但实际群聊代码和验收未完成，不能标 PASS。
