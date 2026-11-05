@@ -42,6 +42,37 @@ describe.skipIf(!url)('existing host + real PostgreSQL session integration',()=>
   } finally { install.release(); }
  });
  afterAll(async()=>{await pool.end();});
+ it('group sessions pin participants, attribute output and preserve atomic idempotent history',async()=>{
+  const a=await login(),b=await login();const cards=await Promise.all([fixture(a.cookie),fixture(a.cookie),fixture(a.cookie)]);const id=randomUUID();
+  expect((await request(path+'/group-sessions','POST',{id,cardIds:cards.map(x=>x.card)},a.cookie)).status).toBe(200);
+  const ps=await(await request(path+`/sessions/${id}/group`,'GET',undefined,a.cookie)).json();expect(ps).toHaveLength(3);
+  expect((await request(path+`/sessions/${id}/group`,'GET',undefined,b.cookie)).status).toBe(404);
+  let calls=0;model=async input=>{calls++;expect(JSON.stringify(input.messages)).toContain(ps[1].id);return 'speaker reply';};
+  const key=randomUUID(),body={action:'hello',expectedRevision:0,idempotencyKey:key,mode:'manual',participantIds:[ps[1].id]};
+  expect((await(await request(path+`/sessions/${id}/group-actions`,'POST',body,a.cookie)).json()).status).toBe('completed');
+  expect((await(await request(path+`/sessions/${id}/group-actions`,'POST',body,a.cookie)).json()).status).toBe('completed');expect(calls).toBe(1);
+  expect((await request(path+`/sessions/${id}/group-actions`,'POST',{...body,idempotencyKey:randomUUID(),expectedRevision:1,participantIds:[randomUUID()]},a.cookie)).status).toBe(400);
+  model=async()=>JSON.stringify({messages:[{participantId:ps[0].id,text:'first'},{participantId:ps[2].id,text:'second'}]});
+  const multi={action:'together',expectedRevision:1,idempotencyKey:randomUUID(),mode:'multi',participantIds:[ps[0].id,ps[2].id]};
+  expect((await(await request(path+`/sessions/${id}/group-actions`,'POST',multi,a.cookie)).json()).status).toBe('completed');
+  const history=await(await request(path+`/sessions/${id}/group-history`,'GET',undefined,a.cookie)).json();expect(history.map((x:{participant_id:string})=>x.participant_id)).toEqual([ps[1].id,ps[0].id,ps[2].id]);
+  model=async()=>JSON.stringify({messages:[{participantId:randomUUID(),text:'forged'}]});
+  expect((await(await request(path+`/sessions/${id}/group-actions`,'POST',{...multi,idempotencyKey:randomUUID(),expectedRevision:2},a.cookie)).json()).status).toBe('failed');
+  expect((await(await request(path+`/sessions/${id}/group-history`,'GET',undefined,a.cookie)).json())).toHaveLength(3);
+  model=async()=> 'automatic';const auto=await(await request(path+`/sessions/${id}/group-actions`,'POST',{action:'next',expectedRevision:2,idempotencyKey:randomUUID(),mode:'auto'},a.cookie)).json();expect(auto.status).toBe('completed');
+  const result=await(await request(path+`/sessions/${id}/group-history`,'GET',undefined,a.cookie)).json();expect(result.at(-1).participant_id).toBe(ps[2].id);
+  const two=randomUUID(),personaId=randomUUID();const persona=await(await request(path+'/personas','POST',{id:personaId,name:'pinned player',description:'fixed',extensions:{}},a.cookie)).json();
+  expect((await request(path+'/group-sessions','POST',{id:two,cardIds:cards.slice(0,2).map(x=>x.card),personaVersionId:persona.id},a.cookie)).status).toBe(200);
+  expect((await(await request(path+`/sessions/${two}`,'GET',undefined,a.cookie)).json()).persona.id).toBe(persona.id);
+  await pool.query("CREATE FUNCTION card_import.test_group_failure() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.ordinal=1 THEN RAISE EXCEPTION 'synthetic group write failure'; END IF; RETURN NEW; END $$");
+  await pool.query('CREATE TRIGGER test_group_failure BEFORE INSERT ON card_import.group_messages FOR EACH ROW EXECUTE FUNCTION card_import.test_group_failure()');
+  const twoPs=await(await request(path+`/sessions/${two}/group`,'GET',undefined,a.cookie)).json();model=async()=>JSON.stringify({messages:twoPs.map((x:{id:string})=>({participantId:x.id,text:'test'}))});
+  try {const failed=await(await request(path+`/sessions/${two}/group-actions`,'POST',{action:'atomic',expectedRevision:0,idempotencyKey:randomUUID(),mode:'multi',participantIds:twoPs.map((x:{id:string})=>x.id)},a.cookie)).json();expect(failed.status).toBe('failed');}
+  finally {await pool.query('DROP TRIGGER test_group_failure ON card_import.group_messages');await pool.query('DROP FUNCTION card_import.test_group_failure()');}
+  expect((await(await request(path+`/sessions/${two}/group-history`,'GET',undefined,a.cookie)).json())).toEqual([]);
+  expect((await(await request(path+`/sessions/${two}`,'GET',undefined,a.cookie)).json()).revision).toBe(0);
+
+ });
  it('pins persona versions to sessions and prevents cross-account access and deletion',async()=>{
   const a=await login(),b=await login(),f=await fixture(a.cookie),id=randomUUID();
   const v1=await(await request(path+'/personas','POST',{id,name:'first',description:'old identity',extensions:{role:'fixture'}},a.cookie)).json();

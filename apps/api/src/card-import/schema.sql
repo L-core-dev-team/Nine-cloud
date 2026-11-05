@@ -66,3 +66,28 @@ CREATE TABLE card_import.requests (
  FOREIGN KEY(owner_id,session_id) REFERENCES card_import.sessions(owner_id,id) ON DELETE CASCADE
 );
 CREATE UNIQUE INDEX card_import_one_pending ON card_import.requests(owner_id,session_id) WHERE status='pending';
+
+-- TEST ONLY: group participants and their immutable book references.
+CREATE TABLE card_import.group_participants (
+ owner_id text NOT NULL, session_id uuid NOT NULL, id uuid NOT NULL, card_id uuid NOT NULL,
+ ordinal integer NOT NULL, display_name text NOT NULL,
+ PRIMARY KEY(owner_id,session_id,id), UNIQUE(owner_id,session_id,ordinal), UNIQUE(owner_id,session_id,card_id),
+ FOREIGN KEY(owner_id,session_id) REFERENCES card_import.sessions(owner_id,id) ON DELETE CASCADE,
+ FOREIGN KEY(owner_id,card_id) REFERENCES card_import.cards(owner_id,id)
+);
+CREATE TABLE card_import.group_participant_worldbooks (
+ owner_id text NOT NULL, session_id uuid NOT NULL, participant_id uuid NOT NULL, import_id uuid NOT NULL,
+ PRIMARY KEY(owner_id,session_id,participant_id,import_id),
+ FOREIGN KEY(owner_id,session_id,participant_id) REFERENCES card_import.group_participants(owner_id,session_id,id) ON DELETE CASCADE,
+ FOREIGN KEY(owner_id,import_id) REFERENCES card_import.imports(owner_id,id)
+);
+CREATE TABLE card_import.group_turns (
+ owner_id text NOT NULL, session_id uuid NOT NULL, key uuid NOT NULL, mode text NOT NULL CHECK(mode IN ('manual','auto','multi')), selected jsonb NOT NULL,
+ PRIMARY KEY(owner_id,session_id,key), FOREIGN KEY(owner_id,session_id,key) REFERENCES card_import.requests(owner_id,session_id,key) ON DELETE CASCADE
+);
+CREATE TABLE card_import.group_messages (
+ owner_id text NOT NULL, session_id uuid NOT NULL, key uuid NOT NULL, ordinal integer NOT NULL, participant_id uuid NOT NULL, body text NOT NULL,
+ PRIMARY KEY(owner_id,session_id,key,ordinal),
+ FOREIGN KEY(owner_id,session_id,key) REFERENCES card_import.group_turns(owner_id,session_id,key) ON DELETE CASCADE,
+ FOREIGN KEY(owner_id,session_id,participant_id) REFERENCES card_import.group_participants(owner_id,session_id,id)
+);

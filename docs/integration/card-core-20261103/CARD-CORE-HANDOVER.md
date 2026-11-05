@@ -43,3 +43,8 @@ POST /cards/duplicates 接收 idempotencyKey、strategy=skip|update|copy、impor
 本轮仅完成 Persona 本地第一阶段，群聊未实现，任务不能判完成。新增 personas、persona_versions、session_personas 三表仅在本地测试 schema；选中版本在 session 创建时固化，旧 session 不带 persona，缺省选当时默认 persona 的最新版本；Persona 以不可信玩家设定放入 user 内容，不是 system 指令。已引用的 persona 删除返回 RESOURCE_IN_USE。账号删除测试挂钩需按请求、session_personas、sessions、persona_versions、personas顺序清理。
 接口：GET/POST /personas；POST /personas/:id/versions；PUT /personas/:id/default；DELETE /personas/:id；POST /sessions 可传 personaVersionId；GET /sessions/:id 返回 persona 快照。正式迁移未设计/执行，历史生产环境不可直接启用。
 群聊尚未实现：现有 requests 一次只存一段 narrative，没有参与者/发言归属；下一步必须在现有事务和幂等流程上设计参与者卡片及每角色世界书快照、可信 speaker ID 和多段输出校验，不能把模型自由文本中的角色名作为权威身份或另造 Provider。用户允许隔离结构开发，但实际群聊代码和验收未完成，不能标 PASS。
+
+
+## CARD-PERSONA-GROUP-04B 本地阶段成果（未完成验收）
+基线 b8206217aabb4171a0079127a01aa2ae89866a40。新增本地测试 schema：group_participants、group_participant_worldbooks、group_turns、group_messages；会话创建固定参与卡版本、其世界书引用、现有 Persona 和全局世界书快照。新增 POST /group-sessions、GET /sessions/:id/group、GET /sessions/:id/group-history、POST /sessions/:id/group-actions。手动与轮询选择由服务端验证，multi 仅接收结构化 JSON 且检查参与者及长度；请求复用现有键和状态，段消息与请求完成和 revision 更新共用事务。读取历史使用可信 participant ID。测试用 host 删除挂钩按外键顺序增加新表。
+未完成：用户要求的会话级默认策略存储与切换；群聊专属世界书触发与去重的端到端测试、并发同键、真实断线取消与迟到结果的群聊专项验证；多段数量限制、分页边界和预算优先策略尚需深入验证；生产级迁移、真实模型、真实浏览器/网络断开尚未验证。现有上下文超预算时拒绝，并未实现按当前发言者和历史的优先裁剪。不能声明 04B 完整验收。不得启用生产。

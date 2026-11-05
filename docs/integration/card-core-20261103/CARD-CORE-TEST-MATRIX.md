@@ -27,3 +27,8 @@
 
 ## CARD-PERSONA-GROUP-04 阶段测试（2026-11-05）
 隔离 PostgreSQL、真实 Cookie/Session 和合成模型：host.integration、context、export、worldbook、provider-golden 共5文件38项 PASS；Persona 不同版本的会话固定、跨账号拒绝、已引用时删除拒绝及模型不可信上下文通过。API typecheck/build PASS。Persona 多用户和正式迁移仍需进一步验证；群聊及所有群聊验收 NOT RUN；真实 Provider NOT RUN。
+
+
+## CARD-PERSONA-GROUP-04B 本地定向验证（2026-11-05）
+真实 PostgreSQL 隔离实例、真实 Email Cookie/Session、合成模型：`pnpm exec vitest run apps/api/src/card-import/host.integration.test.ts apps/api/src/card-import/context.test.ts apps/api/src/card-import/worldbook.test.ts apps/api/src/card-import/card-model-provider.test.ts`，4 文件 34 项 PASS。覆盖 2/3 人创建、指定/轮询、合法多段、伪造参与者拒绝、重复键、历史、跨账号读取、Persona 选定、第二段插入故障回滚、单人已有回归。首次 SQL 类型错误和单人历史内部键泄露引起失败，修正后新空库复测通过。API `pnpm --filter @jiuxiao/api typecheck`、`pnpm --filter @jiuxiao/api build`、`git diff --check` PASS。
+群聊世界书实际触发和固定版本专项、并发同键、取消/迟到及跨会话恢复专项 NOT RUN；结构错误专项仅验证了非法参与者，非 JSON 样本 NOT RUN。真实模型和生产 NOT VERIFIED；正式迁移 NOT RUN。上述未完成项不得标为 PASS。
