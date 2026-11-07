@@ -57,3 +57,9 @@ API `pnpm --filter @jiuxiao/api typecheck`、`pnpm --filter @jiuxiao/api build`�
 
 ## CARD-WORLDBOOK-05C（2026-11-07）
 隔离 PostgreSQL + 应用内 HTTP + 真实 Cookie/Session + 合成 Provider：`pnpm exec vitest run apps/api/src/card-import/host.integration.test.ts apps/api/src/card-import/context.test.ts apps/api/src/card-import/worldbook.test.ts apps/api/src/card-import/card-model-provider.test.ts`，4文件45项 PASS；包含单人与群聊默认关闭/显式开启、模式冲突、跨账号拒绝、链顺序和保留旧行 true 的隔离临时表夹具。前置/后置顺序、原排序/分组概率及既有功能有受影响单元回归；仅选定样本符合固定 ST 的既有运行时证据。API typecheck/build PASS。真实旧数据库升级、混合版本写入、真实网络断开与生产 NOT VERIFIED；正式迁移 NOT RUN。
+
+
+## CARD-INTEGRATION-06A（2026-11-07）
+旧结构 054daa0 合成 PostgreSQL 升级与失败回滚、服务读取旧历史和新会话 false、旧唯一约束恢复拒绝：PASS；更早及中间库、真实数据、混合版本并发 NOT VERIFIED。6 文件 54 项隔离数据库/应用内真实 Session 回归 PASS；单个14步串行闭环 NOT RUN。真实本机 TCP 人为延迟响应、提交后客户端断开、原 key 查询及重试不重复模型调用 PASS；处理中断和未知 COMMIT NOT VERIFIED。详情 CARD-INTEGRATION-06A-DATABASE.md、CARD-INTEGRATION-06A-UI-CONTRACT.md、CARD-INTEGRATION-06A-PROVIDER-AND-HTTP.md。生产迁移、真实模型和发布仍未授权。
+
+06A 补充：实际本地 TCP 串行覆盖导入、世界书、卡库、Persona、单人、登出重登、群聊手动/自动、历史、版本编辑和 JSON/PNG 导出 PASS；验证码冷却在隔离测试数据中调整。备用开场、多角色单次输出和跨账号由独立回归用例覆盖，非同一串行测试。

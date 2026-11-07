@@ -80,3 +80,9 @@ POST /cards/duplicates 接收 idempotencyKey、strategy=skip|update|copy、impor
 ## CARD-WORLDBOOK-05C（2026-11-07）
 基线 b7d7844ea62a5b3746859843234ad0dc9bd509ef。单人 POST /sessions 与 POST /group-sessions 均接受可选布尔 recursiveWorldbook；省略默认 false，新会话创建时写入 sessions.recursive_worldbook，恢复时读取固定值，重复会话 ID 的开关不一致返回 IDEMPOTENCY_CONFLICT。测试 schema 的列 DEFAULT true 仅用于兼容原有直接插入与旧数据回填，新服务显式写 false/所选值。旧会话应保留 true，正式迁移未创建：须独立审查 ALTER 表、旧行回填 true、旧新版本并发插入及回滚，避免在新旧应用滚动部署时改变行为；本轮仅隔离 TEMP TABLE 模拟默认值，并非真实旧库升级。
 世界书最终排序为 order 升序，同 order 按激活顺序逆序；由现有上下文构造器分别按 before_char/after_char 过滤，保留各位置内顺序。支持显式递归开关；开启时保留4轮/5000扫描限制。此前固定 ST 运行时样本的链顺序 gamma/beta/alpha 现由单测重现，其他 ST 高级边界并非完全兼容。正则继续拒绝，复杂组评分/sticky 等未实现；不修改 Canon/Provider/UI，不代表生产开放。
+
+
+## CARD-INTEGRATION-06A（2026-11-07）
+旧结构 054daa0 合成 PostgreSQL 升级与失败回滚、服务读取旧历史和新会话 false、旧唯一约束恢复拒绝：PASS；更早及中间库、真实数据、混合版本并发 NOT VERIFIED。6 文件 54 项隔离数据库/应用内真实 Session 回归 PASS；单个14步串行闭环 NOT RUN。真实本机 TCP 人为延迟响应、提交后客户端断开、原 key 查询及重试不重复模型调用 PASS；处理中断和未知 COMMIT NOT VERIFIED。详情 CARD-INTEGRATION-06A-DATABASE.md、CARD-INTEGRATION-06A-UI-CONTRACT.md、CARD-INTEGRATION-06A-PROVIDER-AND-HTTP.md。生产迁移、真实模型和发布仍未授权。
+
+06A 补充：实际本地 TCP 串行覆盖导入、世界书、卡库、Persona、单人、登出重登、群聊手动/自动、历史、版本编辑和 JSON/PNG 导出 PASS；验证码冷却在隔离测试数据中调整。备用开场、多角色单次输出和跨账号由独立回归用例覆盖，非同一串行测试。
