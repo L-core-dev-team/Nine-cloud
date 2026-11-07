@@ -86,3 +86,7 @@ POST /cards/duplicates 接收 idempotencyKey、strategy=skip|update|copy、impor
 旧结构 054daa0 合成 PostgreSQL 升级与失败回滚、服务读取旧历史和新会话 false、旧唯一约束恢复拒绝：PASS；更早及中间库、真实数据、混合版本并发 NOT VERIFIED。6 文件 54 项隔离数据库/应用内真实 Session 回归 PASS；单个14步串行闭环 NOT RUN。真实本机 TCP 人为延迟响应、提交后客户端断开、原 key 查询及重试不重复模型调用 PASS；处理中断和未知 COMMIT NOT VERIFIED。详情 CARD-INTEGRATION-06A-DATABASE.md、CARD-INTEGRATION-06A-UI-CONTRACT.md、CARD-INTEGRATION-06A-PROVIDER-AND-HTTP.md。生产迁移、真实模型和发布仍未授权。
 
 06A 补充：实际本地 TCP 串行覆盖导入、世界书、卡库、Persona、单人、登出重登、群聊手动/自动、历史、版本编辑和 JSON/PNG 导出 PASS；验证码冷却在隔离测试数据中调整。备用开场、多角色单次输出和跨账号由独立回归用例覆盖，非同一串行测试。
+
+
+## CARD-UI-S1-LINJIANGXIAN（2026-11-07）
+独立候选复用水龙吟 2cd9c46 卡片 UI；真实本地 TCP + 隔离 PG + 实际 Cookie/Session + 合成 Provider 浏览器闭环在360、390、1280宽 PASS，JSON/PNG 原件字节保持、无 Persona/指定 Persona、原始/备用开场、搜索、聊天、刷新、登出重登及跨账号拒绝 PASS；360响应丢失后刷新查询原 key 已完成 PASS；360缩短至500高度模拟键盘时发送按钮可见，非真实键盘。复用原 UI E2E 在320/360/390/844横屏、昼夜共8组（合成 API）PASS。独立 PG 相关回归5文件52项 PASS，后续客户端新增账号切换6项 PASS；API/Web typecheck/build PASS。真实手机、真实网络中断、真实模型/正式迁移/生产 NOT VERIFIED。详见 CARD-UI-S1-RECEIPT.md。

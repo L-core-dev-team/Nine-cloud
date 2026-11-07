@@ -165,6 +165,12 @@ describe.skipIf(!url)('existing host + real PostgreSQL session integration',()=>
   const legacyClient=await pool.connect();try{await legacyClient.query('CREATE TEMP TABLE legacy_recursion (id uuid PRIMARY KEY)');const legacy=randomUUID();await legacyClient.query('INSERT INTO legacy_recursion VALUES($1)',[legacy]);await legacyClient.query('ALTER TABLE legacy_recursion ADD COLUMN recursive_worldbook boolean NOT NULL DEFAULT true');expect((await legacyClient.query('SELECT recursive_worldbook FROM legacy_recursion WHERE id=$1',[legacy])).rows[0].recursive_worldbook).toBe(true);}finally{legacyClient.release();}
   expect((await(await request(path+`/sessions/${ids[1]}`,'GET',undefined,a.cookie)).json()).recursive_worldbook).toBe(true);
  });
+ it('allows explicit no persona even when a default exists',async()=>{
+  const a=await login(),f=await fixture(a.cookie),id=randomUUID();await request(path+'/personas','POST',{id,name:'default identity',description:'secret setting',extensions:{}},a.cookie);await request(path+`/personas/${id}/default`,'PUT',{},a.cookie);
+  const sid=randomUUID();expect((await request(path+'/sessions','POST',{id:sid,cardId:f.card,personaVersionId:null},a.cookie)).status).toBe(200);
+  expect((await(await request(path+`/sessions/${sid}`,'GET',undefined,a.cookie)).json()).persona).toBeNull();
+  expect((await request(path+'/sessions','POST',{id:sid,cardId:f.card,personaVersionId:null},a.cookie)).status).toBe(200);
+ });
  it('pins persona versions to sessions and prevents cross-account access and deletion',async()=>{
   const a=await login(),b=await login(),f=await fixture(a.cookie),id=randomUUID();
   const v1=await(await request(path+'/personas','POST',{id,name:'first',description:'old identity',extensions:{role:'fixture'}},a.cookie)).json();
