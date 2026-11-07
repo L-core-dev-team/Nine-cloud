@@ -141,7 +141,7 @@ describe.skipIf(!url)('existing host + real PostgreSQL session integration',()=>
  });
  it('applies probability to single and group model contexts through authenticated sessions',async()=>{
   const a=await login(),cards=await Promise.all([fixture(a.cookie),fixture(a.cookie)]);
-  const book={name:'probability-test',entries:[{keys:['moon'],content:'selected-probability',extensions:{probability:100}},{keys:['moon'],content:'suppressed-probability',extensions:{probability:0}}]};
+  const book={name:'probability-test',entries:[{keys:['moon'],content:'selected-probability',extensions:{probability:100}},{keys:['moon'],content:'suppressed-probability',extensions:{probability:0}},{keys:['selected-probability'],content:'recursive-winner',group:'choice',groupOverride:true},{keys:['selected-probability'],content:'recursive-loser',group:'choice'}]};
   const uploaded=await(await request(path+'/imports','POST',{filename:'w.json',kind:'worldbook',bytesBase64:Buffer.from(JSON.stringify(book)).toString('base64'),rightsConfirmed:true},a.cookie)).json();
   expect((await request(path+`/worldbooks/${uploaded.id}/global`,'PUT',{enabled:true},a.cookie)).status).toBe(200);
   const single=randomUUID(),group=randomUUID();await request(path+'/sessions','POST',{id:single,cardId:cards[0].card},a.cookie);await request(path+'/group-sessions','POST',{id:group,cardIds:cards.map(c=>c.card)},a.cookie);
@@ -150,7 +150,7 @@ describe.skipIf(!url)('existing host + real PostgreSQL session integration',()=>
    expect((await(await request(path+`/sessions/${single}/actions`,'POST',{action:'moon',expectedRevision:0,idempotencyKey:randomUUID()},a.cookie)).json()).status).toBe('completed');
    expect((await(await request(path+`/sessions/${group}/group-actions`,'POST',{action:'moon',expectedRevision:0,idempotencyKey:randomUUID(),mode:'manual',participantIds:[ps[0].id]},a.cookie)).json()).status).toBe('completed');
   } finally {draw.mockRestore();}
-  expect(seen).toHaveLength(2);for(const value of seen){expect(value).toContain('selected-probability');expect(value).not.toContain('suppressed-probability');}
+  expect(seen).toHaveLength(2);for(const value of seen){expect(value).toContain('selected-probability');expect(value).not.toContain('suppressed-probability');expect(value).toContain('recursive-winner');expect(value).not.toContain('recursive-loser');}
  });
  it('pins persona versions to sessions and prevents cross-account access and deletion',async()=>{
   const a=await login(),b=await login(),f=await fixture(a.cookie),id=randomUUID();

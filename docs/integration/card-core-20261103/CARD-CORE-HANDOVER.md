@@ -59,3 +59,9 @@ POST /cards/duplicates 接收 idempotencyKey、strategy=skip|update|copy、impor
 ## CARD-WORLDBOOK-ADVANCED-05（2026-11-07，部分完成）
 基线 55976a30edf55b61ad87be5365bbca1a76562a71。对照本地 SillyTavern 06bde939fb1e9c4c8d8641d810f0a916b5bce127 的 public/scripts/world-info.js（matchKeys、selectiveLogic、verifyProbability 及 originalWIDataKeyMap）。增量支持条目 probability、useProbability 和 extensions.probability / use_probability，百分比0–100，开启时按随机抽样、关闭及100时不抽样；同一服务端请求键沿用原请求结果，重试不重新生成。概率结果未单独持久化，未知提交或真实模型流程不视为已验证。
 兼容矩阵：次级 AND_ANY/NOT_ALL/NOT_ANY/AND_ALL、大小写、单词匹配与基础前后位置和排序已有基础实现；其整词 Unicode、多词及优先级/预算细节不宣称与 ST 完全一致。概率仅覆盖基本抽样，sticky/cooldown等未支持。正则、递归和互斥分组仍失败关闭（未实现）；常规 JS 正则不能保证限时，禁止不受限执行。复杂位置、组权重和递归延迟等亦未实现。现有选择器至多遍历1000条、选100条及50000字节，群聊另有100000字节预算。此轮未完成用户所列全部高级能力，不得标记完整兼容。
+
+
+## CARD-WORLDBOOK-ADVANCED-05B（2026-11-07，本地有限兼容）
+基线 25e0c6a99ffbd45c0ce4fe763c5690a63d2c25ff。现有选择器增加 group/groupOverride/groupWeight（及对应 extensions 字段）；同组优先 override 按 order 降序、相同顺序按输入稳定排序，否则按权重随机选一，再进行该条目的概率判断。已成功组在后续递归中不能再产生其他条目；失败概率的非优胜候选在后续轮次的处理不保证与 ST 相同。组名含逗号拒绝，group scoring、sticky、延迟触发等复杂策略未支持。
+增加有限递归：新选择正文进入后续扫描，记录条目标识防止重复，preventRecursion 不传播，excludeRecursion 不在递归轮中匹配；最多4轮激活、5000次条目扫描、1000个原始条目、100条选中、50000字节正文，发现第五轮仍有候选失败关闭。默认自动递归，与 ST 的用户全局递归开关存在差异。多次扫描及组处理有硬上限，不能宣称与 ST 在预算、排序和概率上完整一致。正则仍拒绝，未找到并验证非回溯引擎或强制终止隔离，不能以普通 JavaScript 正则执行不可信表达式。
+固定 ST 06bde939fb1e9c4c8d8641d810f0a916b5bce127 仅对 public/scripts/world-info.js 的组选择及概率源码作对照；本轮 ST 触发运行时对照 NOT VERIFIED，不应与此前格式互操作测试混淆。九霄侧综合测试见测试矩阵。前端需呈现不支持语法/超限错误；Provider 必须继续独立执行地址授权与真实模型 token 预算，不得把字节上限视为 token 上限。正式迁移、真实外部模型及生产仍未授权。

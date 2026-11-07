@@ -30,6 +30,21 @@ describe('bounded card worldbook selection', () => {
     expect(()=>select([{entries:[entry({probability:101})]}],[],'moon')).toThrow('WORLDBOOK_INVALID_PROBABILITY');
     expect(()=>select([{entries:[entry({probability:20})]}],[],'moon',()=>1)).toThrow('WORLDBOOK_INVALID_RANDOM');
   });
+  it('bounds recursive activation and breaks cycles', () => {
+    const book={entries:[{keys:['start'],content:'alpha'},{keys:['alpha'],content:'beta'},{keys:['beta'],content:'alpha'}]};
+    expect(select([book],[],'start').map(x=>x.content)).toEqual(['alpha','beta','alpha']);
+    expect(()=>select([{entries:Array.from({length:6},(_,i)=>({keys:[i?'key'+i:'go'],content:'key'+(i+1)}))}],[],'go')).toThrow('WORLDBOOK_RECURSION_LIMIT');
+    expect(select([{entries:[{keys:['go'],content:'next',preventRecursion:true},{keys:['next'],content:'blocked'}]}],[],'go').map(x=>x.content)).toEqual(['next']);
+  });
+  it('selects weighted or override group winners before applying probability', () => {
+    const a={keys:['moon'],content:'A',group:'g',groupWeight:1},b={keys:['moon'],content:'B',group:'g',groupWeight:3};
+    expect(select([{entries:[a,b]}],[],'moon',()=>0.1).map(x=>x.content)).toEqual(['A']);
+    expect(select([{entries:[a,b]}],[],'moon',()=>0.9).map(x=>x.content)).toEqual(['B']);
+    expect(select([{entries:[a,{...b,groupOverride:true}]}],[],'moon',()=>0.1).map(x=>x.content)).toEqual(['B']);
+    expect(select([{entries:[{...a,probability:0},b]}],[],'moon',()=>0.1)).toEqual([]);
+    const chain={entries:[{keys:['go'],content:'open',group:'g'},{keys:['open'],content:'excluded',group:'g'}]};
+    expect(select([chain],[],'go').map(x=>x.content)).toEqual(['open']);
+  });
   it('rejects regular expressions and overlarge book traversal', () => {
     expect(()=>select([{entries:[entry({keys:['/(a+)+$/']})]}],[],'aaa')).toThrow('WORLDBOOK_UNSUPPORTED_KEY');
     expect(()=>select([{entries:Array.from({length:1001},()=>({enabled:false}))}],[],'')).toThrow('WORLDBOOK_ENTRY_LIMIT');

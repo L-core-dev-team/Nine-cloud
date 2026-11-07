@@ -41,3 +41,7 @@ API `pnpm --filter @jiuxiao/api typecheck`、`pnpm --filter @jiuxiao/api build`�
 
 ## CARD-WORLDBOOK-ADVANCED-05（2026-11-07）
 本机隔离 PostgreSQL，应用内 HTTP 请求 + 真实 Cookie/Session 与合成模型：`pnpm exec vitest run apps/api/src/card-import/host.integration.test.ts apps/api/src/card-import/context.test.ts apps/api/src/card-import/worldbook.test.ts apps/api/src/card-import/card-model-provider.test.ts`：4文件40项 PASS。包含单人与群聊概率100/0、边界与关闭开关、已有账号隔离和会话快照回归。概率测试以合成固定随机数证明选择，不证明真实服务随机分布或完整酒馆行为。API typecheck/build、git diff --check PASS。首次非隔离单测的 Provider 测试因沙盒临时文件 ENOENT 失败；上述隔离环境重跑通过。真实网络断线、真实模型、生产 NOT VERIFIED；正则/递归/互斥功能 NOT IMPLEMENTED；固定ST高级功能运行时互操作未执行。
+
+
+## CARD-WORLDBOOK-ADVANCED-05B（2026-11-07）
+隔离 PostgreSQL、应用内 HTTP、真实 Cookie/Session、合成 Provider：`pnpm exec vitest run apps/api/src/card-import/host.integration.test.ts apps/api/src/card-import/context.test.ts apps/api/src/card-import/worldbook.test.ts apps/api/src/card-import/card-model-provider.test.ts`：4 文件 42 项 PASS；覆盖 A→B→C、循环、递归限制、阻断传播、加权/优先分组、分组后概率、单人和群聊组合、已有账号及会话回归。API typecheck/build 和 git diff --check PASS。正则安全实现 BLOCKED（仍拒绝），固定 ST 高级触发运行时对照 NOT VERIFIED；现有验证不等于完整酒馆兼容或真实外部模型/网络/生产验证。
