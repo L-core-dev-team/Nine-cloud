@@ -355,7 +355,12 @@ async function auditProfessionalViewports(page, outputDir, label) {
   const controlsResult = { checkedEdges: 0, failures: [] };
   const viewport = page.viewportSize();
   const barHeight = await page.locator('.ai-actionbar').evaluate(e => e.getBoundingClientRect().height);
-  const step = Math.max(100, viewport.height - barHeight - 40);
+  const headerHeight = await page.locator('.jx-shell > header').evaluate(e => e.getBoundingClientRect().height);
+  // The header stays sticky and the operation bar stays fixed, so each tile can
+  // sample only the band between them. A step based on the viewport alone leaves
+  // a gap under the sticky header, and Linux Chromium font metrics drop whole
+  // role-summary lines into that gap.
+  const step = Math.max(80, Math.floor(viewport.height - barHeight - headerHeight - 24));
   const height = await page.evaluate(() => document.documentElement.scrollHeight);
   const offsets = [...new Set([...Array.from({length: Math.ceil(height / step)}, (_, i) => Math.min(i * step, height - viewport.height)), Math.max(0, height - viewport.height)])];
   const merge = (into, from, tile) => {
