@@ -31,6 +31,15 @@ describe('card API transport', () => {
     vi.stubGlobal('fetch', vi.fn(async (url:RequestInfo|URL)=>String(url).includes('/api/auth/session') ? new Response(JSON.stringify({account:{id:'owner-b'}})) : new Response(JSON.stringify([{id:'private-to-a'}]))));
     await expect(new CardImportClient('owner-a').cards()).rejects.toMatchObject({status:401,code:'ACCOUNT_MISMATCH'});
   });
+  it('accepts bounded multi-segment group histories larger than ordinary card responses', async () => {
+    const rows=[{key:'k',action:'a',resulting_revision:1,mode:'multi',selected:[],ordinal:0,participant_id:'p',body:'x'.repeat(4_100_000)}];
+    stubCards(async()=>new Response(JSON.stringify(rows)));
+    expect((await new CardImportClient('owner-a').groupHistory('session',0))[0]?.body.length).toBe(4_100_000);
+  });
+  it('surfaces unsupported worldbook and invalid group-output errors',()=>{
+    expect(cardError(new CardHttpError(400,'WORLDBOOK_UNSUPPORTED_KEY'))).toContain('暂不支持');
+    expect(cardError(new CardHttpError(400,'GROUP_OUTPUT_INVALID'))).toContain('未保存');
+  });
   it('returns bounded safe error metadata for non-JSON proxy failures', async () => {
     stubCards(async()=>new Response('private proxy details',{status:503}));
     let caught: unknown; try { await new CardImportClient('owner-a').cards(); } catch (e) { caught = e; }

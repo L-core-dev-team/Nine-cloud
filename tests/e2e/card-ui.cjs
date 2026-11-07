@@ -48,7 +48,9 @@ const parsed = { kind: 'card', format: 'v3', name: '测试角色', document: { d
       else if(path==='/library/page' && method==='GET') body={items:cards,nextCursor:null};
       else if (path === '/sessions' && method === 'GET') body = sessions;
       else if(path==='/personas' && method==='GET') body=[];
+      else if(path==='/worldbooks/global' && method==='GET') body=[];
       else if(path.endsWith('/requests') && method==='GET') body=[];
+      else if(path.endsWith('/group') && method==='GET'){status=409;body={error:'NOT_GROUP_SESSION'};}
       else if (path === '/imports' && method === 'POST') {
         const data = req.postDataJSON(); assert.equal(data.rightsConfirmed, true);
         const item = data.filename === 'bad.json' ? { id: '44444444-4444-4444-8444-444444444444', filename: data.filename, kind: 'card', sha256: 'c', error: 'INVALID_JSON', parsed: null } : data.kind === 'worldbook' ? { id: BOOK, filename: data.filename, kind: 'worldbook', sha256: 'a', error: null, parsed: { kind: 'worldbook', format: 'worldbook-json', name: '书', document: { entries: [] }, warnings: [], assetRefs: [] } } : { id: IMP, filename: data.filename, kind: 'card', sha256: 'b', error: null, parsed };
@@ -92,9 +94,9 @@ const parsed = { kind: 'card', format: 'v3', name: '测试角色', document: { d
     await page.getByRole('button', { name: '确认并保存版本' }).click(); await page.getByText('该导入项已有不同的确认结果', { exact: false }).waitFor();
     const download = page.waitForEvent('download'); await page.getByRole('region', { name: '导入核对' }).getByRole('button', { name: '下载原文件' }).click(); assert.equal((await download).suggestedFilename(), 'original.bin');
     page.once('dialog', d => d.accept()); await page.getByRole('button', { name: '删除' }).first().click(); await page.getByText('资料仍被其他卡片或版本引用', { exact: false }).waitFor();
-    await page.getByRole('button', { name: '开始会话' }).click(); await page.getByRole('button',{name:'确认创建'}).click(); await page.getByText('建局结果尚未确认', { exact: false }).waitFor();
+    await page.getByRole('button', { name: '开始会话' }).click(); await page.getByRole('button',{name:'确认创建',exact:true}).click(); await page.getByText('建局结果尚未确认', { exact: false }).waitFor();
     if (viewport.width === 360 && theme === 'night') await page.evaluate(id => { sessionStorage.setItem(`jiuxiao_1_game_scroll_${id}`, '428'); sessionStorage.setItem(`jiuxiao_1_game_scroll_card-${id}`, '529'); window.__cardScrollStorageOps = []; }, firstSessionId);
-    await page.getByRole('button', { name: '确认创建' }).click(); await page.getByRole('heading', { name: '角色卡会话' }).waitFor();
+    await page.getByRole('button', { name: '确认创建', exact: true }).click(); await page.getByRole('heading', { name: '角色卡会话' }).waitFor();
     await page.getByText('会话已读取', { exact: false }).waitFor(); await page.getByText('测试开场').waitFor(); if (viewport.width === 360) assert.ok(traffic.some(x => x.includes('history?after=100'))); const input = page.getByLabel('角色卡行动');
     if (viewport.width === 360 && theme === 'night') {
       const reading = page.locator('.story-reading'); assert.equal(await reading.evaluate(el => el.scrollTop), 0);
@@ -104,7 +106,7 @@ const parsed = { kind: 'card', format: 'v3', name: '测试角色', document: { d
     actionMode = 'lost'; await page.getByRole('button', { name: '提交行动' }).click(); await page.getByText('本次结果未知', { exact: false }).waitFor(); assert.equal(await page.getByRole('button', { name: '提交行动' }).isDisabled(), true);
     await page.getByRole('button', { name: '查询原请求' }).click(); await page.getByText('服务端尚未确认这次请求', { exact: false }).waitFor(); assert.equal(await page.getByRole('button', { name: '提交行动' }).isDisabled(), true);
     await page.getByRole('button', { name: '查询原请求' }).click(); await page.getByText('行动仍在处理', { exact: false }).waitFor();
-    await page.getByRole('button', { name: '核对过期请求' }).click(); await page.getByText('行动未完成：GENERATION_EXPIRED', { exact: false }).waitFor();
+    await page.getByRole('button', { name: '核对过期请求' }).click(); await page.getByText('行动未完成：请求已过期，未再生成。', { exact: false }).waitFor();
     assert.equal(actions.length, 2); await page.getByRole('button', { name: '准备新行动' }).click(); actionMode = 'complete'; await page.getByRole('button', { name: '提交行动' }).click(); await page.getByText('模拟剧情').waitFor(); assert.equal(actions.length, 3);
     const geometry = await page.evaluate(() => { const input = document.querySelector('#card-action'), button = document.querySelector('.intent-composer button'); const rect = el => { const r = el.getBoundingClientRect(); return { top: r.top, bottom: r.bottom, height: r.height }; }; return { width: document.documentElement.scrollWidth - innerWidth, input: rect(input), button: rect(button), reading: rect(document.querySelector('.story-reading')) }; });
     assert.ok(geometry.width <= 1 && geometry.input.top >= 0 && geometry.button.bottom <= viewport.height + 1 && geometry.reading.height >= 24, JSON.stringify(geometry));

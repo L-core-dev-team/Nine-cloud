@@ -29,3 +29,16 @@
 @media (max-height: 600px) { .game-frame .card-session-heading { display: flex; } .card-session-heading h1 { font-size: 1rem; } }
 
 .card-library input:not([type="checkbox"]) { min-height: 44px; font-size: 16px; max-width: 100%; }
+
+.game-frame .card-session .card-group-column { grid-template-rows: minmax(0,1fr) auto auto; }
+.card-group-controls { padding: .35rem .6rem; max-height: min(22dvh, 150px); overflow-y: auto; }
+.card-group-controls select { min-height: 44px; font-size: 16px; max-width: 100%; }
+.card-group-controls [role="group"] { display:flex; flex-wrap:wrap; gap:.5rem; }
+.card-group-controls .card-ui-check { display:flex; align-items:center; min-height:44px; gap:.3rem; }
+
+/* Group controls must not inherit the global full-width input rule. */
+.card-ui-check input { width: auto; padding: 0; flex: 0 0 auto; }
+.card-group-controls .card-ui-check { width: auto; min-width: max-content; white-space: nowrap; }
+.game-frame .card-session .card-ui-section h2 { font-size: 1rem; }
+.game-frame .card-session .card-ui-section { padding: .5rem; gap: .25rem; }
+.game-frame .card-session .story-reading { gap: .5rem; }

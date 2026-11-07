@@ -90,3 +90,7 @@ POST /cards/duplicates 接收 idempotencyKey、strategy=skip|update|copy、impor
 
 ## CARD-UI-S1-LINJIANGXIAN（2026-11-07）
 独立候选复用水龙吟 2cd9c46 卡片 UI；真实本地 TCP + 隔离 PG + 实际 Cookie/Session + 合成 Provider 浏览器闭环在360、390、1280宽 PASS，JSON/PNG 原件字节保持、无 Persona/指定 Persona、原始/备用开场、搜索、聊天、刷新、登出重登及跨账号拒绝 PASS；360响应丢失后刷新查询原 key 已完成 PASS；360缩短至500高度模拟键盘时发送按钮可见，非真实键盘。复用原 UI E2E 在320/360/390/844横屏、昼夜共8组（合成 API）PASS。独立 PG 相关回归5文件52项 PASS，后续客户端新增账号切换6项 PASS；API/Web typecheck/build PASS。真实手机、真实网络中断、真实模型/正式迁移/生产 NOT VERIFIED。详见 CARD-UI-S1-RECEIPT.md。
+
+
+## CARD-UI-S2-LINJIANGXIAN（2026-11-07）
+独立候选基线 ec72c94。群聊（2/3角色、策略、manual/auto/multi、服务端身份与历史）、世界书全局管理与未知替换核对、描述版本及 V2/V3/PNG 导出已接入；群聊 null Persona 与单人对齐。真实 Chromium/真实 Cookie/隔离 PostgreSQL/合成 Provider 360、390、844×390、1280 PASS；101合成回合分页与迟到跨账号响应隔离 PASS；S1真实浏览器及8组合成视口回归 PASS；隔离PG相关5文件54项、客户端8项、typecheck/build PASS。真实手机键盘/生产/真实模型及正式迁移 NOT VERIFIED。详见 CARD-UI-S2-RECEIPT.md。
