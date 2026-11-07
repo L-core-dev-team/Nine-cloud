@@ -75,3 +75,8 @@ POST /cards/duplicates 接收 idempotencyKey、strategy=skip|update|copy、impor
 
 ## CARD-WORLDBOOK-05B-RUNTIME-VERIFY（2026-11-07）
 固定 ST 完整应用 + 真实 Chromium 的 checkWorldInfo 运行时对照已执行，合成条目经公开事件注入并固定随机源；详见 CARD-WORLDBOOK-05B-RUNTIME-VERIFY.md。递归关闭时 ST 只触发首条，九霄仍触发递归链；开启时两者入选集合一致但顺序不同。新会话显式配置、旧会话保留 legacy_on 的方案仅为建议，需单独审查迁移与授权，未修改产品代码；正式生产仍未批准。
+
+
+## CARD-WORLDBOOK-05C（2026-11-07）
+基线 b7d7844ea62a5b3746859843234ad0dc9bd509ef。单人 POST /sessions 与 POST /group-sessions 均接受可选布尔 recursiveWorldbook；省略默认 false，新会话创建时写入 sessions.recursive_worldbook，恢复时读取固定值，重复会话 ID 的开关不一致返回 IDEMPOTENCY_CONFLICT。测试 schema 的列 DEFAULT true 仅用于兼容原有直接插入与旧数据回填，新服务显式写 false/所选值。旧会话应保留 true，正式迁移未创建：须独立审查 ALTER 表、旧行回填 true、旧新版本并发插入及回滚，避免在新旧应用滚动部署时改变行为；本轮仅隔离 TEMP TABLE 模拟默认值，并非真实旧库升级。
+世界书最终排序为 order 升序，同 order 按激活顺序逆序；由现有上下文构造器分别按 before_char/after_char 过滤，保留各位置内顺序。支持显式递归开关；开启时保留4轮/5000扫描限制。此前固定 ST 运行时样本的链顺序 gamma/beta/alpha 现由单测重现，其他 ST 高级边界并非完全兼容。正则继续拒绝，复杂组评分/sticky 等未实现；不修改 Canon/Provider/UI，不代表生产开放。

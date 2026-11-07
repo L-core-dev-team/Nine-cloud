@@ -53,3 +53,7 @@ API `pnpm --filter @jiuxiao/api typecheck`、`pnpm --filter @jiuxiao/api build`�
 
 ## CARD-WORLDBOOK-05B-RUNTIME-VERIFY（2026-11-07）
 真实 Chromium 执行固定 ST 应用 checkWorldInfo，公开事件注入合成条目，浏览器与九霄随机源固定；九组对照结果及证据哈希见 CARD-WORLDBOOK-05B-RUNTIME-VERIFY.md。样本覆盖分组优先与权重两端、概率、概率失败的组行为、递归开关/链/循环和次级条件。递归关闭行为差异、递归链插入顺序差异已复现；固定样本不等于所有边界或实际导入链兼容。九霄 API typecheck/build 和世界书+上下文 2 文件 11 测试 PASS。真实 Provider、生产、真实断线 NOT VERIFIED。
+
+
+## CARD-WORLDBOOK-05C（2026-11-07）
+隔离 PostgreSQL + 应用内 HTTP + 真实 Cookie/Session + 合成 Provider：`pnpm exec vitest run apps/api/src/card-import/host.integration.test.ts apps/api/src/card-import/context.test.ts apps/api/src/card-import/worldbook.test.ts apps/api/src/card-import/card-model-provider.test.ts`，4文件45项 PASS；包含单人与群聊默认关闭/显式开启、模式冲突、跨账号拒绝、链顺序和保留旧行 true 的隔离临时表夹具。前置/后置顺序、原排序/分组概率及既有功能有受影响单元回归；仅选定样本符合固定 ST 的既有运行时证据。API typecheck/build PASS。真实旧数据库升级、混合版本写入、真实网络断开与生产 NOT VERIFIED；正式迁移 NOT RUN。

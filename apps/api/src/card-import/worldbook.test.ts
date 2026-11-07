@@ -24,7 +24,7 @@ describe('bounded card worldbook selection', () => {
   });
   it('uses bounded SillyTavern probability semantics with injectable synthetic draws', () => {
     const rows=[entry({content:'half',probability:50,useProbability:true}),entry({content:'off',probability:0,useProbability:false}),entry({content:'ext',extensions:{probability:10,use_probability:true}})];
-    expect(select([{entries:rows}],[],'moon',()=>0.4).map(x=>x.content)).toEqual(['half','off']);
+    expect(select([{entries:rows}],[],'moon',()=>0.4).map(x=>x.content)).toEqual(['off','half']);
     expect(select([{entries:rows}],[],'moon',()=>0.9).map(x=>x.content)).toEqual(['off']);
     expect(select([{entries:[entry({probability:100})]}],[],'moon',()=>0.99)).toHaveLength(1);
     expect(()=>select([{entries:[entry({probability:101})]}],[],'moon')).toThrow('WORLDBOOK_INVALID_PROBABILITY');
@@ -44,6 +44,18 @@ describe('bounded card worldbook selection', () => {
     expect(select([{entries:[{...a,probability:0},b]}],[],'moon',()=>0.1)).toEqual([]);
     const chain={entries:[{keys:['go'],content:'open',group:'g'},{keys:['open'],content:'excluded',group:'g'}]};
     expect(select([chain],[],'go').map(x=>x.content)).toEqual(['open']);
+  });
+  it('keeps legacy recursion on by default while explicit off stops after initial scan', () => {
+    const chain={entries:[{keys:['start'],content:'alpha'},{keys:['alpha'],content:'beta'},{keys:['beta'],content:'gamma'}]};
+    expect(select([chain],[],'start',()=>0.5,false).map(x=>x.content)).toEqual(['alpha']);
+    expect(select([chain],[],'start',()=>0.5,true).map(x=>x.content)).toEqual(['gamma','beta','alpha']);
+    expect(select([chain],[],'start').map(x=>x.content)).toEqual(['gamma','beta','alpha']);
+  });
+  it('orders separately by priority and reverse activation for both positions', () => {
+    const entries=[{keys:['go'],content:'A',order:10,position:0},{keys:['A'],content:'B',order:10,position:0},{keys:['B'],content:'C',order:20,position:1},{keys:['C'],content:'D',order:20,position:1}];
+    const result=select([{entries}],[],'go',()=>0.5,true);
+    expect(result.filter(x=>x.position==='before_char').map(x=>x.content)).toEqual(['B','A']);
+    expect(result.filter(x=>x.position==='after_char').map(x=>x.content)).toEqual(['D','C']);
   });
   it('rejects regular expressions and overlarge book traversal', () => {
     expect(()=>select([{entries:[entry({keys:['/(a+)+$/']})]}],[],'aaa')).toThrow('WORLDBOOK_UNSUPPORTED_KEY');

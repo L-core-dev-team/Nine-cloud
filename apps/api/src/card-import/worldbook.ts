@@ -1,9 +1,9 @@
 import { CardError, record } from './parser.js';
 
 /** Bounded subset; unsupported advanced features fail closed instead of being ignored. */
-export function selectWorldbookEntries(books: Record<string, unknown>[], history: {action:string; narrative:string}[], action: string, random: () => number = Math.random): Record<string, unknown>[] {
+export function selectWorldbookEntries(books: Record<string, unknown>[], history: {action:string; narrative:string}[], action: string, random: () => number = Math.random, recursive = true): Record<string, unknown>[] {
   const messages = [...history.flatMap(t => [t.action, t.narrative]), action];
-  const selected: {content:string; position:string; order:number; index:number}[] = [];
+  const selected: {content:string; position:string; order:number; index:number; activation:number}[] = [];
   const totalEntries=books.reduce((n,b)=>n+(Array.isArray(b.entries)?b.entries.length:record(b.entries)?Object.keys(b.entries).length:0),0);
   if(totalEntries>1000)throw new CardError('WORLDBOOK_ENTRY_LIMIT',413);
   let examined = 0;
@@ -90,15 +90,15 @@ export function selectWorldbookEntries(books: Record<string, unknown>[], history
     seen.add(c.id);
     if(c.useProbability && c.probability<100){const roll=random();if(!Number.isFinite(roll)||roll<0||roll>=1)throw new CardError('WORLDBOOK_INVALID_RANDOM');if(roll*100>c.probability)continue;}
     if(c.group)wonGroups.add(c.group);
-    selected.push({content:c.content,position:c.position,order:c.order,index:c.index});
+    selected.push({content:c.content,position:c.position,order:c.order,index:c.index,activation:selected.length});
     if(selected.length>100)throw new CardError('WORLDBOOK_MATCH_LIMIT',413);
     if(Buffer.byteLength(JSON.stringify(selected))>50_000)throw new CardError('WORLDBOOK_CONTEXT_LIMIT',413);
     if(!c.prevent)recurse.push(c.content);
     activated++;
   }
-  if(!activated)break;
+  if(!activated || !recursive)break;
   }
-  selected.sort((a,b) => a.order-b.order || a.index-b.index);
+  selected.sort((a,b) => a.order-b.order || b.activation-a.activation);
   if (Buffer.byteLength(JSON.stringify(selected)) > 50_000) throw new CardError('WORLDBOOK_CONTEXT_LIMIT', 413);
   return selected.map(({content,position,order}) => ({content,position,order}));
 }

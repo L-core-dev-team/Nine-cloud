@@ -144,13 +144,26 @@ describe.skipIf(!url)('existing host + real PostgreSQL session integration',()=>
   const book={name:'probability-test',entries:[{keys:['moon'],content:'selected-probability',extensions:{probability:100}},{keys:['moon'],content:'suppressed-probability',extensions:{probability:0}},{keys:['selected-probability'],content:'recursive-winner',group:'choice',groupOverride:true},{keys:['selected-probability'],content:'recursive-loser',group:'choice'}]};
   const uploaded=await(await request(path+'/imports','POST',{filename:'w.json',kind:'worldbook',bytesBase64:Buffer.from(JSON.stringify(book)).toString('base64'),rightsConfirmed:true},a.cookie)).json();
   expect((await request(path+`/worldbooks/${uploaded.id}/global`,'PUT',{enabled:true},a.cookie)).status).toBe(200);
-  const single=randomUUID(),group=randomUUID();await request(path+'/sessions','POST',{id:single,cardId:cards[0].card},a.cookie);await request(path+'/group-sessions','POST',{id:group,cardIds:cards.map(c=>c.card)},a.cookie);
+  const single=randomUUID(),group=randomUUID();await request(path+'/sessions','POST',{id:single,cardId:cards[0].card,recursiveWorldbook:true},a.cookie);await request(path+'/group-sessions','POST',{id:group,cardIds:cards.map(c=>c.card),recursiveWorldbook:true},a.cookie);
   const ps=await(await request(path+`/sessions/${group}/group`,'GET',undefined,a.cookie)).json(),seen:string[]=[];model=async input=>{seen.push(JSON.stringify(input.messages));return 'reply';};
   const draw=vi.spyOn(Math,'random').mockReturnValue(0.5);try {
    expect((await(await request(path+`/sessions/${single}/actions`,'POST',{action:'moon',expectedRevision:0,idempotencyKey:randomUUID()},a.cookie)).json()).status).toBe('completed');
    expect((await(await request(path+`/sessions/${group}/group-actions`,'POST',{action:'moon',expectedRevision:0,idempotencyKey:randomUUID(),mode:'manual',participantIds:[ps[0].id]},a.cookie)).json()).status).toBe('completed');
   } finally {draw.mockRestore();}
   expect(seen).toHaveLength(2);for(const value of seen){expect(value).toContain('selected-probability');expect(value).not.toContain('suppressed-probability');expect(value).toContain('recursive-winner');expect(value).not.toContain('recursive-loser');}
+ });
+ it('pins recursion mode for new and legacy single and group sessions',async()=>{
+  const a=await login(),b=await login(),cards=await Promise.all([fixture(a.cookie),fixture(a.cookie)]);
+  const book={name:'chain',entries:[{keys:['moon'],content:'alpha-chain'},{keys:['alpha-chain'],content:'beta-chain'},{keys:['beta-chain'],content:'gamma-chain'}]};
+  const upload=await(await request(path+'/imports','POST',{filename:'chain.json',kind:'worldbook',bytesBase64:Buffer.from(JSON.stringify(book)).toString('base64'),rightsConfirmed:true},a.cookie)).json();await request(path+`/worldbooks/${upload.id}/global`,'PUT',{enabled:true},a.cookie);
+  const ids=Array.from({length:4},()=>randomUUID());const single=(id:string,on?:boolean)=>request(path+'/sessions','POST',{id,cardId:cards[0].card,...(on===undefined?{}:{recursiveWorldbook:on})},a.cookie);const group=(id:string,on?:boolean)=>request(path+'/group-sessions','POST',{id,cardIds:cards.map(c=>c.card),...(on===undefined?{}:{recursiveWorldbook:on})},a.cookie);
+  expect((await single(ids[0]!)).status).toBe(200);expect((await single(ids[1]!,true)).status).toBe(200);expect((await group(ids[2]!)).status).toBe(200);expect((await group(ids[3]!,true)).status).toBe(200);
+  expect((await single(ids[0]!,true)).status).toBe(409);expect((await request(path+`/sessions/${ids[1]}`,'GET',undefined,b.cookie)).status).toBe(404);
+  const ctx:string[]=[];model=async input=>{ctx.push(JSON.stringify(input.messages));return 'reply';};
+  for(let i=0;i<4;i++){const id=ids[i]!,ps=i>=2?await(await request(path+`/sessions/${id}/group`,'GET',undefined,a.cookie)).json():null;const payload={action:'moon',expectedRevision:0,idempotencyKey:randomUUID(),...(ps?{mode:'manual',participantIds:[ps[0].id]}:{})};expect((await(await request(path+`/sessions/${id}/${ps?'group-actions':'actions'}`,'POST',payload,a.cookie)).json()).status).toBe('completed');}
+  for(const i of [0,2]){expect(ctx[i]).toContain('alpha-chain');expect(ctx[i]).not.toContain('beta-chain');}for(const i of [1,3]){expect(ctx[i]).toContain('beta-chain');expect(ctx[i]!.indexOf('gamma-chain')).toBeLessThan(ctx[i]!.indexOf('beta-chain'));expect(ctx[i]!.indexOf('beta-chain')).toBeLessThan(ctx[i]!.indexOf('alpha-chain'));}
+  const legacyClient=await pool.connect();try{await legacyClient.query('CREATE TEMP TABLE legacy_recursion (id uuid PRIMARY KEY)');const legacy=randomUUID();await legacyClient.query('INSERT INTO legacy_recursion VALUES($1)',[legacy]);await legacyClient.query('ALTER TABLE legacy_recursion ADD COLUMN recursive_worldbook boolean NOT NULL DEFAULT true');expect((await legacyClient.query('SELECT recursive_worldbook FROM legacy_recursion WHERE id=$1',[legacy])).rows[0].recursive_worldbook).toBe(true);}finally{legacyClient.release();}
+  expect((await(await request(path+`/sessions/${ids[1]}`,'GET',undefined,a.cookie)).json()).recursive_worldbook).toBe(true);
  });
  it('pins persona versions to sessions and prevents cross-account access and deletion',async()=>{
   const a=await login(),b=await login(),f=await fixture(a.cookie),id=randomUUID();
