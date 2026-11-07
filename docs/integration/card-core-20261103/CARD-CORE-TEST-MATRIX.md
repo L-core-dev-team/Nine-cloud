@@ -70,4 +70,4 @@ API `pnpm --filter @jiuxiao/api typecheck`、`pnpm --filter @jiuxiao/api build`�
 
 
 ## CARD-UI-S2-LINJIANGXIAN（2026-11-07）
-独立候选基线 ec72c94。群聊（2/3角色、策略、manual/auto/multi、服务端身份与历史）、世界书全局管理与未知替换核对、描述版本及 V2/V3/PNG 导出已接入；群聊 null Persona 与单人对齐。真实 Chromium/真实 Cookie/隔离 PostgreSQL/合成 Provider 360、390、844×390、1280 PASS；101合成回合分页与迟到跨账号响应隔离 PASS；S1真实浏览器及8组合成视口回归 PASS；隔离PG相关5文件54项、客户端8项、typecheck/build PASS。真实手机键盘/生产/真实模型及正式迁移 NOT VERIFIED。详见 CARD-UI-S2-RECEIPT.md。
+独立候选基线 ec72c94。群聊（2/3角色、策略、manual/auto/multi、服务端身份与历史）、世界书全局管理与未知替换核对、卡片常用文本字段版本及 V2/V3/PNG 导出已接入；群聊 null Persona 与单人对齐。真实 Chromium/真实 Cookie/隔离 PostgreSQL/合成 Provider 360、390、844×390、1280 PASS；101合成回合分页与迟到跨账号响应隔离 PASS；S1真实浏览器及8组合成视口回归 PASS；隔离PG相关5文件54项、客户端8项、typecheck/build PASS。真实手机键盘/生产/真实模型及正式迁移 NOT VERIFIED。详见 CARD-UI-S2-RECEIPT.md。
