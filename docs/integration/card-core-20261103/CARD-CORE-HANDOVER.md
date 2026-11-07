@@ -71,3 +71,7 @@ POST /cards/duplicates 接收 idempotencyKey、strategy=skip|update|copy、impor
 输入 e4d55205de3f9657ae464214b138269591963b1b / tree db64192c2ad19b04818f4496b5941651c7ae3376，固定 ST 对象 06bde939fb1e9c4c8d8641d810f0a916b5bce127。ST public/scripts/world-info.js 明确 world_info_recursive 默认 false，九霄选择器固定启用最多四轮递归；玩家未选择递归时九霄可能额外注入正文，存在影响剧情语义的风险。未执行 ST 浏览器实际触发对照，不可视为已冻结。直接 Node import 固定版本 world-info.js 失败（浏览器根路径依赖 /scripts/i18n.js 无法解析），没有将抽取代码、导入世界书或阅读源码当运行时对照；需在真正加载 ST Web 应用的隔离浏览器会话中执行八项指定场景，并固定随机数。是否为九霄增加会话级显式递归开关，应在取得运行时证据和确定设置的持久化契约后处理；不擅自改现有会话语义。
 现状：基础关键词/次级条件、概率、有限互斥与递归为 PARTIAL（九霄本地测试，ST 运行时 NOT VERIFIED）；复杂位置、组评分、sticky、递归延迟和安全正则为 UNSUPPORTED/拒绝；跨模型 token 上限 NOT VERIFIED。未经运行时对照不宣布有限兼容冻结。
 整体联调清单：1) 真实 Provider 须先批准外部请求并完成服务端出站授权/SSRF 和真实供应商联测；2) token 限额不能用100000字节替代，需按真实模型 tokenizer 计量；3) card-import schema、Persona、群聊、世界书及旧数据回填的正式迁移和回滚须单独批准；4) 真实 TCP/代理断线与提交未知状态恢复未验证；5) UI 需消费 cards/imports、sessions、group-actions、group-strategy、group-history 和 requests/recover 的现有契约与错误；6) 对 WORLDBOOK_UNSUPPORTED_KEY/FEATURE/GROUP、RECURSION_LIMIT 等明确展示拒绝原因，不应静默丢条目；7) 内容审核与生产入口另设门禁，不因本地测试或本文释放。
+
+
+## CARD-WORLDBOOK-05B-RUNTIME-VERIFY（2026-11-07）
+固定 ST 完整应用 + 真实 Chromium 的 checkWorldInfo 运行时对照已执行，合成条目经公开事件注入并固定随机源；详见 CARD-WORLDBOOK-05B-RUNTIME-VERIFY.md。递归关闭时 ST 只触发首条，九霄仍触发递归链；开启时两者入选集合一致但顺序不同。新会话显式配置、旧会话保留 legacy_on 的方案仅为建议，需单独审查迁移与授权，未修改产品代码；正式生产仍未批准。

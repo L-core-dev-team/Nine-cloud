@@ -49,3 +49,7 @@ API `pnpm --filter @jiuxiao/api typecheck`、`pnpm --filter @jiuxiao/api build`�
 
 ## CARD-WORLDBOOK-05B-VERIFY-FREEZE（2026-11-07）
 实际执行 `pnpm --filter @jiuxiao/api typecheck` PASS；`pnpm --filter @jiuxiao/api build` PASS；`pnpm exec vitest run apps/api/src/card-import/worldbook.test.ts apps/api/src/card-import/context.test.ts`：2 文件 11 项 PASS；`git diff --check` PASS。固定 ST 运行时八场景全部 NOT VERIFIED：Node 直接导入 world-info.js 因浏览器根路径 /scripts/i18n.js 解析失败；未运行完整浏览器 ST 触发流程。历史隔离数据库与 Cookie 测试仅引用 05B 记录，非本轮新运行。九霄默认递归和 ST 源码默认关闭的行为差异仅由源码确认，尚无 ST 运行时对照。高级世界书冻结 BLOCKED。
+
+
+## CARD-WORLDBOOK-05B-RUNTIME-VERIFY（2026-11-07）
+真实 Chromium 执行固定 ST 应用 checkWorldInfo，公开事件注入合成条目，浏览器与九霄随机源固定；九组对照结果及证据哈希见 CARD-WORLDBOOK-05B-RUNTIME-VERIFY.md。样本覆盖分组优先与权重两端、概率、概率失败的组行为、递归开关/链/循环和次级条件。递归关闭行为差异、递归链插入顺序差异已复现；固定样本不等于所有边界或实际导入链兼容。九霄 API typecheck/build 和世界书+上下文 2 文件 11 测试 PASS。真实 Provider、生产、真实断线 NOT VERIFIED。
