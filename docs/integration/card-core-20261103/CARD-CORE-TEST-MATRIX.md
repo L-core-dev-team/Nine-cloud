@@ -45,3 +45,7 @@ API `pnpm --filter @jiuxiao/api typecheck`、`pnpm --filter @jiuxiao/api build`�
 
 ## CARD-WORLDBOOK-ADVANCED-05B（2026-11-07）
 隔离 PostgreSQL、应用内 HTTP、真实 Cookie/Session、合成 Provider：`pnpm exec vitest run apps/api/src/card-import/host.integration.test.ts apps/api/src/card-import/context.test.ts apps/api/src/card-import/worldbook.test.ts apps/api/src/card-import/card-model-provider.test.ts`：4 文件 42 项 PASS；覆盖 A→B→C、循环、递归限制、阻断传播、加权/优先分组、分组后概率、单人和群聊组合、已有账号及会话回归。API typecheck/build 和 git diff --check PASS。正则安全实现 BLOCKED（仍拒绝），固定 ST 高级触发运行时对照 NOT VERIFIED；现有验证不等于完整酒馆兼容或真实外部模型/网络/生产验证。
+
+
+## CARD-WORLDBOOK-05B-VERIFY-FREEZE（2026-11-07）
+实际执行 `pnpm --filter @jiuxiao/api typecheck` PASS；`pnpm --filter @jiuxiao/api build` PASS；`pnpm exec vitest run apps/api/src/card-import/worldbook.test.ts apps/api/src/card-import/context.test.ts`：2 文件 11 项 PASS；`git diff --check` PASS。固定 ST 运行时八场景全部 NOT VERIFIED：Node 直接导入 world-info.js 因浏览器根路径 /scripts/i18n.js 解析失败；未运行完整浏览器 ST 触发流程。历史隔离数据库与 Cookie 测试仅引用 05B 记录，非本轮新运行。九霄默认递归和 ST 源码默认关闭的行为差异仅由源码确认，尚无 ST 运行时对照。高级世界书冻结 BLOCKED。

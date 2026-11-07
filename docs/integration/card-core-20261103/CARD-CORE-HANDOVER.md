@@ -65,3 +65,9 @@ POST /cards/duplicates 接收 idempotencyKey、strategy=skip|update|copy、impor
 基线 25e0c6a99ffbd45c0ce4fe763c5690a63d2c25ff。现有选择器增加 group/groupOverride/groupWeight（及对应 extensions 字段）；同组优先 override 按 order 降序、相同顺序按输入稳定排序，否则按权重随机选一，再进行该条目的概率判断。已成功组在后续递归中不能再产生其他条目；失败概率的非优胜候选在后续轮次的处理不保证与 ST 相同。组名含逗号拒绝，group scoring、sticky、延迟触发等复杂策略未支持。
 增加有限递归：新选择正文进入后续扫描，记录条目标识防止重复，preventRecursion 不传播，excludeRecursion 不在递归轮中匹配；最多4轮激活、5000次条目扫描、1000个原始条目、100条选中、50000字节正文，发现第五轮仍有候选失败关闭。默认自动递归，与 ST 的用户全局递归开关存在差异。多次扫描及组处理有硬上限，不能宣称与 ST 在预算、排序和概率上完整一致。正则仍拒绝，未找到并验证非回溯引擎或强制终止隔离，不能以普通 JavaScript 正则执行不可信表达式。
 固定 ST 06bde939fb1e9c4c8d8641d810f0a916b5bce127 仅对 public/scripts/world-info.js 的组选择及概率源码作对照；本轮 ST 触发运行时对照 NOT VERIFIED，不应与此前格式互操作测试混淆。九霄侧综合测试见测试矩阵。前端需呈现不支持语法/超限错误；Provider 必须继续独立执行地址授权与真实模型 token 预算，不得把字节上限视为 token 上限。正式迁移、真实外部模型及生产仍未授权。
+
+
+## CARD-WORLDBOOK-05B-VERIFY-FREEZE（2026-11-07，未完成）
+输入 e4d55205de3f9657ae464214b138269591963b1b / tree db64192c2ad19b04818f4496b5941651c7ae3376，固定 ST 对象 06bde939fb1e9c4c8d8641d810f0a916b5bce127。ST public/scripts/world-info.js 明确 world_info_recursive 默认 false，九霄选择器固定启用最多四轮递归；玩家未选择递归时九霄可能额外注入正文，存在影响剧情语义的风险。未执行 ST 浏览器实际触发对照，不可视为已冻结。直接 Node import 固定版本 world-info.js 失败（浏览器根路径依赖 /scripts/i18n.js 无法解析），没有将抽取代码、导入世界书或阅读源码当运行时对照；需在真正加载 ST Web 应用的隔离浏览器会话中执行八项指定场景，并固定随机数。是否为九霄增加会话级显式递归开关，应在取得运行时证据和确定设置的持久化契约后处理；不擅自改现有会话语义。
+现状：基础关键词/次级条件、概率、有限互斥与递归为 PARTIAL（九霄本地测试，ST 运行时 NOT VERIFIED）；复杂位置、组评分、sticky、递归延迟和安全正则为 UNSUPPORTED/拒绝；跨模型 token 上限 NOT VERIFIED。未经运行时对照不宣布有限兼容冻结。
+整体联调清单：1) 真实 Provider 须先批准外部请求并完成服务端出站授权/SSRF 和真实供应商联测；2) token 限额不能用100000字节替代，需按真实模型 tokenizer 计量；3) card-import schema、Persona、群聊、世界书及旧数据回填的正式迁移和回滚须单独批准；4) 真实 TCP/代理断线与提交未知状态恢复未验证；5) UI 需消费 cards/imports、sessions、group-actions、group-strategy、group-history 和 requests/recover 的现有契约与错误；6) 对 WORLDBOOK_UNSUPPORTED_KEY/FEATURE/GROUP、RECURSION_LIMIT 等明确展示拒绝原因，不应静默丢条目；7) 内容审核与生产入口另设门禁，不因本地测试或本文释放。
