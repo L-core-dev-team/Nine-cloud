@@ -32,21 +32,31 @@ API 代码对存档、回合和 NPC 观察使用 `owner_id` 条件，例如 `app
 
 PostgreSQL 中 `TRUNCATE` 不受普通 RLS 行策略约束。权限过宽是事实。公网可利用性没有被证实，也不在生产上试。
 
-## 隔离库草案
+## SQL 修订
 
-只在新建的本地库执行。库主机必须是 `127.0.0.1` 或 `localhost`，库名必须以 `jiuxiao_isolated_` 开头。禁止把 `DATABASE_URL` 指到 Supabase。
+已从可执行草案中删除 `ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin`。Supabase 的普通 `postgres` 角色不能修改内部角色 `supabase_admin` 的默认授权。隔离测试让非超级用户 `app_owner` 执行这句，结果是 `42501`。
 
-草案不进入自动迁移目录。生产撤销必须另一次批准，并先有备份和回滚说明。
+`pg_default_acl` 把全局默认授权和 schema 默认授权分成不同记录。只撤销 schema 级记录，不会取消全局记录。隔离测试先只做 schema 级撤销，随后新建的表仍然从全局默认授权得到 `TRUNCATE`。再撤销全局默认授权后，另一张新建表没有这项权限。因此不能把语句退出码当成权限已经全部消失。
 
-```sql
-REVOKE TRUNCATE ON ALL TABLES IN SCHEMA public FROM anon, authenticated;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
-  REVOKE TRUNCATE ON TABLES FROM anon, authenticated, service_role;
-ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin IN SCHEMA public
-  REVOKE TRUNCATE ON TABLES FROM anon, authenticated;
-```
+先前读到的生产默认授权都标在 `public`。这次补查全局记录时目录连接失败，没有重跑。可执行草案仍对 `postgres` 同时撤销 schema 级和全局默认授权；若生产没有全局记录，后一句是空操作。它不修改 `supabase_admin` 名下的默认授权。
 
-负向测试应在隔离库中：以迁移角色建一张临时表，确认 `anon` 在撤销前可以或按本库默认可以 `TRUNCATE`，撤销后必须得到权限错误，且表中的测试行还在。测试不得连接非本地主机。本轮没有启动这套库，测试记 NOT_RUN。
+现有表上的 `TRUNCATE` 也不会随默认授权撤销而消失。草案改为点名已经核对的 18 张表，不对整个 `public` 做未点名的范围变更。该文件仍不在 Drizzle 迁移目录里。
+
+## 隔离库测试
+
+容器 `jiuxiao-isolated-pr03`，镜像 `postgres:17`，没有发布主机端口。执行前在容器内读到数据库 `jiuxiao_isolated_pr03`、用户 `postgres`、数据目录 `/var/lib/postgresql/data`。没有使用 Supabase 连接串。
+
+| 检查 | 结果 |
+| --- | --- |
+| 撤销前 `anon`、`authenticated` 对合成表有 `TRUNCATE` | PASS |
+| 非超级用户修改 `supabase_admin` 默认授权 | PASS，拒绝，`42501` |
+| 只撤销 schema 级默认授权后新建表 | PASS，仍有来自全局默认授权的 `TRUNCATE` |
+| 再撤销全局默认授权后新建另一张表 | PASS，没有 `anon` 的 `TRUNCATE` |
+| 重复执行撤销 | PASS，第二次后目录里不再列出这两个角色的 `TRUNCATE` |
+| `anon` 清空仍保留一行的合成表 | PASS，拒绝，`42501` |
+| 拒绝后读取该行 | PASS，`id=1`，内容仍是 `keep-me` |
+
+这只证明本地 PostgreSQL 17。它不表示 Supabase 生产权限已经整改。
 
 ## 回滚与批准
 
