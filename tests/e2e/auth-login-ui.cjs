@@ -103,7 +103,11 @@ async function main() {
     await page.getByLabel('短信验证码', { exact: true }).fill('123456');
     await page.getByRole('button', { name: '手机号登录', exact: true }).click();
     await page.getByText('已登录。', { exact: true }).waitFor();
-    await page.getByText('手机号：已绑定（号码不在此页面保存或展示）。解绑需要重新验证当前邮箱。', { exact: true }).waitFor();
+    const loginMethods = page.locator('details.cloud-login-methods');
+    const boundPhone = page.getByText('手机号：已绑定（号码不在此页面保存或展示）。解绑需要重新验证当前邮箱。', { exact: true });
+    assert.equal(await boundPhone.isVisible(), false, 'closed login-methods disclosure keeps the phone status hidden');
+    await loginMethods.locator('summary').click();
+    await boundPhone.waitFor({ state: 'visible' });
     await page.getByText('phone-user@example.invalid', { exact: true }).waitFor();
 
     phoneProviderEnabled = false;
