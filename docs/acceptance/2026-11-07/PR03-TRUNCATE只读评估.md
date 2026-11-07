@@ -38,7 +38,7 @@ PostgreSQL 中 `TRUNCATE` 不受普通 RLS 行策略约束。权限过宽是事�
 
 `pg_default_acl` 把全局默认授权和 schema 默认授权分成不同记录。只撤销 schema 级记录，不会取消全局记录。隔离测试先只做 schema 级撤销，随后新建的表仍然从全局默认授权得到 `TRUNCATE`。再撤销全局默认授权后，另一张新建表没有这项权限。因此不能把语句退出码当成权限已经全部消失。
 
-先前读到的生产默认授权都标在 `public`。这次补查全局记录时目录连接失败，没有重跑。可执行草案仍对 `postgres` 同时撤销 schema 级和全局默认授权；若生产没有全局记录，后一句是空操作。它不修改 `supabase_admin` 名下的默认授权。
+先前读到的生产默认授权都标在 `public`。这次补查全局记录时目录连接失败，没有重跑。可执行草案仍对 `postgres` 同时撤销 schema 级和全局默认授权，对象只限 `anon` 和 `authenticated`。`service_role` 不在本轮撤销范围内。生产上的全局默认授权记录这次没有重新读成，所以这份草案不是最终生产迁移。若生产没有全局记录，后一句是空操作。它不修改 `supabase_admin` 名下的默认授权。
 
 现有表上的 `TRUNCATE` 也不会随默认授权撤销而消失。草案改为点名已经核对的 18 张表，不对整个 `public` 做未点名的范围变更。该文件仍不在 Drizzle 迁移目录里。
 
@@ -48,11 +48,12 @@ PostgreSQL 中 `TRUNCATE` 不受普通 RLS 行策略约束。权限过宽是事�
 
 | 检查 | 结果 |
 | --- | --- |
-| 撤销前 `anon`、`authenticated` 对合成表有 `TRUNCATE` | PASS |
+| 连接到库名 `postgres` 时，脚本在任何写入前终止 | PASS，`42501` 之外的拒绝：数据库名不符合前缀；该库没有留下测试角色 |
+| 撤销前 `anon`、`authenticated`、`service_role` 对合成表有 `TRUNCATE` | PASS |
 | 非超级用户修改 `supabase_admin` 默认授权 | PASS，拒绝，`42501` |
-| 只撤销 schema 级默认授权后新建表 | PASS，仍有来自全局默认授权的 `TRUNCATE` |
-| 再撤销全局默认授权后新建另一张表 | PASS，没有 `anon` 的 `TRUNCATE` |
-| 重复执行撤销 | PASS，第二次后目录里不再列出这两个角色的 `TRUNCATE` |
+| 只撤销 schema 级 `anon`/`authenticated` 默认授权后新建表 | PASS，仍有来自全局默认授权的 `TRUNCATE` |
+| 再撤销这两个角色的全局默认授权后新建另一张表 | PASS，没有 `anon` 的 `TRUNCATE`，`service_role` 仍有 |
+| 重复执行后 | PASS，`anon` 和 `authenticated` 不再列出；三张合成表上 `service_role` 仍有 `TRUNCATE` |
 | `anon` 清空仍保留一行的合成表 | PASS，拒绝，`42501` |
 | 拒绝后读取该行 | PASS，`id=1`，内容仍是 `keep-me` |
 

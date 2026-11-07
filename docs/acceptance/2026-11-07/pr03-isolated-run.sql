@@ -1,5 +1,22 @@
 \set ON_ERROR_STOP on
-SELECT current_database() AS db, current_user AS db_user, current_setting('data_directory') AS data_directory;
+
+-- Stop before any role, table, or privilege change. Printing identity is not a guard.
+DO $$
+DECLARE
+  db text := current_database();
+  dir text := current_setting('data_directory');
+  addr inet := inet_server_addr();
+BEGIN
+  IF db !~ '^jiuxiao_isolated_' THEN
+    RAISE EXCEPTION 'refusing writes: database % does not use the jiuxiao_isolated_ prefix', db;
+  END IF;
+  IF dir IS DISTINCT FROM '/var/lib/postgresql/data' THEN
+    RAISE EXCEPTION 'refusing writes: data directory % is not the controlled local container directory', dir;
+  END IF;
+  IF addr IS NOT NULL AND NOT (addr << inet '127.0.0.0/8' OR addr = inet '::1') THEN
+    RAISE EXCEPTION 'refusing writes: server address % is not loopback', addr;
+  END IF;
+END $$;
 
 CREATE ROLE anon NOLOGIN;
 CREATE ROLE authenticated NOLOGIN;
@@ -11,15 +28,18 @@ GRANT CREATE, USAGE ON SCHEMA public TO app_owner;
 
 CREATE TABLE public.synthetic_saves (id integer PRIMARY KEY, note text NOT NULL);
 INSERT INTO public.synthetic_saves (id, note) VALUES (1, 'keep-me');
-GRANT TRUNCATE ON TABLE public.synthetic_saves TO anon, authenticated;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public GRANT TRUNCATE ON TABLES TO anon, authenticated, service_role;
-ALTER DEFAULT PRIVILEGES FOR ROLE postgres GRANT TRUNCATE ON TABLES TO anon, authenticated;
+GRANT TRUNCATE ON TABLE public.synthetic_saves TO anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
+  GRANT TRUNCATE ON TABLES TO anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres
+  GRANT TRUNCATE ON TABLES TO anon, authenticated, service_role;
 
 \echo '--- before ---'
 SELECT grantee, privilege_type
 FROM information_schema.role_table_grants
-WHERE table_schema = 'public' AND table_name = 'synthetic_saves' AND grantee IN ('anon', 'authenticated')
-ORDER BY 1, 2;
+WHERE table_schema = 'public' AND table_name = 'synthetic_saves'
+  AND grantee IN ('anon', 'authenticated', 'service_role') AND privilege_type = 'TRUNCATE'
+ORDER BY 1;
 
 SET ROLE app_owner;
 DO $$
@@ -34,34 +54,34 @@ RESET ROLE;
 
 REVOKE TRUNCATE ON ALL TABLES IN SCHEMA public FROM anon, authenticated;
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
-  REVOKE TRUNCATE ON TABLES FROM anon, authenticated, service_role;
+  REVOKE TRUNCATE ON TABLES FROM anon, authenticated;
 
-\echo '--- after schema revoke, before global revoke ---'
+\echo '--- after schema-only revoke ---'
 CREATE TABLE public.synthetic_after_schema (id integer PRIMARY KEY);
 SELECT table_name, grantee, privilege_type
 FROM information_schema.role_table_grants
-WHERE table_schema = 'public' AND table_name = 'synthetic_after_schema' AND grantee = 'anon' AND privilege_type = 'TRUNCATE';
+WHERE table_schema = 'public' AND table_name = 'synthetic_after_schema'
+  AND grantee IN ('anon', 'service_role') AND privilege_type = 'TRUNCATE'
+ORDER BY 2;
 
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres
-  REVOKE TRUNCATE ON TABLES FROM anon, authenticated, service_role;
+  REVOKE TRUNCATE ON TABLES FROM anon, authenticated;
 
-\echo '--- after global revoke ---'
+\echo '--- after anon/authenticated global revoke; service_role remains ---'
 CREATE TABLE public.synthetic_after_global (id integer PRIMARY KEY);
 SELECT table_name, grantee, privilege_type
 FROM information_schema.role_table_grants
-WHERE table_schema = 'public' AND grantee IN ('anon', 'authenticated') AND privilege_type = 'TRUNCATE'
+WHERE table_schema = 'public'
+  AND table_name IN ('synthetic_saves', 'synthetic_after_schema', 'synthetic_after_global')
+  AND grantee IN ('anon', 'authenticated', 'service_role') AND privilege_type = 'TRUNCATE'
 ORDER BY 1, 2;
 
-\echo '--- repeat ---'
+\echo '--- repeat narrowed statements ---'
 REVOKE TRUNCATE ON ALL TABLES IN SCHEMA public FROM anon, authenticated;
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
-  REVOKE TRUNCATE ON TABLES FROM anon, authenticated, service_role;
+  REVOKE TRUNCATE ON TABLES FROM anon, authenticated;
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres
-  REVOKE TRUNCATE ON TABLES FROM anon, authenticated, service_role;
-SELECT table_name, grantee, privilege_type
-FROM information_schema.role_table_grants
-WHERE table_schema = 'public' AND grantee IN ('anon', 'authenticated') AND privilege_type = 'TRUNCATE'
-ORDER BY 1, 2;
+  REVOKE TRUNCATE ON TABLES FROM anon, authenticated;
 
 \echo '--- anon truncate attempt ---'
 SET ROLE anon;

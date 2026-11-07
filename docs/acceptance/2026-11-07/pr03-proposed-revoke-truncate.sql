@@ -1,15 +1,16 @@
--- Executable only by the role that owns the tables and granted the defaults.
--- Do not run this against Supabase or any non-local database.
--- Do not register it in packages/db/drizzle/meta/_journal.json.
+-- Candidate for a later, separately approved production change.
+-- This file is not registered in packages/db/drizzle/meta/_journal.json.
+-- Do not apply it to Supabase. The production catalog of global default
+-- privileges was not re-read successfully, so these statements are not a
+-- finished production migration.
 --
--- The previous draft also contained:
---   ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin ...
--- Supabase documents that the project postgres role cannot change default
--- privileges owned by the internal supabase_admin role (SQLSTATE 42501).
--- That statement is intentionally absent. It is not an optional extra step.
+-- Scope is anon and authenticated only. service_role is intentionally absent.
+-- ALTER DEFAULT PRIVILEGES FOR ROLE supabase_admin is also absent: the
+-- ordinary postgres role cannot change that internal role (SQLSTATE 42501).
 --
--- Schema-level default privileges and global default privileges are separate
--- rows in pg_default_acl. Revoking one does not revoke the other.
+-- Schema-level and global default privileges are separate pg_default_acl rows.
+-- Revoking one does not revoke the other. Existing table grants are a third
+-- record and need their own REVOKE.
 
 REVOKE TRUNCATE ON TABLE
   public.account_lifecycle_audit,
@@ -33,7 +34,7 @@ REVOKE TRUNCATE ON TABLE
 FROM anon, authenticated;
 
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
-  REVOKE TRUNCATE ON TABLES FROM anon, authenticated, service_role;
+  REVOKE TRUNCATE ON TABLES FROM anon, authenticated;
 
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres
-  REVOKE TRUNCATE ON TABLES FROM anon, authenticated, service_role;
+  REVOKE TRUNCATE ON TABLES FROM anon, authenticated;
