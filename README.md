@@ -11,10 +11,11 @@
 ![Node](https://img.shields.io/badge/node-%E2%89%A524-brightgreen)
 ![pnpm](https://img.shields.io/badge/pnpm-11.19-orange)
 ![TypeScript](https://img.shields.io/badge/TypeScript-7.0-3178C6)
-![License](https://img.shields.io/badge/license-UNLICENSED--private-red)
-![Gates](https://img.shields.io/badge/gates-fail--closed%20(RULES%2FLICENSE%2FHUMAN)-crimson)
+![License](https://img.shields.io/badge/license-UNLICENSED-lightgrey)
+![Repository](https://img.shields.io/badge/repository-public-blue)
+![Gates](https://img.shields.io/badge/gates-rules%20%7C%20license%20%7C%20owner%20approval-crimson)
 
-> **当前状态（2026-11-07 校正）**：仓库是公开的。公网站点按拥有者决定维持路线 A，不开放正式注册、云档写入和真实回合。页面、本地存档、世界书浏览和 AI 设置有代码；这不等于生产规则模块已装载，也不等于玩家长局已验收。Workers 仍是候选，不是当前生产 API。当前生产形态以 Pages 前端、Caddy/Node API 和 Supabase PostgreSQL 为准，部署号仍须按具体构建核对。2026-11-07 起，后续验收不再使用 Bird 与 LYL 双作者签收；历史记录保持原样，不改写，也不由 AI 补签。上方许可证徽章里的 private 字样是旧口径。开放项仍见 [阶段缺口与人工交接清单](docs/九霄1.0阶段缺口与人工交接清单-2026-09-29.md)，其中与本段冲突的句子以本段为准，不删除历史清单。
+> **当前状态（2026-11-07 校正）**：GitHub 仓库是公开的。`package.json` 里的 `"private": true` 只表示不发布到 npm，不表示仓库私有，也不表示采用了 MIT 或其他开源许可证。仓库许可证状态仍是 UNLICENSED。公网站点维持路线 A，不开放正式注册、云档写入和真实回合。页面和本地存档有代码，不等于生产规则模块已装载。Workers 仍是候选。生产形态是 Pages、Caddy/Node 和 Supabase，具体部署号仍须按构建核对。2026-11-07 起取消 Bird 与 LYL 双人联合签收。正式规则版本、世界书 Canon、素材权利、数据政策和生产发布仍分别由明确指定的项目拥有者批准。历史记录不改写，AI 不补签。开放项见 [阶段缺口与人工交接清单](docs/九霄1.0阶段缺口与人工交接清单-2026-09-29.md)。与本段冲突的旧句以本段为准，不删除该历史清单。
 
 **本地试玩原型**（验证原型与存档迁移；API 密钥由玩家本机配置，仓库与发行文件不含密钥）：[空白版](outputs/九霄WEB-1.0/九霄_WEB_1.0_空白版.html) · [临江仙存档迁移验证版](outputs/九霄WEB-1.0/九霄_WEB_1.0_临江仙存档版.html) · [试玩验收与恢复指南](outputs/九霄WEB-1.0/试玩验收与恢复指南.md)
 
