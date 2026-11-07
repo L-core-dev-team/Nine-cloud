@@ -54,3 +54,8 @@ POST /cards/duplicates 接收 idempotencyKey、strategy=skip|update|copy、impor
 基线 f3f703b887ee170798eb68546e69aa69cb4e39ac。新增本地 group_settings，GET/PUT /sessions/:id/group-strategy 分别读取/设置 manual 或 auto；group-actions 省略 mode 时由事务内读取当前策略并固定到本次 group_turns，已存在 key 先校验并返回原状态，不随策略变化重新选人。手动、自动、multi 可显式指定；重复参与者输出允许并保留顺序，未知字段忽略、身份及文字严校验。group-history 先按回合分页，避免多段响应被截断。
 群聊选择已固定在会话的全局书和选中发言者的专属书，复用既有选择器及内容去重；旧会话不跟随卡新版本或全局开关。群聊上下文最多 100000 字节（含模型输入结构），先移除最早完整对话，再移除选择器末尾世界书条目，不裁剪系统约束、Persona、参与者身份和当前输入，仍超限则拒绝。选择器本身仍有 50000 字节条目上限，超过即拒绝；此字节预算并非针对真实模型 tokenizer 的保证。单人路径不启用群聊裁剪。
 本地测试 schema 增加 group_settings，正式迁移未设计或执行。升级旧 04B 数据时需在独立审查后的同一事务为既有群聊补默认 manual，核对旧新应用并发和回滚；缺失设置时请求失败关闭。未执行真实网络断开、真实付费模型或生产验证，仍不得启用生产。取消检查仅能保证观察到的取消在提交前触发回滚；提交后及 COMMIT 与取消竞争结果以服务端请求记录为准。
+
+
+## CARD-WORLDBOOK-ADVANCED-05（2026-11-07，部分完成）
+基线 55976a30edf55b61ad87be5365bbca1a76562a71。对照本地 SillyTavern 06bde939fb1e9c4c8d8641d810f0a916b5bce127 的 public/scripts/world-info.js（matchKeys、selectiveLogic、verifyProbability 及 originalWIDataKeyMap）。增量支持条目 probability、useProbability 和 extensions.probability / use_probability，百分比0–100，开启时按随机抽样、关闭及100时不抽样；同一服务端请求键沿用原请求结果，重试不重新生成。概率结果未单独持久化，未知提交或真实模型流程不视为已验证。
+兼容矩阵：次级 AND_ANY/NOT_ALL/NOT_ANY/AND_ALL、大小写、单词匹配与基础前后位置和排序已有基础实现；其整词 Unicode、多词及优先级/预算细节不宣称与 ST 完全一致。概率仅覆盖基本抽样，sticky/cooldown等未支持。正则、递归和互斥分组仍失败关闭（未实现）；常规 JS 正则不能保证限时，禁止不受限执行。复杂位置、组权重和递归延迟等亦未实现。现有选择器至多遍历1000条、选100条及50000字节，群聊另有100000字节预算。此轮未完成用户所列全部高级能力，不得标记完整兼容。

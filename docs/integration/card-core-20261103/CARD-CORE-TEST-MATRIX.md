@@ -37,3 +37,7 @@
 ## CARD-PERSONA-GROUP-04B-CLOSEOUT（2026-11-05）
 本机独立 PostgreSQL、Hono app.request + 真实 Email Cookie/Session、合成 Provider：`pnpm exec vitest run apps/api/src/card-import/host.integration.test.ts apps/api/src/card-import/context.test.ts apps/api/src/card-import/worldbook.test.ts apps/api/src/card-import/card-model-provider.test.ts apps/api/src/services/provider-golden.test.ts`：5 文件 46 项 PASS。包括群聊书快照/去重/账号隔离；策略切换与重登录恢复；同键并发及内容冲突；超时与生成中取消、迟到结果；生成前、事务行锁等待中的提交前取消与提交后取消；模拟多段第二条插入失败回滚；模型非法 JSON、缺失字段、伪造身份、空/过长/过多/混合段拒绝，重复发言及额外字段处理；旧单人及 Persona 回归、预算裁剪。重登录为避免等待测试通过数据库调整了合成验证码请求的时间，不是生产认证行为变更。
 API `pnpm --filter @jiuxiao/api typecheck`、`pnpm --filter @jiuxiao/api build`、`git diff --check` PASS。此前一次重新登录测试因真实认证冷却 FAIL，经合成时间调整后在新库复测 PASS。请求通过应用内 HTTP 接口而非真实 TCP；客户端真实断线到服务器的取消传播 NOT VERIFIED。COMMIT 未知结果、正式迁移、真实模型及生产 NOT VERIFIED/NOT RUN；不将测试授权解释为生产签收。
+
+
+## CARD-WORLDBOOK-ADVANCED-05（2026-11-07）
+本机隔离 PostgreSQL，应用内 HTTP 请求 + 真实 Cookie/Session 与合成模型：`pnpm exec vitest run apps/api/src/card-import/host.integration.test.ts apps/api/src/card-import/context.test.ts apps/api/src/card-import/worldbook.test.ts apps/api/src/card-import/card-model-provider.test.ts`：4文件40项 PASS。包含单人与群聊概率100/0、边界与关闭开关、已有账号隔离和会话快照回归。概率测试以合成固定随机数证明选择，不证明真实服务随机分布或完整酒馆行为。API typecheck/build、git diff --check PASS。首次非隔离单测的 Provider 测试因沙盒临时文件 ENOENT 失败；上述隔离环境重跑通过。真实网络断线、真实模型、生产 NOT VERIFIED；正则/递归/互斥功能 NOT IMPLEMENTED；固定ST高级功能运行时互操作未执行。

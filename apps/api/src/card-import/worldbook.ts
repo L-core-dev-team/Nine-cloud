@@ -1,7 +1,7 @@
 import { CardError, record } from './parser.js';
 
 /** Bounded subset; unsupported advanced features fail closed instead of being ignored. */
-export function selectWorldbookEntries(books: Record<string, unknown>[], history: {action:string; narrative:string}[], action: string): Record<string, unknown>[] {
+export function selectWorldbookEntries(books: Record<string, unknown>[], history: {action:string; narrative:string}[], action: string, random: () => number = Math.random): Record<string, unknown>[] {
   const messages = [...history.flatMap(t => [t.action, t.narrative]), action];
   const selected: {content:string; position:string; order:number; index:number}[] = [];
   let examined = 0;
@@ -12,9 +12,9 @@ export function selectWorldbookEntries(books: Record<string, unknown>[], history
       if (++examined > 1000) throw new CardError('WORLDBOOK_ENTRY_LIMIT', 413);
       if (!record(raw) || raw.enabled === false || raw.disable === true) continue;
       const ext = record(raw.extensions) ? raw.extensions : {};
-      const supportedExtensions = new Set(['scan_depth', 'case_sensitive', 'match_whole_words', 'constant', 'position', 'selectiveLogic']);
+      const supportedExtensions = new Set(['scan_depth', 'case_sensitive', 'match_whole_words', 'constant', 'position', 'selectiveLogic', 'probability', 'use_probability']);
       if (Object.keys(ext).some(key => !supportedExtensions.has(key))) throw new CardError('WORLDBOOK_UNSUPPORTED_FEATURE');
-      if (ext.probability !== undefined || ext.useProbability || ext.group || ext.delay_until_recursion || ext.prevent_recursion || ext.recursive_scanning || raw.probability !== undefined || raw.useProbability || raw.group || raw.delayUntilRecursion || raw.preventRecursion || raw.recursive) throw new CardError('WORLDBOOK_UNSUPPORTED_FEATURE');
+      if (ext.group || ext.delay_until_recursion || ext.prevent_recursion || ext.recursive_scanning || raw.group || raw.delayUntilRecursion || raw.preventRecursion || raw.recursive) throw new CardError('WORLDBOOK_UNSUPPORTED_FEATURE');
       const main = Array.isArray(raw.keys) ? raw.keys : Array.isArray(raw.key) ? raw.key : [];
       const secondary = Array.isArray(raw.secondary_keys) ? raw.secondary_keys : Array.isArray(raw.keysecondary) ? raw.keysecondary : [];
       const keys = [...main, ...secondary];
@@ -43,6 +43,14 @@ export function selectWorldbookEntries(books: Record<string, unknown>[], history
         const allowed = mode === 0 ? hits.some(Boolean) : mode === 1 ? !hits.every(Boolean) : mode === 2 ? !hits.some(Boolean) : mode === 3 ? hits.every(Boolean) : false;
         if (![0,1,2,3].includes(Number(mode))) throw new CardError('WORLDBOOK_UNSUPPORTED_LOGIC');
         if (!allowed) continue;
+      }
+      const probability = raw.probability ?? ext.probability ?? 100;
+      const useProbability = raw.useProbability ?? ext.use_probability ?? true;
+      if (typeof probability !== 'number' || !Number.isFinite(probability) || probability < 0 || probability > 100 || typeof useProbability !== 'boolean') throw new CardError('WORLDBOOK_INVALID_PROBABILITY');
+      if (useProbability && probability < 100) {
+        const roll = random();
+        if (!Number.isFinite(roll) || roll < 0 || roll >= 1) throw new CardError('WORLDBOOK_INVALID_RANDOM');
+        if (roll * 100 > probability) continue;
       }
       if (typeof raw.content !== 'string' || !raw.content) continue;
       const pos = raw.position ?? ext.position ?? 'before_char';

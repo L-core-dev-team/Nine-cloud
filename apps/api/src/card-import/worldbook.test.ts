@@ -22,6 +22,14 @@ describe('bounded card worldbook selection', () => {
     const rows=select([{entries:[entry({constant:true,order:20,position:1})]},{entries:[entry({constant:true,order:10,position:0})]}],[],'');
     expect(rows.map(x=>x.order)).toEqual([10,20]); expect(rows.map(x=>x.position)).toEqual(['before_char','after_char']);
   });
+  it('uses bounded SillyTavern probability semantics with injectable synthetic draws', () => {
+    const rows=[entry({content:'half',probability:50,useProbability:true}),entry({content:'off',probability:0,useProbability:false}),entry({content:'ext',extensions:{probability:10,use_probability:true}})];
+    expect(select([{entries:rows}],[],'moon',()=>0.4).map(x=>x.content)).toEqual(['half','off']);
+    expect(select([{entries:rows}],[],'moon',()=>0.9).map(x=>x.content)).toEqual(['off']);
+    expect(select([{entries:[entry({probability:100})]}],[],'moon',()=>0.99)).toHaveLength(1);
+    expect(()=>select([{entries:[entry({probability:101})]}],[],'moon')).toThrow('WORLDBOOK_INVALID_PROBABILITY');
+    expect(()=>select([{entries:[entry({probability:20})]}],[],'moon',()=>1)).toThrow('WORLDBOOK_INVALID_RANDOM');
+  });
   it('rejects regular expressions and overlarge book traversal', () => {
     expect(()=>select([{entries:[entry({keys:['/(a+)+$/']})]}],[],'aaa')).toThrow('WORLDBOOK_UNSUPPORTED_KEY');
     expect(()=>select([{entries:Array.from({length:1001},()=>({enabled:false}))}],[],'')).toThrow('WORLDBOOK_ENTRY_LIMIT');

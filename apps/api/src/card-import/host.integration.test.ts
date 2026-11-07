@@ -1,4 +1,4 @@
-import { beforeAll, afterAll, describe, it, expect } from 'vitest';
+import { beforeAll, afterAll, describe, it, expect, vi } from 'vitest';
 import { readFile, readdir } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import { Pool } from 'pg';
@@ -138,6 +138,19 @@ describe.skipIf(!url)('existing host + real PostgreSQL session integration',()=>
   expect((await(await request(path+`/sessions/${id}/group-history`,'GET',undefined,cookie)).json())).toHaveLength(1);expect((await(await request(path+`/sessions/${id}/group-strategy`,'GET',undefined,cookie)).json()).strategy).toBe('auto');
   const other=randomUUID();await request(path+'/group-sessions','POST',{id:other,cardIds:cards.map(x=>x.card)},cookie);expect((await(await request(path+`/sessions/${other}/group-history`,'GET',undefined,cookie)).json())).toEqual([]);
   expect((await(await request(path+`/sessions/${id}/group-actions`,'POST',{action:'continue',expectedRevision:1,idempotencyKey:randomUUID(),mode:'manual',participantIds:[ps[0].id]},cookie)).json()).status).toBe('completed');
+ });
+ it('applies probability to single and group model contexts through authenticated sessions',async()=>{
+  const a=await login(),cards=await Promise.all([fixture(a.cookie),fixture(a.cookie)]);
+  const book={name:'probability-test',entries:[{keys:['moon'],content:'selected-probability',extensions:{probability:100}},{keys:['moon'],content:'suppressed-probability',extensions:{probability:0}}]};
+  const uploaded=await(await request(path+'/imports','POST',{filename:'w.json',kind:'worldbook',bytesBase64:Buffer.from(JSON.stringify(book)).toString('base64'),rightsConfirmed:true},a.cookie)).json();
+  expect((await request(path+`/worldbooks/${uploaded.id}/global`,'PUT',{enabled:true},a.cookie)).status).toBe(200);
+  const single=randomUUID(),group=randomUUID();await request(path+'/sessions','POST',{id:single,cardId:cards[0].card},a.cookie);await request(path+'/group-sessions','POST',{id:group,cardIds:cards.map(c=>c.card)},a.cookie);
+  const ps=await(await request(path+`/sessions/${group}/group`,'GET',undefined,a.cookie)).json(),seen:string[]=[];model=async input=>{seen.push(JSON.stringify(input.messages));return 'reply';};
+  const draw=vi.spyOn(Math,'random').mockReturnValue(0.5);try {
+   expect((await(await request(path+`/sessions/${single}/actions`,'POST',{action:'moon',expectedRevision:0,idempotencyKey:randomUUID()},a.cookie)).json()).status).toBe('completed');
+   expect((await(await request(path+`/sessions/${group}/group-actions`,'POST',{action:'moon',expectedRevision:0,idempotencyKey:randomUUID(),mode:'manual',participantIds:[ps[0].id]},a.cookie)).json()).status).toBe('completed');
+  } finally {draw.mockRestore();}
+  expect(seen).toHaveLength(2);for(const value of seen){expect(value).toContain('selected-probability');expect(value).not.toContain('suppressed-probability');}
  });
  it('pins persona versions to sessions and prevents cross-account access and deletion',async()=>{
   const a=await login(),b=await login(),f=await fixture(a.cookie),id=randomUUID();
