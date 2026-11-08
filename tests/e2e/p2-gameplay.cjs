@@ -120,7 +120,7 @@ async function stop(child) {
       || (process.platform === 'win32' && existsSync('C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe')
         ? 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe' : undefined);
     browser = await chromium.launch(executablePath ? { executablePath } : {});
-    const context = await browser.newContext({ viewport: { width: 1366, height: 900 } });
+    const context = await browser.newContext({ viewport: { width: 376, height: 844 } });
     const page = await context.newPage();
     const pageErrors = [];
     page.on('pageerror', error => pageErrors.push(error.message));
@@ -156,6 +156,7 @@ async function stop(child) {
     await page.getByTestId('p2-cloud-game').waitFor({ state: 'visible', timeout: 20_000 });
     await page.getByText('真实遗忘', { exact: true }).waitFor();
     await page.locator('[aria-label="故事开场"]').waitFor({state:'visible'});
+    assert.ok((await page.locator('.story-reading').boundingBox()).height >= 120, 'the real story must retain readable viewport space');
     const guestSession = await page.evaluate(async () => {
       const response = await fetch('/api/auth/session');
       return { status: response.status, body: await response.json() };
@@ -247,6 +248,10 @@ async function stop(child) {
     await page.waitForFunction(() => document.querySelector('[data-testid="p2-revision"]')?.textContent === '10');
     await page.getByTestId('p2-receipt').getByText('行动已执行。', {exact:true}).waitFor();
     await page.waitForFunction(() => !document.querySelector('[data-testid="p2-action-input"]').disabled);
+    for (const width of [390, 1366]) {
+      await page.setViewportSize({ width, height: 844 });
+      assert.ok((await page.locator('.story-reading').boundingBox()).height >= 120);
+    }
     await page.getByTestId('p2-action-input').fill('未提交的行动草稿');
     await page.reload({ waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => document.querySelector('[data-testid="p2-action-input"]')?.value === '未提交的行动草稿');
