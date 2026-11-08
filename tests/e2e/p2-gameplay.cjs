@@ -182,7 +182,15 @@ async function stop(child) {
     await page.waitForFunction(() => document.querySelector('[data-testid="p2-narrative"]')?.textContent.includes('渡槽淤了半尺'), null, { timeout: 20_000 });
     expectedRequests = 1;
     expectedEvents = 1;
-    assert.match(await page.getByTestId('p2-receipt').textContent(), /observe\.result/);
+    // The player receipt projects the committed delta. The raw event type stays
+    // in PostgreSQL and is asserted with the turn row below.
+    const receiptText = await page.getByTestId('p2-receipt').textContent();
+    assert.match(receiptText, /行动已执行/);
+    assert.match(receiptText, /耗时 15 分钟/);
+    assert.match(receiptText, /线索：无 → 渡口淤堵线索/);
+    assert.match(receiptText, /游戏分钟：300 → 315/);
+    assert.match(receiptText, /观察记录：无 → 目标：obj_ferry，方式：扫视，发现结果：发现，线索：渡口淤堵线索，线索层级：1/);
+    assert.match(receiptText, /体力：100 → 97/);
 
     const committed = await pool.query(`SELECT s.revision,s.snapshot,s.memory_mode,
       (SELECT count(*)::int FROM turn_requests r WHERE r.save_id=s.id) AS requests,
@@ -201,8 +209,8 @@ async function stop(child) {
     await page.reload({ waitUntil: 'domcontentloaded' });
     await page.getByTestId('p2-cloud-game').waitFor({ state: 'visible', timeout: 20_000 });
     await page.waitForFunction(() => document.querySelector('[data-testid="p2-revision"]')?.textContent === '1', null, { timeout: 20_000 });
-    await page.waitForFunction(() => document.body.innerText.includes('游戏分钟') && document.body.innerText.includes('315'), null, { timeout: 20_000 });
-    await page.getByTestId('p2-status').getByText('服务端存档已恢复').waitFor({ timeout: 20_000 });
+    await page.waitForFunction(() => document.querySelector('[data-testid="p2-game-minute"]')?.textContent === '315', null, { timeout: 20_000 });
+    await page.getByTestId('p2-status').getByText('服务端存档已读取。提交后请以状态回执为准。').waitFor({ timeout: 20_000 });
     assert.deepEqual(pageErrors, []);
 
     console.log(JSON.stringify({

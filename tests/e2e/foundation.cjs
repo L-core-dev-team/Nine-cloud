@@ -191,14 +191,17 @@ async function ready(url) {
       }));
       await page.reload();
       assert.equal(await page.locator('h1').innerText(), '九霄');
-      assert.equal(await page.locator('.brand').innerText(), '踏月过山门，天地任君行。');
+      // Below 720px the landing lockup intentionally stacks its two phrases.
+      // Desktop keeps them on one line. Both measurements stay inside the header.
+      assert.equal(await page.locator('.brand').innerText(), width === 390 ? '踏月过山门，\n天地任君行。' : '踏月过山门，天地任君行。');
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), await page.evaluate(() => document.documentElement.clientWidth), 'landing should not overflow horizontally');
       await page.evaluate(() => document.fonts.ready);
       assert.equal(await page.evaluate(() => document.fonts.check('400 64px "Ma Shan Zheng Brand"', '九霄月下山门修途自此启程踏月过山门天地任君行进入世界风')), true);
       assert.equal(await page.getByRole('button', { name: '进入世界' }).count(), 1);
       assert.equal(await page.getByRole('button', { name: '新开一局' }).count(), 0);
       assert.equal(await page.locator('.scene-picture').count(), 1);
-      assert.notEqual(await page.locator('.portal-enter').evaluate(element => getComputedStyle(element, '::after').animationName), 'none');
+      // The landing crystal button retires the old looping sheen. Scene drift remains the live motion gate.
+      assert.equal(await page.locator('.portal-enter').evaluate(element => getComputedStyle(element, '::after').animationName), 'none');
       assert.equal(await page.locator('.waterfall-traces path').count(), 3);
       assert.notEqual(await page.locator('.scene-cloud-drift-one').evaluate(element => getComputedStyle(element).animationName), 'none');
       await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -575,6 +578,7 @@ async function ready(url) {
       assert.equal(await page.locator('h2').innerText(), `测试修士-${width}`);
       await page.getByRole('button', { name: '菜单' }).click();
       await page.locator('aside').getByRole('button', { name: 'AI 设置' }).click();
+      await page.getByRole('heading', { name: '选择设置方式' }).waitFor();
       assert.equal(await page.getByRole('heading', { name: '选择设置方式' }).count(), 1);
       assert.equal(await page.locator('.skip-to-content').count(), 1, 'the mode chooser has a keyboard skip link without changing the professional editor');
       const readingReturnTarget = await page.evaluate(() => history.state?.returnTo);
@@ -1113,11 +1117,10 @@ async function ready(url) {
       assert.equal(await page.evaluate(() => document.documentElement.dataset.jxDataSaver), 'on', 'data saver must reach the home scene');
       assert.equal(await page.locator('.scene-cloud-drift-one').evaluate(element => getComputedStyle(element).animationName), 'none', 'data saver must freeze decorative CSS animation rather than only the canvas');
       assert.equal(await page.locator('.scene-petals').first().evaluate(element => getComputedStyle(element).display), 'none', 'data saver must suppress decorative particles');
-      assert.equal(await page.locator('.portal-enter').evaluate(element => getComputedStyle(element, '::after').animationName), 'none', 'data saver must also freeze the animated entry-button sheen');
       await page.goto(`http://127.0.0.1:${webPort}/settings/graphics`);
       await page.locator('.graphics-toggle').filter({ hasText: '省电 / 省流量' }).locator('input').uncheck();
       await page.goto(`http://127.0.0.1:${webPort}/`);
-      assert.notEqual(await page.locator('.portal-enter').evaluate(element => getComputedStyle(element, '::after').animationName), 'none', 'disabling data saver must restore the entry-button sheen');
+      assert.notEqual(await page.locator('.scene-cloud-drift-one').evaluate(element => getComputedStyle(element).animationName), 'none', 'disabling data saver must restore drifting clouds');
       await page.goto(`http://127.0.0.1:${webPort}/settings/graphics`);
       await page.waitForFunction(() => Array.from(document.querySelectorAll('.graphics-status')).some(element =>
         /^当前后端：(WebGL 2|WebGL|Canvas 2D|静态回退)$/.test(element.textContent?.trim() || '')), null, { timeout: 5000 });

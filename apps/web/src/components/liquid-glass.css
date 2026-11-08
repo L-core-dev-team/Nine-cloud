@@ -127,11 +127,13 @@
 :root[data-theme='day'] .jx-shell > header :is(.ambient-toggle, .theme-toggle, .menu) {
   color: #344a57;
   background: rgba(255, 255, 255, 0.18);
-  border-color: rgba(38, 58, 71, 0.96);
+  /* Opaque ink. The previous 96% border was blended over the light control
+     fill and fell to 2.98:1 against the day header on the world page. */
+  border-color: #1a3140;
 }
 :root[data-theme='day'] .jx-shell > header :is(.ambient-toggle, .theme-toggle, .menu):is(:hover, :focus-visible) {
   background: rgba(255, 255, 255, 0.42);
-  border-color: rgba(38, 58, 71, 0.98);
+  border-color: #1a3140;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.76);
 }
 .jx-shell > aside :is(button, label) {
@@ -152,6 +154,9 @@
 :root[data-theme='day'] .jx-shell > header nav button { color: #455862; }
 :root[data-theme='day'] body:not(:has(.ai-page)) .world-page .eyebrow { color: #261f17; }
 :root[data-theme='day'] .jx-shell :is(.game-rail, .game-tools) button { color: #263b46; }
+/* The file label shares the glass chip but not the button ink. #344550 measured
+   4.18:1 over the day scene; this ink stays above 4.5:1 down to a #8c9191 field. */
+:root[data-theme='day'] .jx-shell .game-tools label { color: #172a36; }
 
 /* One parent material for grouped world navigation; its child items stay thin. */
 .worldbook-categories, .atlas-collections, .world-view-switch {
