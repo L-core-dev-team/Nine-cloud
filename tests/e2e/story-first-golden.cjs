@@ -10,6 +10,7 @@ const { existsSync, mkdirSync } = require('node:fs');
 const { join, resolve } = require('node:path');
 const net = require('node:net');
 const { chromium } = require('playwright');
+const {textAudit,getTextRuns,maskText}=require('./design-acceptance.cjs');
 
 const root = resolve(__dirname, '../..');
 const webRoot = join(root, 'apps/web');
@@ -205,6 +206,7 @@ async function stop(child) {
     const history=await page.evaluate(async id=>await (await fetch(`/api/games/${id}/story`)).json(),saveId);assert.equal(history.items.length,10);
     const archive=await pool.query('SELECT count(*)::int AS count FROM story_narratives WHERE save_id=$1',[saveId]);assert.equal(archive.rows[0].count,10);
     await assert.rejects(pool.query('UPDATE story_narratives SET narrative_text=$2 WHERE save_id=$1',[saveId,'must not overwrite']),/STORY_NARRATIVE_IMMUTABLE/);
+    const contrast=[];
     for(const theme of ['night','day']) {
     if(theme==='day')await page.getByRole('button',{name:'切换到晴昼配色'}).click();
     for(const width of [376,390,1366]) {
@@ -212,7 +214,13 @@ async function stop(child) {
       assert.ok((await page.locator('.story-reading').boundingBox()).height>=120);
       assert.equal(await page.locator('.story-history-entry').evaluateAll(rows=>rows.every(row=>row.scrollHeight<=row.clientHeight+1)),true,'story paragraphs must not be flex-shrunk and overlap');
       const input=await page.getByTestId('p2-action-input').boundingBox();const send=await page.getByTestId('p2-submit-action').boundingBox();assert.ok(input.y>=0&&send.y+send.height<=844);
-      await page.screenshot({path:join(evidenceDir,`golden-story-${theme}-${width}.png`),fullPage:true});
+      await page.getByTestId('p2-action-input').fill('观察渡船');
+      await page.evaluate(()=>document.fonts.ready);
+      const runs=await getTextRuns(page);const source=await page.screenshot({path:join(evidenceDir,`golden-story-${theme}-${width}.png`)});
+      const mask=await maskText(page);const backgrounds=[];
+      for(let frame=0;frame<3;frame++){if(frame)await page.waitForTimeout(320);backgrounds.push(await page.screenshot());}
+      await mask.evaluate(style=>style.remove());
+      const audited=textAudit(source,backgrounds,runs,`${theme}/${width}`);contrast.push({theme,width,...audited});assert.deepEqual(audited.failures,[],JSON.stringify(audited.failures));
     }
     }
     const second=await page.evaluate(async()=>{const r=await fetch('/api/games',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({idempotencyKey:crypto.randomUUID(),choices:{memoryMode:'continue'}})});return r.json()});
@@ -228,7 +236,7 @@ async function stop(child) {
     const foreignOwner=await foreignPage.evaluate(async()=>{const r=await fetch('/api/auth/guest',{method:'POST',headers:{'content-type':'application/json'},body:'{}'});return {status:r.status,body:await r.json()}});assert.ok(foreignOwner.status<300,JSON.stringify(foreignOwner));
     const denied=await foreignPage.evaluate(async id=>(await fetch(`/api/games/${id}/story`)).status,saveId);assert.equal(denied,404,'authenticated foreign account must not read another story');await foreign.close();
     assert.deepEqual(pageErrors,[]);
-    require('node:fs').writeFileSync(join(evidenceDir,'golden-story-evidence.json'),JSON.stringify({saveId,source:'real PostgreSQL and unmodified signed review rules; no story or turn stubs',snapshots,timings,archiveRows:10,fullRestore:true,foreignAccessStatus:unauthorized.status,authenticatedForeignAccessStatus:denied,immutableAndIdempotent:true,forgedReceiptRejected:true,earlierCursor:true,otherSaveEmpty:true,memoryInfluence:'BLOCKED_PENDING_AUTHOR_REVIEW',knownNarrativeDefect:'post-clearance static observation still mentions grey-feather crows; author-approved state variants required',finalQuest:rows.rows[0].snapshot.facts.questState},null,2));
+    require('node:fs').writeFileSync(join(evidenceDir,'golden-story-evidence.json'),JSON.stringify({saveId,source:'real PostgreSQL and unmodified signed review rules; no story or turn stubs',snapshots,timings,contrast,archiveRows:10,fullRestore:true,foreignAccessStatus:unauthorized.status,authenticatedForeignAccessStatus:denied,immutableAndIdempotent:true,forgedReceiptRejected:true,earlierCursor:true,otherSaveEmpty:true,memoryInfluence:'BLOCKED_PENDING_AUTHOR_REVIEW',knownNarrativeDefect:'post-clearance static observation still mentions grey-feather crows; author-approved state variants required',finalQuest:rows.rows[0].snapshot.facts.questState},null,2));
     console.log(JSON.stringify({result:'PASS_APPROVED_SEGMENT_ONLY',saveId,turns:10,archiveRows:10,fullRestore:true,timings,memoryInfluence:'NOT_PROVEN',newPlayerComprehension:'HUMAN_REQUIRED'},null,2));
     await context.close();
   } finally {await browser?.close();await stop(webChild);await stop(apiChild);await pool.end();}
