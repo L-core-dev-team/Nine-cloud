@@ -155,6 +155,7 @@ async function stop(child) {
     await page.getByTestId('create-server-game').click();
     await page.getByTestId('p2-cloud-game').waitFor({ state: 'visible', timeout: 20_000 });
     await page.getByText('真实遗忘', { exact: true }).waitFor();
+    await page.locator('[aria-label="故事开场"]').waitFor({state:'visible'});
     const guestSession = await page.evaluate(async () => {
       const response = await fetch('/api/auth/session');
       return { status: response.status, body: await response.json() };
@@ -256,11 +257,11 @@ async function stop(child) {
       journey: 'built web -> unseeded zero-identity guest -> server game create -> parseActionText -> PostgreSQL turn -> narrative and receipt -> refresh restore',
       saveId,
       memoryMode: 'forgetting',
-      revision: committed.rows[0].revision,
-      gameMinute: committed.rows[0].snapshot.facts.gameMinute,
+      revision: Number(await page.getByTestId('p2-revision').textContent()),
+      initialGameMinute: committed.rows[0].snapshot.facts.gameMinute,
       turnRequests: expectedRequests,
       committedEvents: expectedEvents,
-      eventType: committed.rows[0].last_event,
+      initialEventType: committed.rows[0].last_event,
       refreshedRevision: await page.getByTestId('p2-revision').textContent(),
       pageErrors: pageErrors.length,
       screenshot: screenshotPath,

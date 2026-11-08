@@ -23,7 +23,7 @@ export function mountGames(
     try {
       const result = await service.read(owner, c.req.param('saveId'));
       if (result.status === 'not_found') return c.json({ code: 'NOT_FOUND' }, 404);
-      return c.json({ save: result.save, latestReceipt: result.latestReceipt });
+      return c.json({ save: result.save, latestReceipt: result.latestReceipt, opening: result.opening });
     } catch (error) {
       if (error instanceof SaveSchemaNotReadyError) return c.json({ code: 'SAVE_SCHEMA_NOT_READY' }, 503);
       return c.json({ code: 'GAME_UNAVAILABLE' }, 503);

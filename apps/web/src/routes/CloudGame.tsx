@@ -32,6 +32,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
   const [suggestions, setSuggestions] = useState<ActionSuggestion[]>([]);
   const [receipt, setReceipt] = useState<TurnReceipt | null>(null);
   const [narrative, setNarrative] = useState('');
+  const [opening, setOpening] = useState<string[]>([]);
   const [text, setText] = useState(() => readActionDraft(`cloud-${saveId}`));
   const [busy, setBusy] = useState(false);
   const [refreshBusy, setRefreshBusy] = useState(true);
@@ -69,6 +70,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
     const next = SaveEnvelopeSchema.parse(response.save);
     if (next.saveId !== saveId) throw new Error('INVALID_GAME_RESPONSE');
     setSave(next);
+    setOpening(Array.isArray(response.opening) ? response.opening.filter((line): line is string => typeof line === 'string').slice(0, 20) : []);
     if (restorePresentation && response.latestReceipt) {
       const prior = TurnReceiptSchema.parse(response.latestReceipt);
       if (prior.saveId !== saveId || prior.resultingRevision > next.revision) throw new Error('INVALID_GAME_RESPONSE');
@@ -247,6 +249,11 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
     await sendTurn(pendingTurn, false, true);
   }
 
+  function suggestionButton(item: ActionSuggestion) {
+    return <button type="button" className="secondary" key={item.id}
+      disabled={busy || refreshBusy || saveNeedsRefresh || pendingTurn !== null || rulesUnavailable}
+      onClick={() => { setText(item.text); document.getElementById('p2-action-input')?.focus(); }}>{item.label}</button>;
+  }
   const eventRows = projectReceiptEvents(receipt);
   return <GameShell saveId={saveId} readingReady={!!save}>
     <header className="game-topline"><div><span className="eyebrow">云端存档</span><h2>行旅</h2></div><button className="secondary" onClick={onBack}>返回山门</button></header>
@@ -258,6 +265,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
     {!save && !notFound && <div className="card"><p>存档尚未载入。请检查连接，或恢复创建时使用的账号。</p><div className="actions"><button className="secondary" onClick={() => void reloadSave()} disabled={refreshBusy}>{refreshBusy ? '正在读取…' : '重新读取存档'}</button><button className="primary" onClick={onLogin}>账号与云档</button></div></div>}
     {notFound && <div className="card"><h2>找不到这份存档</h2><p>账号下没有这份服务端存档，或链接来自另一个账号。</p><button className="primary" onClick={onHome}>回到首页</button></div>}
     {save && <>
+      {!!opening.length && <section aria-label="故事开场"><h3>芦花渡</h3>{opening.map((line,index)=><p key={index}>{line}</p>)}</section>}
       <section className="cloud-game-state" aria-label="服务端存档状态">
         <p>存档版本 <strong data-testid="p2-revision">{save.revision}</strong></p>
         <p>行旅时间 <strong data-testid="p2-game-minute">{typeof save.state.facts.gameMinute === 'number' ? save.state.facts.gameMinute : '未记录'}</strong>{typeof save.state.facts.gameMinute === 'number' ? ' 分钟' : ''}</p>
@@ -274,7 +282,11 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
       </section>}
     </>}
       </div>
-      {!!suggestions.length && <details open className="cloud-game-suggestions"><summary>当前可尝试的行动</summary><small>点击只会填入输入框；可以修改后再提交。</small><div className="actions">{suggestions.map(item => <button className="secondary" key={item.id} disabled={busy || refreshBusy || saveNeedsRefresh || pendingTurn !== null || rulesUnavailable} onClick={() => { setText(item.text); document.getElementById('p2-action-input')?.focus(); }}>{item.label}</button>)}</div></details>}
+      {!!suggestions.length && <details open className="cloud-game-suggestions">
+        <summary>当前可尝试的行动</summary><small>点击只会填入输入框；可以修改后再提交。</small>
+        <div className="actions">{suggestions.slice(0, 3).map(suggestionButton)}</div>
+        {suggestions.length > 3 && <details><summary>更多行动建议（{suggestions.length - 3}）</summary><div className="actions">{suggestions.slice(3).map(suggestionButton)}</div></details>}
+      </details>}
       {failure && !pendingTurn && !rulesUnavailable && <section className="cloud-game-recovery" aria-label="请求恢复">
         {save && failure.next === 'reload' && <button type="button" className="secondary" onClick={() => void reloadSave()} disabled={refreshBusy || busy}>{refreshBusy ? '正在读取…' : '重新读取存档'}</button>}
         {save && failure.next === 'account' && <button type="button" className="secondary" onClick={onLogin}>账号与云档</button>}

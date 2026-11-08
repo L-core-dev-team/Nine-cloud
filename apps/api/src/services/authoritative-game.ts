@@ -4,6 +4,8 @@ import { MemoryModeSchema, SaveEnvelopeSchema, type SaveEnvelope, type TurnRecei
 import { canonicalJson } from '@jiuxiao/domain';
 import type { prepareTurnRuntime } from './turn-runtime.js';
 import { createP1SaveMemoryPolicy } from './p1-memory-policy.js';
+import { PROLOGUE_V1_CONTENT_PACK } from '@jiuxiao/content/p1-review-candidate';
+import { P1_REVIEW_RULE_APPROVAL } from './p1-review-rule-approval.js';
 export type GameRepository={latestReceiptForOwner?(owner:string,id:string):Promise<TurnReceipt|null>;getForOwner(owner:string,id:string):Promise<SaveEnvelope|null>;createForOwner(owner:string,save:SaveEnvelope):Promise<boolean>};
 
 /** Hashes the exact source artifact bytes used to identify this save's Canon input. */
@@ -20,7 +22,10 @@ export class AuthoritativeGameService {
   const save=SaveEnvelopeSchema.parse(stored);
   const latestReceipt=await this.repository.latestReceiptForOwner?.(ownerId,saveId)??null;
   if(latestReceipt && latestReceipt.resultingRevision>save.revision)throw new Error('GAME_CHANGED_DURING_READ');
-  return {status:'ready',save,latestReceipt} as const;
+  const opening = save.revision===0 && save.state.locationId==='loc_luhuadu'
+   && save.ruleVersion===P1_REVIEW_RULE_APPROVAL.ruleVersion && save.canonVersion===P1_REVIEW_RULE_APPROVAL.canonVersion
+   ? (PROLOGUE_V1_CONTENT_PACK.entries.find(entry=>entry.id==='text_prologue_opening')?.content as Readonly<Record<string,unknown>>|undefined)?.paragraphs : undefined;
+  return {status:'ready',save,latestReceipt,opening:Array.isArray(opening)?opening.filter((line):line is string=>typeof line==='string'):[]} as const;
  }
  async actionSuggestions(ownerId:string,saveId:string){
   if(!this.runtime?.actionSuggestions)return {status:'rules_not_ready'} as const;
