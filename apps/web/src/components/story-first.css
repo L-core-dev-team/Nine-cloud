@@ -1,0 +1,67 @@
+/* Story-first layout: presentation only, authoritative actions remain in the caller. */
+.jx-shell:has(.immersive-game) > main { width: min(1100px, calc(100% - 24px)); }
+.jx-shell:has(.immersive-game) > header { height: 48px; }
+.game-frame.immersive-game { width: 100%; gap: 10px; padding-block: 8px; }
+.story-header { display:flex; flex:none; align-items:center; justify-content:space-between; gap:12px; padding:4px 12px; }
+.story-header h1 { margin:0; font-family: 'Noto Serif SC','Source Han Serif SC',serif; font-size:24px; line-height:1.4; }
+.story-header .eyebrow { font-size:12px; }
+.story-utilities { display:flex; align-items:center; flex-wrap:wrap; justify-content:flex-end; gap:8px; font-size:12px; }
+.story-utilities button { min-height:44px; padding:6px 10px; }
+.story-first-workspace { display:grid; grid-template-rows:minmax(120px,1fr) auto; flex:1; min-height:0; gap:12px; }
+.immersive-game .story-reading { background:#0b1b29; color:#e0e6e8; padding:24px clamp(16px,4vw,48px); border-radius:14px; gap:0; }
+.story-prose { width:100%; max-width:42em; flex:none; margin:0 auto; text-align:left; font-family:'Noto Serif SC','Source Han Serif SC',serif; font-size:18px; line-height:1.95; }
+.story-prose p { margin:0 0 1.1em; white-space:pre-wrap; overflow-wrap:anywhere; }
+.story-history-entry { border-top:1px solid #bac6cd44; padding-top:24px; margin-top:24px; }
+.story-turn-kind { display:block; font:12px/1.7 system-ui; letter-spacing:0.12em; color:#bac6cd; margin-bottom:12px; }
+.story-reading-end { height:1px; flex:none; }
+.story-action-area { display:grid; gap:8px; padding:0 12px; min-width:0; }
+.story-action-instruction { margin:0; font-size:14px; line-height:1.6; }
+.story-suggestions { display:flex; flex-wrap:wrap; gap:8px; }
+.story-suggestion { min-height:44px; border:1px solid #bac6cd88; color:#e0e6e8; background:#0b1b29; padding:8px 12px; border-radius:8px; font:14px/1.5 system-ui; cursor:pointer; text-align:left; }
+.story-suggestion:focus-visible { outline:2px solid #f4dfae; outline-offset:2px; }
+.story-all-actions { display:flex; flex-wrap:wrap; gap:8px; }
+.story-composer { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px 12px; align-items:end; }
+.story-composer label { grid-column:1/-1; font-size:14px; }
+.story-composer textarea { min-height:64px; height:76px; max-height:140px; min-width:0; resize:vertical; overflow-y:auto; padding:12px; font:16px/1.6 system-ui; }
+.story-composer button { min-height:64px; padding:12px 20px; }
+.story-save-feedback { min-height:20px; font-size:12px; line-height:1.6; }
+.story-help { font-size:12px; line-height:1.7; }
+.story-help summary { cursor:pointer; min-height:28px; }
+.story-help[open] { max-height:240px; overflow-y:auto; padding:12px; background:#0b1b29; border-radius:8px; }
+.story-action-feedback { max-width:42em; margin:12px auto; padding:12px 16px; border-inline-start:3px solid #f4dfae; background:#0b1b29; color:#e0e6e8; font-size:16px; line-height:1.8; }
+.story-action-feedback h2 { font-size:18px; margin:0 0 8px; }
+.story-action-feedback p { margin:0 0 8px; }
+.game-footer-details { width:100%; font-size:12px; }
+.game-footer-details summary { min-height:32px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.game-footer-details > div { max-height:220px; overflow:auto; display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:12px; padding:8px; }
+.game-session-notice { font-size:12px; }
+.game-session-notice summary { cursor:pointer; }
+.game-session-notice p { margin:4px 0; }
+:root[data-theme='day'] :is(.immersive-game .story-reading,.story-suggestion,.story-help[open],.story-action-feedback) { color:#283c49; background:#faf9f4; }
+:root[data-theme='day'] .story-turn-kind { color:#405d6d; }
+:root[data-theme='day'] .story-suggestion { border-color:#627888; }
+:root[data-theme='day'] .story-action-feedback { border-color:#405d6d; }
+@media(max-width:720px) {
+ .story-header { padding-inline:4px; }
+ .story-header h1 { font-size:22px; }
+ .story-utilities { gap:4px; }
+ .story-utilities >span { display:none; }
+ .story-first-workspace { gap:8px; }
+ .immersive-game .story-reading { padding:16px; }
+ .story-action-area { padding:0; gap:6px; }
+ .story-prose { font-size:18px; line-height:1.8; }
+ .story-composer { grid-template-columns:minmax(0,1fr); }
+ .story-composer button { min-height:44px; padding:10px; }
+ .story-suggestion { padding:7px 10px; }
+}
+.immersive-game[data-keyboard='true'] .story-action-instruction,
+.immersive-game[data-keyboard='true'] .story-help,
+.immersive-game[data-keyboard='true'] .story-header .eyebrow { display:none; }
+.immersive-game[data-keyboard='true'] .story-first-workspace { grid-template-rows:minmax(90px,1fr) auto; }
+.immersive-game[data-keyboard='true'] .story-composer textarea { height:48px; min-height:44px; }
+.immersive-game[data-keyboard='true'] .story-composer button { min-height:44px; }
+.immersive-game[data-keyboard='true'] .story-suggestions > button:nth-child(2):not(:last-child),
+.immersive-game[data-keyboard='true'] .story-suggestions > button:nth-child(3):not(:last-child) { display:none; }
+.jx-shell:has(.immersive-game[data-keyboard='true']) > header,
+.jx-shell:has(.immersive-game[data-keyboard='true']) > footer,
+.jx-shell:has(.immersive-game[data-keyboard='true']) > .game-session-notice { display:none; }

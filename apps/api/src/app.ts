@@ -1,3 +1,4 @@
+import type { StoryArchive } from './services/story-archive.js';
 import { Hono } from 'hono';
 import { mountServerTurnRoutes, type ServerTurnRouteDependencies } from './routes/turns.js';
 import { SAVE_SCHEMA_VERSION } from '@jiuxiao/contracts';
@@ -24,7 +25,7 @@ export function createApp(database?: ReadinessDatabase, cloudSaves?: {
   service: CloudSaveService;
   auth: CloudSaveRouteAuth;
   archive?: CloudArchiveLifecycle;
-}, emailAuth?: { service: AuthSessionService; routesService?: AuthSessionService; supabaseAuth?: SupabaseAuthService | undefined; origin: string; cookieSameSite?: 'Strict' | 'None'; trustedProxyAddresses?: readonly string[]; privacyPolicyUrl?: string | null; privacyPolicyVersion?: string | null; lifecycle?: AccountLifecycle; exporter?: AccountExport; accountQuota?: AccountQuotaLimiter; emailCaptcha?: ((token: unknown, remoteIp?: string) => Promise<void>) | undefined }, turns?: ServerTurnRouteDependencies & {games?:AuthoritativeGameService;memoryRecall?:{reader:AuthorizedRecallPageReader}|undefined}) {
+}, emailAuth?: { service: AuthSessionService; routesService?: AuthSessionService; supabaseAuth?: SupabaseAuthService | undefined; origin: string; cookieSameSite?: 'Strict' | 'None'; trustedProxyAddresses?: readonly string[]; privacyPolicyUrl?: string | null; privacyPolicyVersion?: string | null; lifecycle?: AccountLifecycle; exporter?: AccountExport; accountQuota?: AccountQuotaLimiter; emailCaptcha?: ((token: unknown, remoteIp?: string) => Promise<void>) | undefined }, turns?: ServerTurnRouteDependencies & {storyArchive?:StoryArchive;games?:AuthoritativeGameService;memoryRecall?:{reader:AuthorizedRecallPageReader}|undefined}) {
   const app = new Hono();
   if (emailAuth) mountAuth(app, emailAuth.routesService ?? emailAuth.service, emailAuth.origin, emailAuth.cookieSameSite, emailAuth.trustedProxyAddresses,
     () => ({ ...(emailAuth.supabaseAuth?.providers() ?? { email: true, phone: false }),
@@ -53,7 +54,7 @@ export function createApp(database?: ReadinessDatabase, cloudSaves?: {
   // resolver. The production entry point supplies it only when auth is enabled.
   if (cloudSaves) mountCloudSaveRoutes(app, cloudSaves);
   if (turns) mountServerTurnRoutes(app, turns);
-  if (turns?.games) mountGames(app,turns.games,turns.auth,turns.service,turns.memoryRecall);
+  if (turns?.games) mountGames(app,turns.games,turns.auth,turns.service,turns.memoryRecall,turns.storyArchive);
 
   app.notFound(c => c.json({ code: 'NOT_FOUND', message: '接口不存在。' }, 404));
   return app;

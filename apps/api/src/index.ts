@@ -1,3 +1,5 @@
+import { ensureP1NarrativeHints } from './services/p1-narrative-hints.js';
+import { StoryArchive } from './services/story-archive.js';
 import {configureAccountQuota} from './services/account-rate-limit.js';
 import {loadDataPolicy} from './services/data-policy-node.js';
 import {PolicyCloudSaveRepository} from './services/policy-cloud-save-repository.js';
@@ -25,6 +27,7 @@ if (!Number.isInteger(port) || port < 1 || port > 65535) {
 const databaseUrl = process.env.DATABASE_URL;
 if (!databaseUrl) throw new Error('DATABASE_URL is required');
 
+if(process.env.NODE_ENV==='production'&&process.env.STORY_ARCHIVE_ENABLED==='true')throw new Error('STORY_ARCHIVE_REQUIRES_SEPARATE_PRODUCTION_APPROVAL');
 const pool = new Pool({ connectionString: databaseUrl, max: 5, connectionTimeoutMillis: 3_000 });
 configureAccountQuota(pool);
 pool.on('error', () => { console.error('Database connection unavailable.'); });
@@ -36,14 +39,21 @@ const runtime=preparedRuntime&&plugin?await connectActionTextRuntime(preparedRun
 const dataPolicy=process.env.NODE_ENV==='production'?loadDataPolicy(process.env.ACCOUNT_DATA_POLICY_PATH):undefined;
 const cloudRepository=process.env.NODE_ENV==='production'?new PolicyCloudSaveRepository(pool,dataPolicy):new PostgresCloudSaveRepository(pool,true);
 const turnRepository=createPostgresServerTurnRepository(pool, true,process.env.NODE_ENV==='production'?()=>dataPolicy:undefined);
+const storyArchive=process.env.STORY_ARCHIVE_ENABLED==='true'?new StoryArchive(pool):undefined;
+if(storyArchive)await pool.query('SELECT narrative_text FROM story_narratives LIMIT 0');
+const narrator=runtime?.narrator;
+const fallback=runtime?.narrativeFallback;
+const retainedNarrator=storyArchive&&narrator?((...args:Parameters<typeof narrator>)=>storyArchive.retain(args[0],'model',async()=>ensureP1NarrativeHints(await narrator(...args),args[0],args[2]??{npcMemories:[]}))):narrator;
+const retainedFallback=storyArchive&&fallback?((...args:Parameters<typeof fallback>)=>storyArchive.retain(args[0],'deterministic',()=>ensureP1NarrativeHints(fallback(...args),args[0],args[1]))):fallback;
 const app = createApp({ query: sql => pool.query(sql) }, emailAuth ? {
   service: new CloudSaveService(cloudRepository, true, true),
   archive: new CloudArchiveLifecycle(pool, true),
   auth: { resolveOwnerId: async request => (await emailAuth.service.resolve(sessionToken(request)))?.ownerId || null },
 } : undefined, emailAuth, emailAuth ? {
   // No author rules are bundled: absent host plugin remains fail closed.
-  service: new ServerTurnService(turnRepository,runtime?.rules,runtime?.narrator,120_000,runtime?.narrativeFallback),
+  service: new ServerTurnService(turnRepository,runtime?.rules,retainedNarrator,120_000,retainedFallback),
   games: new AuthoritativeGameService(cloudRepository,runtime),
+  ...(storyArchive?{storyArchive}:{}),
   auth: { resolveOwnerId: async request => (await emailAuth.service.resolve(sessionToken(request)))?.ownerId || null },
   memoryRecall: turnRepository.recallObservationPage ? { reader: turnRepository.recallObservationPage } : undefined,
 } : undefined);

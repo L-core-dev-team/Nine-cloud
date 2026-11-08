@@ -1,3 +1,4 @@
+import type { StoryArchive } from '../services/story-archive.js';
 import type { Hono } from 'hono';
 import { ActionIntentSchema, type TurnReceipt } from '@jiuxiao/contracts';
 import { readGameMinute } from '@jiuxiao/domain';
@@ -16,6 +17,7 @@ export function mountGames(
   auth: CloudSaveRouteAuth,
   turns?: ServerTurnService,
   memoryRecall?: { reader: AuthorizedRecallPageReader },
+  storyArchive?: StoryArchive,
 ) {
   app.get('/api/games/:saveId', async c => {
     const owner = await resolveOwner(c.req.raw, c.req.header('x-jiuxiao-account'), auth);
@@ -23,11 +25,25 @@ export function mountGames(
     try {
       const result = await service.read(owner, c.req.param('saveId'));
       if (result.status === 'not_found') return c.json({ code: 'NOT_FOUND' }, 404);
-      return c.json({ save: result.save, latestReceipt: result.latestReceipt, opening: result.opening });
+      return c.json({ save: result.save, latestReceipt: result.latestReceipt, opening: result.opening, scene: result.scene });
     } catch (error) {
       if (error instanceof SaveSchemaNotReadyError) return c.json({ code: 'SAVE_SCHEMA_NOT_READY' }, 503);
       return c.json({ code: 'GAME_UNAVAILABLE' }, 503);
     }
+  });
+
+  app.get('/api/games/:saveId/story', async c => {
+    const owner=await resolveOwner(c.req.raw,c.req.header('x-jiuxiao-account'),auth);
+    if(!owner)return c.json({code:'UNAUTHENTICATED'},401);
+    if(!storyArchive)return c.json({code:'STORY_HISTORY_DISABLED'},503);
+    const raw=c.req.query('before');const before=raw===undefined?undefined:Number(raw);
+    if(before!==undefined&&(!Number.isSafeInteger(before)||before<0))return c.json({code:'INVALID_STORY_CURSOR'},400);
+    try {
+      const result=await service.read(owner,c.req.param('saveId'));
+      if(result.status==='not_found')return c.json({code:'NOT_FOUND'},404);
+      c.header('Cache-Control','no-store');
+      return c.json(await storyArchive.read(owner,result.save.saveId,result.save.revision,before));
+    }catch{return c.json({code:'STORY_UNAVAILABLE'},503);}
   });
 
   app.get('/api/games/:saveId/action-suggestions', async c => {

@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
-import { SaveEnvelopeSchema, TurnReceiptSchema, type SaveEnvelope, type TurnReceipt } from '@jiuxiao/contracts';
+import { ActionIntentSchema, SaveEnvelopeSchema, TurnReceiptSchema, type SaveEnvelope, type TurnReceipt } from '@jiuxiao/contracts';
 import { CloudHttpError, cloudRequest } from '../cloud-sync';
 import { createIdempotencyKey, readActionDraft, writeActionDraft } from '../storage';
 import { formatReceiptDelta, projectReceiptEvents } from '../receipt-event-view';
 import { GameShell, GameInfoDialog } from '../components/GameShell';
 import { cloudGameDiagnostic, cloudGameErrorPlan, type CloudGameNextStep } from './cloud-game-errors';
 
-type ActionSuggestion = { id: string; kind: string; label: string; text: string };
-type PendingTurn = { idempotencyKey: string; text: string; expectedRevision: number; clarificationOf?: string };
+type ActionSuggestion = { id: string; kind: string; label: string; text: string; intent?: {kind: string; payload: Record<string, unknown>} };
+type PendingTurn = { idempotencyKey: string; text: string; expectedRevision: number; clarificationOf?: string; action?: {kind:string;payload:Record<string,unknown>} };
 type RefreshOutcome = { rulesUnavailable: boolean; suggestionsUnavailable: boolean };
 type CloudGameProps = { saveId: string; onBack: () => void; onHome: () => void; onLogin: () => void; onWorld: () => void };
 const saveCannotBeRead = (error: unknown) => error instanceof CloudHttpError && (error.status === 401 || error.code === 'NOT_FOUND');
@@ -17,6 +17,7 @@ function readPendingTurn(saveId: string): PendingTurn | null {
     return value && typeof value.text === 'string' && value.text.length <= 4000
       && typeof value.idempotencyKey === 'string' && /^[\w-]{8,200}$/.test(value.idempotencyKey)
       && Number.isSafeInteger(value.expectedRevision) && value.expectedRevision >= 0
+      && (value.action === undefined || ActionIntentSchema.safeParse({saveId,actorId:'pending-player',branchId:'root',expectedRevision:value.expectedRevision,idempotencyKey:value.idempotencyKey,...value.action}).success)
       && (value.clarificationOf === undefined || typeof value.clarificationOf === 'string')
       ? value as PendingTurn : null;
   } catch { return null; }
@@ -33,6 +34,13 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
   const [receipt, setReceipt] = useState<TurnReceipt | null>(null);
   const [narrative, setNarrative] = useState('');
   const [opening, setOpening] = useState<string[]>([]);
+  const [scene, setScene] = useState('行旅');
+  const [inventory,setInventory]=useState<{name:string;quantity:number}[]>([]);
+  const [history, setHistory] = useState<{receipt:TurnReceipt;text:string|null;source:string|null}[]>([]);
+  const [historyUnavailable,setHistoryUnavailable] = useState(false);
+  const [nextBefore,setNextBefore] = useState<number|null>(null);
+  const [selected,setSelected] = useState<ActionSuggestion|null>(null);
+  const [showActions,setShowActions] = useState(false);
   const [text, setText] = useState(() => readActionDraft(`cloud-${saveId}`));
   const [busy, setBusy] = useState(false);
   const [refreshBusy, setRefreshBusy] = useState(true);
@@ -70,12 +78,21 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
     const next = SaveEnvelopeSchema.parse(response.save);
     if (next.saveId !== saveId) throw new Error('INVALID_GAME_RESPONSE');
     setSave(next);
+    const sceneValue=response.scene as {location?:unknown;inventory?:unknown}|undefined;
+    setInventory(Array.isArray(sceneValue?.inventory)?sceneValue.inventory.filter((item):item is {name:string;quantity:number}=>!!item&&typeof item.name==='string'&&Number.isSafeInteger(item.quantity)&&item.quantity>0):[]);
+    if(typeof sceneValue?.location==='string')setScene(sceneValue.location);
+    try {
+      const archive=await cloudRequest(`/api/games/${encodeURIComponent(saveId)}/story`);
+      const rows=parseHistory(archive.items,saveId,next.revision);
+      setHistory(previous=>mergeHistory(previous,rows));setNextBefore(typeof archive.nextBefore==='number'?archive.nextBefore:null);setHistoryUnavailable(false);
+    } catch { setHistoryUnavailable(true); }
+
     setOpening(Array.isArray(response.opening) ? response.opening.filter((line): line is string => typeof line === 'string').slice(0, 20) : []);
     if (restorePresentation && response.latestReceipt) {
       const prior = TurnReceiptSchema.parse(response.latestReceipt);
       if (prior.saveId !== saveId || prior.resultingRevision > next.revision) throw new Error('INVALID_GAME_RESPONSE');
       setReceipt(prior);
-      setNarrative('最近一次已确认行动的结果已恢复。以下变化来自保存的规则回执；原剧情文字暂未持久保存。');
+      setNarrative('这次行动已经确认，原剧情文字暂未读取。可重试读取存档，不会再次执行行动。');
     }
     let nextRulesUnavailable = false;
     let nextSuggestionsUnavailable = false;
@@ -145,12 +162,13 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
       setNotice(recovering ? '正在用原请求编号核对状态回执……' : '正在提交行动并等待服务器回执……');
       let result: Record<string, unknown>;
       try {
-        result = await cloudRequest(`/api/games/${encodeURIComponent(saveId)}/turns`, 'POST', {
-          text: request.text,
-          expectedRevision: request.expectedRevision,
-          idempotencyKey: request.idempotencyKey,
-          ...(request.clarificationOf ? { clarificationOf: request.clarificationOf } : {}),
-          requestNarrative,
+        const identity={saveId,actorId:save.state.playerId,branchId:'root',expectedRevision:request.expectedRevision,idempotencyKey:request.idempotencyKey,
+          ...(request.clarificationOf?{clarificationOf:request.clarificationOf}:{})};
+        result = request.action ? await cloudRequest('/api/turns','POST',{
+          intent:ActionIntentSchema.parse({...identity,kind:request.action.kind,payload:request.action.payload}),requestNarrative,
+        }) : await cloudRequest(`/api/games/${encodeURIComponent(saveId)}/turns`, 'POST', {
+          text: request.text, expectedRevision:request.expectedRevision,idempotencyKey:request.idempotencyKey,
+          ...(request.clarificationOf?{clarificationOf:request.clarificationOf}:{}),requestNarrative,
         });
       } catch (error) {
         const plan = cloudGameErrorPlan(error);
@@ -202,6 +220,11 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
           : decision.status === 'rejected' ? decision.message
             : recovering ? '行动已确认。' : '行动已执行。');
       setPendingTurn(null);
+      if(decision.status==='accepted') {
+        const received=typeof resultNarrative?.text==='string'?resultNarrative.text:null;
+        setHistory(previous=>mergeHistory(previous,[{receipt:nextReceipt,text:received,source:typeof resultNarrative?.source==='string'?resultNarrative.source:null}]));
+      }
+      setSelected(null);
       if (decision.status === 'accepted' || decision.status === 'clarify') setText('');
       try {
         const outcome = await refresh();
@@ -238,6 +261,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
       expectedRevision: save.revision,
       idempotencyKey: createIdempotencyKey(),
       ...(clarificationOf ? { clarificationOf } : {}),
+      ...(selected?.intent && selected.text.trim()===utterance ? {action:selected.intent}:{}),
     };
     await sendTurn(request, true, false);
   }
@@ -249,69 +273,93 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
     await sendTurn(pendingTurn, false, true);
   }
 
-  function suggestionButton(item: ActionSuggestion) {
-    return <button type="button" className="secondary" key={item.id}
-      disabled={busy || refreshBusy || saveNeedsRefresh || pendingTurn !== null || rulesUnavailable}
-      onClick={() => { setText(item.text); document.getElementById('p2-action-input')?.focus(); }}>{item.label}</button>;
+  function chooseSuggestion(item:ActionSuggestion) {
+    setText(item.text);setSelected(item);setShowActions(false);
+    document.getElementById('p2-action-input')?.focus();
   }
-  const eventRows = projectReceiptEvents(receipt);
-  return <GameShell saveId={saveId} readingReady={!!save}>
-    <header className="game-topline"><div><span className="eyebrow">云端存档</span><h2>行旅</h2></div><button className="secondary" onClick={onBack}>返回山门</button></header>
-    <div className="game-workspace cloud-game" data-testid="p2-cloud-game">
-      <aside className="game-rail" aria-label="游戏资料"><button aria-expanded={showState} disabled={!save} onClick={() => setShowState(true)}>存档状态</button><button onClick={onWorld}>世界设定</button></aside>
-      <div className="story-column">
+  function suggestionButton(item:ActionSuggestion) {
+    return <button type="button" className="story-suggestion" key={item.id}
+      disabled={busy||refreshBusy||saveNeedsRefresh||!!pendingTurn||rulesUnavailable} onClick={()=>chooseSuggestion(item)}>{item.label}</button>;
+  }
+  async function loadEarlier() {
+    if(nextBefore===null||!save)return;
+    try{const result=await cloudRequest(`/api/games/${encodeURIComponent(saveId)}/story?before=${nextBefore}`);
+      setHistory(previous=>mergeHistory(previous,parseHistory(result.items,saveId,save.revision)));
+      setNextBefore(typeof result.nextBefore==='number'?result.nextBefore:null);
+    }catch{setNotice('较早的经历暂时无法读取，请稍后重试。');}
+  }
+  const eventRows=projectReceiptEvents(receipt);
+  const currentInHistory=history.some(row=>row.receipt.idempotencyKey===receipt?.idempotencyKey&&!!row.text);
+  const canAct=!!save&&!busy&&!refreshBusy&&!saveNeedsRefresh&&!pendingTurn&&!rulesUnavailable;
+  return <GameShell saveId={saveId} readingReady={!!save} immersive>
+    <header className="story-header"><div><span className="eyebrow">九霄 · 行旅</span><h1>{scene}</h1></div>
+      <div className="story-utilities"><span aria-live="polite">{busy?'正在记录…':pendingTurn?'结果待确认':save?(historyUnavailable?'进度已保存':'经历已保存'):'正在读取…'}</span>
+      <button className="quiet-action" onClick={()=>setShowState(true)}>人物 · 行囊</button><button className="quiet-action" onClick={onBack}>离开此局</button></div>
+    </header>
+    <div className="story-first-workspace" data-testid="p2-cloud-game">
       <div className="story-reading" role="region" tabIndex={0} aria-label="剧情记录">
-    <p className="game-statusline" role="status" data-testid="p2-status">{notice}</p>
-    {!save && !notFound && <div className="card"><p>存档尚未载入。请检查连接，或恢复创建时使用的账号。</p><div className="actions"><button className="secondary" onClick={() => void reloadSave()} disabled={refreshBusy}>{refreshBusy ? '正在读取…' : '重新读取存档'}</button><button className="primary" onClick={onLogin}>账号与云档</button></div></div>}
-    {notFound && <div className="card"><h2>找不到这份存档</h2><p>账号下没有这份服务端存档，或链接来自另一个账号。</p><button className="primary" onClick={onHome}>回到首页</button></div>}
-    {save && <>
-      {!!opening.length && <section aria-label="故事开场"><h3>芦花渡</h3>{opening.map((line,index)=><p key={index}>{line}</p>)}</section>}
-      <section className="cloud-game-state" aria-label="服务端存档状态">
-        <p>存档版本 <strong data-testid="p2-revision">{save.revision}</strong></p>
-        <p>行旅时间 <strong data-testid="p2-game-minute">{typeof save.state.facts.gameMinute === 'number' ? save.state.facts.gameMinute : '未记录'}</strong>{typeof save.state.facts.gameMinute === 'number' ? ' 分钟' : ''}</p>
-        {save.schemaVersion === 3 && <p>记忆 <strong>{save.memoryMode === 'forgetting' ? '真实遗忘' : '存档与继续'}</strong></p>}
-      </section>
-      {!!narrative && <section ref={resultRegion} className="cloud-game-narrative" aria-label="行动叙述" aria-live="polite"><h3>纪事</h3><p data-testid="p2-narrative">{narrative}</p></section>}
-      {!!receipt && <section className="cloud-game-receipt" data-testid="p2-receipt" aria-label="本次结果">
-        <h3>本次结果</h3>
-        <p>{receipt.decision.status === 'accepted' ? '行动已执行。' : receipt.decision.status === 'clarify' ? '还需要补充说明。' : '行动未执行。'}</p>
-        {eventRows.length ? <ul>{eventRows.map(event => <li key={event.eventId}>
-          {event.delta ? `存档变化：${formatReceiptDelta(event.delta)}` : '存档状态已记录。'}
-        </li>)}</ul> : <p>存档状态没有变化。</p>}
-        <details><summary>查看记录编号</summary><p>请求 <code>{receipt.idempotencyKey}</code> · 存档修订 {receipt.resultingRevision}</p></details>
-      </section>}
-    </>}
+        {nextBefore!==null&&<button className="quiet-action" onClick={()=>void loadEarlier()}>读取更早的经历</button>}
+        {save&&!!opening.length&&<article className="story-prose" aria-label="故事开场">{opening.map((line,index)=><p key={index}>{line}</p>)}</article>}
+        {save&&history.map(row=><article className="story-prose story-history-entry" data-story-revision={row.receipt.resultingRevision} key={row.receipt.idempotencyKey}>
+          <span className="story-turn-kind">{turnLabel(row.receipt)}</span>
+          {row.text?<div data-testid={row.receipt.idempotencyKey===receipt?.idempotencyKey?'p2-narrative':undefined}>{row.text.split(/\n+/).map((line,index)=><p key={index}>{line}</p>)}</div>
+            :<p className="quiet-note">这段经历的原剧情尚未留存，行动记录仍在。</p>}
+        </article>)}
+        {save&&receipt&&receipt.decision.status!=='accepted'&&<section ref={resultRegion} className="story-action-feedback" aria-live="polite">
+          <h2>{receipt.decision.status==='clarify'?'再说具体一点':'这次没有做到'}</h2>
+          <p data-testid="p2-narrative">{receipt.decision.status==='rejected'?receipt.decision.message:'这次行动尚未执行。请补充想去的地点、想观察的对象或想说的话，也可以选下方的一项行动。'}</p>
+          {receipt.decision.status==='clarify'&&'candidates' in receipt.decision&&receipt.decision.candidates.length>0&&<ul>{receipt.decision.candidates.map((candidate,index)=><li key={index}>{candidate.label}</li>)}</ul>}
+        </section>}
+        {save&&!!narrative&&!currentInHistory&&receipt?.decision.status==='accepted'&&<section ref={resultRegion} className="story-prose" aria-live="polite"><p data-testid="p2-narrative">{narrative}</p></section>}
+        {!save&&<section className="story-action-feedback"><h2>{notFound?'找不到这份存档':'行旅尚未载入'}</h2><p>{notice}</p><div className="actions"><button onClick={()=>void reloadSave()} disabled={refreshBusy}>重新读取存档</button><button onClick={notFound?onHome:onLogin}>{notFound?'回到首页':'账号与云档'}</button></div></section>}
+        <section className="story-reading-end" ref={receipt?.decision.status==='accepted'?resultRegion:undefined} />
       </div>
-      {!!suggestions.length && <details open className="cloud-game-suggestions">
-        <summary>当前可尝试的行动</summary><small>点击只会填入输入框；可以修改后再提交。</small>
-        <div className="actions">{suggestions.slice(0, 3).map(suggestionButton)}</div>
-        {suggestions.length > 3 && <details><summary>更多行动建议（{suggestions.length - 3}）</summary><div className="actions">{suggestions.slice(3).map(suggestionButton)}</div></details>}
-      </details>}
-      {failure && !pendingTurn && !rulesUnavailable && <section className="cloud-game-recovery" aria-label="请求恢复">
-        {save && failure.next === 'reload' && <button type="button" className="secondary" onClick={() => void reloadSave()} disabled={refreshBusy || busy}>{refreshBusy ? '正在读取…' : '重新读取存档'}</button>}
-        {save && failure.next === 'account' && <button type="button" className="secondary" onClick={onLogin}>账号与云档</button>}
-        {save && failure.next === 'home' && <button type="button" className="secondary" onClick={onBack}>查看存档列表</button>}
-        <details><summary>查看错误详情</summary><p><code>{failure.diagnostic}</code></p></details>
+      {save&&<section className="story-action-area" aria-label="接下来怎么做">
+        <p className="story-action-instruction">你可以描述自己的行动，九霄会根据当前世界规则决定结果。</p>
+        <div className="story-suggestions" aria-label="可编辑的行动建议">{suggestions.slice(0,3).map(suggestionButton)}{suggestions.length>3&&<button type="button" className="story-suggestion" onClick={()=>setShowActions(true)}>更多行动</button>}</div>
+        <form className="story-composer" aria-busy={busy||refreshBusy} onSubmit={submit}>
+          <label htmlFor="p2-action-input">接下来，你想怎么做？</label>
+          <textarea id="p2-action-input" data-testid="p2-action-input" value={text} placeholder="例如：观察渡船。点击建议后也可以修改文字。" maxLength={4000} onChange={event=>{setText(event.target.value);setSelected(null);}} disabled={!canAct}/>
+          <button type="submit" className="primary" data-testid="p2-submit-action" disabled={!canAct||!text.trim()}>{busy?'正在判定行动…':'确认行动 · 继续故事'}</button>
+        </form>
+        {historyUnavailable&&<button className="quiet-action story-history-retry" disabled={busy||refreshBusy} onClick={()=>void reloadSave()}>重读剧情记录</button>}
+        <div className="story-save-feedback" role="status" aria-live="polite">{busy?'正在处理这次行动，请稍候。':pendingTurn?'本次结果尚未确认，内容已保留。':receipt?.decision.status==='clarify'?'世界没有变化，可以补充后继续。':receipt?.decision.status==='rejected'?'世界没有变化，请调整行动。':save?(historyUnavailable?'进度已保存；剧情记录暂不可用，请重试读取。':'已保存当前经历。'):''}</div>
+        {pendingTurn&&!busy&&<section className="story-action-feedback" role="alert"><p>暂时无法确认行动是否生效。先核对结果，避免重复执行。</p><button type="button" disabled={busy||refreshBusy} onClick={()=>void reconcilePendingTurn()}>核对本次提交</button></section>}
+        {failure&&!pendingTurn&&<section className="story-action-feedback"><p>{notice}</p>{failure.next==='account'?<button onClick={onLogin}>账号与云档</button>:failure.next==='home'?<button onClick={onBack}>查看存档列表</button>:<button disabled={busy||refreshBusy} onClick={()=>void reloadSave()}>重新读取存档</button>}</section>}
+        {rulesUnavailable&&<section className="story-action-feedback"><p>当前环境的剧情规则尚未开放，行动已暂停。</p><button disabled={refreshBusy||busy} onClick={()=>void reloadSave()}>重新读取存档</button></section>}
+        <details className="story-help"><summary>玩法范围与规则记录</summary>
+          <p>当前支持已列出的移动、观察、交谈及物品和任务操作，暂时不能理解所有自然语言表达。修改建议文字后，会重新判断其含义。</p>
+          <p>自动保存已确认的行动；结果不确定时请先核对。{historyUnavailable?'本环境未开启或暂时无法读取完整剧情保存。':''}</p>
+          <button className="quiet-action" onClick={onWorld}>阅读世界资料</button>
+          <section aria-label="服务端存档状态"><p>存档版本 <strong data-testid="p2-revision">{save.revision}</strong> · 行旅时间 <strong data-testid="p2-game-minute">{String(save.state.facts.gameMinute??'未记录')}</strong></p>
+          {save.schemaVersion===3&&<p>{save.memoryMode==='forgetting'?'真实遗忘':'存档与继续'}</p>}</section>
+          <p data-testid="p2-status">{notice}</p>
+          {receipt&&<section data-testid="p2-receipt"><p>{receipt.decision.status==='accepted'?'行动已执行。':receipt.decision.status==='clarify'?'还需要补充说明。':'行动未执行。'}</p>
+          {eventRows.length?<ul>{eventRows.map(event=><li key={event.eventId}>{event.delta?formatReceiptDelta(event.delta):'存档状态已记录。'}</li>)}</ul>:<p>存档状态没有变化。</p>}
+          <p>请求 {receipt.idempotencyKey} · 修订 {receipt.resultingRevision}</p></section>}
+          {failure&&<p>{failure.diagnostic}</p>}
+        </details>
       </section>}
-      {pendingTurn && <section className="cloud-game-recovery" role="alert" aria-live="assertive">
-        <p>暂时无法确认这次行动是否生效。内容已保留；先核对本次结果，再决定下一步。</p>
-        <button type="button" className="secondary" onClick={() => void reconcilePendingTurn()} disabled={busy || refreshBusy || !save}>{busy ? '正在核对…' : '核对本次提交'}</button>
-        {failure?.next === 'account' && <button type="button" className="secondary" onClick={onLogin}>账号与云档</button>}
-        {failure?.next === 'home' && <button type="button" className="secondary" onClick={onBack}>查看存档列表</button>}
-        {failure?.next === 'reload' && !rulesUnavailable && <button type="button" className="secondary" onClick={() => void reloadSave()} disabled={refreshBusy || busy}>重新读取存档</button>}
-        {failure && <details><summary>查看错误详情</summary><p><code>{failure.diagnostic}</code></p></details>}
-      </section>}
-      {rulesUnavailable && save && <div className="cloud-game-recovery" role="status"><p>服务器规则尚未就绪，行动输入已停用。</p><button type="button" className="secondary" onClick={() => void reloadSave()} disabled={refreshBusy || busy}>{refreshBusy ? '正在读取…' : '重新读取存档'}</button>{failure && <details><summary>查看错误详情</summary><p><code>{failure.diagnostic}</code></p></details>}</div>}
-      {save && <form className="intent-composer cloud-game-action" aria-busy={busy || refreshBusy} onSubmit={submit}>
-        <label htmlFor="p2-action-input">你要做什么？</label>
-        <textarea id="p2-action-input" data-testid="p2-action-input" value={text} placeholder="写下你想做的事，例如：观察渡船。也可以修改上方的行动建议。" maxLength={4_000} onChange={event => setText(event.target.value)} disabled={busy || refreshBusy || saveNeedsRefresh || pendingTurn !== null || rulesUnavailable} />
-        <button type="submit" className="primary" data-testid="p2-submit-action" disabled={busy || refreshBusy || saveNeedsRefresh || pendingTurn !== null || rulesUnavailable || !text.trim()}>{busy ? '正在提交…' : '提交行动'}</button>
-      </form>}
-      </div>
     </div>
-    {showState && save && <GameInfoDialog label="存档状态" onClose={() => setShowState(false)}>
-      <p>当前修订：{save.revision}</p><p>规则版本：<code>{save.ruleVersion}</code></p><p>世界设定版本：<code>{save.canonVersion}</code></p>
-      <p>资料仅来自这份服务端存档；本页未提供人物记忆检索。</p>
-    </GameInfoDialog>}
+    {showActions&&<GameInfoDialog label="当前可以尝试" onClose={()=>setShowActions(false)}><p>选择一项填入行动框，确认后才会执行。</p><div className="story-all-actions">{suggestions.map(suggestionButton)}</div></GameInfoDialog>}
+    {showState&&save&&<GameInfoDialog label="人物与行囊" onClose={()=>setShowState(false)}><p>当前地点：{scene}</p><p>体力：{String(save?.state.facts.stamina??'未记录')}</p><h2>行囊</h2>{inventory.length?<ul>{inventory.map(item=><li key={item.name}>{item.name} ×{item.quantity}</li>)}</ul>:<p>暂无可显示的随身物品。</p>}<p>人物身份、修为等建角资料尚未映射到服务器规则状态。</p><details><summary>存档与技术详情</summary><pre>{JSON.stringify(save,null,2)}</pre></details><button className="quiet-action" onClick={onLogin}>账号与存档管理</button></GameInfoDialog>}
   </GameShell>;
+}
+
+type HistoryEntry={receipt:TurnReceipt;text:string|null;source:string|null};
+function parseHistory(value:unknown,saveId:string,revision:number):HistoryEntry[] {
+ if(!Array.isArray(value)||value.length>100)throw new Error('INVALID_STORY_HISTORY');
+ return value.map(raw=>{if(!raw||typeof raw!=='object')throw new Error('INVALID_STORY_HISTORY');const row=raw as Record<string,unknown>;
+  const receipt=TurnReceiptSchema.parse(row.receipt);if(receipt.saveId!==saveId||receipt.decision.status!=='accepted'||receipt.resultingRevision>revision)throw new Error('INVALID_STORY_HISTORY');
+  if(row.text!==null&&(typeof row.text!=='string'||row.text.length>100000))throw new Error('INVALID_STORY_HISTORY');
+  return {receipt,text:row.text as string|null,source:typeof row.source==='string'?row.source:null};});
+}
+function mergeHistory(previous:HistoryEntry[],rows:HistoryEntry[]):HistoryEntry[]{
+ const merged=new Map(previous.map(row=>[row.receipt.idempotencyKey,row]));for(const row of rows)merged.set(row.receipt.idempotencyKey,row);
+ return [...merged.values()].sort((a,b)=>a.receipt.resultingRevision-b.receipt.resultingRevision);
+}
+function turnLabel(receipt:TurnReceipt):string {
+ if(receipt.decision.status!=='accepted')return '行旅';
+ const event=receipt.decision.events[0]?.type??'';
+ return event.startsWith('talk.')?'交谈':event.startsWith('observe.')?'观察':event.startsWith('move.')?'行路':event.startsWith('quest.')?'任务':'行旅';
 }

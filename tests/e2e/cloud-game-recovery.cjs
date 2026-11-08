@@ -91,6 +91,7 @@ async function startDevServer() {
   try {
     await page.goto(`${base}/game/${saveId}`, { waitUntil: 'networkidle' });
     await page.getByTestId('p2-action-input').waitFor({ state: 'visible' });
+    await page.locator('.story-help summary').click();
     await page.getByTestId('p2-action-input').fill('沿山路走到石阶旁');
     await page.getByTestId('p2-submit-action').click();
     await page.getByRole('button', { name: '核对本次提交' }).waitFor({ state: 'visible' });
@@ -98,6 +99,7 @@ async function startDevServer() {
     assert.equal(await page.getByTestId('p2-action-input').inputValue(), '沿山路走到石阶旁', 'uncertain submit must preserve the action text');
 
     await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.locator('.story-help summary').click();
     await page.getByRole('button', { name: '核对本次提交' }).waitFor({ state: 'visible' });
     assert.equal(await page.getByTestId('p2-action-input').inputValue(), '沿山路走到石阶旁');
     await page.getByRole('button', { name: '核对本次提交' }).click();
@@ -149,6 +151,7 @@ async function startDevServer() {
       });
       try {
         await scenarioPage.goto(`${base}/game/${saveId}`, { waitUntil: 'networkidle' });
+        await scenarioPage.locator('.story-help summary').click();
         await scenarioPage.getByTestId('p2-action-input').fill('继续沿石阶前行');
         await scenarioPage.getByTestId('p2-submit-action').click();
         if (scenario === 'refresh-failure') {

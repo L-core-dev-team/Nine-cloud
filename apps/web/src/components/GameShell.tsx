@@ -1,9 +1,11 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import './game-shell.css';
+import './story-first.css';
 
 /** Presentation only: callers retain their own save, draft and turn handlers. */
-export function GameShell({ saveId, children, archive, readingReady = true }: { saveId: string; children: ReactNode; archive?: ReactNode; readingReady?: boolean }) {
+export function GameShell({ saveId, children, archive, readingReady = true, immersive = false }: { saveId: string; children: ReactNode; archive?: ReactNode; readingReady?: boolean; immersive?:boolean }) {
   const frame = useRef<HTMLElement>(null);
+  const baselineViewport = useRef<{height:number;scale:number}|null>(null);
   const [showArchive, setShowArchive] = useState(false);
   useLayoutEffect(() => {
     if (!readingReady) return;
@@ -25,7 +27,9 @@ export function GameShell({ saveId, children, archive, readingReady = true }: { 
     if (!shell || !viewport) return;
     const resize = () => {
       // Keep pinch zoom available; only compensate for browser chrome / the keyboard.
-      if (viewport.scale !== 1) return;
+      const baseline=baselineViewport.current??(baselineViewport.current={height:viewport.height,scale:viewport.scale});
+      if(Math.abs(viewport.scale-baseline.scale)>0.01)return;
+      frame.current?.setAttribute('data-keyboard',viewport.height<baseline.height*0.78?'true':'false');
       shell.style.setProperty('--jx-game-viewport-height', `${viewport.height}px`);
       shell.style.setProperty('--jx-game-viewport-top', `${viewport.offsetTop}px`);
     };
@@ -37,7 +41,7 @@ export function GameShell({ saveId, children, archive, readingReady = true }: { 
       shell.style.removeProperty('--jx-game-viewport-height'); shell.style.removeProperty('--jx-game-viewport-top');
     };
   }, []);
-  return <section ref={frame} className="game-page game-frame">
+  return <section ref={frame} className={`game-page game-frame${immersive?' immersive-game':''}`}>
     {children}
     {archive && <button className="game-archive-toggle secondary" onClick={() => setShowArchive(true)}>旧档资料与迁移核对</button>}
     {showArchive && <GameInfoDialog label="旧档资料与迁移核对" onClose={() => setShowArchive(false)}>{archive}</GameInfoDialog>}

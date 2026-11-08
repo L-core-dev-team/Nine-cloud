@@ -279,3 +279,15 @@ export const npcMemoryObservationSupersessions = pgTable('npc_memory_observation
 
 export const accountRateLimits=pgTable('account_rate_limits',{key:text('key').primaryKey(),expiresAt:timestamp('expires_at',{withTimezone:true}).notNull(),hits:integer('hits').notNull()});
 export const accountLifecycleAudit=pgTable('account_lifecycle_audit',{id:text('id').primaryKey(),ownerDigest:text('owner_digest').notNull(),operation:text('operation').notNull(),policyVersion:text('policy_version').notNull(),occurredAt:timestamp('occurred_at',{withTimezone:true}).notNull().defaultNow()});
+
+/** Read-only player presentation; never an input to rules or NPC visibility. */
+export const storyNarratives = pgTable('story_narratives', {
+ saveId: text('save_id').notNull(), idempotencyKey: text('idempotency_key').notNull(),
+ revision: integer('revision').notNull(), narrativeText: text('narrative_text').notNull(),
+ source: text('source').notNull(), createdAt: timestamp('created_at',{withTimezone:true}).notNull().defaultNow(),
+}, table => [primaryKey({columns:[table.saveId,table.idempotencyKey]}),
+ foreignKey({columns:[table.saveId,table.idempotencyKey],foreignColumns:[turnRequests.saveId,turnRequests.idempotencyKey]}).onDelete('cascade'),
+ index('story_narratives_revision_idx').on(table.saveId,table.revision),
+ check('story_narrative_revision_check',sql`${table.revision}>0`),
+ check('story_narrative_source_check',sql`${table.source} IN ('model','deterministic')`),
+ check('story_narrative_text_check',sql`char_length(${table.narrativeText})>0 AND octet_length(${table.narrativeText})<=400000`)]);

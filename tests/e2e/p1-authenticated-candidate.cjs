@@ -192,7 +192,7 @@ async function waitFor(url, child, stderr) {
     const firstSuggestions = await actionSuggestions(forgetting);
     assert.ok(firstSuggestions.some(row => row.text === '去望气台'));
     assert.ok(firstSuggestions.some(row => row.text === '观察渡船'));
-    assert.ok(firstSuggestions.some(row => row.text === '对岑九说：'));
+    assert.ok(firstSuggestions.some(row => row.text === '对岑九说：这石头怎么办'));
     assert.ok(!firstSuggestions.some(row => row.kind === 'combat'));
     const invalid = await act(forgetting, 'move', { destinationId: 'loc_unlisted' });
     assert.equal(invalid.result.receipt.decision.status, 'rejected');

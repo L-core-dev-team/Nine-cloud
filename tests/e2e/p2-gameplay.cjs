@@ -154,7 +154,9 @@ async function stop(child) {
     await page.locator('input[name="p2-memory-mode"][value="forgetting"]').check();
     await page.getByTestId('create-server-game').click();
     await page.getByTestId('p2-cloud-game').waitFor({ state: 'visible', timeout: 20_000 });
+    await page.locator('.story-help summary').click();
     await page.getByText('真实遗忘', { exact: true }).waitFor();
+    await page.locator('.story-help summary').click();
     await page.locator('[aria-label="故事开场"]').waitFor({state:'visible'});
     assert.ok((await page.locator('.story-reading').boundingBox()).height >= 120, 'the real story must retain readable viewport space');
     const guestSession = await page.evaluate(async () => {
@@ -217,6 +219,7 @@ async function stop(child) {
     await page.getByTestId('p2-cloud-game').waitFor({ state: 'visible', timeout: 20_000 });
     await page.waitForFunction(() => document.querySelector('[data-testid="p2-revision"]')?.textContent === '1', null, { timeout: 20_000 });
     await page.waitForFunction(() => document.querySelector('[data-testid="p2-game-minute"]')?.textContent === '315', null, { timeout: 20_000 });
+    await page.locator('.story-help summary').click();
     await page.getByTestId('p2-status').getByText('服务端存档已读取。提交后请以状态回执为准。').waitFor({ timeout: 20_000 });
     // Continue through the actual UI and real PostgreSQL, without model or rule stubs.
     const turnEvidence = [];
@@ -246,6 +249,7 @@ async function stop(child) {
     assert.equal(memoryRows.rows[0].event_revision, 2);
     await page.reload({ waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => document.querySelector('[data-testid="p2-revision"]')?.textContent === '10');
+    await page.locator('.story-help summary').click();
     await page.getByTestId('p2-receipt').getByText('行动已执行。', {exact:true}).waitFor();
     await page.waitForFunction(() => !document.querySelector('[data-testid="p2-action-input"]').disabled);
     for (const width of [390, 1366]) {
