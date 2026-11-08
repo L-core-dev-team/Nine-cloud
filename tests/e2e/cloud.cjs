@@ -83,11 +83,13 @@ async function latestCode(email) {
     await page.getByText('云档已移至回收区，本地档与待上传队列保留。', { exact: true }).waitFor();
     assert.equal(await page.evaluate(async id => (await fetch(`/api/saves/${encodeURIComponent(id)}`)).status, remote.saveId), 404);
     assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem('jiuxiao_1_local_saves'))), saved);
+    await page.locator('.cloud-trash > summary').click();
     await page.getByRole('button', { name: '恢复删除的云档', exact: true }).click();
     await page.getByText('完整性校验通过，云档已恢复。', { exact: true }).waitFor();
     const recovered = await page.evaluate(async id => (await (await fetch(`/api/saves/${encodeURIComponent(id)}`)).json()).save, remote.saveId);
     assert.equal(recovered.revision, 3); assert.deepEqual(recovered.state, next.state);
     const accountBefore = await page.evaluate(async()=>(await(await fetch('/api/auth/session')).json()).account);
+    await page.locator('.cloud-security > summary').click();
     const accountDownloadPromise=page.waitForEvent('download');await page.getByRole('button',{name:'导出账号全部资料',exact:true}).click();
     const accountDownload=await accountDownloadPromise;const accountText=readFileSync(await accountDownload.path(),'utf8');const accountBundle=JSON.parse(accountText);
     assert.equal(accountBundle.account.id,accountBefore.id);assert.equal(accountBundle.client.independentLocalSaves.length,2);assert.ok(accountBundle.data.saves.some(row=>row.id===remote.saveId));assert.ok(!accountText.includes('never-upload-this-key'));assert.ok(!accountText.includes('session_hash'));
