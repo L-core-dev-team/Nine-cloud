@@ -122,10 +122,13 @@ async function stop(child) {
     page.on('pageerror', error => pageErrors.push(error.message));
     // Forward same-origin production-bundle API requests to the real local API.
     // No gameplay response is stubbed or synthesized by the browser harness.
+    const apiRoundTrips=new Map();
     await page.route('**/api/**', async route => {
       const source = new URL(route.request().url());
       if (source.pathname === '/api/auth/code' && route.request().method() === 'POST') otpRequestCount += 1;
+      const began=performance.now();
       const response = await route.fetch({ url: `${apiOrigin}${source.pathname}${source.search}` });
+      if(source.pathname.endsWith('/turns')&&route.request().method()==='POST'){const sent=route.request().postDataJSON();apiRoundTrips.set(sent.idempotencyKey??sent.intent?.idempotencyKey,performance.now()-began);}
       if (source.pathname === '/api/auth/guest' && route.request().method() === 'POST' && response.ok()) {
         ownerId = (await response.json()).account.id;
       }
@@ -173,12 +176,12 @@ async function stop(child) {
       if(text)await page.getByTestId('p2-action-input').fill(text);
       const response=page.waitForResponse(r=>r.request().method()==='POST'&&(r.url().endsWith('/turns')));
       const started=Date.now();await page.getByTestId('p2-submit-action').click();
-      const raw=await response;const body=await raw.json();await raw.finished();const network=raw.request().timing();assert.equal(body.receipt.decision.status,'accepted',JSON.stringify(body));assert.equal(body.receipt.resultingRevision,revision);
+      const raw=await response;const body=await raw.json();await raw.finished();assert.equal(body.receipt.decision.status,'accepted',JSON.stringify(body));assert.equal(body.receipt.resultingRevision,revision);
       await page.waitForFunction(revision=>document.querySelectorAll('[data-story-revision]').length===revision,revision);
       await page.waitForFunction(()=>!document.querySelector('[data-testid="p2-action-input"]').disabled);
       const api=await page.evaluate(async id=>await (await fetch(`/api/games/${id}/story`)).json(),saveId);
       assert.equal(api.items.length,revision);assert.equal(api.items.at(-1).text,body.narrative.text,'archive must retain the complete exact returned text, including approved hints');
-      const perf=await page.evaluate(()=>window.__storyPerf);timings.push({revision,...perf,requestRoundTripMs:network.requestStart>=0&&network.responseEnd>=network.requestStart?network.responseEnd-network.requestStart:null,httpAndUIWallMs:Date.now()-started});
+      const perf=await page.evaluate(()=>window.__storyPerf);timings.push({revision,...perf,apiRoundTripMs:apiRoundTrips.get(body.receipt.idempotencyKey)??null,httpAndUIWallMs:Date.now()-started});
       snapshots.push({revision,text:body.narrative.text,events:body.receipt.decision.events.map(e=>e.type)});return body;
     }
     await act('对岑九说：这石头怎么办',1);
