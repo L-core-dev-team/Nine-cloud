@@ -27,6 +27,25 @@ test('explicit preview email enablement opens email routes and keeps phone route
   });
 });
 
+test('email enablement does not expose account or guest routes', async () => {
+  const env = { ...simulationEnv, JIUXIAO_EMAIL_AUTH_ENABLED: 'true' };
+  let upstreamCalls = 0;
+  await withFetch(async () => { upstreamCalls += 1; throw new Error('unexpected upstream call'); }, async () => {
+    for (const [path, method] of [
+      ['/api/account/capabilities', 'GET'],
+      ['/api/account/capabilities', 'POST'],
+      ['/api/account/operation/begin', 'POST'],
+      ['/api/auth/guest', 'POST'],
+      ['/api/auth/guest/upgrade', 'POST'],
+    ]) {
+      const response = await proxyApiRequest(context(path, { method, body: method === 'GET' ? undefined : '{}' }, env));
+      assert.equal(response.status, 404, `${method} ${path}`);
+      assert.equal((await response.json()).code, 'ROUTE_A_BLOCKED', `${method} ${path}`);
+    }
+  });
+  assert.equal(upstreamCalls, 0);
+});
+
 test('only a matching owned website Origin can be canonicalized for the shared API', async () => {
   const env = { ...simulationEnv, JIUXIAO_EMAIL_AUTH_ENABLED:'true', API_AUTH_CANONICAL_ORIGIN:'https://play.jiuxiaogame.cn' };
   const forwarded=[];
