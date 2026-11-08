@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { SaveEnvelopeSchema, TurnReceiptSchema, type SaveEnvelope, type TurnReceipt } from '@jiuxiao/contracts';
 import { CloudHttpError, cloudRequest } from '../cloud-sync';
-import { createIdempotencyKey } from '../storage';
+import { createIdempotencyKey, readActionDraft, writeActionDraft } from '../storage';
 import { formatReceiptDelta, projectReceiptEvents } from '../receipt-event-view';
 import { GameShell, GameInfoDialog } from '../components/GameShell';
 import { cloudGameDiagnostic, cloudGameErrorPlan, type CloudGameNextStep } from './cloud-game-errors';
@@ -11,6 +11,16 @@ type PendingTurn = { idempotencyKey: string; text: string; expectedRevision: num
 type RefreshOutcome = { rulesUnavailable: boolean; suggestionsUnavailable: boolean };
 type CloudGameProps = { saveId: string; onBack: () => void; onHome: () => void; onLogin: () => void; onWorld: () => void };
 const saveCannotBeRead = (error: unknown) => error instanceof CloudHttpError && (error.status === 401 || error.code === 'NOT_FOUND');
+function readPendingTurn(saveId: string): PendingTurn | null {
+  try {
+    const value = JSON.parse(sessionStorage.getItem(`jiuxiao_cloud_pending_${saveId}`) || 'null');
+    return value && typeof value.text === 'string' && value.text.length <= 4000
+      && typeof value.idempotencyKey === 'string' && /^[\w-]{8,200}$/.test(value.idempotencyKey)
+      && Number.isSafeInteger(value.expectedRevision) && value.expectedRevision >= 0
+      && (value.clarificationOf === undefined || typeof value.clarificationOf === 'string')
+      ? value as PendingTurn : null;
+  } catch { return null; }
+}
 
 export function CloudGame(props: CloudGameProps) {
   return <CloudGameSession key={props.saveId} {...props} />;
@@ -22,17 +32,28 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
   const [suggestions, setSuggestions] = useState<ActionSuggestion[]>([]);
   const [receipt, setReceipt] = useState<TurnReceipt | null>(null);
   const [narrative, setNarrative] = useState('');
-  const [text, setText] = useState('');
+  const [text, setText] = useState(() => readActionDraft(`cloud-${saveId}`));
   const [busy, setBusy] = useState(false);
   const [refreshBusy, setRefreshBusy] = useState(true);
   const [saveNeedsRefresh, setSaveNeedsRefresh] = useState(true);
   const [failure, setFailure] = useState<{ next: CloudGameNextStep; diagnostic: string } | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [rulesUnavailable, setRulesUnavailable] = useState(false);
-  const [pendingTurn, setPendingTurn] = useState<PendingTurn | null>(null);
+  const [pendingTurn, setPendingTurn] = useState<PendingTurn | null>(() => readPendingTurn(saveId));
+  const sending = useRef(false);
+  const resultRegion = useRef<HTMLElement>(null);
   const [notice, setNotice] = useState('正在读取服务端存档……');
+  useEffect(() => { writeActionDraft(`cloud-${saveId}`, text); }, [saveId, text]);
+  useEffect(() => {
+    try {
+      const key = `jiuxiao_cloud_pending_${saveId}`;
+      if (pendingTurn) sessionStorage.setItem(key, JSON.stringify(pendingTurn));
+      else sessionStorage.removeItem(key);
+    } catch { /* The in-memory recovery request remains available. */ }
+  }, [saveId, pendingTurn]);
+  useEffect(() => { if (receipt) resultRegion.current?.scrollIntoView({ block: 'nearest' }); }, [receipt]);
 
-  const refresh = useCallback(async () => {
+  const refresh = useCallback(async (restorePresentation = false) => {
     setNotFound(false);
     setSaveNeedsRefresh(true);
     let response: Record<string, unknown>;
@@ -48,6 +69,12 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
     const next = SaveEnvelopeSchema.parse(response.save);
     if (next.saveId !== saveId) throw new Error('INVALID_GAME_RESPONSE');
     setSave(next);
+    if (restorePresentation && response.latestReceipt) {
+      const prior = TurnReceiptSchema.parse(response.latestReceipt);
+      if (prior.saveId !== saveId || prior.resultingRevision > next.revision) throw new Error('INVALID_GAME_RESPONSE');
+      setReceipt(prior);
+      setNarrative('最近一次已确认行动的结果已恢复。以下变化来自保存的规则回执；原剧情文字暂未持久保存。');
+    }
     let nextRulesUnavailable = false;
     let nextSuggestionsUnavailable = false;
     try {
@@ -72,7 +99,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
 
   useEffect(() => {
     let active = true;
-    void refresh().then(outcome => {
+    void refresh(true).then(outcome => {
       if (!active) return;
       setNotice(outcome.rulesUnavailable ? cloudGameErrorPlan(new CloudHttpError(503, 'RULES_NOT_READY')).message
         : outcome.suggestionsUnavailable ? '存档已读取；当前无法读取行动建议，你仍可直接输入行动。'
@@ -107,7 +134,9 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
   }
 
   async function sendTurn(request: PendingTurn, requestNarrative: boolean, recovering: boolean) {
-    if (!save || busy || refreshBusy || save.saveId !== saveId || (!recovering && saveNeedsRefresh)) return;
+    if (!save || busy || sending.current || refreshBusy || save.saveId !== saveId || (!recovering && saveNeedsRefresh)) return;
+    sending.current = true;
+    setPendingTurn(request);
     setBusy(true);
     setFailure(null);
     try {
@@ -191,6 +220,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
           : '行动回执已收到，但最新存档暂未刷新。请重新读取状态后继续；本次回执仍显示在页面上。');
       }
     } finally {
+      sending.current = false;
       setBusy(false);
     }
   }
@@ -233,7 +263,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
         <p>行旅时间 <strong data-testid="p2-game-minute">{typeof save.state.facts.gameMinute === 'number' ? save.state.facts.gameMinute : '未记录'}</strong>{typeof save.state.facts.gameMinute === 'number' ? ' 分钟' : ''}</p>
         {save.schemaVersion === 3 && <p>记忆 <strong>{save.memoryMode === 'forgetting' ? '真实遗忘' : '存档与继续'}</strong></p>}
       </section>
-      {!!narrative && <section className="cloud-game-narrative" aria-label="行动叙述"><h3>纪事</h3><p data-testid="p2-narrative">{narrative}</p></section>}
+      {!!narrative && <section ref={resultRegion} className="cloud-game-narrative" aria-label="行动叙述" aria-live="polite"><h3>纪事</h3><p data-testid="p2-narrative">{narrative}</p></section>}
       {!!receipt && <section className="cloud-game-receipt" data-testid="p2-receipt" aria-label="本次结果">
         <h3>本次结果</h3>
         <p>{receipt.decision.status === 'accepted' ? '行动已执行。' : receipt.decision.status === 'clarify' ? '还需要补充说明。' : '行动未执行。'}</p>
@@ -244,7 +274,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
       </section>}
     </>}
       </div>
-      {!!suggestions.length && <details className="cloud-game-suggestions"><summary>当前可尝试的行动</summary><div className="actions">{suggestions.map(item => <button className="secondary" key={item.id} disabled={busy || refreshBusy || saveNeedsRefresh || pendingTurn !== null || rulesUnavailable} onClick={() => setText(item.text)}>{item.label}</button>)}</div></details>}
+      {!!suggestions.length && <details open className="cloud-game-suggestions"><summary>当前可尝试的行动</summary><small>点击只会填入输入框；可以修改后再提交。</small><div className="actions">{suggestions.map(item => <button className="secondary" key={item.id} disabled={busy || refreshBusy || saveNeedsRefresh || pendingTurn !== null || rulesUnavailable} onClick={() => { setText(item.text); document.getElementById('p2-action-input')?.focus(); }}>{item.label}</button>)}</div></details>}
       {failure && !pendingTurn && !rulesUnavailable && <section className="cloud-game-recovery" aria-label="请求恢复">
         {save && failure.next === 'reload' && <button type="button" className="secondary" onClick={() => void reloadSave()} disabled={refreshBusy || busy}>{refreshBusy ? '正在读取…' : '重新读取存档'}</button>}
         {save && failure.next === 'account' && <button type="button" className="secondary" onClick={onLogin}>账号与云档</button>}
@@ -262,7 +292,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
       {rulesUnavailable && save && <div className="cloud-game-recovery" role="status"><p>服务器规则尚未就绪，行动输入已停用。</p><button type="button" className="secondary" onClick={() => void reloadSave()} disabled={refreshBusy || busy}>{refreshBusy ? '正在读取…' : '重新读取存档'}</button>{failure && <details><summary>查看错误详情</summary><p><code>{failure.diagnostic}</code></p></details>}</div>}
       {save && <form className="intent-composer cloud-game-action" aria-busy={busy || refreshBusy} onSubmit={submit}>
         <label htmlFor="p2-action-input">你要做什么？</label>
-        <textarea id="p2-action-input" data-testid="p2-action-input" value={text} maxLength={8_000} onChange={event => setText(event.target.value)} disabled={busy || refreshBusy || saveNeedsRefresh || pendingTurn !== null || rulesUnavailable} />
+        <textarea id="p2-action-input" data-testid="p2-action-input" value={text} placeholder="写下你想做的事，例如：观察渡船。也可以修改上方的行动建议。" maxLength={4_000} onChange={event => setText(event.target.value)} disabled={busy || refreshBusy || saveNeedsRefresh || pendingTurn !== null || rulesUnavailable} />
         <button type="submit" className="primary" data-testid="p2-submit-action" disabled={busy || refreshBusy || saveNeedsRefresh || pendingTurn !== null || rulesUnavailable || !text.trim()}>{busy ? '正在提交…' : '提交行动'}</button>
       </form>}
       </div>

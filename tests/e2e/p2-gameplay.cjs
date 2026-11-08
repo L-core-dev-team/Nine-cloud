@@ -203,6 +203,11 @@ async function stop(child) {
     assert.equal(committed.rows[0].requests, expectedRequests);
     assert.equal(committed.rows[0].events, expectedEvents);
     assert.equal(committed.rows[0].last_event, 'observe.result');
+    const { PostgresCloudSaveRepository } = await import(require('node:url').pathToFileURL(join(root, 'apps/api/dist/services/postgres-cloud-save-repository.js')).href);
+    const receiptReader = new PostgresCloudSaveRepository(pool);
+    assert.equal(await receiptReader.latestReceiptForOwner('foreign-test-owner', saveId), null);
+    assert.equal((await receiptReader.latestReceiptForOwner(ownerId, saveId)).resultingRevision, 1);
+
 
     const screenshotPath = join(evidenceDir, 'p1-guest-gameplay-turn.png');
     await page.screenshot({ path: screenshotPath, fullPage: true });
@@ -211,6 +216,40 @@ async function stop(child) {
     await page.waitForFunction(() => document.querySelector('[data-testid="p2-revision"]')?.textContent === '1', null, { timeout: 20_000 });
     await page.waitForFunction(() => document.querySelector('[data-testid="p2-game-minute"]')?.textContent === '315', null, { timeout: 20_000 });
     await page.getByTestId('p2-status').getByText('服务端存档已读取。提交后请以状态回执为准。').waitFor({ timeout: 20_000 });
+    // Continue through the actual UI and real PostgreSQL, without model or rule stubs.
+    const turnEvidence = [];
+    for (let turn = 2; turn <= 10; turn += 1) {
+      await page.getByTestId('p2-action-input').fill('对岑九说：不要去望气台');
+      const response = page.waitForResponse(r => r.url().endsWith(`/api/games/${saveId}/turns`) && r.request().method() === 'POST');
+      await page.getByTestId('p2-submit-action').click();
+      const body = await (await response).json();
+      assert.equal(body.receipt.decision.status, 'accepted');
+      await page.waitForFunction(revision => document.querySelector('[data-testid="p2-revision"]')?.textContent === String(revision), turn);
+      await page.getByTestId('p2-submit-action').waitFor({ state: 'visible' });
+      await page.waitForFunction(() => !document.querySelector('[data-testid="p2-action-input"]').disabled);
+      const prose = await page.getByTestId('p2-narrative').innerText();
+      assert.equal(prose.includes('此前已与此人谈过同一话题'), false, 'signed deterministic narration does not yet consume prior memory');
+      turnEvidence.push({ turn, revision: body.receipt.resultingRevision, narrative: prose });
+      expectedRequests += 1; expectedEvents += body.receipt.decision.events.length;
+    }
+    await page.getByTestId('p2-action-input').fill('打开时光裂缝');
+    const rejectedResponse = page.waitForResponse(r => r.url().endsWith(`/api/games/${saveId}/turns`) && r.request().method() === 'POST');
+    await page.getByTestId('p2-submit-action').click();
+    const rejected = await (await rejectedResponse).json();
+    assert.notEqual(rejected.receipt.decision.status, 'accepted');
+    assert.equal(rejected.receipt.resultingRevision, 10);
+    expectedRequests += 1;
+    const memoryRows = await pool.query('SELECT event_revision,summary,memory_class FROM npc_authorized_observation_outbox WHERE save_id=$1 ORDER BY event_revision', [saveId]);
+    assert.equal(memoryRows.rows.length, 9);
+    assert.equal(memoryRows.rows[0].event_revision, 2);
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => document.querySelector('[data-testid="p2-revision"]')?.textContent === '10');
+    await page.getByTestId('p2-receipt').getByText('行动已执行。', {exact:true}).waitFor();
+    await page.waitForFunction(() => !document.querySelector('[data-testid="p2-action-input"]').disabled);
+    await page.getByTestId('p2-action-input').fill('未提交的行动草稿');
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => document.querySelector('[data-testid="p2-action-input"]')?.value === '未提交的行动草稿');
+    require('node:fs').writeFileSync(join(evidenceDir, 'first-play-continuous-pg.json'), JSON.stringify({ turnEvidence, memoryRows: memoryRows.rows, rejected: rejected.receipt.decision.status }, null, 2));
     assert.deepEqual(pageErrors, []);
 
     console.log(JSON.stringify({

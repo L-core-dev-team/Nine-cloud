@@ -1,5 +1,5 @@
 import type { SaveEnvelope } from '@jiuxiao/contracts';
-import { SaveEnvelopeSchema } from '@jiuxiao/contracts';
+import { SaveEnvelopeSchema, TurnReceiptSchema } from '@jiuxiao/contracts';
 import { isDeepStrictEqual } from 'node:util';
 import type { Pool, PoolClient, QueryResultRow } from 'pg';
 import { CloudCapacityError, type CloudSaveRepository } from './cloud-save-service.js';
@@ -270,4 +270,16 @@ export class PostgresCloudSaveRepository implements CloudSaveRepository {
     return { kind: 'conflict', currentRevision: latest.rows[0].revision };
     });
   }
+  async latestReceiptForOwner(ownerId: string, saveId: string) {
+    const result = await this.pool.query(
+      `SELECT r.result FROM turn_requests r JOIN game_saves s ON s.id=r.save_id
+       WHERE s.id=$1 AND s.owner_id=$2 AND r.result->'decision'->>'status'='accepted'
+       AND NOT EXISTS (SELECT 1 FROM cloud_archive_trash t WHERE t.save_id=s.id)
+       ORDER BY r.expected_revision DESC, r.idempotency_key DESC LIMIT 1`, [saveId, ownerId]);
+    if (!result.rows[0]) return null;
+    const receipt = TurnReceiptSchema.parse(result.rows[0].result);
+    if (receipt.saveId !== saveId) throw new Error('INVALID_GAME_RECEIPT');
+    return receipt;
+  }
+
 }

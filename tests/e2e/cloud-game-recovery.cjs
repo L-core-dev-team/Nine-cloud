@@ -97,6 +97,9 @@ async function startDevServer() {
     assert.match(await page.getByTestId('p2-status').innerText(), /服务器暂时无法确认这次行动/);
     assert.equal(await page.getByTestId('p2-action-input').inputValue(), '沿山路走到石阶旁', 'uncertain submit must preserve the action text');
 
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.getByRole('button', { name: '核对本次提交' }).waitFor({ state: 'visible' });
+    assert.equal(await page.getByTestId('p2-action-input').inputValue(), '沿山路走到石阶旁');
     await page.getByRole('button', { name: '核对本次提交' }).click();
     await page.getByTestId('p2-receipt').waitFor({ state: 'visible' });
     await page.getByTestId('p2-status').getByText(/行动已确认，当前存档已同步/).waitFor();

@@ -17,7 +17,7 @@ import {
   verifyLocalEventChain,
   verifyLocalReplay,
 } from '../authoritative-turn-store';
-import { createIdempotencyKey, type LocalSave } from '../storage';
+import { createIdempotencyKey, readActionDraft, writeActionDraft, type LocalSave } from '../storage';
 import { formatReceiptDelta, projectReceiptEvents } from '../receipt-event-view';
 import { loadP2ReviewGameplayRuntime, type P2ReviewGameplayRuntime } from '../p2-review-gameplay-runtime';
 import { syncP2CandidateMemoryProjection, type CandidateMemoryProjectionSnapshot } from '../p2-candidate-memory-store';
@@ -56,7 +56,8 @@ function P2ReviewGame({ save, onBack }: { save: LocalSave | undefined; onBack: (
   const [snapshot, setSnapshot] = useState<AuthoritySnapshot | null>(null);
   const [currentReceipt, setCurrentReceipt] = useState<TurnReceipt | null>(null);
   const [presentationText, setPresentationText] = useState('');
-  const [actionText, setActionText] = useState('');
+  const [actionText, setActionText] = useState(() => readActionDraft(`review-${save?.saveId ?? ''}`));
+  useEffect(() => { if (save) writeActionDraft(`review-${save.saveId}`, actionText); }, [save?.saveId, actionText]);
   const [memoryNpcId, setMemoryNpcId] = useState('');
   const [memoryRecall, setMemoryRecall] = useState<AuthorizedRecallResult | null>(null);
   const [digestJobs, setDigestJobs] = useState<readonly P2CandidateDigestJob[]>([]);
@@ -362,6 +363,15 @@ function P2ReviewGame({ save, onBack }: { save: LocalSave | undefined; onBack: (
         {scene && <details><summary>简报依据</summary><p>钩子依据：{scene.hookEvidence}</p><p>离线推进：{scene.offlineAdvance}</p></details>}
         {snapshot.latestAcceptedReceipt && <p>最近一次已接受行动：{snapshot.runtime.narrate(snapshot.latestAcceptedReceipt)}</p>}
       </section>
+      <form onSubmit={submitAction} aria-label="提交行动">
+        <label htmlFor="p2-action">行动或显式记忆问题</label>
+        <textarea id="p2-action" data-testid="p2-action-input" value={actionText}
+          onChange={event => { setActionText(event.target.value); setMemoryRecall(null); }} maxLength={4000}
+          placeholder="例如：去望气台、观察落石堵渡、对岑九说：这石头怎么办；也可问：你还记得落石吗？" />
+        <button type="submit" className="primary" data-testid="p2-submit-action" disabled={actionDisabled || !actionText.trim()}>
+          {busy ? '结算中……' : '提交行动 / 查询记忆'}
+        </button>
+      </form>
       <section className="stats" aria-label="世界状态">
         <div><small>修订</small><strong data-testid="p2-revision">{snapshot.save.revision}</strong></div>
         <div><small>游戏分钟</small><strong data-testid="p2-game-minute">{String(snapshot.save.state.facts.gameMinute ?? 0)}</strong></div>
@@ -383,15 +393,7 @@ function P2ReviewGame({ save, onBack }: { save: LocalSave | undefined; onBack: (
         <p className="quiet-note">五类主要行动按钮只填入可编辑文本；手输和按钮共用同一可见目标解析器。拾取、子地点移动和任务领奖也填入文本后，再由同一权威规则事务结算。</p>
         <div className="actions" aria-label="当前可用的其他规则行动">{structuredActions.map((action, index) => <button key={`${action.kind}-${index}`} type="button" className="secondary" data-testid={`p2-structured-${action.kind}-${index}`} disabled={actionDisabled} onClick={() => setActionText(action.text)}>{action.label}</button>)}</div>
       </section>}
-      <form onSubmit={submitAction} aria-label="提交行动">
-        <label htmlFor="p2-action">行动或显式记忆问题</label>
-        <textarea id="p2-action" data-testid="p2-action-input" value={actionText}
-          onChange={event => { setActionText(event.target.value); setMemoryRecall(null); }} maxLength={4000}
-          placeholder="例如：去望气台、观察落石堵渡、对岑九说：这石头怎么办；也可问：你还记得落石吗？" />
-        <button type="submit" className="primary" data-testid="p2-submit-action" disabled={actionDisabled || !actionText.trim()}>
-          {busy ? '结算中……' : '提交行动 / 查询记忆'}
-        </button>
-      </form>
+
       {memoryNpcChoices.length > 0 && <section className="card" aria-label="双记忆状态" data-testid="p2-memory-panel">
         <h3>NPC 记忆</h3>
         <p>所选模式：{memoryModeLabel(snapshot.save.memoryMode)}。来源是权威回合内冻结的授权观察；两个模式分别保存在独立 IndexedDB 数据库。</p>

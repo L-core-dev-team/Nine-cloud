@@ -1,4 +1,10 @@
 /* Entrance-only layout. Reading routes retain the existing sticky toolbar. */
+.landing-availability { max-width: 34em; margin: 16px auto; padding: 12px 16px; color: #e0e6e8; background: #0b1b29; border-radius: var(--jx-radius-control); font-size: 14px; line-height: 1.7; }
+.landing-help { display: flex; justify-content: center; gap: 24px; }
+.landing-help a { display: inline-flex; align-items: center; min-height: 44px; color: #e0e6e8; background: #0b1b29; padding: 0 12px; border-radius: var(--jx-radius-control); }
+:root[data-theme='day'] .landing-availability, :root[data-theme='day'] .landing-help a { color: #283c49; background: #faf9f4; }
+:root .landing-shell .hero .hero-deck { padding: 8px 12px; color: #e0e6e8; background: #0b1b29; border-radius: var(--jx-radius-control); }
+:root[data-theme='day'] .landing-shell .hero .hero-deck { color: #283c49; background: #faf9f4; }
 .landing-shell > header[data-liquid-glass] {
   position: fixed;
   top: max(var(--jx-space-4), env(safe-area-inset-top));

@@ -173,7 +173,7 @@ function WorldHub({ saves }: { saves: LocalSave[] }) {
     <section className="page lobby-page">
       <span className="eyebrow">山门之内</span>
       <h2>选择去处</h2>
-      <p>旧档可接着走；另开新局，将从角色创建开始。</p>
+      <p>先创建角色，再探索世界。当前公开体验可保存角色和行动草稿；服务器剧情回合尚未开放。</p>
       <div className="lobby-actions">
         {save && <button className="primary" onClick={() => go(`/game/${save.saveId}`)}>继续游玩<span>{save.name} · 存档版本 {save.revision}</span></button>}
         <button className="primary" onClick={() => go('/new')}>新开一局<span>进入角色创建，择定出身与地域</span></button>
@@ -305,7 +305,7 @@ function NewCharacter({ onSaved, onCreateServerGame, onBack }: {
     } finally { submittingRef.current = false; setSubmitting(false); }
   }
   return <section className="page character-creation"><span className="eyebrow">建角 · {stepNames[step]}</span><h2>把自己写进山门。</h2>
-    <p>依次记下人物、修行与去处。提交前可以回看修改；开局意图在规则未就绪时留在存档中。</p>
+    <p>只填姓名也可以继续，其余内容可留空。角色会自动保存在当前设备；公开体验目前只保存角色和行动草稿，尚不结算剧情回合。</p>
     <ol className="character-steps" aria-label="建角进度">{stepNames.map((label, index) => <li key={label} aria-current={index === step ? 'step' : undefined}><span>{index + 1}</span>{label}</li>)}</ol>
     <div className="form">{fields.filter(([key]) => stepKeys[step]?.includes(key)).map(([key, label, hint]) => <div className="character-field" key={key}><label>{label}<small>{hint}</small>{key === 'region' ? <><select aria-label="开局地域" value={selectedRegion} onChange={event => set(key, event.target.value)}><option>中州天枢域</option><option>北境霜寒域</option><option>南疆万蛊域</option><option>东瀚龙吟域</option><option>西荒焚天域</option><option>完全自定义</option></select>{regionArtwork && <figure className="region-visual-reference"><img src={mediaUrlForBrowser(regionArtwork.src)} alt="" loading="lazy" decoding="async" /><figcaption><strong>{selectedRegion}</strong><span>地域画影 · AI 生成 · 只作辨识，设定以正文为准</span></figcaption></figure>}</> : key === 'talents' || key === 'goal' ? <textarea aria-label={label} value={form[key] || ''} onChange={event => set(key, event.target.value)} /> : <input aria-label={label} value={form[key] || ''} onChange={event => set(key, event.target.value)} />}</label>{CHARACTER_OPTIONS[key] && <label className="character-suggestions">{label}备选<select aria-label={`${label}备选`} value="" onChange={event => {
       const value = event.target.value;
@@ -553,7 +553,7 @@ function LegacyGame({ save, onExport, onImportSupplement, onUpdate, onBranch, on
           const role = row.gm === true || row.role === 'assistant' ? '剧情' : row.role === 'user' ? '行者' : '旧档';
           return <article className={`story-message ${role === '剧情' ? 'narration' : 'player-line'}`} key={index}><span>{role}</span><p>{content}</p></article>;
         })}
-        {!readableMessages.length && <article className="story-opening"><span>山门未启</span><h2>{save.name}</h2><p>{pendingText ? '此局的开局意图已保存在行囊中。' : '夜色沉在群峰之间。写下你的行动，先将这一念收入存档。'}</p><small>新一回合尚未结算</small></article>}
+        {!readableMessages.length && <article className="story-opening"><span>本地角色草稿已保存</span><h2>{save.name}</h2><p>你可以查看角色、探索世界资料，或写下想做的事。当前公开体验不会生成剧情反馈、推进时间或改变角色状态。</p><small>服务器剧情回合尚未开放；无需登录即可保留本机草稿。</small></article>}
         {pendingText && <article className="pending-intent"><span>{pendingFromLegacy ? '旧档待处理意图 · 尚未恢复' : '开局意图 · 尚未结算'}</span><p>{pendingText}</p></article>}
         {pendingQueue.map((item, index) => <article className="pending-intent" key={String(item.idempotencyKey || index)}><span>待处理行动 {index + 1} · 尚未结算</span><p>{String(item.text)}</p></article>)}
       </div>

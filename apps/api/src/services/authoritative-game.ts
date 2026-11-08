@@ -1,10 +1,10 @@
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
-import { MemoryModeSchema, SaveEnvelopeSchema, type SaveEnvelope } from '@jiuxiao/contracts';
+import { MemoryModeSchema, SaveEnvelopeSchema, type SaveEnvelope, type TurnReceipt } from '@jiuxiao/contracts';
 import { canonicalJson } from '@jiuxiao/domain';
 import type { prepareTurnRuntime } from './turn-runtime.js';
 import { createP1SaveMemoryPolicy } from './p1-memory-policy.js';
-export type GameRepository={getForOwner(owner:string,id:string):Promise<SaveEnvelope|null>;createForOwner(owner:string,save:SaveEnvelope):Promise<boolean>};
+export type GameRepository={latestReceiptForOwner?(owner:string,id:string):Promise<TurnReceipt|null>;getForOwner(owner:string,id:string):Promise<SaveEnvelope|null>;createForOwner(owner:string,save:SaveEnvelope):Promise<boolean>};
 
 /** Hashes the exact source artifact bytes used to identify this save's Canon input. */
 export async function computeCanonRuntimeArtifactHash(): Promise<`sha256:${string}`> {
@@ -17,7 +17,10 @@ export class AuthoritativeGameService {
  async read(ownerId:string,saveId:string){
   const stored=await this.repository.getForOwner(ownerId,saveId);
   if(!stored||stored.state.facts.archiveKind==='local-untrusted-v1')return {status:'not_found'} as const;
-  return {status:'ready',save:SaveEnvelopeSchema.parse(stored)} as const;
+  const save=SaveEnvelopeSchema.parse(stored);
+  const latestReceipt=await this.repository.latestReceiptForOwner?.(ownerId,saveId)??null;
+  if(latestReceipt && latestReceipt.resultingRevision>save.revision)throw new Error('GAME_CHANGED_DURING_READ');
+  return {status:'ready',save,latestReceipt} as const;
  }
  async actionSuggestions(ownerId:string,saveId:string){
   if(!this.runtime?.actionSuggestions)return {status:'rules_not_ready'} as const;

@@ -4,7 +4,7 @@
 const assert = require('node:assert/strict');
 const { spawn } = require('node:child_process');
 const { once } = require('node:events');
-const { mkdirSync } = require('node:fs');
+const { mkdirSync, existsSync } = require('node:fs');
 const { join, resolve } = require('node:path');
 const net = require('node:net');
 const { chromium } = require('playwright');
@@ -282,7 +282,7 @@ async function runP7CatchUpSimulation(browser, origin) {
   let context;
   try {
     await waitFor(origin, webChild, () => webStderr);
-    browser = await chromium.launch({ headless: true, args: ['--no-sandbox', '--disable-dev-shm-usage'] });
+    browser = await chromium.launch({ headless: true, executablePath: process.env.PLAYWRIGHT_BROWSER_EXECUTABLE || (process.platform === 'win32' && existsSync('C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe') ? 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe' : undefined) });
     context = await browser.newContext({ viewport: { width: 390, height: 844 } });
     context._jiuxiaoOrigin = origin;
     const page = await context.newPage();
