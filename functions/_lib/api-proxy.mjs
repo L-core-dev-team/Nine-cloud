@@ -63,9 +63,9 @@ async function proxyRequest(context, route) {
     if (normalizedPath !== '/api' && !normalizedPath.startsWith('/api/')) {
       return jsonError(404, 'NOT_FOUND', '接口不存在。');
     }
-    const emailEnabled = context.env?.JIUXIAO_EMAIL_AUTH_ENABLED === 'true';
-    const phonePath = normalizedPath === '/api/auth/phone' || normalizedPath.startsWith('/api/auth/phone/');
-    if (isRouteABlocked(normalizedPath) && (!emailEnabled || phonePath)) {
+    // Email login may be enabled without opening account lifecycle or guest
+    // issuance. Those stay on the Route A denylist regardless of the mail switch.
+    if (isRouteABlocked(normalizedPath) && !emailLoginException(normalizedPath, context.env)) {
       return jsonError(404, 'ROUTE_A_BLOCKED', '该入口在当前部署阶段未开放。');
     }
   } else if (normalizedPath !== route.endpoint) {
@@ -211,6 +211,13 @@ function normalizePath(pathname) {
 function isRouteABlocked(path) {
   if (BLOCKED_EXACT.has(path)) return true;
   return BLOCKED_ROOTS.some(root => path === root || path.startsWith(`${root}/`));
+}
+
+function emailLoginException(path, env) {
+  if (env?.JIUXIAO_EMAIL_AUTH_ENABLED !== 'true') return false;
+  return path === '/api/auth/code' || path.startsWith('/api/auth/code/')
+    || path === '/api/auth/verify' || path === '/api/auth/restore'
+    || path === '/api/auth/refresh' || path === '/api/auth/logout';
 }
 
 async function readBoundedBody(request) {
