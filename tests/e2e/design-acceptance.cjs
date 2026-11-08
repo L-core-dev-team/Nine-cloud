@@ -406,7 +406,11 @@ async function auditProfessionalViewports(page, outputDir, label) {
     const dynamicSource = await page.screenshot({animations:'disabled'});
     const dynamicMask = await maskText(page);
     const backgrounds=[];
-    for(let frame=0;frame<3;frame++){await page.waitForTimeout(100);backgrounds.push(await page.screenshot({animations:'disabled'}));}
+    // Pair the first masked background with its source frame before the atmosphere can drift.
+    for(let frame=0;frame<3;frame++){
+      if(frame>0) await page.waitForTimeout(100);
+      backgrounds.push(await page.screenshot({animations:'disabled'}));
+    }
     await dynamicMask.evaluate(e=>e.remove());
     merge(dynamicResult,textAudit(dynamicSource,backgrounds,dynamicSampled.runs,`${label}/${tile}/dynamic `),tile);
   }
@@ -511,8 +515,9 @@ async function runDesignAcceptance(browser, origin, outputDir, options = {}) {
       const dynamicTextMask = await maskText(page);
       await settleHeight(page);
       const dynamicBackgrounds = [];
+      // Pair the first masked background with its source frame before the atmosphere can drift.
       for (let frame = 0; frame < 3; frame++) {
-        await page.waitForTimeout(320);
+        if (frame > 0) await page.waitForTimeout(320);
         // The atmosphere keeps animating between frames, but its canvas must not
         // change the page height partway through the run — otherwise the three
         // background frames would disagree with the source frame.
