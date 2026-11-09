@@ -43,6 +43,10 @@ export function createPlaytestServer({webRoot,apiOrigin,accessHash,publicOrigin}
       const decoded=decodeURIComponent(path);if(decoded.includes('\\')||decoded.includes('\0'))return json(res,400,{code:'INVALID_PATH'});
       let file=resolve(root,'.'+decoded);if(!file.startsWith(root+sep)&&file!==root)return json(res,404,{code:'NOT_FOUND'});
       let info;try{info=await stat(file);}catch{}
+      if(info?.isDirectory()) {
+        const index=resolve(file,'index.html');let indexInfo;try{indexInfo=await stat(index);}catch{}
+        if(indexInfo?.isFile()){file=index;info=indexInfo;}
+      }
       if(!info?.isFile()){if(extname(decoded))return json(res,404,{code:'NOT_FOUND'});file=resolve(root,'index.html');}
       file=await realpath(file);if(!file.startsWith(root+sep))return json(res,404,{code:'NOT_FOUND'});
       const extension=extname(file);let content=await readFile(file);

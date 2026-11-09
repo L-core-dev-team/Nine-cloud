@@ -303,7 +303,7 @@ async function stop(child) {
     assert.equal(observedTurnPosts,postsBeforeRecovery,'recovery must only query the committed receipt, without POST');
     assert.equal(await page.getByTestId('p2-action-input').inputValue(),'打开时光裂缝');
     assert.equal(await page.getByTestId('p2-revision').innerText(),'10','clarification recovery must not advance world state');
-    require('node:fs').writeFileSync(join(evidenceDir, 'first-play-continuous-pg.json'), JSON.stringify({ turnEvidence, memoryRows: memoryRows.rows, rejected: rejected.receipt.decision.status }, null, 2));
+    require('node:fs').writeFileSync(join(evidenceDir, 'first-play-continuous-pg.json'), JSON.stringify({ turnEvidence, memoryRows: memoryRows.rows, rejected: rejected.receipt.decision.status, browserVersion:browser.version(),platform:process.platform,turnReplyHashes:[...realTurnReplies].map(([id,row])=>({id,sha256:row.sha256})) }, null, 2));
     assert.deepEqual(pageErrors, []);
 
     console.log(JSON.stringify({
