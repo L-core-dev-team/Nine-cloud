@@ -1371,13 +1371,21 @@ async function ready(url) {
         // navigation resets the automatic-download limiter between samples.
         await page.reload();
         await page.waitForFunction(() => document.documentElement.dataset.jxStorageHydrated === 'true');
+        if (name.endsWith('.html')) await page.evaluate(() => {
+          const original = URL.createObjectURL.bind(URL);
+          URL.createObjectURL = blob => { window.importBackupMime = blob.type; return original(blob); };
+        });
         await page.getByRole('button', { name: '菜单' }).click();
         const [invalidBackup] = await Promise.all([
           page.waitForEvent('download'),
-          importInput.setInputFiles({ name, mimeType: name.endsWith('.json') ? 'application/json' : 'text/plain', buffer: bytes }),
+          importInput.setInputFiles({ name, mimeType: name.endsWith('.html') ? 'text/html' : name.endsWith('.json') ? 'application/json' : 'text/plain', buffer: bytes }),
         ]);
         await page.getByText(/导入失败：文件格式或内容不符合旧档契约/).waitFor();
         assert.deepEqual(readFileSync(await invalidBackup.path()), bytes, `rejected ${name} must retain its exact original backup`);
+        if (name.endsWith('.html')) {
+          assert.equal(await page.evaluate(() => window.importBackupMime), 'application/octet-stream', 'untrusted HTML backup must never retain an executable blob MIME type');
+          assert.ok(invalidBackup.suggestedFilename().endsWith('.html.txt'), 'an HTML original backup must download as inert text');
+        }
         assert.equal(await page.locator('.import-preview').count(), 0, `rejected ${name} must not enter preview`);
         assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), beforeInvalidImports, `rejected ${name} must preserve the complete save library`);
       }
