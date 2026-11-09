@@ -1,0 +1,5 @@
+{"kind":"new-scenario","suite":"blind","count":3000,"mode":"boundary","queries":672,"pass":596,"fail":76,"sourceRecall":1,"precision":0.8155339805825242,"spanRecall":1,"wrongSources":76,"falseRejections":0,"positiveQueries":336,"negativeRefusalRate":0.7738095238095238,"unsupportedSuccess":76,"npcLeaks":0,"futureLeaks":0,"byteErrors":0,"falseAuthority":16,"p50Ms":0.5289999999999964,"p95Ms":6.645200000000386,"queryMs":1598.034599999994,"rss":428933120}
+(node:43588) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/Users/11954/Desktop/%E6%B0%B4%E9%BE%99%E5%90%9F%E4%B8%93%E7%94%A8/%E9%A1%B9%E7%9B%AE/Nine-cloud-P6-longmem-06-20261014/tests/experiments/p6-longmem-06/evaluate-worker.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-P6-longmem-06-20261014\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)

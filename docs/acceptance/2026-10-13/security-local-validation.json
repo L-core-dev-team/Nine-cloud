@@ -1,0 +1,92 @@
+{
+  "date": "2026-10-13",
+  "sourceBaseCommit": "01fa09c067c11bf961a13efff0bea0823c2cd78b",
+  "inventory": {
+    "trackedFiles": 1474,
+    "sourceFiles": 382,
+    "totalLines": 65317,
+    "manualReviewIsFocused": true
+  },
+  "commands": {
+    "typecheck": {
+      "exitCode": 0,
+      "workspaceProjects": 6
+    },
+    "unitTests": {
+      "exitCode": 0,
+      "webPassed": 221,
+      "apiPassed": 335,
+      "defaultPostgresSkipped": 38
+    },
+    "postgresIntegration": {
+      "exitCode": 0,
+      "files": 11,
+      "passed": 43
+    },
+    "browserSuite": {
+      "exitCode": 0,
+      "sequentialScripts": 8,
+      "logSha256": "ee03f5bb292273e252b60f0645ea48a7a50875955f46fc6669b415e55b628d2f"
+    },
+    "cloudBrowser": {
+      "exitCode": 0,
+      "localSMTP": true
+    },
+    "turnRecovery": {
+      "exitCode": 0,
+      "syntheticMobileViewports": 4
+    },
+    "backupRestore": {
+      "exitCode": 0,
+      "digestTables": 12,
+      "sourceUnchanged": true
+    },
+    "freshAndUpgradeMigration": {
+      "exitCode": 0,
+      "original0020Unchanged": true
+    },
+    "pagesReleaseBuild": {
+      "exitCode": 0,
+      "cfPages": "1",
+      "mainJsBytes": 618023
+    },
+    "dependencyAudit": {
+      "allKnownVulnerabilities": 0,
+      "productionKnownVulnerabilities": 0
+    },
+    "mediaReleaseGate": {
+      "exitCode": 0
+    },
+    "license": {
+      "exitCode": 0,
+      "packages": 117
+    },
+    "artifactScan": {
+      "exitCode": 0,
+      "files": 103,
+      "bytes": 17789838
+    }
+  },
+  "design": {
+    "baselines": 20,
+    "textRuns": 4508,
+    "controlEdges": 572,
+    "failures": 0
+  },
+  "migration": {
+    "deployedVersion": "20261013113307",
+    "sameLocalAndDeployedMigrationSource": true,
+    "sourceSha256": "64b731c2a843519271e716f7b8d0b3e26e66476af7280e01fd9767e0262eabeb"
+  },
+  "sourceSha256": {
+    "apps/web/src/cloud-sync.ts": "37731ca98958ca0513133a4ebbf40754eb26a59c61df5a28856608fea4d920ca",
+    "apps/web/src/export-save.ts": "5dac55f1a83c029dc05708a11de238030569db440cefef2b1e8da439a5e40cdf",
+    "apps/api/src/services/supabase-auth.ts": "63f9990c98bd86f728b28e0762a37f33fd868f429c6b925f37464b26dc25ce00",
+    "apps/api/src/services/turnstile.ts": "a73d0ce593998b23c181cdf3bcf7eb10617cc522a1c369afe4d83b2a9129ae88",
+    "apps/web/vite.config.ts": "8aac95f39efa22321d060a2fe108470c2b2a20e561210789373e6f2c17b59a6d",
+    "scripts/build/build-target.mjs": "ce1366eaf0226af04a009c84f34cda9d08c509372cd5ee9600e118da30042cb7",
+    "packages/db/drizzle/0021_p4_recall_upgrade_catchup.sql": "fc0caec22e795d06f40b5577b31ce022420cca2ded98b8e9d7b04d14566e16e4",
+    "packages/db/drizzle/0022_function_scope_hardening.sql": "64b731c2a843519271e716f7b8d0b3e26e66476af7280e01fd9767e0262eabeb"
+  },
+  "websiteCodeDeploymentPerformed": false
+}

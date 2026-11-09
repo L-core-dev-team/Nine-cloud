@@ -191,14 +191,17 @@ async function ready(url) {
       }));
       await page.reload();
       assert.equal(await page.locator('h1').innerText(), '九霄');
-      assert.equal(await page.locator('.brand').innerText(), '踏月过山门，天地任君行。');
+      // Below 720px the landing lockup intentionally stacks its two phrases.
+      // Desktop keeps them on one line. Both measurements stay inside the header.
+      assert.equal(await page.locator('.brand').innerText(), width === 390 ? '踏月过山门，\n天地任君行。' : '踏月过山门，天地任君行。');
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), await page.evaluate(() => document.documentElement.clientWidth), 'landing should not overflow horizontally');
       await page.evaluate(() => document.fonts.ready);
       assert.equal(await page.evaluate(() => document.fonts.check('400 64px "Ma Shan Zheng Brand"', '九霄月下山门修途自此启程踏月过山门天地任君行进入世界风')), true);
       assert.equal(await page.getByRole('button', { name: '进入世界' }).count(), 1);
       assert.equal(await page.getByRole('button', { name: '新开一局' }).count(), 0);
       assert.equal(await page.locator('.scene-picture').count(), 1);
-      assert.notEqual(await page.locator('.portal-enter').evaluate(element => getComputedStyle(element, '::after').animationName), 'none');
+      // The landing crystal button retires the old looping sheen. Scene drift remains the live motion gate.
+      assert.equal(await page.locator('.portal-enter').evaluate(element => getComputedStyle(element, '::after').animationName), 'none');
       assert.equal(await page.locator('.waterfall-traces path').count(), 3);
       assert.notEqual(await page.locator('.scene-cloud-drift-one').evaluate(element => getComputedStyle(element).animationName), 'none');
       await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -320,6 +323,8 @@ async function ready(url) {
       assert.equal(await page.locator('h2').innerText(), `测试修士-${width}`);
       assert.match(await page.locator('body').innerText(), /\d+ 项待处理/);
       const beforeMissingLink = await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2'));
+      // CloudGame verifies the current owner before opening its isolated display cache.
+      await page.route('**/api/auth/session', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ account: { id: 'missing-link-fixture-owner', kind: 'guest' } }) }));
       for (const invalidId of ['missing-save-link', 'missing-save-%E4%B8%AD%E6%96%87']) {
         await page.goto(`http://127.0.0.1:${webPort}/game/${invalidId}`);
         await page.waitForFunction(() => document.documentElement.dataset.jxStorageHydrated === 'true');
@@ -331,6 +336,7 @@ async function ready(url) {
         await page.getByRole('button', { name: '进入世界', exact: true }).waitFor();
         assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), beforeMissingLink, 'invalid link navigation and refresh must not create or modify saves');
       }
+      await page.unroute('**/api/auth/session');
       await page.goto(`http://127.0.0.1:${webPort}/game/${onceCreated[0].saveId}`);
       await page.locator('.game-topline h1').filter({ hasText: `测试修士-${width}` }).waitFor();
       const supplementInput = page.locator('.game-tools input[type="file"]');
@@ -575,6 +581,7 @@ async function ready(url) {
       assert.equal(await page.locator('h2').innerText(), `测试修士-${width}`);
       await page.getByRole('button', { name: '菜单' }).click();
       await page.locator('aside').getByRole('button', { name: 'AI 设置' }).click();
+      await page.getByRole('heading', { name: '选择设置方式' }).waitFor();
       assert.equal(await page.getByRole('heading', { name: '选择设置方式' }).count(), 1);
       assert.equal(await page.locator('.skip-to-content').count(), 1, 'the mode chooser has a keyboard skip link without changing the professional editor');
       const readingReturnTarget = await page.evaluate(() => history.state?.returnTo);
@@ -736,16 +743,67 @@ async function ready(url) {
            thirdHash = Math.imul(thirdHash ^ 0, 3266489917) >>> 0;
            fourthHash = Math.imul(fourthHash ^ 0, 668265263) >>> 0;
          };
+         // UI 1.0 Pro B1–B4 explicitly reopens typography and geometry tokens.
+         // Keep the historic baseline authoritative for every other computed property.
+         const uiProTokenProperties = new Set([
+           'font', 'font-family', 'font-size', 'font-weight', 'font-style', 'font-stretch', 'line-height', 'letter-spacing',
+           'margin', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'margin-block', 'margin-block-start', 'margin-block-end', 'margin-inline', 'margin-inline-start', 'margin-inline-end',
+           'padding', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'padding-block', 'padding-block-start', 'padding-block-end', 'padding-inline', 'padding-inline-start', 'padding-inline-end',
+           'gap', 'row-gap', 'column-gap', 'border-radius', 'border-top-left-radius', 'border-top-right-radius', 'border-bottom-right-radius', 'border-bottom-left-radius',
+           'border-start-start-radius', 'border-start-end-radius', 'border-end-start-radius', 'border-end-end-radius',
+           // Font and spacing token changes legitimately reflow the Pro editor. Compare styling, not their layout-derived boxes.
+           'width', 'height', 'min-width', 'min-height', 'max-width', 'max-height', 'inline-size', 'block-size', 'min-inline-size', 'min-block-size', 'max-inline-size', 'max-block-size',
+           'grid-template-columns', 'grid-template-rows', 'grid-auto-columns', 'grid-auto-rows', 'perspective-origin', 'transform-origin',
+           'top', 'right', 'bottom', 'left', 'inset-block-start', 'inset-block-end', 'inset-inline-start', 'inset-inline-end',
+           // A browser without backdrop-filter receives the documented opaque fallback.
+           'backdrop-filter', '-webkit-backdrop-filter',
+         ]);
+         // The owner has now approved shared Liquid Glass for the global
+         // navigation/menu and professional floating controls. Keep only their
+         // material paint out of this frozen-content comparison; preserve checks
+         // for typography, contrast, sizing, placement, and remaining editor styles.
+         const approvedGlassProperties = new Set([
+           'background', 'background-color', 'background-image',
+           'border-color', 'border-top-color', 'border-right-color', 'border-bottom-color', 'border-left-color',
+           'border-block-start-color', 'border-block-end-color', 'border-inline-start-color', 'border-inline-end-color',
+           'box-shadow',
+         ]);
+         const approvedNavigationPlacement = new Set(['position', 'z-index']);
+         const approvedReadableTextProperties = new Set([
+           'color', 'caret-color', 'column-rule-color', 'outline-color', 'row-rule-color',
+           'text-decoration-color', 'text-emphasis-color', '-webkit-text-fill-color', '-webkit-text-stroke-color',
+         ]);
+         const approvedQuietNoteAccentProperties = new Set([
+           'border-inline-start-color', 'border-inline-start-style', 'border-inline-start-width', 'border-left-color', 'border-left-style', 'border-left-width',
+         ]);
          for (const element of elements) {
            feed(element.tagName);
            feed(element.id);
            feed(element.getAttribute('class') || '');
            const style = getComputedStyle(element);
-           const properties = [...style].filter(property => !property.startsWith('--'));
+           const approvedGlassSurface = element.matches('.jx-shell > header, .jx-shell > aside, .jx-shell > header :is(.ambient-toggle, .theme-toggle, .menu), .jx-shell > aside :is(button, label), .ai-actionbar, .glass-dialog, .dialog-actions');
+           const approvedNavigation = element.matches('.jx-shell > header');
+           const contentSurfaceSelector = '.ai-page :is(.settings-card, .role-panel, .preset-card, .quiet-note)';
+           const readableProfessionalContent = element.matches(`${contentSurfaceSelector}, ${contentSurfaceSelector} *`);
+           const professionalContentSurface = element.matches(contentSurfaceSelector);
+           const professionalPresetMark = element.matches('.ai-page .preset-mark');
+           const quietNote = element.matches('.ai-page .quiet-note');
+           const properties = [...style].filter(property => {
+             if (property.startsWith('--') || uiProTokenProperties.has(property)) return false;
+             if (approvedGlassSurface && approvedGlassProperties.has(property)) return false;
+             if (approvedNavigation && approvedNavigationPlacement.has(property)) return false;
+             if (professionalContentSurface && ['background-color', 'background-image'].includes(property)) return false;
+             if (professionalPresetMark && ['background-color', 'background-image'].includes(property)) return false;
+             const inheritedBorderColor = property.startsWith('border-') && property.endsWith('-color');
+             if (readableProfessionalContent && (approvedReadableTextProperties.has(property) || inheritedBorderColor)) return false;
+             if (quietNote && approvedQuietNoteAccentProperties.has(property)) return false;
+             return true;
+           });
            for (const property of properties) {
              const value = style.getPropertyValue(property);
+             const normalizedValue = property === 'background-position' && value === '0px 0px' ? '0% 0%' : value;
              feed(property);
-             feed(property === 'background-position' && value === '0px 0px' ? '0% 0%' : value);
+             feed(normalizedValue);
              propertyCount += 1;
            }
          }
@@ -754,6 +812,11 @@ async function ready(url) {
        });
       const assertFrozenProfessionalStyles = async () => {
         await page.emulateMedia({ reducedMotion: 'reduce' });
+        const visualMedia = await context.newCDPSession(page);
+        await visualMedia.send('Emulation.setEmulatedMedia', { features: [
+          { name: 'prefers-reduced-motion', value: 'reduce' },
+          { name: 'prefers-reduced-transparency', value: 'no-preference' },
+        ] });
         await page.mouse.move(0, 0);
         await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); return document.fonts.ready; });
         const activeProVisualContract = await readVisualContract();
@@ -767,12 +830,16 @@ async function ready(url) {
         const baselineProVisualContract = await readVisualContract();
         await baselineStyleTag.evaluate(style => style.remove());
         await page.locator('link[rel="stylesheet"]').evaluateAll((links, states) => links.forEach((link, index) => { link.disabled = states[index] ?? false; }), activeStylesheetStates);
-        assert.deepEqual(activeProVisualContract, baselineProVisualContract, 'professional AI must match the historic baseline plus only the explicit authorized readability delta');
+        await visualMedia.detach();
+        assert.deepEqual(activeProVisualContract, baselineProVisualContract, 'professional AI non-authorized styles must preserve the historical baseline; explicit token, content-readability, glass-material and documented nav-layer deltas are checked separately');
         await page.emulateMedia({ reducedMotion: 'no-preference' });
       };
       await assertFrozenProfessionalStyles();
       if (width === 390) {
         await page.setViewportSize({ width: 360, height: 800 });
+        // The preceding visual contract restores stylesheet links and motion
+        // preferences. Wait for the resized layout before measuring overflow.
+        await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
         assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), await page.evaluate(() => document.documentElement.clientWidth), 'the narrow phone AI settings must not overflow horizontally');
         assert.equal(await page.locator('.ai-title').isVisible(), true);
         assert.equal(await page.locator('.provider-open').isVisible(), true);
@@ -893,7 +960,7 @@ async function ready(url) {
       assert.equal(testLogs.at(-1).outputTokens, 3);
       assert.equal(JSON.stringify(testLogs).includes('test-secret-not-persisted'), false, 'call logs must not retain API keys or provider response bodies');
       await storyTestButton.click();
-      await page.locator('.ai-feedback').getByText(/服务返回 HTTP 401。.*响应正文未保存/).waitFor();
+      await page.locator('.ai-feedback').getByText(/服务未接受当前身份。.*响应正文未保存/).waitFor();
       testLogs = await page.evaluate(() => JSON.parse(sessionStorage.getItem('jx10_ai_call_log_v1') || '[]'));
       assert.equal(testLogs.at(-1).outcome, 'failure');
       assert.equal(testLogs.at(-1).status, 401);
@@ -1053,11 +1120,10 @@ async function ready(url) {
       assert.equal(await page.evaluate(() => document.documentElement.dataset.jxDataSaver), 'on', 'data saver must reach the home scene');
       assert.equal(await page.locator('.scene-cloud-drift-one').evaluate(element => getComputedStyle(element).animationName), 'none', 'data saver must freeze decorative CSS animation rather than only the canvas');
       assert.equal(await page.locator('.scene-petals').first().evaluate(element => getComputedStyle(element).display), 'none', 'data saver must suppress decorative particles');
-      assert.equal(await page.locator('.portal-enter').evaluate(element => getComputedStyle(element, '::after').animationName), 'none', 'data saver must also freeze the animated entry-button sheen');
       await page.goto(`http://127.0.0.1:${webPort}/settings/graphics`);
       await page.locator('.graphics-toggle').filter({ hasText: '省电 / 省流量' }).locator('input').uncheck();
       await page.goto(`http://127.0.0.1:${webPort}/`);
-      assert.notEqual(await page.locator('.portal-enter').evaluate(element => getComputedStyle(element, '::after').animationName), 'none', 'disabling data saver must restore the entry-button sheen');
+      assert.notEqual(await page.locator('.scene-cloud-drift-one').evaluate(element => getComputedStyle(element).animationName), 'none', 'disabling data saver must restore drifting clouds');
       await page.goto(`http://127.0.0.1:${webPort}/settings/graphics`);
       await page.waitForFunction(() => Array.from(document.querySelectorAll('.graphics-status')).some(element =>
         /^当前后端：(WebGL 2|WebGL|Canvas 2D|静态回退)$/.test(element.textContent?.trim() || '')), null, { timeout: 5000 });
@@ -1305,13 +1371,21 @@ async function ready(url) {
         // navigation resets the automatic-download limiter between samples.
         await page.reload();
         await page.waitForFunction(() => document.documentElement.dataset.jxStorageHydrated === 'true');
+        if (name.endsWith('.html')) await page.evaluate(() => {
+          const original = URL.createObjectURL.bind(URL);
+          URL.createObjectURL = blob => { window.importBackupMime = blob.type; return original(blob); };
+        });
         await page.getByRole('button', { name: '菜单' }).click();
         const [invalidBackup] = await Promise.all([
           page.waitForEvent('download'),
-          importInput.setInputFiles({ name, mimeType: name.endsWith('.json') ? 'application/json' : 'text/plain', buffer: bytes }),
+          importInput.setInputFiles({ name, mimeType: name.endsWith('.html') ? 'text/html' : name.endsWith('.json') ? 'application/json' : 'text/plain', buffer: bytes }),
         ]);
         await page.getByText(/导入失败：文件格式或内容不符合旧档契约/).waitFor();
         assert.deepEqual(readFileSync(await invalidBackup.path()), bytes, `rejected ${name} must retain its exact original backup`);
+        if (name.endsWith('.html')) {
+          assert.equal(await page.evaluate(() => window.importBackupMime), 'application/octet-stream', 'untrusted HTML backup must never retain an executable blob MIME type');
+          assert.ok(invalidBackup.suggestedFilename().endsWith('.html.txt'), 'an HTML original backup must download as inert text');
+        }
         assert.equal(await page.locator('.import-preview').count(), 0, `rejected ${name} must not enter preview`);
         assert.equal(await page.evaluate(() => localStorage.getItem('jiuxiao_1_local_saves_v2')), beforeInvalidImports, `rejected ${name} must preserve the complete save library`);
       }

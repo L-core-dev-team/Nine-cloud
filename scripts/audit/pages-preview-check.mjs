@@ -2,29 +2,28 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { join, relative, resolve } from 'node:path';
+import { resolvePagesPreviewAssets } from '../build/pages-preview-assets.mjs';
 
 export function verifyPagesPreview({ includeApprovedMedia = false } = {}) {
   const root = fileURLToPath(new URL('../../apps/web/dist/', import.meta.url));
   const repoRoot = fileURLToPath(new URL('../../', import.meta.url));
   if (!existsSync(join(root, 'index.html'))) throw new Error('Pages index.html missing');
   if (existsSync(join(root, '404.html'))) throw new Error('Top-level 404.html would disable Pages SPA fallback');
+  const publicRoot = resolve(repoRoot, 'apps/web/public');
+  const manifest = JSON.parse(readFileSync(resolve(publicRoot, 'scenes/candidate/asset-manifest.json'), 'utf8'));
+  const { staticAssets, runtimeAssets } = resolvePagesPreviewAssets(manifest.files);
   const expected = new Set([
     'index.html',
     'fonts/ma-shan-zheng-brand.woff2',
     'fonts/OFL-MaShanZheng.txt',
+    ...staticAssets.map(asset => asset.path.slice(1)),
   ]);
-  const mediaDigests = new Map();
+  const mediaDigests = new Map(staticAssets.map(asset => [asset.path.slice(1), asset.sha256]));
   if (includeApprovedMedia) {
-    const publicRoot = resolve(repoRoot, 'apps/web/public');
-    const manifest = JSON.parse(readFileSync(resolve(publicRoot, 'scenes/candidate/asset-manifest.json'), 'utf8'));
-    if (!Array.isArray(manifest.files) || manifest.files.length === 0) {
+    if (runtimeAssets.length === 0) {
       throw new Error('Pages preview runtime media manifest is invalid');
     }
-    const assets = [
-      { path: '/scenes/gate-moonlight.webp', sha256: '7a1995a609ce04a8af2b32a1918b8e38ed3e880f08325ee55c375cf8e5b29dea' },
-      { path: '/scenes/gate-moonlight-mobile.webp', sha256: 'fa4ab0e8e7080bd040a0b1b2dd6895b65e43e31770fd03e003b6dcb73989c740' },
-      ...manifest.files,
-    ];
+    const assets = runtimeAssets;
     for (const asset of assets) {
       if (typeof asset.path !== 'string' || !/^\/scenes\/[a-zA-Z0-9/._-]+$/.test(asset.path)
         || asset.path.includes('..') || !/^[a-f0-9]{64}$/.test(asset.sha256)) {
@@ -111,7 +110,8 @@ export function verifyPagesPreview({ includeApprovedMedia = false } = {}) {
     const actualDigest = createHash('sha256').update(readFileSync(join(root, name))).digest('hex');
     if (actualDigest !== expectedDigest) throw new Error(`Pages preview media digest mismatch: ${name}`);
   }
+  const runtimeAssetCount = mediaDigests.size - staticAssets.length;
   console.log(includeApprovedMedia
-    ? `Pages preview output checked: SPA entry, frontend bundles, OFL font and ${mediaDigests.size} approved runtime media files/fallbacks.`
-    : 'Pages preview output checked: SPA entry, frontend bundles and OFL font; runtime media excluded.');
+    ? `Pages preview output checked: SPA entry, frontend bundles, OFL font, ${staticAssets.length} approved static asset(s), and ${runtimeAssetCount} approved runtime media files/fallbacks.`
+    : `Pages preview output checked: SPA entry, frontend bundles, OFL font and ${staticAssets.length} approved static asset(s); runtime media excluded.`);
 }

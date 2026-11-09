@@ -1,0 +1,30 @@
+{
+  "count": 3000,
+  "mode": "baseline",
+  "worker": 1,
+  "queries": 16,
+  "pass": 16,
+  "dataHash": "cf1d58aabfcc3d99a720441b84e4d6770aaae3d98da8d4bd0c8e445d79e5882a",
+  "p50Ms": 18.613699999999994,
+  "p95Ms": 34.167100000000005,
+  "queryMs": 304.59649999999993,
+  "rss": 183513088,
+  "heap": 78621304,
+  "stats": {
+    "hits": 0,
+    "misses": 16,
+    "evictions": 12,
+    "builds": 16,
+    "buildMs": 212.50249999999997,
+    "originalBytesRead": 0,
+    "maxEntries": 4,
+    "maxEstimatedBytes": 2557614,
+    "currentEntries": 4,
+    "currentEstimatedBytes": 2557003,
+    "entryLimit": 4,
+    "estimatedByteLimit": 134217728,
+    "sourceRoot": "cf1d58aabfcc3d99a720441b84e4d6770aaae3d98da8d4bd0c8e445d79e5882a",
+    "policyEpoch": 0,
+    "limitation": "Serialization bounds are not heap bounds; offline whole-source policy simulation only; original bytes are logical reads, not physical disk IO."
+  }
+}

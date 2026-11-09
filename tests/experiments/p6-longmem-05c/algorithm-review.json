@@ -1,0 +1,14 @@
+{
+  "reason": "Post-freeze safety correction for punctuation-free multi-object events, derived from newly authored adversarial cases, not holdout answers. Dataset, ledger and questions unchanged. All four candidate modes replayed against all recorded outputs; identical. Initial freeze code hashes retained as historical evidence.",
+  "replayRun": "replay-01",
+  "code": [
+    {
+      "name": "conditions.ts",
+      "sha256": "0c08433f4c9cb137210534480a7d3d996ec77f5fe4ea0177f40c49927b186894"
+    },
+    {
+      "name": "retrieval.ts",
+      "sha256": "094e8f9c6b85b7890fd7f25c537b020e57fed5254f150f167bcc60371846d0c4"
+    }
+  ]
+}

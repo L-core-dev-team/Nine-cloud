@@ -1,0 +1,1846 @@
+[
+  {
+    "questionId": "holdout:1:rumor:35",
+    "category": "rumor",
+    "budget": 512,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:1:7"
+    ],
+    "actual": [],
+    "missing": [
+      "long:1:7"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 3.598700000000008,
+    "result": {
+      "strategy": "historical",
+      "ranked": [
+        {
+          "sourceId": "long:1:7",
+          "turnId": 8285,
+          "gameMinute": 596448,
+          "gameTime": "合成第8285刻",
+          "participants": [
+            "n1"
+          ],
+          "location": "l1",
+          "items": [
+            "o1"
+          ],
+          "narrative": "第8285回合第1记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是394号，簿页107705未与旧页合并。第8285回合第2记，有人问：“难道每个故事都能凭一句话说清？谢荻说：“听说远方的门已经开放。”他没有亲眼确认，谣言仍未核实。第8386回合第1记，一位旅人翻开残缺的行路札记，读到道路岔口便停下，旁人提醒旧路标未必适用于今日，两人决定翌日亲自查验。本次登记的验点是5号，簿页109018未与旧页合并。第8386回合第2记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是83号，簿页109019未与旧页合并。第8386回合第3记，有人问：“难道每个故事都能凭一句话说清？”同行者摇头，将破损的纸页一一铺平，提醒应当保留前后语境。本次登记的验点是11号，簿页109020未与旧页合并。第8386回合第4记，潮汐退过石阶后，抄录者对照两册旧账，逐笔确认数目，却没有对任何人的身份作出结论。本次登记的验点是604号，簿页109021未与旧页合并。第8386回合第5记，案头的草图画着三条岔路，执笔者逐一注明沿途补给与路程，另将道听途说的捷径圈出，留给后来者复核。本次登记的验点是505号，簿页109022未与旧页合并。第8386回合第6记，廊下的木桌被移开半尺，学徒重排坐席，争论午后应当先修屋檐还是清点柴薪，直到更鼓响起才各自散去。本次登记的验点是662号，簿页109023未与旧页合并。",
+          "eventIds": [
+            "ev:long:1:7"
+          ],
+          "tags": [
+            "rumor"
+          ],
+          "facts": [
+            {
+              "id": "f:1:身份传闻:远门已开放",
+              "subject": "n1",
+              "predicate": "身份传闻",
+              "value": "远门已开放",
+              "kind": "character-claim",
+              "validFrom": 8285
+            }
+          ],
+          "historicalSources": [],
+          "authorizedNpcIds": [
+            "n1"
+          ],
+          "score": 100,
+          "factStates": [
+            {
+              "factId": "f:1:身份传闻:远门已开放",
+              "kind": "character-claim",
+              "status": "unverified",
+              "validity": "unverified"
+            }
+          ]
+        }
+      ],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "roles": {
+        "long:1:7": "direct"
+      },
+      "diagnosis": "budget-missing-key-source",
+      "supportAudit": [
+        {
+          "sourceId": "long:1:7",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:1:身份传闻:远门已开放"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "ambiguous-or-missing-attributed-claim",
+          "confirmation": "unverified",
+          "npcAuthorized": true,
+          "asOfTurn": 10000,
+          "spans": []
+        }
+      ],
+      "omittedSourceIds": [
+        "long:1:7"
+      ],
+      "enoughEvidence": false,
+      "reason": "budget-missing-key-source; source claims retain unverified status; no generated answer",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 3.5961999999999534,
+      "originalSpans": [],
+      "intent": {
+        "mode": "typed",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [
+        {
+          "sourceId": "long:1:0",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:1",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:2",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:3",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:4",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:5",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:6",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:7",
+          "role": "direct",
+          "reason": "ambiguous-or-missing-attributed-claim"
+        }
+      ],
+      "originalAuditCount": 8
+    }
+  },
+  {
+    "questionId": "holdout:2:historical-relation:49",
+    "category": "historical-relation",
+    "budget": 512,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:2:0"
+    ],
+    "actual": [],
+    "missing": [
+      "long:2:0"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 3.1637000000000626,
+    "result": {
+      "strategy": "historical",
+      "ranked": [
+        {
+          "sourceId": "long:2:0",
+          "turnId": 429,
+          "gameMinute": 30816,
+          "gameTime": "合成第429刻",
+          "participants": [
+            "n2"
+          ],
+          "location": "l2",
+          "items": [
+            "o2"
+          ],
+          "narrative": "第429回合第1记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是847号，簿页5577未与旧页合并。第429回合第2记，有人问：“难道每个故事都能凭一句话说清？钱柚第一次在映荻馆见到玩家，态度戒备，说：“先问清来处，再谈同行。”第530回合第1记，一位旅人翻开残缺的行路札记，读到道路岔口便停下，旁人提醒旧路标未必适用于今日，两人决定翌日亲自查验。本次登记的验点是459号，簿页6890未与旧页合并。第530回合第2记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是643号，簿页6891未与旧页合并。第530回合第3记，有人问：“难道每个故事都能凭一句话说清？”同行者摇头，将破损的纸页一一铺平，提醒应当保留前后语境。本次登记的验点是946号，簿页6892未与旧页合并。第530回合第4记，潮汐退过石阶后，抄录者对照两册旧账，逐笔确认数目，却没有对任何人的身份作出结论。本次登记的验点是409号，簿页6893未与旧页合并。第530回合第5记，案头的草图画着三条岔路，执笔者逐一注明沿途补给与路程，另将道听途说的捷径圈出，留给后来者复核。本次登记的验点是638号，簿页6894未与旧页合并。第530回合第6记，廊下的木桌被移开半尺，学徒重排坐席，争论午后应当先修屋檐还是清点柴薪，直到更鼓响起才各自散去。本次登记的验点是29号，簿页6895未与旧页合并。",
+          "eventIds": [
+            "ev:long:2:0"
+          ],
+          "tags": [
+            "meeting"
+          ],
+          "facts": [
+            {
+              "id": "f:2:初遇地点:映荻馆",
+              "subject": "n2",
+              "predicate": "初遇地点",
+              "value": "映荻馆",
+              "kind": "world-event",
+              "validFrom": 429,
+              "confirmedBy": "ev:long:2:0"
+            },
+            {
+              "id": "f:2:关系:戒备",
+              "subject": "n2",
+              "predicate": "关系",
+              "value": "戒备",
+              "kind": "world-event",
+              "validFrom": 429,
+              "confirmedBy": "ev:long:2:0"
+            }
+          ],
+          "historicalSources": [],
+          "authorizedNpcIds": [
+            "n2"
+          ],
+          "score": 100,
+          "factStates": [
+            {
+              "factId": "f:2:初遇地点:映荻馆",
+              "kind": "world-event",
+              "status": "current",
+              "validity": "active"
+            },
+            {
+              "factId": "f:2:关系:戒备",
+              "kind": "world-event",
+              "status": "current",
+              "validity": "active"
+            }
+          ]
+        }
+      ],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "roles": {
+        "long:2:0": "direct"
+      },
+      "diagnosis": "budget-missing-key-source",
+      "supportAudit": [
+        {
+          "sourceId": "long:2:0",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:2:关系:戒备"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "no-complete-supporting-unit",
+          "confirmation": "offline-event-bound",
+          "npcAuthorized": true,
+          "asOfTurn": 6142,
+          "spans": []
+        }
+      ],
+      "omittedSourceIds": [
+        "long:2:0"
+      ],
+      "enoughEvidence": false,
+      "reason": "budget-missing-key-source; source claims retain unverified status; no generated answer",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 3.161699999999655,
+      "originalSpans": [],
+      "intent": {
+        "mode": "typed",
+        "temporal": "historical"
+      },
+      "candidateAudit": [
+        {
+          "sourceId": "long:2:0",
+          "role": "direct",
+          "reason": "no-complete-supporting-unit"
+        },
+        {
+          "sourceId": "long:2:1",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:2",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:3",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:4",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        }
+      ],
+      "originalAuditCount": 5
+    }
+  },
+  {
+    "questionId": "holdout:2:consumed:52",
+    "category": "consumed",
+    "budget": 512,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:2:6"
+    ],
+    "actual": [],
+    "missing": [
+      "long:2:6"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 2.9036000000000968,
+    "result": {
+      "strategy": "historical",
+      "ranked": [
+        {
+          "sourceId": "long:2:6",
+          "turnId": 7285,
+          "gameMinute": 524448,
+          "gameTime": "合成第7285刻",
+          "participants": [
+            "n2"
+          ],
+          "location": "l2",
+          "items": [
+            "o2"
+          ],
+          "narrative": "第7285回合第1记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是344号，簿页94705未与旧页合并。第7285回合第2记，有人问：“难道每个故事都能凭一句话说清？钱柚把铜环信物交给玩家，随后信物被消耗于阵门，归属不再有效。第7386回合第1记，一位旅人翻开残缺的行路札记，读到道路岔口便停下，旁人提醒旧路标未必适用于今日，两人决定翌日亲自查验。本次登记的验点是953号，簿页96018未与旧页合并。第7386回合第2记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是488号，簿页96019未与旧页合并。第7386回合第3记，有人问：“难道每个故事都能凭一句话说清？”同行者摇头，将破损的纸页一一铺平，提醒应当保留前后语境。本次登记的验点是608号，簿页96020未与旧页合并。第7386回合第4记，潮汐退过石阶后，抄录者对照两册旧账，逐笔确认数目，却没有对任何人的身份作出结论。本次登记的验点是558号，簿页96021未与旧页合并。第7386回合第5记，案头的草图画着三条岔路，执笔者逐一注明沿途补给与路程，另将道听途说的捷径圈出，留给后来者复核。本次登记的验点是945号，簿页96022未与旧页合并。第7386回合第6记，廊下的木桌被移开半尺，学徒重排坐席，争论午后应当先修屋檐还是清点柴薪，直到更鼓响起才各自散去。本次登记的验点是495号，簿页96023未与旧页合并。",
+          "eventIds": [
+            "ev:long:2:6"
+          ],
+          "tags": [
+            "transfer"
+          ],
+          "facts": [
+            {
+              "id": "f:2:归属:已消耗",
+              "subject": "o2",
+              "predicate": "归属",
+              "value": "已消耗",
+              "kind": "world-event",
+              "validFrom": 7285,
+              "confirmedBy": "ev:long:2:6"
+            }
+          ],
+          "historicalSources": [],
+          "authorizedNpcIds": [
+            "n2"
+          ],
+          "score": 100,
+          "factStates": [
+            {
+              "factId": "f:2:归属:已消耗",
+              "kind": "world-event",
+              "status": "current",
+              "validity": "active"
+            }
+          ]
+        }
+      ],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "roles": {
+        "long:2:6": "direct"
+      },
+      "diagnosis": "budget-missing-key-source",
+      "supportAudit": [
+        {
+          "sourceId": "long:2:6",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:2:归属:已消耗"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "no-complete-supporting-unit",
+          "confirmation": "offline-event-bound",
+          "npcAuthorized": true,
+          "asOfTurn": 10000,
+          "spans": []
+        }
+      ],
+      "omittedSourceIds": [
+        "long:2:6"
+      ],
+      "enoughEvidence": false,
+      "reason": "budget-missing-key-source; source claims retain unverified status; no generated answer",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 2.9025000000001455,
+      "originalSpans": [],
+      "intent": {
+        "mode": "typed",
+        "temporal": "current"
+      },
+      "candidateAudit": [
+        {
+          "sourceId": "long:2:0",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:1",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:2",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:3",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:4",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:5",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:6",
+          "role": "direct",
+          "reason": "no-complete-supporting-unit"
+        },
+        {
+          "sourceId": "long:2:7",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        }
+      ],
+      "originalAuditCount": 8
+    }
+  },
+  {
+    "questionId": "holdout:1:rumor:35",
+    "category": "rumor",
+    "budget": 1024,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:1:7"
+    ],
+    "actual": [],
+    "missing": [
+      "long:1:7"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 8.73050000000012,
+    "result": {
+      "strategy": "historical",
+      "ranked": [
+        {
+          "sourceId": "long:1:7",
+          "turnId": 8285,
+          "gameMinute": 596448,
+          "gameTime": "合成第8285刻",
+          "participants": [
+            "n1"
+          ],
+          "location": "l1",
+          "items": [
+            "o1"
+          ],
+          "narrative": "第8285回合第1记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是394号，簿页107705未与旧页合并。第8285回合第2记，有人问：“难道每个故事都能凭一句话说清？谢荻说：“听说远方的门已经开放。”他没有亲眼确认，谣言仍未核实。第8386回合第1记，一位旅人翻开残缺的行路札记，读到道路岔口便停下，旁人提醒旧路标未必适用于今日，两人决定翌日亲自查验。本次登记的验点是5号，簿页109018未与旧页合并。第8386回合第2记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是83号，簿页109019未与旧页合并。第8386回合第3记，有人问：“难道每个故事都能凭一句话说清？”同行者摇头，将破损的纸页一一铺平，提醒应当保留前后语境。本次登记的验点是11号，簿页109020未与旧页合并。第8386回合第4记，潮汐退过石阶后，抄录者对照两册旧账，逐笔确认数目，却没有对任何人的身份作出结论。本次登记的验点是604号，簿页109021未与旧页合并。第8386回合第5记，案头的草图画着三条岔路，执笔者逐一注明沿途补给与路程，另将道听途说的捷径圈出，留给后来者复核。本次登记的验点是505号，簿页109022未与旧页合并。第8386回合第6记，廊下的木桌被移开半尺，学徒重排坐席，争论午后应当先修屋檐还是清点柴薪，直到更鼓响起才各自散去。本次登记的验点是662号，簿页109023未与旧页合并。",
+          "eventIds": [
+            "ev:long:1:7"
+          ],
+          "tags": [
+            "rumor"
+          ],
+          "facts": [
+            {
+              "id": "f:1:身份传闻:远门已开放",
+              "subject": "n1",
+              "predicate": "身份传闻",
+              "value": "远门已开放",
+              "kind": "character-claim",
+              "validFrom": 8285
+            }
+          ],
+          "historicalSources": [],
+          "authorizedNpcIds": [
+            "n1"
+          ],
+          "score": 100,
+          "factStates": [
+            {
+              "factId": "f:1:身份传闻:远门已开放",
+              "kind": "character-claim",
+              "status": "unverified",
+              "validity": "unverified"
+            }
+          ]
+        }
+      ],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "roles": {
+        "long:1:7": "direct"
+      },
+      "diagnosis": "budget-missing-key-source",
+      "supportAudit": [
+        {
+          "sourceId": "long:1:7",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:1:身份传闻:远门已开放"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "ambiguous-or-missing-attributed-claim",
+          "confirmation": "unverified",
+          "npcAuthorized": true,
+          "asOfTurn": 10000,
+          "spans": []
+        }
+      ],
+      "omittedSourceIds": [
+        "long:1:7"
+      ],
+      "enoughEvidence": false,
+      "reason": "budget-missing-key-source; source claims retain unverified status; no generated answer",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 8.727899999999863,
+      "originalSpans": [],
+      "intent": {
+        "mode": "typed",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [
+        {
+          "sourceId": "long:1:0",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:1",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:2",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:3",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:4",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:5",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:6",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:7",
+          "role": "direct",
+          "reason": "ambiguous-or-missing-attributed-claim"
+        }
+      ],
+      "originalAuditCount": 8
+    }
+  },
+  {
+    "questionId": "holdout:2:historical-relation:49",
+    "category": "historical-relation",
+    "budget": 1024,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:2:0"
+    ],
+    "actual": [],
+    "missing": [
+      "long:2:0"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 4.197200000000066,
+    "result": {
+      "strategy": "historical",
+      "ranked": [
+        {
+          "sourceId": "long:2:0",
+          "turnId": 429,
+          "gameMinute": 30816,
+          "gameTime": "合成第429刻",
+          "participants": [
+            "n2"
+          ],
+          "location": "l2",
+          "items": [
+            "o2"
+          ],
+          "narrative": "第429回合第1记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是847号，簿页5577未与旧页合并。第429回合第2记，有人问：“难道每个故事都能凭一句话说清？钱柚第一次在映荻馆见到玩家，态度戒备，说：“先问清来处，再谈同行。”第530回合第1记，一位旅人翻开残缺的行路札记，读到道路岔口便停下，旁人提醒旧路标未必适用于今日，两人决定翌日亲自查验。本次登记的验点是459号，簿页6890未与旧页合并。第530回合第2记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是643号，簿页6891未与旧页合并。第530回合第3记，有人问：“难道每个故事都能凭一句话说清？”同行者摇头，将破损的纸页一一铺平，提醒应当保留前后语境。本次登记的验点是946号，簿页6892未与旧页合并。第530回合第4记，潮汐退过石阶后，抄录者对照两册旧账，逐笔确认数目，却没有对任何人的身份作出结论。本次登记的验点是409号，簿页6893未与旧页合并。第530回合第5记，案头的草图画着三条岔路，执笔者逐一注明沿途补给与路程，另将道听途说的捷径圈出，留给后来者复核。本次登记的验点是638号，簿页6894未与旧页合并。第530回合第6记，廊下的木桌被移开半尺，学徒重排坐席，争论午后应当先修屋檐还是清点柴薪，直到更鼓响起才各自散去。本次登记的验点是29号，簿页6895未与旧页合并。",
+          "eventIds": [
+            "ev:long:2:0"
+          ],
+          "tags": [
+            "meeting"
+          ],
+          "facts": [
+            {
+              "id": "f:2:初遇地点:映荻馆",
+              "subject": "n2",
+              "predicate": "初遇地点",
+              "value": "映荻馆",
+              "kind": "world-event",
+              "validFrom": 429,
+              "confirmedBy": "ev:long:2:0"
+            },
+            {
+              "id": "f:2:关系:戒备",
+              "subject": "n2",
+              "predicate": "关系",
+              "value": "戒备",
+              "kind": "world-event",
+              "validFrom": 429,
+              "confirmedBy": "ev:long:2:0"
+            }
+          ],
+          "historicalSources": [],
+          "authorizedNpcIds": [
+            "n2"
+          ],
+          "score": 100,
+          "factStates": [
+            {
+              "factId": "f:2:初遇地点:映荻馆",
+              "kind": "world-event",
+              "status": "current",
+              "validity": "active"
+            },
+            {
+              "factId": "f:2:关系:戒备",
+              "kind": "world-event",
+              "status": "current",
+              "validity": "active"
+            }
+          ]
+        }
+      ],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "roles": {
+        "long:2:0": "direct"
+      },
+      "diagnosis": "budget-missing-key-source",
+      "supportAudit": [
+        {
+          "sourceId": "long:2:0",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:2:关系:戒备"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "no-complete-supporting-unit",
+          "confirmation": "offline-event-bound",
+          "npcAuthorized": true,
+          "asOfTurn": 6142,
+          "spans": []
+        }
+      ],
+      "omittedSourceIds": [
+        "long:2:0"
+      ],
+      "enoughEvidence": false,
+      "reason": "budget-missing-key-source; source claims retain unverified status; no generated answer",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 4.1952000000001135,
+      "originalSpans": [],
+      "intent": {
+        "mode": "typed",
+        "temporal": "historical"
+      },
+      "candidateAudit": [
+        {
+          "sourceId": "long:2:0",
+          "role": "direct",
+          "reason": "no-complete-supporting-unit"
+        },
+        {
+          "sourceId": "long:2:1",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:2",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:3",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:4",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        }
+      ],
+      "originalAuditCount": 5
+    }
+  },
+  {
+    "questionId": "holdout:2:consumed:52",
+    "category": "consumed",
+    "budget": 1024,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:2:6"
+    ],
+    "actual": [],
+    "missing": [
+      "long:2:6"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 5.540399999999863,
+    "result": {
+      "strategy": "historical",
+      "ranked": [
+        {
+          "sourceId": "long:2:6",
+          "turnId": 7285,
+          "gameMinute": 524448,
+          "gameTime": "合成第7285刻",
+          "participants": [
+            "n2"
+          ],
+          "location": "l2",
+          "items": [
+            "o2"
+          ],
+          "narrative": "第7285回合第1记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是344号，簿页94705未与旧页合并。第7285回合第2记，有人问：“难道每个故事都能凭一句话说清？钱柚把铜环信物交给玩家，随后信物被消耗于阵门，归属不再有效。第7386回合第1记，一位旅人翻开残缺的行路札记，读到道路岔口便停下，旁人提醒旧路标未必适用于今日，两人决定翌日亲自查验。本次登记的验点是953号，簿页96018未与旧页合并。第7386回合第2记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是488号，簿页96019未与旧页合并。第7386回合第3记，有人问：“难道每个故事都能凭一句话说清？”同行者摇头，将破损的纸页一一铺平，提醒应当保留前后语境。本次登记的验点是608号，簿页96020未与旧页合并。第7386回合第4记，潮汐退过石阶后，抄录者对照两册旧账，逐笔确认数目，却没有对任何人的身份作出结论。本次登记的验点是558号，簿页96021未与旧页合并。第7386回合第5记，案头的草图画着三条岔路，执笔者逐一注明沿途补给与路程，另将道听途说的捷径圈出，留给后来者复核。本次登记的验点是945号，簿页96022未与旧页合并。第7386回合第6记，廊下的木桌被移开半尺，学徒重排坐席，争论午后应当先修屋檐还是清点柴薪，直到更鼓响起才各自散去。本次登记的验点是495号，簿页96023未与旧页合并。",
+          "eventIds": [
+            "ev:long:2:6"
+          ],
+          "tags": [
+            "transfer"
+          ],
+          "facts": [
+            {
+              "id": "f:2:归属:已消耗",
+              "subject": "o2",
+              "predicate": "归属",
+              "value": "已消耗",
+              "kind": "world-event",
+              "validFrom": 7285,
+              "confirmedBy": "ev:long:2:6"
+            }
+          ],
+          "historicalSources": [],
+          "authorizedNpcIds": [
+            "n2"
+          ],
+          "score": 100,
+          "factStates": [
+            {
+              "factId": "f:2:归属:已消耗",
+              "kind": "world-event",
+              "status": "current",
+              "validity": "active"
+            }
+          ]
+        }
+      ],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "roles": {
+        "long:2:6": "direct"
+      },
+      "diagnosis": "budget-missing-key-source",
+      "supportAudit": [
+        {
+          "sourceId": "long:2:6",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:2:归属:已消耗"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "no-complete-supporting-unit",
+          "confirmation": "offline-event-bound",
+          "npcAuthorized": true,
+          "asOfTurn": 10000,
+          "spans": []
+        }
+      ],
+      "omittedSourceIds": [
+        "long:2:6"
+      ],
+      "enoughEvidence": false,
+      "reason": "budget-missing-key-source; source claims retain unverified status; no generated answer",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 5.5383999999999105,
+      "originalSpans": [],
+      "intent": {
+        "mode": "typed",
+        "temporal": "current"
+      },
+      "candidateAudit": [
+        {
+          "sourceId": "long:2:0",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:1",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:2",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:3",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:4",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:5",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:6",
+          "role": "direct",
+          "reason": "no-complete-supporting-unit"
+        },
+        {
+          "sourceId": "long:2:7",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        }
+      ],
+      "originalAuditCount": 8
+    }
+  },
+  {
+    "questionId": "holdout:1:rumor:35",
+    "category": "rumor",
+    "budget": 2048,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:1:7"
+    ],
+    "actual": [],
+    "missing": [
+      "long:1:7"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 5.359999999999673,
+    "result": {
+      "strategy": "historical",
+      "ranked": [
+        {
+          "sourceId": "long:1:7",
+          "turnId": 8285,
+          "gameMinute": 596448,
+          "gameTime": "合成第8285刻",
+          "participants": [
+            "n1"
+          ],
+          "location": "l1",
+          "items": [
+            "o1"
+          ],
+          "narrative": "第8285回合第1记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是394号，簿页107705未与旧页合并。第8285回合第2记，有人问：“难道每个故事都能凭一句话说清？谢荻说：“听说远方的门已经开放。”他没有亲眼确认，谣言仍未核实。第8386回合第1记，一位旅人翻开残缺的行路札记，读到道路岔口便停下，旁人提醒旧路标未必适用于今日，两人决定翌日亲自查验。本次登记的验点是5号，簿页109018未与旧页合并。第8386回合第2记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是83号，簿页109019未与旧页合并。第8386回合第3记，有人问：“难道每个故事都能凭一句话说清？”同行者摇头，将破损的纸页一一铺平，提醒应当保留前后语境。本次登记的验点是11号，簿页109020未与旧页合并。第8386回合第4记，潮汐退过石阶后，抄录者对照两册旧账，逐笔确认数目，却没有对任何人的身份作出结论。本次登记的验点是604号，簿页109021未与旧页合并。第8386回合第5记，案头的草图画着三条岔路，执笔者逐一注明沿途补给与路程，另将道听途说的捷径圈出，留给后来者复核。本次登记的验点是505号，簿页109022未与旧页合并。第8386回合第6记，廊下的木桌被移开半尺，学徒重排坐席，争论午后应当先修屋檐还是清点柴薪，直到更鼓响起才各自散去。本次登记的验点是662号，簿页109023未与旧页合并。",
+          "eventIds": [
+            "ev:long:1:7"
+          ],
+          "tags": [
+            "rumor"
+          ],
+          "facts": [
+            {
+              "id": "f:1:身份传闻:远门已开放",
+              "subject": "n1",
+              "predicate": "身份传闻",
+              "value": "远门已开放",
+              "kind": "character-claim",
+              "validFrom": 8285
+            }
+          ],
+          "historicalSources": [],
+          "authorizedNpcIds": [
+            "n1"
+          ],
+          "score": 100,
+          "factStates": [
+            {
+              "factId": "f:1:身份传闻:远门已开放",
+              "kind": "character-claim",
+              "status": "unverified",
+              "validity": "unverified"
+            }
+          ]
+        }
+      ],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "roles": {
+        "long:1:7": "direct"
+      },
+      "diagnosis": "budget-missing-key-source",
+      "supportAudit": [
+        {
+          "sourceId": "long:1:7",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:1:身份传闻:远门已开放"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "ambiguous-or-missing-attributed-claim",
+          "confirmation": "unverified",
+          "npcAuthorized": true,
+          "asOfTurn": 10000,
+          "spans": []
+        }
+      ],
+      "omittedSourceIds": [
+        "long:1:7"
+      ],
+      "enoughEvidence": false,
+      "reason": "budget-missing-key-source; source claims retain unverified status; no generated answer",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 5.3586999999997715,
+      "originalSpans": [],
+      "intent": {
+        "mode": "typed",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [
+        {
+          "sourceId": "long:1:0",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:1",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:2",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:3",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:4",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:5",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:6",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:7",
+          "role": "direct",
+          "reason": "ambiguous-or-missing-attributed-claim"
+        }
+      ],
+      "originalAuditCount": 8
+    }
+  },
+  {
+    "questionId": "holdout:2:historical-relation:49",
+    "category": "historical-relation",
+    "budget": 2048,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:2:0"
+    ],
+    "actual": [],
+    "missing": [
+      "long:2:0"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 2.971599999999853,
+    "result": {
+      "strategy": "historical",
+      "ranked": [
+        {
+          "sourceId": "long:2:0",
+          "turnId": 429,
+          "gameMinute": 30816,
+          "gameTime": "合成第429刻",
+          "participants": [
+            "n2"
+          ],
+          "location": "l2",
+          "items": [
+            "o2"
+          ],
+          "narrative": "第429回合第1记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是847号，簿页5577未与旧页合并。第429回合第2记，有人问：“难道每个故事都能凭一句话说清？钱柚第一次在映荻馆见到玩家，态度戒备，说：“先问清来处，再谈同行。”第530回合第1记，一位旅人翻开残缺的行路札记，读到道路岔口便停下，旁人提醒旧路标未必适用于今日，两人决定翌日亲自查验。本次登记的验点是459号，簿页6890未与旧页合并。第530回合第2记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是643号，簿页6891未与旧页合并。第530回合第3记，有人问：“难道每个故事都能凭一句话说清？”同行者摇头，将破损的纸页一一铺平，提醒应当保留前后语境。本次登记的验点是946号，簿页6892未与旧页合并。第530回合第4记，潮汐退过石阶后，抄录者对照两册旧账，逐笔确认数目，却没有对任何人的身份作出结论。本次登记的验点是409号，簿页6893未与旧页合并。第530回合第5记，案头的草图画着三条岔路，执笔者逐一注明沿途补给与路程，另将道听途说的捷径圈出，留给后来者复核。本次登记的验点是638号，簿页6894未与旧页合并。第530回合第6记，廊下的木桌被移开半尺，学徒重排坐席，争论午后应当先修屋檐还是清点柴薪，直到更鼓响起才各自散去。本次登记的验点是29号，簿页6895未与旧页合并。",
+          "eventIds": [
+            "ev:long:2:0"
+          ],
+          "tags": [
+            "meeting"
+          ],
+          "facts": [
+            {
+              "id": "f:2:初遇地点:映荻馆",
+              "subject": "n2",
+              "predicate": "初遇地点",
+              "value": "映荻馆",
+              "kind": "world-event",
+              "validFrom": 429,
+              "confirmedBy": "ev:long:2:0"
+            },
+            {
+              "id": "f:2:关系:戒备",
+              "subject": "n2",
+              "predicate": "关系",
+              "value": "戒备",
+              "kind": "world-event",
+              "validFrom": 429,
+              "confirmedBy": "ev:long:2:0"
+            }
+          ],
+          "historicalSources": [],
+          "authorizedNpcIds": [
+            "n2"
+          ],
+          "score": 100,
+          "factStates": [
+            {
+              "factId": "f:2:初遇地点:映荻馆",
+              "kind": "world-event",
+              "status": "current",
+              "validity": "active"
+            },
+            {
+              "factId": "f:2:关系:戒备",
+              "kind": "world-event",
+              "status": "current",
+              "validity": "active"
+            }
+          ]
+        }
+      ],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "roles": {
+        "long:2:0": "direct"
+      },
+      "diagnosis": "budget-missing-key-source",
+      "supportAudit": [
+        {
+          "sourceId": "long:2:0",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:2:关系:戒备"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "no-complete-supporting-unit",
+          "confirmation": "offline-event-bound",
+          "npcAuthorized": true,
+          "asOfTurn": 6142,
+          "spans": []
+        }
+      ],
+      "omittedSourceIds": [
+        "long:2:0"
+      ],
+      "enoughEvidence": false,
+      "reason": "budget-missing-key-source; source claims retain unverified status; no generated answer",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 2.970600000000559,
+      "originalSpans": [],
+      "intent": {
+        "mode": "typed",
+        "temporal": "historical"
+      },
+      "candidateAudit": [
+        {
+          "sourceId": "long:2:0",
+          "role": "direct",
+          "reason": "no-complete-supporting-unit"
+        },
+        {
+          "sourceId": "long:2:1",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:2",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:3",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:4",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        }
+      ],
+      "originalAuditCount": 5
+    }
+  },
+  {
+    "questionId": "holdout:2:consumed:52",
+    "category": "consumed",
+    "budget": 2048,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:2:6"
+    ],
+    "actual": [],
+    "missing": [
+      "long:2:6"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 5.699700000000121,
+    "result": {
+      "strategy": "historical",
+      "ranked": [
+        {
+          "sourceId": "long:2:6",
+          "turnId": 7285,
+          "gameMinute": 524448,
+          "gameTime": "合成第7285刻",
+          "participants": [
+            "n2"
+          ],
+          "location": "l2",
+          "items": [
+            "o2"
+          ],
+          "narrative": "第7285回合第1记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是344号，簿页94705未与旧页合并。第7285回合第2记，有人问：“难道每个故事都能凭一句话说清？钱柚把铜环信物交给玩家，随后信物被消耗于阵门，归属不再有效。第7386回合第1记，一位旅人翻开残缺的行路札记，读到道路岔口便停下，旁人提醒旧路标未必适用于今日，两人决定翌日亲自查验。本次登记的验点是953号，簿页96018未与旧页合并。第7386回合第2记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是488号，簿页96019未与旧页合并。第7386回合第3记，有人问：“难道每个故事都能凭一句话说清？”同行者摇头，将破损的纸页一一铺平，提醒应当保留前后语境。本次登记的验点是608号，簿页96020未与旧页合并。第7386回合第4记，潮汐退过石阶后，抄录者对照两册旧账，逐笔确认数目，却没有对任何人的身份作出结论。本次登记的验点是558号，簿页96021未与旧页合并。第7386回合第5记，案头的草图画着三条岔路，执笔者逐一注明沿途补给与路程，另将道听途说的捷径圈出，留给后来者复核。本次登记的验点是945号，簿页96022未与旧页合并。第7386回合第6记，廊下的木桌被移开半尺，学徒重排坐席，争论午后应当先修屋檐还是清点柴薪，直到更鼓响起才各自散去。本次登记的验点是495号，簿页96023未与旧页合并。",
+          "eventIds": [
+            "ev:long:2:6"
+          ],
+          "tags": [
+            "transfer"
+          ],
+          "facts": [
+            {
+              "id": "f:2:归属:已消耗",
+              "subject": "o2",
+              "predicate": "归属",
+              "value": "已消耗",
+              "kind": "world-event",
+              "validFrom": 7285,
+              "confirmedBy": "ev:long:2:6"
+            }
+          ],
+          "historicalSources": [],
+          "authorizedNpcIds": [
+            "n2"
+          ],
+          "score": 100,
+          "factStates": [
+            {
+              "factId": "f:2:归属:已消耗",
+              "kind": "world-event",
+              "status": "current",
+              "validity": "active"
+            }
+          ]
+        }
+      ],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "roles": {
+        "long:2:6": "direct"
+      },
+      "diagnosis": "budget-missing-key-source",
+      "supportAudit": [
+        {
+          "sourceId": "long:2:6",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:2:归属:已消耗"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "no-complete-supporting-unit",
+          "confirmation": "offline-event-bound",
+          "npcAuthorized": true,
+          "asOfTurn": 10000,
+          "spans": []
+        }
+      ],
+      "omittedSourceIds": [
+        "long:2:6"
+      ],
+      "enoughEvidence": false,
+      "reason": "budget-missing-key-source; source claims retain unverified status; no generated answer",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 5.697400000000016,
+      "originalSpans": [],
+      "intent": {
+        "mode": "typed",
+        "temporal": "current"
+      },
+      "candidateAudit": [
+        {
+          "sourceId": "long:2:0",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:1",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:2",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:3",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:4",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:5",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:6",
+          "role": "direct",
+          "reason": "no-complete-supporting-unit"
+        },
+        {
+          "sourceId": "long:2:7",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        }
+      ],
+      "originalAuditCount": 8
+    }
+  },
+  {
+    "questionId": "holdout:1:rumor:35",
+    "category": "rumor",
+    "budget": 4096,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:1:7"
+    ],
+    "actual": [],
+    "missing": [
+      "long:1:7"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 7.146600000000035,
+    "result": {
+      "strategy": "historical",
+      "ranked": [
+        {
+          "sourceId": "long:1:7",
+          "turnId": 8285,
+          "gameMinute": 596448,
+          "gameTime": "合成第8285刻",
+          "participants": [
+            "n1"
+          ],
+          "location": "l1",
+          "items": [
+            "o1"
+          ],
+          "narrative": "第8285回合第1记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是394号，簿页107705未与旧页合并。第8285回合第2记，有人问：“难道每个故事都能凭一句话说清？谢荻说：“听说远方的门已经开放。”他没有亲眼确认，谣言仍未核实。第8386回合第1记，一位旅人翻开残缺的行路札记，读到道路岔口便停下，旁人提醒旧路标未必适用于今日，两人决定翌日亲自查验。本次登记的验点是5号，簿页109018未与旧页合并。第8386回合第2记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是83号，簿页109019未与旧页合并。第8386回合第3记，有人问：“难道每个故事都能凭一句话说清？”同行者摇头，将破损的纸页一一铺平，提醒应当保留前后语境。本次登记的验点是11号，簿页109020未与旧页合并。第8386回合第4记，潮汐退过石阶后，抄录者对照两册旧账，逐笔确认数目，却没有对任何人的身份作出结论。本次登记的验点是604号，簿页109021未与旧页合并。第8386回合第5记，案头的草图画着三条岔路，执笔者逐一注明沿途补给与路程，另将道听途说的捷径圈出，留给后来者复核。本次登记的验点是505号，簿页109022未与旧页合并。第8386回合第6记，廊下的木桌被移开半尺，学徒重排坐席，争论午后应当先修屋檐还是清点柴薪，直到更鼓响起才各自散去。本次登记的验点是662号，簿页109023未与旧页合并。",
+          "eventIds": [
+            "ev:long:1:7"
+          ],
+          "tags": [
+            "rumor"
+          ],
+          "facts": [
+            {
+              "id": "f:1:身份传闻:远门已开放",
+              "subject": "n1",
+              "predicate": "身份传闻",
+              "value": "远门已开放",
+              "kind": "character-claim",
+              "validFrom": 8285
+            }
+          ],
+          "historicalSources": [],
+          "authorizedNpcIds": [
+            "n1"
+          ],
+          "score": 100,
+          "factStates": [
+            {
+              "factId": "f:1:身份传闻:远门已开放",
+              "kind": "character-claim",
+              "status": "unverified",
+              "validity": "unverified"
+            }
+          ]
+        }
+      ],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "roles": {
+        "long:1:7": "direct"
+      },
+      "diagnosis": "budget-missing-key-source",
+      "supportAudit": [
+        {
+          "sourceId": "long:1:7",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:1:身份传闻:远门已开放"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "ambiguous-or-missing-attributed-claim",
+          "confirmation": "unverified",
+          "npcAuthorized": true,
+          "asOfTurn": 10000,
+          "spans": []
+        }
+      ],
+      "omittedSourceIds": [
+        "long:1:7"
+      ],
+      "enoughEvidence": false,
+      "reason": "budget-missing-key-source; source claims retain unverified status; no generated answer",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 7.1445999999996275,
+      "originalSpans": [],
+      "intent": {
+        "mode": "typed",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [
+        {
+          "sourceId": "long:1:0",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:1",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:2",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:3",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:4",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:5",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:6",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:7",
+          "role": "direct",
+          "reason": "ambiguous-or-missing-attributed-claim"
+        }
+      ],
+      "originalAuditCount": 8
+    }
+  },
+  {
+    "questionId": "holdout:2:historical-relation:49",
+    "category": "historical-relation",
+    "budget": 4096,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:2:0"
+    ],
+    "actual": [],
+    "missing": [
+      "long:2:0"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 2.878700000000208,
+    "result": {
+      "strategy": "historical",
+      "ranked": [
+        {
+          "sourceId": "long:2:0",
+          "turnId": 429,
+          "gameMinute": 30816,
+          "gameTime": "合成第429刻",
+          "participants": [
+            "n2"
+          ],
+          "location": "l2",
+          "items": [
+            "o2"
+          ],
+          "narrative": "第429回合第1记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是847号，簿页5577未与旧页合并。第429回合第2记，有人问：“难道每个故事都能凭一句话说清？钱柚第一次在映荻馆见到玩家，态度戒备，说：“先问清来处，再谈同行。”第530回合第1记，一位旅人翻开残缺的行路札记，读到道路岔口便停下，旁人提醒旧路标未必适用于今日，两人决定翌日亲自查验。本次登记的验点是459号，簿页6890未与旧页合并。第530回合第2记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是643号，簿页6891未与旧页合并。第530回合第3记，有人问：“难道每个故事都能凭一句话说清？”同行者摇头，将破损的纸页一一铺平，提醒应当保留前后语境。本次登记的验点是946号，簿页6892未与旧页合并。第530回合第4记，潮汐退过石阶后，抄录者对照两册旧账，逐笔确认数目，却没有对任何人的身份作出结论。本次登记的验点是409号，簿页6893未与旧页合并。第530回合第5记，案头的草图画着三条岔路，执笔者逐一注明沿途补给与路程，另将道听途说的捷径圈出，留给后来者复核。本次登记的验点是638号，簿页6894未与旧页合并。第530回合第6记，廊下的木桌被移开半尺，学徒重排坐席，争论午后应当先修屋檐还是清点柴薪，直到更鼓响起才各自散去。本次登记的验点是29号，簿页6895未与旧页合并。",
+          "eventIds": [
+            "ev:long:2:0"
+          ],
+          "tags": [
+            "meeting"
+          ],
+          "facts": [
+            {
+              "id": "f:2:初遇地点:映荻馆",
+              "subject": "n2",
+              "predicate": "初遇地点",
+              "value": "映荻馆",
+              "kind": "world-event",
+              "validFrom": 429,
+              "confirmedBy": "ev:long:2:0"
+            },
+            {
+              "id": "f:2:关系:戒备",
+              "subject": "n2",
+              "predicate": "关系",
+              "value": "戒备",
+              "kind": "world-event",
+              "validFrom": 429,
+              "confirmedBy": "ev:long:2:0"
+            }
+          ],
+          "historicalSources": [],
+          "authorizedNpcIds": [
+            "n2"
+          ],
+          "score": 100,
+          "factStates": [
+            {
+              "factId": "f:2:初遇地点:映荻馆",
+              "kind": "world-event",
+              "status": "current",
+              "validity": "active"
+            },
+            {
+              "factId": "f:2:关系:戒备",
+              "kind": "world-event",
+              "status": "current",
+              "validity": "active"
+            }
+          ]
+        }
+      ],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "roles": {
+        "long:2:0": "direct"
+      },
+      "diagnosis": "budget-missing-key-source",
+      "supportAudit": [
+        {
+          "sourceId": "long:2:0",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:2:关系:戒备"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "no-complete-supporting-unit",
+          "confirmation": "offline-event-bound",
+          "npcAuthorized": true,
+          "asOfTurn": 6142,
+          "spans": []
+        }
+      ],
+      "omittedSourceIds": [
+        "long:2:0"
+      ],
+      "enoughEvidence": false,
+      "reason": "budget-missing-key-source; source claims retain unverified status; no generated answer",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 2.8777000000000044,
+      "originalSpans": [],
+      "intent": {
+        "mode": "typed",
+        "temporal": "historical"
+      },
+      "candidateAudit": [
+        {
+          "sourceId": "long:2:0",
+          "role": "direct",
+          "reason": "no-complete-supporting-unit"
+        },
+        {
+          "sourceId": "long:2:1",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:2",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:3",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:4",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        }
+      ],
+      "originalAuditCount": 5
+    }
+  },
+  {
+    "questionId": "holdout:2:consumed:52",
+    "category": "consumed",
+    "budget": 4096,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:2:6"
+    ],
+    "actual": [],
+    "missing": [
+      "long:2:6"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 4.796400000000176,
+    "result": {
+      "strategy": "historical",
+      "ranked": [
+        {
+          "sourceId": "long:2:6",
+          "turnId": 7285,
+          "gameMinute": 524448,
+          "gameTime": "合成第7285刻",
+          "participants": [
+            "n2"
+          ],
+          "location": "l2",
+          "items": [
+            "o2"
+          ],
+          "narrative": "第7285回合第1记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是344号，簿页94705未与旧页合并。第7285回合第2记，有人问：“难道每个故事都能凭一句话说清？钱柚把铜环信物交给玩家，随后信物被消耗于阵门，归属不再有效。第7386回合第1记，一位旅人翻开残缺的行路札记，读到道路岔口便停下，旁人提醒旧路标未必适用于今日，两人决定翌日亲自查验。本次登记的验点是953号，簿页96018未与旧页合并。第7386回合第2记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是488号，簿页96019未与旧页合并。第7386回合第3记，有人问：“难道每个故事都能凭一句话说清？”同行者摇头，将破损的纸页一一铺平，提醒应当保留前后语境。本次登记的验点是608号，簿页96020未与旧页合并。第7386回合第4记，潮汐退过石阶后，抄录者对照两册旧账，逐笔确认数目，却没有对任何人的身份作出结论。本次登记的验点是558号，簿页96021未与旧页合并。第7386回合第5记，案头的草图画着三条岔路，执笔者逐一注明沿途补给与路程，另将道听途说的捷径圈出，留给后来者复核。本次登记的验点是945号，簿页96022未与旧页合并。第7386回合第6记，廊下的木桌被移开半尺，学徒重排坐席，争论午后应当先修屋檐还是清点柴薪，直到更鼓响起才各自散去。本次登记的验点是495号，簿页96023未与旧页合并。",
+          "eventIds": [
+            "ev:long:2:6"
+          ],
+          "tags": [
+            "transfer"
+          ],
+          "facts": [
+            {
+              "id": "f:2:归属:已消耗",
+              "subject": "o2",
+              "predicate": "归属",
+              "value": "已消耗",
+              "kind": "world-event",
+              "validFrom": 7285,
+              "confirmedBy": "ev:long:2:6"
+            }
+          ],
+          "historicalSources": [],
+          "authorizedNpcIds": [
+            "n2"
+          ],
+          "score": 100,
+          "factStates": [
+            {
+              "factId": "f:2:归属:已消耗",
+              "kind": "world-event",
+              "status": "current",
+              "validity": "active"
+            }
+          ]
+        }
+      ],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "roles": {
+        "long:2:6": "direct"
+      },
+      "diagnosis": "budget-missing-key-source",
+      "supportAudit": [
+        {
+          "sourceId": "long:2:6",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:2:归属:已消耗"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "no-complete-supporting-unit",
+          "confirmation": "offline-event-bound",
+          "npcAuthorized": true,
+          "asOfTurn": 10000,
+          "spans": []
+        }
+      ],
+      "omittedSourceIds": [
+        "long:2:6"
+      ],
+      "enoughEvidence": false,
+      "reason": "budget-missing-key-source; source claims retain unverified status; no generated answer",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 4.795600000000377,
+      "originalSpans": [],
+      "intent": {
+        "mode": "typed",
+        "temporal": "current"
+      },
+      "candidateAudit": [
+        {
+          "sourceId": "long:2:0",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:1",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:2",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:3",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:4",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:5",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:2:6",
+          "role": "direct",
+          "reason": "no-complete-supporting-unit"
+        },
+        {
+          "sourceId": "long:2:7",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        }
+      ],
+      "originalAuditCount": 8
+    }
+  }
+]

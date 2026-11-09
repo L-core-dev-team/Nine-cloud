@@ -1,0 +1,4 @@
+import fs from 'node:fs';import path from 'node:path';import {fileURLToPath} from 'node:url';import {gzipSync,gunzipSync} from 'node:zlib';import {LexicalIndex} from './retrieval.ts';
+const name=process.argv[2];if(!name||!/^[a-z0-9-]+$/.test(name))throw Error('Unique safe name');const root=path.dirname(fileURLToPath(import.meta.url)),out=path.join(root,'evidence',name);fs.mkdirSync(out);const read=(label:string)=>JSON.parse(gunzipSync(fs.readFileSync(path.join(root,'fixtures',`holdout-10000-${label}.json.gz`))).toString('utf8'));const data=read('dataset'),qs=read('questions');const index=new LexicalIndex(data),rows=[];
+for(const budget of [512,1024,2048,4096])for(const q of qs){const result=index.search({text:q.text,asOfTurn:q.asOfTurn,audience:q.audience},budget);rows.push({questionId:q.questionId,budget,result});}
+fs.writeFileSync(path.join(out,'full-results.json.gz'),gzipSync(JSON.stringify(rows)));console.log(JSON.stringify({queries:rows.length,output:out}));

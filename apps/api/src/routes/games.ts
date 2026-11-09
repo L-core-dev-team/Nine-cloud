@@ -1,5 +1,6 @@
+import type { StoryArchive } from '../services/story-archive.js';
 import type { Hono } from 'hono';
-import { ActionIntentSchema, type TurnReceipt } from '@jiuxiao/contracts';
+import { ActionIntentSchema, TurnReceiptSchema, type TurnReceipt } from '@jiuxiao/contracts';
 import { readGameMinute } from '@jiuxiao/domain';
 import { readJson, type CloudSaveRouteAuth } from './saves.js';
 import { serverTurnHttpResponse } from './turn-http.js';
@@ -16,18 +17,48 @@ export function mountGames(
   auth: CloudSaveRouteAuth,
   turns?: ServerTurnService,
   memoryRecall?: { reader: AuthorizedRecallPageReader },
+  storyArchive?: StoryArchive,
+  readReceipt?: (owner: string, saveId: string, key: string) => Promise<TurnReceipt | null>,
 ) {
+  // Recovery is read-only. Absence is NOT proof that an in-flight turn was never sent.
+  if (readReceipt) app.get('/api/games/:saveId/receipts/:key', async c => {
+    const owner = await resolveOwner(c.req.raw, c.req.header('x-jiuxiao-account'), auth);
+    if (!owner) return c.json({ code: 'UNAUTHENTICATED' }, 401);
+    if (!/^[a-f\d]{8}(-[a-f\d]{4}){3}-[a-f\d]{12}$/i.test(c.req.param('key'))) return c.json({ code: 'INVALID_TURN' }, 400);
+    try {
+      const game = await service.read(owner, c.req.param('saveId'));
+      if (game.status === 'not_found') return c.json({ code: 'NOT_FOUND' }, 404);
+      const raw = await readReceipt(owner, game.save.saveId, c.req.param('key'));
+      const receipt = raw ? TurnReceiptSchema.parse(raw) : null;
+      if (receipt && (receipt.saveId !== game.save.saveId || receipt.idempotencyKey !== c.req.param('key'))) throw Error('INVALID_RECEIPT');
+      return c.json({ status: receipt ? 'confirmed' : 'unknown', receipt, revision: game.save.revision });
+    } catch { return c.json({ code: 'GAME_UNAVAILABLE' }, 503); }
+  });
   app.get('/api/games/:saveId', async c => {
     const owner = await resolveOwner(c.req.raw, c.req.header('x-jiuxiao-account'), auth);
     if (!owner) return c.json({ code: 'UNAUTHENTICATED' }, 401);
     try {
       const result = await service.read(owner, c.req.param('saveId'));
       if (result.status === 'not_found') return c.json({ code: 'NOT_FOUND' }, 404);
-      return c.json({ save: result.save });
+      return c.json({ save: result.save, latestReceipt: result.latestReceipt, opening: result.opening, scene: result.scene });
     } catch (error) {
       if (error instanceof SaveSchemaNotReadyError) return c.json({ code: 'SAVE_SCHEMA_NOT_READY' }, 503);
       return c.json({ code: 'GAME_UNAVAILABLE' }, 503);
     }
+  });
+
+  app.get('/api/games/:saveId/story', async c => {
+    const owner=await resolveOwner(c.req.raw,c.req.header('x-jiuxiao-account'),auth);
+    if(!owner)return c.json({code:'UNAUTHENTICATED'},401);
+    if(!storyArchive)return c.json({code:'STORY_HISTORY_DISABLED'},503);
+    const raw=c.req.query('before');const before=raw===undefined?undefined:Number(raw);
+    if(before!==undefined&&(!Number.isSafeInteger(before)||before<0))return c.json({code:'INVALID_STORY_CURSOR'},400);
+    try {
+      const result=await service.read(owner,c.req.param('saveId'));
+      if(result.status==='not_found')return c.json({code:'NOT_FOUND'},404);
+      c.header('Cache-Control','no-store');
+      return c.json(await storyArchive.read(owner,result.save.saveId,result.save.revision,before));
+    }catch{return c.json({code:'STORY_UNAVAILABLE'},503);}
   });
 
   app.get('/api/games/:saveId/action-suggestions', async c => {
@@ -81,7 +112,7 @@ export function mountGames(
     const owner = await resolveOwner(c.req.raw, c.req.header('x-jiuxiao-account'), auth);
     if (!owner) return c.json({ code: 'UNAUTHENTICATED' }, 401);
     if (!await consumeAccountQuota(owner, 'turn', 30, 60_000)) return c.json({ code: 'RATE_LIMITED' }, 429);
-    const body = await readJson(c.req.raw, 16_384);
+    const body = await readJson(c.req.raw, 65_536);
     if (!body.ok) return c.json({ code: body.status === 413 ? 'REQUEST_TOO_LARGE' : 'INVALID_TURN' }, body.status);
     const value = body.value as Record<string, unknown> | null;
     if (!value || typeof value !== 'object' || Array.isArray(value)

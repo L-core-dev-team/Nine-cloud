@@ -1,0 +1,868 @@
+{
+  "generatedAt": "2026-10-13T04:36:59.566Z",
+  "criteria": "Five baseline pages: home, lobby, game, world, and AI mode; two themes and 390/1366px viewports. Contrast additionally covers graphics and professional AI with no protected-scope exemptions. Professional text uses overlapping real viewport tiles with complete rendered-run coverage, excluding glyphs obscured by the sticky header or fixed operation bar. Static backgrounds and three atmosphere-on frames use unchanged WCAG AA 4.5:1 normal / 3:1 large thresholds and effective opacity. Control boundaries use 3:1 fill or border against adjacent pixels; native checkbox/radio/range and clipped shapes remain outside rectangular sampling. Closed disclosures and clipped-off glyphs are not rendered text; expanded professional fields and dialog states are checked separately.",
+  "screenshots": [
+    {
+      "page": "home",
+      "route": "/",
+      "theme": "night",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "home-night-390.png",
+      "sha256": "ab29ee07f1649a6845cd183aebfc19f8e1a73f2f38d9db6c2d28de195abe3a8c"
+    },
+    {
+      "page": "lobby",
+      "route": "/lobby",
+      "theme": "night",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "lobby-night-390.png",
+      "sha256": "38921fcd31d26798b259bd7da9154782c8669afe75555aa17e8b895db0a456f0"
+    },
+    {
+      "page": "game",
+      "route": "/game",
+      "theme": "night",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "game-night-390.png",
+      "sha256": "f56c2d264091a0e35ea5647744ec0beb05b2c2bd8140075df92eac6d2c55b13d"
+    },
+    {
+      "page": "world",
+      "route": "/world",
+      "theme": "night",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "world-night-390.png",
+      "sha256": "ee89af5a07688c41fe11aed31cf751d19f7e79308ea3e4f2cb2e6061321f9aff"
+    },
+    {
+      "page": "ai-mode",
+      "route": "/settings/ai",
+      "theme": "night",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "ai-mode-night-390.png",
+      "sha256": "7ab47acbc00efcee03a31da041025f7cab77cfca4b466ad58b9882cee399831a"
+    },
+    {
+      "page": "home",
+      "route": "/",
+      "theme": "day",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "home-day-390.png",
+      "sha256": "fb42bc5be0e5293a42fa0fa30ee2f8b473622edd4956cf6eb20652d02f4fd833"
+    },
+    {
+      "page": "lobby",
+      "route": "/lobby",
+      "theme": "day",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "lobby-day-390.png",
+      "sha256": "aedd7c74c1b7d69ac327c7a57ab2568e505f3c93f1f0205a477aa2f49837eb8c"
+    },
+    {
+      "page": "game",
+      "route": "/game",
+      "theme": "day",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "game-day-390.png",
+      "sha256": "049246c6b14650f79bed9878b5b93d4dc2984a0710954f9120542a768a07cca8"
+    },
+    {
+      "page": "world",
+      "route": "/world",
+      "theme": "day",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "world-day-390.png",
+      "sha256": "237fa4d0f820b807753a4de40cc9b0f4b3df487e49f66182ac40c9fad7f6a9be"
+    },
+    {
+      "page": "ai-mode",
+      "route": "/settings/ai",
+      "theme": "day",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "ai-mode-day-390.png",
+      "sha256": "45d822b8908d17dae2f69eebaa2b1bd124826b842169527f0d339af8420ddf90"
+    },
+    {
+      "page": "home",
+      "route": "/",
+      "theme": "night",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "file": "home-night-1366.png",
+      "sha256": "841eab080761201dfe318277b23ae4f0ff9cb9d9495c8f79088afc8d4eb6ba90"
+    },
+    {
+      "page": "lobby",
+      "route": "/lobby",
+      "theme": "night",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "file": "lobby-night-1366.png",
+      "sha256": "8f5f09322cf25a9e6dfdf14da34b8b396d5ceb8665faf4a97ca9f0703626e58f"
+    },
+    {
+      "page": "game",
+      "route": "/game",
+      "theme": "night",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "file": "game-night-1366.png",
+      "sha256": "a7bf01afa907d921b71e80fbc10e1d6cb39b64a7e72bad50502b6cd556340fc7"
+    },
+    {
+      "page": "world",
+      "route": "/world",
+      "theme": "night",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "file": "world-night-1366.png",
+      "sha256": "8cb67fde8cdab3f8be4caebeaa0f7b0ba99fe69a18f7986ae98b20b8f8c718da"
+    },
+    {
+      "page": "ai-mode",
+      "route": "/settings/ai",
+      "theme": "night",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "file": "ai-mode-night-1366.png",
+      "sha256": "dcd4b55aaf0d0478932e91eeb94ea471d9fa855aea6d8f05bffab66ecfe7ef33"
+    },
+    {
+      "page": "home",
+      "route": "/",
+      "theme": "day",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "file": "home-day-1366.png",
+      "sha256": "7643e399333b7144409266acfe2838f7e4e3ed3260bc7ae01293b6754acdd387"
+    },
+    {
+      "page": "lobby",
+      "route": "/lobby",
+      "theme": "day",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "file": "lobby-day-1366.png",
+      "sha256": "39ace501a3706ac1fcd3df321c56acefa75630c7f1d92072bcb7cf007bc7254e"
+    },
+    {
+      "page": "game",
+      "route": "/game",
+      "theme": "day",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "file": "game-day-1366.png",
+      "sha256": "7be6c297a018da6e0330b6ff959d0ed3554fd7093d7ffec4a8f9b1006051a072"
+    },
+    {
+      "page": "world",
+      "route": "/world",
+      "theme": "day",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "file": "world-day-1366.png",
+      "sha256": "370bf651e4fa1a7cbc9615ad1c5f80ba52e4007275dc4da0ee57a66e50182667"
+    },
+    {
+      "page": "ai-mode",
+      "route": "/settings/ai",
+      "theme": "day",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "file": "ai-mode-day-1366.png",
+      "sha256": "3d056517f38719c6c7a940737ce8b153d3eb0383dffe46114eb3829abbbe07e8"
+    }
+  ],
+  "contrast": [
+    {
+      "page": "home",
+      "theme": "night",
+      "width": 390,
+      "text": {
+        "static": {
+          "checkedRuns": 21,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 21,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 7,
+        "failures": []
+      },
+      "dynamicFrames": 3
+    },
+    {
+      "page": "lobby",
+      "theme": "night",
+      "width": 390,
+      "text": {
+        "static": {
+          "checkedRuns": 28,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 28,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 7,
+        "failures": []
+      },
+      "dynamicFrames": 3
+    },
+    {
+      "page": "game",
+      "theme": "night",
+      "width": 390,
+      "text": {
+        "static": {
+          "checkedRuns": 41,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 41,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 24,
+        "failures": []
+      },
+      "dynamicFrames": 3
+    },
+    {
+      "page": "world",
+      "theme": "night",
+      "width": 390,
+      "text": {
+        "static": {
+          "checkedRuns": 210,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 210,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 38,
+        "failures": []
+      },
+      "dynamicFrames": 3
+    },
+    {
+      "page": "graphics",
+      "theme": "night",
+      "width": 390,
+      "text": {
+        "static": {
+          "checkedRuns": 76,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 76,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 27,
+        "failures": []
+      },
+      "dynamicFrames": 3
+    },
+    {
+      "page": "ai-mode",
+      "theme": "night",
+      "width": 390,
+      "text": {
+        "static": {
+          "checkedRuns": 27,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 27,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 7,
+        "failures": []
+      },
+      "dynamicFrames": 3
+    },
+    {
+      "page": "ai-professional",
+      "theme": "night",
+      "width": 390,
+      "text": {
+        "static": {
+          "checkedRuns": 173,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 173,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 84,
+        "failures": []
+      },
+      "dynamicFrames": 3,
+      "coverage": {
+        "tiles": 8,
+        "totalRuns": 104,
+        "coveredRuns": 104,
+        "coveredControls": 7
+      }
+    },
+    {
+      "page": "home",
+      "theme": "day",
+      "width": 390,
+      "text": {
+        "static": {
+          "checkedRuns": 21,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 21,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 7,
+        "failures": []
+      },
+      "dynamicFrames": 3
+    },
+    {
+      "page": "lobby",
+      "theme": "day",
+      "width": 390,
+      "text": {
+        "static": {
+          "checkedRuns": 28,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 28,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 7,
+        "failures": []
+      },
+      "dynamicFrames": 3
+    },
+    {
+      "page": "game",
+      "theme": "day",
+      "width": 390,
+      "text": {
+        "static": {
+          "checkedRuns": 41,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 41,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 24,
+        "failures": []
+      },
+      "dynamicFrames": 3
+    },
+    {
+      "page": "world",
+      "theme": "day",
+      "width": 390,
+      "text": {
+        "static": {
+          "checkedRuns": 210,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 210,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 38,
+        "failures": []
+      },
+      "dynamicFrames": 3
+    },
+    {
+      "page": "graphics",
+      "theme": "day",
+      "width": 390,
+      "text": {
+        "static": {
+          "checkedRuns": 76,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 76,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 27,
+        "failures": []
+      },
+      "dynamicFrames": 3
+    },
+    {
+      "page": "ai-mode",
+      "theme": "day",
+      "width": 390,
+      "text": {
+        "static": {
+          "checkedRuns": 27,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 27,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 7,
+        "failures": []
+      },
+      "dynamicFrames": 3
+    },
+    {
+      "page": "ai-professional",
+      "theme": "day",
+      "width": 390,
+      "text": {
+        "static": {
+          "checkedRuns": 173,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 173,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 84,
+        "failures": []
+      },
+      "dynamicFrames": 3,
+      "coverage": {
+        "tiles": 8,
+        "totalRuns": 104,
+        "coveredRuns": 104,
+        "coveredControls": 7
+      }
+    },
+    {
+      "page": "home",
+      "theme": "night",
+      "width": 1366,
+      "text": {
+        "static": {
+          "checkedRuns": 21,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 21,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 8,
+        "failures": []
+      },
+      "dynamicFrames": 3
+    },
+    {
+      "page": "lobby",
+      "theme": "night",
+      "width": 1366,
+      "text": {
+        "static": {
+          "checkedRuns": 33,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 33,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 8,
+        "failures": []
+      },
+      "dynamicFrames": 3
+    },
+    {
+      "page": "game",
+      "theme": "night",
+      "width": 1366,
+      "text": {
+        "static": {
+          "checkedRuns": 48,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 48,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 24,
+        "failures": []
+      },
+      "dynamicFrames": 3
+    },
+    {
+      "page": "world",
+      "theme": "night",
+      "width": 1366,
+      "text": {
+        "static": {
+          "checkedRuns": 218,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 218,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 44,
+        "failures": []
+      },
+      "dynamicFrames": 3
+    },
+    {
+      "page": "graphics",
+      "theme": "night",
+      "width": 1366,
+      "text": {
+        "static": {
+          "checkedRuns": 81,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 81,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 28,
+        "failures": []
+      },
+      "dynamicFrames": 3
+    },
+    {
+      "page": "ai-mode",
+      "theme": "night",
+      "width": 1366,
+      "text": {
+        "static": {
+          "checkedRuns": 32,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 32,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 8,
+        "failures": []
+      },
+      "dynamicFrames": 3
+    },
+    {
+      "page": "ai-professional",
+      "theme": "night",
+      "width": 1366,
+      "text": {
+        "static": {
+          "checkedRuns": 180,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 180,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 68,
+        "failures": []
+      },
+      "dynamicFrames": 3,
+      "coverage": {
+        "tiles": 6,
+        "totalRuns": 114,
+        "coveredRuns": 114,
+        "coveredControls": 7
+      }
+    },
+    {
+      "page": "home",
+      "theme": "day",
+      "width": 1366,
+      "text": {
+        "static": {
+          "checkedRuns": 21,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 21,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 8,
+        "failures": []
+      },
+      "dynamicFrames": 3
+    },
+    {
+      "page": "lobby",
+      "theme": "day",
+      "width": 1366,
+      "text": {
+        "static": {
+          "checkedRuns": 33,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 33,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 8,
+        "failures": []
+      },
+      "dynamicFrames": 3
+    },
+    {
+      "page": "game",
+      "theme": "day",
+      "width": 1366,
+      "text": {
+        "static": {
+          "checkedRuns": 48,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 48,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 24,
+        "failures": []
+      },
+      "dynamicFrames": 3
+    },
+    {
+      "page": "world",
+      "theme": "day",
+      "width": 1366,
+      "text": {
+        "static": {
+          "checkedRuns": 218,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 218,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 44,
+        "failures": []
+      },
+      "dynamicFrames": 3
+    },
+    {
+      "page": "graphics",
+      "theme": "day",
+      "width": 1366,
+      "text": {
+        "static": {
+          "checkedRuns": 81,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 81,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 28,
+        "failures": []
+      },
+      "dynamicFrames": 3
+    },
+    {
+      "page": "ai-mode",
+      "theme": "day",
+      "width": 1366,
+      "text": {
+        "static": {
+          "checkedRuns": 32,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 32,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 8,
+        "failures": []
+      },
+      "dynamicFrames": 3
+    },
+    {
+      "page": "ai-professional",
+      "theme": "day",
+      "width": 1366,
+      "text": {
+        "static": {
+          "checkedRuns": 180,
+          "failures": [],
+          "shadowRelief": []
+        },
+        "dynamic": {
+          "checkedRuns": 180,
+          "failures": [],
+          "shadowRelief": []
+        }
+      },
+      "controls": {
+        "checkedEdges": 68,
+        "failures": []
+      },
+      "dynamicFrames": 3,
+      "coverage": {
+        "tiles": 6,
+        "totalRuns": 114,
+        "coveredRuns": 114,
+        "coveredControls": 7
+      }
+    }
+  ]
+}

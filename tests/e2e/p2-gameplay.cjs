@@ -120,9 +120,17 @@ async function stop(child) {
       || (process.platform === 'win32' && existsSync('C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe')
         ? 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe' : undefined);
     browser = await chromium.launch(executablePath ? { executablePath } : {});
-    const context = await browser.newContext({ viewport: { width: 1366, height: 900 } });
+    const context = await browser.newContext({ viewport: { width: 376, height: 844 } });
     const page = await context.newPage();
     const pageErrors = [];
+    let interruptNextClarification = false;
+    let observedTurnPosts = 0;
+    const realTurnReplies=new Map();
+    function capturedTurn(response) {
+      const key=response.request().postDataJSON().idempotencyKey;
+      const captured=realTurnReplies.get(key);assert.ok(captured,'the actual upstream reply must be captured before it is forwarded to the browser');
+      assert.equal(captured.body.receipt.idempotencyKey,key);return captured.body;
+    }
     page.on('pageerror', error => pageErrors.push(error.message));
     // Forward same-origin production-bundle API requests to the real local API.
     // No gameplay response is stubbed or synthesized by the browser harness.
@@ -130,6 +138,20 @@ async function stop(child) {
       const source = new URL(route.request().url());
       if (source.pathname === '/api/auth/code' && route.request().method() === 'POST') otpRequestCount += 1;
       const response = await route.fetch({ url: `${apiOrigin}${source.pathname}${source.search}` });
+      if(source.pathname.endsWith('/turns')&&route.request().method()==='POST') {
+        observedTurnPosts++;
+        const bytes=await response.body();
+        const body=JSON.parse(bytes.toString('utf8'));
+        realTurnReplies.set(route.request().postDataJSON().idempotencyKey,{body,sha256:createHash('sha256').update(bytes).digest('hex')});
+        if(interruptNextClarification) {
+          assert.equal(body.receipt.decision.status,'clarify');
+          interruptNextClarification=false;
+          await page.evaluate(()=>{
+            const original=IDBFactory.prototype.open;
+            IDBFactory.prototype.open=function(name,...args){if(name==='jiuxiao_cloud_game_ui_v1')throw Error('fixture interruption after server settlement');return original.call(this,name,...args);};
+          });
+        }
+      }
       if (source.pathname === '/api/auth/guest' && route.request().method() === 'POST' && response.ok()) {
         ownerId = (await response.json()).account.id;
         accountSeeded = typeof ownerId === 'string';
@@ -154,7 +176,11 @@ async function stop(child) {
     await page.locator('input[name="p2-memory-mode"][value="forgetting"]').check();
     await page.getByTestId('create-server-game').click();
     await page.getByTestId('p2-cloud-game').waitFor({ state: 'visible', timeout: 20_000 });
+    await page.locator('.story-help summary').click();
     await page.getByText('真实遗忘', { exact: true }).waitFor();
+    await page.locator('.story-help summary').click();
+    await page.locator('[aria-label="故事开场"]').waitFor({state:'visible'});
+    assert.ok((await page.locator('.story-reading').boundingBox()).height >= 120, 'the real story must retain readable viewport space');
     const guestSession = await page.evaluate(async () => {
       const response = await fetch('/api/auth/session');
       return { status: response.status, body: await response.json() };
@@ -182,7 +208,15 @@ async function stop(child) {
     await page.waitForFunction(() => document.querySelector('[data-testid="p2-narrative"]')?.textContent.includes('渡槽淤了半尺'), null, { timeout: 20_000 });
     expectedRequests = 1;
     expectedEvents = 1;
-    assert.match(await page.getByTestId('p2-receipt').textContent(), /observe\.result/);
+    // The player receipt projects the committed delta. The raw event type stays
+    // in PostgreSQL and is asserted with the turn row below.
+    const receiptText = await page.getByTestId('p2-receipt').textContent();
+    assert.match(receiptText, /行动已执行/);
+    assert.match(receiptText, /耗时 15 分钟/);
+    assert.match(receiptText, /线索：无 → 渡口淤堵线索/);
+    assert.match(receiptText, /游戏分钟：300 → 315/);
+    assert.match(receiptText, /观察记录：无 → 目标：obj_ferry，方式：扫视，发现结果：发现，线索：渡口淤堵线索，线索层级：1/);
+    assert.match(receiptText, /体力：100 → 97/);
 
     const committed = await pool.query(`SELECT s.revision,s.snapshot,s.memory_mode,
       (SELECT count(*)::int FROM turn_requests r WHERE r.save_id=s.id) AS requests,
@@ -195,25 +229,92 @@ async function stop(child) {
     assert.equal(committed.rows[0].requests, expectedRequests);
     assert.equal(committed.rows[0].events, expectedEvents);
     assert.equal(committed.rows[0].last_event, 'observe.result');
+    const { PostgresCloudSaveRepository } = await import(require('node:url').pathToFileURL(join(root, 'apps/api/dist/services/postgres-cloud-save-repository.js')).href);
+    const receiptReader = new PostgresCloudSaveRepository(pool);
+    assert.equal(await receiptReader.latestReceiptForOwner('foreign-test-owner', saveId), null);
+    assert.equal((await receiptReader.latestReceiptForOwner(ownerId, saveId)).resultingRevision, 1);
+
 
     const screenshotPath = join(evidenceDir, 'p1-guest-gameplay-turn.png');
     await page.screenshot({ path: screenshotPath, fullPage: true });
     await page.reload({ waitUntil: 'domcontentloaded' });
     await page.getByTestId('p2-cloud-game').waitFor({ state: 'visible', timeout: 20_000 });
     await page.waitForFunction(() => document.querySelector('[data-testid="p2-revision"]')?.textContent === '1', null, { timeout: 20_000 });
-    await page.waitForFunction(() => document.body.innerText.includes('游戏分钟') && document.body.innerText.includes('315'), null, { timeout: 20_000 });
-    await page.getByTestId('p2-status').getByText('服务端存档已恢复').waitFor({ timeout: 20_000 });
+    await page.waitForFunction(() => document.querySelector('[data-testid="p2-game-minute"]')?.textContent === '315', null, { timeout: 20_000 });
+    await page.locator('.story-help summary').click();
+    await page.getByTestId('p2-status').getByText('服务端存档已读取。提交后请以状态回执为准。').waitFor({ timeout: 20_000 });
+    // Continue through the actual UI and real PostgreSQL, without model or rule stubs.
+    const turnEvidence = [];
+    for (let turn = 2; turn <= 10; turn += 1) {
+      await page.getByTestId('p2-action-input').fill('对岑九说：不要去望气台');
+      const response = page.waitForResponse(r => r.url().endsWith(`/api/games/${saveId}/turns`) && r.request().method() === 'POST');
+      await page.getByTestId('p2-submit-action').click();
+      const body = capturedTurn(await response);
+      assert.equal(body.receipt.decision.status, 'accepted');
+      await page.waitForFunction(revision => document.querySelector('[data-testid="p2-revision"]')?.textContent === String(revision), turn);
+      await page.getByTestId('p2-submit-action').waitFor({ state: 'visible' });
+      await page.waitForFunction(() => !document.querySelector('[data-testid="p2-action-input"]').disabled);
+      assert.match(await page.getByTestId('p2-receipt').innerText(),new RegExp(body.receipt.idempotencyKey),'the browser must display the same real receipt that was forwarded');
+      const prose = await page.getByTestId('p2-narrative').innerText();
+      assert.equal(prose.includes('此前已与此人谈过同一话题'), false, 'signed deterministic narration does not yet consume prior memory');
+      turnEvidence.push({ turn, revision: body.receipt.resultingRevision, narrative: prose });
+      expectedRequests += 1; expectedEvents += body.receipt.decision.events.length;
+    }
+    await page.getByTestId('p2-action-input').fill('打开时光裂缝');
+    const rejectedResponse = page.waitForResponse(r => r.url().endsWith(`/api/games/${saveId}/turns`) && r.request().method() === 'POST');
+    await page.getByTestId('p2-submit-action').click();
+    const rejected = capturedTurn(await rejectedResponse);
+    assert.notEqual(rejected.receipt.decision.status, 'accepted');
+    assert.equal(rejected.receipt.resultingRevision, 10);
+    // A normal refresh starts after the UI has finished persisting this known result.
+    await page.getByTestId('p2-receipt').getByText('还需要补充说明。',{exact:true}).waitFor();
+    await page.waitForFunction(()=>{const input=document.querySelector('[data-testid="p2-action-input"]');return input&&!input.disabled;});
+    expectedRequests += 1;
+    const memoryRows = await pool.query('SELECT event_revision,summary,memory_class FROM npc_authorized_observation_outbox WHERE save_id=$1 ORDER BY event_revision', [saveId]);
+    assert.equal(memoryRows.rows.length, 9);
+    assert.equal(memoryRows.rows[0].event_revision, 2);
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => document.querySelector('[data-testid="p2-revision"]')?.textContent === '10');
+    await page.locator('.story-help summary').click();
+    await page.getByTestId('p2-receipt').getByText('行动已执行。', {exact:true}).waitFor();
+    await page.waitForFunction(() => !document.querySelector('[data-testid="p2-action-input"]').disabled);
+    for (const width of [390, 1366]) {
+      await page.setViewportSize({ width, height: 844 });
+      assert.ok((await page.locator('.story-reading').boundingBox()).height >= 120);
+    }
+    await page.getByTestId('p2-action-input').fill('未提交的行动草稿');
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => document.querySelector('[data-testid="p2-action-input"]')?.value === '未提交的行动草稿');
+    // Reproduce the Linux failure deterministically: the real server commits a clarification,
+    // but the browser cannot finalize its local pending record before navigation.
+    await page.waitForFunction(()=>{const input=document.querySelector('[data-testid="p2-action-input"]');return input&&!input.disabled;});
+    interruptNextClarification=true;
+    await page.getByTestId('p2-action-input').fill('打开时光裂缝');
+    const interruptedResponse=page.waitForResponse(r=>r.request().method()==='POST'&&r.url().endsWith(`/api/games/${saveId}/turns`));
+    await page.getByTestId('p2-submit-action').click();
+    const interrupted=capturedTurn(await interruptedResponse);expectedRequests++;
+    const postsBeforeRecovery=observedTurnPosts;
+    await page.reload({waitUntil:'domcontentloaded'});
+    await page.waitForFunction(()=>document.querySelector('[data-testid="p2-revision"]')?.textContent==='10');
+    await page.locator('.story-help summary').click();
+    await page.getByTestId('p2-status').filter({hasText:'已从服务端恢复回执'}).waitFor();
+    await page.getByTestId('p2-receipt').getByText('还需要补充说明。',{exact:true}).waitFor();
+    assert.match(await page.getByTestId('p2-receipt').innerText(),new RegExp(interrupted.receipt.idempotencyKey));
+    assert.equal(observedTurnPosts,postsBeforeRecovery,'recovery must only query the committed receipt, without POST');
+    assert.equal(await page.getByTestId('p2-action-input').inputValue(),'打开时光裂缝');
+    assert.equal(await page.getByTestId('p2-revision').innerText(),'10','clarification recovery must not advance world state');
+    require('node:fs').writeFileSync(join(evidenceDir, 'first-play-continuous-pg.json'), JSON.stringify({ turnEvidence, memoryRows: memoryRows.rows, rejected: rejected.receipt.decision.status, browserVersion:browser.version(),platform:process.platform,turnReplyHashes:[...realTurnReplies].map(([id,row])=>({id,sha256:row.sha256})) }, null, 2));
     assert.deepEqual(pageErrors, []);
 
     console.log(JSON.stringify({
       journey: 'built web -> unseeded zero-identity guest -> server game create -> parseActionText -> PostgreSQL turn -> narrative and receipt -> refresh restore',
       saveId,
       memoryMode: 'forgetting',
-      revision: committed.rows[0].revision,
-      gameMinute: committed.rows[0].snapshot.facts.gameMinute,
+      revision: Number(await page.getByTestId('p2-revision').textContent()),
+      initialGameMinute: committed.rows[0].snapshot.facts.gameMinute,
       turnRequests: expectedRequests,
       committedEvents: expectedEvents,
-      eventType: committed.rows[0].last_event,
+      initialEventType: committed.rows[0].last_event,
       refreshedRevision: await page.getByTestId('p2-revision').textContent(),
       pageErrors: pageErrors.length,
       screenshot: screenshotPath,
@@ -223,6 +324,15 @@ async function stop(child) {
       server: 'real PostgreSQL transaction; isolated test database; no seeded session or email OTP; non-production approved review plugin',
     }, null, 2));
     await context.close();
+  } catch(error) {
+    const page=browser?.contexts()[0]?.pages()[0];
+    if(page) {
+      await page.screenshot({path:join(evidenceDir,'p2-gameplay-failure.png'),fullPage:true}).catch(()=>{});
+      const state=await page.evaluate(()=>({text:document.body.innerText,input:document.querySelector('[data-testid="p2-action-input"]')?.value})).catch(()=>null);
+      require('node:fs').writeFileSync(join(evidenceDir,'p2-gameplay-failure.json'),JSON.stringify({error:String(error),state},null,2));
+      console.error(JSON.stringify({browser:browser.version(),platform:process.platform,error:String(error),state}));
+    }
+    throw error;
   } finally {
     await browser?.close();
     await stop(webChild);

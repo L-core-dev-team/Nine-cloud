@@ -52,6 +52,10 @@ jobs:
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jiuxiao_test
       - run: pnpm license:check
+      - name: Verify fresh and existing database migration paths
+        run: node tests/integration/migration-upgrade.mjs
+        env:
+          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jiuxiao_test
       - name: Test the dependency licence policy
         run: pnpm exec vitest run scripts/audit/license-check.test.mjs
       - name: Test GitHub evidence synchronization gate
@@ -73,6 +77,10 @@ jobs:
             caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
       - run: pnpm typecheck
       - run: pnpm test
+      - name: Test the Pages API relay and Route A boundary
+        run: pnpm test:pages-relay
+      - name: Verify isolated playtest invitation and proxy boundaries
+        run: pnpm test:playtest-gateway
       - run: pnpm build
       - name: Scan web artifacts for scene packages
         # Defense in depth: the workspace build excludes the unapproved scene

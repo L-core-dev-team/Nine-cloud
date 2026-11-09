@@ -1,0 +1,8 @@
+{
+  "version": "p6-reader-proposal-v1",
+  "backendFactory": true,
+  "PASS": 30,
+  "FAIL": 0,
+  "backend": "external Reader factory",
+  "productionDependencies": "6 BLOCKED; passing the synthetic suite does not establish production readiness"
+}

@@ -1,0 +1,145 @@
+{
+  "kind": "prose",
+  "count": 3000,
+  "questionsSha256": "36a3bd9cf8080da62a59bae6a89fd5b34a28b112d96e5c4366591f15754d70d0",
+  "reusedWriter": false,
+  "crashRecovery": null,
+  "writer": {
+    "pid": 39736,
+    "root": "0f68c54524d4117eeeb1139dc51f4cc0ed9cf0e285bb176b4700b78616111d5f",
+    "count": 3000,
+    "saved": 3000,
+    "duplicates": 0,
+    "writeMs": 2263.7502,
+    "writeP50Ms": 0.703200000000038,
+    "writeP95Ms": 0.9134999999999991,
+    "duplicateMs": 0.902599999999893,
+    "dbBytes": 5046272,
+    "bodyBytes": 440334,
+    "heapUsed": 17817736,
+    "sqlite": "WAL + synchronous FULL"
+  },
+  "reader": {
+    "pid": 13600,
+    "restoreMs": 152.221,
+    "restoredRoot": "0f68c54524d4117eeeb1139dc51f4cc0ed9cf0e285bb176b4700b78616111d5f",
+    "restoredCount": 3000,
+    "unboundWorldLabelsExcluded": 7,
+    "heapUsed": 97064480,
+    "builds": [
+      {
+        "audience": {
+          "kind": "player"
+        },
+        "firstSearchIncludingIndexMs": 146.6239999999998,
+        "indexBuildMs": 137.72279999999955
+      },
+      {
+        "audience": {
+          "kind": "npc",
+          "npcId": "observer"
+        },
+        "firstSearchIncludingIndexMs": 9.695299999999406,
+        "indexBuildMs": 7.980799999999363
+      }
+    ],
+    "viewBuildCount": 134,
+    "viewBuildTotalMs": 3447.7204000000033,
+    "runs": [
+      {
+        "budget": 512,
+        "queries": 200,
+        "pass": 197,
+        "fail": 3,
+        "sourceRecall": 0.9785714285714285,
+        "sourcePrecision": 0.958041958041958,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "byteChecks": 149,
+        "estimatedTokensMean": 34.65,
+        "estimatedTokensMax": 103,
+        "endToEndP50Ms": 2.2390000000000327,
+        "endToEndP95Ms": 15.653999999999996,
+        "endToEndMaxMs": 89.19119999999998
+      },
+      {
+        "budget": 1024,
+        "queries": 200,
+        "pass": 197,
+        "fail": 3,
+        "sourceRecall": 0.9785714285714285,
+        "sourcePrecision": 0.958041958041958,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "byteChecks": 149,
+        "estimatedTokensMean": 34.65,
+        "estimatedTokensMax": 103,
+        "endToEndP50Ms": 2.351799999999912,
+        "endToEndP95Ms": 12.638699999999972,
+        "endToEndMaxMs": 72.99180000000001
+      },
+      {
+        "budget": 2048,
+        "queries": 200,
+        "pass": 197,
+        "fail": 3,
+        "sourceRecall": 0.9785714285714285,
+        "sourcePrecision": 0.958041958041958,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "byteChecks": 149,
+        "estimatedTokensMean": 34.65,
+        "estimatedTokensMax": 103,
+        "endToEndP50Ms": 2.8484000000003107,
+        "endToEndP95Ms": 24.566100000000006,
+        "endToEndMaxMs": 126.77389999999968
+      },
+      {
+        "budget": 4096,
+        "queries": 200,
+        "pass": 197,
+        "fail": 3,
+        "sourceRecall": 0.9785714285714285,
+        "sourcePrecision": 0.958041958041958,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "byteChecks": 149,
+        "estimatedTokensMean": 34.65,
+        "estimatedTokensMax": 103,
+        "endToEndP50Ms": 3.13970000000063,
+        "endToEndP95Ms": 23.33100000000013,
+        "endToEndMaxMs": 144.95350000000053
+      }
+    ],
+    "processResource": {
+      "userCPUTime": 8640000,
+      "systemCPUTime": 484000,
+      "maxRSS": 474100,
+      "sharedMemorySize": 0,
+      "unsharedDataSize": 0,
+      "unsharedStackSize": 0,
+      "minorPageFault": 0,
+      "majorPageFault": 174836,
+      "swappedOut": 0,
+      "fsRead": 5033,
+      "fsWrite": 3,
+      "ipcSent": 0,
+      "ipcReceived": 0,
+      "signalsCount": 0,
+      "voluntaryContextSwitches": 0,
+      "involuntaryContextSwitches": 0
+    }
+  }
+}

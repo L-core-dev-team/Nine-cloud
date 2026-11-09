@@ -15,6 +15,7 @@ describe('turnstile siteverify', () => {
   it('submits secret, response and optional remoteip, and accepts a success verdict', async () => {
     const calls: Array<{ url: string; body: string }> = [];
     const verify = createTurnstileVerifier('secret-key', async (url, init) => {
+      expect(init?.redirect).toBe('error');
       calls.push({ url, body: String(init?.body) });
       return jsonResponse({ success: true });
     });
@@ -39,6 +40,11 @@ describe('turnstile siteverify', () => {
 
   it('rejects construction without a secret', () => {
     expect(() => createTurnstileVerifier('')).toThrow();
+  });
+
+  it.each([null, [], 'ok', { success: 'true' }])('maps malformed provider JSON to a typed CAPTCHA failure: %j', async payload => {
+    const verify = createTurnstileVerifier('secret', async () => jsonResponse(payload));
+    await expect(verify('token')).rejects.toMatchObject({ code: 'CAPTCHA_INVALID', stage: 'captcha_verify' });
   });
 });
 

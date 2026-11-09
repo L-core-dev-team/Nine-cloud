@@ -1,0 +1,59 @@
+{
+  "mode": "baseline",
+  "count": 3000,
+  "restoreMs": 41.810900000000004,
+  "coldAfterEvictionMs": 18.07109999999966,
+  "concurrencyMs": 36.7201,
+  "concurrencyNote": "Promise-scheduled single-process calls are serialized CPU work, not a true multi-worker concurrency throughput benchmark.",
+  "queries": 40,
+  "pass": 32,
+  "maxSampledRss": 637538304,
+  "maxSampledHeap": 426571408,
+  "runs": [
+    {
+      "budget": 512,
+      "p50Ms": 15.68259999999998,
+      "p95Ms": 300.39919999999995,
+      "queryMs": 688.4721999999999
+    },
+    {
+      "budget": 1024,
+      "p50Ms": 19.89230000000009,
+      "p95Ms": 284.20590000000004,
+      "queryMs": 681.4536
+    },
+    {
+      "budget": 2048,
+      "p50Ms": 10.416299999999865,
+      "p95Ms": 298.1151,
+      "queryMs": 664.3490999999997
+    },
+    {
+      "budget": 4096,
+      "p50Ms": 11.822400000000016,
+      "p95Ms": 287.5488,
+      "queryMs": 652.0569999999998
+    }
+  ],
+  "stats": {
+    "hits": 41,
+    "misses": 44,
+    "evictions": 36,
+    "builds": 44,
+    "buildMs": 2499.0186000000003,
+    "originalBytesRead": 70332,
+    "maxEntries": 4,
+    "maxEstimatedBytes": 7608054,
+    "currentEntries": 4,
+    "currentEstimatedBytes": 2557543,
+    "entryLimit": 4,
+    "estimatedByteLimit": 134217728,
+    "sourceRoot": "cf1d58aabfcc3d99a720441b84e4d6770aaae3d98da8d4bd0c8e445d79e5882a",
+    "policyEpoch": 0,
+    "limitation": "Serialization bounds are not heap bounds; offline whole-source policy simulation only; original bytes are logical reads, not physical disk IO."
+  },
+  "dataSha256": "cf1d58aabfcc3d99a720441b84e4d6770aaae3d98da8d4bd0c8e445d79e5882a",
+  "questionsSha256": "a36c5750fa151be538789160c306f00217346bcb3b0e1cd728c0ae2b7852f1ac",
+  "indexSerializedBytesEstimate": 7608054,
+  "sourceBytes": 4924616
+}

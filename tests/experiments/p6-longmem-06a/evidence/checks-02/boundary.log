@@ -1,0 +1,42 @@
+(node:11500) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/Users/11954/Desktop/%E6%B0%B4%E9%BE%99%E5%90%9F%E4%B8%93%E7%94%A8/%E9%A1%B9%E7%9B%AE/Nine-cloud-P6-longmem-06a-20261014/tests/experiments/p6-longmem-06a/boundary.test.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-P6-longmem-06a-20261014\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✖ frozen consumed evidence: four budgets remain strict failures, not mislabeled successful refusals (60.2685ms)
+✔ punctuation restart loses governing condition: 岑苇问：“如果这只是演练，会不会这样？ (2.1189ms)
+✔ punctuation restart loses governing condition: 岑苇说：“下列只是传闻，不代表此事发生。 (0.5363ms)
+✔ punctuation restart loses governing condition: 岑苇说：“我否认下面这段记载。 (0.2835ms)
+✔ punctuation restart loses governing condition: 杜桐问：“若岑苇没有在场，能否出现这种说法？ (0.3092ms)
+✔ blank paragraph cannot prove a quote has ended (0.4109ms)
+✔ fresh speaker attribution cannot close somebody else’s quotation (0.5355ms)
+✔ unclosed “ is not silently reset before an event (1.0796ms)
+✔ unclosed ‘ is not silently reset before an event (0.5773ms)
+✔ unclosed 「 is not silently reset before an event (0.5382ms)
+✔ unclosed 『 is not silently reset before an event (0.6236ms)
+✔ unclosed " is not silently reset before an event (0.6219ms)
+✔ balanced nested quotation still preserves original outer bounds (0.7817ms)
+✔ closed different speakers stay separate; one cannot donate a speech interval to the other (0.801ms)
+✔ real source boundary isolates a malformed quote without rewriting either source (0.3253ms)
+✔ closing delimiter after apparent event still makes it part of the preceding quote (0.1593ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 15
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 228.6266
+
+✖ failing tests:
+
+test at tests\experiments\p6-longmem-06a\boundary.test.ts:22:1
+✖ frozen consumed evidence: four budgets remain strict failures, not mislabeled successful refusals (60.2685ms)
+  TypeError: Invalid query/budget
+      at HardenedIndex.search (file:///C:/Users/11954/Desktop/%E6%B0%B4%E9%BE%99%E5%90%9F%E4%B8%93%E7%94%A8/%E9%A1%B9%E7%9B%AE/Nine-cloud-P6-longmem-06a-20261014/tests/experiments/p6-longmem-06/typed.ts:57:166)
+      at LexicalIndex.search (file:///C:/Users/11954/Desktop/%E6%B0%B4%E9%BE%99%E5%90%9F%E4%B8%93%E7%94%A8/%E9%A1%B9%E7%9B%AE/Nine-cloud-P6-longmem-06a-20261014/tests/experiments/p6-longmem-06/retrieval.ts:38:26)
+      at TestContext.<anonymous> (file:///C:/Users/11954/Desktop/%E6%B0%B4%E9%BE%99%E5%90%9F%E4%B8%93%E7%94%A8/%E9%A1%B9%E7%9B%AE/Nine-cloud-P6-longmem-06a-20261014/tests/experiments/p6-longmem-06a/boundary.test.ts:29:58)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)

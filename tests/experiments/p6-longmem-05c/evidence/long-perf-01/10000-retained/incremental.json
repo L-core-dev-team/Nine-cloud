@@ -1,0 +1,9 @@
+{
+  "initialMs": 50.802700000000186,
+  "fullMs": 29.569100000000162,
+  "incrementalMs": 51.395500000000084,
+  "sharedEntries": 10001,
+  "oldSources": 10000,
+  "unchangedEvidence": true,
+  "limitation": "Sentence-cache reuse measured on sparse NPC evidence projection; full typed index still rebuilt; does not prove incremental database IO."
+}

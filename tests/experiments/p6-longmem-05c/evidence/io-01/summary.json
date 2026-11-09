@@ -1,0 +1,98 @@
+[
+  {
+    "count": 1000,
+    "buildMs": 21.122799999999998,
+    "fileBytes": 1652203,
+    "indexBytesEstimate": 122030,
+    "modes": [
+      {
+        "mode": "whole",
+        "queries": 24,
+        "bytesRead": 39652872,
+        "reads": 24,
+        "p50Ms": 4.197599999999994,
+        "p95Ms": 6.162999999999997,
+        "totalMs": 106.48229999999992,
+        "rss": 101396480,
+        "heap": 32429816
+      },
+      {
+        "mode": "on-demand",
+        "queries": 24,
+        "bytesRead": 63385,
+        "reads": 30,
+        "p50Ms": 0.045200000000022555,
+        "p95Ms": 0.21529999999998495,
+        "totalMs": 2.1141000000000076,
+        "rss": 101842944,
+        "heap": 32834904
+      }
+    ],
+    "sameOriginalBytes": true,
+    "limitation": "Measures requested filesystem bytes; OS page cache and physical device reads are not measured. Retrieval authorization is inherited from independently verified frozen result IDs; this is not a production original Reader."
+  },
+  {
+    "count": 3000,
+    "buildMs": 51.76519999999999,
+    "fileBytes": 4922327,
+    "indexBytesEstimate": 369976,
+    "modes": [
+      {
+        "mode": "whole",
+        "queries": 24,
+        "bytesRead": 118135848,
+        "reads": 24,
+        "p50Ms": 10.413999999999987,
+        "p95Ms": 15.891700000000014,
+        "totalMs": 267.22569999999996,
+        "rss": 156610560,
+        "heap": 33007640
+      },
+      {
+        "mode": "on-demand",
+        "queries": 24,
+        "bytesRead": 61499,
+        "reads": 29,
+        "p50Ms": 0.028599999999983083,
+        "p95Ms": 0.241800000000012,
+        "totalMs": 1.3072999999996,
+        "rss": 156626944,
+        "heap": 33323560
+      }
+    ],
+    "sameOriginalBytes": true,
+    "limitation": "Measures requested filesystem bytes; OS page cache and physical device reads are not measured. Retrieval authorization is inherited from independently verified frozen result IDs; this is not a production original Reader."
+  },
+  {
+    "count": 10000,
+    "buildMs": 184.5517000000001,
+    "fileBytes": 16383718,
+    "indexBytesEstimate": 1241841,
+    "modes": [
+      {
+        "mode": "whole",
+        "queries": 24,
+        "bytesRead": 393209232,
+        "reads": 24,
+        "p50Ms": 36.44369999999992,
+        "p95Ms": 48.459100000000035,
+        "totalMs": 937.1058000000003,
+        "rss": 246202368,
+        "heap": 59598344
+      },
+      {
+        "mode": "on-demand",
+        "queries": 24,
+        "bytesRead": 62185,
+        "reads": 29,
+        "p50Ms": 0.02729999999996835,
+        "p95Ms": 0.2357999999999265,
+        "totalMs": 1.2756000000001677,
+        "rss": 246378496,
+        "heap": 59894008
+      }
+    ],
+    "sameOriginalBytes": true,
+    "limitation": "Measures requested filesystem bytes; OS page cache and physical device reads are not measured. Retrieval authorization is inherited from independently verified frozen result IDs; this is not a production original Reader."
+  }
+]

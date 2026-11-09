@@ -1,0 +1,1825 @@
+{
+  "testedSourceSha": "c8a2c976e668daf8838a3366e790a97e71a71083",
+  "finalUnseal": false,
+  "tokenMethod": "ESTIMATE ceil(UTF-8 bytes/2), excludes system/query/output; not API billing",
+  "latencyMethod": "single sequential local process; index construction separated; no production SLO",
+  "freezeManifest": {
+    "stage": "PRE_IMPLEMENTATION_FREEZE",
+    "synthetic": true,
+    "developmentCount": 100,
+    "holdoutCount": 100,
+    "split": "first ten scenes development; last ten scenes held out; no scene shared",
+    "policy": "Same AI authored, not human independent blind test. Holdout evaluated only after retrieval source freeze; no retuning after unseal.",
+    "files": [
+      {
+        "name": "history-1000.json",
+        "bytes": 411597,
+        "sha256": "2963dc2589b6f56a4de0fe3dee2ee01a70ae0c2a6a33325de88acd75ad302414"
+      },
+      {
+        "name": "development.json",
+        "bytes": 58997,
+        "sha256": "697ab2ab93385cfa971835f7cd33b5f1b0c2637375ea0c332c605d807bbfd95b"
+      },
+      {
+        "name": "holdout.json",
+        "bytes": 59206,
+        "sha256": "2c7e89694f28269cf9fbc92157db475a9c93a25aff6952612bab033d93cec033"
+      }
+    ]
+  },
+  "runs": [
+    {
+      "set": "original60-200",
+      "engine": "p602",
+      "budget": 512,
+      "indexBuildMs": 2.2771000000000043,
+      "metrics": {
+        "PASS": 60,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8860759493670886,
+        "answerSpanPass": 60,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06808452809675886,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 122.86666666666666,
+        "estimatedTokensMax": 482,
+        "latencyMeanMs": 0.18803333333333375,
+        "latencyP95Ms": 0.4095000000000084
+      },
+      "categories": {
+        "public-regression": {
+          "total": 60,
+          "pass": 60
+        }
+      }
+    },
+    {
+      "set": "original60-200",
+      "engine": "p602",
+      "budget": 1024,
+      "indexBuildMs": 2.2771000000000043,
+      "metrics": {
+        "PASS": 60,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8860759493670886,
+        "answerSpanPass": 60,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06808452809675886,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 122.86666666666666,
+        "estimatedTokensMax": 482,
+        "latencyMeanMs": 0.10608333333333349,
+        "latencyP95Ms": 0.22919999999999163
+      },
+      "categories": {
+        "public-regression": {
+          "total": 60,
+          "pass": 60
+        }
+      }
+    },
+    {
+      "set": "original60-200",
+      "engine": "p602",
+      "budget": 2048,
+      "indexBuildMs": 2.2771000000000043,
+      "metrics": {
+        "PASS": 60,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8860759493670886,
+        "answerSpanPass": 60,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06808452809675886,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 122.86666666666666,
+        "estimatedTokensMax": 482,
+        "latencyMeanMs": 0.09558500000000122,
+        "latencyP95Ms": 0.21760000000000446
+      },
+      "categories": {
+        "public-regression": {
+          "total": 60,
+          "pass": 60
+        }
+      }
+    },
+    {
+      "set": "original60-200",
+      "engine": "p602",
+      "budget": 4096,
+      "indexBuildMs": 2.2771000000000043,
+      "metrics": {
+        "PASS": 60,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8860759493670886,
+        "answerSpanPass": 60,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06808452809675886,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 122.86666666666666,
+        "estimatedTokensMax": 482,
+        "latencyMeanMs": 0.06890333333333369,
+        "latencyP95Ms": 0.16679999999999495
+      },
+      "categories": {
+        "public-regression": {
+          "total": 60,
+          "pass": 60
+        }
+      }
+    },
+    {
+      "set": "original60-200",
+      "engine": "prose",
+      "budget": 512,
+      "indexBuildMs": 7.735600000000005,
+      "metrics": {
+        "PASS": 60,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8860759493670886,
+        "answerSpanPass": 60,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06808452809675886,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 122.86666666666666,
+        "estimatedTokensMax": 482,
+        "latencyMeanMs": 0.21723833333333242,
+        "latencyP95Ms": 0.6920000000000073
+      },
+      "categories": {
+        "public-regression": {
+          "total": 60,
+          "pass": 60
+        }
+      }
+    },
+    {
+      "set": "original60-200",
+      "engine": "prose",
+      "budget": 1024,
+      "indexBuildMs": 7.735600000000005,
+      "metrics": {
+        "PASS": 60,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8860759493670886,
+        "answerSpanPass": 60,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06808452809675886,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 122.86666666666666,
+        "estimatedTokensMax": 482,
+        "latencyMeanMs": 0.15100833333333222,
+        "latencyP95Ms": 0.36010000000001696
+      },
+      "categories": {
+        "public-regression": {
+          "total": 60,
+          "pass": 60
+        }
+      }
+    },
+    {
+      "set": "original60-200",
+      "engine": "prose",
+      "budget": 2048,
+      "indexBuildMs": 7.735600000000005,
+      "metrics": {
+        "PASS": 60,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8860759493670886,
+        "answerSpanPass": 60,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06808452809675886,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 122.86666666666666,
+        "estimatedTokensMax": 482,
+        "latencyMeanMs": 0.13150500000000137,
+        "latencyP95Ms": 0.3076000000000363
+      },
+      "categories": {
+        "public-regression": {
+          "total": 60,
+          "pass": 60
+        }
+      }
+    },
+    {
+      "set": "original60-200",
+      "engine": "prose",
+      "budget": 4096,
+      "indexBuildMs": 7.735600000000005,
+      "metrics": {
+        "PASS": 60,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8860759493670886,
+        "answerSpanPass": 60,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06808452809675886,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 122.86666666666666,
+        "estimatedTokensMax": 482,
+        "latencyMeanMs": 0.13951166666666193,
+        "latencyP95Ms": 0.30450000000001864
+      },
+      "categories": {
+        "public-regression": {
+          "total": 60,
+          "pass": 60
+        }
+      }
+    },
+    {
+      "set": "original60-500",
+      "engine": "p602",
+      "budget": 512,
+      "indexBuildMs": 6.50690000000003,
+      "metrics": {
+        "PASS": 60,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8860759493670886,
+        "answerSpanPass": 60,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06808452809675886,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 122.86666666666666,
+        "estimatedTokensMax": 482,
+        "latencyMeanMs": 0.07303000000000376,
+        "latencyP95Ms": 0.16679999999996653
+      },
+      "categories": {
+        "public-regression": {
+          "total": 60,
+          "pass": 60
+        }
+      }
+    },
+    {
+      "set": "original60-500",
+      "engine": "p602",
+      "budget": 1024,
+      "indexBuildMs": 6.50690000000003,
+      "metrics": {
+        "PASS": 60,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8860759493670886,
+        "answerSpanPass": 60,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06808452809675886,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 122.86666666666666,
+        "estimatedTokensMax": 482,
+        "latencyMeanMs": 0.07384666666666344,
+        "latencyP95Ms": 0.17660000000000764
+      },
+      "categories": {
+        "public-regression": {
+          "total": 60,
+          "pass": 60
+        }
+      }
+    },
+    {
+      "set": "original60-500",
+      "engine": "p602",
+      "budget": 2048,
+      "indexBuildMs": 6.50690000000003,
+      "metrics": {
+        "PASS": 60,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8860759493670886,
+        "answerSpanPass": 60,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06808452809675886,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 122.86666666666666,
+        "estimatedTokensMax": 482,
+        "latencyMeanMs": 0.10090833333333175,
+        "latencyP95Ms": 0.20139999999997826
+      },
+      "categories": {
+        "public-regression": {
+          "total": 60,
+          "pass": 60
+        }
+      }
+    },
+    {
+      "set": "original60-500",
+      "engine": "p602",
+      "budget": 4096,
+      "indexBuildMs": 6.50690000000003,
+      "metrics": {
+        "PASS": 60,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8860759493670886,
+        "answerSpanPass": 60,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06808452809675886,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 122.86666666666666,
+        "estimatedTokensMax": 482,
+        "latencyMeanMs": 0.07320833333333117,
+        "latencyP95Ms": 0.1963999999999828
+      },
+      "categories": {
+        "public-regression": {
+          "total": 60,
+          "pass": 60
+        }
+      }
+    },
+    {
+      "set": "original60-500",
+      "engine": "prose",
+      "budget": 512,
+      "indexBuildMs": 9.905999999999949,
+      "metrics": {
+        "PASS": 60,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8860759493670886,
+        "answerSpanPass": 60,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06808452809675886,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 122.86666666666666,
+        "estimatedTokensMax": 482,
+        "latencyMeanMs": 0.11566333333333319,
+        "latencyP95Ms": 0.2785999999999831
+      },
+      "categories": {
+        "public-regression": {
+          "total": 60,
+          "pass": 60
+        }
+      }
+    },
+    {
+      "set": "original60-500",
+      "engine": "prose",
+      "budget": 1024,
+      "indexBuildMs": 9.905999999999949,
+      "metrics": {
+        "PASS": 60,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8860759493670886,
+        "answerSpanPass": 60,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06808452809675886,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 122.86666666666666,
+        "estimatedTokensMax": 482,
+        "latencyMeanMs": 0.14059833333333718,
+        "latencyP95Ms": 0.3091000000000008
+      },
+      "categories": {
+        "public-regression": {
+          "total": 60,
+          "pass": 60
+        }
+      }
+    },
+    {
+      "set": "original60-500",
+      "engine": "prose",
+      "budget": 2048,
+      "indexBuildMs": 9.905999999999949,
+      "metrics": {
+        "PASS": 60,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8860759493670886,
+        "answerSpanPass": 60,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06808452809675886,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 122.86666666666666,
+        "estimatedTokensMax": 482,
+        "latencyMeanMs": 0.10081666666666252,
+        "latencyP95Ms": 0.248800000000017
+      },
+      "categories": {
+        "public-regression": {
+          "total": 60,
+          "pass": 60
+        }
+      }
+    },
+    {
+      "set": "original60-500",
+      "engine": "prose",
+      "budget": 4096,
+      "indexBuildMs": 9.905999999999949,
+      "metrics": {
+        "PASS": 60,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8860759493670886,
+        "answerSpanPass": 60,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06808452809675886,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 122.86666666666666,
+        "estimatedTokensMax": 482,
+        "latencyMeanMs": 0.10530500000000037,
+        "latencyP95Ms": 0.252900000000011
+      },
+      "categories": {
+        "public-regression": {
+          "total": 60,
+          "pass": 60
+        }
+      }
+    },
+    {
+      "set": "original60-1000",
+      "engine": "p602",
+      "budget": 512,
+      "indexBuildMs": 9.85329999999999,
+      "metrics": {
+        "PASS": 60,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8860759493670886,
+        "answerSpanPass": 60,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06808452809675886,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 122.86666666666666,
+        "estimatedTokensMax": 482,
+        "latencyMeanMs": 0.07303333333333625,
+        "latencyP95Ms": 0.16720000000003665
+      },
+      "categories": {
+        "public-regression": {
+          "total": 60,
+          "pass": 60
+        }
+      }
+    },
+    {
+      "set": "original60-1000",
+      "engine": "p602",
+      "budget": 1024,
+      "indexBuildMs": 9.85329999999999,
+      "metrics": {
+        "PASS": 60,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8860759493670886,
+        "answerSpanPass": 60,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06808452809675886,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 122.86666666666666,
+        "estimatedTokensMax": 482,
+        "latencyMeanMs": 0.07409666666666984,
+        "latencyP95Ms": 0.17530000000004975
+      },
+      "categories": {
+        "public-regression": {
+          "total": 60,
+          "pass": 60
+        }
+      }
+    },
+    {
+      "set": "original60-1000",
+      "engine": "p602",
+      "budget": 2048,
+      "indexBuildMs": 9.85329999999999,
+      "metrics": {
+        "PASS": 60,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8860759493670886,
+        "answerSpanPass": 60,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06808452809675886,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 122.86666666666666,
+        "estimatedTokensMax": 482,
+        "latencyMeanMs": 0.07366833333332655,
+        "latencyP95Ms": 0.1831000000000813
+      },
+      "categories": {
+        "public-regression": {
+          "total": 60,
+          "pass": 60
+        }
+      }
+    },
+    {
+      "set": "original60-1000",
+      "engine": "p602",
+      "budget": 4096,
+      "indexBuildMs": 9.85329999999999,
+      "metrics": {
+        "PASS": 60,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8860759493670886,
+        "answerSpanPass": 60,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06808452809675886,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 122.86666666666666,
+        "estimatedTokensMax": 482,
+        "latencyMeanMs": 0.07333666666666355,
+        "latencyP95Ms": 0.16570000000001528
+      },
+      "categories": {
+        "public-regression": {
+          "total": 60,
+          "pass": 60
+        }
+      }
+    },
+    {
+      "set": "original60-1000",
+      "engine": "prose",
+      "budget": 512,
+      "indexBuildMs": 21.33069999999998,
+      "metrics": {
+        "PASS": 60,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8860759493670886,
+        "answerSpanPass": 60,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06808452809675886,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 122.86666666666666,
+        "estimatedTokensMax": 482,
+        "latencyMeanMs": 0.11101333333334082,
+        "latencyP95Ms": 0.25679999999999836
+      },
+      "categories": {
+        "public-regression": {
+          "total": 60,
+          "pass": 60
+        }
+      }
+    },
+    {
+      "set": "original60-1000",
+      "engine": "prose",
+      "budget": 1024,
+      "indexBuildMs": 21.33069999999998,
+      "metrics": {
+        "PASS": 60,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8860759493670886,
+        "answerSpanPass": 60,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06808452809675886,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 122.86666666666666,
+        "estimatedTokensMax": 482,
+        "latencyMeanMs": 0.13864833333334067,
+        "latencyP95Ms": 0.3345999999999094
+      },
+      "categories": {
+        "public-regression": {
+          "total": 60,
+          "pass": 60
+        }
+      }
+    },
+    {
+      "set": "original60-1000",
+      "engine": "prose",
+      "budget": 2048,
+      "indexBuildMs": 21.33069999999998,
+      "metrics": {
+        "PASS": 60,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8860759493670886,
+        "answerSpanPass": 60,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06808452809675886,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 122.86666666666666,
+        "estimatedTokensMax": 482,
+        "latencyMeanMs": 0.13665333333332796,
+        "latencyP95Ms": 0.33609999999998763
+      },
+      "categories": {
+        "public-regression": {
+          "total": 60,
+          "pass": 60
+        }
+      }
+    },
+    {
+      "set": "original60-1000",
+      "engine": "prose",
+      "budget": 4096,
+      "indexBuildMs": 21.33069999999998,
+      "metrics": {
+        "PASS": 60,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8860759493670886,
+        "answerSpanPass": 60,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06808452809675886,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 122.86666666666666,
+        "estimatedTokensMax": 482,
+        "latencyMeanMs": 0.16950833333332865,
+        "latencyP95Ms": 0.34769999999991796
+      },
+      "categories": {
+        "public-regression": {
+          "total": 60,
+          "pass": 60
+        }
+      }
+    },
+    {
+      "set": "p602-development50",
+      "engine": "p602",
+      "budget": 512,
+      "indexBuildMs": 7.818899999999985,
+      "metrics": {
+        "PASS": 50,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.9166666666666666,
+        "answerSpanPass": 50,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.05232558139534884,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 223.8,
+        "estimatedTokensMax": 457,
+        "latencyMeanMs": 0.5968039999999928,
+        "latencyP95Ms": 1.0749000000000706
+      },
+      "categories": {
+        "public-regression": {
+          "total": 50,
+          "pass": 50
+        }
+      }
+    },
+    {
+      "set": "p602-development50",
+      "engine": "p602",
+      "budget": 1024,
+      "indexBuildMs": 7.818899999999985,
+      "metrics": {
+        "PASS": 50,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.9166666666666666,
+        "answerSpanPass": 50,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.05232558139534884,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 223.8,
+        "estimatedTokensMax": 457,
+        "latencyMeanMs": 0.629882,
+        "latencyP95Ms": 1.2427000000000135
+      },
+      "categories": {
+        "public-regression": {
+          "total": 50,
+          "pass": 50
+        }
+      }
+    },
+    {
+      "set": "p602-development50",
+      "engine": "p602",
+      "budget": 2048,
+      "indexBuildMs": 7.818899999999985,
+      "metrics": {
+        "PASS": 50,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.9166666666666666,
+        "answerSpanPass": 50,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.05232558139534884,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 223.8,
+        "estimatedTokensMax": 457,
+        "latencyMeanMs": 0.5115959999999973,
+        "latencyP95Ms": 0.880399999999895
+      },
+      "categories": {
+        "public-regression": {
+          "total": 50,
+          "pass": 50
+        }
+      }
+    },
+    {
+      "set": "p602-development50",
+      "engine": "p602",
+      "budget": 4096,
+      "indexBuildMs": 7.818899999999985,
+      "metrics": {
+        "PASS": 50,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.9166666666666666,
+        "answerSpanPass": 50,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.05232558139534884,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 223.8,
+        "estimatedTokensMax": 457,
+        "latencyMeanMs": 0.4409780000000046,
+        "latencyP95Ms": 0.6718999999999369
+      },
+      "categories": {
+        "public-regression": {
+          "total": 50,
+          "pass": 50
+        }
+      }
+    },
+    {
+      "set": "p602-development50",
+      "engine": "prose",
+      "budget": 512,
+      "indexBuildMs": 15.948399999999992,
+      "metrics": {
+        "PASS": 50,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.9166666666666666,
+        "answerSpanPass": 50,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.05232558139534884,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 223.8,
+        "estimatedTokensMax": 457,
+        "latencyMeanMs": 0.5433519999999749,
+        "latencyP95Ms": 0.8853999999998905
+      },
+      "categories": {
+        "public-regression": {
+          "total": 50,
+          "pass": 50
+        }
+      }
+    },
+    {
+      "set": "p602-development50",
+      "engine": "prose",
+      "budget": 1024,
+      "indexBuildMs": 15.948399999999992,
+      "metrics": {
+        "PASS": 50,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.9166666666666666,
+        "answerSpanPass": 50,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.05232558139534884,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 223.8,
+        "estimatedTokensMax": 457,
+        "latencyMeanMs": 0.5779980000000251,
+        "latencyP95Ms": 0.7520999999999276
+      },
+      "categories": {
+        "public-regression": {
+          "total": 50,
+          "pass": 50
+        }
+      }
+    },
+    {
+      "set": "p602-development50",
+      "engine": "prose",
+      "budget": 2048,
+      "indexBuildMs": 15.948399999999992,
+      "metrics": {
+        "PASS": 50,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.9166666666666666,
+        "answerSpanPass": 50,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.05232558139534884,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 223.8,
+        "estimatedTokensMax": 457,
+        "latencyMeanMs": 0.5343659999999727,
+        "latencyP95Ms": 0.782799999999952
+      },
+      "categories": {
+        "public-regression": {
+          "total": 50,
+          "pass": 50
+        }
+      }
+    },
+    {
+      "set": "p602-development50",
+      "engine": "prose",
+      "budget": 4096,
+      "indexBuildMs": 15.948399999999992,
+      "metrics": {
+        "PASS": 50,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.9166666666666666,
+        "answerSpanPass": 50,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.05232558139534884,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 223.8,
+        "estimatedTokensMax": 457,
+        "latencyMeanMs": 0.773785999999991,
+        "latencyP95Ms": 1.1786999999999352
+      },
+      "categories": {
+        "public-regression": {
+          "total": 50,
+          "pass": 50
+        }
+      }
+    },
+    {
+      "set": "p602-public50",
+      "engine": "p602",
+      "budget": 512,
+      "indexBuildMs": 7.341300000000047,
+      "metrics": {
+        "PASS": 40,
+        "FAIL": 10,
+        "sourceRecall": 0.875,
+        "sourcePrecision": 0.875,
+        "answerSpanPass": 50,
+        "missedSources": 10,
+        "rankMissedSources": 10,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06818181818181818,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 171.8,
+        "estimatedTokensMax": 472,
+        "latencyMeanMs": 0.4676959999999644,
+        "latencyP95Ms": 0.8864000000000942
+      },
+      "categories": {
+        "public-regression": {
+          "total": 50,
+          "pass": 40
+        }
+      }
+    },
+    {
+      "set": "p602-public50",
+      "engine": "p602",
+      "budget": 1024,
+      "indexBuildMs": 7.341300000000047,
+      "metrics": {
+        "PASS": 40,
+        "FAIL": 10,
+        "sourceRecall": 0.875,
+        "sourcePrecision": 0.875,
+        "answerSpanPass": 50,
+        "missedSources": 10,
+        "rankMissedSources": 10,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06818181818181818,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 171.8,
+        "estimatedTokensMax": 472,
+        "latencyMeanMs": 0.47549800000001596,
+        "latencyP95Ms": 0.8028999999999087
+      },
+      "categories": {
+        "public-regression": {
+          "total": 50,
+          "pass": 40
+        }
+      }
+    },
+    {
+      "set": "p602-public50",
+      "engine": "p602",
+      "budget": 2048,
+      "indexBuildMs": 7.341300000000047,
+      "metrics": {
+        "PASS": 40,
+        "FAIL": 10,
+        "sourceRecall": 0.875,
+        "sourcePrecision": 0.875,
+        "answerSpanPass": 50,
+        "missedSources": 10,
+        "rankMissedSources": 10,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06818181818181818,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 171.8,
+        "estimatedTokensMax": 472,
+        "latencyMeanMs": 0.5631759999999895,
+        "latencyP95Ms": 0.8733999999999469
+      },
+      "categories": {
+        "public-regression": {
+          "total": 50,
+          "pass": 40
+        }
+      }
+    },
+    {
+      "set": "p602-public50",
+      "engine": "p602",
+      "budget": 4096,
+      "indexBuildMs": 7.341300000000047,
+      "metrics": {
+        "PASS": 40,
+        "FAIL": 10,
+        "sourceRecall": 0.875,
+        "sourcePrecision": 0.875,
+        "answerSpanPass": 50,
+        "missedSources": 10,
+        "rankMissedSources": 10,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06818181818181818,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 171.8,
+        "estimatedTokensMax": 472,
+        "latencyMeanMs": 0.3963399999999956,
+        "latencyP95Ms": 0.8456999999998516
+      },
+      "categories": {
+        "public-regression": {
+          "total": 50,
+          "pass": 40
+        }
+      }
+    },
+    {
+      "set": "p602-public50",
+      "engine": "prose",
+      "budget": 512,
+      "indexBuildMs": 16.156099999999924,
+      "metrics": {
+        "PASS": 50,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8888888888888888,
+        "answerSpanPass": 50,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06213489113117366,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 188.6,
+        "estimatedTokensMax": 472,
+        "latencyMeanMs": 1.6374480000000085,
+        "latencyP95Ms": 3.830900000000156
+      },
+      "categories": {
+        "public-regression": {
+          "total": 50,
+          "pass": 50
+        }
+      }
+    },
+    {
+      "set": "p602-public50",
+      "engine": "prose",
+      "budget": 1024,
+      "indexBuildMs": 16.156099999999924,
+      "metrics": {
+        "PASS": 50,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8888888888888888,
+        "answerSpanPass": 50,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06213489113117366,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 188.6,
+        "estimatedTokensMax": 472,
+        "latencyMeanMs": 1.589184000000014,
+        "latencyP95Ms": 3.7420999999999367
+      },
+      "categories": {
+        "public-regression": {
+          "total": 50,
+          "pass": 50
+        }
+      }
+    },
+    {
+      "set": "p602-public50",
+      "engine": "prose",
+      "budget": 2048,
+      "indexBuildMs": 16.156099999999924,
+      "metrics": {
+        "PASS": 50,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8888888888888888,
+        "answerSpanPass": 50,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06213489113117366,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 188.6,
+        "estimatedTokensMax": 472,
+        "latencyMeanMs": 1.5015480000000025,
+        "latencyP95Ms": 3.7708000000000084
+      },
+      "categories": {
+        "public-regression": {
+          "total": 50,
+          "pass": 50
+        }
+      }
+    },
+    {
+      "set": "p602-public50",
+      "engine": "prose",
+      "budget": 4096,
+      "indexBuildMs": 16.156099999999924,
+      "metrics": {
+        "PASS": 50,
+        "FAIL": 0,
+        "sourceRecall": 1,
+        "sourcePrecision": 0.8888888888888888,
+        "answerSpanPass": 50,
+        "missedSources": 0,
+        "rankMissedSources": 0,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.06213489113117366,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 188.6,
+        "estimatedTokensMax": 472,
+        "latencyMeanMs": 1.5430999999999948,
+        "latencyP95Ms": 3.9229999999997744
+      },
+      "categories": {
+        "public-regression": {
+          "total": 50,
+          "pass": 50
+        }
+      }
+    },
+    {
+      "set": "prose-development100",
+      "engine": "p602",
+      "budget": 512,
+      "indexBuildMs": 2.984200000000328,
+      "metrics": {
+        "PASS": 30,
+        "FAIL": 70,
+        "sourceRecall": 0,
+        "sourcePrecision": 0,
+        "answerSpanPass": 30,
+        "missedSources": 70,
+        "rankMissedSources": 70,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.865588681152097,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 9.9,
+        "estimatedTokensMax": 466,
+        "latencyMeanMs": 0.22605399999998554,
+        "latencyP95Ms": 0.7152000000000953
+      },
+      "categories": {
+        "appearance": {
+          "total": 10,
+          "pass": 0
+        },
+        "smell": {
+          "total": 10,
+          "pass": 0
+        },
+        "sound": {
+          "total": 10,
+          "pass": 0
+        },
+        "action": {
+          "total": 10,
+          "pass": 0
+        },
+        "dialogue": {
+          "total": 10,
+          "pass": 0
+        },
+        "unauthorized": {
+          "total": 10,
+          "pass": 10
+        },
+        "time": {
+          "total": 20,
+          "pass": 0
+        },
+        "future": {
+          "total": 10,
+          "pass": 10
+        },
+        "unknown": {
+          "total": 10,
+          "pass": 10
+        }
+      }
+    },
+    {
+      "set": "prose-development100",
+      "engine": "p602",
+      "budget": 1024,
+      "indexBuildMs": 2.984200000000328,
+      "metrics": {
+        "PASS": 30,
+        "FAIL": 70,
+        "sourceRecall": 0,
+        "sourcePrecision": 0,
+        "answerSpanPass": 30,
+        "missedSources": 70,
+        "rankMissedSources": 70,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.8555691554467564,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 20.44,
+        "estimatedTokensMax": 993,
+        "latencyMeanMs": 0.15863899999996647,
+        "latencyP95Ms": 0.40419999999994616
+      },
+      "categories": {
+        "appearance": {
+          "total": 10,
+          "pass": 0
+        },
+        "smell": {
+          "total": 10,
+          "pass": 0
+        },
+        "sound": {
+          "total": 10,
+          "pass": 0
+        },
+        "action": {
+          "total": 10,
+          "pass": 0
+        },
+        "dialogue": {
+          "total": 10,
+          "pass": 0
+        },
+        "unauthorized": {
+          "total": 10,
+          "pass": 10
+        },
+        "time": {
+          "total": 20,
+          "pass": 0
+        },
+        "future": {
+          "total": 10,
+          "pass": 10
+        },
+        "unknown": {
+          "total": 10,
+          "pass": 10
+        }
+      }
+    },
+    {
+      "set": "prose-development100",
+      "engine": "p602",
+      "budget": 2048,
+      "indexBuildMs": 2.984200000000328,
+      "metrics": {
+        "PASS": 30,
+        "FAIL": 70,
+        "sourceRecall": 0,
+        "sourcePrecision": 0,
+        "answerSpanPass": 30,
+        "missedSources": 70,
+        "rankMissedSources": 70,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.8534728829686014,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 26.28,
+        "estimatedTokensMax": 1285,
+        "latencyMeanMs": 0.15910600000000613,
+        "latencyP95Ms": 0.41229999999995925
+      },
+      "categories": {
+        "appearance": {
+          "total": 10,
+          "pass": 0
+        },
+        "smell": {
+          "total": 10,
+          "pass": 0
+        },
+        "sound": {
+          "total": 10,
+          "pass": 0
+        },
+        "action": {
+          "total": 10,
+          "pass": 0
+        },
+        "dialogue": {
+          "total": 10,
+          "pass": 0
+        },
+        "unauthorized": {
+          "total": 10,
+          "pass": 10
+        },
+        "time": {
+          "total": 20,
+          "pass": 0
+        },
+        "future": {
+          "total": 10,
+          "pass": 10
+        },
+        "unknown": {
+          "total": 10,
+          "pass": 10
+        }
+      }
+    },
+    {
+      "set": "prose-development100",
+      "engine": "p602",
+      "budget": 4096,
+      "indexBuildMs": 2.984200000000328,
+      "metrics": {
+        "PASS": 30,
+        "FAIL": 70,
+        "sourceRecall": 0,
+        "sourcePrecision": 0,
+        "answerSpanPass": 30,
+        "missedSources": 70,
+        "rankMissedSources": 70,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.8534728829686014,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 26.28,
+        "estimatedTokensMax": 1285,
+        "latencyMeanMs": 0.16019499999998515,
+        "latencyP95Ms": 0.4414999999999054
+      },
+      "categories": {
+        "appearance": {
+          "total": 10,
+          "pass": 0
+        },
+        "smell": {
+          "total": 10,
+          "pass": 0
+        },
+        "sound": {
+          "total": 10,
+          "pass": 0
+        },
+        "action": {
+          "total": 10,
+          "pass": 0
+        },
+        "dialogue": {
+          "total": 10,
+          "pass": 0
+        },
+        "unauthorized": {
+          "total": 10,
+          "pass": 10
+        },
+        "time": {
+          "total": 20,
+          "pass": 0
+        },
+        "future": {
+          "total": 10,
+          "pass": 10
+        },
+        "unknown": {
+          "total": 10,
+          "pass": 10
+        }
+      }
+    },
+    {
+      "set": "prose-development100",
+      "engine": "prose",
+      "budget": 512,
+      "indexBuildMs": 6.324000000000069,
+      "metrics": {
+        "PASS": 99,
+        "FAIL": 1,
+        "sourceRecall": 0.9857142857142858,
+        "sourcePrecision": 0.9583333333333334,
+        "answerSpanPass": 99,
+        "missedSources": 1,
+        "rankMissedSources": 1,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.014460999123575811,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 34.42,
+        "estimatedTokensMax": 102,
+        "latencyMeanMs": 0.35630699999999704,
+        "latencyP95Ms": 0.8737999999998465
+      },
+      "categories": {
+        "appearance": {
+          "total": 10,
+          "pass": 10
+        },
+        "smell": {
+          "total": 10,
+          "pass": 10
+        },
+        "sound": {
+          "total": 10,
+          "pass": 9
+        },
+        "action": {
+          "total": 10,
+          "pass": 10
+        },
+        "dialogue": {
+          "total": 10,
+          "pass": 10
+        },
+        "unauthorized": {
+          "total": 10,
+          "pass": 10
+        },
+        "time": {
+          "total": 20,
+          "pass": 20
+        },
+        "future": {
+          "total": 10,
+          "pass": 10
+        },
+        "unknown": {
+          "total": 10,
+          "pass": 10
+        }
+      }
+    },
+    {
+      "set": "prose-development100",
+      "engine": "prose",
+      "budget": 1024,
+      "indexBuildMs": 6.324000000000069,
+      "metrics": {
+        "PASS": 99,
+        "FAIL": 1,
+        "sourceRecall": 0.9857142857142858,
+        "sourcePrecision": 0.9583333333333334,
+        "answerSpanPass": 99,
+        "missedSources": 1,
+        "rankMissedSources": 1,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.014460999123575811,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 34.42,
+        "estimatedTokensMax": 102,
+        "latencyMeanMs": 0.34806600000000343,
+        "latencyP95Ms": 0.6141999999999825
+      },
+      "categories": {
+        "appearance": {
+          "total": 10,
+          "pass": 10
+        },
+        "smell": {
+          "total": 10,
+          "pass": 10
+        },
+        "sound": {
+          "total": 10,
+          "pass": 9
+        },
+        "action": {
+          "total": 10,
+          "pass": 10
+        },
+        "dialogue": {
+          "total": 10,
+          "pass": 10
+        },
+        "unauthorized": {
+          "total": 10,
+          "pass": 10
+        },
+        "time": {
+          "total": 20,
+          "pass": 20
+        },
+        "future": {
+          "total": 10,
+          "pass": 10
+        },
+        "unknown": {
+          "total": 10,
+          "pass": 10
+        }
+      }
+    },
+    {
+      "set": "prose-development100",
+      "engine": "prose",
+      "budget": 2048,
+      "indexBuildMs": 6.324000000000069,
+      "metrics": {
+        "PASS": 99,
+        "FAIL": 1,
+        "sourceRecall": 0.9857142857142858,
+        "sourcePrecision": 0.9583333333333334,
+        "answerSpanPass": 99,
+        "missedSources": 1,
+        "rankMissedSources": 1,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.014460999123575811,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 34.42,
+        "estimatedTokensMax": 102,
+        "latencyMeanMs": 0.39749600000000557,
+        "latencyP95Ms": 0.9169999999999163
+      },
+      "categories": {
+        "appearance": {
+          "total": 10,
+          "pass": 10
+        },
+        "smell": {
+          "total": 10,
+          "pass": 10
+        },
+        "sound": {
+          "total": 10,
+          "pass": 9
+        },
+        "action": {
+          "total": 10,
+          "pass": 10
+        },
+        "dialogue": {
+          "total": 10,
+          "pass": 10
+        },
+        "unauthorized": {
+          "total": 10,
+          "pass": 10
+        },
+        "time": {
+          "total": 20,
+          "pass": 20
+        },
+        "future": {
+          "total": 10,
+          "pass": 10
+        },
+        "unknown": {
+          "total": 10,
+          "pass": 10
+        }
+      }
+    },
+    {
+      "set": "prose-development100",
+      "engine": "prose",
+      "budget": 4096,
+      "indexBuildMs": 6.324000000000069,
+      "metrics": {
+        "PASS": 99,
+        "FAIL": 1,
+        "sourceRecall": 0.9857142857142858,
+        "sourcePrecision": 0.9583333333333334,
+        "answerSpanPass": 99,
+        "missedSources": 1,
+        "rankMissedSources": 1,
+        "budgetOmittedSources": 0,
+        "unrelatedContextByteRate": 0.014460999123575811,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "estimatedTokensMean": 34.42,
+        "estimatedTokensMax": 102,
+        "latencyMeanMs": 0.330856000000008,
+        "latencyP95Ms": 0.719499999999698
+      },
+      "categories": {
+        "appearance": {
+          "total": 10,
+          "pass": 10
+        },
+        "smell": {
+          "total": 10,
+          "pass": 10
+        },
+        "sound": {
+          "total": 10,
+          "pass": 9
+        },
+        "action": {
+          "total": 10,
+          "pass": 10
+        },
+        "dialogue": {
+          "total": 10,
+          "pass": 10
+        },
+        "unauthorized": {
+          "total": 10,
+          "pass": 10
+        },
+        "time": {
+          "total": 20,
+          "pass": 20
+        },
+        "future": {
+          "total": 10,
+          "pass": 10
+        },
+        "unknown": {
+          "total": 10,
+          "pass": 10
+        }
+      }
+    }
+  ]
+}

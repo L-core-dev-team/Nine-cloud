@@ -16,6 +16,8 @@ minimumReleaseAgeExclude:
   - nodemailer@10.0.13
 
 overrides:
+  # Same-major security patch for Wrangler's HTTP client (GHSA advisories in release audit).
+  undici: 7.30.1
   esbuild: 0.28.2
   # GHSA-wq5f-xc86-pv6w / CVE-2026-96889: sharp < 0.35.5 bundles a vulnerable
   # librsvg. The package arrives only through the devDependency chain

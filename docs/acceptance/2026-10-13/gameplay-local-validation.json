@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-13",
+  "kind": "local-gameplay-v4-validation",
+  "productionAcceptance": false,
+  "sourceBaseCommit": "b506d5e2ef1d3d8566e90f244da3812f6abc0ebd",
+  "sourceSha256": {
+    "apps/web/src/style.css": "fd3c9f8269b1d6460529a559da3ef32ebc60d98659581ac3062c0c4d076d4ee8",
+    "tests/e2e/foundation.cjs": "c069e288a2b31abb60df9b07ec9e90682dd9ed38b0877eb3e458e7903a0cb9e0",
+    "apps/web/src/p2-candidate-offline.ts": "f0b7b96e70c4031640cf9e480fa68401d64ad1096052563511dc25959b45aca2",
+    "apps/web/src/p2-candidate-offline-store.ts": "5ddaa6b3316091da14247b66282f99d59a3a8ff7025a1b9617f304f6e64cf2e2"
+  },
+  "commands": {
+    "typecheck": {
+      "exitCode": 0,
+      "workspaceProjects": 6
+    },
+    "unitTests": {
+      "exitCode": 0,
+      "webPassed": 201,
+      "apiPassed": 327,
+      "postgresSkippedInDefaultUnitCommand": 38
+    },
+    "postgresIntegration": {
+      "exitCode": 0,
+      "files": 11,
+      "passed": 43
+    },
+    "browserSuite": {
+      "exitCode": 0,
+      "sequentialScripts": 8,
+      "logSha256": "69899dabb8b9c3f0d659ba73a633cc5ad96fee46a56a6721ceecf93df59019b2"
+    },
+    "cloudBrowser": {
+      "exitCode": 0,
+      "evidenceFile": "gameplay-cloud-local.json",
+      "fixture": "loopback Mailpit with MP_SMTP_DISABLE_RDNS=true and disposable PostgreSQL"
+    },
+    "backupRestore": {
+      "exitCode": 0,
+      "comparedTables": 12,
+      "evidenceFile": "gameplay-database-restore-local.json"
+    },
+    "licenseCheck": {
+      "exitCode": 0,
+      "packages": 117
+    },
+    "artifactScan": {
+      "exitCode": 0,
+      "files": 103,
+      "bytes": 17789558
+    }
+  },
+  "design": {
+    "generatedAt": "2026-10-13T10:50:08.453Z",
+    "baselines": 20,
+    "textRuns": 4508,
+    "controlEdges": 572,
+    "failures": 0
+  },
+  "boundaries": [
+    "No production database or external mail delivery used",
+    "Candidate quality author acceptance recorded separately",
+    "No physical-device or production-rule installation acceptance",
+    "Backup digest compares the 12 tables enumerated in this branch; not all 20 tables"
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "method": "Recorded evidence comparison only; no legacy benchmark rerun",
+  "rows": [
+    {
+      "budget": 512,
+      "priorPass": 197,
+      "regressions": 0,
+      "improvements": 0
+    },
+    {
+      "budget": 1024,
+      "priorPass": 197,
+      "regressions": 0,
+      "improvements": 0
+    },
+    {
+      "budget": 2048,
+      "priorPass": 197,
+      "regressions": 0,
+      "improvements": 0
+    },
+    {
+      "budget": 4096,
+      "priorPass": 197,
+      "regressions": 0,
+      "improvements": 0
+    }
+  ]
+}

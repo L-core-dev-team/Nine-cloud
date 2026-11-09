@@ -1,0 +1,103 @@
+{
+  "status": "ENVIRONMENT_SIMULATION_PASS",
+  "at": "2026-10-13T04:43:50.072Z",
+  "scope": "isolated loopback fixtures only",
+  "productionDeployment": "NOT_PERFORMED",
+  "realMailDelivery": "NOT_TESTED",
+  "physicalDevices": "NOT_TESTED",
+  "caddy": "NOT_TESTED",
+  "checks": [
+    {
+      "name": "pages denies /api/auth/guest",
+      "status": "PASS"
+    },
+    {
+      "name": "pages denies /api/auth/guest/",
+      "status": "PASS"
+    },
+    {
+      "name": "pages denies /api//auth/guest",
+      "status": "PASS"
+    },
+    {
+      "name": "pages denies /api/auth//guest",
+      "status": "PASS"
+    },
+    {
+      "name": "pages denies /api/auth/guest%2Fupgrade",
+      "status": "PASS"
+    },
+    {
+      "name": "pages denies /api/auth/guest%252Fupgrade",
+      "status": "PASS"
+    },
+    {
+      "name": "pages denies /api/auth/%67uest",
+      "status": "PASS"
+    },
+    {
+      "name": "pages denies /api/%2Fauth/guest",
+      "status": "PASS"
+    },
+    {
+      "name": "pages denies /api//account",
+      "status": "PASS"
+    },
+    {
+      "name": "pages denies /api/account",
+      "status": "PASS"
+    },
+    {
+      "name": "pages denies /api/account/capabilities",
+      "status": "PASS"
+    },
+    {
+      "name": "pages denies /api/auth/phone",
+      "status": "PASS"
+    },
+    {
+      "name": "pages denies /api/auth/phone/request",
+      "status": "PASS"
+    },
+    {
+      "name": "pages denies /api/auth/code",
+      "status": "PASS"
+    },
+    {
+      "name": "pages API root is JSON, not static fallback",
+      "status": "PASS"
+    },
+    {
+      "name": "pages invalid encoding fails before upstream",
+      "status": "PASS"
+    },
+    {
+      "name": "pages static and SPA paths stay available",
+      "status": "PASS"
+    },
+    {
+      "name": "pages health, readiness and diagnostic reads",
+      "status": "PASS"
+    },
+    {
+      "name": "pages preserves body, cookie and query without trusting client IP headers",
+      "status": "PASS"
+    },
+    {
+      "name": "pages preserves independent cookies and downloads",
+      "status": "PASS"
+    },
+    {
+      "name": "pages returns private JSON 503 when upstream stops",
+      "status": "PASS"
+    }
+  ],
+  "fingerprints": {
+    "functions/_middleware.js": "4e2a0ad67c7ee4c60c501aafeb599cbd30b9798a5d4b3263fca47c34a783fb79",
+    "functions/_lib/api-proxy.mjs": "524a139ad9758d05bf9742c89d4bf022e593b8f12e2209cd204ebd8af1c0ee78",
+    "apps/web/public/_routes.json": "9d7a5dad4711cd2fc83349bc790fa7d1a31cd52a72616685bdc465e16de94f0d",
+    "deployment/Caddyfile": "26b33abb80835fe5da4c6760c998dfe9eb2da7839ca07ba6c153d4043d310513",
+    "deployment/api-production.compose.yml": "b02cf4a341674d7aad6ac8815959af645d0413f0b00b43153ac9b55e7d57de7a",
+    "docker-compose.yml": "0676dd3e8b45903beb6545762838bca56826bfbb7d096de78590333f8b6fa4d3"
+  }
+}

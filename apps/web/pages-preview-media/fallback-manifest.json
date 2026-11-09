@@ -5,7 +5,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/brand_calligraphy.webp",
       "jpegPath": "/scenes/candidate/atlas/brand_calligraphy.jpg",
-      "webpSha256": "64500b1664b485875b9493d904408a0957451aecc2bc6dbcd0185dbc8aad7c2a",
+      "webpSha256": "a5c65ab80697e06d641f273497f06a53d5aafcbdbcff3dd3b7f49c766e2e70ad",
       "jpegSha256": "43195966f4c8ce2ef1338bf1883a10aa6e770a9ff7eefdeafb0bd818868fcb36",
       "jpegBytes": 72445,
       "quality": 82
@@ -13,7 +13,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/brand_plum.webp",
       "jpegPath": "/scenes/candidate/atlas/brand_plum.jpg",
-      "webpSha256": "0b502f3b0dc76310807c3f0aec38374b60bdae636f7df8f45fdcadf51546696f",
+      "webpSha256": "89a0f355b80e891e6d3e4b498f258b3765859b4542456752e0becc8d71f42186",
       "jpegSha256": "1fdb9ec9c57bd9ab58775ba1aa575fa2e7f572f4df4e899c015e62178bbe5bd6",
       "jpegBytes": 48119,
       "quality": 82
@@ -21,7 +21,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/brand_scroll.webp",
       "jpegPath": "/scenes/candidate/atlas/brand_scroll.jpg",
-      "webpSha256": "3d62d3fa53a3189f66ad0b2e02416afc02a6d6815b2452edfe2eacefa3849aaa",
+      "webpSha256": "723b7cdf5573e5422d212511dc586125ad44eabdeb1478ddd584a1724e707882",
       "jpegSha256": "87012031ba6ced6d047f11d6f86a4e24c5b102ef66ffdd8251980ec1601ad24e",
       "jpegBytes": 150207,
       "quality": 82
@@ -29,7 +29,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/brand_seal.webp",
       "jpegPath": "/scenes/candidate/atlas/brand_seal.jpg",
-      "webpSha256": "a54b0ba22b95ae9aefa669204f0cd58862a2ebdf5820a6829dc3b161c6dbbd28",
+      "webpSha256": "889af11082fc294a10a41e507728d27101d06fbf2897d7ffbc3ff8a7eeb2d357",
       "jpegSha256": "934815376fcdb1035cb5e2a8849eb5a73b87e6b7465f5c4ca4dc44b996a58826",
       "jpegBytes": 81629,
       "quality": 82
@@ -37,7 +37,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/faction_beijing_lianmeng.webp",
       "jpegPath": "/scenes/candidate/atlas/faction_beijing_lianmeng.jpg",
-      "webpSha256": "ea82b1ada17f99810d3f32d22dc8ee327f9be217f58f17630649281d1eaf1240",
+      "webpSha256": "611931dafe0077e310caff0a3f4261b11efc1c867e2b4459cf1b3ba1aa460b78",
       "jpegSha256": "5a2522b4f6e09a9490dafc9583d12eb91aa81e8d0d09473327b16742d0c4779b",
       "jpegBytes": 240482,
       "quality": 82
@@ -45,7 +45,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/faction_bingshen_gong.webp",
       "jpegPath": "/scenes/candidate/atlas/faction_bingshen_gong.jpg",
-      "webpSha256": "fa2ec6953e8e5a3cfc3af5c3b9ceee9b5702336a41d6f94f886e113d309893ae",
+      "webpSha256": "48633850cd8ea558a90027e8d476d59d0295eb9ab2f00a6c688e7cef27794727",
       "jpegSha256": "4b2bfbef16b53338ebdd3794a47e49bdea70a6ca1125b74975ecfffe3594e649",
       "jpegBytes": 229818,
       "quality": 82
@@ -53,7 +53,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/faction_daguangming_si.webp",
       "jpegPath": "/scenes/candidate/atlas/faction_daguangming_si.jpg",
-      "webpSha256": "f7404dd41a60d465321bb80d4cc112c280cd46e1d7ffc0cdc5650d3b87c06cec",
+      "webpSha256": "d0dfb5d511932413c4d06369269e1e04409065ee5f8853943bcd6053d9b86b66",
       "jpegSha256": "119062bd5e1991db732e7002927a1a9e9883fb0df456d60d50c631adecf593e7",
       "jpegBytes": 250552,
       "quality": 82
@@ -61,7 +61,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/faction_fuhai_zong.webp",
       "jpegPath": "/scenes/candidate/atlas/faction_fuhai_zong.jpg",
-      "webpSha256": "516459a5cce746e950654952c26bb4a616ce70c32aa82143ced22b7f3803b08f",
+      "webpSha256": "465d8a4339d51d4f16ce08907162758abb905024ba748d462d99aa62b7a40cc5",
       "jpegSha256": "8524ee70bcaabc714afb9a85b52bff577a4077e6ec86d42c7404da413c70612d",
       "jpegBytes": 317133,
       "quality": 82
@@ -69,7 +69,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/faction_haotian_jianzong.webp",
       "jpegPath": "/scenes/candidate/atlas/faction_haotian_jianzong.jpg",
-      "webpSha256": "6054813b48b5fbbdbbdd4c8503d689f043f0cf1a8ea01bae19998ba6c08c4ae3",
+      "webpSha256": "3b160fff011afe2c517385b815233f0d148495ecc9a200d464b17b35f041c07e",
       "jpegSha256": "4e327c8a17ff59cc3572ae5b2759eae54a4b42602fcdb097129faf71044a603b",
       "jpegBytes": 316298,
       "quality": 82
@@ -77,7 +77,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/faction_jingang_buhai_gu.webp",
       "jpegPath": "/scenes/candidate/atlas/faction_jingang_buhai_gu.jpg",
-      "webpSha256": "af3140898605a7ee85fce54d02c0dbf6db4f3d1e4c7ac0f8baa74a33405b702b",
+      "webpSha256": "9c7a236c86b2b355650a37315d7da41bb545216c8a707a17a91243013fa76207",
       "jpegSha256": "d110fa47ec3d9f3974ceab5023b54c227d2d49d7e156d4f97bc80c3f19d7567a",
       "jpegBytes": 286527,
       "quality": 82
@@ -85,7 +85,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/faction_jixia_xuegong.webp",
       "jpegPath": "/scenes/candidate/atlas/faction_jixia_xuegong.jpg",
-      "webpSha256": "87470619036f7a41d956cc5ef4a6ed74aee5f99c11f507584cb16e594e11a5f2",
+      "webpSha256": "8b620bac4a79ffcdf18a44c57cc6610c14bd11504ab317bd7905ebe58a5e3e50",
       "jpegSha256": "2fc8c55aeab95258cf9c7354d12be2dc08bc63d36917026ff9cbb45ea676c001",
       "jpegBytes": 315529,
       "quality": 82
@@ -93,7 +93,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/faction_shenghuo_jiao.webp",
       "jpegPath": "/scenes/candidate/atlas/faction_shenghuo_jiao.jpg",
-      "webpSha256": "fba7702da871c4ccb384afa4c62d54fcf347aebd3e5a800dd0ecbf95336205d8",
+      "webpSha256": "abb77e08d4b11aa9a9af63507a1dae672a7235b39acd909ff7bfcba21c157e4c",
       "jpegSha256": "095a824267d43b3e093a1bb531dd48b09b028369ca7e3169ccf654d393c278b6",
       "jpegBytes": 294347,
       "quality": 82
@@ -101,7 +101,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/faction_sihai_shanghui.webp",
       "jpegPath": "/scenes/candidate/atlas/faction_sihai_shanghui.jpg",
-      "webpSha256": "d60ace6ad242242032f59cfca2e2d5c89f3dd4e776b0b855d180ed238b88e9ef",
+      "webpSha256": "400575f8a811e8474fe02e81630d726733d725ecd1e9d6e2de2153ae8cbf9cd4",
       "jpegSha256": "65b1043d5e7eb79b82cc956c0beeff9e748e4cb7057d61c2df03bf8eb5b41af5",
       "jpegBytes": 331279,
       "quality": 82
@@ -109,7 +109,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/faction_tiangong_ge.webp",
       "jpegPath": "/scenes/candidate/atlas/faction_tiangong_ge.jpg",
-      "webpSha256": "6541a859798af70eec6120b1085223c19529b7212dc2f797679bfa4567ea2698",
+      "webpSha256": "4793dc91097e6261f2ce0b99ce814655841490824c2004d66a946fc73d7ad5b4",
       "jpegSha256": "bc07128118e1b379a9da0bccac9ab7db599f1ac77ea967a4ec3c1320e4b796c3",
       "jpegBytes": 299497,
       "quality": 82
@@ -117,7 +117,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/faction_tingchao_ge.webp",
       "jpegPath": "/scenes/candidate/atlas/faction_tingchao_ge.jpg",
-      "webpSha256": "60ee246d94a8e92de7c3275a92773069a5785c8254f781312fff146cdaa80372",
+      "webpSha256": "aa0c1a9bfdebd2a7b3e6d1d4b0c14555dc1df2e9a36152f48b13e9b6753224b9",
       "jpegSha256": "8df4513e171ad5dcf5a199baa689d3b364a6abe8b7ee77a1a6b450388178f78e",
       "jpegBytes": 199501,
       "quality": 82
@@ -125,7 +125,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/faction_wanshou_shanzhuang.webp",
       "jpegPath": "/scenes/candidate/atlas/faction_wanshou_shanzhuang.jpg",
-      "webpSha256": "8228130bc9b4acb59b6079f1b527843fc1b5a24bb65bfbd1b4d9c24bfb35310f",
+      "webpSha256": "4ca7b3d479dcb4956e1499beaa992e3a54aa9ad64d46f4c40efa180f21d9d08f",
       "jpegSha256": "ee09491995ee448e9552d5e386a69e166973b881ae5bcce3660f57906c83288f",
       "jpegBytes": 329450,
       "quality": 82
@@ -133,7 +133,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/faction_wudu_shenjiao.webp",
       "jpegPath": "/scenes/candidate/atlas/faction_wudu_shenjiao.jpg",
-      "webpSha256": "096bd16cb272254e7b1e9cd753e0c5b6dae9cbf6d5abf9a513f4232ccd267211",
+      "webpSha256": "90afdb76374474de2fef31204a43b8c20123f5ce876a2a5f78bc0a02204ffc17",
       "jpegSha256": "ea2dfbee26bba3f1ca7dc20346618c41b51e9f68c1cdf54bdd0647b3d8613f18",
       "jpegBytes": 313428,
       "quality": 82
@@ -141,7 +141,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/faction_yanshi_fu.webp",
       "jpegPath": "/scenes/candidate/atlas/faction_yanshi_fu.jpg",
-      "webpSha256": "20528e90f7ec022ceb341c125880acfaf9fc10937e9548785adf3ccdcdfcc8b9",
+      "webpSha256": "7567182c58231d0738e59a9bdd464be9b47cb0316f1bea2fc9a84e32f9ce481b",
       "jpegSha256": "6d7b2ada8c31a340b56e40765e9eff693e82a6801741c4ecdfb8d2237e007377",
       "jpegBytes": 336611,
       "quality": 82
@@ -149,7 +149,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/faction_yantian_zong.webp",
       "jpegPath": "/scenes/candidate/atlas/faction_yantian_zong.jpg",
-      "webpSha256": "fbe06a62df39ba6c8e543c7c5548d2e366da01ec82a236d664210b02fba0472f",
+      "webpSha256": "d8233f1d59b23603e3feeefa253d32efe85e346d7183f08cdbee1d762b31fd42",
       "jpegSha256": "0eb64a39e3aa7912b1c3376e128f340b46e2a79b4d549728d5380db8aaa90001",
       "jpegBytes": 283174,
       "quality": 82
@@ -157,7 +157,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/faction_yuqing_ge.webp",
       "jpegPath": "/scenes/candidate/atlas/faction_yuqing_ge.jpg",
-      "webpSha256": "6fc16a38ebdee06f7eef09c98a887a8a062540874e34c5f241409a4d90a4ffb3",
+      "webpSha256": "b3ce14f9e83f7c70eae400f7aa519438bf22c3905a3780041a4d85725d344363",
       "jpegSha256": "ba9fc542c25005537cac9e407fbd599b477d01e69fafd75dadc59d8a359fb06f",
       "jpegBytes": 312047,
       "quality": 82
@@ -165,7 +165,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/region_beijing_shuanghan.webp",
       "jpegPath": "/scenes/candidate/atlas/region_beijing_shuanghan.jpg",
-      "webpSha256": "75f594af202b266fd62f525d206444ce33b22cb67ad2e9093710d9a5f6f978b8",
+      "webpSha256": "d80f297c67636b73611f95f8af1ea9b592abebd51e9fd46a84055d1dc25704db",
       "jpegSha256": "e13943d81e53d563eb270de5e8baa3bcb47569ecf59d8a8412fffe5e2fd2dcb5",
       "jpegBytes": 232876,
       "quality": 82
@@ -173,7 +173,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/region_donghan_longyin.webp",
       "jpegPath": "/scenes/candidate/atlas/region_donghan_longyin.jpg",
-      "webpSha256": "d3e7df2f4ffa95c5f01733fcc513629b4d6f41fb370dd5216e73e5c8466713e1",
+      "webpSha256": "798338dfb58aaf83acc99e48e45373a9c289dc4545d265e1300f1814b2ecf2ae",
       "jpegSha256": "4c850c478ff1900cd71479c1869bc757a7cf313d775927fe2a50445cebda5d8b",
       "jpegBytes": 310327,
       "quality": 82
@@ -181,7 +181,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/region_honghuang_yaolin.webp",
       "jpegPath": "/scenes/candidate/atlas/region_honghuang_yaolin.jpg",
-      "webpSha256": "d5b40a8f30415d288186314777bf61e3ddcd45888dee5593d287606cf06e6d1c",
+      "webpSha256": "330d9632e41e9fada911b9fe19333264daee7a52fea8cfc488dfa953eae74b42",
       "jpegSha256": "9025388f345cae8af65c1b75a8cdd1d4e6d3c1ab91aaf59b8917fc3ab93d24bd",
       "jpegBytes": 292718,
       "quality": 82
@@ -189,7 +189,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/region_nanjiang_wangu.webp",
       "jpegPath": "/scenes/candidate/atlas/region_nanjiang_wangu.jpg",
-      "webpSha256": "b09ff3267d2b9c3e9ccc34b235130893e882f0c8ed1bebf7a4aaaff2ba6ff798",
+      "webpSha256": "986a9f4031ad3e752ead9ec0a4826ab2b8f6740130def20ce1fa79e99f085ec1",
       "jpegSha256": "d57b56f65067dabf44d6f650ce6f97bcee5d77f71fa3b8f955284dc249a8fb8f",
       "jpegBytes": 301868,
       "quality": 82
@@ -197,7 +197,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/region_xihuang_fentian.webp",
       "jpegPath": "/scenes/candidate/atlas/region_xihuang_fentian.jpg",
-      "webpSha256": "58efff005b9654df3265528203478ee31ec3b0427525c689e7881c64a3097c8e",
+      "webpSha256": "39f90a9a4a79ee59f4d5881d6699afaef84141d5bbdd3ca1008294e7dad3df16",
       "jpegSha256": "d5d64d5c21fe8e0e037e16f479126ba71421644c6297530b87fac3f70abeaef5",
       "jpegBytes": 242150,
       "quality": 82
@@ -205,7 +205,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/region_zhongzhou_tianshu.webp",
       "jpegPath": "/scenes/candidate/atlas/region_zhongzhou_tianshu.jpg",
-      "webpSha256": "a2bc6a40339d206824f519a0c9b2a9e926897320e2e029a22941c7308035c5ff",
+      "webpSha256": "05054780d659deeba7fb4237e687dc58922e4d09fe7f49a0d3641dc1953ebad2",
       "jpegSha256": "4a2fd7da7d143e6c4736580deba488c586097e2e15b5342031bd061f1b53885d",
       "jpegBytes": 251871,
       "quality": 82
@@ -213,7 +213,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/system_cultivation_realm_core.webp",
       "jpegPath": "/scenes/candidate/atlas/system_cultivation_realm_core.jpg",
-      "webpSha256": "d104c0e0d76741e5d9c80b613a79ef165f75dd00298d69ae3d2c783b2c084c2c",
+      "webpSha256": "3a8e99f4c8ecaac25cecba15cf5a889dcd30a32592a74420b523f96c4efc6afc",
       "jpegSha256": "1c6013cb30ae6470c33fd3bdc4473950f180cdec7cd636f9f1d16bdbb3c834dc",
       "jpegBytes": 212937,
       "quality": 82
@@ -221,7 +221,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/system_cultivation_realm_nascent.webp",
       "jpegPath": "/scenes/candidate/atlas/system_cultivation_realm_nascent.jpg",
-      "webpSha256": "3d6072e58ae2626b98242675dbf760916d0be40e8fc9b508628f964e6ccd647b",
+      "webpSha256": "40764eec881de8e15ddd056b08be646d312c51b8b0856d054b92788557d4b7ac",
       "jpegSha256": "c7396e2b4b915233fb80abb7deecae8b262ddc4dbe653d05b6a76f75a128a3b1",
       "jpegBytes": 217334,
       "quality": 82
@@ -229,7 +229,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/system_cultivation_realm_tribulation.webp",
       "jpegPath": "/scenes/candidate/atlas/system_cultivation_realm_tribulation.jpg",
-      "webpSha256": "cf466bd2fbdaf1df838462fb7fdf7d598c685f6b308ae6e3890a46452530bea5",
+      "webpSha256": "60c4e1c1000f7b3c0126e11d8f70c036b40c799111ed3f923fa8a5c69bb12f2d",
       "jpegSha256": "24b5d5a389847af6756ef4ccd567f2eda7adc1ec5214b09cece585dbd0c9dd11",
       "jpegBytes": 143346,
       "quality": 82
@@ -237,7 +237,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/system_cultivation_schools.webp",
       "jpegPath": "/scenes/candidate/atlas/system_cultivation_schools.jpg",
-      "webpSha256": "4f4e0573892223baab3050e73bdfe562b9705fee15aca1fc0c1112293f68c3e3",
+      "webpSha256": "3b672e3d7ef4447ccda981b648eb578058d773108709196640654c0404bece03",
       "jpegSha256": "599793242efa99c1cf4cf1bf718d10b783eef592f1c62304403d1298bd6afc97",
       "jpegBytes": 243853,
       "quality": 82
@@ -245,7 +245,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/system_economy.webp",
       "jpegPath": "/scenes/candidate/atlas/system_economy.jpg",
-      "webpSha256": "ca819a3df7f1ba10cb20d2e8f930edb78a0a3c3bef224fa942a97d4f7cc292cd",
+      "webpSha256": "8f7d76b16fbe03e24122e2f4f3f02739655f378c94cd00b7b7c83919e7ae3f35",
       "jpegSha256": "87676e5d399b2b79655645efc6faf2813001ca4ccd7738c4442bf50d5ccfe273",
       "jpegBytes": 181919,
       "quality": 82
@@ -253,7 +253,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/system_foundations.webp",
       "jpegPath": "/scenes/candidate/atlas/system_foundations.jpg",
-      "webpSha256": "86bdcfcb31c6ae70a07ea3cdf0be6f0f56e1b55b54e5d5513848b4faf9c8b7fb",
+      "webpSha256": "61eaad4a6412edc09204681e329c8106a3c3bc732bdddafbc86e347e0d84bcf0",
       "jpegSha256": "a7c09df4a952f6d6a7983f3b4038919779e7bdbcdf45478fd33abf727901ca90",
       "jpegBytes": 147856,
       "quality": 82
@@ -261,7 +261,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/system_heterodox_cultivation.webp",
       "jpegPath": "/scenes/candidate/atlas/system_heterodox_cultivation.jpg",
-      "webpSha256": "e0c5692153e1f36bdccef336d0160ba3bc3ef92ca7d1d2c433517fd5cdb6afe0",
+      "webpSha256": "34c1b11e69203b2eaf62aa3a1c1d34b94babcc57a289987ddb0c64d72cd10d0b",
       "jpegSha256": "79a4aa14ca1069bc1366cf355a237b3e06d292b23e29f52aced590d6dec074b9",
       "jpegBytes": 200376,
       "quality": 82
@@ -269,7 +269,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/system_prices.webp",
       "jpegPath": "/scenes/candidate/atlas/system_prices.jpg",
-      "webpSha256": "7e2602257fe6d25abbce290d7c077f791a7c37b0ffbb7ba7422efd57b71755bf",
+      "webpSha256": "f06651f89fc4e853458f6c96c95e09cbfce643977d84ddf377e193ae18b1b9b5",
       "jpegSha256": "6917382c55f7c836002fd57570cd42c22832e119c51c582f7c3c7f78a471b737",
       "jpegBytes": 216195,
       "quality": 82
@@ -277,7 +277,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/system_realm_faction_tiers.webp",
       "jpegPath": "/scenes/candidate/atlas/system_realm_faction_tiers.jpg",
-      "webpSha256": "d433726bea569cde347a7a13c3ad726ca97f17d04b1ef9b6963ad6511270e38b",
+      "webpSha256": "524e73afd939e13ecd5326d4235fef56f290cb74eaa471809fbcf71da9e624c0",
       "jpegSha256": "e0959c9dccc580da050ef1a6883c35552eaae318b90f27b75fbdf13f8f19b8aa",
       "jpegBytes": 201998,
       "quality": 82
@@ -285,7 +285,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/system_resource_grade.webp",
       "jpegPath": "/scenes/candidate/atlas/system_resource_grade.jpg",
-      "webpSha256": "62b282b7fd7bd40e7103a7afdd017310aae2af7a53e819a243ee4c2bad4af690",
+      "webpSha256": "ca3a396f2cd7395a2ab8e0bdbed76b79214b0ecdc45a0e0db7359a531ae0b4c1",
       "jpegSha256": "576b51f35b645cc6ea1b4a2d6c039113446ad4cd76f5a7edce3372b31b354f71",
       "jpegBytes": 193079,
       "quality": 82
@@ -293,7 +293,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/system_spirit_beasts.webp",
       "jpegPath": "/scenes/candidate/atlas/system_spirit_beasts.jpg",
-      "webpSha256": "8bc192985896f9479db3a8f21a7841a3e51f2adde44afc1c3134321ce39fac4c",
+      "webpSha256": "76bb1b3e4fae9f47a7418d42582c5dbc58f66f3b2a3db5ca3a6b12f291d6de00",
       "jpegSha256": "e6ba525b4b37818acfc5b8bf0baf3187cfd516f3754b972c46a7003be0accd5d",
       "jpegBytes": 207927,
       "quality": 82
@@ -301,7 +301,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/system_spirit_beasts_feral.webp",
       "jpegPath": "/scenes/candidate/atlas/system_spirit_beasts_feral.jpg",
-      "webpSha256": "8f00a023981a689baa098b6ae265b6c9f4f9d8790f8c9ad8c2481261ea820280",
+      "webpSha256": "a257a66be3701257a2e65e537f9922fee4687656aa23fd97308906612c9b97bd",
       "jpegSha256": "0128f8165c3da9c238c31281d42ce1577589d453cd77b63bc2c1e8034727e754",
       "jpegBytes": 252745,
       "quality": 82
@@ -309,7 +309,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/system_spiritual_root.webp",
       "jpegPath": "/scenes/candidate/atlas/system_spiritual_root.jpg",
-      "webpSha256": "6ad19f2d0cd5fd509eb177311ffdb64298982cf190d7d688c1016a55e8718b76",
+      "webpSha256": "16acf62314f6dbbdcce79571f5890aa50a724ed84d53f7f600addae6a5801512",
       "jpegSha256": "c72bb967653dca0803b8aec3d49da1e5dcd7f8de243046cc4f0829810a88cc41",
       "jpegBytes": 201472,
       "quality": 82
@@ -317,7 +317,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/system_technique_grade.webp",
       "jpegPath": "/scenes/candidate/atlas/system_technique_grade.jpg",
-      "webpSha256": "1f466e7cd9c713b2a0f6eacb60f720b4ef0f231c81acd18b2c9567c7e176e85e",
+      "webpSha256": "56ee1d7adfc40a2985ba336f0c6fe76b2e1ceea4e63b68110f354dab4f850f0a",
       "jpegSha256": "0006bf10d7e1a561f118fc10941f540277cf9d87b193ddd7b69b73670c35d271",
       "jpegBytes": 196081,
       "quality": 82
@@ -325,7 +325,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/texture_day-paper.webp",
       "jpegPath": "/scenes/candidate/atlas/texture_day-paper.jpg",
-      "webpSha256": "c54233446430a7e95422ec6f88e71cb5d2ec5a6cd58e110984be7f59e42041a8",
+      "webpSha256": "3df403d0a7ef2280f6bd4f0bac4fdf4597b8962e4f92670847cea31990664270",
       "jpegSha256": "7122daf85991f03e830daee34ed0421f4fb3dca07b10fd7e8a425fde0d90052c",
       "jpegBytes": 121104,
       "quality": 82
@@ -333,7 +333,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/texture_mist-mountains.webp",
       "jpegPath": "/scenes/candidate/atlas/texture_mist-mountains.jpg",
-      "webpSha256": "12936e29457eba51dcd22b2b31df9fa8e1364c8f7cc48a924b1c8d3f8132574c",
+      "webpSha256": "357a0ddfa130270527050ee199dd5778fee3495b6ab6a44cc6df673da6754018",
       "jpegSha256": "7f45a1787360d98f409f742a7d18781811164705f9b33ad5c8c0a940cd3b0e62",
       "jpegBytes": 130294,
       "quality": 82
@@ -341,7 +341,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/texture_night-ink.webp",
       "jpegPath": "/scenes/candidate/atlas/texture_night-ink.jpg",
-      "webpSha256": "a1f0b823804903b9cd7fd959a8c526bf9d7f0fa9f65323ac91214d3ec2a6a817",
+      "webpSha256": "ab3e7e6e60ef2275650bf3801125461fa3b12a5589d17ed0e05a4ea068b5e9ac",
       "jpegSha256": "a30ad3935ff595513dc39f3857e3c21ca61e28243657bb11e518f311b6985701",
       "jpegBytes": 57488,
       "quality": 82
@@ -349,7 +349,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/world_jiuxiao.webp",
       "jpegPath": "/scenes/candidate/atlas/world_jiuxiao.jpg",
-      "webpSha256": "7cf40335d072e9fd0b9c1cdb378a89c8a891500dbede5dd5f365388f1087cdec",
+      "webpSha256": "0f057c420a9bf676881dd3f872318c7274ab1de3b82c81dc0855f8e0e26bbdbf",
       "jpegSha256": "b6f5d0a137f51e83bdb3544cd99d3c1e6e8716721d021625c38d3fdcb0a498f3",
       "jpegBytes": 314673,
       "quality": 82
@@ -357,7 +357,7 @@
     {
       "webpPath": "/scenes/candidate/battle-anomaly.desktop.webp",
       "jpegPath": "/scenes/candidate/battle-anomaly.desktop.jpg",
-      "webpSha256": "e02598934b30a11f7446fd5d85469a3fd2c84eba282887ead43367a8ec05e078",
+      "webpSha256": "c5e4637e289a19c08418a1ded5b6379a6a19004cb4fe385711bd7a97f76e5d42",
       "jpegSha256": "623b729bf18249df51156474b4a228c76eff2eb4eff91d0decce5b48000ddbcd",
       "jpegBytes": 390280,
       "quality": 82
@@ -365,7 +365,7 @@
     {
       "webpPath": "/scenes/candidate/battle-anomaly.mobile.webp",
       "jpegPath": "/scenes/candidate/battle-anomaly.mobile.jpg",
-      "webpSha256": "40b087b58f667e9c066c728785dfe274d440430f2ae9a054266ee0e571a8a0d6",
+      "webpSha256": "42ed64262436ecc1e2e80190dca316c34a3b978dc23f6d28e2923f98468bfd62",
       "jpegSha256": "e7974d1ff4add72c69d99c4b739fa42a19b2ceccfe4516af49eddb6456db5f80",
       "jpegBytes": 605051,
       "quality": 82
@@ -373,7 +373,7 @@
     {
       "webpPath": "/scenes/candidate/mountain-gate.desktop.webp",
       "jpegPath": "/scenes/candidate/mountain-gate.desktop.jpg",
-      "webpSha256": "53e5df04cef3d76d774cc37fb519ca6f4ca1fc1f3d5cb3792f74b475f1c18f35",
+      "webpSha256": "6c62315aea5f311dc3720dc851a759c4f0a7ca5e4bb4bca328975f59c90eaae3",
       "jpegSha256": "b9629da35b31c459e85d1c012b9050bdf398273f76a4e6d9472b694915850018",
       "jpegBytes": 289477,
       "quality": 82
@@ -381,7 +381,7 @@
     {
       "webpPath": "/scenes/candidate/mountain-gate.mobile.webp",
       "jpegPath": "/scenes/candidate/mountain-gate.mobile.jpg",
-      "webpSha256": "e89f5c2e2d964a9949d4ea035d5f5dacb1943de87b47880002b16a042183beec",
+      "webpSha256": "7f3c3aad3ed8e9bbbc40a4756e1f8316db030dec3bd3bcc1c95b2931945bb809",
       "jpegSha256": "64dd6a2b967e769a004b45ded81cead3d0d80e1999514d025da75b8bcf85e7ce",
       "jpegBytes": 479671,
       "quality": 82
@@ -389,7 +389,7 @@
     {
       "webpPath": "/scenes/candidate/sect-town.desktop.webp",
       "jpegPath": "/scenes/candidate/sect-town.desktop.jpg",
-      "webpSha256": "8657b4d725763202a63ecb0c535f824755d217009d7f02ee0f66b09761cdf9d8",
+      "webpSha256": "0560253b7f37621d8dd73a8c70635277abe8fb9f7d485f5e2826869874354918",
       "jpegSha256": "6d25da4bc1ad56ee06bf6768f660bc189988fa0390e3f0f02557a6b0065ac3ab",
       "jpegBytes": 304712,
       "quality": 82
@@ -397,7 +397,7 @@
     {
       "webpPath": "/scenes/candidate/sect-town.mobile.webp",
       "jpegPath": "/scenes/candidate/sect-town.mobile.jpg",
-      "webpSha256": "bd49b32d2cb11363e00cf538d250443b377ca43b2010628e0cfc507c038bae30",
+      "webpSha256": "8bd1a0654e4b2539ba6ae3b0555f861b5c4b7b40b8845e13834ad52cc1382e05",
       "jpegSha256": "2d49717aceaa11a7dc5f06e468cd6dd8ca91aa12dede06a8a5287e6f77f1eb76",
       "jpegBytes": 502413,
       "quality": 82
@@ -405,7 +405,7 @@
     {
       "webpPath": "/scenes/candidate/wilderness.desktop.webp",
       "jpegPath": "/scenes/candidate/wilderness.desktop.jpg",
-      "webpSha256": "5caa0f24db1e9a1f6b0cb70024e45be15cc8ed766c096a027483a339bf4ebe98",
+      "webpSha256": "280640c74798b99aff615a4c7d0bc1ba1034c3f8e8e98fa118dbacf261103086",
       "jpegSha256": "123a622889ce2ad21696b376a16994cc372c266104d7b7afe83d4a5146c6e8cd",
       "jpegBytes": 263788,
       "quality": 82
@@ -413,7 +413,7 @@
     {
       "webpPath": "/scenes/candidate/wilderness.mobile.webp",
       "jpegPath": "/scenes/candidate/wilderness.mobile.jpg",
-      "webpSha256": "875fb60f34901b333d81bb791a8af3f7074b703b448d108f1d5c9442d54e8cd2",
+      "webpSha256": "6f63a8cece4c580d93d2dea883a61eca1380a96fb60aa1ad0e817e631792edca",
       "jpegSha256": "556d0ee923a29d2f9232800ace9c647b9b13c990f08798b669acd66aad5337e6",
       "jpegBytes": 480516,
       "quality": 82
@@ -421,7 +421,7 @@
     {
       "webpPath": "/scenes/gate-moonlight-mobile.webp",
       "jpegPath": "/scenes/gate-moonlight-mobile.jpg",
-      "webpSha256": "fa4ab0e8e7080bd040a0b1b2dd6895b65e43e31770fd03e003b6dcb73989c740",
+      "webpSha256": "df13f22978a4c79d3d18217118e4b1e1c0d8eeead73e5f04340bba02a4d47366",
       "jpegSha256": "26780ab7bd07c441fdec124fbb0829c2717c0e82de5641c8722552ff33d7d37d",
       "jpegBytes": 281078,
       "quality": 82
@@ -429,7 +429,7 @@
     {
       "webpPath": "/scenes/gate-moonlight.webp",
       "jpegPath": "/scenes/gate-moonlight.jpg",
-      "webpSha256": "7a1995a609ce04a8af2b32a1918b8e38ed3e880f08325ee55c375cf8e5b29dea",
+      "webpSha256": "9004151d62af4c9ae4cc293c5708ee71ec4be772e1cbd93b5ad407293469265b",
       "jpegSha256": "f9836ef53c6d0643c6f7395d081cdf935d9b5c93aa81ee6f0cc408cb6a95eaa7",
       "jpegBytes": 265136,
       "quality": 82
@@ -437,7 +437,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/artifact_ice_marrow_vial.webp",
       "jpegPath": "/scenes/candidate/atlas/artifact_ice_marrow_vial.jpg",
-      "webpSha256": "14b9a63f4b521899fde06344bc45e6b36f1c514b786d3952fd399b8147718443",
+      "webpSha256": "69291188429b47dc69d6d380d061e710ef640566ce7d93aba78659a4df84f872",
       "jpegSha256": "6e48da9d4bac04fe3be1db70dcd4e019adf2c3f2fe0baf59b030f9c58e33228b",
       "jpegBytes": 130569,
       "quality": 82
@@ -445,7 +445,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/artifact_message_mirror.webp",
       "jpegPath": "/scenes/candidate/atlas/artifact_message_mirror.jpg",
-      "webpSha256": "39f277717cbbf6bfd136becb3811c602d5f704bd31d082043c227f8fd0bc6365",
+      "webpSha256": "2c5adeed11931135bbe7977a9af42477ce4732ce68ef026417c064f52b19931c",
       "jpegSha256": "dfa0896277f5e43b2ff331be034ba0bc8a3fd8b584c04b308dd0ab8fe60ec78e",
       "jpegBytes": 101196,
       "quality": 82
@@ -453,7 +453,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/artifact_haotian_sword_token.webp",
       "jpegPath": "/scenes/candidate/atlas/artifact_haotian_sword_token.jpg",
-      "webpSha256": "9bc8deb0faf83added622db3bf6b875429d64d61e1d7fad234347b04c89d3a7d",
+      "webpSha256": "a0967ec9d4b06ceb6f0d5cb61bf90803426f80ac1cc06d812ad10c833b1f2b1b",
       "jpegSha256": "d95ba38c7bb101a85870e1e5a9ee134d84b9866a3fb1fa2c93e9984c0ccaf53a",
       "jpegBytes": 88689,
       "quality": 82
@@ -461,7 +461,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/artifact_protective_mirror.webp",
       "jpegPath": "/scenes/candidate/atlas/artifact_protective_mirror.jpg",
-      "webpSha256": "803c5de39f3beaa4864dc7011d003e5230dfe896012aa3185174ffe1ade678c7",
+      "webpSha256": "64b9067c07152e8f76bd2ccae43825e1285c341c7888c44c07b80491b88fd37b",
       "jpegSha256": "65f637c50f4c5af031b0be8cc84a4085c2094536ad7ba77a7b6b5b40c738ee8c",
       "jpegBytes": 115778,
       "quality": 82
@@ -469,7 +469,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/artifact_binding_rope.webp",
       "jpegPath": "/scenes/candidate/atlas/artifact_binding_rope.jpg",
-      "webpSha256": "db069cc485ba4b6140f13e8b0ccd96bd41a612c3c2669646c7264fba8ace83a7",
+      "webpSha256": "c145ea266adc6f826c3e36b0236a300fa3fb24ba7e4ae1ddcca36b4a65ae268f",
       "jpegSha256": "58346d5e0f994624be2d311996a24d056b6f838454255ea03b362bef5890bfd4",
       "jpegBytes": 140589,
       "quality": 82
@@ -477,7 +477,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/artifact_mountain_river_fan.webp",
       "jpegPath": "/scenes/candidate/atlas/artifact_mountain_river_fan.jpg",
-      "webpSha256": "adf7295c9cdb4faa3c2be07608ffdb26de1d9cdb95475beffdc1443ad581ec25",
+      "webpSha256": "316e21e98a381c1f63830aa164f0f157dc1d0617af59afc50cba175022d899ca",
       "jpegSha256": "a8ff74d240e648aae72d47aea90653125cdd06c828b4dd370c1de2dbba67b62c",
       "jpegBytes": 115563,
       "quality": 82
@@ -485,7 +485,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/artifact_sacred_fire_token.webp",
       "jpegPath": "/scenes/candidate/atlas/artifact_sacred_fire_token.jpg",
-      "webpSha256": "e1586a6189e7c0a70799e44277a9404659d8912d623f940199bf046a5f4262c8",
+      "webpSha256": "f69e31de5c242ae6c2438a813be8b4af2b11a12c45bff45c4c41cc1efdcee313",
       "jpegSha256": "fe2db0240278a344acee936067ebcfca7d8062bae10823defec96f4df891a207",
       "jpegBytes": 107538,
       "quality": 82
@@ -493,7 +493,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/artifact_five_poison_vessel.webp",
       "jpegPath": "/scenes/candidate/atlas/artifact_five_poison_vessel.jpg",
-      "webpSha256": "6d73c068d674153ce028867da5df9cf8f1cfcbd965662e981a1f3826780da0c8",
+      "webpSha256": "db79b256c5a3089a072d413209253efb604e5571b377f4e54447b1b475b9443e",
       "jpegSha256": "447a00ba4f0ac69225bc0160af6a52da473bac4b30bd3e037233baacce3d395f",
       "jpegBytes": 128353,
       "quality": 82
@@ -501,7 +501,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/artifact_wind_boat.webp",
       "jpegPath": "/scenes/candidate/atlas/artifact_wind_boat.jpg",
-      "webpSha256": "e9557c741d4ffd5c4e20cb4462d72f2ca8c6a53eb50f74576bcf08ddc451124f",
+      "webpSha256": "f4331ccbbb4f10066fe0b7462aad7179814caa604d45e732bd5079119bff04a1",
       "jpegSha256": "58fd20e740c19fac52bb1648c4f5043c07071995206c758c01a8834671a4536e",
       "jpegBytes": 101627,
       "quality": 82
@@ -509,7 +509,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/artifact_purple_gold_gourd.webp",
       "jpegPath": "/scenes/candidate/atlas/artifact_purple_gold_gourd.jpg",
-      "webpSha256": "d8ec5efe12b60eb03b86579baad09ab97b937559199d75bdbbe9288b37f3a7df",
+      "webpSha256": "c61a7c613c5711abc42486bf9b4104de420ceb8ea691a7f01f5a1394733f9257",
       "jpegSha256": "7d321a4e93f7bf0d4cc3ebccb4a8b1d1f8718dcfc23d3f45c21347679d2673f2",
       "jpegBytes": 128794,
       "quality": 82
@@ -517,7 +517,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/character_white_robed_sword_cultivator.webp",
       "jpegPath": "/scenes/candidate/atlas/character_white_robed_sword_cultivator.jpg",
-      "webpSha256": "e6072c80ce08884f8fdebc58961878b70b6eaa3e9c3ad215db6a2b6f78ee5dc0",
+      "webpSha256": "03d27207626708801d2e33b37435e1ede0dd0b817548fbd9253f83f9d3b8b217",
       "jpegSha256": "3200aef4377f9739581ebc42e875014b05244262e630dddeafa49b549ea2545e",
       "jpegBytes": 122573,
       "quality": 82
@@ -525,7 +525,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/character_icefield_messenger.webp",
       "jpegPath": "/scenes/candidate/atlas/character_icefield_messenger.jpg",
-      "webpSha256": "648ac4a05894c55b11c334f896a7d9ff1caff204c57eb6fa8fe447492114f9e1",
+      "webpSha256": "60045a354ae9336b15b2702276601d5ddcbac70422950eb009ad62d3cbd0a54e",
       "jpegSha256": "072a29fa25242c378dfc2a2e140635f8f09fbdc5d73425fab03c4ab755610238",
       "jpegBytes": 201538,
       "quality": 82
@@ -533,7 +533,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/character_aged_wanderer.webp",
       "jpegPath": "/scenes/candidate/atlas/character_aged_wanderer.jpg",
-      "webpSha256": "e82197a153ffc1752f10ab64cbb50d245235f27191c7301959e5d86d1d317e2f",
+      "webpSha256": "d9ca5223a8c13da17e8e584a1b4f5469dce8cdc28c4fd8022e5d72d4dbbeadfe",
       "jpegSha256": "e071b5f1cf8854f5f0c2472fe699c775c57a60f9ec2e5681de8392a45ab6c9d0",
       "jpegBytes": 295480,
       "quality": 82
@@ -541,7 +541,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/character_dan_room_cultivator.webp",
       "jpegPath": "/scenes/candidate/atlas/character_dan_room_cultivator.jpg",
-      "webpSha256": "35f500c1db09be4102b5375286f6df39cd6a97d86b9c53545d19245dc2ecf9ad",
+      "webpSha256": "67180b68ea81c84ec6a99c5041bbec69a7c036fd468d9a52c2050451ffbe2f58",
       "jpegSha256": "4cff8504b43d37275fb73abca739fb665b9229ee568d3dad40ad12510abe4299",
       "jpegBytes": 246725,
       "quality": 82
@@ -549,7 +549,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/character_black_robed_heretic.webp",
       "jpegPath": "/scenes/candidate/atlas/character_black_robed_heretic.jpg",
-      "webpSha256": "3a3a2842f0d31ea6528aa26d12e49b4963a964d7325d760adf427d22dc46c1b3",
+      "webpSha256": "5cd373c2212c0636d335042820c24857cbe1535f54d0f39bcb7bb940f0d40339",
       "jpegSha256": "95d2eee256da573c5be99cc402dc65be2905a2f18c18eb7d5b2bc8ce9e1f8c8c",
       "jpegBytes": 251735,
       "quality": 82
@@ -557,7 +557,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/character_brocade_merchant.webp",
       "jpegPath": "/scenes/candidate/atlas/character_brocade_merchant.jpg",
-      "webpSha256": "9616179d6fd3bad3ed92dec2b1c96e6cbfea8f7f38633f8ab0668b7d9a3e8339",
+      "webpSha256": "c8ae053343bf49b052bf3e60b2190626155f5307c815cc7c2ddc688500cca496",
       "jpegSha256": "eacb8407efbd23421f38822c01b082adaa59d8e5737d44b265d30d3e09cc1b5e",
       "jpegBytes": 291437,
       "quality": 82
@@ -565,7 +565,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/character_wilderness_hunter.webp",
       "jpegPath": "/scenes/candidate/atlas/character_wilderness_hunter.jpg",
-      "webpSha256": "69a6f89d58ce0e8ff6a569fc9d51156169b25575b07891c1f86f17c56d0045b1",
+      "webpSha256": "5281f835c8755bbf7669eb8ad451dc839e91be2ee2c86a9f19e70c266277b7ea",
       "jpegSha256": "3551593d800d18b1ed304b8eddcee6e53e45f00a625b662502d19bc075edd8e0",
       "jpegBytes": 265085,
       "quality": 82
@@ -573,7 +573,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/character_miaojiang_gu_master.webp",
       "jpegPath": "/scenes/candidate/atlas/character_miaojiang_gu_master.jpg",
-      "webpSha256": "d2e231006e4b803956aeb13bcb3b21ef1cfcaa547c3a9f4cfb69ea9e57580277",
+      "webpSha256": "6f5cffff11de6945dde74cc6bdfdba11d3d5bd273c76e8adf3c42bf67e5d2d29",
       "jpegSha256": "090cd532aa33e56f2dad925d352c1a78edac48f24b8f652b4f34ea5bbe3ef4f4",
       "jpegBytes": 243118,
       "quality": 82
@@ -581,7 +581,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/character_yanshi_craftsman.webp",
       "jpegPath": "/scenes/candidate/atlas/character_yanshi_craftsman.jpg",
-      "webpSha256": "e73cb88c09c88511ef2759b9611f672a8e0762178c66579179a49ef55e0f6607",
+      "webpSha256": "b8da8ab7a02dad98ef88038e66798440f666cf1437772eda3285218c62390800",
       "jpegSha256": "ae300bb7c58e7aadb87aeb09c09ec8876a980ce5eb93fb0163660f10be4b038e",
       "jpegBytes": 300929,
       "quality": 82
@@ -589,7 +589,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/character_wandering_monk.webp",
       "jpegPath": "/scenes/candidate/atlas/character_wandering_monk.jpg",
-      "webpSha256": "7b9253a03b9010667bf552dfee2680bf202e2f2476358defaa9e14b1cbf8e4ee",
+      "webpSha256": "d1788c9dfe8ddda06504e57780bd386e0cb23eb98ed123b5610fad147dfdc6d1",
       "jpegSha256": "dd53fe39cdc6907e1ef58a7d39f3c69b6a15390c036304035fa4b76eb820abdf",
       "jpegBytes": 149756,
       "quality": 82
@@ -597,7 +597,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/atmosphere_dawn_cloud_sea.webp",
       "jpegPath": "/scenes/candidate/atlas/atmosphere_dawn_cloud_sea.jpg",
-      "webpSha256": "fbe0f588fcd293e0ef30b46bab52ddf1311f627fe4a4c8e010795db2db67917d",
+      "webpSha256": "e62939c4d1bd9194d5dac90bf83e6b5466711c70304aa444263a91283ad79c7c",
       "jpegSha256": "7f82c49deebf8abf96e3941cf5cc6ef47b5824fe7496f4c90dc38a5c81eaad94",
       "jpegBytes": 157476,
       "quality": 82
@@ -605,7 +605,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/atmosphere_spring_rain_ferry.webp",
       "jpegPath": "/scenes/candidate/atlas/atmosphere_spring_rain_ferry.jpg",
-      "webpSha256": "70eb811e0f0afae769010121e01336e3617c391d1f656887c1c819b76f9ad273",
+      "webpSha256": "6bd9ee95c07ea56366b40f624ad090f7cfc89f93e60ee2b68d17675fff0d6700",
       "jpegSha256": "3337ddac0ff85106cc038df7b479e6f9777102bca4571fa520c67e8f55e9b5d0",
       "jpegBytes": 188287,
       "quality": 82
@@ -613,7 +613,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/atmosphere_stormy_night_temple.webp",
       "jpegPath": "/scenes/candidate/atlas/atmosphere_stormy_night_temple.jpg",
-      "webpSha256": "0d30f843a0825e0427ba9fab1e2569b21b5a31364262a301d79247c3e2b5c4b1",
+      "webpSha256": "435663ab2e1149115676b931303a8dbbfecfc56ecd72eb1f9f3e3a9ea0195ae2",
       "jpegSha256": "81352813aa9d15a8b010b328961b88ac7c97f0d50f777e71999b0facb6b9664f",
       "jpegBytes": 208242,
       "quality": 82
@@ -621,7 +621,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/atmosphere_misty_forest.webp",
       "jpegPath": "/scenes/candidate/atlas/atmosphere_misty_forest.jpg",
-      "webpSha256": "308ea5f303d4370b76f5f543e4fce4572fe131d5d23940765a9664f565f5e4b0",
+      "webpSha256": "0cb24e81d6c0565dc7f65d97e6db50ae68e8dd877cdadc1fc5266e804b1d9105",
       "jpegSha256": "2378433d4ee87673ba07b120fa30d084b007e8ccecd6aae67884dc588fad044c",
       "jpegBytes": 187103,
       "quality": 82
@@ -629,7 +629,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/atmosphere_autumn_red_leaf_road.webp",
       "jpegPath": "/scenes/candidate/atlas/atmosphere_autumn_red_leaf_road.jpg",
-      "webpSha256": "2b238c9a0f6e6580f58004625002808f26531778c2495245a9f72874b83cfe4a",
+      "webpSha256": "722d0658f6dd929a1dcfff1dfc213e35dcaee1ca10be8bc991af541ffd6795fb",
       "jpegSha256": "12be35c92c0419348e2e0205140c0079c2df81db4304273850c0898f1932bcd8",
       "jpegBytes": 320300,
       "quality": 82
@@ -637,7 +637,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/atmosphere_moonlit_snow_gate.webp",
       "jpegPath": "/scenes/candidate/atlas/atmosphere_moonlit_snow_gate.jpg",
-      "webpSha256": "fbf9e7643a241e68188d1b6496db806e82f9f577db5c152399ca470386861399",
+      "webpSha256": "de316da5f0b1e5380a27bad1cc7f13b036fd1011ede9bf30671dc079fcbb42f8",
       "jpegSha256": "e68baaeb29d5b11710f3a6cbc4820a40921a7a86fa2714bbf90cd22e5a48563f",
       "jpegBytes": 171601,
       "quality": 82
@@ -645,7 +645,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/battle_sword_duel.webp",
       "jpegPath": "/scenes/candidate/atlas/battle_sword_duel.jpg",
-      "webpSha256": "7310089b7acc12c0b92f8963dbe0c65b716de19386dbcb23275258cdcad9e81e",
+      "webpSha256": "8bff31b84fce3651c9150548f9808c041f21ee09397985ac345d301b4a12c33a",
       "jpegSha256": "6d6583449ed27b0e46727295df81fdf803bb41f48b04b7072662217c17265f2c",
       "jpegBytes": 212872,
       "quality": 82
@@ -653,7 +653,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/battle_beast_clash.webp",
       "jpegPath": "/scenes/candidate/atlas/battle_beast_clash.jpg",
-      "webpSha256": "8d3387686f1a3ce3bdedd4b1eecb5f2767b233e08b998155accae2439f078724",
+      "webpSha256": "5dbd668d37c37dd38629c6424a2531365b7850051f00b31985f7f9f77c6b0d18",
       "jpegSha256": "974bb7605820a4f73d284912eaa1144f8852cc981898bd4f42593edc0a07d343",
       "jpegBytes": 356794,
       "quality": 82
@@ -661,7 +661,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/battle_spell_exchange.webp",
       "jpegPath": "/scenes/candidate/atlas/battle_spell_exchange.jpg",
-      "webpSha256": "4b7d12adb22f8cddde2c78078599664cd3acbf79cdf949d405cbf9ea0c06eda0",
+      "webpSha256": "a92460a9d5f7d41904eab4d80f26eb396bd3999de647002f65bcd1ce29409926",
       "jpegSha256": "7991cab841f5334acb33b1404b93f74ac980ea03e6790526c59f41528620f372",
       "jpegBytes": 222877,
       "quality": 82
@@ -669,7 +669,7 @@
     {
       "webpPath": "/scenes/candidate/atlas/battle_flying_sword_travel.webp",
       "jpegPath": "/scenes/candidate/atlas/battle_flying_sword_travel.jpg",
-      "webpSha256": "aa3032a11dedc7dd5b1c0a5fbd3f8789ebd88f42fe244c1d532a1289660b52f8",
+      "webpSha256": "c956d5cda9e1a425fddf53535c26718d8fd0196928a5176dc07cdde29711a68b",
       "jpegSha256": "76ab141de5a77a359bffcf0f88eca36cf6dc946fc44de26bc935befc0a2f1d66",
       "jpegBytes": 201264,
       "quality": 82

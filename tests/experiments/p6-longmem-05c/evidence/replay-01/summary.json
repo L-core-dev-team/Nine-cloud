@@ -1,0 +1,72 @@
+{
+  "status": "PASS",
+  "results": [
+    {
+      "kind": "complex",
+      "count": 1000,
+      "queries": 1600,
+      "unchangedOutputs": true
+    },
+    {
+      "kind": "complex",
+      "count": 10000,
+      "queries": 1600,
+      "unchangedOutputs": true
+    },
+    {
+      "kind": "prose",
+      "count": 1000,
+      "queries": 3200,
+      "unchangedOutputs": true
+    },
+    {
+      "kind": "prose",
+      "count": 10000,
+      "queries": 3200,
+      "unchangedOutputs": true
+    },
+    {
+      "kind": "long",
+      "count": 1000,
+      "suite": "development",
+      "queries": 2304,
+      "unchangedOutputs": true
+    },
+    {
+      "kind": "long",
+      "count": 3000,
+      "suite": "development",
+      "queries": 2304,
+      "unchangedOutputs": true
+    },
+    {
+      "kind": "long",
+      "count": 10000,
+      "suite": "development",
+      "queries": 2304,
+      "unchangedOutputs": true
+    },
+    {
+      "kind": "long",
+      "count": 1000,
+      "suite": "holdout",
+      "queries": 2304,
+      "unchangedOutputs": true
+    },
+    {
+      "kind": "long",
+      "count": 3000,
+      "suite": "holdout",
+      "queries": 2304,
+      "unchangedOutputs": true
+    },
+    {
+      "kind": "long",
+      "count": 10000,
+      "suite": "holdout",
+      "queries": 2304,
+      "unchangedOutputs": true
+    }
+  ],
+  "totalQueries": 23424
+}

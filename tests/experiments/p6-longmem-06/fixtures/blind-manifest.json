@@ -1,0 +1,96 @@
+{
+  "suite": "blind",
+  "prefix": "blind",
+  "seed": "bc2de178760183dfb1db3bf237f2ae710b2e95df1698d71e",
+  "generatedAt": "2026-10-14T04:15:09.657Z",
+  "synthetic": true,
+  "blindProtocol": "Candidate stable before creation; no retriever import; freeze before first query; any later tuning invalidates this blind label.",
+  "files": [
+    {
+      "name": "blind-1000-dataset.json.gz",
+      "sha256": "5850128860536398f06e90a2bc4f6d198d286fc5b0645c6889cd5cca86cd2474",
+      "rawSha256": "53e095ce5209ffc241c0a0efee78f6c19c148a68c4c95890736b4ae8a338040e"
+    },
+    {
+      "name": "blind-1000-ledger.json.gz",
+      "sha256": "ac71a47a0e092f022b43a0d4324c4fd50ef3efffd1bd42d17c06b78bebc85235",
+      "rawSha256": "c5b8938c76e6ac943f5b76806a68a70e83790fcaf48e58ebf9e03c5877d48369"
+    },
+    {
+      "name": "blind-1000-questions.json.gz",
+      "sha256": "09aba03c3ca0e48dc34eea4fbdb5f819a14408e5a0a241071c12af32af0c48c7",
+      "rawSha256": "eb0d98441a9ccf89d60848ffcdce0c1cdaebf7006e16803debead4e7987d7615"
+    },
+    {
+      "name": "blind-1000-metadata.json.gz",
+      "sha256": "0dd7f3356b331fb0ecf92c9303e46ac05faa4c88a3df927223e48355f601a397",
+      "rawSha256": "a3b1b3bc3371c5b63f26fef7c240f9b9ceb1bbe9e5f61332dc9d138009eb7416"
+    },
+    {
+      "name": "blind-3000-dataset.json.gz",
+      "sha256": "943f56754b21594d05225c92ff78f431c5182a8040040e3ac4ebe813f51df7a3",
+      "rawSha256": "24374fbca32cf94e6fac6a8bef7f6af498731aa19581194de77822423b92d2ad"
+    },
+    {
+      "name": "blind-3000-ledger.json.gz",
+      "sha256": "5bb9d31f338dced8fd9ed5657474472fb9be672e1455d8dd327918ffb9ab88a1",
+      "rawSha256": "64f3e0266c9229fdb729f18a24d5a993c76eee2ec5879058ff22bc9feb27820e"
+    },
+    {
+      "name": "blind-3000-questions.json.gz",
+      "sha256": "a034345eb809183ab22e890176eeb2edadd5cd8008aa2fecc12f278a145cd186",
+      "rawSha256": "90187ee2f9cc7f035f51eb92ae5283039c4254396f92eb87aab74fb3dd42ce9f"
+    },
+    {
+      "name": "blind-3000-metadata.json.gz",
+      "sha256": "45e790bf1b97c51e6509c6ca8f1174397b6fb66edd58c9ce89256bbf1da43292",
+      "rawSha256": "b53e3b1b448795ccda72e592d1ccc7fa715bb2adcbac7d5b3ad45ffed00726fc"
+    },
+    {
+      "name": "blind-10000-dataset.json.gz",
+      "sha256": "b65235642598527bf8a8ee6af80cab2bfabbd84b30cf6ae2f09a3d4be3abf96f",
+      "rawSha256": "2a263484f4e4849eaf4c87351e33c82cf7dad32b435d7ef5625a901c42dfe5ed"
+    },
+    {
+      "name": "blind-10000-ledger.json.gz",
+      "sha256": "c9b4aea99247a2c283f00215a36261c7ec8ceb43bec5049b53cfb5b193d75772",
+      "rawSha256": "31d8cdaecad334bb7b7a32338f3688990197672b4bb9f08d6bfae24133ce5ca7"
+    },
+    {
+      "name": "blind-10000-questions.json.gz",
+      "sha256": "1d3b72d8db094a69ff06245768ba3eda3eca0f7caefe9a7022d76675616c153a",
+      "rawSha256": "389e08ab6e86cc42e4165737ec15f89796c1a21552b1788f45b6fa4d56280119"
+    },
+    {
+      "name": "blind-10000-metadata.json.gz",
+      "sha256": "c4d3129c64c99990623e5a3489911ea3fb18652d0ad62ba0ac18d6961c3cd7ec",
+      "rawSha256": "a269ae8d3dbd4ea995f3ef7e742debb507baaaa4ff80193992322a052af37c94"
+    }
+  ],
+  "code": [
+    {
+      "name": "evidence.ts",
+      "sha256": "d1cc5a8481f5d926a01aa7e1b22fe5b4194a05ce908e4a936fe24116930555fd"
+    },
+    {
+      "name": "typed.ts",
+      "sha256": "574d937a84b9674e326ff0e5b15f457bca31dd3ed485cce3520058da6a2bdbee"
+    },
+    {
+      "name": "retrieval.ts",
+      "sha256": "f917854c75bb0d1acd509917bcc9fa0851fe866ace7bea2df9e394bb4dbb17e9"
+    },
+    {
+      "name": "policy.ts",
+      "sha256": "3e6100db0900cf7b4f7ce3d4f2272251517e07e111a4968fd775c7be33fda7be"
+    },
+    {
+      "name": "scenario-world.ts",
+      "sha256": "24b18674a9debb42c7e74ba62cf5d6ceb7c9cea77b2b8bd29fcb90a074b5680c"
+    },
+    {
+      "name": "evaluate-worker.ts",
+      "sha256": "a94408533b5ed1fef0faa6efdbd8c9c2196a78d5dbfa7795482b80eed76a78a8"
+    }
+  ]
+}

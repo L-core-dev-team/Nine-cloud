@@ -49,7 +49,9 @@ export const P1_REVIEW_RULE_APPROVAL = Object.freeze({
   scope: 'p1-review-candidate-v1',
   bundleSha256: 'sha256:468a26ad109c64c6cf2a7224b0e895fd7614241e15c5b468842295d91dcddbce',
   pluginSourceSha256: 'sha256:94c57793bfde874469b81c1d97c914ab5591d628631564679f07d7e3aef83735',
-  semanticSha256: 'sha256:94afe4339c08d982e4cd304f34c905877bdf24fc5863f0bb73079306858310cb',
+  // LYL explicitly approved the Zod-only non-production identity update on 2026-11-09.
+  // See docs/integration/2026-11-09-zod-semantic-approval.md; no rule/content/memory changes.
+  semanticSha256: 'sha256:8b938f92e0427ef03b44a7fe6cb90f8fb208e9ca7140a316dae187dfdd422006',
   ruleVersion: 'prologue-v1-candidate-20261005',
   canonVersion: 'prologue-canon-candidate-20261005',
   actionRulesVersion: 'p1-actions-a4b8fbf7e6120840',

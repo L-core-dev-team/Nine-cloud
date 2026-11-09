@@ -1,0 +1,26 @@
+200 recent 512: PASS 9, FAIL 51; Recall@8 0.214; leaks 0
+200 historical 512: PASS 53, FAIL 7; Recall@8 1.000; leaks 0
+200 recent 1024: PASS 9, FAIL 51; Recall@8 0.214; leaks 0
+200 historical 1024: PASS 57, FAIL 3; Recall@8 1.000; leaks 0
+200 recent 2048: PASS 12, FAIL 48; Recall@8 0.214; leaks 0
+200 historical 2048: PASS 60, FAIL 0; Recall@8 1.000; leaks 0
+200 recent 4096: PASS 14, FAIL 46; Recall@8 0.214; leaks 0
+200 historical 4096: PASS 60, FAIL 0; Recall@8 1.000; leaks 0
+500 recent 512: PASS 9, FAIL 51; Recall@8 0.214; leaks 0
+500 historical 512: PASS 53, FAIL 7; Recall@8 1.000; leaks 0
+500 recent 1024: PASS 9, FAIL 51; Recall@8 0.214; leaks 0
+500 historical 1024: PASS 57, FAIL 3; Recall@8 1.000; leaks 0
+500 recent 2048: PASS 12, FAIL 48; Recall@8 0.214; leaks 0
+500 historical 2048: PASS 60, FAIL 0; Recall@8 1.000; leaks 0
+500 recent 4096: PASS 14, FAIL 46; Recall@8 0.214; leaks 0
+500 historical 4096: PASS 60, FAIL 0; Recall@8 1.000; leaks 0
+1000 recent 512: PASS 9, FAIL 51; Recall@8 0.214; leaks 0
+1000 historical 512: PASS 53, FAIL 7; Recall@8 1.000; leaks 0
+1000 recent 1024: PASS 9, FAIL 51; Recall@8 0.214; leaks 0
+1000 historical 1024: PASS 57, FAIL 3; Recall@8 1.000; leaks 0
+1000 recent 2048: PASS 12, FAIL 48; Recall@8 0.214; leaks 0
+1000 historical 2048: PASS 60, FAIL 0; Recall@8 1.000; leaks 0
+1000 recent 4096: PASS 14, FAIL 46; Recall@8 0.214; leaks 0
+1000 historical 4096: PASS 60, FAIL 0; Recall@8 1.000; leaks 0
+
+

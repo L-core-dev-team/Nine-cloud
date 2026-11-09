@@ -4,6 +4,7 @@ import { copyFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, isAbsolute, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { verifyPagesPreview } from '../audit/pages-preview-check.mjs';
+import { resolvePagesPreviewAssets } from './pages-preview-assets.mjs';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const includeApprovedMedia = process.argv.includes('--include-user-approved-media');
@@ -20,6 +21,28 @@ for (const name of ['@jiuxiao/contracts', '@jiuxiao/content', '@jiuxiao/domain',
   if (result.status !== 0) process.exit(result.status ?? 1);
 }
 
+const publicRoot = resolve(root, 'apps/web/public');
+const outputRoot = resolve(root, 'apps/web/dist');
+const manifestPath = resolve(publicRoot, 'scenes/candidate/asset-manifest.json');
+const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+const { staticAssets, runtimeAssets } = resolvePagesPreviewAssets(manifest.files);
+for (const asset of staticAssets) {
+  const source = resolve(publicRoot, `.${asset.path}`);
+  const destination = resolve(outputRoot, `.${asset.path}`);
+  const sourceRelative = relative(publicRoot, source);
+  const outputRelative = relative(outputRoot, destination);
+  if (isAbsolute(sourceRelative) || sourceRelative.startsWith('..')
+    || isAbsolute(outputRelative) || outputRelative.startsWith('..')) {
+    throw new Error('PUBLIC_DEMO_COMPLIANCE_ASSET_PATH_OUTSIDE_ROOT');
+  }
+  if (!existsSync(source)) throw new Error(`PUBLIC_DEMO_STATIC_ASSET_MISSING: ${asset.path}`);
+  const actualDigest = createHash('sha256').update(readFileSync(source)).digest('hex');
+  if (actualDigest !== asset.sha256) throw new Error(`PUBLIC_DEMO_STATIC_ASSET_DIGEST_MISMATCH: ${asset.path}`);
+  mkdirSync(dirname(destination), { recursive: true });
+  copyFileSync(source, destination);
+}
+console.log(`Included ${staticAssets.length} approved hash-verified static asset(s) in the public-demo package.`);
+
 if (includeApprovedMedia) {
   const approvalPath = resolve(root, 'docs/audit/public-demo-media-approval.json');
   if (!existsSync(approvalPath)) throw new Error('PUBLIC_DEMO_MEDIA_APPROVAL_RECORD_MISSING');
@@ -33,18 +56,10 @@ if (includeApprovedMedia) {
     throw new Error('PUBLIC_DEMO_MEDIA_APPROVAL_RECORD_INVALID');
   }
 
-  const publicRoot = resolve(root, 'apps/web/public');
-  const outputRoot = resolve(root, 'apps/web/dist');
-  const manifestPath = resolve(publicRoot, 'scenes/candidate/asset-manifest.json');
-  const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
-  if (!Array.isArray(manifest.files) || manifest.files.length === 0) {
+  if (runtimeAssets.length === 0) {
     throw new Error('PUBLIC_DEMO_RUNTIME_MEDIA_MANIFEST_UNEXPECTED');
   }
-  const assets = [
-    { path: '/scenes/gate-moonlight.webp', sha256: '7a1995a609ce04a8af2b32a1918b8e38ed3e880f08325ee55c375cf8e5b29dea' },
-    { path: '/scenes/gate-moonlight-mobile.webp', sha256: 'fa4ab0e8e7080bd040a0b1b2dd6895b65e43e31770fd03e003b6dcb73989c740' },
-    ...manifest.files,
-  ];
+  const assets = runtimeAssets;
 
   for (const asset of assets) {
     if (typeof asset.path !== 'string' || !/^\/scenes\/[a-zA-Z0-9/._-]+$/.test(asset.path)

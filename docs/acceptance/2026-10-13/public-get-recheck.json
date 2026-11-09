@@ -1,0 +1,82 @@
+{
+  "at": "2026-10-13T05:06:04.465Z",
+  "method": "GET only; no cookies, credentials, mail or writes",
+  "probes": [
+    {
+      "base": "https://api.jiuxiaogame.cn",
+      "path": "/health",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "apiStatus": "ok"
+    },
+    {
+      "base": "https://api.jiuxiaogame.cn",
+      "path": "/ready",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "apiStatus": "ready",
+      "database": "ok"
+    },
+    {
+      "base": "https://api.jiuxiaogame.cn",
+      "path": "/api/auth/session",
+      "httpStatus": 404,
+      "contentType": "application/json",
+      "code": "NOT_FOUND"
+    },
+    {
+      "base": "https://api.jiuxiaogame.cn",
+      "path": "/api/auth/providers",
+      "httpStatus": 404,
+      "contentType": "application/json",
+      "code": "NOT_FOUND"
+    },
+    {
+      "base": "https://api.jiuxiaogame.cn",
+      "path": "/api/auth/guest",
+      "httpStatus": 404,
+      "contentType": null
+    },
+    {
+      "base": "https://api.jiuxiaogame.cn",
+      "path": "/api/account",
+      "httpStatus": 404,
+      "contentType": "application/json",
+      "code": "NOT_FOUND"
+    },
+    {
+      "base": "https://play.jiuxiaogame.cn",
+      "path": "/api/auth/session",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "base": "https://play.jiuxiaogame.cn",
+      "path": "/api//auth/guest",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "base": "https://play.jiuxiaogame.cn",
+      "path": "/api/auth/guest",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8"
+    },
+    {
+      "base": "https://api.jiuxiaogame.cn",
+      "path": "/health",
+      "requestOrigin": "https://evil.example",
+      "httpStatus": 200,
+      "allowOrigin": "https://evil.example",
+      "allowCredentials": null
+    },
+    {
+      "base": "https://api.jiuxiaogame.cn",
+      "path": "/health",
+      "requestOrigin": "https://play.jiuxiaogame.cn",
+      "httpStatus": 200,
+      "allowOrigin": "https://play.jiuxiaogame.cn",
+      "allowCredentials": null
+    }
+  ]
+}

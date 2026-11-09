@@ -1,0 +1,79 @@
+{
+  "readOnly": true,
+  "intakes": [
+    {
+      "path": "docs/acceptance/2026-10-03/九霄1.0-P0玩法双记忆验收记录表-2026-10-03.xlsx",
+      "registered": "6f75e27850ba7aa574441f5f8f17a0cc96197be4b341d52375af6c7c83804db3",
+      "gitBlob": "6f75e27850ba7aa574441f5f8f17a0cc96197be4b341d52375af6c7c83804db3",
+      "working": "6f75e27850ba7aa574441f5f8f17a0cc96197be4b341d52375af6c7c83804db3",
+      "workingLf": null,
+      "gitUnchangedFromMain": true
+    },
+    {
+      "path": "docs/九霄P1序章作者原创输入登记-2026-10-03.md",
+      "registered": "6c390226f731f71c19c7c29d246ffff59d1a971c28c8da807bace6e613bcc052",
+      "gitBlob": "6c390226f731f71c19c7c29d246ffff59d1a971c28c8da807bace6e613bcc052",
+      "working": "d17911b4b9a7f18c09db7d90636834b9655228301e17b34c3548e07e24e36da6",
+      "workingLf": "6c390226f731f71c19c7c29d246ffff59d1a971c28c8da807bace6e613bcc052",
+      "gitUnchangedFromMain": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/archived-candidates/P1-EXEC-SPEC-v3.1.0-20261004.md",
+      "registered": "3edba2136ef1a783a701327c16208bab289908f83db0084dc748bdc612fa526f",
+      "gitBlob": "3edba2136ef1a783a701327c16208bab289908f83db0084dc748bdc612fa526f",
+      "working": "9815fd2113aaa87d58a7e6b674954b8e09447e8da2e747d395a575c389a2e777",
+      "workingLf": "3edba2136ef1a783a701327c16208bab289908f83db0084dc748bdc612fa526f",
+      "gitUnchangedFromMain": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-03/九霄1.0-P1-玩法规则与序章-签署表-2026-10-03.xlsx",
+      "registered": "33b6c8f6708d76f3420df12eb29f1439c5059f67f4cb7320ffe7810ed071c1bd",
+      "gitBlob": "33b6c8f6708d76f3420df12eb29f1439c5059f67f4cb7320ffe7810ed071c1bd",
+      "working": "33b6c8f6708d76f3420df12eb29f1439c5059f67f4cb7320ffe7810ed071c1bd",
+      "workingLf": null,
+      "gitUnchangedFromMain": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/archived-candidates/prologue-v1-20261004.ts",
+      "registered": "66c7557c74263813d7a7ea832de4961c612a12fa48a6f15ecdf6c53a7a1a571f",
+      "gitBlob": "66c7557c74263813d7a7ea832de4961c612a12fa48a6f15ecdf6c53a7a1a571f",
+      "working": "81ba905b72fd0e7f8d44f33133d262691bd92a57de4a1636bb3b78e431c8fa34",
+      "workingLf": "66c7557c74263813d7a7ea832de4961c612a12fa48a6f15ecdf6c53a7a1a571f",
+      "gitUnchangedFromMain": true
+    },
+    {
+      "path": "docs/九霄1.0-P1-执行规格-GPT交付版-2026-10-03.md",
+      "registered": "7677776d40825889694abeff4cb51c33d4fcd4a91e70eafcf8baae491635259e",
+      "gitBlob": "7677776d40825889694abeff4cb51c33d4fcd4a91e70eafcf8baae491635259e",
+      "working": "7083693353002d07d7da9b5880db1c9269058cf8f11be06752304c7795aaa41e",
+      "workingLf": "7677776d40825889694abeff4cb51c33d4fcd4a91e70eafcf8baae491635259e",
+      "gitUnchangedFromMain": true
+    },
+    {
+      "path": "docs/acceptance/2026-10-04/P1-author-inputs/P1-MAP-作者可执行映射.md",
+      "registered": "5869f3a3518156c2ac166388cc9f652aebc7bd5e36f071172030665f3d0a9e53",
+      "gitBlob": "5869f3a3518156c2ac166388cc9f652aebc7bd5e36f071172030665f3d0a9e53",
+      "working": "f882d1f5d818c0b5f46b81d01466daa1a256f0a5312e4e488f6d7fd546b6b82c",
+      "workingLf": "5869f3a3518156c2ac166388cc9f652aebc7bd5e36f071172030665f3d0a9e53",
+      "gitUnchangedFromMain": true
+    },
+    {
+      "path": "packages/content/src/prologue/prologue-v1.ts",
+      "registered": "5a73149978919112d2ec2e29064a0c82e5c487c68b46444d9b5699b00fb49d7a",
+      "gitBlob": "5a73149978919112d2ec2e29064a0c82e5c487c68b46444d9b5699b00fb49d7a",
+      "working": "6f42af7feb65c7d53a15cbef540c815066f3d75487d7c98bdcc03856b63d1136",
+      "workingLf": "5a73149978919112d2ec2e29064a0c82e5c487c68b46444d9b5699b00fb49d7a",
+      "gitUnchangedFromMain": true
+    }
+  ],
+  "draft": {
+    "registeredSha256": "1d871057163f7f0b439c135b3af943e948b2401bb284ab077622ed95450d35d2",
+    "gitSha256": "1d871057163f7f0b439c135b3af943e948b2401bb284ab077622ed95450d35d2",
+    "registeredByteLength": 131160,
+    "gitByteLength": 131160,
+    "workingSha256": "1d871057163f7f0b439c135b3af943e948b2401bb284ab077622ed95450d35d2",
+    "workingLfSha256": "84cab1e1a944acbe66af170c30c2e35b79a48e354cdf493ff4b5a263832ca782",
+    "indexContainsCrLf": true,
+    "indexLfEqualsCanonicalJson": true
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "recordedAt": "2026-10-13T05:07:10.169Z",
+  "files": [
+    {
+      "file": "formal-home-night-390.png",
+      "source": "docs/acceptance/2026-10-12/evidence/390-night-production-route.png",
+      "bytes": 426788,
+      "sha256": "5295942ba85c5101bf4005fbff500b61fcfd888401e079d610c800159d0d0c63"
+    },
+    {
+      "file": "formal-home-reduced-390.png",
+      "source": "docs/acceptance/2026-10-12/evidence/390-night-reduced-transparency-route.png",
+      "bytes": 382420,
+      "sha256": "a641351d31cfc5c240f6eb40dae29f5c938468427b973839daf2d57a4dbeb475"
+    },
+    {
+      "file": "formal-cloud-recovery-390.png",
+      "source": "docs/acceptance/2026-10-12/evidence/390-night-cloud-recovery.png",
+      "bytes": 244655,
+      "sha256": "ed8c3476a92fe85cbc1cb5fc06bce58b58104708d006df63b71cd83541f7b2a3"
+    },
+    {
+      "file": "formal-home-day-390.png",
+      "source": "test-results/e2e/home-day-390.png",
+      "bytes": 480261,
+      "sha256": "fb42bc5be0e5293a42fa0fa30ee2f8b473622edd4956cf6eb20652d02f4fd833"
+    },
+    {
+      "file": "formal-home-day-1366.png",
+      "source": "test-results/e2e/home-day-1366.png",
+      "bytes": 1330087,
+      "sha256": "7643e399333b7144409266acfe2838f7e4e3ed3260bc7ae01293b6754acdd387"
+    },
+    {
+      "file": "formal-settings-night-390.png",
+      "source": "test-results/e2e/ai-professional-night-390-tile-0.png",
+      "bytes": 292807,
+      "sha256": "d3dc142c8e7c6db6d1761b8f5e5f34657dce8ede4295e2fcbb087fa0288e7bdd"
+    },
+    {
+      "file": "glass-demo-night-390.png",
+      "source": "test-results/ui-final/390-night-liquid-glass.png",
+      "bytes": 321507,
+      "sha256": "068e2f563dd35fe539b72fbdf5933d9d594e25e104308dda06e59e3ee00233fd"
+    },
+    {
+      "file": "glass-demo-day-1440.png",
+      "source": "test-results/ui-final/1440-day-liquid-glass.png",
+      "bytes": 1103462,
+      "sha256": "45177bb5e74d0f9922277263a0b738857a9ece24a086b464aff2a708fe6dc19d"
+    },
+    {
+      "file": "glass-demo-menu-390.png",
+      "source": "test-results/ui-final/390-night-liquid-glass-menu.png",
+      "bytes": 354526,
+      "sha256": "08ccbb0f72a1d96d960fc4b65a910539a1a40966122c0df178cd5dc53a052d4a"
+    },
+    {
+      "file": "liquid-glass-performance.json",
+      "source": "test-results/ui-final/liquid-glass-performance.json",
+      "bytes": 2858,
+      "sha256": "90b967eff75a6639927ae20aa913378e5a9cfede424694a62319524cd04d8bce"
+    },
+    {
+      "file": "ui-baseline-manifest.json",
+      "source": "test-results/e2e/ui-baseline-manifest.json",
+      "bytes": 19310,
+      "sha256": "86d4d134b65e93c7ed8374c5ec2272ad36485bacdd9349475838bdcb6182d172"
+    }
+  ]
+}

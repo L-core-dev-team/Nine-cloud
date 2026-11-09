@@ -1,0 +1,557 @@
+{
+  "offlineDeliverables": "COMPLETE",
+  "productionIntegration": "BLOCKED",
+  "productionDependencies": 6,
+  "protectedTrackedDiff": [],
+  "pausedFilesChanged": [
+    "tests/experiments/p6-integration-ready/README.md",
+    "tests/experiments/p6-integration-ready/bridge.cjs",
+    "tests/experiments/p6-integration-ready/contracts.ts"
+  ],
+  "historicalEvidencePreserved": true,
+  "validJsonFiles": 42,
+  "credentialScan": "No credential patterns or runtime databases in tracked candidates; synthetic keys are fixtures.",
+  "localOnly": true,
+  "files": [
+    {
+      "path": "tests/experiments/p6-integration-ready/.gitattributes",
+      "bytes": 89,
+      "sha256": "921f90b06576425d8a465c8f8096513cbc711fa7aeda80fe954f6c6bf3dcb830"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/.gitignore",
+      "bytes": 19,
+      "sha256": "6ef7eb01e221d6759677add39cbc9072f605c0ed66e1e6dc2a4fc30500802678"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/CHECKPOINT-20261013.md",
+      "bytes": 11049,
+      "sha256": "1d8cb9ee225903d9d1ccc9508f57bf2a4a6cfd63007ad09603b2d6be657b33e4"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/README.md",
+      "bytes": 2378,
+      "sha256": "cba337162ff9bca098a189a7a08d6a356c8904cade88b7181c5beda19d666707"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/audit.cjs",
+      "bytes": 6195,
+      "sha256": "6d239c18077729712852d4182cf0fffd17028bbd82a662741dcb55ebf3d1e5be"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/benchmark.ts",
+      "bytes": 5029,
+      "sha256": "198b6897e5b81b360c6ef20c002f97a4cc960e7f1069a8f4131341b0711fd025"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/bridge.cjs",
+      "bytes": 13627,
+      "sha256": "ce2812f523d80551cff3fed37fb1ed3726c72b5e970b347ae2d45f4580f22f40"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/bridge.d.cts",
+      "bytes": 668,
+      "sha256": "e42ae624065ddb6b9d4d408680cdd698718700295d04938af969fd584f86afff"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/checks.cjs",
+      "bytes": 2469,
+      "sha256": "926c22fa8657355ea0db10c41df4ad4fbe2751f7b421ef6a164b5298e1bf293d"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/contract-check.ts",
+      "bytes": 1600,
+      "sha256": "317a903f3b7437faa4e8d95bd4d2970c33a857547da4e199a18b9ac82edd141a"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/contracts.ts",
+      "bytes": 3842,
+      "sha256": "c3a0c6a0597196410996f3a2e7956d1074e848fdf43afb3ed60b836acf95a686"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/audit-01/cases.json",
+      "bytes": 5600,
+      "sha256": "9839fa57895db44e9e70a4adc01fb8dec68c5c29652f0acc5f0af0c65e66a623"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/audit-01/summary.json",
+      "bytes": 100,
+      "sha256": "75ec35e9c90dd8366a4021f96473b2e3cf2c9d9d7102328fe862af1d475cbc21"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/audit-02/cases.json",
+      "bytes": 5126,
+      "sha256": "06e9e0c5252851bb504db8f021db9a1641cf3bdceedbddbb3b564fc035bf44dd"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/audit-02/summary.json",
+      "bytes": 100,
+      "sha256": "3344844244695046613f33d99680b65ebce19cd24344c91a6e2f5f3b458f7569"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/audit-03/cases.json",
+      "bytes": 5126,
+      "sha256": "06e9e0c5252851bb504db8f021db9a1641cf3bdceedbddbb3b564fc035bf44dd"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/audit-03/summary.json",
+      "bytes": 100,
+      "sha256": "3344844244695046613f33d99680b65ebce19cd24344c91a6e2f5f3b458f7569"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-01/old-lexical-prose-safety.log",
+      "bytes": 10752,
+      "sha256": "53076bd15e5a15bc854acbab5c0ee5de869cd53973820d55656847381dfc1ebc"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-01/old-storage-and-adapter.log",
+      "bytes": 5717,
+      "sha256": "48bfc79ec18edee7b8556384b82d7d98b375508087dce1894f5604b173faebf8"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-01/summary.json",
+      "bytes": 1873,
+      "sha256": "b78e1c9bf569d6c5f3e6c578c48bf3504c68c49b286bb9254df85b5379b59aa4"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-01/syntax-audit.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-01/syntax-bridge.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-01/syntax-checks.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-01/syntax-fixtures.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-01/syntax-formal.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-01/syntax-legacy-audit.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-01/syntax-security.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-01/typescript.log",
+      "bytes": 4449,
+      "sha256": "70772f62588df25d62fdd2549904e4a29ae2e7a42116fe3b9bc43393fcf86a54"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-02/summary.json",
+      "bytes": 779,
+      "sha256": "716851330512f9033f78efd45ae626f0188b086db6c6daf01f2d000737a4b8a2"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-02/syntax-audit.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-02/syntax-bridge.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-02/syntax-checks.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-02/syntax-fixtures.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-02/syntax-formal.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-02/syntax-legacy-audit.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-02/syntax-security.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-02/typescript.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-03/summary.json",
+      "bytes": 779,
+      "sha256": "524e224ec02f4e8ffbe92c98a81187c5a71f6d8bfb6595f8f24888d6aee2fb8d"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-03/syntax-audit.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-03/syntax-bridge.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-03/syntax-checks.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-03/syntax-fixtures.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-03/syntax-formal.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-03/syntax-legacy-audit.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-03/syntax-security.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-03/typescript.log",
+      "bytes": 170,
+      "sha256": "fa60ab87c73c77174d9de4478c72bbabcce97709f1e98d7f0cbadf91a3b4ca13"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-04/summary.json",
+      "bytes": 779,
+      "sha256": "716851330512f9033f78efd45ae626f0188b086db6c6daf01f2d000737a4b8a2"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-04/syntax-audit.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-04/syntax-bridge.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-04/syntax-checks.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-04/syntax-fixtures.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-04/syntax-formal.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-04/syntax-legacy-audit.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-04/syntax-security.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-04/typescript.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-05/summary.json",
+      "bytes": 879,
+      "sha256": "1efbdf6d4266acdb5b4837ae84815c2aecacfb85669391fad1c77c958ede2f34"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-05/syntax-audit.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-05/syntax-bridge.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-05/syntax-checks.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-05/syntax-fixtures.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-05/syntax-formal.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-05/syntax-legacy-audit.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-05/syntax-security.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-05/syntax-verify-performance.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/checks-05/typescript.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/formal-runtime-01/summary.json",
+      "bytes": 4034,
+      "sha256": "1d30f54ce5f4189d826d6eeb06bff262b1081f56216ff8ff7fae5a6621623075"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/formal-source-manifest.json",
+      "bytes": 3735,
+      "sha256": "570890b2a368b2842aa3e10a2a85f02c2db3f326bea20f481ecbabddc315dbdf"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/legacy-01/legacy-cases.json",
+      "bytes": 3196,
+      "sha256": "1303d66b3720ee7af96dbc897f8dcbc9c496568bac36aadbc3fa3afe956e905d"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/legacy-01/policy-surface-difference.json",
+      "bytes": 511,
+      "sha256": "515b1ce75618f5dbde8a2410b768ff2ac1b15be80c73522545092cf0cd927a09"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/legacy-01/summary.json",
+      "bytes": 819,
+      "sha256": "b75a16bc13d4f33e3c7c938861e5f34bb33b00458f4fd4a470c89c77a7c7123a"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/performance-01/complex-10000/failures.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/performance-01/complex-10000/queries.json.gz",
+      "bytes": 108511,
+      "sha256": "fe313551646c5f2cc0b6b15bcbf9ac5d979e94d0d3664f121da6b449299ff571"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/performance-01/complex-10000/questions.json",
+      "bytes": 45662,
+      "sha256": "a9d6f614872ae314442b6bba64472dec327dda8a4ff29907eea26a8b92bd5bac"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/performance-01/complex-10000/read-process.json",
+      "bytes": 2320,
+      "sha256": "57e818062f2fd90601a2fd533e8bf07315045df21f02ebbae4d61a7dd32e3a76"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/performance-01/complex-10000/summary.json",
+      "bytes": 4009,
+      "sha256": "c26a8640e439f2b1aa1ce956a75fa30c5c2e86f1e8f5ef021eaadd3f0228cc1b"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/performance-01/complex-10000/write-process.json",
+      "bytes": 337,
+      "sha256": "183357396503ce0bd994c9f73278c585d1be5492a5e19ad44a1e8d3a5b204cef"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/performance-01/prose-10000/failures.json",
+      "bytes": 16150,
+      "sha256": "9925a2d79ee39f39ecbda4e193bacc5ab45f14cf1eba44077e363823d0bee79b"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/performance-01/prose-10000/queries.json.gz",
+      "bytes": 67927,
+      "sha256": "b2228516be0936acce7285aee3e6ab8a39f41f5062b78249d563cc27c388422c"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/performance-01/prose-10000/questions.json",
+      "bytes": 84617,
+      "sha256": "58640216c9589287905806437ea1035c504e337ae88acea87b85e7631c50fc31"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/performance-01/prose-10000/read-process.json",
+      "bytes": 2373,
+      "sha256": "f47c6223151bb706272dc4d1a691e08d905bdf4f604fe67a6c865288f6f1ffac"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/performance-01/prose-10000/summary.json",
+      "bytes": 4064,
+      "sha256": "1f6d7f8b401ddfc4977fc93559f7d04705b322dd1040983cb8723e99a185a4ea"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/performance-01/prose-10000/write-process.json",
+      "bytes": 341,
+      "sha256": "41031f76719262632ed84cbf262e0cd94bbcbaaead932523cd581117acca9406"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/performance-01/summary.json",
+      "bytes": 11631,
+      "sha256": "dfc9a78435953caccb13995c6d48e7880f56d8d0e32b77c341dea4e8de59e584"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/performance-verification-01/failure.log",
+      "bytes": 344,
+      "sha256": "88b0acf7b44d287bd19df0f9cc7c2629c25256f7142621dcf01817f38692a2e2"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/performance-verification-02/summary.json",
+      "bytes": 854,
+      "sha256": "598ae0e85be660a55aa359e5b4a995a08b7184d8b5370df6697b3a5aa1d526f5"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/resume-01/summary.json",
+      "bytes": 2929,
+      "sha256": "99731c6b09ed661d1d2ce5e66dc55e351f53e1895db5338eb125bc35227789d1"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/security-01/cases.json",
+      "bytes": 15312,
+      "sha256": "259715ee4f12af8b42685baba1b1b7e02ff082f6615d776e52b2d1f56038507e"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/security-01/failures.json",
+      "bytes": 15312,
+      "sha256": "259715ee4f12af8b42685baba1b1b7e02ff082f6615d776e52b2d1f56038507e"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/security-01/summary.json",
+      "bytes": 17677,
+      "sha256": "2a47cc731f87d5e6e2f64463749f353a664581cd0b33389f1d3d13138457b6fc"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/security-02/cases.json",
+      "bytes": 22162,
+      "sha256": "89a4a4fbce0db8ad9a1d45af1ed732835c18c674852a3a6d33e1b0bfc06fff7d"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/security-02/failures.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/security-02/summary.json",
+      "bytes": 7051,
+      "sha256": "241dd9d1e5da3c2bb1d7fc530827b1f2bc34d2cdc9ddd5a1bcb712a8157d45a4"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/security-03/cases.json",
+      "bytes": 22162,
+      "sha256": "89a4a4fbce0db8ad9a1d45af1ed732835c18c674852a3a6d33e1b0bfc06fff7d"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/security-03/failures.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/security-03/summary.json",
+      "bytes": 7051,
+      "sha256": "241dd9d1e5da3c2bb1d7fc530827b1f2bc34d2cdc9ddd5a1bcb712a8157d45a4"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/security-04/cases.json",
+      "bytes": 22162,
+      "sha256": "89a4a4fbce0db8ad9a1d45af1ed732835c18c674852a3a6d33e1b0bfc06fff7d"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/security-04/failures.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/security-04/summary.json",
+      "bytes": 7051,
+      "sha256": "241dd9d1e5da3c2bb1d7fc530827b1f2bc34d2cdc9ddd5a1bcb712a8157d45a4"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/fixtures.cjs",
+      "bytes": 5144,
+      "sha256": "33024720a407b240c7f52bad154aa6a00b79cc544d9caaf0aec5dd71e2df5104"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/formal.cjs",
+      "bytes": 4014,
+      "sha256": "eb711344c37635f175881a879abd889e4712af7e9af45b39a79ec5df5d3bd06d"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/legacy-audit.cjs",
+      "bytes": 7166,
+      "sha256": "4a06f66f7b9dfa387b75198cc0b18199ad3011cd8cfe1ce345b41eeff4d2798d"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/reports/P6-INTEGRATION-READY-01-接入准备报告.md",
+      "bytes": 5943,
+      "sha256": "594f3edd8d8bd691e752b428cf9005438f9be42f88c693706ac39872e3ee8daa"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/reports/P6-P3-数据契约需求清单.md",
+      "bytes": 6580,
+      "sha256": "73062dae874b1d3ad838ed174e908302d742cdd7aafbf80be6d5d46b5273f52e"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/reports/P6-长期记忆对抗测试与性能评测报告.md",
+      "bytes": 6431,
+      "sha256": "4529dbb6b9ad8b0435337714f40e2872417b827d07beac9edb60fdbc7b31e52a"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/runtime-schema.ts",
+      "bytes": 2304,
+      "sha256": "0f871c6b230216a13c0e92de66586187fd10f8ae692f15512b3e61f4b43580cc"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/security.cjs",
+      "bytes": 16552,
+      "sha256": "96c105dc1214cd1048bd041f0b523699d2f5e101d87475624ffba5bfa2f54c32"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/tsconfig.json",
+      "bytes": 718,
+      "sha256": "899997370f331cf565a0ff38ce20603ff6783c1fd1be38b1c1e6a340565afcbe"
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/verify-performance.cjs",
+      "bytes": 3401,
+      "sha256": "a6a7a655e75e80b1e40bcc7774ba5f94db57b40d1b8930498aa7db1708d98168"
+    }
+  ]
+}

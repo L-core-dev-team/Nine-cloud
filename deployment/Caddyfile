@@ -12,13 +12,27 @@ api.jiuxiaogame.cn {
         max_size 8MB
     }
 
+    # Keep edge-generated errors and proxy responses private.
+    header {
+        >Cache-Control no-store
+        X-Content-Type-Options nosniff
+        Referrer-Policy strict-origin-when-cross-origin
+        X-Frame-Options SAMEORIGIN
+        Strict-Transport-Security max-age=31536000
+    }
+
+    # After one URI decode, a remaining percent or backslash is ambiguous to
+    # downstream routers. Reject it rather than permitting nested decoding.
+    @ambiguous path_regexp [%\\]
+    respond @ambiguous 400
+
     # 路线 A 入口封锁 v2（2026-10-11 裁决，docs/acceptance/2026-10-11/路线A入口封锁规则.md）：
     # 账号写入/凭据签发端点在边缘显式 404（双防御第二层；第一层是 API 本身 AUTH_ENABLED=false）。
     # v2 修订：只读诊断端点 /api/auth/session（auth 未挂载时 API 自身 404）与 /api/auth/providers
     # 不封锁——保留 api-production-smoke 的 fail-closed 契约与状态诊断。
     # 升级路线 B 时删除本 @blocked 段并按文档 §5 走解除流程。
     @blocked {
-        path /api/auth/guest /api/auth/guest/upgrade /api/auth/code /api/auth/refresh /api/auth/logout /api/auth/phone/* /api/account/*
+        path /api/auth/guest /api/auth/guest/* /api/auth/code /api/auth/code/* /api/auth/refresh /api/auth/refresh/* /api/auth/logout /api/auth/logout/* /api/auth/phone /api/auth/phone/* /api/account /api/account/*
     }
     respond @blocked 404
 
@@ -26,6 +40,23 @@ api.jiuxiaogame.cn {
         header_up Host {host}
         header_up Origin {header.Origin}
         header_up Cookie {header.Cookie}
-        header_down Access-Control-Allow-Origin {header.Origin}
+        # Direct API CORS is restricted to the public frontend origin. The
+        # Pages same-origin relay does not depend on a reflected CORS header.
+        header_down Access-Control-Allow-Origin https://play.jiuxiaogame.cn
+        transport http {
+            dial_timeout 5s
+            response_header_timeout 180s
+        }
     }
+    handle_errors {
+        header {
+            Cache-Control no-store
+            X-Content-Type-Options nosniff
+            Referrer-Policy strict-origin-when-cross-origin
+            X-Frame-Options SAMEORIGIN
+            Strict-Transport-Security max-age=31536000
+        }
+        respond "" {http.error.status_code}
+    }
+
 }

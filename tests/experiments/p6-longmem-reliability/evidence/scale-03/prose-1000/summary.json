@@ -1,0 +1,145 @@
+{
+  "kind": "prose",
+  "count": 1000,
+  "questionsSha256": "ea9dae29dd96ce5bf4ab6c514ca2501f92e5397315f4ec916ca0fafe10fe616b",
+  "reusedWriter": true,
+  "crashRecovery": null,
+  "writer": {
+    "pid": 23068,
+    "root": "b1372d1cf8d0a44dd1c9afd7a4048ddc617974b204510bfa53df73c35717cdfb",
+    "count": 1000,
+    "saved": 1000,
+    "duplicates": 0,
+    "writeMs": 755.4663,
+    "writeP50Ms": 0.7110999999999876,
+    "writeP95Ms": 0.9427000000000589,
+    "duplicateMs": 1.311200000000099,
+    "dbBytes": 1335296,
+    "bodyBytes": 63560,
+    "heapUsed": 13284896,
+    "sqlite": "WAL + synchronous FULL"
+  },
+  "reader": {
+    "pid": 6568,
+    "restoreMs": 52.087500000000006,
+    "restoredRoot": "b1372d1cf8d0a44dd1c9afd7a4048ddc617974b204510bfa53df73c35717cdfb",
+    "restoredCount": 1000,
+    "unboundWorldLabelsExcluded": 7,
+    "heapUsed": 118306448,
+    "builds": [
+      {
+        "audience": {
+          "kind": "player"
+        },
+        "firstSearchIncludingIndexMs": 13.49630000000002,
+        "indexBuildMs": 11.881999999999834
+      },
+      {
+        "audience": {
+          "kind": "npc",
+          "npcId": "observer"
+        },
+        "firstSearchIncludingIndexMs": 2.6206999999999425,
+        "indexBuildMs": 1.764399999999796
+      }
+    ],
+    "viewBuildCount": 134,
+    "viewBuildTotalMs": 526.1897999999999,
+    "runs": [
+      {
+        "budget": 512,
+        "queries": 200,
+        "pass": 197,
+        "fail": 3,
+        "sourceRecall": 0.9785714285714285,
+        "sourcePrecision": 0.958041958041958,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "byteChecks": 149,
+        "estimatedTokensMean": 34.52,
+        "estimatedTokensMax": 102,
+        "endToEndP50Ms": 0.6589000000000169,
+        "endToEndP95Ms": 3.9258000000000095,
+        "endToEndMaxMs": 24.752699999999976
+      },
+      {
+        "budget": 1024,
+        "queries": 200,
+        "pass": 197,
+        "fail": 3,
+        "sourceRecall": 0.9785714285714285,
+        "sourcePrecision": 0.958041958041958,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "byteChecks": 149,
+        "estimatedTokensMean": 34.52,
+        "estimatedTokensMax": 102,
+        "endToEndP50Ms": 0.5942000000000007,
+        "endToEndP95Ms": 3.3817000000000235,
+        "endToEndMaxMs": 16.54309999999998
+      },
+      {
+        "budget": 2048,
+        "queries": 200,
+        "pass": 197,
+        "fail": 3,
+        "sourceRecall": 0.9785714285714285,
+        "sourcePrecision": 0.958041958041958,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "byteChecks": 149,
+        "estimatedTokensMean": 34.52,
+        "estimatedTokensMax": 102,
+        "endToEndP50Ms": 0.4739999999999327,
+        "endToEndP95Ms": 3.755800000000022,
+        "endToEndMaxMs": 16.72479999999996
+      },
+      {
+        "budget": 4096,
+        "queries": 200,
+        "pass": 197,
+        "fail": 3,
+        "sourceRecall": 0.9785714285714285,
+        "sourcePrecision": 0.958041958041958,
+        "npcLeaks": 0,
+        "futureLeaks": 0,
+        "wrongFactStatus": 0,
+        "misattribution": 0,
+        "negativeFalsePositive": 0,
+        "byteChecks": 149,
+        "estimatedTokensMean": 34.52,
+        "estimatedTokensMax": 102,
+        "endToEndP50Ms": 0.5237999999999374,
+        "endToEndP95Ms": 2.787599999999884,
+        "endToEndMaxMs": 16.761400000000094
+      }
+    ],
+    "processResource": {
+      "userCPUTime": 1828000,
+      "systemCPUTime": 140000,
+      "maxRSS": 301024,
+      "sharedMemorySize": 0,
+      "unsharedDataSize": 0,
+      "unsharedStackSize": 0,
+      "minorPageFault": 0,
+      "majorPageFault": 112028,
+      "swappedOut": 0,
+      "fsRead": 929,
+      "fsWrite": 3,
+      "ipcSent": 0,
+      "ipcReceived": 0,
+      "signalsCount": 0,
+      "voluntaryContextSwitches": 0,
+      "involuntaryContextSwitches": 0
+    }
+  }
+}

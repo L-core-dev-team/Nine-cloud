@@ -1,0 +1,114 @@
+[
+  {
+    "questionId": "H-16-0",
+    "split": "public-compatibility",
+    "category": "appearance",
+    "budget": 512,
+    "pass": false,
+    "expected": [
+      "p0155"
+    ],
+    "actual": [],
+    "missing": [
+      "p0155"
+    ],
+    "extras": [],
+    "expectedSpans": 1,
+    "matched": 0,
+    "leaks": [],
+    "future": [],
+    "byteErrors": 0,
+    "oracleFacts": true,
+    "ms": 0.22690000000000055,
+    "diagnosis": "no-readable-support",
+    "enoughEvidence": false,
+    "estimatedTokens": 0,
+    "context": "",
+    "originalSpans": [],
+    "ranked": []
+  },
+  {
+    "questionId": "H-16-0",
+    "split": "public-compatibility",
+    "category": "appearance",
+    "budget": 1024,
+    "pass": false,
+    "expected": [
+      "p0155"
+    ],
+    "actual": [],
+    "missing": [
+      "p0155"
+    ],
+    "extras": [],
+    "expectedSpans": 1,
+    "matched": 0,
+    "leaks": [],
+    "future": [],
+    "byteErrors": 0,
+    "oracleFacts": true,
+    "ms": 0.3479000000000383,
+    "diagnosis": "no-readable-support",
+    "enoughEvidence": false,
+    "estimatedTokens": 0,
+    "context": "",
+    "originalSpans": [],
+    "ranked": []
+  },
+  {
+    "questionId": "H-16-0",
+    "split": "public-compatibility",
+    "category": "appearance",
+    "budget": 2048,
+    "pass": false,
+    "expected": [
+      "p0155"
+    ],
+    "actual": [],
+    "missing": [
+      "p0155"
+    ],
+    "extras": [],
+    "expectedSpans": 1,
+    "matched": 0,
+    "leaks": [],
+    "future": [],
+    "byteErrors": 0,
+    "oracleFacts": true,
+    "ms": 0.6195000000000164,
+    "diagnosis": "no-readable-support",
+    "enoughEvidence": false,
+    "estimatedTokens": 0,
+    "context": "",
+    "originalSpans": [],
+    "ranked": []
+  },
+  {
+    "questionId": "H-16-0",
+    "split": "public-compatibility",
+    "category": "appearance",
+    "budget": 4096,
+    "pass": false,
+    "expected": [
+      "p0155"
+    ],
+    "actual": [],
+    "missing": [
+      "p0155"
+    ],
+    "extras": [],
+    "expectedSpans": 1,
+    "matched": 0,
+    "leaks": [],
+    "future": [],
+    "byteErrors": 0,
+    "oracleFacts": true,
+    "ms": 0.21589999999997644,
+    "diagnosis": "no-readable-support",
+    "enoughEvidence": false,
+    "estimatedTokens": 0,
+    "context": "",
+    "originalSpans": [],
+    "ranked": []
+  }
+]

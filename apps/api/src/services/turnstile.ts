@@ -19,6 +19,7 @@ export function createTurnstileVerifier(secret: string, fetchImpl: typeof fetch 
     try {
       response = await fetchImpl(SITEVERIFY_URL, {
         method: 'POST',
+        redirect: 'error',
         headers: { 'content-type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ secret, response: token, ...(remoteIp ? { remoteip: remoteIp } : {}) }),
         signal: AbortSignal.timeout(10_000),
@@ -27,9 +28,10 @@ export function createTurnstileVerifier(secret: string, fetchImpl: typeof fetch 
       throw new AuthFailure('CAPTCHA_UNAVAILABLE', 'captcha_verify');
     }
     if (!response.ok) throw new AuthFailure('CAPTCHA_UNAVAILABLE', 'captcha_verify');
-    let result: { success?: boolean };
-    try { result = await response.json() as { success?: boolean }; }
+    let result: unknown;
+    try { result = await response.json(); }
     catch { throw new AuthFailure('CAPTCHA_UNAVAILABLE', 'captcha_verify'); }
-    if (result.success !== true) throw new AuthFailure('CAPTCHA_INVALID', 'captcha_verify');
+    if (!result || typeof result !== 'object' || Array.isArray(result)
+      || !('success' in result) || result.success !== true) throw new AuthFailure('CAPTCHA_INVALID', 'captcha_verify');
   };
 }

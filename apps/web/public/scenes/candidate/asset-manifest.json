@@ -4202,27 +4202,27 @@
       "path": "/compliance/beian-police.png",
       "mimeType": "image/png",
       "licenseBasis": "公安备案官方徽章，备案网站依规展示",
-      "sha256": "a20583c81805fe64f7fa210851ce29754af9d25fd6aa5a3225a9557529602513",
-      "bytes": 19256,
-      "width": 20,
-      "height": 20,
+      "sha256": "8dfecad0dfcb3dc584f2c2447943eefb1fd65a058856eb0611e2c56ddc4c1fe1",
+      "bytes": 1403,
+      "width": 36,
+      "height": 40,
       "metadataValuesCopied": false,
       "licenseStatus": "approved",
-      "licenseEvidenceSha256": "99b858a2e20adbd3aa80b6308b7b10150052beccded0d8d2427bbe115e9e6a10",
+      "licenseEvidenceSha256": "6c9c956bd9508abc09f6119cdbc84c0a746f3859dc7935f9f419af6915a75488",
       "authorReceipts": [
         {
           "author": "LYL",
-          "assetSha256": "a20583c81805fe64f7fa210851ce29754af9d25fd6aa5a3225a9557529602513",
+          "assetSha256": "8dfecad0dfcb3dc584f2c2447943eefb1fd65a058856eb0611e2c56ddc4c1fe1",
           "status": "approved",
-          "date": "2026-10-10",
-          "basis": "G-05 batch 3: see docs/acceptance/2026-10-10/G05-batch3-license-evidence.md (author per-file attestations 2026-10-10; recorded per LYL authorization + Bird review convention)"
+          "date": "2026-10-13",
+          "basis": "User joint endorsement of signed v4 execution documents including PR #85; exact source commit 64d13f08406b0a0781777554e88bac055674b9f2. See docs/acceptance/2026-10-13/备案徽章替换登记.md."
         },
         {
           "author": "Bird",
-          "assetSha256": "a20583c81805fe64f7fa210851ce29754af9d25fd6aa5a3225a9557529602513",
+          "assetSha256": "8dfecad0dfcb3dc584f2c2447943eefb1fd65a058856eb0611e2c56ddc4c1fe1",
           "status": "approved",
-          "date": "2026-10-10",
-          "basis": "G-05 batch 3: see docs/acceptance/2026-10-10/G05-batch3-license-evidence.md (author per-file attestations 2026-10-10; recorded per LYL authorization + Bird review convention)"
+          "date": "2026-10-13",
+          "basis": "User joint endorsement of signed v4 execution documents including PR #85; exact source commit 64d13f08406b0a0781777554e88bac055674b9f2. See docs/acceptance/2026-10-13/备案徽章替换登记.md."
         }
       ]
     }

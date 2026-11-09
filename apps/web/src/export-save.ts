@@ -2,14 +2,14 @@ import type { LocalSave } from './storage';
 
 const REDACTED = '[已移除密钥]';
 const CREDENTIAL_KEYS = new Set([
-  'authorization', 'accesstoken', 'refreshtoken', 'idtoken', 'authtoken', 'bearertoken',
+  'authorization', 'accesstoken', 'refreshtoken', 'idtoken', 'authtoken', 'bearertoken', 'sessiontoken',
   'clientsecret', 'apisecret', 'secretkey', 'secretaccesskey', 'privatekey', 'apikey', 'apitoken',
 ]);
 const CREDENTIAL_SUFFIXES = [
   'apikey', 'apitoken', 'apisecret', 'clientsecret', 'secretkey', 'secretaccesskey',
-  'privatekey', 'accesstoken', 'refreshtoken', 'idtoken', 'authtoken', 'bearertoken', 'authorization',
+  'privatekey', 'accesstoken', 'refreshtoken', 'idtoken', 'authtoken', 'bearertoken', 'sessiontoken', 'authorization',
 ];
-const GENERIC_CREDENTIAL_KEYS = new Set(['token', 'secret', 'password', 'passwd', 'credential', 'credentials']);
+const GENERIC_CREDENTIAL_KEYS = new Set(['token', 'secret', 'password', 'passwd', 'credential', 'credentials', 'cookie', 'setcookie']);
 const CREDENTIAL_CONTAINERS = new Set([
   'provider', 'providers', 'providerconfig', 'providerconfigs', 'service', 'services', 'serviceconfig',
   'serviceconfigs', 'vendor', 'vendors', 'aiconfig', 'aiprovider', 'llm', 'llmconfig', 'api', 'apiconfig',
@@ -70,6 +70,14 @@ function redactEndpointUrl(value: string): string {
     for (const name of [...url.searchParams.keys()]) {
       if (isSensitiveUrlParameter(name)) url.searchParams.set(name, REDACTED);
     }
+    // OAuth-style fragments can contain the same credentials as query strings.
+    // Leave ordinary document anchors byte-for-byte intact.
+    const fragment = new URLSearchParams(url.hash.slice(1));
+    let fragmentChanged = false;
+    for (const name of url.hash.includes('=') ? [...fragment.keys()] : []) {
+      if (isSensitiveUrlParameter(name)) { fragment.set(name, REDACTED); fragmentChanged = true; }
+    }
+    if (fragmentChanged) url.hash = fragment.toString();
     if (isAbsolute) return url.toString();
     const relativeUrl = `${url.pathname}${url.search}${url.hash}`;
     if (isProtocolRelative) return `//${url.host}${relativeUrl}`;

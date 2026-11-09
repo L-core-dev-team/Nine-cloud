@@ -57,6 +57,18 @@ function phoneConfig(overrides: Partial<SupabaseAuthConfig> = {}) {
 afterEach(() => vi.unstubAllGlobals());
 
 describe('SupabaseAuthService provider boundary', () => {
+  it('rejects project URLs containing embedded credentials', () => {
+    const f = poolFixture();
+    expect(() => service(f.pool, { url: 'https://user:private@project.supabase.co/' })).toThrow('SUPABASE_URL');
+  });
+
+  it.each([null, [], 'invalid'])('fails closed with a typed provider error on malformed verification JSON: %j', async value => {
+    vi.stubGlobal('fetch', vi.fn(async () => jsonResponse(value)));
+    const f = poolFixture();
+    await expect(service(f.pool).verify(email, '123456')).rejects.toMatchObject({ code: 'AUTH_PROVIDER_UNAVAILABLE', stage: 'auth_verify' });
+    expect(f.pool.connect).not.toHaveBeenCalled();
+  });
+
   it('sends normalized email OTP requests with only the publishable key', async () => {
     const fetch = vi.fn(async () => jsonResponse({}));
     vi.stubGlobal('fetch', fetch);
@@ -65,6 +77,7 @@ describe('SupabaseAuthService provider boundary', () => {
     const [url, init] = fetch.mock.calls[0] as unknown as [URL, RequestInit];
     expect(String(url)).toBe('https://project.supabase.co/auth/v1/otp');
     expect(JSON.parse(String(init.body))).toEqual({ email, create_user: true });
+    expect(init.redirect).toBe('error');
     expect(init.headers).toEqual({ apikey: 'sb_publishable_test-key', 'content-type': 'application/json', accept: 'application/json' });
   });
 
@@ -137,6 +150,7 @@ describe('SupabaseAuthService provider boundary', () => {
     await auth.changeEmailIdentity(f.client as unknown as PoolClient, owner, 'New@Example.Invalid');
     expect(fetch).toHaveBeenCalledTimes(2);
     for (const [, init] of fetch.mock.calls as unknown as Array<[URL, RequestInit]>) {
+      expect(init.redirect).toBe('error');
       expect((init.headers as Record<string, string>).apikey).toBe(`sb_secret_${'s'.repeat(32)}`);
       expect((init.headers as Record<string, string>).authorization).toBeUndefined();
     }

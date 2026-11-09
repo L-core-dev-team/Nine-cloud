@@ -1,0 +1,251 @@
+{
+  "date": "2026-10-13",
+  "supabase": {
+    "projectId": "deyzirwnzjxsmyvfrsdb",
+    "migrationVersion": "20261013113307",
+    "migrationName": "function_scope_hardening",
+    "functionBodiesAndOwnersUnchanged": true,
+    "fixedSearchPaths": 9,
+    "publicEventTriggerExecuteRevoked": true,
+    "remainingSecurityWarnings": 0,
+    "remainingSecurityInfo": 25,
+    "before": [
+      {
+        "nspname": "public",
+        "proname": "append_turn_event_hash",
+        "arguments": "",
+        "owner": "postgres",
+        "proconfig": null,
+        "body_sha256": "50d20656121df40a6619b2dec30acac5fd0ca19a41492009bc305c339a2dccfe",
+        "anon_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "nspname": "public",
+        "proname": "guard_game_saves_update",
+        "arguments": "",
+        "owner": "postgres",
+        "proconfig": null,
+        "body_sha256": "3885035736e7338d8f379e22355cb952aa44ef09cee9953f50cb758d31489881",
+        "anon_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "nspname": "public",
+        "proname": "protect_game_save_memory_policy",
+        "arguments": "",
+        "owner": "postgres",
+        "proconfig": null,
+        "body_sha256": "3c0170ae7a98a7fd6c103c7b444dc20885f0c83dabf5645fc65968cb96837215",
+        "anon_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "nspname": "public",
+        "proname": "protect_npc_authorized_observation_outbox",
+        "arguments": "",
+        "owner": "postgres",
+        "proconfig": null,
+        "body_sha256": "3725f1a4fa8bbb1fe7345868d82a6e09032b9ad484177f7f1cff27cf2b384d21",
+        "anon_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "nspname": "public",
+        "proname": "reject_entitlement_ledger_mutation",
+        "arguments": "",
+        "owner": "postgres",
+        "proconfig": null,
+        "body_sha256": "8968a731da2c0ff7b676c452f5ff2905f52e72ac4402f1dc4338ab8970a04d9e",
+        "anon_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "nspname": "public",
+        "proname": "reject_protected_archive_delete",
+        "arguments": "",
+        "owner": "postgres",
+        "proconfig": null,
+        "body_sha256": "3b1510170dbf2b34b27eddc29b33cd2f2b6ea00c0d8b3a8048c630384787c431",
+        "anon_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "nspname": "public",
+        "proname": "reject_turn_event_update",
+        "arguments": "",
+        "owner": "postgres",
+        "proconfig": null,
+        "body_sha256": "5108cf56da7b97677dd2dcb274902c1d42d72aeebf1369b09c6aaac32f61f2c4",
+        "anon_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "nspname": "public",
+        "proname": "rls_auto_enable",
+        "arguments": "",
+        "owner": "postgres",
+        "proconfig": [
+          "search_path=pg_catalog"
+        ],
+        "body_sha256": "2782e98b348aca7d6f6f73c420fd78d2e094957dd7a52b0483d4c34f29d2a7a1",
+        "anon_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "nspname": "public",
+        "proname": "turn_event_digest",
+        "arguments": "e turn_events, previous text",
+        "owner": "postgres",
+        "proconfig": null,
+        "body_sha256": "94b7763a73f8be409f203e09df4cf43984e5c1342963b12ab888842aaca2017b",
+        "anon_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "nspname": "public",
+        "proname": "verify_turn_event_chain",
+        "arguments": "target text",
+        "owner": "postgres",
+        "proconfig": null,
+        "body_sha256": "e61ce460a3c1536263eac10ce3489ac14a9e4d51cd2fb07625aaca46bba73a9f",
+        "anon_execute": true,
+        "authenticated_execute": true
+      }
+    ],
+    "after": [
+      {
+        "nspname": "public",
+        "proname": "append_turn_event_hash",
+        "arguments": "",
+        "owner": "postgres",
+        "proconfig": [
+          "search_path=pg_catalog, public, pg_temp"
+        ],
+        "body_sha256": "50d20656121df40a6619b2dec30acac5fd0ca19a41492009bc305c339a2dccfe",
+        "anon_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "nspname": "public",
+        "proname": "guard_game_saves_update",
+        "arguments": "",
+        "owner": "postgres",
+        "proconfig": [
+          "search_path=pg_catalog, public, pg_temp"
+        ],
+        "body_sha256": "3885035736e7338d8f379e22355cb952aa44ef09cee9953f50cb758d31489881",
+        "anon_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "nspname": "public",
+        "proname": "protect_game_save_memory_policy",
+        "arguments": "",
+        "owner": "postgres",
+        "proconfig": [
+          "search_path=pg_catalog, public, pg_temp"
+        ],
+        "body_sha256": "3c0170ae7a98a7fd6c103c7b444dc20885f0c83dabf5645fc65968cb96837215",
+        "anon_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "nspname": "public",
+        "proname": "protect_npc_authorized_observation_outbox",
+        "arguments": "",
+        "owner": "postgres",
+        "proconfig": [
+          "search_path=pg_catalog, public, pg_temp"
+        ],
+        "body_sha256": "3725f1a4fa8bbb1fe7345868d82a6e09032b9ad484177f7f1cff27cf2b384d21",
+        "anon_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "nspname": "public",
+        "proname": "reject_entitlement_ledger_mutation",
+        "arguments": "",
+        "owner": "postgres",
+        "proconfig": [
+          "search_path=pg_catalog, public, pg_temp"
+        ],
+        "body_sha256": "8968a731da2c0ff7b676c452f5ff2905f52e72ac4402f1dc4338ab8970a04d9e",
+        "anon_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "nspname": "public",
+        "proname": "reject_protected_archive_delete",
+        "arguments": "",
+        "owner": "postgres",
+        "proconfig": [
+          "search_path=pg_catalog, public, pg_temp"
+        ],
+        "body_sha256": "3b1510170dbf2b34b27eddc29b33cd2f2b6ea00c0d8b3a8048c630384787c431",
+        "anon_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "nspname": "public",
+        "proname": "reject_turn_event_update",
+        "arguments": "",
+        "owner": "postgres",
+        "proconfig": [
+          "search_path=pg_catalog, public, pg_temp"
+        ],
+        "body_sha256": "5108cf56da7b97677dd2dcb274902c1d42d72aeebf1369b09c6aaac32f61f2c4",
+        "anon_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "nspname": "public",
+        "proname": "rls_auto_enable",
+        "arguments": "",
+        "owner": "postgres",
+        "proconfig": [
+          "search_path=pg_catalog"
+        ],
+        "body_sha256": "2782e98b348aca7d6f6f73c420fd78d2e094957dd7a52b0483d4c34f29d2a7a1",
+        "anon_execute": false,
+        "authenticated_execute": false
+      },
+      {
+        "nspname": "public",
+        "proname": "turn_event_digest",
+        "arguments": "e turn_events, previous text",
+        "owner": "postgres",
+        "proconfig": [
+          "search_path=pg_catalog, public, pg_temp"
+        ],
+        "body_sha256": "94b7763a73f8be409f203e09df4cf43984e5c1342963b12ab888842aaca2017b",
+        "anon_execute": true,
+        "authenticated_execute": true
+      },
+      {
+        "nspname": "public",
+        "proname": "verify_turn_event_chain",
+        "arguments": "target text",
+        "owner": "postgres",
+        "proconfig": [
+          "search_path=pg_catalog, public, pg_temp"
+        ],
+        "body_sha256": "e61ce460a3c1536263eac10ce3489ac14a9e4d51cd2fb07625aaca46bba73a9f",
+        "anon_execute": true,
+        "authenticated_execute": true
+      }
+    ]
+  },
+  "pages": {
+    "success": true,
+    "project": "jiuxiaogame-public-demo",
+    "productionBranch": "main",
+    "productionTarget": "release",
+    "existingVariablesPreserved": true,
+    "previewUnchanged": true,
+    "buildCommandUnchanged": true,
+    "canonicalDeploymentUnchanged": true,
+    "canonicalSha": "2647439e0cccc9a136606a81131519f53253f125",
+    "websiteCodeDeploymentPerformed": false
+  }
+}

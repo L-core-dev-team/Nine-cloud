@@ -1,0 +1,3870 @@
+[
+  {
+    "questionId": "holdout:0:clear:4",
+    "category": "clear",
+    "budget": 512,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:0:3"
+    ],
+    "actual": [],
+    "missing": [
+      "long:0:3"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 3.38130000000001,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 3.3788000000000125,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:1:historical-relation:31",
+    "category": "historical-relation",
+    "budget": 512,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:1:0"
+    ],
+    "actual": [],
+    "missing": [
+      "long:1:0"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.5358999999999696,
+    "result": {
+      "strategy": "historical",
+      "ranked": [
+        {
+          "sourceId": "long:1:0",
+          "turnId": 29,
+          "gameMinute": 2016,
+          "gameTime": "合成第29刻",
+          "participants": [
+            "n1"
+          ],
+          "location": "l1",
+          "items": [
+            "o1"
+          ],
+          "narrative": "第29回合第1记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是748号，簿页377未与旧页合并。第29回合第2记，有人问：“难道每个故事都能凭一句话说清？谢荻第一次在温苓院见到玩家，态度戒备，说：“先问清来处，再谈同行。”第130回合第1记，一位旅人翻开残缺的行路札记，读到道路岔口便停下，旁人提醒旧路标未必适用于今日，两人决定翌日亲自查验。本次登记的验点是360号，簿页1690未与旧页合并。第130回合第2记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是286号，簿页1691未与旧页合并。第130回合第3记，有人问：“难道每个故事都能凭一句话说清？”同行者摇头，将破损的纸页一一铺平，提醒应当保留前后语境。本次登记的验点是327号，簿页1692未与旧页合并。第130回合第4记，潮汐退过石阶后，抄录者对照两册旧账，逐笔确认数目，却没有对任何人的身份作出结论。本次登记的验点是909号，簿页1693未与旧页合并。第130回合第5记，案头的草图画着三条岔路，执笔者逐一注明沿途补给与路程，另将道听途说的捷径圈出，留给后来者复核。本次登记的验点是276号，簿页1694未与旧页合并。第130回合第6记，廊下的木桌被移开半尺，学徒重排坐席，争论午后应当先修屋檐还是清点柴薪，直到更鼓响起才各自散去。本次登记的验点是380号，簿页1695未与旧页合并。",
+          "eventIds": [
+            "ev:long:1:0"
+          ],
+          "tags": [
+            "meeting"
+          ],
+          "facts": [
+            {
+              "id": "f:1:初遇地点:温苓院",
+              "subject": "n1",
+              "predicate": "初遇地点",
+              "value": "温苓院",
+              "kind": "world-event",
+              "validFrom": 29,
+              "confirmedBy": "ev:long:1:0"
+            },
+            {
+              "id": "f:1:关系:戒备",
+              "subject": "n1",
+              "predicate": "关系",
+              "value": "戒备",
+              "kind": "world-event",
+              "validFrom": 29,
+              "confirmedBy": "ev:long:1:0"
+            }
+          ],
+          "historicalSources": [],
+          "authorizedNpcIds": [
+            "n1"
+          ],
+          "score": 100,
+          "factStates": [
+            {
+              "factId": "f:1:初遇地点:温苓院",
+              "kind": "world-event",
+              "status": "current",
+              "validity": "active"
+            },
+            {
+              "factId": "f:1:关系:戒备",
+              "kind": "world-event",
+              "status": "current",
+              "validity": "active"
+            }
+          ]
+        }
+      ],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "roles": {
+        "long:1:0": "direct"
+      },
+      "diagnosis": "budget-missing-key-source",
+      "supportAudit": [
+        {
+          "sourceId": "long:1:0",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:1:关系:戒备"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "no-complete-supporting-unit",
+          "confirmation": "offline-event-bound",
+          "npcAuthorized": true,
+          "asOfTurn": 599,
+          "spans": []
+        }
+      ],
+      "omittedSourceIds": [
+        "long:1:0"
+      ],
+      "enoughEvidence": false,
+      "reason": "budget-missing-key-source; source claims retain unverified status; no generated answer",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.5353000000000065,
+      "originalSpans": [],
+      "intent": {
+        "mode": "typed",
+        "temporal": "historical"
+      },
+      "candidateAudit": [
+        {
+          "sourceId": "long:1:0",
+          "role": "direct",
+          "reason": "no-complete-supporting-unit"
+        },
+        {
+          "sourceId": "long:1:1",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:2",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:3",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:4",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        }
+      ],
+      "originalAuditCount": 5
+    }
+  },
+  {
+    "questionId": "holdout:2:body:36",
+    "category": "body",
+    "budget": 512,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:2:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:2:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.6931999999999903,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.6927000000000021,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:2:body-waist:37",
+    "category": "body-waist",
+    "budget": 512,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:2:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:2:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.5072000000000116,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.5063999999999851,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:2:alias-known:45",
+    "category": "alias-known",
+    "budget": 512,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:2:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:2:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.5907000000000266,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.5883999999999787,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:2:npc-self:46",
+    "category": "npc-self",
+    "budget": 512,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:2:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:2:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.32159999999998945,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.32089999999999463,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:4:consumed:88",
+    "category": "consumed",
+    "budget": 512,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:4:6"
+    ],
+    "actual": [],
+    "missing": [
+      "long:4:6"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.3480999999999881,
+    "result": {
+      "strategy": "historical",
+      "ranked": [
+        {
+          "sourceId": "long:4:6",
+          "turnId": 757,
+          "gameMinute": 54432,
+          "gameTime": "合成第757刻",
+          "participants": [
+            "n4"
+          ],
+          "location": "l4",
+          "items": [
+            "o4"
+          ],
+          "narrative": "第757回合第1记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是973号，簿页9841未与旧页合并。第757回合第2记，有人问：“难道每个故事都能凭一句话说清？鲁蓼把竹笛信物交给玩家，随后信物被消耗于阵门，归属不再有效。第858回合第1记，一位旅人翻开残缺的行路札记，读到道路岔口便停下，旁人提醒旧路标未必适用于今日，两人决定翌日亲自查验。本次登记的验点是585号，簿页11154未与旧页合并。第858回合第2记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是593号，簿页11155未与旧页合并。第858回合第3记，有人问：“难道每个故事都能凭一句话说清？”同行者摇头，将破损的纸页一一铺平，提醒应当保留前后语境。本次登记的验点是845号，簿页11156未与旧页合并。第858回合第4记，潮汐退过石阶后，抄录者对照两册旧账，逐笔确认数目，却没有对任何人的身份作出结论。本次登记的验点是23号，簿页11157未与旧页合并。第858回合第5记，案头的草图画着三条岔路，执笔者逐一注明沿途补给与路程，另将道听途说的捷径圈出，留给后来者复核。本次登记的验点是503号，簿页11158未与旧页合并。第858回合第6记，廊下的木桌被移开半尺，学徒重排坐席，争论午后应当先修屋檐还是清点柴薪，直到更鼓响起才各自散去。本次登记的验点是21号，簿页11159未与旧页合并。",
+          "eventIds": [
+            "ev:long:4:6"
+          ],
+          "tags": [
+            "transfer"
+          ],
+          "facts": [
+            {
+              "id": "f:4:归属:已消耗",
+              "subject": "o4",
+              "predicate": "归属",
+              "value": "已消耗",
+              "kind": "world-event",
+              "validFrom": 757,
+              "confirmedBy": "ev:long:4:6"
+            }
+          ],
+          "historicalSources": [],
+          "authorizedNpcIds": [
+            "n4"
+          ],
+          "score": 100,
+          "factStates": [
+            {
+              "factId": "f:4:归属:已消耗",
+              "kind": "world-event",
+              "status": "current",
+              "validity": "active"
+            }
+          ]
+        }
+      ],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "roles": {
+        "long:4:6": "direct"
+      },
+      "diagnosis": "budget-missing-key-source",
+      "supportAudit": [
+        {
+          "sourceId": "long:4:6",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:4:归属:已消耗"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "no-complete-supporting-unit",
+          "confirmation": "offline-event-bound",
+          "npcAuthorized": true,
+          "asOfTurn": 1000,
+          "spans": []
+        }
+      ],
+      "omittedSourceIds": [
+        "long:4:6"
+      ],
+      "enoughEvidence": false,
+      "reason": "budget-missing-key-source; source claims retain unverified status; no generated answer",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.3475999999999999,
+      "originalSpans": [],
+      "intent": {
+        "mode": "typed",
+        "temporal": "current"
+      },
+      "candidateAudit": [
+        {
+          "sourceId": "long:4:0",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:4:1",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:4:2",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:4:3",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:4:4",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:4:5",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:4:6",
+          "role": "direct",
+          "reason": "no-complete-supporting-unit"
+        },
+        {
+          "sourceId": "long:4:7",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        }
+      ],
+      "originalAuditCount": 8
+    }
+  },
+  {
+    "questionId": "holdout:5:clear:94",
+    "category": "clear",
+    "budget": 512,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:5:3"
+    ],
+    "actual": [],
+    "missing": [
+      "long:5:3"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 1.592299999999966,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 1.591700000000003,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:5:rumor:107",
+    "category": "rumor",
+    "budget": 512,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:5:7"
+    ],
+    "actual": [],
+    "missing": [
+      "long:5:7"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.4531000000000063,
+    "result": {
+      "strategy": "historical",
+      "ranked": [
+        {
+          "sourceId": "long:5:7",
+          "turnId": 885,
+          "gameMinute": 63648,
+          "gameTime": "合成第885刻",
+          "participants": [
+            "n5"
+          ],
+          "location": "l5",
+          "items": [
+            "o5"
+          ],
+          "narrative": "第885回合第1记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是250号，簿页11505未与旧页合并。第885回合第2记，有人问：“难道每个故事都能凭一句话说清？曹苓说：“听说远方的门已经开放。”他没有亲眼确认，谣言仍未核实。第986回合第1记，一位旅人翻开残缺的行路札记，读到道路岔口便停下，旁人提醒旧路标未必适用于今日，两人决定翌日亲自查验。本次登记的验点是859号，簿页12818未与旧页合并。第986回合第2记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是64号，簿页12819未与旧页合并。第986回合第3记，有人问：“难道每个故事都能凭一句话说清？”同行者摇头，将破损的纸页一一铺平，提醒应当保留前后语境。本次登记的验点是584号，簿页12820未与旧页合并。第986回合第4记，潮汐退过石阶后，抄录者对照两册旧账，逐笔确认数目，却没有对任何人的身份作出结论。本次登记的验点是584号，簿页12821未与旧页合并。第986回合第5记，案头的草图画着三条岔路，执笔者逐一注明沿途补给与路程，另将道听途说的捷径圈出，留给后来者复核。本次登记的验点是834号，簿页12822未与旧页合并。第986回合第6记，廊下的木桌被移开半尺，学徒重排坐席，争论午后应当先修屋檐还是清点柴薪，直到更鼓响起才各自散去。本次登记的验点是838号，簿页12823未与旧页合并。",
+          "eventIds": [
+            "ev:long:5:7"
+          ],
+          "tags": [
+            "rumor"
+          ],
+          "facts": [
+            {
+              "id": "f:5:身份传闻:远门已开放",
+              "subject": "n5",
+              "predicate": "身份传闻",
+              "value": "远门已开放",
+              "kind": "character-claim",
+              "validFrom": 885
+            }
+          ],
+          "historicalSources": [],
+          "authorizedNpcIds": [
+            "n5"
+          ],
+          "score": 100,
+          "factStates": [
+            {
+              "factId": "f:5:身份传闻:远门已开放",
+              "kind": "character-claim",
+              "status": "unverified",
+              "validity": "unverified"
+            }
+          ]
+        }
+      ],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "roles": {
+        "long:5:7": "direct"
+      },
+      "diagnosis": "budget-missing-key-source",
+      "supportAudit": [
+        {
+          "sourceId": "long:5:7",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:5:身份传闻:远门已开放"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "ambiguous-or-missing-attributed-claim",
+          "confirmation": "unverified",
+          "npcAuthorized": true,
+          "asOfTurn": 1000,
+          "spans": []
+        }
+      ],
+      "omittedSourceIds": [
+        "long:5:7"
+      ],
+      "enoughEvidence": false,
+      "reason": "budget-missing-key-source; source claims retain unverified status; no generated answer",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.452699999999993,
+      "originalSpans": [],
+      "intent": {
+        "mode": "typed",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [
+        {
+          "sourceId": "long:5:0",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:1",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:2",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:3",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:4",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:5",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:6",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:7",
+          "role": "direct",
+          "reason": "ambiguous-or-missing-attributed-claim"
+        }
+      ],
+      "originalAuditCount": 8
+    }
+  },
+  {
+    "questionId": "holdout:6:landing:113",
+    "category": "landing",
+    "budget": 512,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:6:4"
+    ],
+    "actual": [],
+    "missing": [
+      "long:6:4"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 3.2521999999999593,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 3.248100000000022,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:7:body:126",
+    "category": "body",
+    "budget": 512,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:7:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:7:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.6355000000000359,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.6348999999999592,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:7:body-waist:127",
+    "category": "body-waist",
+    "budget": 512,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:7:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:7:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.4974000000000274,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.49670000000003256,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:7:alias-known:135",
+    "category": "alias-known",
+    "budget": 512,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:7:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:7:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.47900000000004184,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.47860000000002856,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:7:npc-self:136",
+    "category": "npc-self",
+    "budget": 512,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:7:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:7:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.2839000000000169,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.2832000000000221,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:0:clear:4",
+    "category": "clear",
+    "budget": 1024,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:0:3"
+    ],
+    "actual": [],
+    "missing": [
+      "long:0:3"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 2.314199999999971,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 2.3132000000000517,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:1:historical-relation:31",
+    "category": "historical-relation",
+    "budget": 1024,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:1:0"
+    ],
+    "actual": [],
+    "missing": [
+      "long:1:0"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.4232999999999265,
+    "result": {
+      "strategy": "historical",
+      "ranked": [
+        {
+          "sourceId": "long:1:0",
+          "turnId": 29,
+          "gameMinute": 2016,
+          "gameTime": "合成第29刻",
+          "participants": [
+            "n1"
+          ],
+          "location": "l1",
+          "items": [
+            "o1"
+          ],
+          "narrative": "第29回合第1记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是748号，簿页377未与旧页合并。第29回合第2记，有人问：“难道每个故事都能凭一句话说清？谢荻第一次在温苓院见到玩家，态度戒备，说：“先问清来处，再谈同行。”第130回合第1记，一位旅人翻开残缺的行路札记，读到道路岔口便停下，旁人提醒旧路标未必适用于今日，两人决定翌日亲自查验。本次登记的验点是360号，簿页1690未与旧页合并。第130回合第2记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是286号，簿页1691未与旧页合并。第130回合第3记，有人问：“难道每个故事都能凭一句话说清？”同行者摇头，将破损的纸页一一铺平，提醒应当保留前后语境。本次登记的验点是327号，簿页1692未与旧页合并。第130回合第4记，潮汐退过石阶后，抄录者对照两册旧账，逐笔确认数目，却没有对任何人的身份作出结论。本次登记的验点是909号，簿页1693未与旧页合并。第130回合第5记，案头的草图画着三条岔路，执笔者逐一注明沿途补给与路程，另将道听途说的捷径圈出，留给后来者复核。本次登记的验点是276号，簿页1694未与旧页合并。第130回合第6记，廊下的木桌被移开半尺，学徒重排坐席，争论午后应当先修屋檐还是清点柴薪，直到更鼓响起才各自散去。本次登记的验点是380号，簿页1695未与旧页合并。",
+          "eventIds": [
+            "ev:long:1:0"
+          ],
+          "tags": [
+            "meeting"
+          ],
+          "facts": [
+            {
+              "id": "f:1:初遇地点:温苓院",
+              "subject": "n1",
+              "predicate": "初遇地点",
+              "value": "温苓院",
+              "kind": "world-event",
+              "validFrom": 29,
+              "confirmedBy": "ev:long:1:0"
+            },
+            {
+              "id": "f:1:关系:戒备",
+              "subject": "n1",
+              "predicate": "关系",
+              "value": "戒备",
+              "kind": "world-event",
+              "validFrom": 29,
+              "confirmedBy": "ev:long:1:0"
+            }
+          ],
+          "historicalSources": [],
+          "authorizedNpcIds": [
+            "n1"
+          ],
+          "score": 100,
+          "factStates": [
+            {
+              "factId": "f:1:初遇地点:温苓院",
+              "kind": "world-event",
+              "status": "current",
+              "validity": "active"
+            },
+            {
+              "factId": "f:1:关系:戒备",
+              "kind": "world-event",
+              "status": "current",
+              "validity": "active"
+            }
+          ]
+        }
+      ],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "roles": {
+        "long:1:0": "direct"
+      },
+      "diagnosis": "budget-missing-key-source",
+      "supportAudit": [
+        {
+          "sourceId": "long:1:0",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:1:关系:戒备"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "no-complete-supporting-unit",
+          "confirmation": "offline-event-bound",
+          "npcAuthorized": true,
+          "asOfTurn": 599,
+          "spans": []
+        }
+      ],
+      "omittedSourceIds": [
+        "long:1:0"
+      ],
+      "enoughEvidence": false,
+      "reason": "budget-missing-key-source; source claims retain unverified status; no generated answer",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.4230000000000018,
+      "originalSpans": [],
+      "intent": {
+        "mode": "typed",
+        "temporal": "historical"
+      },
+      "candidateAudit": [
+        {
+          "sourceId": "long:1:0",
+          "role": "direct",
+          "reason": "no-complete-supporting-unit"
+        },
+        {
+          "sourceId": "long:1:1",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:2",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:3",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:4",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        }
+      ],
+      "originalAuditCount": 5
+    }
+  },
+  {
+    "questionId": "holdout:2:body:36",
+    "category": "body",
+    "budget": 1024,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:2:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:2:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.6488000000000511,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.648200000000088,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:2:body-waist:37",
+    "category": "body-waist",
+    "budget": 1024,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:2:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:2:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.5005999999999631,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.5,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:2:alias-known:45",
+    "category": "alias-known",
+    "budget": 1024,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:2:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:2:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.43029999999998836,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.4298000000000002,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:2:npc-self:46",
+    "category": "npc-self",
+    "budget": 1024,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:2:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:2:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.2819000000000642,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.28139999999996235,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:4:consumed:88",
+    "category": "consumed",
+    "budget": 1024,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:4:6"
+    ],
+    "actual": [],
+    "missing": [
+      "long:4:6"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.41039999999998145,
+    "result": {
+      "strategy": "historical",
+      "ranked": [
+        {
+          "sourceId": "long:4:6",
+          "turnId": 757,
+          "gameMinute": 54432,
+          "gameTime": "合成第757刻",
+          "participants": [
+            "n4"
+          ],
+          "location": "l4",
+          "items": [
+            "o4"
+          ],
+          "narrative": "第757回合第1记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是973号，簿页9841未与旧页合并。第757回合第2记，有人问：“难道每个故事都能凭一句话说清？鲁蓼把竹笛信物交给玩家，随后信物被消耗于阵门，归属不再有效。第858回合第1记，一位旅人翻开残缺的行路札记，读到道路岔口便停下，旁人提醒旧路标未必适用于今日，两人决定翌日亲自查验。本次登记的验点是585号，簿页11154未与旧页合并。第858回合第2记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是593号，簿页11155未与旧页合并。第858回合第3记，有人问：“难道每个故事都能凭一句话说清？”同行者摇头，将破损的纸页一一铺平，提醒应当保留前后语境。本次登记的验点是845号，簿页11156未与旧页合并。第858回合第4记，潮汐退过石阶后，抄录者对照两册旧账，逐笔确认数目，却没有对任何人的身份作出结论。本次登记的验点是23号，簿页11157未与旧页合并。第858回合第5记，案头的草图画着三条岔路，执笔者逐一注明沿途补给与路程，另将道听途说的捷径圈出，留给后来者复核。本次登记的验点是503号，簿页11158未与旧页合并。第858回合第6记，廊下的木桌被移开半尺，学徒重排坐席，争论午后应当先修屋檐还是清点柴薪，直到更鼓响起才各自散去。本次登记的验点是21号，簿页11159未与旧页合并。",
+          "eventIds": [
+            "ev:long:4:6"
+          ],
+          "tags": [
+            "transfer"
+          ],
+          "facts": [
+            {
+              "id": "f:4:归属:已消耗",
+              "subject": "o4",
+              "predicate": "归属",
+              "value": "已消耗",
+              "kind": "world-event",
+              "validFrom": 757,
+              "confirmedBy": "ev:long:4:6"
+            }
+          ],
+          "historicalSources": [],
+          "authorizedNpcIds": [
+            "n4"
+          ],
+          "score": 100,
+          "factStates": [
+            {
+              "factId": "f:4:归属:已消耗",
+              "kind": "world-event",
+              "status": "current",
+              "validity": "active"
+            }
+          ]
+        }
+      ],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "roles": {
+        "long:4:6": "direct"
+      },
+      "diagnosis": "budget-missing-key-source",
+      "supportAudit": [
+        {
+          "sourceId": "long:4:6",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:4:归属:已消耗"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "no-complete-supporting-unit",
+          "confirmation": "offline-event-bound",
+          "npcAuthorized": true,
+          "asOfTurn": 1000,
+          "spans": []
+        }
+      ],
+      "omittedSourceIds": [
+        "long:4:6"
+      ],
+      "enoughEvidence": false,
+      "reason": "budget-missing-key-source; source claims retain unverified status; no generated answer",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.40989999999999327,
+      "originalSpans": [],
+      "intent": {
+        "mode": "typed",
+        "temporal": "current"
+      },
+      "candidateAudit": [
+        {
+          "sourceId": "long:4:0",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:4:1",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:4:2",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:4:3",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:4:4",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:4:5",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:4:6",
+          "role": "direct",
+          "reason": "no-complete-supporting-unit"
+        },
+        {
+          "sourceId": "long:4:7",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        }
+      ],
+      "originalAuditCount": 8
+    }
+  },
+  {
+    "questionId": "holdout:5:clear:94",
+    "category": "clear",
+    "budget": 1024,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:5:3"
+    ],
+    "actual": [],
+    "missing": [
+      "long:5:3"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 1.9681999999999107,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 1.9674999999999727,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:5:rumor:107",
+    "category": "rumor",
+    "budget": 1024,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:5:7"
+    ],
+    "actual": [],
+    "missing": [
+      "long:5:7"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.34379999999998745,
+    "result": {
+      "strategy": "historical",
+      "ranked": [
+        {
+          "sourceId": "long:5:7",
+          "turnId": 885,
+          "gameMinute": 63648,
+          "gameTime": "合成第885刻",
+          "participants": [
+            "n5"
+          ],
+          "location": "l5",
+          "items": [
+            "o5"
+          ],
+          "narrative": "第885回合第1记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是250号，簿页11505未与旧页合并。第885回合第2记，有人问：“难道每个故事都能凭一句话说清？曹苓说：“听说远方的门已经开放。”他没有亲眼确认，谣言仍未核实。第986回合第1记，一位旅人翻开残缺的行路札记，读到道路岔口便停下，旁人提醒旧路标未必适用于今日，两人决定翌日亲自查验。本次登记的验点是859号，簿页12818未与旧页合并。第986回合第2记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是64号，簿页12819未与旧页合并。第986回合第3记，有人问：“难道每个故事都能凭一句话说清？”同行者摇头，将破损的纸页一一铺平，提醒应当保留前后语境。本次登记的验点是584号，簿页12820未与旧页合并。第986回合第4记，潮汐退过石阶后，抄录者对照两册旧账，逐笔确认数目，却没有对任何人的身份作出结论。本次登记的验点是584号，簿页12821未与旧页合并。第986回合第5记，案头的草图画着三条岔路，执笔者逐一注明沿途补给与路程，另将道听途说的捷径圈出，留给后来者复核。本次登记的验点是834号，簿页12822未与旧页合并。第986回合第6记，廊下的木桌被移开半尺，学徒重排坐席，争论午后应当先修屋檐还是清点柴薪，直到更鼓响起才各自散去。本次登记的验点是838号，簿页12823未与旧页合并。",
+          "eventIds": [
+            "ev:long:5:7"
+          ],
+          "tags": [
+            "rumor"
+          ],
+          "facts": [
+            {
+              "id": "f:5:身份传闻:远门已开放",
+              "subject": "n5",
+              "predicate": "身份传闻",
+              "value": "远门已开放",
+              "kind": "character-claim",
+              "validFrom": 885
+            }
+          ],
+          "historicalSources": [],
+          "authorizedNpcIds": [
+            "n5"
+          ],
+          "score": 100,
+          "factStates": [
+            {
+              "factId": "f:5:身份传闻:远门已开放",
+              "kind": "character-claim",
+              "status": "unverified",
+              "validity": "unverified"
+            }
+          ]
+        }
+      ],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "roles": {
+        "long:5:7": "direct"
+      },
+      "diagnosis": "budget-missing-key-source",
+      "supportAudit": [
+        {
+          "sourceId": "long:5:7",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:5:身份传闻:远门已开放"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "ambiguous-or-missing-attributed-claim",
+          "confirmation": "unverified",
+          "npcAuthorized": true,
+          "asOfTurn": 1000,
+          "spans": []
+        }
+      ],
+      "omittedSourceIds": [
+        "long:5:7"
+      ],
+      "enoughEvidence": false,
+      "reason": "budget-missing-key-source; source claims retain unverified status; no generated answer",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.34339999999997417,
+      "originalSpans": [],
+      "intent": {
+        "mode": "typed",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [
+        {
+          "sourceId": "long:5:0",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:1",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:2",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:3",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:4",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:5",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:6",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:7",
+          "role": "direct",
+          "reason": "ambiguous-or-missing-attributed-claim"
+        }
+      ],
+      "originalAuditCount": 8
+    }
+  },
+  {
+    "questionId": "holdout:6:landing:113",
+    "category": "landing",
+    "budget": 1024,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:6:4"
+    ],
+    "actual": [],
+    "missing": [
+      "long:6:4"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 2.8869000000000824,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 2.8856000000000677,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:7:body:126",
+    "category": "body",
+    "budget": 1024,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:7:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:7:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.6449000000000069,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.6440999999999804,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:7:body-waist:127",
+    "category": "body-waist",
+    "budget": 1024,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:7:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:7:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.42200000000002547,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.4212999999999738,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:7:alias-known:135",
+    "category": "alias-known",
+    "budget": 1024,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:7:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:7:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 1.4773999999999887,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 1.4764999999999873,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:7:npc-self:136",
+    "category": "npc-self",
+    "budget": 1024,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:7:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:7:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.331299999999942,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.3304000000000542,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:0:clear:4",
+    "category": "clear",
+    "budget": 2048,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:0:3"
+    ],
+    "actual": [],
+    "missing": [
+      "long:0:3"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 1.988299999999981,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 1.9873000000000047,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:1:historical-relation:31",
+    "category": "historical-relation",
+    "budget": 2048,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:1:0"
+    ],
+    "actual": [],
+    "missing": [
+      "long:1:0"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.29909999999995307,
+    "result": {
+      "strategy": "historical",
+      "ranked": [
+        {
+          "sourceId": "long:1:0",
+          "turnId": 29,
+          "gameMinute": 2016,
+          "gameTime": "合成第29刻",
+          "participants": [
+            "n1"
+          ],
+          "location": "l1",
+          "items": [
+            "o1"
+          ],
+          "narrative": "第29回合第1记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是748号，簿页377未与旧页合并。第29回合第2记，有人问：“难道每个故事都能凭一句话说清？谢荻第一次在温苓院见到玩家，态度戒备，说：“先问清来处，再谈同行。”第130回合第1记，一位旅人翻开残缺的行路札记，读到道路岔口便停下，旁人提醒旧路标未必适用于今日，两人决定翌日亲自查验。本次登记的验点是360号，簿页1690未与旧页合并。第130回合第2记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是286号，簿页1691未与旧页合并。第130回合第3记，有人问：“难道每个故事都能凭一句话说清？”同行者摇头，将破损的纸页一一铺平，提醒应当保留前后语境。本次登记的验点是327号，簿页1692未与旧页合并。第130回合第4记，潮汐退过石阶后，抄录者对照两册旧账，逐笔确认数目，却没有对任何人的身份作出结论。本次登记的验点是909号，簿页1693未与旧页合并。第130回合第5记，案头的草图画着三条岔路，执笔者逐一注明沿途补给与路程，另将道听途说的捷径圈出，留给后来者复核。本次登记的验点是276号，簿页1694未与旧页合并。第130回合第6记，廊下的木桌被移开半尺，学徒重排坐席，争论午后应当先修屋檐还是清点柴薪，直到更鼓响起才各自散去。本次登记的验点是380号，簿页1695未与旧页合并。",
+          "eventIds": [
+            "ev:long:1:0"
+          ],
+          "tags": [
+            "meeting"
+          ],
+          "facts": [
+            {
+              "id": "f:1:初遇地点:温苓院",
+              "subject": "n1",
+              "predicate": "初遇地点",
+              "value": "温苓院",
+              "kind": "world-event",
+              "validFrom": 29,
+              "confirmedBy": "ev:long:1:0"
+            },
+            {
+              "id": "f:1:关系:戒备",
+              "subject": "n1",
+              "predicate": "关系",
+              "value": "戒备",
+              "kind": "world-event",
+              "validFrom": 29,
+              "confirmedBy": "ev:long:1:0"
+            }
+          ],
+          "historicalSources": [],
+          "authorizedNpcIds": [
+            "n1"
+          ],
+          "score": 100,
+          "factStates": [
+            {
+              "factId": "f:1:初遇地点:温苓院",
+              "kind": "world-event",
+              "status": "current",
+              "validity": "active"
+            },
+            {
+              "factId": "f:1:关系:戒备",
+              "kind": "world-event",
+              "status": "current",
+              "validity": "active"
+            }
+          ]
+        }
+      ],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "roles": {
+        "long:1:0": "direct"
+      },
+      "diagnosis": "budget-missing-key-source",
+      "supportAudit": [
+        {
+          "sourceId": "long:1:0",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:1:关系:戒备"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "no-complete-supporting-unit",
+          "confirmation": "offline-event-bound",
+          "npcAuthorized": true,
+          "asOfTurn": 599,
+          "spans": []
+        }
+      ],
+      "omittedSourceIds": [
+        "long:1:0"
+      ],
+      "enoughEvidence": false,
+      "reason": "budget-missing-key-source; source claims retain unverified status; no generated answer",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.2984000000000151,
+      "originalSpans": [],
+      "intent": {
+        "mode": "typed",
+        "temporal": "historical"
+      },
+      "candidateAudit": [
+        {
+          "sourceId": "long:1:0",
+          "role": "direct",
+          "reason": "no-complete-supporting-unit"
+        },
+        {
+          "sourceId": "long:1:1",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:2",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:3",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:4",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        }
+      ],
+      "originalAuditCount": 5
+    }
+  },
+  {
+    "questionId": "holdout:2:body:36",
+    "category": "body",
+    "budget": 2048,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:2:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:2:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.6720000000000255,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.6710000000000491,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:2:body-waist:37",
+    "category": "body-waist",
+    "budget": 2048,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:2:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:2:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.5062000000000353,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.503400000000056,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:2:alias-known:45",
+    "category": "alias-known",
+    "budget": 2048,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:2:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:2:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.39240000000006603,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.39179999999998927,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:2:npc-self:46",
+    "category": "npc-self",
+    "budget": 2048,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:2:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:2:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.2737999999999374,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.27340000000003783,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:4:consumed:88",
+    "category": "consumed",
+    "budget": 2048,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:4:6"
+    ],
+    "actual": [],
+    "missing": [
+      "long:4:6"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.3547000000000935,
+    "result": {
+      "strategy": "historical",
+      "ranked": [
+        {
+          "sourceId": "long:4:6",
+          "turnId": 757,
+          "gameMinute": 54432,
+          "gameTime": "合成第757刻",
+          "participants": [
+            "n4"
+          ],
+          "location": "l4",
+          "items": [
+            "o4"
+          ],
+          "narrative": "第757回合第1记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是973号，簿页9841未与旧页合并。第757回合第2记，有人问：“难道每个故事都能凭一句话说清？鲁蓼把竹笛信物交给玩家，随后信物被消耗于阵门，归属不再有效。第858回合第1记，一位旅人翻开残缺的行路札记，读到道路岔口便停下，旁人提醒旧路标未必适用于今日，两人决定翌日亲自查验。本次登记的验点是585号，簿页11154未与旧页合并。第858回合第2记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是593号，簿页11155未与旧页合并。第858回合第3记，有人问：“难道每个故事都能凭一句话说清？”同行者摇头，将破损的纸页一一铺平，提醒应当保留前后语境。本次登记的验点是845号，簿页11156未与旧页合并。第858回合第4记，潮汐退过石阶后，抄录者对照两册旧账，逐笔确认数目，却没有对任何人的身份作出结论。本次登记的验点是23号，簿页11157未与旧页合并。第858回合第5记，案头的草图画着三条岔路，执笔者逐一注明沿途补给与路程，另将道听途说的捷径圈出，留给后来者复核。本次登记的验点是503号，簿页11158未与旧页合并。第858回合第6记，廊下的木桌被移开半尺，学徒重排坐席，争论午后应当先修屋檐还是清点柴薪，直到更鼓响起才各自散去。本次登记的验点是21号，簿页11159未与旧页合并。",
+          "eventIds": [
+            "ev:long:4:6"
+          ],
+          "tags": [
+            "transfer"
+          ],
+          "facts": [
+            {
+              "id": "f:4:归属:已消耗",
+              "subject": "o4",
+              "predicate": "归属",
+              "value": "已消耗",
+              "kind": "world-event",
+              "validFrom": 757,
+              "confirmedBy": "ev:long:4:6"
+            }
+          ],
+          "historicalSources": [],
+          "authorizedNpcIds": [
+            "n4"
+          ],
+          "score": 100,
+          "factStates": [
+            {
+              "factId": "f:4:归属:已消耗",
+              "kind": "world-event",
+              "status": "current",
+              "validity": "active"
+            }
+          ]
+        }
+      ],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "roles": {
+        "long:4:6": "direct"
+      },
+      "diagnosis": "budget-missing-key-source",
+      "supportAudit": [
+        {
+          "sourceId": "long:4:6",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:4:归属:已消耗"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "no-complete-supporting-unit",
+          "confirmation": "offline-event-bound",
+          "npcAuthorized": true,
+          "asOfTurn": 1000,
+          "spans": []
+        }
+      ],
+      "omittedSourceIds": [
+        "long:4:6"
+      ],
+      "enoughEvidence": false,
+      "reason": "budget-missing-key-source; source claims retain unverified status; no generated answer",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.35410000000001673,
+      "originalSpans": [],
+      "intent": {
+        "mode": "typed",
+        "temporal": "current"
+      },
+      "candidateAudit": [
+        {
+          "sourceId": "long:4:0",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:4:1",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:4:2",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:4:3",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:4:4",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:4:5",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:4:6",
+          "role": "direct",
+          "reason": "no-complete-supporting-unit"
+        },
+        {
+          "sourceId": "long:4:7",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        }
+      ],
+      "originalAuditCount": 8
+    }
+  },
+  {
+    "questionId": "holdout:5:clear:94",
+    "category": "clear",
+    "budget": 2048,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:5:3"
+    ],
+    "actual": [],
+    "missing": [
+      "long:5:3"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 1.4642999999999802,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 1.463700000000017,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:5:rumor:107",
+    "category": "rumor",
+    "budget": 2048,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:5:7"
+    ],
+    "actual": [],
+    "missing": [
+      "long:5:7"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.3768000000000029,
+    "result": {
+      "strategy": "historical",
+      "ranked": [
+        {
+          "sourceId": "long:5:7",
+          "turnId": 885,
+          "gameMinute": 63648,
+          "gameTime": "合成第885刻",
+          "participants": [
+            "n5"
+          ],
+          "location": "l5",
+          "items": [
+            "o5"
+          ],
+          "narrative": "第885回合第1记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是250号，簿页11505未与旧页合并。第885回合第2记，有人问：“难道每个故事都能凭一句话说清？曹苓说：“听说远方的门已经开放。”他没有亲眼确认，谣言仍未核实。第986回合第1记，一位旅人翻开残缺的行路札记，读到道路岔口便停下，旁人提醒旧路标未必适用于今日，两人决定翌日亲自查验。本次登记的验点是859号，簿页12818未与旧页合并。第986回合第2记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是64号，簿页12819未与旧页合并。第986回合第3记，有人问：“难道每个故事都能凭一句话说清？”同行者摇头，将破损的纸页一一铺平，提醒应当保留前后语境。本次登记的验点是584号，簿页12820未与旧页合并。第986回合第4记，潮汐退过石阶后，抄录者对照两册旧账，逐笔确认数目，却没有对任何人的身份作出结论。本次登记的验点是584号，簿页12821未与旧页合并。第986回合第5记，案头的草图画着三条岔路，执笔者逐一注明沿途补给与路程，另将道听途说的捷径圈出，留给后来者复核。本次登记的验点是834号，簿页12822未与旧页合并。第986回合第6记，廊下的木桌被移开半尺，学徒重排坐席，争论午后应当先修屋檐还是清点柴薪，直到更鼓响起才各自散去。本次登记的验点是838号，簿页12823未与旧页合并。",
+          "eventIds": [
+            "ev:long:5:7"
+          ],
+          "tags": [
+            "rumor"
+          ],
+          "facts": [
+            {
+              "id": "f:5:身份传闻:远门已开放",
+              "subject": "n5",
+              "predicate": "身份传闻",
+              "value": "远门已开放",
+              "kind": "character-claim",
+              "validFrom": 885
+            }
+          ],
+          "historicalSources": [],
+          "authorizedNpcIds": [
+            "n5"
+          ],
+          "score": 100,
+          "factStates": [
+            {
+              "factId": "f:5:身份传闻:远门已开放",
+              "kind": "character-claim",
+              "status": "unverified",
+              "validity": "unverified"
+            }
+          ]
+        }
+      ],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "roles": {
+        "long:5:7": "direct"
+      },
+      "diagnosis": "budget-missing-key-source",
+      "supportAudit": [
+        {
+          "sourceId": "long:5:7",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:5:身份传闻:远门已开放"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "ambiguous-or-missing-attributed-claim",
+          "confirmation": "unverified",
+          "npcAuthorized": true,
+          "asOfTurn": 1000,
+          "spans": []
+        }
+      ],
+      "omittedSourceIds": [
+        "long:5:7"
+      ],
+      "enoughEvidence": false,
+      "reason": "budget-missing-key-source; source claims retain unverified status; no generated answer",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.3765000000000782,
+      "originalSpans": [],
+      "intent": {
+        "mode": "typed",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [
+        {
+          "sourceId": "long:5:0",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:1",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:2",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:3",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:4",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:5",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:6",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:7",
+          "role": "direct",
+          "reason": "ambiguous-or-missing-attributed-claim"
+        }
+      ],
+      "originalAuditCount": 8
+    }
+  },
+  {
+    "questionId": "holdout:6:landing:113",
+    "category": "landing",
+    "budget": 2048,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:6:4"
+    ],
+    "actual": [],
+    "missing": [
+      "long:6:4"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 2.49980000000005,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 2.4991999999999734,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:7:body:126",
+    "category": "body",
+    "budget": 2048,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:7:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:7:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.5086000000000013,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.5079999999999245,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:7:body-waist:127",
+    "category": "body-waist",
+    "budget": 2048,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:7:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:7:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.4115000000000464,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.4107999999999947,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:7:alias-known:135",
+    "category": "alias-known",
+    "budget": 2048,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:7:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:7:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.4533000000000129,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.45280000000002474,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:7:npc-self:136",
+    "category": "npc-self",
+    "budget": 2048,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:7:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:7:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.2621000000000322,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.26130000000000564,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:0:clear:4",
+    "category": "clear",
+    "budget": 4096,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:0:3"
+    ],
+    "actual": [],
+    "missing": [
+      "long:0:3"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 1.6435999999999922,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 1.6427999999999656,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:1:historical-relation:31",
+    "category": "historical-relation",
+    "budget": 4096,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:1:0"
+    ],
+    "actual": [],
+    "missing": [
+      "long:1:0"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.2699000000000069,
+    "result": {
+      "strategy": "historical",
+      "ranked": [
+        {
+          "sourceId": "long:1:0",
+          "turnId": 29,
+          "gameMinute": 2016,
+          "gameTime": "合成第29刻",
+          "participants": [
+            "n1"
+          ],
+          "location": "l1",
+          "items": [
+            "o1"
+          ],
+          "narrative": "第29回合第1记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是748号，簿页377未与旧页合并。第29回合第2记，有人问：“难道每个故事都能凭一句话说清？谢荻第一次在温苓院见到玩家，态度戒备，说：“先问清来处，再谈同行。”第130回合第1记，一位旅人翻开残缺的行路札记，读到道路岔口便停下，旁人提醒旧路标未必适用于今日，两人决定翌日亲自查验。本次登记的验点是360号，簿页1690未与旧页合并。第130回合第2记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是286号，簿页1691未与旧页合并。第130回合第3记，有人问：“难道每个故事都能凭一句话说清？”同行者摇头，将破损的纸页一一铺平，提醒应当保留前后语境。本次登记的验点是327号，簿页1692未与旧页合并。第130回合第4记，潮汐退过石阶后，抄录者对照两册旧账，逐笔确认数目，却没有对任何人的身份作出结论。本次登记的验点是909号，簿页1693未与旧页合并。第130回合第5记，案头的草图画着三条岔路，执笔者逐一注明沿途补给与路程，另将道听途说的捷径圈出，留给后来者复核。本次登记的验点是276号，簿页1694未与旧页合并。第130回合第6记，廊下的木桌被移开半尺，学徒重排坐席，争论午后应当先修屋檐还是清点柴薪，直到更鼓响起才各自散去。本次登记的验点是380号，簿页1695未与旧页合并。",
+          "eventIds": [
+            "ev:long:1:0"
+          ],
+          "tags": [
+            "meeting"
+          ],
+          "facts": [
+            {
+              "id": "f:1:初遇地点:温苓院",
+              "subject": "n1",
+              "predicate": "初遇地点",
+              "value": "温苓院",
+              "kind": "world-event",
+              "validFrom": 29,
+              "confirmedBy": "ev:long:1:0"
+            },
+            {
+              "id": "f:1:关系:戒备",
+              "subject": "n1",
+              "predicate": "关系",
+              "value": "戒备",
+              "kind": "world-event",
+              "validFrom": 29,
+              "confirmedBy": "ev:long:1:0"
+            }
+          ],
+          "historicalSources": [],
+          "authorizedNpcIds": [
+            "n1"
+          ],
+          "score": 100,
+          "factStates": [
+            {
+              "factId": "f:1:初遇地点:温苓院",
+              "kind": "world-event",
+              "status": "current",
+              "validity": "active"
+            },
+            {
+              "factId": "f:1:关系:戒备",
+              "kind": "world-event",
+              "status": "current",
+              "validity": "active"
+            }
+          ]
+        }
+      ],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "roles": {
+        "long:1:0": "direct"
+      },
+      "diagnosis": "budget-missing-key-source",
+      "supportAudit": [
+        {
+          "sourceId": "long:1:0",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:1:关系:戒备"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "no-complete-supporting-unit",
+          "confirmation": "offline-event-bound",
+          "npcAuthorized": true,
+          "asOfTurn": 599,
+          "spans": []
+        }
+      ],
+      "omittedSourceIds": [
+        "long:1:0"
+      ],
+      "enoughEvidence": false,
+      "reason": "budget-missing-key-source; source claims retain unverified status; no generated answer",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.26949999999999363,
+      "originalSpans": [],
+      "intent": {
+        "mode": "typed",
+        "temporal": "historical"
+      },
+      "candidateAudit": [
+        {
+          "sourceId": "long:1:0",
+          "role": "direct",
+          "reason": "no-complete-supporting-unit"
+        },
+        {
+          "sourceId": "long:1:1",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:2",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:3",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:1:4",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        }
+      ],
+      "originalAuditCount": 5
+    }
+  },
+  {
+    "questionId": "holdout:2:body:36",
+    "category": "body",
+    "budget": 4096,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:2:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:2:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.5352000000000317,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.5346000000000686,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:2:body-waist:37",
+    "category": "body-waist",
+    "budget": 4096,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:2:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:2:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.40440000000000964,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.403699999999958,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:2:alias-known:45",
+    "category": "alias-known",
+    "budget": 4096,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:2:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:2:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.38840000000004693,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.38769999999999527,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:2:npc-self:46",
+    "category": "npc-self",
+    "budget": 4096,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:2:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:2:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.23890000000005784,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.23839999999995598,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:4:consumed:88",
+    "category": "consumed",
+    "budget": 4096,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:4:6"
+    ],
+    "actual": [],
+    "missing": [
+      "long:4:6"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.34770000000003165,
+    "result": {
+      "strategy": "historical",
+      "ranked": [
+        {
+          "sourceId": "long:4:6",
+          "turnId": 757,
+          "gameMinute": 54432,
+          "gameTime": "合成第757刻",
+          "participants": [
+            "n4"
+          ],
+          "location": "l4",
+          "items": [
+            "o4"
+          ],
+          "narrative": "第757回合第1记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是973号，簿页9841未与旧页合并。第757回合第2记，有人问：“难道每个故事都能凭一句话说清？鲁蓼把竹笛信物交给玩家，随后信物被消耗于阵门，归属不再有效。第858回合第1记，一位旅人翻开残缺的行路札记，读到道路岔口便停下，旁人提醒旧路标未必适用于今日，两人决定翌日亲自查验。本次登记的验点是585号，簿页11154未与旧页合并。第858回合第2记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是593号，簿页11155未与旧页合并。第858回合第3记，有人问：“难道每个故事都能凭一句话说清？”同行者摇头，将破损的纸页一一铺平，提醒应当保留前后语境。本次登记的验点是845号，簿页11156未与旧页合并。第858回合第4记，潮汐退过石阶后，抄录者对照两册旧账，逐笔确认数目，却没有对任何人的身份作出结论。本次登记的验点是23号，簿页11157未与旧页合并。第858回合第5记，案头的草图画着三条岔路，执笔者逐一注明沿途补给与路程，另将道听途说的捷径圈出，留给后来者复核。本次登记的验点是503号，簿页11158未与旧页合并。第858回合第6记，廊下的木桌被移开半尺，学徒重排坐席，争论午后应当先修屋檐还是清点柴薪，直到更鼓响起才各自散去。本次登记的验点是21号，簿页11159未与旧页合并。",
+          "eventIds": [
+            "ev:long:4:6"
+          ],
+          "tags": [
+            "transfer"
+          ],
+          "facts": [
+            {
+              "id": "f:4:归属:已消耗",
+              "subject": "o4",
+              "predicate": "归属",
+              "value": "已消耗",
+              "kind": "world-event",
+              "validFrom": 757,
+              "confirmedBy": "ev:long:4:6"
+            }
+          ],
+          "historicalSources": [],
+          "authorizedNpcIds": [
+            "n4"
+          ],
+          "score": 100,
+          "factStates": [
+            {
+              "factId": "f:4:归属:已消耗",
+              "kind": "world-event",
+              "status": "current",
+              "validity": "active"
+            }
+          ]
+        }
+      ],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "roles": {
+        "long:4:6": "direct"
+      },
+      "diagnosis": "budget-missing-key-source",
+      "supportAudit": [
+        {
+          "sourceId": "long:4:6",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:4:归属:已消耗"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "no-complete-supporting-unit",
+          "confirmation": "offline-event-bound",
+          "npcAuthorized": true,
+          "asOfTurn": 1000,
+          "spans": []
+        }
+      ],
+      "omittedSourceIds": [
+        "long:4:6"
+      ],
+      "enoughEvidence": false,
+      "reason": "budget-missing-key-source; source claims retain unverified status; no generated answer",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.3472999999999047,
+      "originalSpans": [],
+      "intent": {
+        "mode": "typed",
+        "temporal": "current"
+      },
+      "candidateAudit": [
+        {
+          "sourceId": "long:4:0",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:4:1",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:4:2",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:4:3",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:4:4",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:4:5",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:4:6",
+          "role": "direct",
+          "reason": "no-complete-supporting-unit"
+        },
+        {
+          "sourceId": "long:4:7",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        }
+      ],
+      "originalAuditCount": 8
+    }
+  },
+  {
+    "questionId": "holdout:5:clear:94",
+    "category": "clear",
+    "budget": 4096,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:5:3"
+    ],
+    "actual": [],
+    "missing": [
+      "long:5:3"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 1.6583000000000538,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 1.657799999999952,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:5:rumor:107",
+    "category": "rumor",
+    "budget": 4096,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:5:7"
+    ],
+    "actual": [],
+    "missing": [
+      "long:5:7"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.36800000000005184,
+    "result": {
+      "strategy": "historical",
+      "ranked": [
+        {
+          "sourceId": "long:5:7",
+          "turnId": 885,
+          "gameMinute": 63648,
+          "gameTime": "合成第885刻",
+          "participants": [
+            "n5"
+          ],
+          "location": "l5",
+          "items": [
+            "o5"
+          ],
+          "narrative": "第885回合第1记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是250号，簿页11505未与旧页合并。第885回合第2记，有人问：“难道每个故事都能凭一句话说清？曹苓说：“听说远方的门已经开放。”他没有亲眼确认，谣言仍未核实。第986回合第1记，一位旅人翻开残缺的行路札记，读到道路岔口便停下，旁人提醒旧路标未必适用于今日，两人决定翌日亲自查验。本次登记的验点是859号，簿页12818未与旧页合并。第986回合第2记，小院正在更换门框，匠人核对榫眼和尺寸，几次试装后仍把最后一道工序留待明日；学徒逐条抄下尚未完成的步骤。本次登记的验点是64号，簿页12819未与旧页合并。第986回合第3记，有人问：“难道每个故事都能凭一句话说清？”同行者摇头，将破损的纸页一一铺平，提醒应当保留前后语境。本次登记的验点是584号，簿页12820未与旧页合并。第986回合第4记，潮汐退过石阶后，抄录者对照两册旧账，逐笔确认数目，却没有对任何人的身份作出结论。本次登记的验点是584号，簿页12821未与旧页合并。第986回合第5记，案头的草图画着三条岔路，执笔者逐一注明沿途补给与路程，另将道听途说的捷径圈出，留给后来者复核。本次登记的验点是834号，簿页12822未与旧页合并。第986回合第6记，廊下的木桌被移开半尺，学徒重排坐席，争论午后应当先修屋檐还是清点柴薪，直到更鼓响起才各自散去。本次登记的验点是838号，簿页12823未与旧页合并。",
+          "eventIds": [
+            "ev:long:5:7"
+          ],
+          "tags": [
+            "rumor"
+          ],
+          "facts": [
+            {
+              "id": "f:5:身份传闻:远门已开放",
+              "subject": "n5",
+              "predicate": "身份传闻",
+              "value": "远门已开放",
+              "kind": "character-claim",
+              "validFrom": 885
+            }
+          ],
+          "historicalSources": [],
+          "authorizedNpcIds": [
+            "n5"
+          ],
+          "score": 100,
+          "factStates": [
+            {
+              "factId": "f:5:身份传闻:远门已开放",
+              "kind": "character-claim",
+              "status": "unverified",
+              "validity": "unverified"
+            }
+          ]
+        }
+      ],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "roles": {
+        "long:5:7": "direct"
+      },
+      "diagnosis": "budget-missing-key-source",
+      "supportAudit": [
+        {
+          "sourceId": "long:5:7",
+          "sourceExists": true,
+          "speakerIds": [],
+          "reporterIds": [],
+          "factIds": [
+            "f:5:身份传闻:远门已开放"
+          ],
+          "supported": false,
+          "delivered": false,
+          "reason": "ambiguous-or-missing-attributed-claim",
+          "confirmation": "unverified",
+          "npcAuthorized": true,
+          "asOfTurn": 1000,
+          "spans": []
+        }
+      ],
+      "omittedSourceIds": [
+        "long:5:7"
+      ],
+      "enoughEvidence": false,
+      "reason": "budget-missing-key-source; source claims retain unverified status; no generated answer",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.3675999999999249,
+      "originalSpans": [],
+      "intent": {
+        "mode": "typed",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [
+        {
+          "sourceId": "long:5:0",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:1",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:2",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:3",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:4",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:5",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:6",
+          "role": "weak",
+          "reason": "entity co-occurrence alone cannot support query"
+        },
+        {
+          "sourceId": "long:5:7",
+          "role": "direct",
+          "reason": "ambiguous-or-missing-attributed-claim"
+        }
+      ],
+      "originalAuditCount": 8
+    }
+  },
+  {
+    "questionId": "holdout:6:landing:113",
+    "category": "landing",
+    "budget": 4096,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:6:4"
+    ],
+    "actual": [],
+    "missing": [
+      "long:6:4"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 3.189300000000003,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 3.18769999999995,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:7:body:126",
+    "category": "body",
+    "budget": 4096,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:7:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:7:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.5378999999999223,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.5373000000000729,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:7:body-waist:127",
+    "category": "body-waist",
+    "budget": 4096,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:7:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:7:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.4008000000000038,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.40009999999995216,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:7:alias-known:135",
+    "category": "alias-known",
+    "budget": 4096,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:7:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:7:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.3628999999999678,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.3623999999999796,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "holdout:7:npc-self:136",
+    "category": "npc-self",
+    "budget": 4096,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "long:7:1"
+    ],
+    "actual": [],
+    "missing": [
+      "long:7:1"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.2921999999999798,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.29160000000001673,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  }
+]

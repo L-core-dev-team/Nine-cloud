@@ -1,0 +1,52 @@
+(node:13908) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/Users/11954/Desktop/%E6%B0%B4%E9%BE%99%E5%90%9F%E4%B8%93%E7%94%A8/%E9%A1%B9%E7%9B%AE/Nine-cloud-P6-longmem-06a-20261014/tests/experiments/p6-longmem-06a/boundary.test.ts is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to \\?\C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-P6-longmem-06a-20261014\package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+✖ frozen consumed evidence: four budgets remain strict failures, not mislabeled successful refusals (66.2837ms)
+✔ punctuation restart loses governing condition: 岑苇问：“如果这只是演练，会不会这样？ (10.8262ms)
+✔ punctuation restart loses governing condition: 岑苇说：“下列只是传闻，不代表此事发生。 (0.8905ms)
+✔ punctuation restart loses governing condition: 岑苇说：“我否认下面这段记载。 (0.2965ms)
+✔ punctuation restart loses governing condition: 杜桐问：“若岑苇没有在场，能否出现这种说法？ (0.3386ms)
+✔ blank paragraph cannot prove a quote has ended (0.4601ms)
+✔ fresh speaker attribution cannot close somebody else’s quotation (3.1ms)
+✔ unclosed “ is not silently reset before an event (1.1198ms)
+✔ unclosed ‘ is not silently reset before an event (0.5638ms)
+✔ unclosed 「 is not silently reset before an event (0.4499ms)
+✔ unclosed 『 is not silently reset before an event (0.4104ms)
+✔ unclosed " is not silently reset before an event (0.3658ms)
+✔ balanced nested quotation still preserves original outer bounds (1.3176ms)
+✔ closed different speakers stay separate; one cannot donate a speech interval to the other (0.9517ms)
+✔ real source boundary isolates a malformed quote without rewriting either source (0.4065ms)
+✔ closing delimiter after apparent event still makes it part of the preceding quote (0.1829ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 15
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 331.0233
+
+✖ failing tests:
+
+test at tests\experiments\p6-longmem-06a\boundary.test.ts:22:1
+✖ frozen consumed evidence: four budgets remain strict failures, not mislabeled successful refusals (66.2837ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + '9857372a38cf51a6aebc66c8d28a212f17bf1cf7046e48353fee2880ee5e1ae2'
+  - '1287d2f0e53bfebfd3512baaf958e41557f50002f151f3c4c9f6cc834fd77b10'
+  
+      at TestContext.<anonymous> (file:///C:/Users/11954/Desktop/%E6%B0%B4%E9%BE%99%E5%90%9F%E4%B8%93%E7%94%A8/%E9%A1%B9%E7%9B%AE/Nine-cloud-P6-longmem-06a-20261014/tests/experiments/p6-longmem-06a/boundary.test.ts:27:90)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '9857372a38cf51a6aebc66c8d28a212f17bf1cf7046e48353fee2880ee5e1ae2',
+    expected: '1287d2f0e53bfebfd3512baaf958e41557f50002f151f3c4c9f6cc834fd77b10',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

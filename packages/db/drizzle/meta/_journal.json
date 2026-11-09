@@ -148,6 +148,34 @@
       "when": 1791178800000,
       "tag": "0020_npc_memory_recall_semantics",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1791849600000,
+      "tag": "0021_p4_recall_upgrade_catchup",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1791849600001,
+      "tag": "0022_function_scope_hardening",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1791974639605,
+      "tag": "0023_legacy_0017_0019_catchup",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1794124800000,
+      "tag": "0024_story_narratives",
+      "breakpoints": true
     }
   ]
 }

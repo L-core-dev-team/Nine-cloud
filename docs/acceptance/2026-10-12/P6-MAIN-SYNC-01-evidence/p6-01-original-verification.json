@@ -1,0 +1,249 @@
+{
+  "testedSourceCommit": "4d71ddd024a06cec44e752f6e0ff0be84e633c25",
+  "node": "v24.19.0",
+  "frozenGoldSha256": "91235f6ee8c4305979eadf46852af899815f1c0e04b52c07209d6c6ee680014f",
+  "previousEvidenceFilesVerified": 18,
+  "finalQueriesVerified": 1440,
+  "checks": {
+    "tests": "22/22 PASS; see tests.log",
+    "typecheck": "PASS",
+    "strictQuality": "FAIL expected: 512/1024 insufficient evidence; see strict.log"
+  },
+  "files": [
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/.gitattributes",
+      "bytes": 8,
+      "sha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/allRegression-0.log",
+      "bytes": 11371,
+      "sha256": "e9b1707976ce946678ca560ea16568134247de0c137521979275add217a304d8"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/build-0.log",
+      "bytes": 1907,
+      "sha256": "e6d9b54b0bd422fe47dfc46893915025a59779bebb4eb35067445f498424f4b8"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/checks-and-manifest.json",
+      "bytes": 6335,
+      "sha256": "18894a7bc76be5fa41bfd36bd690a9f34994c2984d5cbd7514bdc7e1868a4ed7"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/evaluation.json",
+      "bytes": 5221496,
+      "sha256": "775056574f58ecac86a2086786adbe7ac2392e807621e7bcb0a95eee444c8616"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/failures.json",
+      "bytes": 3628385,
+      "sha256": "baa227144abd18f608f310b53e9ae9d643858b111eedd6e619f51ad8268afaf3"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/final-0.log",
+      "bytes": 1450,
+      "sha256": "c5aeebd1293cfabf7f145d4f35fc3080090c3a58b6546d0c80fb53c01a5b09a3"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/gold-questions.json",
+      "bytes": 34120,
+      "sha256": "91235f6ee8c4305979eadf46852af899815f1c0e04b52c07209d6c6ee680014f"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/history-1000.json",
+      "bytes": 640526,
+      "sha256": "dea4baacd67ed5b63dc3cef78aac59795ab2f4e927b716c19eea601c6caa13d0"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/history-200.json",
+      "bytes": 132123,
+      "sha256": "4e551b324436534472455251d0aebaf4aedbdca9130f7c476ac54fc99248c0db"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/history-500.json",
+      "bytes": 322833,
+      "sha256": "dc8fb12bc18eb5527cedc64b0c39278a6f89e0d4c96f435010183efd1409cb05"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/initial-evaluation.json",
+      "bytes": 1321203,
+      "sha256": "3d871856d6447c5cdb9484827e36a79971d62841136f006f2c4f047edb3acb48"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/read-only-hash-diagnostic.json",
+      "bytes": 5312,
+      "sha256": "cba5418cddea4195dd53e945a28b9770d120b2545864919c07a98c6532e90096"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/regression-0.log",
+      "bytes": 466,
+      "sha256": "8b38db4f6cbcb92e4a05321b1b01d341c38895c39236342e711531c7a24f2de2"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/regression-1.log",
+      "bytes": 459,
+      "sha256": "874e242c64bd29dee1e1d82777c1ef933479bfb9be38c963e1c62f425f06d626"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/review-boundaries-before.log",
+      "bytes": 4904,
+      "sha256": "59b2d4993ffb1c447275a90148e83f78b893f2bd5ad3d9b5b5a19ef2df9cb5da"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/review/adversarial-history-200.json",
+      "bytes": 132580,
+      "sha256": "02a463cd2a1c2a65d5b6c3c2117f7f5db183fcc6c5ef897225cd685c296a5e5c"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/review/evaluation.json",
+      "bytes": 5224268,
+      "sha256": "144126af72177dc445c92670b6dd6804d74c541ec66272c84b7833cf2d1bbbf2"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/review/evaluation.log",
+      "bytes": 2946,
+      "sha256": "4ea687553d17eaf887e999e2f60354cac4ab7b1abd5aae726e3aa868f5eec369"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/review/failures.json",
+      "bytes": 3630970,
+      "sha256": "ee3244077d2c9439aab5d96bbdbdb891ed5698cc61c36f1063bb9e9a71b8d424"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/review/gold-questions.json",
+      "bytes": 34120,
+      "sha256": "91235f6ee8c4305979eadf46852af899815f1c0e04b52c07209d6c6ee680014f"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/review/history-1000.json",
+      "bytes": 640526,
+      "sha256": "dea4baacd67ed5b63dc3cef78aac59795ab2f4e927b716c19eea601c6caa13d0"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/review/history-200.json",
+      "bytes": 132123,
+      "sha256": "4e551b324436534472455251d0aebaf4aedbdca9130f7c476ac54fc99248c0db"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/review/history-500.json",
+      "bytes": 322833,
+      "sha256": "dc8fb12bc18eb5527cedc64b0c39278a6f89e0d4c96f435010183efd1409cb05"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/review/strict.log",
+      "bytes": 2946,
+      "sha256": "4ea687553d17eaf887e999e2f60354cac4ab7b1abd5aae726e3aa868f5eec369"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/review/summary.md",
+      "bytes": 2661,
+      "sha256": "1ee059d6c73fc8a7994b6313e9512de6aac089ef126a0e48ef230e1fc4a81ea8"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/review/tests.log",
+      "bytes": 4142,
+      "sha256": "a04bf33ea1be1d03e11d310aa721e5dbed703b78abdc62487d2af03ee5b46480"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/strict-0.log",
+      "bytes": 482,
+      "sha256": "e724ea7465523f59625805ba5b7a6e53fb7f8d985a779ae6e655d60b48b0ab78"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/summary.md",
+      "bytes": 2661,
+      "sha256": "22063989346da052354d62ce28e1b92ec152d1af346a494dc8aa8dc7103042f0"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/typecheck-0.log",
+      "bytes": 813,
+      "sha256": "e944681e91150bde6211368e8639f53261c07fc66098e9ba7fc1eb46a527c75d"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/typecheck-1.log",
+      "bytes": 2,
+      "sha256": "75a11da44c802486bc6f65640aa48a730f0f684c5c07a42ba3cd1735eb3fb070"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/unit-0.log",
+      "bytes": 1747,
+      "sha256": "efe74c088281f371dd77f2f450a09780982ca10140eb2a4b7b289f8d39c33da0"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/README.md",
+      "bytes": 8315,
+      "sha256": "c3bffb445bef06ca0822c71ba09c78ef91094afb43e839b735ca5454e71ea2e3"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/adversarial.ts",
+      "bytes": 1068,
+      "sha256": "278de026f616b4228fb62dc27abcc32bb9c3c94cb7e3f3976080e5352c1ed3ab"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/anchors.json",
+      "bytes": 11525,
+      "sha256": "89d16efe6581e8dc6bfda8c3513a93de4def4e854baa32487446b0f166820e54"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/dataset.ts",
+      "bytes": 4372,
+      "sha256": "fb3f99d8752f3a11ff7b75357ba66db901f3e833ea1837c6de90592619773077"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/evaluate.ts",
+      "bytes": 7194,
+      "sha256": "25710d231dda5eea4912d7b85ce53297fcde40b8e7ad2700afd19916623fee2d"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/gold.ts",
+      "bytes": 9628,
+      "sha256": "33cada65515bbed6dd81996a14654994c55272b8490a2a4ebc73587e1ffac199"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/invariants.test.ts",
+      "bytes": 9991,
+      "sha256": "cbf5086eb567153974e5eb0a34dad341464a9268d30860914feef28da7dd0d33"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/package.json",
+      "bytes": 138,
+      "sha256": "8b3d43dfdd944ad4015d41acad7f2a3fbc73e355646e8b394f7156a9dbe1d7a0"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/query.ts",
+      "bytes": 1374,
+      "sha256": "518656fc7cef38dc3890621725c6149d78e7ceb1afd11e0c817f8d2b63fe8725"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/retrieval.ts",
+      "bytes": 13350,
+      "sha256": "2180e98af278bd0abd7f70e7d0d98b76a91e62710cf71d2280fa3bf99eaf61b2"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/review-boundaries.test.ts",
+      "bytes": 3312,
+      "sha256": "130186337914be0ed6a7d3929e00a717b5bb2358ced7d1b6ea024f47bfde93aa"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/run.ts",
+      "bytes": 4784,
+      "sha256": "ba22490be8f5d2c2c0b3454a671f08510eecd94781ea02a1bf1da88be8bc4d34"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/tsconfig.json",
+      "bytes": 189,
+      "sha256": "9318ea87214d2537c7c2067fc2f02701a3584ebd5f72d68e88f42d9b7291bbef"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/types.ts",
+      "bytes": 1964,
+      "sha256": "5c5f65b6f1c02fabce0cab8b810e960635d8eaafb49df21f189d298b85913d93"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/verify-evidence.ts",
+      "bytes": 3484,
+      "sha256": "c427c02623bf33dd2883548a2726d45df6583f904a33c6c76dd734e174fe189a"
+    }
+  ]
+}

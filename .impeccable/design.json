@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-09-23T00:00:00+08:00",
+  "generatedAt": "2026-10-12T10:49:35Z",
   "title": "Design System: 九霄 WEB",
   "extensions": {
     "colorMeta": {
@@ -27,7 +27,32 @@
     "breakpoints": [
       {"name": "mobile", "value": "599px"},
       {"name": "compact-desktop", "value": "900px"}
-    ]
+    ],
+    "runtimeTokenAudit": {
+      "sourceOfTruth": "apps/web/src/style.css",
+      "verifiedAt": "2026-10-12",
+      "spacing": ["4px", "8px", "12px", "16px", "24px", "32px", "48px", "64px"],
+      "opticalAdjustments": ["1px", "2px"],
+      "componentSpacingAliases": {"dialogCloseClearance": "calc(var(--jx-space-8) + var(--jx-space-2))", "dialogSafeAreaTail": "calc(var(--jx-space-3) + var(--jx-space-optical-1) + env(safe-area-inset-bottom))", "aiActionbarClearance": "225px + env(safe-area-inset-bottom)", "worldbookAnchorOffset": "84px"},
+      "radii": ["4px", "8px", "12px", "16px", "999px", "50% for circular controls"],
+      "type": {
+        "caption": "0.75rem",
+        "small": "0.875rem",
+        "body": "1rem",
+        "inputMinimum": "max(1rem, 16px)",
+        "lead": "1.125rem",
+        "subhead": "1.25rem",
+        "section": "1.5rem",
+        "page": "2rem",
+        "display": "2.5rem"
+      },
+      "glass": {
+        "regular": "Readable navigation and temporary controls; live backdrop sampling with controlled blur, saturation, edge light, and adaptive theme contrast.",
+        "clear": "Higher background visibility for small floating controls over image-rich areas.",
+        "opticalApproximation": "Small-surface SVG displacement and edge lighting when supported; stable opaque or blur-only fallback otherwise.",
+        "platformLimit": "A web approximation; it does not use Apple's native Liquid Glass renderer or reproduce its system-level optical behavior."
+      }
+    }
   },
   "components": [
     {

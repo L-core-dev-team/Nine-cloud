@@ -1,0 +1,4 @@
+{
+  "status": 0,
+  "correction": "Compare every evidence field, excluding top-level elapsedMs; both cache-hit and explicit-invalidation checks."
+}

@@ -1,0 +1,15 @@
+# Add to playtest.compose.yml only. No existing Caddy site or production ingress is changed.
+services:
+  tunnel:
+    image: cloudflare/cloudflared@sha256:4955524aeaa379e154023d5a027c250f7b35041a2e7e950cf13f144bc9b9c5ba
+    command: ["tunnel", "--no-autoupdate", "--metrics", "127.0.0.1:19091", "run"]
+    environment:
+      TUNNEL_TOKEN: ${PLAYTEST_TUNNEL_TOKEN:?dedicated tunnel token required}
+    network_mode: host
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 128m
+    cpus: 0.2
+    restart: unless-stopped
+    depends_on: [front]

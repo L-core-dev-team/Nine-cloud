@@ -1,0 +1,18 @@
+{
+  "productionAcceptance": false,
+  "evidence": [
+    {
+      "kind": "upgrade",
+      "historicalRecallSchemaMissing": true,
+      "existingAccountPreserved": true
+    },
+    {
+      "kind": "fresh"
+    }
+  ],
+  "repeatedMigrationIdempotent": true,
+  "recallSchemaPresent": true,
+  "fixedFunctionPaths": true,
+  "publicExecuteRevoked": true,
+  "installedEventTriggerPreserved": true
+}

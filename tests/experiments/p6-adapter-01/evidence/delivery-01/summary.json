@@ -1,0 +1,747 @@
+{
+  "scopeValid": true,
+  "baseline": "534a6d58acf32ce8915f419cf4aeddc723a88e2d",
+  "originalWorkspaceClean": true,
+  "protectedTrackedChanges": [],
+  "oldDataRootsVerified": "verification-01: 20000 sources",
+  "legacy42Executed": false,
+  "contracts": "30 unique cases; synthetic, serialized and immutable test factories passed",
+  "cacheTests": 4,
+  "productionBlocked": 6,
+  "stage0": "REVIEW_READY, not frozen",
+  "localOnly": true,
+  "newFiles": [
+    {
+      "path": "tests/experiments/p6-adapter-01/.gitattributes",
+      "bytes": 89,
+      "sha256": "e8e67ae1c7a00c4f042c794f76cdab6c9549d3beef6d7d5a1e7652d2d2ab62aa"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/.gitignore",
+      "bytes": 7,
+      "sha256": "416c368351d655294bc29cfb669584917dfdbdc1f6166378117900ce07135c08"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/README.md",
+      "bytes": 1866,
+      "sha256": "10c0dd7c82bc68e48d325725e0dd9a60d91bcbb6e877e936521ed81d49c5ae20"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/adapter.cjs",
+      "bytes": 8186,
+      "sha256": "454b268e79c2fbc38fef15b68b7bc063072fc43e321ed17acc422f570015484d"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/adapter.d.cts",
+      "bytes": 426,
+      "sha256": "981ee270775b073abe459f80ad6874dc40b3abaa6d49f61603e5b8b599c2232c"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/benchmark.cjs",
+      "bytes": 3543,
+      "sha256": "5e198d659e2dfe19f14c67315b30dacd95c33eb7bc0b23d29e5a2a5626e95926"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/checks.cjs",
+      "bytes": 1211,
+      "sha256": "f32b49618a31046097a1cfd6e8419c7ada77fc45627cd93ca21b5bc2fd1c5575"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/contract-catalog.json",
+      "bytes": 70803,
+      "sha256": "2ce307fc0408529394e759ae8d637958ded0afd78ce8554814af2ae048d1d69b"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/contract-suite.cjs",
+      "bytes": 10848,
+      "sha256": "997d95a7795a458d3eb7eb11fa9949014e7e9184f04ccc52568f542175a851d4"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-01/retention-tests.log",
+      "bytes": 2783725,
+      "sha256": "bfd83fb1c851b33135f8f14c56364ce1f80bfa0115c9ad978869a9c425fd392b"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-01/summary.json",
+      "bytes": 1167,
+      "sha256": "ff30a6991d984004789f2beb57472d7f21d0f6fe082eaf40e5476a5adb3fc958"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-01/syntax-adapter.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-01/syntax-benchmark.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-01/syntax-checks.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-01/syntax-contract-suite.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-01/syntax-fixture-factory.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-01/syntax-portability.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-01/syntax-profile-worker.ts.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-01/syntax-reader-harness.example.ts.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-01/syntax-reader.ts.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-01/syntax-retained-recall.ts.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-01/syntax-retention.test.ts.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-01/syntax-run-contracts.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-01/syntax-serialized-factory.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-01/syntax-tooling.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-01/typescript.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-02/retention-tests.log",
+      "bytes": 2783727,
+      "sha256": "fd70b36cad690f07e1bb1fb42ea1f8e96d72ac22dd35d175e8340cbf907db629"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-02/summary.json",
+      "bytes": 1167,
+      "sha256": "ff30a6991d984004789f2beb57472d7f21d0f6fe082eaf40e5476a5adb3fc958"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-02/syntax-adapter.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-02/syntax-benchmark.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-02/syntax-checks.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-02/syntax-contract-suite.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-02/syntax-fixture-factory.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-02/syntax-portability.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-02/syntax-profile-worker.ts.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-02/syntax-reader-harness.example.ts.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-02/syntax-reader.ts.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-02/syntax-retained-recall.ts.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-02/syntax-retention.test.ts.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-02/syntax-run-contracts.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-02/syntax-serialized-factory.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-02/syntax-tooling.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-02/typescript.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-03/retention-tests.log",
+      "bytes": 1617,
+      "sha256": "3b909770f202e3668b6448fec709b829fb6873386702d49702d5386c86421a46"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-03/summary.json",
+      "bytes": 1167,
+      "sha256": "a7ae3717ab4f946d678a88e2b1a17f88fb578ac30916b16090bb80b1d43f66c6"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-03/syntax-adapter.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-03/syntax-benchmark.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-03/syntax-checks.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-03/syntax-contract-suite.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-03/syntax-fixture-factory.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-03/syntax-portability.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-03/syntax-profile-worker.ts.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-03/syntax-reader-harness.example.ts.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-03/syntax-reader.ts.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-03/syntax-retained-recall.ts.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-03/syntax-retention.test.ts.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-03/syntax-run-contracts.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-03/syntax-serialized-factory.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-03/syntax-tooling.cjs.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/checks-03/typescript.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/contracts-01/cases.json",
+      "bytes": 20913,
+      "sha256": "1044f8a2024d5a73ab428d3f2f32d75b969d675ee900d806469425206dc392e7"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/contracts-01/summary.json",
+      "bytes": 242,
+      "sha256": "940811ef7ac12ddebdeaefb899711bb1e976bb5cebfb0aa6d274bc9c709b4c82"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/contracts-02/cases.json",
+      "bytes": 20913,
+      "sha256": "10afb829cc0b3d121e857e73ebee2c25a1380d70f04b3af7228e176159c8c1f7"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/contracts-02/summary.json",
+      "bytes": 242,
+      "sha256": "940811ef7ac12ddebdeaefb899711bb1e976bb5cebfb0aa6d274bc9c709b4c82"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/contracts-03/cases.json",
+      "bytes": 20913,
+      "sha256": "10afb829cc0b3d121e857e73ebee2c25a1380d70f04b3af7228e176159c8c1f7"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/contracts-03/summary.json",
+      "bytes": 242,
+      "sha256": "940811ef7ac12ddebdeaefb899711bb1e976bb5cebfb0aa6d274bc9c709b4c82"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/contracts-cli-01/cases.json",
+      "bytes": 20913,
+      "sha256": "10afb829cc0b3d121e857e73ebee2c25a1380d70f04b3af7228e176159c8c1f7"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/contracts-cli-01/summary.json",
+      "bytes": 244,
+      "sha256": "a7955d52a396b25c4b2562ba6291f5623f9ca2dbddb8468968557fc9f640ac09"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/contracts-cli-02/cases.json",
+      "bytes": 20913,
+      "sha256": "10afb829cc0b3d121e857e73ebee2c25a1380d70f04b3af7228e176159c8c1f7"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/contracts-cli-02/summary.json",
+      "bytes": 244,
+      "sha256": "a7955d52a396b25c4b2562ba6291f5623f9ca2dbddb8468968557fc9f640ac09"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/contracts-immutable-01/cases.json",
+      "bytes": 20913,
+      "sha256": "10afb829cc0b3d121e857e73ebee2c25a1380d70f04b3af7228e176159c8c1f7"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/contracts-immutable-01/summary.json",
+      "bytes": 244,
+      "sha256": "a7955d52a396b25c4b2562ba6291f5623f9ca2dbddb8468968557fc9f640ac09"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-01/complex-baseline/failure.log",
+      "bytes": 2155,
+      "sha256": "4f8cae4c14037335c0013bd565976a232ca5a3493dff86dac8e3a78529a4c781"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-01/complex-baseline/questions.json",
+      "bytes": 45662,
+      "sha256": "a9d6f614872ae314442b6bba64472dec327dda8a4ff29907eea26a8b92bd5bac"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-02/complex-baseline/failures.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-02/complex-baseline/queries.json.gz",
+      "bytes": 100182,
+      "sha256": "8856de9e81bf81d2a48ffc6510efc9134dbe8038525bcc6a90792ffcaf0906d3"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-02/complex-baseline/questions.json",
+      "bytes": 45662,
+      "sha256": "a9d6f614872ae314442b6bba64472dec327dda8a4ff29907eea26a8b92bd5bac"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-02/complex-baseline/summary.json",
+      "bytes": 1685,
+      "sha256": "7f819072e5e9557f58f5385134260358bff1ace076d62c8c33929bf8f76aaa5e"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-02/complex-retained/failures.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-02/complex-retained/queries.json.gz",
+      "bytes": 99823,
+      "sha256": "12d7bf82768f99a542f824b235504d21374a204cd09472f95a2e31d39d185368"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-02/complex-retained/questions.json",
+      "bytes": 45662,
+      "sha256": "a9d6f614872ae314442b6bba64472dec327dda8a4ff29907eea26a8b92bd5bac"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-02/complex-retained/summary.json",
+      "bytes": 2074,
+      "sha256": "7517430948985c32c26002663c58d6cdc61a4dee1e115293ae877a7de0772b28"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-02/prose-baseline/failures.json",
+      "bytes": 15281,
+      "sha256": "262e9057af4b02a149e145350b21a2e496a518f14c6a61370d5ebaa2525da54b"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-02/prose-baseline/queries.json.gz",
+      "bytes": 65965,
+      "sha256": "d80d92e3555cd43229d7006f5b8a0b396edc755e5dbd867111c79c231e885a0b"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-02/prose-baseline/questions.json",
+      "bytes": 84617,
+      "sha256": "58640216c9589287905806437ea1035c504e337ae88acea87b85e7631c50fc31"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-02/prose-baseline/summary.json",
+      "bytes": 1674,
+      "sha256": "a6c988a40c5eadad55fdb0b13a0c1fd066b3f52a9dd9490a0cfacfd820e423a7"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-02/prose-retained/failures.json",
+      "bytes": 15274,
+      "sha256": "142db2af1f640e6841b6071448329be5c078dedc6d803291df8c47c1c8aa2599"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-02/prose-retained/queries.json.gz",
+      "bytes": 65451,
+      "sha256": "a5545a9824709438848bd072b161d53d3505dd5329d871767cb36203eee81733"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-02/prose-retained/questions.json",
+      "bytes": 84617,
+      "sha256": "58640216c9589287905806437ea1035c504e337ae88acea87b85e7631c50fc31"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-02/prose-retained/summary.json",
+      "bytes": 2076,
+      "sha256": "6bed715e458dedcfe9e1a43d09710684ca693291b40fbc75af04364c048c0f65"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-02/summary.json",
+      "bytes": 11075,
+      "sha256": "c930708f7c6cb7f62d6fcae151a6b97b22a6cef39dc413d3bf78f3017d63e63d"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-03/complex-baseline/failures.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-03/complex-baseline/queries.json.gz",
+      "bytes": 100182,
+      "sha256": "8856de9e81bf81d2a48ffc6510efc9134dbe8038525bcc6a90792ffcaf0906d3"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-03/complex-baseline/questions.json",
+      "bytes": 45662,
+      "sha256": "a9d6f614872ae314442b6bba64472dec327dda8a4ff29907eea26a8b92bd5bac"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-03/complex-baseline/summary.json",
+      "bytes": 1685,
+      "sha256": "7f819072e5e9557f58f5385134260358bff1ace076d62c8c33929bf8f76aaa5e"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-03/complex-retained/failures.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-03/complex-retained/queries.json.gz",
+      "bytes": 99837,
+      "sha256": "2227a97276b5e45854a5d7a415a8a316a5c3fe062e8f7a1af76f054776dcf4e2"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-03/complex-retained/questions.json",
+      "bytes": 45662,
+      "sha256": "a9d6f614872ae314442b6bba64472dec327dda8a4ff29907eea26a8b92bd5bac"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-03/complex-retained/summary.json",
+      "bytes": 2099,
+      "sha256": "1ad60c2424e5dd9581d6dccc0e7eb746b68dbdaf86e50748ea790d917e9b7901"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-03/prose-baseline/failures.json",
+      "bytes": 15281,
+      "sha256": "262e9057af4b02a149e145350b21a2e496a518f14c6a61370d5ebaa2525da54b"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-03/prose-baseline/queries.json.gz",
+      "bytes": 65965,
+      "sha256": "d80d92e3555cd43229d7006f5b8a0b396edc755e5dbd867111c79c231e885a0b"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-03/prose-baseline/questions.json",
+      "bytes": 84617,
+      "sha256": "58640216c9589287905806437ea1035c504e337ae88acea87b85e7631c50fc31"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-03/prose-baseline/summary.json",
+      "bytes": 1674,
+      "sha256": "a6c988a40c5eadad55fdb0b13a0c1fd066b3f52a9dd9490a0cfacfd820e423a7"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-03/prose-retained/failures.json",
+      "bytes": 15277,
+      "sha256": "2b51901475dd1e07ff05aa5f7a1c3162b03b38dd2440cafce5a53a0982c805ff"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-03/prose-retained/queries.json.gz",
+      "bytes": 65202,
+      "sha256": "7f25c805be230beaad9d8de69c97aca6c7f3e0d1c770e9e5766005d92671690d"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-03/prose-retained/questions.json",
+      "bytes": 84617,
+      "sha256": "58640216c9589287905806437ea1035c504e337ae88acea87b85e7631c50fc31"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-03/prose-retained/summary.json",
+      "bytes": 2074,
+      "sha256": "2c76904c44a75982bf419c9fa9bdac486b98cf41325701d5dcafb1d6028a840e"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-03/summary.json",
+      "bytes": 11192,
+      "sha256": "5ce6e19cd7a686c46c0995c01d28154cbb838e3a9cca0818b88ff83e3c4c3074"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-04/complex-baseline/failures.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-04/complex-baseline/queries.json.gz",
+      "bytes": 99938,
+      "sha256": "82157caf4f9737e2aa5531af2cc182ff928fb02b86624eff9188f57216e0833c"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-04/complex-baseline/questions.json",
+      "bytes": 45662,
+      "sha256": "a9d6f614872ae314442b6bba64472dec327dda8a4ff29907eea26a8b92bd5bac"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-04/complex-baseline/summary.json",
+      "bytes": 1690,
+      "sha256": "c3d977ddc3b7215c013b8a681bbd7f97b3562ea18c3c5ba76bdf8f5c78edd745"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-04/complex-retained/failures.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-04/complex-retained/queries.json.gz",
+      "bytes": 99727,
+      "sha256": "5b1223dd0ad6f0539be9120c3b202366d65b5b7efc5e0003bfa260c82a178a8d"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-04/complex-retained/questions.json",
+      "bytes": 45662,
+      "sha256": "a9d6f614872ae314442b6bba64472dec327dda8a4ff29907eea26a8b92bd5bac"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-04/complex-retained/summary.json",
+      "bytes": 2100,
+      "sha256": "8aae9a0d2bd3eefddc654fdb6f3e48c6ee6b54bbbbc4d6ab4a1074571a028b45"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-04/prose-baseline/failures.json",
+      "bytes": 15275,
+      "sha256": "c34b1c7de9b45ec25aa5ea0de53402a762a2c3de00959b67b2e452748e6ac4b6"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-04/prose-baseline/queries.json.gz",
+      "bytes": 65634,
+      "sha256": "938b3121e827535a55c888fdf70d045d2487a0864f883b4c29ec8bfaf0ebbe2f"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-04/prose-baseline/questions.json",
+      "bytes": 84617,
+      "sha256": "58640216c9589287905806437ea1035c504e337ae88acea87b85e7631c50fc31"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-04/prose-baseline/summary.json",
+      "bytes": 1692,
+      "sha256": "489266f8220f1227ba43790f613b4799f034cea19044accb9c39804ce8043e21"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-04/prose-retained/failures.json",
+      "bytes": 15278,
+      "sha256": "dd51d06acda710abd31ae7ab193f16195c6a374d51328a557cd7fd22ee7439f6"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-04/prose-retained/queries.json.gz",
+      "bytes": 65015,
+      "sha256": "d6492e8d9f698bcfb5f0798395d31e7eb7fc23710891f9d6e0132ce969a9bb31"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-04/prose-retained/questions.json",
+      "bytes": 84617,
+      "sha256": "58640216c9589287905806437ea1035c504e337ae88acea87b85e7631c50fc31"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-04/prose-retained/summary.json",
+      "bytes": 2069,
+      "sha256": "ddd0299c9a2ac44e17130493fa9964eb88e73acc27e2598e50e903269a743855"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/performance-04/summary.json",
+      "bytes": 11117,
+      "sha256": "b7365dc2194ed8ed5583e0874df4daf5536ef31cfd2a0c2d65623cecd96a8c88"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/portability-01/summary.json",
+      "bytes": 5656,
+      "sha256": "d7a341148664a0d47bd8d8e427a7a695a263b13136d4af95f38ae1052b381180"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/retention-03/summary.json",
+      "bytes": 147,
+      "sha256": "0a01abb7f9a7bb6e8063b8f65691ccb3bf0e4204e5d6727424e2af84c4fcfb7a"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/retention-03/tests.log",
+      "bytes": 1399,
+      "sha256": "04eb2781bc1ca13fe32f3d30d4580cade414b2b4f99aecfccfc0a9d317c1927b"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/startup.json",
+      "bytes": 434,
+      "sha256": "6dd67b5cf0247260d777894a261fc044281d89afcafd8fea66799a7bfba628c5"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/evidence/verification-01/summary.json",
+      "bytes": 928,
+      "sha256": "8e6f1b644d7fab17de8c3fb1af4999552600e90c61fbcd129ea97b70d8e7e6bb"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/fixture-factory.cjs",
+      "bytes": 4758,
+      "sha256": "d453eb6c3ac4db08adec3cbf06dd95135dadb647bf53f50143b5c4616015b054"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/frozen-factory.cjs",
+      "bytes": 579,
+      "sha256": "8369aa09a319e0ef675fcfea14081379df72eddb53709057683a03acba17c121"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/portability.cjs",
+      "bytes": 842,
+      "sha256": "6ac66b60faa07e093ccaa2ac8c5020a7bc7a2f397f3100b774e22d90f62238c9"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/profile-worker.ts",
+      "bytes": 4162,
+      "sha256": "75559037d8c6f1804e9d54e63ecbeab2f7753e59824c8f3f744b4c53cb2158fc"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/reader-harness.example.ts",
+      "bytes": 575,
+      "sha256": "1a843b335bdca909dd5a27e8dd1e58edfeae4e6e7b5884f8a83e976627ccae24"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/reader.ts",
+      "bytes": 2193,
+      "sha256": "6472f26e25e29f61c7752d0b4cfcd2a32d53688fda71e838bbeaa71c542a9e6e"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/reports/P6-ADAPTER-01-契约测试与验收报告.md",
+      "bytes": 5094,
+      "sha256": "015e6c5ee65e57ce13250701a06c3e8cb88e43a5cc655bc7e205b61c29043fb3"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/reports/P6-ADAPTER-01-性能对比报告.md",
+      "bytes": 4920,
+      "sha256": "1dd0eed216ee7dda3eff7cbd4793bf9963f6d6afd4096f4c2095e9d123fbed83"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/reports/P6-ADAPTER-01-模块接入与Reader对接说明.md",
+      "bytes": 7323,
+      "sha256": "cf53f1836fae995e44c38422a96279521047265b9f006b0126c120aaa8c0a4b6"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/retained-recall.ts",
+      "bytes": 3806,
+      "sha256": "d7bd01299c58e79d983b7151125fa1dcd81fb309bda7ae0ccb0f6f965750b5f4"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/retention.test.ts",
+      "bytes": 2645,
+      "sha256": "820f9d9e7e8c237dc5aa634f1e00e0319300bbeb587d3312c66c2075bb943be8"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/run-contracts.cjs",
+      "bytes": 1469,
+      "sha256": "b372212b0caecbf0012a2966d0d72a03c3351163a9dcceb9de86204d836fa06f"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/serialized-factory.cjs",
+      "bytes": 733,
+      "sha256": "a385781c47ba80b2f3e82ea96ade11a92315e0e583b9d104d1ed2665bcee8ad9"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/tooling.cjs",
+      "bytes": 638,
+      "sha256": "6a8cd9545d551fbbc62c65fff2b210447739a35be9831fcc62e7fdccbb5680de"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/tsconfig.json",
+      "bytes": 755,
+      "sha256": "cc5de92a8c6e9e3b56475c2e78f6fb61b8d67a74da3df7e8f357b9ef2a47d09f"
+    },
+    {
+      "path": "tests/experiments/p6-adapter-01/verify-profile.cjs",
+      "bytes": 3348,
+      "sha256": "7eae59bcbcdf0ae70e69eff2fcd37829a1739c35b9af3bac9cf4a1a2e56344ff"
+    }
+  ],
+  "deletedExistingFiles": [],
+  "outsideCircleWrites": false
+}
