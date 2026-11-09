@@ -20,7 +20,7 @@ services:
     restart: unless-stopped
   migrate:
     image: jiuxiao-playtest:${PLAYTEST_SHA:?candidate SHA required}
-    command: ["node", "packages/db/dist/migrate.js"]
+    command: ["pnpm", "--filter", "@jiuxiao/db", "db:migrate"]
     environment:
       DATABASE_URL: postgresql://playtest:${PLAYTEST_DB_PASSWORD}@db:5432/jiuxiao_test_playtest
     networks: [isolated]
