@@ -111,7 +111,9 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
       if(restorePresentation){
         const migrated=cached.draft||readActionDraft(`cloud-${saveId}`);setText(migrated);
         if(!cached.draft&&migrated)await local.edit(migrated);
+        const legacyPending=readPendingTurn(saveId);
         if(cached.pending)setPendingTurn(cached.pending);
+        else if(!legacyPending||cached.history.some(row=>row.id===legacyPending.idempotencyKey))setPendingTurn(null);
         const last=cached.history.at(-1);if(last&&last.revision<=next.revision){setReceipt(last.receipt);setNarrative(last.text);}
         setHistory(previous=>mergeHistory(previous,cached.history.filter(row=>row.receipt.decision.status==='accepted').map(row=>({receipt:row.receipt,text:row.text,source:'local-cache'}))));
       }

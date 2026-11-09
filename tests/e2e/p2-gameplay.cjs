@@ -123,6 +123,8 @@ async function stop(child) {
     const context = await browser.newContext({ viewport: { width: 376, height: 844 } });
     const page = await context.newPage();
     const pageErrors = [];
+    let interruptNextClarification = false;
+    let observedTurnPosts = 0;
     page.on('pageerror', error => pageErrors.push(error.message));
     // Forward same-origin production-bundle API requests to the real local API.
     // No gameplay response is stubbed or synthesized by the browser harness.
@@ -130,6 +132,17 @@ async function stop(child) {
       const source = new URL(route.request().url());
       if (source.pathname === '/api/auth/code' && route.request().method() === 'POST') otpRequestCount += 1;
       const response = await route.fetch({ url: `${apiOrigin}${source.pathname}${source.search}` });
+      if(source.pathname.endsWith('/turns')&&route.request().method()==='POST') {
+        observedTurnPosts++;
+        if(interruptNextClarification) {
+          assert.equal((await response.json()).receipt.decision.status,'clarify');
+          interruptNextClarification=false;
+          await page.evaluate(()=>{
+            const original=IDBFactory.prototype.open;
+            IDBFactory.prototype.open=function(name,...args){if(name==='jiuxiao_cloud_game_ui_v1')throw Error('fixture interruption after server settlement');return original.call(this,name,...args);};
+          });
+        }
+      }
       if (source.pathname === '/api/auth/guest' && route.request().method() === 'POST' && response.ok()) {
         ownerId = (await response.json()).account.id;
         accountSeeded = typeof ownerId === 'string';
@@ -243,6 +256,9 @@ async function stop(child) {
     const rejected = await (await rejectedResponse).json();
     assert.notEqual(rejected.receipt.decision.status, 'accepted');
     assert.equal(rejected.receipt.resultingRevision, 10);
+    // A normal refresh starts after the UI has finished persisting this known result.
+    await page.getByTestId('p2-receipt').getByText('还需要补充说明。',{exact:true}).waitFor();
+    await page.waitForFunction(()=>{const input=document.querySelector('[data-testid="p2-action-input"]');return input&&!input.disabled;});
     expectedRequests += 1;
     const memoryRows = await pool.query('SELECT event_revision,summary,memory_class FROM npc_authorized_observation_outbox WHERE save_id=$1 ORDER BY event_revision', [saveId]);
     assert.equal(memoryRows.rows.length, 9);
@@ -259,6 +275,24 @@ async function stop(child) {
     await page.getByTestId('p2-action-input').fill('未提交的行动草稿');
     await page.reload({ waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => document.querySelector('[data-testid="p2-action-input"]')?.value === '未提交的行动草稿');
+    // Reproduce the Linux failure deterministically: the real server commits a clarification,
+    // but the browser cannot finalize its local pending record before navigation.
+    await page.waitForFunction(()=>{const input=document.querySelector('[data-testid="p2-action-input"]');return input&&!input.disabled;});
+    interruptNextClarification=true;
+    await page.getByTestId('p2-action-input').fill('打开时光裂缝');
+    const interruptedResponse=page.waitForResponse(r=>r.request().method()==='POST'&&r.url().endsWith(`/api/games/${saveId}/turns`));
+    await page.getByTestId('p2-submit-action').click();
+    const interrupted=await(await interruptedResponse).json();expectedRequests++;
+    const postsBeforeRecovery=observedTurnPosts;
+    await page.reload({waitUntil:'domcontentloaded'});
+    await page.waitForFunction(()=>document.querySelector('[data-testid="p2-revision"]')?.textContent==='10');
+    await page.locator('.story-help summary').click();
+    await page.getByTestId('p2-status').filter({hasText:'已从服务端恢复回执'}).waitFor();
+    await page.getByTestId('p2-receipt').getByText('还需要补充说明。',{exact:true}).waitFor();
+    assert.match(await page.getByTestId('p2-receipt').innerText(),new RegExp(interrupted.receipt.idempotencyKey));
+    assert.equal(observedTurnPosts,postsBeforeRecovery,'recovery must only query the committed receipt, without POST');
+    assert.equal(await page.getByTestId('p2-action-input').inputValue(),'打开时光裂缝');
+    assert.equal(await page.getByTestId('p2-revision').innerText(),'10','clarification recovery must not advance world state');
     require('node:fs').writeFileSync(join(evidenceDir, 'first-play-continuous-pg.json'), JSON.stringify({ turnEvidence, memoryRows: memoryRows.rows, rejected: rejected.receipt.decision.status }, null, 2));
     assert.deepEqual(pageErrors, []);
 
@@ -280,6 +314,15 @@ async function stop(child) {
       server: 'real PostgreSQL transaction; isolated test database; no seeded session or email OTP; non-production approved review plugin',
     }, null, 2));
     await context.close();
+  } catch(error) {
+    const page=browser?.contexts()[0]?.pages()[0];
+    if(page) {
+      await page.screenshot({path:join(evidenceDir,'p2-gameplay-failure.png'),fullPage:true}).catch(()=>{});
+      const state=await page.evaluate(()=>({text:document.body.innerText,input:document.querySelector('[data-testid="p2-action-input"]')?.value})).catch(()=>null);
+      require('node:fs').writeFileSync(join(evidenceDir,'p2-gameplay-failure.json'),JSON.stringify({error:String(error),state},null,2));
+      console.error(JSON.stringify({browser:browser.version(),platform:process.platform,error:String(error),state}));
+    }
+    throw error;
   } finally {
     await browser?.close();
     await stop(webChild);
