@@ -2,12 +2,16 @@
 .workbuddy
 .impeccable
 node_modules
+**/node_modules
+**/*.tsbuildinfo
+test-results
 outputs
 work
 docs
 tests
 scripts
 *.zip
+*.tar
 **/dist
 .env
 
