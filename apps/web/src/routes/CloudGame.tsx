@@ -55,6 +55,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
   const [pendingTurn, setPendingTurn] = useState<PendingTurn | null>(() => readPendingTurn(saveId));
   const bridge=useRef<CloudGameCacheBridge|null>(null);
   const [cacheReady,setCacheReady]=useState(false);
+  const [draftConflict,setDraftConflict]=useState<string>();
   const [readingPosition,setReadingPosition]=useState<ReadingPosition>();
   const [cacheKey,setCacheKey]=useState<string>();
   const abort=useRef(new AbortController());
@@ -63,7 +64,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
     if(abort.current.signal.aborted)throw new Error('GAME_SESSION_CHANGED');return response;
   },[]);
   useEffect(()=>{
-    const invalidate=()=>{abort.current.abort();setSave(null);setHistory([]);setOpening([]);setReceipt(null);setNarrative('');setText('');setPendingTurn(null);setSuggestions([]);setCacheReady(false);setFailure({next:'account',diagnostic:'GAME_SESSION_CHANGED'});setNotice('账号已改变，请重新进入这份存档。');};
+    const invalidate=()=>{try{bridge.current?.discardJournal();}catch{}abort.current.abort();setSave(null);setHistory([]);setOpening([]);setReceipt(null);setNarrative('');setText('');setPendingTurn(null);setSuggestions([]);setCacheReady(false);setFailure({next:'account',diagnostic:'GAME_SESSION_CHANGED'});setNotice('账号已改变，请重新进入这份存档。');};
     const check=()=>{const local=bridge.current;if(!local||document.visibilityState==='hidden'||abort.current.signal.aborted)return;
       void cloudRequest('/api/auth/session').then(result=>{if((result.account as {id?:unknown}|undefined)?.id!==local.scope.ownerId)invalidate();}).catch(()=>{});};
     const channel=typeof BroadcastChannel==='undefined'?null:new BroadcastChannel('jiuxiao-cloud-game-session');
@@ -106,7 +107,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
       const session=await gameRequest('/api/auth/session');const account=session.account as {id?:unknown}|undefined;
       if(typeof account?.id!=='string')throw new Error('INVALID_SESSION');
       const local=new CloudGameCacheBridge(account.id,saveId);const cached=await local.open();bridge.current=local;
-      setCacheReady(true);setCacheKey(cached.key);setReadingPosition(cached.position);
+      setCacheReady(local.recoveryDraft===undefined);setDraftConflict(local.recoveryDraft);setCacheKey(cached.key);setReadingPosition(cached.position);
       if(restorePresentation){
         const migrated=cached.draft||readActionDraft(`cloud-${saveId}`);setText(migrated);
         if(!cached.draft&&migrated)await local.edit(migrated);
@@ -376,6 +377,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
         <section className="story-reading-end" ref={receipt?.decision.status==='accepted'?resultRegion:undefined} />
       </div>
       {save&&<section className={`story-action-area${pendingTurn&&!busy?' story-awaiting-confirmation':''}`} aria-label="接下来怎么做">
+        {draftConflict!==undefined&&<details open className="story-draft-conflict"><summary>还有一段未保存的输入</summary><p>另一页面已保存不同草稿。请先复制下面这段文字保留，再核对已保存的草稿；当前不能提交行动。</p><textarea aria-label="尚未保存的输入" readOnly value={draftConflict}/><button type="button" onClick={()=>{bridge.current?.discardJournal();window.location.reload();}}>使用已保存的草稿</button></details>}
         <p className="story-action-instruction">你可以描述自己的行动，九霄会根据当前世界规则决定结果。</p>
         <div className="story-suggestions" aria-label="可编辑的行动建议">{suggestions.slice(0,3).map(suggestionButton)}{suggestions.length>1&&<button type="button" className={`story-suggestion${suggestions.length>3?'':' story-more-compact'}`} onClick={()=>setShowActions(true)}>更多行动</button>}</div>
         <form className="story-composer" aria-busy={busy||refreshBusy} onSubmit={submit}>
