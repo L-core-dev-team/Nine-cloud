@@ -134,7 +134,16 @@ export function finishGameAction(value: GameCache, scope: GameCacheScope, key: s
   const history = [...value.history.filter(item => item.id !== key), { id: key, revision: receipt.resultingRevision, text, receipt }];
   history.sort((a, b) => a.revision - b.revision); // stable order for rejected/clarifying turns at the same revision
   const clearDraft = receipt.decision.status === 'accepted' && value.draftVersion === pending.draftVersion;
-  return { ...value, history, pending: null, ...(clearDraft ? { draft: '', draftVersion: value.draftVersion + 1 } : {}) };
+  const next = { ...value, history: [] as ReadingTurn[], pending: null, ...(clearDraft ? { draft: '', draftVersion: value.draftVersion + 1 } : {}) };
+  // Only evict presentation cache entries. Server receipts and complete prose remain authoritative.
+  let bytes = new TextEncoder().encode(JSON.stringify(next)).length;
+  for (const row of history.slice(-1000).reverse()) {
+    const size = new TextEncoder().encode(JSON.stringify(row)).length + 1;
+    if (bytes + size > 4_000_000) break;
+    next.history.unshift(row); bytes += size;
+  }
+  if (!next.history.length) throw new Error('GAME_CACHE_FULL');
+  return next;
 }
 
 /** Persist before POST. A lost response/refresh retains exactly the same request, never a new ID. */

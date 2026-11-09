@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { TurnReceiptSchema } from '@jiuxiao/contracts';
 import { beginGameAction, cacheIdentity, editGameDraft, emptyGameCache, finishGameAction, recoverGameAction, type GameCache, type GameCacheStore } from './cloud-game-cache';
 
 const scope = { apiBase: 'https://example.invalid/api', ownerId: 'owner-a', saveId: 'save-a' };
@@ -12,6 +13,19 @@ function receipt(saveId = scope.saveId, revision = 3) {
     decision: { status: 'clarify', question: '观察哪里？', revision } };
 }
 describe('cloud display cache recovery contract', () => {
+  it('finalizes beyond 1000 actions and evicts old prose by UTF-8 bytes without losing the latest receipt', () => {
+    const value=prepared();
+    value.history=Array.from({length:1000},()=>{const r=TurnReceiptSchema.parse({...receipt(),idempotencyKey:crypto.randomUUID()});return {id:r.idempotencyKey,revision:3,text:'旧文',receipt:r};});
+    const done=finishGameAction(value,scope,key,receipt(),'新文');
+    expect(done.pending).toBeNull();expect(done.history).toHaveLength(1000);expect(done.history.at(-1)?.id).toBe(key);
+    const large=prepared();
+    large.history=Array.from({length:160},()=>{const r=TurnReceiptSchema.parse({...receipt(),idempotencyKey:crypto.randomUUID()});return {id:r.idempotencyKey,revision:3,text:'旧'.repeat(8000),receipt:r};});
+    expect(new TextEncoder().encode(JSON.stringify(large)).length).toBeLessThan(4_000_000);
+    const bounded=finishGameAction(large,scope,key,receipt(),'新'.repeat(100000));
+    expect(new TextEncoder().encode(JSON.stringify(bounded)).length).toBeLessThanOrEqual(4_000_000);
+    expect(bounded.history.length).toBeLessThan(161);expect(bounded.history.at(-1)?.text).toBe('新'.repeat(100000));
+    expect(bounded.pending).toBeNull();
+  });
   it('clears only an accepted submitted draft, protects later edits, and deduplicates recovery', () => {
     const accepted = { ...receipt(), resultingRevision: 4, decision: { status: 'accepted', nextRevision: 4,
       events: [{ id: crypto.randomUUID(), saveId: scope.saveId, type: 'fixture', beforeRevision: 3, afterRevision: 4,

@@ -14,11 +14,12 @@ suite('presentation archive on isolated PostgreSQL (synthetic pagination fixture
   const owner = 'story-fixture-owner-' + randomUUID();
   const saveId = 'story-fixture-save-' + randomUUID();
   const receipts: TurnReceipt[] = [];
+  let service: ServerTurnService;
   beforeAll(async () => {
     await pool.query('INSERT INTO auth_accounts(id,email) VALUES($1,$2)', [owner, owner + '@fixture.invalid']);
     await pool.query(`INSERT INTO game_saves(id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,snapshot)
       VALUES($1,$2,0,1,'fixture','fixture','fixture',$3::jsonb)`, [saveId, owner, JSON.stringify({playerId:'fixture-player',locationId:'fixture-place',elapsedMinutes:0,facts:{gameMinute:0}})]);
-    const service = new ServerTurnService(createPostgresServerTurnRepository(pool), {
+    service = new ServerTurnService(createPostgresServerTurnRepository(pool), {
       ruleVersion:'fixture',canonVersion:'fixture',memoryPolicyVersion:'fixture',
       decide: (intent,save) => ({status:'accepted',nextRevision:save.revision+1,events:[{id:randomUUID(),saveId:save.saveId,type:'fixture.story',beforeRevision:save.revision,afterRevision:save.revision+1,source:'RULES',ruleVersion:'fixture',occurredAt:new Date().toISOString(),payload:{}}]}),
       reduce: state => ({...state,elapsedMinutes:state.elapsedMinutes+1,facts:{gameMinute:Number(state.facts.gameMinute)+1}}),
@@ -37,9 +38,9 @@ suite('presentation archive on isolated PostgreSQL (synthetic pagination fixture
     try {
       await client.query('BEGIN');
       await client.query("SELECT set_config('jiuxiao.account_erasure_operation','test-cleanup',true)");
-      await client.query('DELETE FROM turn_events WHERE save_id=$1',[saveId]);
-      await client.query('DELETE FROM turn_requests WHERE save_id=$1',[saveId]);
-      await client.query('DELETE FROM game_saves WHERE id=$1 AND owner_id=$2',[saveId,owner]);
+      await client.query('DELETE FROM turn_events WHERE save_id=ANY($1::text[])',[[saveId,saveId+'-long']]);
+      await client.query('DELETE FROM turn_requests WHERE save_id=ANY($1::text[])',[[saveId,saveId+'-long']]);
+      await client.query('DELETE FROM game_saves WHERE id=ANY($1::text[]) AND owner_id=$2',[[saveId,saveId+'-long'],owner]);
       await client.query('DELETE FROM auth_accounts WHERE id=$1',[owner]);
       await client.query('COMMIT');
     }catch(error){await client.query('ROLLBACK');throw error;}finally{client.release();await pool.end();}
@@ -56,6 +57,29 @@ suite('presentation archive on isolated PostgreSQL (synthetic pagination fixture
   it('isolates owners and save IDs',async()=>{
     expect((await archive.read('foreign-owner',saveId,101)).items).toEqual([]);
     expect((await archive.read(owner,'other-save',101)).items).toEqual([]);
+  });
+  it('paginates long Chinese prose under the client byte limit without dropping any revision or text',async()=>{
+    const id=saveId+'-long';
+    await pool.query(`INSERT INTO game_saves(id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,snapshot)
+      VALUES($1,$2,0,1,'fixture','fixture','fixture',$3::jsonb)`,[id,owner,JSON.stringify({playerId:'fixture-player',locationId:'fixture-place',elapsedMinutes:0,facts:{gameMinute:0}})]);
+    const prose=(revision:number)=>`${revision}:`+'灵'.repeat(4000)+'\u0001'.repeat(20);
+    for(let i=0;i<80;i++) {
+      const result=await service.execute(owner,{kind:'move',saveId:id,actorId:'fixture-player',expectedRevision:i,idempotencyKey:randomUUID(),payload:{destinationId:'fixture-place'}});
+      if(result.status!=='accepted')throw Error('FIXTURE_COMMIT_FAILED');
+      await archive.retain(result.receipt,'deterministic',()=>prose(i+1));
+    }
+    const revisions:number[]=[];let before:number|undefined;let pages=0;
+    do {
+      const page=await archive.read(owner,id,80,before);pages++;
+      expect(Buffer.byteLength(JSON.stringify(page),'utf8')).toBeLessThanOrEqual(850_000);
+      expect(page.items.length).toBeGreaterThan(0);
+      for(const row of page.items){expect(row.text).toBe(prose(row.receipt.resultingRevision));revisions.push(row.receipt.resultingRevision);}
+      if(page.nextBefore===null)break;
+      expect(page.nextBefore).toBeLessThan(before??81);before=page.nextBefore;
+      if(pages>80)throw Error('NON_ADVANCING_STORY_CURSOR');
+    }while(true);
+    expect(pages).toBeGreaterThan(1);expect(revisions.sort((a,b)=>a-b)).toEqual(Array.from({length:80},(_,i)=>i+1));
+    expect((await pool.query('SELECT count(*)::int AS count FROM story_narratives WHERE save_id=$1',[id])).rows[0].count).toBe(80);
   });
   it('concurrent render attempts return one immutable winning text and retries do not render again',async()=>{
     const receipt=receipts[100]!;

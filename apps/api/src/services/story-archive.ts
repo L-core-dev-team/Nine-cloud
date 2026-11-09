@@ -26,8 +26,19 @@ export class StoryArchive {
     AND (r.result->>'resultingRevision')::int <= $3
     AND NOT EXISTS(SELECT 1 FROM cloud_archive_trash t WHERE t.save_id=s.id)
    ORDER BY r.expected_revision DESC,r.idempotency_key DESC LIMIT 101`,[saveId,ownerId,boundary]);
-  const hasMore=rows.rows.length>100;
-  const items=rows.rows.slice(0,100).map(row=>({receipt:TurnReceiptSchema.parse(row.result),text:row.narrative_text??null,source:row.source??null})).reverse();
+  const descending: {receipt:TurnReceipt;text:string|null;source:string|null}[]=[];
+  let bytes=64; // Envelope/cursor/comma margin below cloudRequest's 1 MB UTF-8 limit.
+  for(const row of rows.rows.slice(0,100)) {
+    const item={receipt:TurnReceiptSchema.parse(row.result),text:row.narrative_text??null,source:row.source??null};
+    const size=Buffer.byteLength(JSON.stringify(item),'utf8')+1;
+    if(bytes+size>850_000) {
+      if(!descending.length)throw new Error('STORY_ENTRY_TOO_LARGE');
+      break;
+    }
+    descending.push(item);bytes+=size;
+  }
+  const hasMore=rows.rows.length>descending.length;
+  const items=descending.reverse();
   return {items,nextBefore:hasMore?items[0]!.receipt.resultingRevision-1:null};
  }
 }
