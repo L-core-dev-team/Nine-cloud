@@ -123,6 +123,7 @@ async function stop(child) {
     // Forward same-origin production-bundle API requests to the real local API.
     // No gameplay response is stubbed or synthesized by the browser harness.
     const apiRoundTrips=new Map();
+    let heldStoryResponse = null;
     await page.route('**/api/**', async route => {
       const source = new URL(route.request().url());
       if (source.pathname === '/api/auth/code' && route.request().method() === 'POST') otpRequestCount += 1;
@@ -132,6 +133,7 @@ async function stop(child) {
       if (source.pathname === '/api/auth/guest' && route.request().method() === 'POST' && response.ok()) {
         ownerId = (await response.json()).account.id;
       }
+      if (source.pathname.endsWith('/story') && heldStoryResponse) await heldStoryResponse;
       await route.fulfill({ response });
     });
 
@@ -204,7 +206,12 @@ async function stop(child) {
     await page.getByTestId('p2-action-input').fill('打开时光裂缝');
     await page.getByTestId('p2-submit-action').click();await page.getByRole('heading',{name:'再说具体一点'}).waitFor();
     assert.equal(await page.locator('.story-history-entry').count(),10);
+    let releaseStoryResponse;
+    heldStoryResponse = new Promise(resolve => { releaseStoryResponse = resolve; });
     await page.reload();await page.waitForFunction(()=>document.querySelectorAll('[data-story-revision]').length===10);
+    assert.equal(await page.getByTestId('p2-action-input').isDisabled(), true, 'cached history must not unlock actions before the authoritative refresh completes');
+    releaseStoryResponse();heldStoryResponse = null;
+    await page.waitForFunction(()=>!document.querySelector('[data-testid="p2-action-input"]').disabled);
     assert.deepEqual(await page.locator('.story-history-entry').allTextContents(),originalHistory,'all story paragraphs must return unchanged after reload');
     const history=await page.evaluate(async id=>await (await fetch(`/api/games/${id}/story`)).json(),saveId);assert.equal(history.items.length,10);
     const archive=await pool.query('SELECT count(*)::int AS count FROM story_narratives WHERE save_id=$1',[saveId]);assert.equal(archive.rows[0].count,10);
