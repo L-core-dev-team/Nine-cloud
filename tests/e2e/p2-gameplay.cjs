@@ -125,6 +125,12 @@ async function stop(child) {
     const pageErrors = [];
     let interruptNextClarification = false;
     let observedTurnPosts = 0;
+    const realTurnReplies=new Map();
+    function capturedTurn(response) {
+      const key=response.request().postDataJSON().idempotencyKey;
+      const captured=realTurnReplies.get(key);assert.ok(captured,'the actual upstream reply must be captured before it is forwarded to the browser');
+      assert.equal(captured.body.receipt.idempotencyKey,key);return captured.body;
+    }
     page.on('pageerror', error => pageErrors.push(error.message));
     // Forward same-origin production-bundle API requests to the real local API.
     // No gameplay response is stubbed or synthesized by the browser harness.
@@ -134,8 +140,11 @@ async function stop(child) {
       const response = await route.fetch({ url: `${apiOrigin}${source.pathname}${source.search}` });
       if(source.pathname.endsWith('/turns')&&route.request().method()==='POST') {
         observedTurnPosts++;
+        const bytes=await response.body();
+        const body=JSON.parse(bytes.toString('utf8'));
+        realTurnReplies.set(route.request().postDataJSON().idempotencyKey,{body,sha256:createHash('sha256').update(bytes).digest('hex')});
         if(interruptNextClarification) {
-          assert.equal((await response.json()).receipt.decision.status,'clarify');
+          assert.equal(body.receipt.decision.status,'clarify');
           interruptNextClarification=false;
           await page.evaluate(()=>{
             const original=IDBFactory.prototype.open;
@@ -240,11 +249,12 @@ async function stop(child) {
       await page.getByTestId('p2-action-input').fill('对岑九说：不要去望气台');
       const response = page.waitForResponse(r => r.url().endsWith(`/api/games/${saveId}/turns`) && r.request().method() === 'POST');
       await page.getByTestId('p2-submit-action').click();
-      const body = await (await response).json();
+      const body = capturedTurn(await response);
       assert.equal(body.receipt.decision.status, 'accepted');
       await page.waitForFunction(revision => document.querySelector('[data-testid="p2-revision"]')?.textContent === String(revision), turn);
       await page.getByTestId('p2-submit-action').waitFor({ state: 'visible' });
       await page.waitForFunction(() => !document.querySelector('[data-testid="p2-action-input"]').disabled);
+      assert.match(await page.getByTestId('p2-receipt').innerText(),new RegExp(body.receipt.idempotencyKey),'the browser must display the same real receipt that was forwarded');
       const prose = await page.getByTestId('p2-narrative').innerText();
       assert.equal(prose.includes('此前已与此人谈过同一话题'), false, 'signed deterministic narration does not yet consume prior memory');
       turnEvidence.push({ turn, revision: body.receipt.resultingRevision, narrative: prose });
@@ -253,7 +263,7 @@ async function stop(child) {
     await page.getByTestId('p2-action-input').fill('打开时光裂缝');
     const rejectedResponse = page.waitForResponse(r => r.url().endsWith(`/api/games/${saveId}/turns`) && r.request().method() === 'POST');
     await page.getByTestId('p2-submit-action').click();
-    const rejected = await (await rejectedResponse).json();
+    const rejected = capturedTurn(await rejectedResponse);
     assert.notEqual(rejected.receipt.decision.status, 'accepted');
     assert.equal(rejected.receipt.resultingRevision, 10);
     // A normal refresh starts after the UI has finished persisting this known result.
@@ -282,7 +292,7 @@ async function stop(child) {
     await page.getByTestId('p2-action-input').fill('打开时光裂缝');
     const interruptedResponse=page.waitForResponse(r=>r.request().method()==='POST'&&r.url().endsWith(`/api/games/${saveId}/turns`));
     await page.getByTestId('p2-submit-action').click();
-    const interrupted=await(await interruptedResponse).json();expectedRequests++;
+    const interrupted=capturedTurn(await interruptedResponse);expectedRequests++;
     const postsBeforeRecovery=observedTurnPosts;
     await page.reload({waitUntil:'domcontentloaded'});
     await page.waitForFunction(()=>document.querySelector('[data-testid="p2-revision"]')?.textContent==='10');
