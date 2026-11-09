@@ -3,7 +3,7 @@
 // turn transaction. The test-only review plugin supplies the approved rules.
 const assert = require('node:assert/strict');
 const { spawn, spawnSync } = require('node:child_process');
-const { randomBytes } = require('node:crypto');
+const { randomBytes, createHash } = require('node:crypto');
 const { createRequire } = require('node:module');
 const { once } = require('node:events');
 const { existsSync, mkdirSync } = require('node:fs');
@@ -123,13 +123,27 @@ async function stop(child) {
     // Forward same-origin production-bundle API requests to the real local API.
     // No gameplay response is stubbed or synthesized by the browser harness.
     const apiRoundTrips=new Map();
+    const realTurnReplies=new Map();
+    function capturedTurn(response) {
+      const sent=response.request().postDataJSON();
+      const key=sent.idempotencyKey??sent.intent?.idempotencyKey;
+      const captured=realTurnReplies.get(key);
+      assert.ok(captured,'capture the actual upstream reply before forwarding it to Chromium');
+      assert.equal(captured.body.receipt.idempotencyKey,key);
+      return captured.body;
+    }
     let heldStoryResponse = null;
     await page.route('**/api/**', async route => {
       const source = new URL(route.request().url());
       if (source.pathname === '/api/auth/code' && route.request().method() === 'POST') otpRequestCount += 1;
       const began=performance.now();
       const response = await route.fetch({ url: `${apiOrigin}${source.pathname}${source.search}` });
-      if(source.pathname.endsWith('/turns')&&route.request().method()==='POST'){const sent=route.request().postDataJSON();apiRoundTrips.set(sent.idempotencyKey??sent.intent?.idempotencyKey,performance.now()-began);}
+      if(source.pathname.endsWith('/turns')&&route.request().method()==='POST') {
+        const sent=route.request().postDataJSON();const key=sent.idempotencyKey??sent.intent?.idempotencyKey;
+        const bytes=await response.body();
+        realTurnReplies.set(key,{body:JSON.parse(bytes.toString('utf8')),sha256:createHash('sha256').update(bytes).digest('hex')});
+        apiRoundTrips.set(key,performance.now()-began);
+      }
       if (source.pathname === '/api/auth/guest' && route.request().method() === 'POST' && response.ok()) {
         ownerId = (await response.json()).account.id;
       }
@@ -178,19 +192,21 @@ async function stop(child) {
       if(text)await page.getByTestId('p2-action-input').fill(text);
       const response=page.waitForResponse(r=>r.request().method()==='POST'&&(r.url().endsWith('/turns')));
       const started=Date.now();await page.getByTestId('p2-submit-action').click();
-      const raw=await response;const body=await raw.json();await raw.finished();assert.equal(body.receipt.decision.status,'accepted',JSON.stringify(body));assert.equal(body.receipt.resultingRevision,revision);
+      const raw=await response;const body=capturedTurn(raw);assert.equal(body.receipt.decision.status,'accepted',JSON.stringify(body));assert.equal(body.receipt.resultingRevision,revision);
       await page.waitForFunction(revision=>document.querySelectorAll('[data-story-revision]').length===revision,revision);
       await page.waitForFunction(()=>!document.querySelector('[data-testid="p2-action-input"]').disabled);
+      assert.equal(await page.locator('.story-history-entry').last().getAttribute('data-reading-id'),body.receipt.idempotencyKey,'the visible story must belong to the real receipt forwarded by the harness');
+      assert.equal(await page.getByTestId('p2-narrative').textContent(),body.narrative.text.split(/\n+/).join(''),'the browser must render the complete upstream narrative');
       const api=await page.evaluate(async id=>await (await fetch(`/api/games/${id}/story`)).json(),saveId);
       assert.equal(api.items.length,revision);assert.equal(api.items.at(-1).text,body.narrative.text,'archive must retain the complete exact returned text, including approved hints');
       const perf=await page.evaluate(()=>window.__storyPerf);timings.push({revision,...perf,apiRoundTripMs:apiRoundTrips.get(body.receipt.idempotencyKey)??null,httpAndUIWallMs:Date.now()-started});
-      snapshots.push({revision,text:body.narrative.text,events:body.receipt.decision.events.map(e=>e.type)});return body;
+      snapshots.push({revision,text:body.narrative.text,events:body.receipt.decision.events.map(e=>e.type),responseSha256:realTurnReplies.get(body.receipt.idempotencyKey).sha256});return body;
     }
     await act('对岑九说：这石头怎么办',1);
     await suggest('acquire:src_ferry_shore');
     await page.getByTestId('p2-action-input').fill('打开时光裂缝');
     const invalid=page.waitForResponse(r=>r.request().method()==='POST'&&r.url().endsWith('/turns'));await page.getByTestId('p2-submit-action').click();
-    const invalidResponse=await invalid;const invalidBody=await invalidResponse.json();assert.notEqual(invalidBody.receipt.decision.status,'accepted');assert.equal(invalidBody.receipt.resultingRevision,1);assert.ok(invalidResponse.url().includes(`/api/games/${saveId}/turns`),'editing a structured suggestion must return to signed free-text parsing');
+    const invalidResponse=await invalid;const invalidBody=capturedTurn(invalidResponse);assert.notEqual(invalidBody.receipt.decision.status,'accepted');assert.equal(invalidBody.receipt.resultingRevision,1);assert.ok(invalidResponse.url().includes(`/api/games/${saveId}/turns`),'editing a structured suggestion must return to signed free-text parsing');
     await page.waitForFunction(()=>!document.querySelector('[data-testid="p2-action-input"]').disabled);
     await suggest('acquire:src_ferry_shore');await act(null,2);
     await act('去渡口作业位',3);
