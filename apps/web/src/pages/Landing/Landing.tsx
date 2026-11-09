@@ -1,3 +1,4 @@
+import {ISOLATED_PLAYTEST} from '../../playtest-channel';
 import type { LocalSave } from '../../storage';
 import { LiquidGlass } from '../../components/LiquidGlass';
 import { MountainGateScene } from '../../scene';
@@ -14,7 +15,7 @@ export function Landing({ saves, onEnter, onReadSave }: Props) {
       <LiquidGlass as="button" type="button" variant="clear" className="landing-read-save secondary liquid-glass--crystal" aria-label="读取存档" aria-describedby="landing-save-status" onClick={onReadSave}>
         <span>读取存档</span><small id="landing-save-status">{saves.length ? `已有 ${saves.length} 份本地存档` : '当前没有旧档'}</small>
       </LiquidGlass>
-      <p className="landing-availability">当前公开体验：创建本地角色、保存行动草稿、探索世界资料。服务器剧情回合尚未开放。</p>
+      <p className="landing-availability">{ISOLATED_PLAYTEST?'隔离试玩：可体验已批准的开场行动。当前只提供游客测试，剧情与记忆仍在验收中。':'当前公开体验：创建本地角色、保存行动草稿、探索世界资料。服务器剧情回合尚未开放。'}</p>
       <nav className="landing-help" aria-label="初次体验"><a href="/intro">了解玩法</a><a href="/world">探索世界</a></nav>
     </div>
     <MountainGateScene />

@@ -7,7 +7,7 @@ const net = require('node:net');
 const { chromium } = require('playwright');
 const root = resolve(__dirname, '../..');
 const output = join(root, 'test-results/cloud-game-shell');
-let server, browser;
+let server, browser, activePage;
 (async () => {
   mkdirSync(output, { recursive: true });
   const port = await new Promise(resolve => {
@@ -16,11 +16,11 @@ let server, browser;
   server = spawn(process.execPath, [join(root, 'apps/web/node_modules/vite/bin/vite.js'), 'preview', '--host', '127.0.0.1', '--port', String(port), '--strictPort'], { cwd: join(root, 'apps/web'), windowsHide: true, stdio: 'pipe' });
   const base = `http://127.0.0.1:${port}`;
   for (let attempt = 0; attempt < 100; attempt++) { try { if ((await fetch(base)).ok) break; } catch {} await new Promise(resolve => setTimeout(resolve, 100)); }
-  browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_BROWSER_EXECUTABLE || 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe' });
+  browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_BROWSER_EXECUTABLE || (process.platform === 'win32' ? 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe' : undefined) });
   const results = [];
   for (const viewport of [{ width: 320, height: 568 }, { width: 390, height: 844 }, { width: 844, height: 390 }, { width: 1440, height: 900 }]) for (const theme of ['night', 'day']) {
     const context = await browser.newContext({ viewport, reducedMotion: 'reduce' });
-    const page = await context.newPage();
+    const page = await context.newPage(); activePage=page; console.log(JSON.stringify({starting:viewport,theme}));
     const errors = []; page.on('pageerror', error => errors.push(error.message));
     await page.addInitScript(theme => localStorage.setItem('jx10_appearance', theme), theme);
     const save = { schemaVersion: 1, saveId: 'cloud-ui-fixture', canonVersion: 'synthetic-canon', ruleVersion: 'synthetic-rules', memoryPolicyVersion: 'synthetic-memory', revision: 0, state: { playerId: 'synthetic-player', locationId: 'synthetic-location', elapsedMinutes: 0, facts: { gameMinute: 0 } } };
@@ -28,7 +28,8 @@ let server, browser;
     await page.route('**/api/**', async route => {
       const pathname = new URL(route.request().url()).pathname;
       let body, status = 200;
-      if (pathname.endsWith('/action-suggestions')) body = { actions: [{ id: 'synthetic', kind: 'observe', label: '测试观察', text: '测试行动' }] };
+      if (pathname === '/api/auth/session') body = { account: {id:'synthetic-owner',kind:'guest'} };
+      else if (pathname.endsWith('/action-suggestions')) body = { actions: [{ id: 'synthetic', kind: 'observe', label: '测试观察', text: '测试行动' }] };
       else if (pathname.endsWith('/turns')) {
         submissions++;
         const request = route.request().postDataJSON();
@@ -42,14 +43,14 @@ let server, browser;
     });
     await page.goto(`${base}/game/${save.saveId}`);
     const input = page.getByTestId('p2-action-input'); await input.waitFor();
-    await page.getByRole('button', { name: '存档状态', exact: true }).click();
-    await page.getByRole('dialog', { name: '存档状态详情' }).waitFor(); await page.keyboard.press('Escape');
-    assert.equal(await page.getByRole('button', { name: '存档状态', exact: true }).evaluate(element => element === document.activeElement), true);
-    await page.getByText('当前可尝试的行动', { exact: true }).click();
+    await page.getByRole('button', { name: '人物 · 行囊', exact: true }).click();
+    await page.getByRole('dialog', { name: '人物与行囊详情' }).waitFor(); await page.keyboard.press('Escape');
+    assert.equal(await page.getByRole('button', { name: '人物 · 行囊', exact: true }).evaluate(element => element === document.activeElement), true);
+
     await page.getByRole('button', { name: '测试观察', exact: true }).click();
     assert.equal(await input.inputValue(), '测试行动');
     await page.getByTestId('p2-submit-action').click(); await page.getByTestId('p2-narrative').waitFor();
-    assert.equal(submissions, 1); assert.equal(await page.getByTestId('p2-revision').innerText(), '0');
+    assert.equal(submissions, 1); await page.locator('.story-help summary').click(); assert.equal(await page.getByTestId('p2-revision').innerText(), '0'); await page.locator('.story-help summary').click();
     const geometry = await page.evaluate(() => {
       const reading = document.querySelector('.story-reading'); const input = document.querySelector('#p2-action-input'); const button = document.querySelector('[data-testid="p2-submit-action"]');
       const rect = element => { const r = element.getBoundingClientRect(); return { top: r.top, bottom: r.bottom, height: r.height }; };
@@ -59,10 +60,12 @@ let server, browser;
     assert.ok(geometry.document <= geometry.height + 1 && geometry.overflow <= 1, JSON.stringify(geometry));
     assert.ok(geometry.reading.height >= 24 && geometry.input.top >= 0 && geometry.button.bottom <= viewport.height + 1 && geometry.clickable, JSON.stringify(geometry));
     await page.locator('.story-reading').evaluate(element => { element.scrollTop = 220; }); await page.waitForTimeout(100);
-    await page.getByRole('button', { name: '世界设定', exact: true }).last().click();
+    await page.locator('.story-help summary').click();
+    await page.getByRole('button', { name: '阅读世界资料', exact: true }).click();
     await page.getByRole('button', { name: '返回当前行旅', exact: true }).click(); await input.waitFor();
     failNext = true; await input.fill('保留未确认行动'); await page.getByTestId('p2-submit-action').click();
-    await page.getByTestId('p2-status').filter({ hasText: '服务端请求未完成' }).waitFor();
+    await page.locator('.story-help summary').click();
+    await page.getByTestId('p2-status').filter({ hasText: /无法确认|请求未确认/ }).waitFor();
     assert.equal(await input.inputValue(), '保留未确认行动'); assert.equal(submissions, 2);
     assert.deepEqual(errors, []);
     await page.screenshot({ path: join(output, `${viewport.width}-${theme}.png`) });
@@ -70,4 +73,4 @@ let server, browser;
   }
   writeFileSync(join(output, 'results.json'), JSON.stringify({ mockedApi: true, realRules: false, results }, null, 2));
   console.log(`CloudGame presentation: ${results.length} layout, receipt, input recovery and navigation journeys PASS.`);
-})().catch(error => { console.error(error); process.exitCode = 1; }).finally(async () => { await browser?.close(); server?.kill(); });
+})().catch(async error => { console.error(error); if(activePage){await activePage.screenshot({path:join(output,'failure.png')}).catch(()=>{});console.error(JSON.stringify(await activePage.evaluate(()=>Object.fromEntries(['.story-help','.story-help summary','.story-action-area','.game-frame'].map(s=>{const e=document.querySelector(s);if(!e)return [s,null];const r=e.getBoundingClientRect();const c=getComputedStyle(e);return [s,{y:r.y,x:r.x,w:r.width,h:r.height,open:e.open,position:c.position,transform:c.transform,overflow:c.overflow,contain:c.contain}]}))).catch(()=>({}))))}process.exitCode = 1; }).finally(async () => { await browser?.close(); server?.kill(); });

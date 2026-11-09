@@ -79,6 +79,8 @@ jobs:
       - run: pnpm test
       - name: Test the Pages API relay and Route A boundary
         run: pnpm test:pages-relay
+      - name: Verify isolated playtest invitation and proxy boundaries
+        run: pnpm test:playtest-gateway
       - run: pnpm build
       - name: Scan web artifacts for scene packages
         # Defense in depth: the workspace build excludes the unapproved scene

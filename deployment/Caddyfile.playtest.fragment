@@ -1,0 +1,13 @@
+# Append-only proposed site. Existing api.jiuxiaogame.cn block is preserved byte-for-byte.
+trial.jiuxiaogame.cn {
+    encode zstd gzip
+    request_body {
+        max_size 8MB
+    }
+    reverse_proxy 127.0.0.1:19090 {
+        transport http {
+            dial_timeout 5s
+            response_header_timeout 45s
+        }
+    }
+}

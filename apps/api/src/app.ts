@@ -25,7 +25,7 @@ export function createApp(database?: ReadinessDatabase, cloudSaves?: {
   service: CloudSaveService;
   auth: CloudSaveRouteAuth;
   archive?: CloudArchiveLifecycle;
-}, emailAuth?: { service: AuthSessionService; routesService?: AuthSessionService; supabaseAuth?: SupabaseAuthService | undefined; origin: string; cookieSameSite?: 'Strict' | 'None'; trustedProxyAddresses?: readonly string[]; privacyPolicyUrl?: string | null; privacyPolicyVersion?: string | null; lifecycle?: AccountLifecycle; exporter?: AccountExport; accountQuota?: AccountQuotaLimiter; emailCaptcha?: ((token: unknown, remoteIp?: string) => Promise<void>) | undefined }, turns?: ServerTurnRouteDependencies & {storyArchive?:StoryArchive;games?:AuthoritativeGameService;memoryRecall?:{reader:AuthorizedRecallPageReader}|undefined}) {
+}, emailAuth?: { service: AuthSessionService; routesService?: AuthSessionService; supabaseAuth?: SupabaseAuthService | undefined; origin: string; cookieSameSite?: 'Strict' | 'None'; trustedProxyAddresses?: readonly string[]; privacyPolicyUrl?: string | null; privacyPolicyVersion?: string | null; lifecycle?: AccountLifecycle; exporter?: AccountExport; accountQuota?: AccountQuotaLimiter; emailCaptcha?: ((token: unknown, remoteIp?: string) => Promise<void>) | undefined }, turns?: ServerTurnRouteDependencies & {storyArchive?:StoryArchive;readReceipt?:(owner:string,saveId:string,key:string)=>Promise<import('@jiuxiao/contracts').TurnReceipt|null>;games?:AuthoritativeGameService;memoryRecall?:{reader:AuthorizedRecallPageReader}|undefined}) {
   const app = new Hono();
   if (emailAuth) mountAuth(app, emailAuth.routesService ?? emailAuth.service, emailAuth.origin, emailAuth.cookieSameSite, emailAuth.trustedProxyAddresses,
     () => ({ ...(emailAuth.supabaseAuth?.providers() ?? { email: true, phone: false }),
@@ -54,7 +54,7 @@ export function createApp(database?: ReadinessDatabase, cloudSaves?: {
   // resolver. The production entry point supplies it only when auth is enabled.
   if (cloudSaves) mountCloudSaveRoutes(app, cloudSaves);
   if (turns) mountServerTurnRoutes(app, turns);
-  if (turns?.games) mountGames(app,turns.games,turns.auth,turns.service,turns.memoryRecall,turns.storyArchive);
+  if (turns?.games) mountGames(app,turns.games,turns.auth,turns.service,turns.memoryRecall,turns.storyArchive,turns.readReceipt);
 
   app.notFound(c => c.json({ code: 'NOT_FOUND', message: '接口不存在。' }, 404));
   return app;

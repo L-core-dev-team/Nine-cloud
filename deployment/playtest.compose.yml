@@ -1,0 +1,81 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: jiuxiao_test_playtest
+      POSTGRES_USER: playtest
+      POSTGRES_PASSWORD: ${PLAYTEST_DB_PASSWORD:?private environment required}
+    volumes:
+      - playtest-data:/var/lib/postgresql/data
+    networks:
+      isolated:
+        ipv4_address: 172.29.83.30
+    mem_limit: 256m
+    cpus: 0.35
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U playtest -d jiuxiao_test_playtest"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+  migrate:
+    image: jiuxiao-playtest:${PLAYTEST_SHA:?candidate SHA required}
+    command: ["node", "packages/db/dist/migrate.js"]
+    environment:
+      DATABASE_URL: postgresql://playtest:${PLAYTEST_DB_PASSWORD}@db:5432/jiuxiao_test_playtest
+    networks: [isolated]
+    depends_on:
+      db: {condition: service_healthy}
+    profiles: [migration]
+    mem_limit: 256m
+  api:
+    image: jiuxiao-playtest:${PLAYTEST_SHA:?candidate SHA required}
+    environment:
+      NODE_ENV: test
+      API_HOST: 0.0.0.0
+      API_PORT: 8787
+      DATABASE_URL: postgresql://playtest:${PLAYTEST_DB_PASSWORD}@db:5432/jiuxiao_test_playtest
+      AUTH_ENABLED: 'true'
+      AUTH_PUBLIC_ORIGIN: https://trial.jiuxiaogame.cn
+      AUTH_SECRET: ${PLAYTEST_AUTH_SECRET:?private environment required}
+      AUTH_IDENTITY_HMAC_SECRET: ${PLAYTEST_IDENTITY_SECRET:?private environment required}
+      AUTH_TRUSTED_PROXY_ADDRESSES: 172.29.83.10
+      AUTH_MAILER: smtp
+      SMTP_URL: smtp://127.0.0.1:1
+      AUTH_MAIL_FROM: playtest@example.invalid
+      SUPABASE_AUTH_ENABLED: 'false'
+      ACCOUNT_DELETE_ENABLED: 'false'
+      TURN_RULES_MODULE: /app/apps/api/dist/services/p1-prologue-plugin.js
+      STORY_ARCHIVE_ENABLED: 'true'
+    networks:
+      isolated:
+        ipv4_address: 172.29.83.20
+    depends_on:
+      db: {condition: service_healthy}
+    mem_limit: 384m
+    cpus: 0.5
+    read_only: true
+    restart: unless-stopped
+  front:
+    image: jiuxiao-playtest:${PLAYTEST_SHA:?candidate SHA required}
+    command: ["node", "deployment/playtest-front.mjs"]
+    environment:
+      AUTH_PUBLIC_ORIGIN: https://trial.jiuxiaogame.cn
+      PLAYTEST_API_ORIGIN: http://api:8787
+      PLAYTEST_ACCESS_SHA256: ${PLAYTEST_ACCESS_SHA256:?invitation gate required}
+      PLAYTEST_WEB_ROOT: /app/playtest-web
+    ports: ["127.0.0.1:19090:8080"]
+    networks:
+      isolated:
+        ipv4_address: 172.29.83.10
+    depends_on: [api]
+    mem_limit: 128m
+    cpus: 0.2
+    read_only: true
+    restart: unless-stopped
+volumes:
+  playtest-data:
+networks:
+  isolated:
+    ipam:
+      config: [{subnet: 172.29.83.0/24}]

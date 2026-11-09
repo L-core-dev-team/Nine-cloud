@@ -1,3 +1,4 @@
+import {ISOLATED_PLAYTEST} from './playtest-channel';
 import {claimCharacterDraftId} from './idb';
 import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -173,7 +174,7 @@ function WorldHub({ saves }: { saves: LocalSave[] }) {
     <section className="page lobby-page">
       <span className="eyebrow">山门之内</span>
       <h2>选择去处</h2>
-      <p>先创建角色，再探索世界。当前公开体验可保存角色和行动草稿；服务器剧情回合尚未开放。</p>
+      <p>{ISOLATED_PLAYTEST?'这是隔离试玩站。创建游客存档后，可通过文字和建议行动体验已批准的开场。':'先创建角色，再探索世界。当前公开体验可保存角色和行动草稿；服务器剧情回合尚未开放。'}</p>
       <div className="lobby-actions">
         {save && <button className="primary" onClick={() => go(`/game/${save.saveId}`)}>继续游玩<span>{save.name} · 存档版本 {save.revision}</span></button>}
         <button className="primary" onClick={() => go('/new')}>新开一局<span>进入角色创建，择定出身与地域</span></button>
@@ -305,7 +306,7 @@ function NewCharacter({ onSaved, onCreateServerGame, onBack }: {
     } finally { submittingRef.current = false; setSubmitting(false); }
   }
   return <section className="page character-creation"><span className="eyebrow">建角 · {stepNames[step]}</span><h2>把自己写进山门。</h2>
-    <p>只填姓名也可以继续，其余内容可留空。角色会自动保存在当前设备；公开体验目前只保存角色和行动草稿，尚不结算剧情回合。</p>
+    <p>{ISOLATED_PLAYTEST?'只填姓名也可以继续。最后选择“创建角色并开始剧情”进入隔离测试；姓名、出身等表单资料尚未映射服务器能力。':'只填姓名也可以继续，其余内容可留空。角色会自动保存在当前设备；公开体验目前只保存角色和行动草稿，尚不结算剧情回合。'}</p>
     <ol className="character-steps" aria-label="建角进度">{stepNames.map((label, index) => <li key={label} aria-current={index === step ? 'step' : undefined}><span>{index + 1}</span>{label}</li>)}</ol>
     <div className="form">{fields.filter(([key]) => stepKeys[step]?.includes(key)).map(([key, label, hint]) => <div className="character-field" key={key}><label>{label}<small>{hint}</small>{key === 'region' ? <><select aria-label="开局地域" value={selectedRegion} onChange={event => set(key, event.target.value)}><option>中州天枢域</option><option>北境霜寒域</option><option>南疆万蛊域</option><option>东瀚龙吟域</option><option>西荒焚天域</option><option>完全自定义</option></select>{regionArtwork && <figure className="region-visual-reference"><img src={mediaUrlForBrowser(regionArtwork.src)} alt="" loading="lazy" decoding="async" /><figcaption><strong>{selectedRegion}</strong><span>地域画影 · AI 生成 · 只作辨识，设定以正文为准</span></figcaption></figure>}</> : key === 'talents' || key === 'goal' ? <textarea aria-label={label} value={form[key] || ''} onChange={event => set(key, event.target.value)} /> : <input aria-label={label} value={form[key] || ''} onChange={event => set(key, event.target.value)} />}</label>{CHARACTER_OPTIONS[key] && <label className="character-suggestions">{label}备选<select aria-label={`${label}备选`} value="" onChange={event => {
       const value = event.target.value;
@@ -325,8 +326,8 @@ function NewCharacter({ onSaved, onCreateServerGame, onBack }: {
     <div className="actions"><button className="secondary" onClick={() => step ? setStep(step - 1) : (onBack ?? (() => go('/lobby')))()}>{step ? '上一步' : '返回山门'}</button>
       {step < 2 ? <button className="primary" onClick={() => { setError(''); setStep(step + 1); }}>下一步</button> : <>
         <button className="secondary" disabled={submitting} onClick={() => submit('random')}>按资料随机开局<span>保留随机开局意图</span></button>
-        <button className="secondary" data-testid="create-server-game" disabled={submitting} onClick={() => void createServerGame()}>创建服务端规则存档<span>游客或邮箱会话 · 单一服务端事实源</span></button>
-        <button className="primary" disabled={submitting} onClick={() => submit('manual')}>保存角色并进入<span>本地存档 · 待剧情规则接入</span></button>
+        <button className={ISOLATED_PLAYTEST?'primary':'secondary'} data-testid="create-server-game" disabled={submitting} onClick={() => void createServerGame()}>{ISOLATED_PLAYTEST?'创建角色并开始剧情':'创建服务端规则存档'}<span>{ISOLATED_PLAYTEST?'隔离游客测试 · 无需填写邮箱':'游客或邮箱会话 · 单一服务端事实源'}</span></button>
+        <button className={ISOLATED_PLAYTEST?'secondary':'primary'} disabled={submitting} onClick={() => submit('manual')}>保存角色并进入<span>本地存档 · 待剧情规则接入</span></button>
       </>}</div>
   </section>;
 }

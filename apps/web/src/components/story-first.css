@@ -65,3 +65,32 @@
 .jx-shell:has(.immersive-game[data-keyboard='true']) > header,
 .jx-shell:has(.immersive-game[data-keyboard='true']) > footer,
 .jx-shell:has(.immersive-game[data-keyboard='true']) > .game-session-notice { display:none; }
+
+.story-more-compact { display:none; }
+@media(max-height:740px) {
+ .jx-shell:has(.immersive-game) > header,
+ .jx-shell:has(.immersive-game) > footer,
+ .jx-shell:has(.immersive-game) > .game-session-notice { display:none; }
+ .immersive-game .story-header .eyebrow { display:none; }
+ .immersive-game .story-header { padding-block:0; }
+ .immersive-game .story-first-workspace { grid-template-rows:minmax(90px,1fr) auto; gap:6px; }
+ .immersive-game .story-action-area { gap:4px; padding:8px; position:relative; }
+ .immersive-game .story-action-instruction { font-size:12px; line-height:1.4; }
+ .immersive-game .story-composer textarea { height:48px; min-height:44px; }
+ .immersive-game .story-composer button { min-height:44px; }
+ .immersive-game .story-suggestions > button:nth-child(2):not(:last-child),
+ .immersive-game .story-suggestions > button:nth-child(3):not(:last-child) { display:none; }
+ .immersive-game .story-more-compact { display:block; }
+ .immersive-game .story-help[open] { position:fixed; top:8px; bottom:auto; left:12px; right:12px; max-height:min(200px,70dvh); z-index:8; }
+}
+@media(max-height:480px) {
+ .immersive-game .story-first-workspace { grid-template-rows:minmax(56px,1fr) auto; }
+}
+
+.story-awaiting-confirmation .story-action-instruction,
+.story-awaiting-confirmation .story-suggestions,
+.story-awaiting-confirmation [data-testid='p2-submit-action'],
+.story-awaiting-confirmation .story-save-feedback { display:none; }
+.story-awaiting-confirmation .story-action-feedback { margin:0; padding:8px; font-size:13px; line-height:1.4; width:100%; }
+.story-recovery-actions { display:flex; flex-wrap:wrap; gap:8px; }
+.story-recovery-actions button { min-height:44px; padding:6px 10px; font-size:14px; }
