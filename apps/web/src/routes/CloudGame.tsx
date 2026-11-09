@@ -388,7 +388,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
         {pendingTurn&&!busy&&<section className="story-action-feedback" role="alert"><p>结果待确认，请先查询或核对本次提交。</p><div className="story-recovery-actions"><button type="button" disabled={busy||refreshBusy} onClick={()=>void reconcilePendingTurn()}>核对本次提交</button><button type="button" disabled={busy||refreshBusy} onClick={()=>void queryPendingTurn()}>查询行动结果</button></div></section>}
         {failure&&!pendingTurn&&<section className="story-action-feedback"><p>{notice}</p>{failure.next==='account'?<button onClick={onLogin}>账号与云档</button>:failure.next==='home'?<button onClick={onBack}>查看存档列表</button>:<button disabled={busy||refreshBusy} onClick={()=>void reloadSave()}>重新读取存档</button>}</section>}
         {rulesUnavailable&&!pendingTurn&&<section className="story-action-feedback"><p>当前环境的剧情规则尚未开放，行动已暂停。</p><button disabled={refreshBusy||busy} onClick={()=>void reloadSave()}>重新读取存档</button></section>}
-        <details className="story-help"><summary>玩法范围与规则记录</summary><nav aria-label="法律链接"><a href="/privacy">隐私政策</a> · <a href="/privacy/rights">隐私权利</a> · <a href="/terms">用户协议</a></nav>
+        <details className="story-help"><summary>玩法范围与规则记录</summary><nav aria-label="法律链接"><a href="/privacy">隐私政策</a> · <a href="/privacy-rights">隐私权利</a> · <a href="/terms">用户协议</a></nav>
           <p>当前支持已列出的移动、观察、交谈及物品和任务操作，暂时不能理解所有自然语言表达。修改建议文字后，会重新判断其含义。</p>
           <p>自动保存已确认的行动；结果不确定时请先核对。{historyUnavailable?'本环境未开启或暂时无法读取完整剧情保存。':''}</p>
           <p data-testid="p3-world-brief">{save?buildGameplayBrief(save,receipt,suggestions).questStatus:''}</p>

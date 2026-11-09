@@ -38,6 +38,8 @@ async function startDevServer() {
   const executablePath = process.env.PLAYWRIGHT_BROWSER_EXECUTABLE || (existsSync(edge) ? edge : undefined);
   const browser = await chromium.launch(executablePath ? { executablePath } : {});
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true });
+  const mockSession = ctx => ctx.route('**/api/auth/session', route => route.fulfill({ contentType: 'application/json', body: JSON.stringify({ account: { id: 'ui-recovery-owner', kind: 'guest' } }) }));
+  await mockSession(context);
   const page = await context.newPage();
   const pageErrors = [];
   const requests = [];
@@ -119,6 +121,7 @@ async function startDevServer() {
     const guardedCases = [];
     for (const scenario of ['refresh-failure', 'foreign-save', 'foreign-key', 'version-mismatch', 'recovery-gate', 'missing-after-refresh']) {
       const scenarioContext = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+      await mockSession(scenarioContext);
       const scenarioPage = await scenarioContext.newPage();
       const posts = [];
       let committed = false;
