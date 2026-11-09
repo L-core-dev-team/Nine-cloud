@@ -21,7 +21,7 @@
     "@jiuxiao/content": "workspace:*",
     "@jiuxiao/domain": "workspace:*",
     "hono": "4.13.12",
-    "nodemailer": "10.0.13",
+    "nodemailer": "10.1.4",
     "pg": "8.23.1"
   },
   "devDependencies": {
