@@ -81,6 +81,8 @@ jobs:
         run: pnpm test:pages-relay
       - name: Verify isolated playtest invitation and proxy boundaries
         run: pnpm test:playtest-gateway
+      - name: Verify the independent invited playtest entry
+        run: node --test tests/integration/playtest-worker.test.mjs
       - run: pnpm build
       - name: Scan web artifacts for scene packages
         # Defense in depth: the workspace build excludes the unapproved scene
