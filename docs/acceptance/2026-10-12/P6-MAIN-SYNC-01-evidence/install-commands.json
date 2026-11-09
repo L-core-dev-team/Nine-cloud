@@ -1,0 +1,14 @@
+[
+  {
+    "args": [
+      "C:\\Users\\11954\\Desktop\\水龙吟专用\\临时\\S-FINAL\\tools\\node_modules\\pnpm\\bin\\pnpm.cjs",
+      "install",
+      "--frozen-lockfile",
+      "--store-dir",
+      "C:\\Users\\11954\\Desktop\\水龙吟专用\\临时\\P6-MAIN-SYNC-01\\store"
+    ],
+    "started": "2026-10-12T04:47:17.830Z",
+    "finished": "2026-10-12T04:48:00.883Z",
+    "exitCode": 0
+  }
+]

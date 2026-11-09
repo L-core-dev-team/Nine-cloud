@@ -1,0 +1,68 @@
+{
+  "results": [
+    {
+      "label": "retention-tests",
+      "status": 1
+    },
+    {
+      "label": "typescript",
+      "status": 0
+    },
+    {
+      "label": "syntax-adapter.cjs",
+      "status": 0
+    },
+    {
+      "label": "syntax-benchmark.cjs",
+      "status": 0
+    },
+    {
+      "label": "syntax-checks.cjs",
+      "status": 0
+    },
+    {
+      "label": "syntax-contract-suite.cjs",
+      "status": 0
+    },
+    {
+      "label": "syntax-fixture-factory.cjs",
+      "status": 0
+    },
+    {
+      "label": "syntax-portability.cjs",
+      "status": 0
+    },
+    {
+      "label": "syntax-profile-worker.ts",
+      "status": 0
+    },
+    {
+      "label": "syntax-reader-harness.example.ts",
+      "status": 0
+    },
+    {
+      "label": "syntax-reader.ts",
+      "status": 0
+    },
+    {
+      "label": "syntax-retained-recall.ts",
+      "status": 0
+    },
+    {
+      "label": "syntax-retention.test.ts",
+      "status": 0
+    },
+    {
+      "label": "syntax-run-contracts.cjs",
+      "status": 0
+    },
+    {
+      "label": "syntax-serialized-factory.cjs",
+      "status": 0
+    },
+    {
+      "label": "syntax-tooling.cjs",
+      "status": 0
+    }
+  ]
+}

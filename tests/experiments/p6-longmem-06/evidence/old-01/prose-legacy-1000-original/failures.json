@@ -1,0 +1,554 @@
+[
+  {
+    "questionId": "H-10-0",
+    "category": "appearance",
+    "budget": 512,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "p0101"
+    ],
+    "actual": [],
+    "missing": [
+      "p0101"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.2827000000000055,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.2822999999999922,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "H-14-2",
+    "category": "sound",
+    "budget": 512,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "p0137"
+    ],
+    "actual": [],
+    "missing": [
+      "p0137"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.5912999999999897,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.5908000000000015,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "H-16-1",
+    "category": "smell",
+    "budget": 512,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "p0155"
+    ],
+    "actual": [],
+    "missing": [
+      "p0155"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.47270000000000323,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.47219999999998663,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "H-10-0",
+    "category": "appearance",
+    "budget": 1024,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "p0101"
+    ],
+    "actual": [],
+    "missing": [
+      "p0101"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.5047999999999888,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.5043000000000006,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "H-14-2",
+    "category": "sound",
+    "budget": 1024,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "p0137"
+    ],
+    "actual": [],
+    "missing": [
+      "p0137"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 1.044300000000021,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 1.043799999999976,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "H-16-1",
+    "category": "smell",
+    "budget": 1024,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "p0155"
+    ],
+    "actual": [],
+    "missing": [
+      "p0155"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.4732999999999947,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.4730999999999881,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "H-10-0",
+    "category": "appearance",
+    "budget": 2048,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "p0101"
+    ],
+    "actual": [],
+    "missing": [
+      "p0101"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.5778000000000247,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.5774000000000115,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "H-14-2",
+    "category": "sound",
+    "budget": 2048,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "p0137"
+    ],
+    "actual": [],
+    "missing": [
+      "p0137"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.568300000000022,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.5677000000000021,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "H-16-1",
+    "category": "smell",
+    "budget": 2048,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "p0155"
+    ],
+    "actual": [],
+    "missing": [
+      "p0155"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.4682999999999993,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.467899999999986,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "H-10-0",
+    "category": "appearance",
+    "budget": 4096,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "p0101"
+    ],
+    "actual": [],
+    "missing": [
+      "p0101"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.2717999999999847,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.27139999999997144,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "H-14-2",
+    "category": "sound",
+    "budget": 4096,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "p0137"
+    ],
+    "actual": [],
+    "missing": [
+      "p0137"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.5627000000000066,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.5622000000000185,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  },
+  {
+    "questionId": "H-16-1",
+    "category": "smell",
+    "budget": 4096,
+    "pass": false,
+    "complete": false,
+    "noEvidence": false,
+    "expected": [
+      "p0155"
+    ],
+    "actual": [],
+    "missing": [
+      "p0155"
+    ],
+    "extras": [],
+    "matched": 0,
+    "expectedSpans": 1,
+    "falseAuthority": 0,
+    "leaks": 0,
+    "future": 0,
+    "byteErrors": 0,
+    "ms": 0.5766000000000417,
+    "result": {
+      "strategy": "historical",
+      "ranked": [],
+      "evidence": [],
+      "context": "",
+      "spans": [],
+      "originalSpans": [],
+      "roles": {},
+      "diagnosis": "no-readable-support",
+      "omittedSourceIds": [],
+      "enoughEvidence": false,
+      "reason": "no-readable-support; no generated answer; original prose is not authoritative world state",
+      "estimatedTokens": 0,
+      "tokenMethod": "ESTIMATE: ceil(UTF-8 evidence bytes / 2); no target tokenizer; not API usage",
+      "contextBytes": 0,
+      "elapsedMs": 0.5758999999999901,
+      "intent": {
+        "mode": "prose",
+        "temporal": "ordinary"
+      },
+      "candidateAudit": [],
+      "originalAuditCount": 0
+    }
+  }
+]

@@ -1,0 +1,4 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),{validators}=require('./tooling.cjs'),{runContractSuite}=require('./contract-suite.cjs'),{createHarness}=require('./serialized-factory.cjs');
+async function main(){const name=process.argv[2];if(!name||!/^[a-z0-9-]+$/.test(name))throw Error('Unique name required');const out=path.join(__dirname,'evidence',name);fs.mkdirSync(out);const result=await runContractSuite(createHarness,await validators(),{ids:['R03','R10','R11','R16','R29']});result.backend='independent serialized asynchronous test-double factory';fs.writeFileSync(path.join(out,'summary.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify({PASS:result.PASS,FAIL:result.FAIL,backend:result.backend}));if(result.FAIL)process.exitCode=1;}
+main().catch(e=>{console.error(e);process.exitCode=1;});

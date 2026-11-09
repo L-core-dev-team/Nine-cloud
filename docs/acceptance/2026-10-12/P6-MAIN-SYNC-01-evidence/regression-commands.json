@@ -1,0 +1,35 @@
+[
+  {
+    "args": [
+      "C:\\Users\\11954\\Desktop\\水龙吟专用\\临时\\S-FINAL\\tools\\node_modules\\pnpm\\bin\\pnpm.cjs",
+      "--filter",
+      "@jiuxiao/content",
+      "test"
+    ],
+    "started": "2026-10-12T04:49:00.666Z",
+    "finished": "2026-10-12T04:49:02.069Z",
+    "exitCode": 1
+  },
+  {
+    "args": [
+      "C:\\Users\\11954\\Desktop\\水龙吟专用\\临时\\S-FINAL\\tools\\node_modules\\pnpm\\bin\\pnpm.cjs",
+      "--filter",
+      "@jiuxiao/domain",
+      "test"
+    ],
+    "started": "2026-10-12T04:49:02.070Z",
+    "finished": "2026-10-12T04:49:03.993Z",
+    "exitCode": 0
+  },
+  {
+    "args": [
+      "C:\\Users\\11954\\Desktop\\水龙吟专用\\临时\\S-FINAL\\tools\\node_modules\\pnpm\\bin\\pnpm.cjs",
+      "--filter",
+      "@jiuxiao/web",
+      "test"
+    ],
+    "started": "2026-10-12T04:49:03.994Z",
+    "finished": "2026-10-12T04:49:06.545Z",
+    "exitCode": 0
+  }
+]

@@ -1,0 +1,1 @@
+tests/experiments/p6-longmem-06/typed.ts(134,137): error TS2540: Cannot assign to 'reason' because it is a read-only property.

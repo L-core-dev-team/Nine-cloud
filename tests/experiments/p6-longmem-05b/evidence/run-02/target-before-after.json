@@ -1,0 +1,110 @@
+[
+  {
+    "budget": 512,
+    "before": {
+      "ranked": 0,
+      "spans": 0
+    },
+    "after": {
+      "sources": [
+        "p0137"
+      ],
+      "context": "[p0137 turn=137 type=narrative-detail; original-prose-only]\n一颗棋子落在地上弹了两下。",
+      "spans": [
+        {
+          "sourceId": "p0137",
+          "turnId": 137,
+          "start": 32,
+          "end": 45,
+          "text": "一颗棋子落在地上弹了两下。",
+          "originalSha256": "57b2ae72509852c8abd70be0f4ec693331ceb2b182e386b8234b9858a89d465f",
+          "kind": "narrative-detail",
+          "authority": "original-prose-only",
+          "factIds": []
+        }
+      ],
+      "estimatedTokens": 50
+    }
+  },
+  {
+    "budget": 1024,
+    "before": {
+      "ranked": 0,
+      "spans": 0
+    },
+    "after": {
+      "sources": [
+        "p0137"
+      ],
+      "context": "[p0137 turn=137 type=narrative-detail; original-prose-only]\n一颗棋子落在地上弹了两下。",
+      "spans": [
+        {
+          "sourceId": "p0137",
+          "turnId": 137,
+          "start": 32,
+          "end": 45,
+          "text": "一颗棋子落在地上弹了两下。",
+          "originalSha256": "57b2ae72509852c8abd70be0f4ec693331ceb2b182e386b8234b9858a89d465f",
+          "kind": "narrative-detail",
+          "authority": "original-prose-only",
+          "factIds": []
+        }
+      ],
+      "estimatedTokens": 50
+    }
+  },
+  {
+    "budget": 2048,
+    "before": {
+      "ranked": 0,
+      "spans": 0
+    },
+    "after": {
+      "sources": [
+        "p0137"
+      ],
+      "context": "[p0137 turn=137 type=narrative-detail; original-prose-only]\n一颗棋子落在地上弹了两下。",
+      "spans": [
+        {
+          "sourceId": "p0137",
+          "turnId": 137,
+          "start": 32,
+          "end": 45,
+          "text": "一颗棋子落在地上弹了两下。",
+          "originalSha256": "57b2ae72509852c8abd70be0f4ec693331ceb2b182e386b8234b9858a89d465f",
+          "kind": "narrative-detail",
+          "authority": "original-prose-only",
+          "factIds": []
+        }
+      ],
+      "estimatedTokens": 50
+    }
+  },
+  {
+    "budget": 4096,
+    "before": {
+      "ranked": 0,
+      "spans": 0
+    },
+    "after": {
+      "sources": [
+        "p0137"
+      ],
+      "context": "[p0137 turn=137 type=narrative-detail; original-prose-only]\n一颗棋子落在地上弹了两下。",
+      "spans": [
+        {
+          "sourceId": "p0137",
+          "turnId": 137,
+          "start": 32,
+          "end": 45,
+          "text": "一颗棋子落在地上弹了两下。",
+          "originalSha256": "57b2ae72509852c8abd70be0f4ec693331ceb2b182e386b8234b9858a89d465f",
+          "kind": "narrative-detail",
+          "authority": "original-prose-only",
+          "factIds": []
+        }
+      ],
+      "estimatedTokens": 50
+    }
+  }
+]

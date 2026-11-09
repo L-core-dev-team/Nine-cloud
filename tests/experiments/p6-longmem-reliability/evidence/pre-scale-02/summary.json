@@ -1,0 +1,15 @@
+{
+  "node": "v24.19.0",
+  "results": [
+    {
+      "label": "boundaries",
+      "status": 0,
+      "error": null
+    },
+    {
+      "label": "typescript",
+      "status": 1,
+      "error": null
+    }
+  ]
+}

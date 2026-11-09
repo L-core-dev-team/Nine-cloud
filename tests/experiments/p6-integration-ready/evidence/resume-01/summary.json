@@ -1,0 +1,109 @@
+{
+  "pausedFileChecks": [
+    {
+      "path": "tests/experiments/p6-integration-ready/.gitattributes",
+      "bytes": 89,
+      "match": true
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/.gitignore",
+      "bytes": 19,
+      "match": true
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/CHECKPOINT-20261013.md",
+      "bytes": 11049,
+      "match": true
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/README.md",
+      "bytes": 1066,
+      "match": true
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/bridge.cjs",
+      "bytes": 12732,
+      "match": true
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/contracts.ts",
+      "bytes": 2883,
+      "match": true
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/formal-source-manifest.json",
+      "bytes": 3735,
+      "match": true
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/legacy-01/legacy-cases.json",
+      "bytes": 3196,
+      "match": true
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/legacy-01/policy-surface-difference.json",
+      "bytes": 511,
+      "match": true
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/legacy-01/summary.json",
+      "bytes": 819,
+      "match": true
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/security-01/cases.json",
+      "bytes": 15312,
+      "match": true
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/security-01/failures.json",
+      "bytes": 15312,
+      "match": true
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/security-01/summary.json",
+      "bytes": 17677,
+      "match": true
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/security-02/cases.json",
+      "bytes": 22162,
+      "match": true
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/security-02/failures.json",
+      "bytes": 3,
+      "match": true
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/evidence/security-02/summary.json",
+      "bytes": 7051,
+      "match": true
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/fixtures.cjs",
+      "bytes": 5144,
+      "match": true
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/formal.cjs",
+      "bytes": 4014,
+      "match": true
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/legacy-audit.cjs",
+      "bytes": 7166,
+      "match": true
+    },
+    {
+      "path": "tests/experiments/p6-integration-ready/security.cjs",
+      "bytes": 16552,
+      "match": true
+    }
+  ],
+  "formalSourcesChecked": 23,
+  "head": "7ff824791c3dfc0a544728b29c7ddc24b7857b26",
+  "branch": "shuilongyin/p6-integration-ready-20261013",
+  "trackedDiff": "",
+  "resumedAt": "2026-10-13T11:36:21.311Z"
+}

@@ -1,0 +1,46 @@
+{
+  "node": "v24.19.0",
+  "copiedOriginalBytes": [],
+  "results": [
+    {
+      "label": "typescript",
+      "status": 0,
+      "error": null
+    },
+    {
+      "label": "syntax-audit.cjs",
+      "status": 0,
+      "error": null
+    },
+    {
+      "label": "syntax-bridge.cjs",
+      "status": 0,
+      "error": null
+    },
+    {
+      "label": "syntax-checks.cjs",
+      "status": 0,
+      "error": null
+    },
+    {
+      "label": "syntax-fixtures.cjs",
+      "status": 0,
+      "error": null
+    },
+    {
+      "label": "syntax-formal.cjs",
+      "status": 0,
+      "error": null
+    },
+    {
+      "label": "syntax-legacy-audit.cjs",
+      "status": 0,
+      "error": null
+    },
+    {
+      "label": "syntax-security.cjs",
+      "status": 0,
+      "error": null
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "main": "2647439e0cccc9a136606a81131519f53253f125",
+  "runtimeChecks": [
+    {
+      "file": "packages/contracts/src/action.ts",
+      "sha256": "45f1654eaddc532d4b6cc707ce4860254d125b9813b1ce85ca80991b87ac5e2e",
+      "transformedByteEqual": true
+    },
+    {
+      "file": "packages/contracts/src/decision.ts",
+      "sha256": "a7c61da21a856423791d9758ece67be467ceb099f41b34b14d4581a9b100876a",
+      "transformedByteEqual": true
+    },
+    {
+      "file": "packages/contracts/src/errors.ts",
+      "sha256": "695eb0dbe55c92e97b23e96e7b948f898c1950c99c3951666d9bf12428dcba9d",
+      "transformedByteEqual": true
+    },
+    {
+      "file": "packages/contracts/src/event.ts",
+      "sha256": "8f536702ce7c3deb998916f08882391646e73b38a1962a6441290fee519750ba",
+      "transformedByteEqual": true
+    },
+    {
+      "file": "packages/contracts/src/index.ts",
+      "sha256": "bf509bebd85acb0498ec9f18a86a2107e29ce3438758b499a14b6be5198b5651",
+      "transformedByteEqual": true
+    },
+    {
+      "file": "packages/contracts/src/json-bounds.ts",
+      "sha256": "38bcd46b149da54edfd614349f7c2233c720bbe4b3af58d2eb3eb7851c24a9c7",
+      "transformedByteEqual": true
+    },
+    {
+      "file": "packages/contracts/src/legacy-save.ts",
+      "sha256": "7afb14648bfe628a97909634e7e328d4ac677dc10b92d1fc806ec3ef925745c3",
+      "transformedByteEqual": true
+    },
+    {
+      "file": "packages/contracts/src/prologue.ts",
+      "sha256": "901dd80e74c81ea68d942312816bcf84dc7fd69283fa65ee1aa1d2747ad07273",
+      "transformedByteEqual": true
+    },
+    {
+      "file": "packages/contracts/src/save.ts",
+      "sha256": "cd7a76f0d4e26e6d3dcb078498b035e0e1828b54365bebe18e565af70780e0ed",
+      "transformedByteEqual": true
+    },
+    {
+      "file": "packages/contracts/src/state-delta.ts",
+      "sha256": "f73404acf344cb5f2d009df1d19aa621dad09ef3bee5ff46ede9e7852258ae59",
+      "transformedByteEqual": true
+    },
+    {
+      "file": "packages/contracts/src/turn.ts",
+      "sha256": "56e2735bda9adcee5fa3e59324abed9215ce4fae077793c8e6f3aea59c8556a9",
+      "transformedByteEqual": true
+    },
+    {
+      "file": "packages/contracts/src/world.ts",
+      "sha256": "285db04f009dc0f27e24427350ed8ce75c70c69dd89da7adfff42febb9c1252a",
+      "transformedByteEqual": true
+    },
+    {
+      "file": "packages/domain/src/memory/policy.ts",
+      "sha256": "859cd67c856a6a654eb3f4c6ced416869c56b6574a88eeeeda491c76e9cfde1c",
+      "transformedByteEqual": true
+    },
+    {
+      "file": "packages/domain/src/memory/belief.ts",
+      "sha256": "b716efe88e001a7ef0b14f8929eac8156e47e45bf2000654ae485ab59c1a1a9c",
+      "transformedByteEqual": true
+    },
+    {
+      "file": "packages/domain/src/memory/retrieve.ts",
+      "sha256": "4b912ad7d175e380dbcb533a5bd42e9074a17532cf7235803ddf670ba4f26aa3",
+      "transformedByteEqual": true
+    },
+    {
+      "file": "packages/domain/src/memory/turn-journal.ts",
+      "sha256": "b63d95b37d4e53878c54dd86e3b2c26b3464cedec3a315d18d7c49ec3c1701b1",
+      "transformedByteEqual": true
+    },
+    {
+      "file": "packages/domain/src/memory/recall-authorized.ts",
+      "sha256": "ad1703c120d1a3fe2ee6cf30dc2b506929bbc296204467ff28b50b1db566792e",
+      "transformedByteEqual": true
+    },
+    {
+      "file": "packages/domain/src/state-delta.ts",
+      "sha256": "f7e8d143f125a06300d73154a17073697b91bccff0a2f8c2772b77f6a33ad142",
+      "transformedByteEqual": true
+    },
+    {
+      "file": "apps/api/src/services/p1-memory-policy.ts",
+      "sha256": "82984d77000311cc5ea134607276694f02ad3bc4822938761b1a930014eaab81",
+      "transformedByteEqual": true
+    },
+    {
+      "file": "apps/api/src/services/npc-memory-recall.ts",
+      "sha256": "a494821ec2941564ffb01a086d66e744abdf3aa6b5ede50ad5d6f36c45f9c800",
+      "transformedByteEqual": true
+    },
+    {
+      "file": "apps/api/src/services/narrative-memory-context.ts",
+      "sha256": "7dd21c6e23a39ad6d91b1fbdb339e075820f4f9189d053c43e78bee3949bd6fa",
+      "transformedByteEqual": true
+    }
+  ],
+  "sourceCount": 23,
+  "allMatch": true
+}

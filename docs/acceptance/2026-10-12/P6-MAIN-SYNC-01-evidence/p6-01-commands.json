@@ -1,0 +1,14 @@
+[
+  {
+    "args": [
+      "tests/experiments/p6-longmem/run.ts",
+      "--sizes",
+      "200,500,1000",
+      "--out",
+      "C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-P6-main-sync-20261012\\docs\\acceptance\\2026-10-12\\P6-MAIN-SYNC-01-evidence\\p6-01"
+    ],
+    "started": "2026-10-12T04:47:52.648Z",
+    "finished": "2026-10-12T04:47:53.633Z",
+    "exitCode": 0
+  }
+]

@@ -1,0 +1,32 @@
+{
+  "stage": "PRE_OPTIMIZATION_FREEZE",
+  "scale": {
+    "meaningfulNodes": 1000,
+    "majorNodes": 180,
+    "characters": 30,
+    "items": 20,
+    "longThreads": 20,
+    "relationshipChains": 10
+  },
+  "developmentCount": 50,
+  "frozenCount": 50,
+  "oldGoldSha256": "91235f6ee8c4305979eadf46852af899815f1c0e04b52c07209d6c6ee680014f",
+  "files": [
+    {
+      "name": "complex-history-1000.json",
+      "bytes": 1149490,
+      "sha256": "18231cb879f00ed0b3a7bf5bc936815ab17160463b7b1e65296cca6824a68c9f"
+    },
+    {
+      "name": "development-questions.json",
+      "bytes": 36513,
+      "sha256": "5d207224323ea0eca9920ddc9a163187981a51ea213505d8eee692bf88da8e88"
+    },
+    {
+      "name": "frozen-questions.json",
+      "bytes": 29083,
+      "sha256": "0ca371a9135b2e58572550da31e2b3e26827a6ef6225422db11267eb3507fdc6"
+    }
+  ],
+  "policy": "Freeze before retrieval changes. Development uses development-questions only. Frozen questions are evaluated once at final unseal; no per-question retuning. AI authored, not human blind evaluation."
+}

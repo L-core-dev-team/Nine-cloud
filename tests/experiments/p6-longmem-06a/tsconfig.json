@@ -1,0 +1,4 @@
+{
+  "extends": "../p6-longmem-06/tsconfig.json",
+  "include": ["boundary.test.ts"]
+}

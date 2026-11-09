@@ -1,0 +1,18 @@
+[
+  {
+    "args": [
+      "C:\\Users\\11954\\Desktop\\水龙吟专用\\临时\\P6-MAIN-SYNC-01\\verify-evidence.ts"
+    ],
+    "started": "2026-10-12T04:49:02.539Z",
+    "finished": "2026-10-12T04:49:02.867Z",
+    "exitCode": 0
+  },
+  {
+    "args": [
+      "C:\\Users\\11954\\Desktop\\水龙吟专用\\临时\\P6-MAIN-SYNC-01\\verify.ts"
+    ],
+    "started": "2026-10-12T04:49:02.867Z",
+    "finished": "2026-10-12T04:49:10.633Z",
+    "exitCode": 0
+  }
+]

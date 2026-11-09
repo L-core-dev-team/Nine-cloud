@@ -1,0 +1,9 @@
+{
+  "baseline": "534a6d58acf32ce8915f419cf4aeddc723a88e2d",
+  "branch": "shuilongyin/p6-adapter-01-20261013",
+  "workspace": "circle/项目/Nine-cloud-P6-adapter-01-20261013",
+  "stage0": "REVIEW_READY (user supplied; not formally frozen)",
+  "scope": "Independent prototype and tools only; no production ports, policy, authentication or SQL transactions implemented",
+  "legacy42": "Not rerun",
+  "reportedBeforeDevelopment": true
+}

@@ -1,0 +1,2652 @@
+[
+  {
+    "questionId": "H-10-0",
+    "text": "祁栖耳后有什么装饰？",
+    "category": "appearance",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0101"
+    ],
+    "supportingSourceIds": [
+      "p0101"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0101",
+        "text": "耳后别着一朵半干的紫花",
+        "start": 8,
+        "end": 19,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-10-1",
+    "text": "青瓷坳破窑门边闻到什么？",
+    "category": "smell",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0101"
+    ],
+    "supportingSourceIds": [
+      "p0101"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0101",
+        "text": "破窑门边有潮纸与烟灰混合的味道",
+        "start": 20,
+        "end": 35,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-10-2",
+    "text": "青瓷坳石阶雨水如何作响？",
+    "category": "sound",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0101"
+    ],
+    "supportingSourceIds": [
+      "p0101"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0101",
+        "text": "石阶上的雨水滴答滴答落下",
+        "start": 36,
+        "end": 48,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-10-3",
+    "text": "祁栖怎样处理碎瓷片？",
+    "category": "action",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0101"
+    ],
+    "supportingSourceIds": [
+      "p0101"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0101",
+        "text": "他用脚尖将碎瓷片推入墙缝",
+        "start": 49,
+        "end": 61,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-10-4",
+    "text": "祁栖说裂口应该怎样？",
+    "category": "dialogue",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0101"
+    ],
+    "supportingSourceIds": [
+      "p0101"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0101",
+        "text": "他说：“裂口要朝外。”",
+        "start": 62,
+        "end": 73,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-10-denied",
+    "text": "青瓷坳破窑门边闻到什么？",
+    "category": "unauthorized",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "npc",
+      "npcId": "outsider"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": true,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-10-early",
+    "text": "祁栖最早一段原文的衣着或外貌是什么？",
+    "category": "time",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0101"
+    ],
+    "supportingSourceIds": [
+      "p0101"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0101",
+        "text": "耳后别着一朵半干的紫花",
+        "start": 8,
+        "end": 19,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-10-latest",
+    "text": "祁栖最新一段原文的衣着是什么？",
+    "category": "time",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p791"
+    ],
+    "supportingSourceIds": [
+      "p791"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p791",
+        "text": "衣服换成了素白短衫",
+        "start": 10,
+        "end": 19,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-10-future",
+    "text": "祁栖耳后有什么装饰？",
+    "category": "future",
+    "asOfTurn": 100,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-10-unknown",
+    "text": "祁栖的翡翠耳坠原文在哪里？",
+    "category": "unknown",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-11-0",
+    "text": "程荻披肩上的颜色与物品是什么？",
+    "category": "appearance",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0110"
+    ],
+    "supportingSourceIds": [
+      "p0110"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0110",
+        "text": "披肩上沾着一枚金黄树种",
+        "start": 8,
+        "end": 19,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-11-1",
+    "text": "回风院空炉是什么气味？",
+    "category": "smell",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0110"
+    ],
+    "supportingSourceIds": [
+      "p0110"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0110",
+        "text": "空炉里留有焦麦的气息",
+        "start": 20,
+        "end": 30,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-11-2",
+    "text": "回风院屏风后的声音是什么？",
+    "category": "sound",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0110"
+    ],
+    "supportingSourceIds": [
+      "p0110"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0110",
+        "text": "屏风后有人轻轻吸了一口气",
+        "start": 31,
+        "end": 43,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-11-3",
+    "text": "程荻怎样试墙的温度？",
+    "category": "action",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0110"
+    ],
+    "supportingSourceIds": [
+      "p0110"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0110",
+        "text": "她把手背贴在石墙上试温度",
+        "start": 44,
+        "end": 56,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-11-4",
+    "text": "程荻有关墙的原话是什么？",
+    "category": "dialogue",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0110"
+    ],
+    "supportingSourceIds": [
+      "p0110"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0110",
+        "text": "她说：“墙比昨天冷。”",
+        "start": 57,
+        "end": 68,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-11-denied",
+    "text": "回风院空炉是什么气味？",
+    "category": "unauthorized",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "npc",
+      "npcId": "outsider"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": true,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-11-early",
+    "text": "程荻最早一段原文的衣着或外貌是什么？",
+    "category": "time",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0110"
+    ],
+    "supportingSourceIds": [
+      "p0110"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0110",
+        "text": "披肩上沾着一枚金黄树种",
+        "start": 8,
+        "end": 19,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-11-latest",
+    "text": "程荻最新一段原文的衣着是什么？",
+    "category": "time",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p800"
+    ],
+    "supportingSourceIds": [
+      "p800"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p800",
+        "text": "衣服换成了素白短衫",
+        "start": 10,
+        "end": 19,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-11-future",
+    "text": "程荻披肩上的颜色与物品是什么？",
+    "category": "future",
+    "asOfTurn": 109,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-11-unknown",
+    "text": "程荻的翡翠耳坠原文在哪里？",
+    "category": "unknown",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-12-0",
+    "text": "孟遥当时脸上有什么神态？",
+    "category": "appearance",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0119"
+    ],
+    "supportingSourceIds": [
+      "p0119"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0119",
+        "text": "唇边有一个几乎看不见的笑意",
+        "start": 8,
+        "end": 21,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-12-1",
+    "text": "断潮台石缝的植物闻起来如何？",
+    "category": "smell",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0119"
+    ],
+    "supportingSourceIds": [
+      "p0119"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0119",
+        "text": "石缝长着散出辛凉味的薄荷",
+        "start": 22,
+        "end": 34,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-12-2",
+    "text": "断潮台的潮声怎样变化？",
+    "category": "sound",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0119"
+    ],
+    "supportingSourceIds": [
+      "p0119"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0119",
+        "text": "潮声一阵高一阵低地拍打台基",
+        "start": 35,
+        "end": 48,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-12-3",
+    "text": "孟遥手指怎样移动石子？",
+    "category": "action",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0119"
+    ],
+    "supportingSourceIds": [
+      "p0119"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0119",
+        "text": "他将小石子从拇指滚到食指",
+        "start": 49,
+        "end": 61,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-12-4",
+    "text": "孟遥谈到数潮的原句是什么？",
+    "category": "dialogue",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0119"
+    ],
+    "supportingSourceIds": [
+      "p0119"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0119",
+        "text": "他说：“这次不要数潮。”",
+        "start": 62,
+        "end": 74,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-12-denied",
+    "text": "断潮台石缝的植物闻起来如何？",
+    "category": "unauthorized",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "npc",
+      "npcId": "outsider"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": true,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-12-early",
+    "text": "孟遥最早一段原文的衣着或外貌是什么？",
+    "category": "time",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0119"
+    ],
+    "supportingSourceIds": [
+      "p0119"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0119",
+        "text": "唇边有一个几乎看不见的笑意",
+        "start": 8,
+        "end": 21,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-12-latest",
+    "text": "孟遥最新一段原文的衣着是什么？",
+    "category": "time",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p809"
+    ],
+    "supportingSourceIds": [
+      "p809"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p809",
+        "text": "衣服换成了素白短衫",
+        "start": 10,
+        "end": 19,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-12-future",
+    "text": "孟遥当时脸上有什么神态？",
+    "category": "future",
+    "asOfTurn": 118,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-12-unknown",
+    "text": "孟遥的翡翠耳坠原文在哪里？",
+    "category": "unknown",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-13-0",
+    "text": "白荞裙边是什么颜色？",
+    "category": "appearance",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0128"
+    ],
+    "supportingSourceIds": [
+      "p0128"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0128",
+        "text": "裙边染着未干的深绿水痕",
+        "start": 8,
+        "end": 19,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-13-1",
+    "text": "银杏埠系船绳有什么味道？",
+    "category": "smell",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0128"
+    ],
+    "supportingSourceIds": [
+      "p0128"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0128",
+        "text": "系船绳有海盐和湿麻的气味",
+        "start": 20,
+        "end": 32,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-13-2",
+    "text": "银杏埠船舱木碗如何响？",
+    "category": "sound",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0128"
+    ],
+    "supportingSourceIds": [
+      "p0128"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0128",
+        "text": "船舱里木碗相撞发出空响",
+        "start": 33,
+        "end": 44,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-13-3",
+    "text": "白荞扶正了什么物品？",
+    "category": "action",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0128"
+    ],
+    "supportingSourceIds": [
+      "p0128"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0128",
+        "text": "她伸手扶正倾斜的细灯杆",
+        "start": 45,
+        "end": 56,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-13-4",
+    "text": "白荞说灯影怎样？",
+    "category": "dialogue",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0128"
+    ],
+    "supportingSourceIds": [
+      "p0128"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0128",
+        "text": "她说：“灯影照不到那里。”",
+        "start": 57,
+        "end": 70,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-13-denied",
+    "text": "银杏埠系船绳有什么味道？",
+    "category": "unauthorized",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "npc",
+      "npcId": "outsider"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": true,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-13-early",
+    "text": "白荞最早一段原文的衣着或外貌是什么？",
+    "category": "time",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0128"
+    ],
+    "supportingSourceIds": [
+      "p0128"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0128",
+        "text": "裙边染着未干的深绿水痕",
+        "start": 8,
+        "end": 19,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-13-latest",
+    "text": "白荞最新一段原文的衣着是什么？",
+    "category": "time",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p818"
+    ],
+    "supportingSourceIds": [
+      "p818"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p818",
+        "text": "衣服换成了素白短衫",
+        "start": 10,
+        "end": 19,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-13-future",
+    "text": "白荞裙边是什么颜色？",
+    "category": "future",
+    "asOfTurn": 127,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-13-unknown",
+    "text": "白荞的翡翠耳坠原文在哪里？",
+    "category": "unknown",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-14-0",
+    "text": "谭宁肩头的衣物是什么样？",
+    "category": "appearance",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0137"
+    ],
+    "supportingSourceIds": [
+      "p0137"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0137",
+        "text": "肩头披着带细格纹的灰毡",
+        "start": 8,
+        "end": 19,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-14-1",
+    "text": "旧棋室棋盒的气味是什么？",
+    "category": "smell",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0137"
+    ],
+    "supportingSourceIds": [
+      "p0137"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0137",
+        "text": "棋盒内衬透出淡淡樟脑味",
+        "start": 20,
+        "end": 31,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-14-2",
+    "text": "旧棋室落地棋子的声音出现在哪里？",
+    "category": "sound",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0137"
+    ],
+    "supportingSourceIds": [
+      "p0137"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0137",
+        "text": "一颗棋子落在地上弹了两下",
+        "start": 32,
+        "end": 44,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-14-3",
+    "text": "谭宁怎样打开棋盒？",
+    "category": "action",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0137"
+    ],
+    "supportingSourceIds": [
+      "p0137"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0137",
+        "text": "他只用指尖掀开盒盖一角",
+        "start": 45,
+        "end": 56,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-14-4",
+    "text": "谭宁有关白子的原话是什么？",
+    "category": "dialogue",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0137"
+    ],
+    "supportingSourceIds": [
+      "p0137"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0137",
+        "text": "他说：“白子少了一颗。”",
+        "start": 57,
+        "end": 69,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-14-denied",
+    "text": "旧棋室棋盒的气味是什么？",
+    "category": "unauthorized",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "npc",
+      "npcId": "outsider"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": true,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-14-early",
+    "text": "谭宁最早一段原文的衣着或外貌是什么？",
+    "category": "time",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0137"
+    ],
+    "supportingSourceIds": [
+      "p0137"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0137",
+        "text": "肩头披着带细格纹的灰毡",
+        "start": 8,
+        "end": 19,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-14-latest",
+    "text": "谭宁最新一段原文的衣着是什么？",
+    "category": "time",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p827"
+    ],
+    "supportingSourceIds": [
+      "p827"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p827",
+        "text": "衣服换成了素白短衫",
+        "start": 10,
+        "end": 19,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-14-future",
+    "text": "谭宁肩头的衣物是什么样？",
+    "category": "future",
+    "asOfTurn": 136,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-14-unknown",
+    "text": "谭宁的翡翠耳坠原文在哪里？",
+    "category": "unknown",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-15-0",
+    "text": "柳璇眼睛有什么外貌细节？",
+    "category": "appearance",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0146"
+    ],
+    "supportingSourceIds": [
+      "p0146"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0146",
+        "text": "双眼因熬夜泛着细细血丝",
+        "start": 8,
+        "end": 19,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-15-1",
+    "text": "烟水庵蒲团附近有什么气味？",
+    "category": "smell",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0146"
+    ],
+    "supportingSourceIds": [
+      "p0146"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0146",
+        "text": "蒲团边有温热豆浆的香气",
+        "start": 20,
+        "end": 31,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-15-2",
+    "text": "烟水庵柴门外传来什么声响？",
+    "category": "sound",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0146"
+    ],
+    "supportingSourceIds": [
+      "p0146"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0146",
+        "text": "柴门外有人拖着鞋走过",
+        "start": 32,
+        "end": 42,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-15-3",
+    "text": "柳璇把折纸放在哪里？",
+    "category": "action",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0146"
+    ],
+    "supportingSourceIds": [
+      "p0146"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0146",
+        "text": "她将折纸压在灯台脚下",
+        "start": 43,
+        "end": 53,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-15-4",
+    "text": "柳璇关于信说了什么原话？",
+    "category": "dialogue",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0146"
+    ],
+    "supportingSourceIds": [
+      "p0146"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0146",
+        "text": "她说：“信不要拆开。”",
+        "start": 54,
+        "end": 65,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-15-denied",
+    "text": "烟水庵蒲团附近有什么气味？",
+    "category": "unauthorized",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "npc",
+      "npcId": "outsider"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": true,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-15-early",
+    "text": "柳璇最早一段原文的衣着或外貌是什么？",
+    "category": "time",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0146"
+    ],
+    "supportingSourceIds": [
+      "p0146"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0146",
+        "text": "双眼因熬夜泛着细细血丝",
+        "start": 8,
+        "end": 19,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-15-latest",
+    "text": "柳璇最新一段原文的衣着是什么？",
+    "category": "time",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p836"
+    ],
+    "supportingSourceIds": [
+      "p836"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p836",
+        "text": "衣服换成了素白短衫",
+        "start": 10,
+        "end": 19,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-15-future",
+    "text": "柳璇眼睛有什么外貌细节？",
+    "category": "future",
+    "asOfTurn": 145,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-15-unknown",
+    "text": "柳璇的翡翠耳坠原文在哪里？",
+    "category": "unknown",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-16-0",
+    "text": "唐芷腰间的物品外观如何？",
+    "category": "appearance",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0155"
+    ],
+    "supportingSourceIds": [
+      "p0155"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0155",
+        "text": "腰间挂着一枚磨圆的白石",
+        "start": 8,
+        "end": 19,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-16-1",
+    "text": "碎玉坡雨里的味道是什么？",
+    "category": "smell",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0155"
+    ],
+    "supportingSourceIds": [
+      "p0155"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0155",
+        "text": "雨落在蕨叶上带起青草味",
+        "start": 20,
+        "end": 31,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-16-2",
+    "text": "碎玉坡下铃铛怎样响？",
+    "category": "sound",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0155"
+    ],
+    "supportingSourceIds": [
+      "p0155"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0155",
+        "text": "坡下铃铛响了一声便停",
+        "start": 32,
+        "end": 42,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-16-3",
+    "text": "唐芷如何抖去水珠？",
+    "category": "action",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0155"
+    ],
+    "supportingSourceIds": [
+      "p0155"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0155",
+        "text": "他捏住蕨叶尖端抖去水珠",
+        "start": 43,
+        "end": 54,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-16-4",
+    "text": "唐芷关于石头的对白是什么？",
+    "category": "dialogue",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0155"
+    ],
+    "supportingSourceIds": [
+      "p0155"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0155",
+        "text": "他说：“石头不是玉。”",
+        "start": 55,
+        "end": 66,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-16-denied",
+    "text": "碎玉坡雨里的味道是什么？",
+    "category": "unauthorized",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "npc",
+      "npcId": "outsider"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": true,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-16-early",
+    "text": "唐芷最早一段原文的衣着或外貌是什么？",
+    "category": "time",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0155"
+    ],
+    "supportingSourceIds": [
+      "p0155"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0155",
+        "text": "腰间挂着一枚磨圆的白石",
+        "start": 8,
+        "end": 19,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-16-latest",
+    "text": "唐芷最新一段原文的衣着是什么？",
+    "category": "time",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p845"
+    ],
+    "supportingSourceIds": [
+      "p845"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p845",
+        "text": "衣服换成了素白短衫",
+        "start": 10,
+        "end": 19,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-16-future",
+    "text": "唐芷腰间的物品外观如何？",
+    "category": "future",
+    "asOfTurn": 154,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-16-unknown",
+    "text": "唐芷的翡翠耳坠原文在哪里？",
+    "category": "unknown",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-17-0",
+    "text": "林絮额前头发是什么样？",
+    "category": "appearance",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0164"
+    ],
+    "supportingSourceIds": [
+      "p0164"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0164",
+        "text": "额前垂着被雨黏住的一缕发",
+        "start": 8,
+        "end": 20,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-17-1",
+    "text": "夜篷巷篷布闻起来如何？",
+    "category": "smell",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0164"
+    ],
+    "supportingSourceIds": [
+      "p0164"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0164",
+        "text": "篷布上有旧蜡与湿布的味道",
+        "start": 21,
+        "end": 33,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-17-2",
+    "text": "夜篷巷瓦沟水声是什么样？",
+    "category": "sound",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0164"
+    ],
+    "supportingSourceIds": [
+      "p0164"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0164",
+        "text": "水沿瓦沟流下发出细长嘶声",
+        "start": 34,
+        "end": 46,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-17-3",
+    "text": "林絮怎样拿着破伞？",
+    "category": "action",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0164"
+    ],
+    "supportingSourceIds": [
+      "p0164"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0164",
+        "text": "她把破伞柄夹在臂弯里",
+        "start": 47,
+        "end": 57,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-17-4",
+    "text": "林絮关于伞骨的原句是什么？",
+    "category": "dialogue",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0164"
+    ],
+    "supportingSourceIds": [
+      "p0164"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0164",
+        "text": "她说：“伞骨已经断了。”",
+        "start": 58,
+        "end": 70,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-17-denied",
+    "text": "夜篷巷篷布闻起来如何？",
+    "category": "unauthorized",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "npc",
+      "npcId": "outsider"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": true,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-17-early",
+    "text": "林絮最早一段原文的衣着或外貌是什么？",
+    "category": "time",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0164"
+    ],
+    "supportingSourceIds": [
+      "p0164"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0164",
+        "text": "额前垂着被雨黏住的一缕发",
+        "start": 8,
+        "end": 20,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-17-latest",
+    "text": "林絮最新一段原文的衣着是什么？",
+    "category": "time",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p854"
+    ],
+    "supportingSourceIds": [
+      "p854"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p854",
+        "text": "衣服换成了素白短衫",
+        "start": 10,
+        "end": 19,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-17-future",
+    "text": "林絮额前头发是什么样？",
+    "category": "future",
+    "asOfTurn": 163,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-17-unknown",
+    "text": "林絮的翡翠耳坠原文在哪里？",
+    "category": "unknown",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-18-0",
+    "text": "赵葭衣领露出什么颜色？",
+    "category": "appearance",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0173"
+    ],
+    "supportingSourceIds": [
+      "p0173"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0173",
+        "text": "衣领里面露出一小段黄绸",
+        "start": 8,
+        "end": 19,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-18-1",
+    "text": "赤泥驿热泥墙边的气味是什么？",
+    "category": "smell",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0173"
+    ],
+    "supportingSourceIds": [
+      "p0173"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0173",
+        "text": "热泥墙边散出铁锈气",
+        "start": 20,
+        "end": 29,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-18-2",
+    "text": "赤泥驿驿马发出什么声音？",
+    "category": "sound",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0173"
+    ],
+    "supportingSourceIds": [
+      "p0173"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0173",
+        "text": "驿马鼻中喷出短短一声气响",
+        "start": 30,
+        "end": 42,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-18-3",
+    "text": "赵葭将布包放在哪里？",
+    "category": "action",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0173"
+    ],
+    "supportingSourceIds": [
+      "p0173"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0173",
+        "text": "他把布包放到门槛内侧",
+        "start": 43,
+        "end": 53,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-18-4",
+    "text": "赵葭关于包的原话是什么？",
+    "category": "dialogue",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0173"
+    ],
+    "supportingSourceIds": [
+      "p0173"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0173",
+        "text": "他说：“包里没有药。”",
+        "start": 54,
+        "end": 65,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-18-denied",
+    "text": "赤泥驿热泥墙边的气味是什么？",
+    "category": "unauthorized",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "npc",
+      "npcId": "outsider"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": true,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-18-early",
+    "text": "赵葭最早一段原文的衣着或外貌是什么？",
+    "category": "time",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0173"
+    ],
+    "supportingSourceIds": [
+      "p0173"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0173",
+        "text": "衣领里面露出一小段黄绸",
+        "start": 8,
+        "end": 19,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-18-latest",
+    "text": "赵葭最新一段原文的衣着是什么？",
+    "category": "time",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p863"
+    ],
+    "supportingSourceIds": [
+      "p863"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p863",
+        "text": "衣服换成了素白短衫",
+        "start": 10,
+        "end": 19,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-18-future",
+    "text": "赵葭衣领露出什么颜色？",
+    "category": "future",
+    "asOfTurn": 172,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-18-unknown",
+    "text": "赵葭的翡翠耳坠原文在哪里？",
+    "category": "unknown",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-19-0",
+    "text": "季萦手套的外观细节是什么？",
+    "category": "appearance",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0182"
+    ],
+    "supportingSourceIds": [
+      "p0182"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0182",
+        "text": "手套指腹磨出了浅色绒毛",
+        "start": 8,
+        "end": 19,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-19-1",
+    "text": "空竹园竹筒内部有什么气息？",
+    "category": "smell",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0182"
+    ],
+    "supportingSourceIds": [
+      "p0182"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0182",
+        "text": "竹筒内有甜涩的竹汁味",
+        "start": 20,
+        "end": 30,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-19-2",
+    "text": "空竹园空竹滚动时怎样响？",
+    "category": "sound",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0182"
+    ],
+    "supportingSourceIds": [
+      "p0182"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0182",
+        "text": "空竹滚过石板时嗡嗡低鸣",
+        "start": 31,
+        "end": 42,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-19-3",
+    "text": "季萦如何接住竹片？",
+    "category": "action",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0182"
+    ],
+    "supportingSourceIds": [
+      "p0182"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0182",
+        "text": "她用两指夹住即将落地的竹片",
+        "start": 43,
+        "end": 56,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-19-4",
+    "text": "季萦请求留下什么原话？",
+    "category": "dialogue",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0182"
+    ],
+    "supportingSourceIds": [
+      "p0182"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0182",
+        "text": "她说：“留住这一片。”",
+        "start": 57,
+        "end": 68,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-19-denied",
+    "text": "空竹园竹筒内部有什么气息？",
+    "category": "unauthorized",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "npc",
+      "npcId": "outsider"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": true,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-19-early",
+    "text": "季萦最早一段原文的衣着或外貌是什么？",
+    "category": "time",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p0182"
+    ],
+    "supportingSourceIds": [
+      "p0182"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p0182",
+        "text": "手套指腹磨出了浅色绒毛",
+        "start": 8,
+        "end": 19,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-19-latest",
+    "text": "季萦最新一段原文的衣着是什么？",
+    "category": "time",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [
+      "p872"
+    ],
+    "supportingSourceIds": [
+      "p872"
+    ],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "expectedSpans": [
+      {
+        "sourceId": "p872",
+        "text": "衣服换成了素白短衫",
+        "start": 10,
+        "end": 19,
+        "kind": "narrative-detail"
+      }
+    ]
+  },
+  {
+    "questionId": "H-19-future",
+    "text": "季萦手套的外观细节是什么？",
+    "category": "future",
+    "asOfTurn": 181,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  },
+  {
+    "questionId": "H-19-unknown",
+    "text": "季萦的翡翠耳坠原文在哪里？",
+    "category": "unknown",
+    "asOfTurn": 1000,
+    "audience": {
+      "kind": "player"
+    },
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "expectedSpans": []
+  }
+]

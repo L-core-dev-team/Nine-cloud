@@ -1,0 +1,5 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),{spawnSync}=require('node:child_process');
+const name=process.argv[2];if(!name||!/^[a-z0-9-]+$/.test(name))throw Error('Unique safe run name required');const root=__dirname,out=path.join(root,'evidence',name);fs.mkdirSync(out,{recursive:true});if(fs.existsSync(path.join(out,'summary.json')))throw Error('No overwrite');const rows=[];
+for(const [label,args] of [['targeted',['--test',path.join(root,'targeted.test.ts')]],['compatibility',['--test',path.join(root,'compatibility.test.ts')]],['typescript',[path.resolve(root,'../../../../Nine-cloud-P6-main-sync-20261012/node_modules/typescript/bin/tsc'),'--project',path.join(root,'tsconfig.json')]]]){const r=spawnSync(process.execPath,args,{encoding:'utf8',windowsHide:true,timeout:180000,maxBuffer:8*1024*1024});fs.writeFileSync(path.join(out,label+'.log'),(r.stdout??'')+(r.stderr??'')+(r.error?.stack??''));rows.push({label,status:r.status,error:r.error?.message});console.log(JSON.stringify(rows.at(-1)));if(r.status!==0)process.exitCode=1;}
+fs.writeFileSync(path.join(out,'summary.json'),JSON.stringify({results:rows},null,2)+'\n');

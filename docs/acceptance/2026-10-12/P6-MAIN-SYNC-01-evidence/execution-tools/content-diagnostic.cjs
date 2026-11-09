@@ -1,0 +1,10 @@
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),assert=require('node:assert/strict'),{execFileSync}=require('node:child_process');
+const root=path.resolve(__dirname,'../../项目/Nine-cloud-P6-main-sync-20261012');
+const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
+const old=JSON.parse(fs.readFileSync(path.resolve(__dirname,'../P6-LONGMEM-01/hash-diagnostic.json')));
+const rows=old.map(row=>{const working=fs.readFileSync(path.join(root,row.path));const blob=execFileSync('git',['show','HEAD:'+row.path],{cwd:root,maxBuffer:20*1024*1024});assert.equal(sha(blob),row.registered);return {path:row.path,registered:row.registered,gitBlob:sha(blob),working:sha(working),workingLf:row.path.endsWith('.xlsx')?null:sha(working.toString('utf8').replaceAll('\r\n','\n')),gitUnchangedFromMain:execFileSync('git',['diff','8b698845810144bb8e78cc7e2120fc8ee1b013d5','HEAD','--',row.path],{cwd:root,encoding:'utf8'})===''};});
+const indexText=fs.readFileSync(path.join(root,'docs/sources/worldbook-draft-index.json'),'utf8');
+const index=JSON.parse(indexText),source=fs.readFileSync(path.join(root,'docs/sources/世界书_保守补全版.md'));
+const blob=execFileSync('git',['show','HEAD:docs/sources/世界书_保守补全版.md'],{cwd:root,maxBuffer:20*1024*1024});assert.equal(sha(blob),index.source.sha256);assert.equal(blob.length,index.source.byteLength);
+const result={readOnly:true,intakes:rows,draft:{registeredSha256:index.source.sha256,gitSha256:sha(blob),registeredByteLength:index.source.byteLength,gitByteLength:blob.length,workingSha256:sha(source),workingLfSha256:sha(source.toString('utf8').replaceAll('\r\n','\n')),indexContainsCrLf:indexText.includes('\r\n'),indexLfEqualsCanonicalJson:indexText.replaceAll('\r\n','\n')===JSON.stringify(index,null,2)+'\n'}};
+fs.writeFileSync(path.join(root,'docs/acceptance/2026-10-12/P6-MAIN-SYNC-01-evidence/content-readonly-diagnostic.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));

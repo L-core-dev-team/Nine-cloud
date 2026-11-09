@@ -1,0 +1,1647 @@
+[
+  {
+    "questionId": "Q01",
+    "text": "我第一次遇到那名剑修时，他交给了我什么？",
+    "asOfTurn": 180,
+    "expectedSourceIds": [
+      "s010"
+    ],
+    "supportingSourceIds": [
+      "s010"
+    ],
+    "correctFacts": [
+      {
+        "id": "f010-bell",
+        "value": "沈砚赠给旅人",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q02",
+    "text": "沈砚和我初遇的地点在哪里？",
+    "asOfTurn": 180,
+    "expectedSourceIds": [
+      "s010"
+    ],
+    "supportingSourceIds": [
+      "s010"
+    ],
+    "correctFacts": [
+      {
+        "id": "f010-meet",
+        "value": "苇汀渡",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q03",
+    "text": "铜铃内的刻痕是什么样的？",
+    "asOfTurn": 180,
+    "expectedSourceIds": [
+      "s010"
+    ],
+    "supportingSourceIds": [
+      "s010"
+    ],
+    "correctFacts": [
+      {
+        "id": "f010-lines",
+        "value": "三道短线",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q04",
+    "text": "沈雁交给我的药册封面是什么？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s012"
+    ],
+    "supportingSourceIds": [
+      "s012"
+    ],
+    "correctFacts": [
+      {
+        "id": "f012-leaf",
+        "value": "褪色柳叶",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q05",
+    "text": "药册最初是谁赠给我的？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s012"
+    ],
+    "supportingSourceIds": [
+      "s012"
+    ],
+    "correctFacts": [
+      {
+        "id": "f012-book",
+        "value": "沈雁赠给旅人",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q06",
+    "text": "我与沈砚约定归还铜铃的时间地点是什么？",
+    "asOfTurn": 180,
+    "expectedSourceIds": [
+      "s017"
+    ],
+    "supportingSourceIds": [
+      "s017"
+    ],
+    "correctFacts": [
+      {
+        "id": "f017-promise",
+        "value": "第十日暮时在旧钟楼归还铜铃",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q07",
+    "text": "铜铃的约定后来有没有兑现？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s017",
+      "s200"
+    ],
+    "supportingSourceIds": [
+      "s017",
+      "s200"
+    ],
+    "correctFacts": [
+      {
+        "id": "f017-promise",
+        "value": "第十日暮时在旧钟楼归还铜铃",
+        "status": "historical"
+      },
+      {
+        "id": "f200-promise",
+        "value": "已兑现",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q08",
+    "text": "铁钥匙上有哪些刻痕？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s023"
+    ],
+    "supportingSourceIds": [
+      "s023"
+    ],
+    "correctFacts": [
+      {
+        "id": "f023-lines",
+        "value": "三道短线",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q09",
+    "text": "铁钥匙的来源在哪里？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s023"
+    ],
+    "supportingSourceIds": [
+      "s023"
+    ],
+    "correctFacts": [
+      {
+        "id": "f023-key",
+        "value": "旧钟楼捡到",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q10",
+    "text": "铜铃与铁钥匙的刻痕伏笔如何揭晓？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s010",
+      "s023",
+      "s140"
+    ],
+    "supportingSourceIds": [
+      "s010",
+      "s023",
+      "s140"
+    ],
+    "correctFacts": [
+      {
+        "id": "f010-lines",
+        "value": "三道短线",
+        "status": "current"
+      },
+      {
+        "id": "f023-lines",
+        "value": "三道短线",
+        "status": "current"
+      },
+      {
+        "id": "f140-lines",
+        "value": "旧报汛器物编号",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q11",
+    "text": "白鹭客最早自称什么身份？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s025"
+    ],
+    "supportingSourceIds": [
+      "s025"
+    ],
+    "correctFacts": [
+      {
+        "id": "f025-claim",
+        "value": "旅商白鹭客",
+        "status": "unverified"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q12",
+    "text": "白鹭客的真实身份如何揭晓？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s070"
+    ],
+    "supportingSourceIds": [
+      "s070"
+    ],
+    "correctFacts": [
+      {
+        "id": "f070-identity",
+        "value": "钟楼看守陆迟",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q13",
+    "text": "陆迟被发现真实身份后又使用了什么伪装？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s070",
+      "s090"
+    ],
+    "supportingSourceIds": [
+      "s070",
+      "s090"
+    ],
+    "correctFacts": [
+      {
+        "id": "f070-identity",
+        "value": "钟楼看守陆迟",
+        "status": "current"
+      },
+      {
+        "id": "f090-disguise",
+        "value": "白鹭客",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q14",
+    "text": "青玉佩最初买下之后归谁持有？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s028"
+    ],
+    "supportingSourceIds": [
+      "s028"
+    ],
+    "correctFacts": [
+      {
+        "id": "f028-owner",
+        "value": "旅人",
+        "status": "historical"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q15",
+    "text": "第六十回合青玉佩归谁持有？",
+    "asOfTurn": 60,
+    "expectedSourceIds": [
+      "s060"
+    ],
+    "supportingSourceIds": [
+      "s060"
+    ],
+    "correctFacts": [
+      {
+        "id": "f060-owner",
+        "value": "沈雁",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    },
+    "turnRange": [
+      60,
+      60
+    ]
+  },
+  {
+    "questionId": "Q16",
+    "text": "第一百二十回合青玉佩转交给了谁？",
+    "asOfTurn": 120,
+    "expectedSourceIds": [
+      "s120"
+    ],
+    "supportingSourceIds": [
+      "s120"
+    ],
+    "correctFacts": [
+      {
+        "id": "f120-owner",
+        "value": "陆迟",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    },
+    "turnRange": [
+      120,
+      120
+    ]
+  },
+  {
+    "questionId": "Q17",
+    "text": "现在青玉佩归谁持有？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s190"
+    ],
+    "supportingSourceIds": [
+      "s190"
+    ],
+    "correctFacts": [
+      {
+        "id": "f190-owner",
+        "value": "旅人",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q18",
+    "text": "青玉佩的全部归属变化经过是什么？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s028",
+      "s060",
+      "s120",
+      "s190"
+    ],
+    "supportingSourceIds": [
+      "s028",
+      "s060",
+      "s120",
+      "s190"
+    ],
+    "correctFacts": [
+      {
+        "id": "f028-owner",
+        "value": "旅人",
+        "status": "historical"
+      },
+      {
+        "id": "f060-owner",
+        "value": "沈雁",
+        "status": "historical"
+      },
+      {
+        "id": "f120-owner",
+        "value": "陆迟",
+        "status": "historical"
+      },
+      {
+        "id": "f190-owner",
+        "value": "旅人",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q19",
+    "text": "沈砚最初对我是什么态度？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s030"
+    ],
+    "supportingSourceIds": [
+      "s030"
+    ],
+    "correctFacts": [
+      {
+        "id": "f030-relation",
+        "value": "戒备",
+        "status": "historical"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q20",
+    "text": "沈砚从戒备到信任的关系如何变化？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s030",
+      "s080"
+    ],
+    "supportingSourceIds": [
+      "s030",
+      "s080"
+    ],
+    "correctFacts": [
+      {
+        "id": "f030-relation",
+        "value": "戒备",
+        "status": "historical"
+      },
+      {
+        "id": "f080-relation",
+        "value": "信任",
+        "status": "historical"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q21",
+    "text": "沈砚为何从信任变为疏远？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s080",
+      "s160"
+    ],
+    "supportingSourceIds": [
+      "s080",
+      "s160"
+    ],
+    "correctFacts": [
+      {
+        "id": "f080-relation",
+        "value": "信任",
+        "status": "historical"
+      },
+      {
+        "id": "f160-relation",
+        "value": "疏远",
+        "status": "historical"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q22",
+    "text": "现在沈砚对我的关系是什么？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s200"
+    ],
+    "supportingSourceIds": [
+      "s200"
+    ],
+    "correctFacts": [
+      {
+        "id": "f200-relation",
+        "value": "信任",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q23",
+    "text": "沈砚对我的完整关系变化经过是什么？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s030",
+      "s080",
+      "s160",
+      "s200"
+    ],
+    "supportingSourceIds": [
+      "s030",
+      "s080",
+      "s160",
+      "s200"
+    ],
+    "correctFacts": [
+      {
+        "id": "f030-relation",
+        "value": "戒备",
+        "status": "historical"
+      },
+      {
+        "id": "f080-relation",
+        "value": "信任",
+        "status": "historical"
+      },
+      {
+        "id": "f160-relation",
+        "value": "疏远",
+        "status": "historical"
+      },
+      {
+        "id": "f200-relation",
+        "value": "信任",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q24",
+    "text": "第四十回合雾桥能不能通行？",
+    "asOfTurn": 40,
+    "expectedSourceIds": [
+      "s040"
+    ],
+    "supportingSourceIds": [
+      "s040"
+    ],
+    "correctFacts": [
+      {
+        "id": "f040-bridge",
+        "value": "封闭",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    },
+    "turnRange": [
+      40,
+      40
+    ]
+  },
+  {
+    "questionId": "Q25",
+    "text": "雾桥现在是什么通行状态？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s100"
+    ],
+    "supportingSourceIds": [
+      "s100"
+    ],
+    "correctFacts": [
+      {
+        "id": "f100-bridge",
+        "value": "开放",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q26",
+    "text": "雾桥从封闭到开放有哪些历史记录？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s040",
+      "s100"
+    ],
+    "supportingSourceIds": [
+      "s040",
+      "s100"
+    ],
+    "correctFacts": [
+      {
+        "id": "f040-bridge",
+        "value": "封闭",
+        "status": "historical"
+      },
+      {
+        "id": "f100-bridge",
+        "value": "开放",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q27",
+    "text": "陆迟说密信藏在哪里，这是否已经证实？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s045"
+    ],
+    "supportingSourceIds": [
+      "s045"
+    ],
+    "correctFacts": [
+      {
+        "id": "f045-secret",
+        "value": "客舍东墙第三块砖后",
+        "status": "unverified"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q28",
+    "text": "苏禾能知道陆迟私下说的密信位置吗？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": true,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "npc",
+      "npcId": "p-su"
+    }
+  },
+  {
+    "questionId": "Q29",
+    "text": "沈雁能知道陆迟私下说的密信位置吗？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": true,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "npc",
+      "npcId": "p-shen2"
+    }
+  },
+  {
+    "questionId": "Q30",
+    "text": "陆迟知道自己说的密信位置吗？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s045"
+    ],
+    "supportingSourceIds": [
+      "s045"
+    ],
+    "correctFacts": [
+      {
+        "id": "f045-secret",
+        "value": "客舍东墙第三块砖后",
+        "status": "unverified"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": true,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "npc",
+      "npcId": "p-lu"
+    }
+  },
+  {
+    "questionId": "Q31",
+    "text": "沈砚行踪的两种矛盾说法是什么？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s050"
+    ],
+    "supportingSourceIds": [
+      "s050"
+    ],
+    "correctFacts": [
+      {
+        "id": "f050-su",
+        "value": "从未离开渡口",
+        "status": "unverified"
+      },
+      {
+        "id": "f050-lu",
+        "value": "曾在雾桥",
+        "status": "unverified"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q32",
+    "text": "沈砚是守堤人的早期传闻来自哪里？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s020"
+    ],
+    "supportingSourceIds": [
+      "s020"
+    ],
+    "correctFacts": [
+      {
+        "id": "f020-rumor",
+        "value": "失踪的守堤人",
+        "status": "unverified"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q33",
+    "text": "沈砚曾任守堤人的身份何时正式证实？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s110"
+    ],
+    "supportingSourceIds": [
+      "s110"
+    ],
+    "correctFacts": [
+      {
+        "id": "f110-identity",
+        "value": "曾任守堤人",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q34",
+    "text": "沈砚守堤人身份从传闻到证实的来源是什么？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s020",
+      "s110"
+    ],
+    "supportingSourceIds": [
+      "s020",
+      "s110"
+    ],
+    "correctFacts": [
+      {
+        "id": "f020-rumor",
+        "value": "失踪的守堤人",
+        "status": "unverified"
+      },
+      {
+        "id": "f110-identity",
+        "value": "曾任守堤人",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q35",
+    "text": "药册原文描述的气味是什么？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s150"
+    ],
+    "supportingSourceIds": [
+      "s150"
+    ],
+    "correctFacts": [
+      {
+        "id": "f150-scent",
+        "value": "淡淡艾草气味",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q36",
+    "text": "第一百八十回合我与沈砚在哪里重逢？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s180"
+    ],
+    "supportingSourceIds": [
+      "s180"
+    ],
+    "correctFacts": [
+      {
+        "id": "f180-reunion",
+        "value": "旧钟楼",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    },
+    "turnRange": [
+      180,
+      180
+    ]
+  },
+  {
+    "questionId": "Q37",
+    "text": "现在铜铃归谁持有？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s200"
+    ],
+    "supportingSourceIds": [
+      "s200"
+    ],
+    "correctFacts": [
+      {
+        "id": "f200-bell",
+        "value": "沈砚",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q38",
+    "text": "事件 e010-gift 发生了什么？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s010"
+    ],
+    "supportingSourceIds": [
+      "s010"
+    ],
+    "correctFacts": [
+      {
+        "id": "f010-bell",
+        "value": "沈砚赠给旅人",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q39",
+    "text": "事件 e060-transfer 的交接是什么？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s060"
+    ],
+    "supportingSourceIds": [
+      "s060"
+    ],
+    "correctFacts": [
+      {
+        "id": "f060-owner",
+        "value": "沈雁",
+        "status": "historical"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q40",
+    "text": "事件 e140-reveal 揭晓了什么？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s140"
+    ],
+    "supportingSourceIds": [
+      "s140"
+    ],
+    "correctFacts": [
+      {
+        "id": "f140-lines",
+        "value": "旧报汛器物编号",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q41",
+    "text": "沈雁和沈砚分别交给我哪些物品？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s010",
+      "s012"
+    ],
+    "supportingSourceIds": [
+      "s010",
+      "s012"
+    ],
+    "correctFacts": [
+      {
+        "id": "f010-bell",
+        "value": "沈砚赠给旅人",
+        "status": "current"
+      },
+      {
+        "id": "f012-book",
+        "value": "沈雁赠给旅人",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q42",
+    "text": "白鹭客与陆迟是同一个人吗，有哪些前后身份来源？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s025",
+      "s070",
+      "s090"
+    ],
+    "supportingSourceIds": [
+      "s025",
+      "s070",
+      "s090"
+    ],
+    "correctFacts": [
+      {
+        "id": "f025-claim",
+        "value": "旅商白鹭客",
+        "status": "unverified"
+      },
+      {
+        "id": "f070-identity",
+        "value": "钟楼看守陆迟",
+        "status": "current"
+      },
+      {
+        "id": "f090-disguise",
+        "value": "白鹭客",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q43",
+    "text": "苏禾与我后来在哪里同行？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s185"
+    ],
+    "supportingSourceIds": [
+      "s185"
+    ],
+    "correctFacts": [
+      {
+        "id": "f185-walk",
+        "value": "雾桥",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q44",
+    "text": "第一百八十回合以前，铜铃约定是否已兑现？",
+    "asOfTurn": 180,
+    "expectedSourceIds": [
+      "s017"
+    ],
+    "supportingSourceIds": [
+      "s017"
+    ],
+    "correctFacts": [
+      {
+        "id": "f017-promise",
+        "value": "第十日暮时在旧钟楼归还铜铃",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q45",
+    "text": "第十到第三十回合铜铃来源和铁钥匙来源是什么？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s010",
+      "s023"
+    ],
+    "supportingSourceIds": [
+      "s010",
+      "s023"
+    ],
+    "correctFacts": [
+      {
+        "id": "f010-bell",
+        "value": "沈砚赠给旅人",
+        "status": "current"
+      },
+      {
+        "id": "f023-key",
+        "value": "旧钟楼捡到",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    },
+    "turnRange": [
+      10,
+      30
+    ]
+  },
+  {
+    "questionId": "Q46",
+    "text": "第一百到第二百回合青玉佩的归属变化是什么？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s120",
+      "s190"
+    ],
+    "supportingSourceIds": [
+      "s120",
+      "s190"
+    ],
+    "correctFacts": [
+      {
+        "id": "f120-owner",
+        "value": "陆迟",
+        "status": "historical"
+      },
+      {
+        "id": "f190-owner",
+        "value": "旅人",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    },
+    "turnRange": [
+      100,
+      200
+    ]
+  },
+  {
+    "questionId": "Q47",
+    "text": "第八十回合沈砚的关系状态是什么？",
+    "asOfTurn": 80,
+    "expectedSourceIds": [
+      "s080"
+    ],
+    "supportingSourceIds": [
+      "s080"
+    ],
+    "correctFacts": [
+      {
+        "id": "f080-relation",
+        "value": "信任",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    },
+    "turnRange": [
+      80,
+      80
+    ]
+  },
+  {
+    "questionId": "Q48",
+    "text": "第一百六十回合沈砚的关系状态是什么？",
+    "asOfTurn": 160,
+    "expectedSourceIds": [
+      "s160"
+    ],
+    "supportingSourceIds": [
+      "s160"
+    ],
+    "correctFacts": [
+      {
+        "id": "f160-relation",
+        "value": "疏远",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    },
+    "turnRange": [
+      160,
+      160
+    ]
+  },
+  {
+    "questionId": "Q49",
+    "text": "沈砚知道铜铃归还约定的哪些来源？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s017",
+      "s200"
+    ],
+    "supportingSourceIds": [
+      "s017",
+      "s200"
+    ],
+    "correctFacts": [
+      {
+        "id": "f017-promise",
+        "value": "第十日暮时在旧钟楼归还铜铃",
+        "status": "historical"
+      },
+      {
+        "id": "f200-promise",
+        "value": "已兑现",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": true,
+    "temporal": true,
+    "longDistance": false,
+    "audience": {
+      "kind": "npc",
+      "npcId": "p-shen"
+    }
+  },
+  {
+    "questionId": "Q50",
+    "text": "苏禾知道青玉佩转交陆迟的事情吗？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": true,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "npc",
+      "npcId": "p-su"
+    }
+  },
+  {
+    "questionId": "Q51",
+    "text": "苏禾知道药册的艾草气味吗？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": true,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "npc",
+      "npcId": "p-su"
+    }
+  },
+  {
+    "questionId": "Q52",
+    "text": "沈雁知道我购买青玉佩时的来源吗？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": true,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "npc",
+      "npcId": "p-shen2"
+    }
+  },
+  {
+    "questionId": "Q53",
+    "text": "沈砚把银翼舟送给我的时候在哪里？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q54",
+    "text": "我和沈雁在哪里结为道侣？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q55",
+    "text": "沈砚在赤潮谷击败了谁？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q56",
+    "text": "苏禾何时盗走了铁钥匙？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q57",
+    "text": "药册曾经被烧毁的事件是什么？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q58",
+    "text": "陆迟在月宫获得王位的事件是什么？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [],
+    "supportingSourceIds": [],
+    "correctFacts": [],
+    "multipleEvidence": false,
+    "noEvidence": true,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  },
+  {
+    "questionId": "Q59",
+    "text": "第十七回合归还铜铃的约定有哪些原始来源？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s017"
+    ],
+    "supportingSourceIds": [
+      "s017"
+    ],
+    "correctFacts": [
+      {
+        "id": "f017-promise",
+        "value": "第十日暮时在旧钟楼归还铜铃",
+        "status": "historical"
+      }
+    ],
+    "multipleEvidence": false,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": true,
+    "longDistance": true,
+    "audience": {
+      "kind": "player"
+    },
+    "turnRange": [
+      17,
+      17
+    ]
+  },
+  {
+    "questionId": "Q60",
+    "text": "药册的封面与气味分别有哪些原文细节？",
+    "asOfTurn": 200,
+    "expectedSourceIds": [
+      "s012",
+      "s150"
+    ],
+    "supportingSourceIds": [
+      "s012",
+      "s150"
+    ],
+    "correctFacts": [
+      {
+        "id": "f012-leaf",
+        "value": "褪色柳叶",
+        "status": "current"
+      },
+      {
+        "id": "f150-scent",
+        "value": "淡淡艾草气味",
+        "status": "current"
+      }
+    ],
+    "multipleEvidence": true,
+    "noEvidence": false,
+    "authorizationBoundary": false,
+    "temporal": false,
+    "longDistance": false,
+    "audience": {
+      "kind": "player"
+    }
+  }
+]

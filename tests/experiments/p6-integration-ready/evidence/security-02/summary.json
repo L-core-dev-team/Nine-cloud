@@ -1,0 +1,257 @@
+{
+  "synthetic": true,
+  "formalMain": "2647439e0cccc9a136606a81131519f53253f125",
+  "PASS": 42,
+  "FAIL": 0,
+  "BLOCKED": 6,
+  "cases": [
+    {
+      "id": "S01",
+      "title": "同一原文公开片段可读，私密片段不可读",
+      "status": "PASS"
+    },
+    {
+      "id": "S02",
+      "title": "NPC 在场但没有私密谈话 grant，不推断知情",
+      "status": "PASS"
+    },
+    {
+      "id": "S03",
+      "title": "后来获转述的秘密在知情 revision 之前不可读",
+      "status": "PASS"
+    },
+    {
+      "id": "S04",
+      "title": "后来转述 grant 与原来源分开，可在实际知情后读取",
+      "status": "PASS"
+    },
+    {
+      "id": "S05",
+      "title": "历史允许后当前撤销，不能返回缓存片段",
+      "status": "PASS"
+    },
+    {
+      "id": "S06",
+      "title": "实际 P4 遗忘门限后再次查询应 forgotten",
+      "status": "PASS"
+    },
+    {
+      "id": "S07",
+      "title": "同名 NPC 使用不同稳定身份，不共享观察",
+      "status": "PASS"
+    },
+    {
+      "id": "S08",
+      "title": "伪造账号 session 不得读取已知 sourceId",
+      "status": "PASS"
+    },
+    {
+      "id": "S09",
+      "title": "跨存档可信读取范围不能误配旧正文",
+      "status": "PASS"
+    },
+    {
+      "id": "S10",
+      "title": "非 root 分支没有正式契约，不猜测 lineage",
+      "status": "PASS"
+    },
+    {
+      "id": "S11",
+      "title": "未证实主观说法仍 unverified，即使回合已经结算",
+      "status": "PASS"
+    },
+    {
+      "id": "S12",
+      "title": "缺失规则事件引用明确未知，不创造权威事实",
+      "status": "PASS"
+    },
+    {
+      "id": "S13",
+      "title": "已被后继推翻的当前事实不再作为当前证据",
+      "status": "PASS"
+    },
+    {
+      "id": "S14",
+      "title": "原文 hash 损坏后缓存命中也必须拒绝",
+      "status": "PASS"
+    },
+    {
+      "id": "S15",
+      "title": "授权片段 source hash 与实际正文不符",
+      "status": "PASS"
+    },
+    {
+      "id": "S16",
+      "title": "授权策略 hash 失效，不复用已命中缓存",
+      "status": "PASS"
+    },
+    {
+      "id": "S17",
+      "title": "未知叙事总结没有原文来源，不进入证据",
+      "status": "PASS"
+    },
+    {
+      "id": "S18",
+      "title": "检索未命中不会生成确定答案",
+      "status": "PASS"
+    },
+    {
+      "id": "S19",
+      "title": "偏移错位导致原句不等于授权字段，拒绝",
+      "status": "PASS"
+    },
+    {
+      "id": "S20",
+      "title": "预算不足不截断“不得转卖”等限定条件",
+      "status": "PASS"
+    },
+    {
+      "id": "S21",
+      "title": "未授权标题或别名不进入模型上下文",
+      "status": "PASS"
+    },
+    {
+      "id": "S22",
+      "title": "读取过程中授权 epoch 改变，拒绝交付旧片段",
+      "status": "PASS"
+    },
+    {
+      "id": "S23",
+      "title": "授权 grant 没有覆盖私密字段，不能扩大为全文",
+      "status": "PASS"
+    },
+    {
+      "id": "S24",
+      "title": "无逐段映射真实接口时 BLOCKED，不能退回整条 ACL",
+      "status": "PASS"
+    },
+    {
+      "id": "S25",
+      "title": "不完整授权分页明确 BLOCKED，不当作空档案",
+      "status": "PASS"
+    },
+    {
+      "id": "S26",
+      "title": "未确认回执不能发布正文或重做行动",
+      "status": "PASS"
+    },
+    {
+      "id": "S27",
+      "title": "行动已结算但叙事正在生成，正文未保存",
+      "status": "PASS"
+    },
+    {
+      "id": "S28",
+      "title": "叙事失败不撤销权威行动，也不伪造原文",
+      "status": "PASS"
+    },
+    {
+      "id": "S29",
+      "title": "正文保存不等同 NPC 获准或叙事已成为规则事实",
+      "status": "PASS"
+    },
+    {
+      "id": "S30",
+      "title": "同回执不同生成版本不可互相覆盖，未指定版本拒绝猜测",
+      "status": "PASS"
+    },
+    {
+      "id": "S31",
+      "title": "请求不存在的生成版本不回退另一版本",
+      "status": "PASS"
+    },
+    {
+      "id": "S32",
+      "title": "未来查询 revision 不可突破服务端边界",
+      "status": "PASS"
+    },
+    {
+      "id": "S33",
+      "title": "观察的 NPC 身份伪造且沿用旧 grantId，正式验证拒绝",
+      "status": "PASS"
+    },
+    {
+      "id": "S34",
+      "title": "授权来源回执 hash 变更，不以已有正文掩盖",
+      "status": "PASS"
+    },
+    {
+      "id": "S35",
+      "title": "引用了权威事件但未授权字段，NPC 不能获得该事实",
+      "status": "PASS"
+    },
+    {
+      "id": "S36",
+      "title": "缓存对返回对象修改隔离，且命中仍读取授权与正文",
+      "status": "PASS"
+    },
+    {
+      "id": "S37",
+      "title": "遗忘时间改变但 ACL epoch 不变，缓存仍必须过真实门限",
+      "status": "PASS"
+    },
+    {
+      "id": "S38",
+      "title": "没有统一 P4/P5 策略入口时拒绝自行选择",
+      "status": "PASS"
+    },
+    {
+      "id": "S39",
+      "title": "授权回调故障不生成假答案",
+      "status": "PASS"
+    },
+    {
+      "id": "S40",
+      "title": "同一来源的不同正文或 attempt 不可重写",
+      "status": "PASS"
+    },
+    {
+      "id": "S41",
+      "title": "无版本的授权快照不能参与缓存",
+      "status": "PASS"
+    },
+    {
+      "id": "S42",
+      "title": "accepted 的 legal_failure 仍为已结算行动，不能混成叙事失败",
+      "status": "PASS"
+    }
+  ],
+  "dependencies": [
+    {
+      "id": "P01",
+      "title": "真实会话/存档所有权授权端点绑定",
+      "status": "BLOCKED",
+      "requiredInterface": "verifySaveSession: main session and getForOwner, not fixture WeakSet"
+    },
+    {
+      "id": "P02",
+      "title": "生成正文与逐段 grant/source SHA/offset 的真实映射",
+      "status": "BLOCKED",
+      "requiredInterface": "readAuthorizedSegments: new segment binding contract must be approved by 临江仙"
+    },
+    {
+      "id": "P03",
+      "title": "历史授权、动态撤权与原文快照一致读取",
+      "status": "BLOCKED",
+      "requiredInterface": "readBoundary/readAuthorizedSegments: atomic versioned visibility snapshot API"
+    },
+    {
+      "id": "P04",
+      "title": "P4/P5 对同一回忆的策略入口与观察计数统一",
+      "status": "BLOCKED",
+      "requiredInterface": "policySurface adjudication; P4 strict decay versus P5 cue floor"
+    },
+    {
+      "id": "P05",
+      "title": "P3 服务端回调提供 attemptId、版本与已发布正文",
+      "status": "BLOCKED",
+      "requiredInterface": "confirmed receipt + narrative publication callback; current response omits attemptId"
+    },
+    {
+      "id": "P06",
+      "title": "生产数据库事务及授权变化竞态保证",
+      "status": "BLOCKED",
+      "requiredInterface": "real PostgreSQL publication/authorized snapshot transaction; offline port is not authentication"
+    }
+  ]
+}

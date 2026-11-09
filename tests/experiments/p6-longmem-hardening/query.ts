@@ -1,0 +1,10 @@
+import {readFileSync} from 'node:fs';
+import {HardenedIndex} from './retrieval.ts';
+import type {Dataset,Query} from '../p6-longmem/types.ts';
+const args=process.argv.slice(2);const get=(key:string)=>{const i=args.indexOf(key);return i<0?undefined:args[i+1];};
+const data=JSON.parse(readFileSync(new URL('./fixtures/complex-history-1000.json',import.meta.url),'utf8')) as Dataset;
+const npcId=get('--npc');const text=get('--text');if(!text)throw new Error('--text required');
+const q:Query={text,asOfTurn:Number(get('--as-of')??1000),audience:npcId?{kind:'npc',npcId}:{kind:'player'}};
+if(get('--from-turn')||get('--to-turn'))q.turnRange=[Number(get('--from-turn')??1),Number(get('--to-turn')??q.asOfTurn)];
+const result=new HardenedIndex(data).search(q,Number(get('--budget')??1024));
+console.log(JSON.stringify(result,null,2));

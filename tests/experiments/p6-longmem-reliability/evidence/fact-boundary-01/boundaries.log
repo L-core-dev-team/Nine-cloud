@@ -1,0 +1,140 @@
+TAP version 13
+# (node:2216) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///C:/Users/11954/Desktop/%E6%B0%B4%E9%BE%99%E5%90%9F%E4%B8%93%E7%94%A8/%E9%A1%B9%E7%9B%AE/Nine-cloud-P6-longmem-04-reliability-20261013/tests/experiments/p6-longmem-reliability/adapter.test.ts is not specified and it doesn't parse as CommonJS.
+# Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+# To eliminate this warning, add "type": "module" to \\\\?\\C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-P6-longmem-04-reliability-20261013\\package.json.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: disk-restored original bytes, SHA and UTF-16 spans agree with retrieval
+ok 1 - disk-restored original bytes, SHA and UTF-16 spans agree with retrieval
+  ---
+  duration_ms: 25.229
+  type: 'test'
+  ...
+# Subtest: NPC permission precedes index construction and also guards direct full-text reads
+ok 2 - NPC permission precedes index construction and also guards direct full-text reads
+  ---
+  duration_ms: 20.977
+  type: 'test'
+  ...
+# Subtest: revision, as-of, ranges and owner/branch scope prevent future and cross-save reads
+ok 3 - revision, as-of, ranges and owner/branch scope prevent future and cross-save reads
+  ---
+  duration_ms: 24.9424
+  type: 'test'
+  ...
+# Subtest: claims stay unverified and narrative details never become rule facts
+ok 4 - claims stay unverified and narrative details never become rule facts
+  ---
+  duration_ms: 21.258
+  type: 'test'
+  ...
+# Subtest: missing, null or mismatched permission snapshots fail closed during restoration
+ok 5 - missing, null or mismatched permission snapshots fail closed during restoration
+  ---
+  duration_ms: 60.2529
+  type: 'test'
+  ...
+# Subtest: full-original reads reveal later disk damage instead of trusting cached plaintext
+ok 6 - full-original reads reveal later disk damage instead of trusting cached plaintext
+  ---
+  duration_ms: 22.5788
+  type: 'test'
+  ...
+# Subtest: corpus checksum preserves exact text but is independent of metadata key insertion order
+ok 7 - corpus checksum preserves exact text but is independent of metadata key insertion order
+  ---
+  duration_ms: 0.4075
+  type: 'test'
+  ...
+# Subtest: legacy world-event labels without confirmed rule events remain raw provenance, never authoritative facts
+ok 8 - legacy world-event labels without confirmed rule events remain raw provenance, never authoritative facts
+  ---
+  duration_ms: 20.4201
+  type: 'test'
+  ...
+# Subtest: long UTF-8 body, CRLF, emoji and all metadata survive a fresh process
+ok 9 - long UTF-8 body, CRLF, emoji and all metadata survive a fresh process
+  ---
+  duration_ms: 110.1054
+  type: 'test'
+  ...
+# Subtest: same source and request are idempotent; conflicting text or provenance never overwrites
+ok 10 - same source and request are idempotent; conflicting text or provenance never overwrites
+  ---
+  duration_ms: 19.4215
+  type: 'test'
+  ...
+# Subtest: trusted scopes isolate owner/save/branch and reject malformed inputs
+ok 11 - trusted scopes isolate owner/save/branch and reject malformed inputs
+  ---
+  duration_ms: 18.1668
+  type: 'test'
+  ...
+# Subtest: exceptions before commit rollback every field; lost acknowledgement retries as duplicate
+ok 12 - exceptions before commit rollback every field; lost acknowledgement retries as duplicate
+  ---
+  duration_ms: 85.4049
+  type: 'test'
+  ...
+# Subtest: hard process termination at four transaction checkpoints recovers exactly once
+ok 13 - hard process termination at four transaction checkpoints recovers exactly once
+  ---
+  duration_ms: 353.8215
+  type: 'test'
+  ...
+# Subtest: eight independent processes racing the same result commit once and duplicate seven times
+ok 14 - eight independent processes racing the same result commit once and duplicate seven times
+  ---
+  duration_ms: 142.5928
+  type: 'test'
+  ...
+# Subtest: racing conflicting bodies preserve one winner; same request cannot create two sources
+ok 15 - racing conflicting bodies preserve one winner; same request cannot create two sources
+  ---
+  duration_ms: 265.5196
+  type: 'test'
+  ...
+# Subtest: concurrent distinct revisions preserve every original and indexed revision limits
+ok 16 - concurrent distinct revisions preserve every original and indexed revision limits
+  ---
+  duration_ms: 174.1119
+  type: 'test'
+  ...
+# Subtest: reader cannot see uncommitted rows; busy timeout fails explicitly and lock vanishes after kill
+ok 17 - reader cannot see uncommitted rows; busy timeout fails explicitly and lock vanishes after kill
+  ---
+  duration_ms: 302.4009
+  type: 'test'
+  ...
+# Subtest: SQL immutability triggers reject updates/deletes; storage rejection leaves no partial row
+ok 18 - SQL immutability triggers reject updates/deletes; storage rejection leaves no partial row
+  ---
+  duration_ms: 23.0103
+  type: 'test'
+  ...
+# Subtest: external body/provenance damage is detected and duplicate retry cannot overwrite it
+ok 19 - external body/provenance damage is detected and duplicate retry cannot overwrite it
+  ---
+  duration_ms: 120.0286
+  type: 'test'
+  ...
+# Subtest: truncated SQLite file fails explicitly and is not silently replaced
+ok 20 - truncated SQLite file fails explicitly and is not silently replaced
+  ---
+  duration_ms: 15.9065
+  type: 'test'
+  ...
+# Subtest: unknown existing schema is rejected without rewriting its version or tables
+ok 21 - unknown existing schema is rejected without rewriting its version or tables
+  ---
+  duration_ms: 8.6848
+  type: 'test'
+  ...
+1..21
+# tests 21
+# suites 0
+# pass 21
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1737.0829

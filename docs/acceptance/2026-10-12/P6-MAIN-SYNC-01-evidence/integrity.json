@@ -1,0 +1,1648 @@
+{
+  "main": "8b698845810144bb8e78cc7e2120fc8ee1b013d5",
+  "p601": "67e4692bf14bb483885a8c764a83aa3a4e115310",
+  "p602": "d6c2f15c08b622b08910ac41b68bf4b72ff5453a",
+  "mergeSha": "4d71ddd024a06cec44e752f6e0ff0be84e633c25",
+  "overlappingPaths": [],
+  "p6FileCount": 308,
+  "mainPathsPreserved": [
+    "apps/web/public/functions/api/[[path]].js",
+    "deployment/Caddyfile",
+    "deployment/api-production.compose.yml",
+    "docs/acceptance/2026-10-10/S-HANDOFF-D8修复报告.md",
+    "docs/acceptance/2026-10-11/D8-焦点复验/professional-focus.json",
+    "docs/acceptance/2026-10-11/D8-焦点复验/professional-quality.json",
+    "docs/acceptance/2026-10-11/GPT-工作交接与状态总结-2026-10-11.md",
+    "docs/acceptance/2026-10-11/P1-服务器初始化执行清单.md",
+    "docs/acceptance/2026-10-11/路线A入口封锁规则.md",
+    "docs/acceptance/2026-10-11/路线A邮件发信预检方案-SES-API.md",
+    "docs/acceptance/2026-10-11/部署路线A-B裁决材料.md",
+    "docs/九霄1.0P0-P8玩法与双记忆阶段缺口与人工交接清单.md",
+    "scripts/api-production-smoke.mjs"
+  ],
+  "p6GitBlobsUnchanged": true,
+  "checkoutNewlineDifferences": [
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-02-长剧情记忆精度强化与复杂千回合测试报告.md",
+      "candidate": "acf7ecbac9bfabc7903a535d243daa237f22b947deb38947bb4dddf6e46ec497",
+      "sourceWorking": "040938eea2edaff52c47382a61f96d071174a7a85b09d4fa9b5a3afa8c6fcabf"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/README.md",
+      "candidate": "a52c29bee41cc0c927642877d62c102c210921b18686f2f3c9efb0451db43b0a",
+      "sourceWorking": "6d4cc5c7d53c1af7f5f78cf991c61da6f6cfcdbd9fd92d3e37aac251dabc8e16"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/benchmark.ts",
+      "candidate": "62095b805912f7cf0a3053063a9913f0f14dd8d0ff452e1ff7b6121376cc9dd5",
+      "sourceWorking": "2928eb8c32f1320b1c0b141192475838b97f3aeaaa2c6ca8f99a961769a299b3"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/corpus.ts",
+      "candidate": "52bbf8ad6ae318168509b83448765537896a480293b2b998c62a309f37c21279",
+      "sourceWorking": "f7b0f460a6712c52c22bd150c0f38ea714de52997026355742159edc5c185096"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/freeze.ts",
+      "candidate": "62bb6986916d61444eb98328514d827af91239c0125042bebe40256cbf8db2e1",
+      "sourceWorking": "d0d464d604292f3be6b4e2ee3323cee36660441c62ea6e562a5c2c821b8c7468"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/interfaces.ts",
+      "candidate": "aebdaf5b26baf96a1747448a06c7a3ed4d60cd60ffad38a23ebfad45a1ed3144",
+      "sourceWorking": "415198393dc28a1a3b7e5f5a626904d49e84a7bc26df7454b11322cd98cf39c6"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/oracle-authoring.ts",
+      "candidate": "2ce0591aa9c3fc75fd33783e4f0763b8ece0ff79c9d9260c56335cb6d7d5963c",
+      "sourceWorking": "e59489698b2fd5a238a7689550d88aed376594acc25f7b8c65eb09038872a5d1"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/package.json",
+      "candidate": "edc9aee4c8b1e619b7712896d154e4a03deb9b9a519fbe4a9d35e11d77439eb8",
+      "sourceWorking": "54b852de748f0fbf52a363c03c951b43f15e5dc6363b1c5b3115f98818ce589f"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/query.ts",
+      "candidate": "d48477db45e2287303bca452e31076aeffeadfb80bdfa4fa78bab39859f03c10",
+      "sourceWorking": "8d2f6fdde0ac82cea5158b876a3491f6195b29788828af671592c3c8732839d6"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/retrieval.test.ts",
+      "candidate": "b9d88b5d65fda812b31c1c4831b0fa51d82d19d30f8d263c41b7c6138b19059a",
+      "sourceWorking": "4b12918b2e1e629b3151cd87ec5f2f6dd5f02480fcd864a6e4756e174d1675d7"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/retrieval.ts",
+      "candidate": "11f898c2d6086ff8e48b17582ffc773859046e62777bb1b63586b787209332cf",
+      "sourceWorking": "d9799fbf1badd2fcb1f2a1960c8a3d70ac641dcbd20ec7e2ae59a6f58dd6103e"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/tsconfig.json",
+      "candidate": "7258ffc819bc58a8663125ded5fe4822a5c6cde6d7d2b8c1260bc737adccfe4e",
+      "sourceWorking": "55f18b640a9cc268e7dab1fb22d9acc8e26f5f59fd425782a5ac80f1c37b5616"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/verify.ts",
+      "candidate": "856e455d5ddb155e7efe82f476597280957983f841053bab6482a334dbf275b5",
+      "sourceWorking": "e1b16e8b77d00155406540b9021959a7204a92e1e22b594346e9213d0b3276f4"
+    }
+  ],
+  "p601QualityUnchanged": true,
+  "p602QualityAndRawRecordsUnchanged": true,
+  "p602QueriesCompared": 2560,
+  "sourceTrees": [
+    {
+      "directory": "C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-P6-longmem-20261011",
+      "head": "67e4692bf14bb483885a8c764a83aa3a4e115310",
+      "status": "clean"
+    },
+    {
+      "directory": "C:\\Users\\11954\\Desktop\\水龙吟专用\\项目\\Nine-cloud-P6-longmem-hardening-20261011",
+      "head": "d6c2f15c08b622b08910ac41b68bf4b72ff5453a",
+      "status": "clean"
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/.gitattributes",
+      "bytes": 8,
+      "sha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/allRegression-0.log",
+      "bytes": 11371,
+      "sha256": "e9b1707976ce946678ca560ea16568134247de0c137521979275add217a304d8"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/build-0.log",
+      "bytes": 1907,
+      "sha256": "e6d9b54b0bd422fe47dfc46893915025a59779bebb4eb35067445f498424f4b8"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/checks-and-manifest.json",
+      "bytes": 6335,
+      "sha256": "18894a7bc76be5fa41bfd36bd690a9f34994c2984d5cbd7514bdc7e1868a4ed7"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/evaluation.json",
+      "bytes": 5221496,
+      "sha256": "775056574f58ecac86a2086786adbe7ac2392e807621e7bcb0a95eee444c8616"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/failures.json",
+      "bytes": 3628385,
+      "sha256": "baa227144abd18f608f310b53e9ae9d643858b111eedd6e619f51ad8268afaf3"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/final-0.log",
+      "bytes": 1450,
+      "sha256": "c5aeebd1293cfabf7f145d4f35fc3080090c3a58b6546d0c80fb53c01a5b09a3"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/gold-questions.json",
+      "bytes": 34120,
+      "sha256": "91235f6ee8c4305979eadf46852af899815f1c0e04b52c07209d6c6ee680014f"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/history-1000.json",
+      "bytes": 640526,
+      "sha256": "dea4baacd67ed5b63dc3cef78aac59795ab2f4e927b716c19eea601c6caa13d0"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/history-200.json",
+      "bytes": 132123,
+      "sha256": "4e551b324436534472455251d0aebaf4aedbdca9130f7c476ac54fc99248c0db"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/history-500.json",
+      "bytes": 322833,
+      "sha256": "dc8fb12bc18eb5527cedc64b0c39278a6f89e0d4c96f435010183efd1409cb05"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/initial-evaluation.json",
+      "bytes": 1321203,
+      "sha256": "3d871856d6447c5cdb9484827e36a79971d62841136f006f2c4f047edb3acb48"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/read-only-hash-diagnostic.json",
+      "bytes": 5312,
+      "sha256": "cba5418cddea4195dd53e945a28b9770d120b2545864919c07a98c6532e90096"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/regression-0.log",
+      "bytes": 466,
+      "sha256": "8b38db4f6cbcb92e4a05321b1b01d341c38895c39236342e711531c7a24f2de2"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/regression-1.log",
+      "bytes": 459,
+      "sha256": "874e242c64bd29dee1e1d82777c1ef933479bfb9be38c963e1c62f425f06d626"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/review-boundaries-before.log",
+      "bytes": 4904,
+      "sha256": "59b2d4993ffb1c447275a90148e83f78b893f2bd5ad3d9b5b5a19ef2df9cb5da"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/review/adversarial-history-200.json",
+      "bytes": 132580,
+      "sha256": "02a463cd2a1c2a65d5b6c3c2117f7f5db183fcc6c5ef897225cd685c296a5e5c"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/review/evaluation.json",
+      "bytes": 5224268,
+      "sha256": "144126af72177dc445c92670b6dd6804d74c541ec66272c84b7833cf2d1bbbf2"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/review/evaluation.log",
+      "bytes": 2946,
+      "sha256": "4ea687553d17eaf887e999e2f60354cac4ab7b1abd5aae726e3aa868f5eec369"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/review/failures.json",
+      "bytes": 3630970,
+      "sha256": "ee3244077d2c9439aab5d96bbdbdb891ed5698cc61c36f1063bb9e9a71b8d424"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/review/gold-questions.json",
+      "bytes": 34120,
+      "sha256": "91235f6ee8c4305979eadf46852af899815f1c0e04b52c07209d6c6ee680014f"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/review/history-1000.json",
+      "bytes": 640526,
+      "sha256": "dea4baacd67ed5b63dc3cef78aac59795ab2f4e927b716c19eea601c6caa13d0"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/review/history-200.json",
+      "bytes": 132123,
+      "sha256": "4e551b324436534472455251d0aebaf4aedbdca9130f7c476ac54fc99248c0db"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/review/history-500.json",
+      "bytes": 322833,
+      "sha256": "dc8fb12bc18eb5527cedc64b0c39278a6f89e0d4c96f435010183efd1409cb05"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/review/strict.log",
+      "bytes": 2946,
+      "sha256": "4ea687553d17eaf887e999e2f60354cac4ab7b1abd5aae726e3aa868f5eec369"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/review/summary.md",
+      "bytes": 2661,
+      "sha256": "1ee059d6c73fc8a7994b6313e9512de6aac089ef126a0e48ef230e1fc4a81ea8"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/review/tests.log",
+      "bytes": 4142,
+      "sha256": "a04bf33ea1be1d03e11d310aa721e5dbed703b78abdc62487d2af03ee5b46480"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/review/verification.json",
+      "bytes": 9621,
+      "sha256": "1e59785d1c52ba269a141befa03e0e154c4fc58377c3204cbbf627373ebc74b2"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/strict-0.log",
+      "bytes": 482,
+      "sha256": "e724ea7465523f59625805ba5b7a6e53fb7f8d985a779ae6e655d60b48b0ab78"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/summary.md",
+      "bytes": 2661,
+      "sha256": "22063989346da052354d62ce28e1b92ec152d1af346a494dc8aa8dc7103042f0"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/typecheck-0.log",
+      "bytes": 813,
+      "sha256": "e944681e91150bde6211368e8639f53261c07fc66098e9ba7fc1eb46a527c75d"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/typecheck-1.log",
+      "bytes": 2,
+      "sha256": "75a11da44c802486bc6f65640aa48a730f0f684c5c07a42ba3cd1735eb3fb070"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-evidence/unit-0.log",
+      "bytes": 1747,
+      "sha256": "efe74c088281f371dd77f2f450a09780982ca10140eb2a4b7b289f8d39c33da0"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-01-长剧情记忆评测与Token成本分析报告.md",
+      "bytes": 15801,
+      "sha256": "34aca3fd13135414827c409bb51596318749d5adefaeca44cfa631bca31a0926"
+    },
+    {
+      "path": "docs/acceptance/2026-10-11/P6-LONGMEM-02-长剧情记忆精度强化与复杂千回合测试报告.md",
+      "bytes": 15436,
+      "sha256": "acf7ecbac9bfabc7903a535d243daa237f22b947deb38947bb4dddf6e46ec497"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/README.md",
+      "bytes": 3367,
+      "sha256": "a52c29bee41cc0c927642877d62c102c210921b18686f2f3c9efb0451db43b0a"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/benchmark.ts",
+      "bytes": 5625,
+      "sha256": "62095b805912f7cf0a3053063a9913f0f14dd8d0ff452e1ff7b6121376cc9dd5"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/corpus.ts",
+      "bytes": 8681,
+      "sha256": "52bbf8ad6ae318168509b83448765537896a480293b2b998c62a309f37c21279"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/.gitattributes",
+      "bytes": 8,
+      "sha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/content-regression.log",
+      "bytes": 11100,
+      "sha256": "b841d51d2182eb9b53f2eb09d2c2ee551ae10ecd80ea3c2e5b282cae9ce99a23"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-baseline-historical-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-baseline-historical-1024.json.gz",
+      "bytes": 36013,
+      "sha256": "46080a71c8e856020395301cc36e100d78b3144a832fc6aff19b4de969e40344"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-baseline-historical-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-baseline-historical-2048.json.gz",
+      "bytes": 36028,
+      "sha256": "46a29770517e1d13e7fe11940ece9e6bd012fa0ce23119f6aba0d2fae2b3549d"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-baseline-historical-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-baseline-historical-4096.json.gz",
+      "bytes": 36024,
+      "sha256": "eeff7955ce0360c3e905ac19b506de876a359868f54e0b9f58bee852c5faf46e"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-baseline-historical-512-failures.json.gz",
+      "bytes": 15808,
+      "sha256": "6dcc2eebf527ce27c145e6d2b545855267a4bd8f9bf1a309752a2322a2d66dc3"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-baseline-historical-512.json.gz",
+      "bytes": 35664,
+      "sha256": "25abb5f8cd4dfbd186e712252a8365e2d2b4bce6d8d44b11dc631bf054ddfd64"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-baseline-recent-1024-failures.json.gz",
+      "bytes": 2938695,
+      "sha256": "0e4ea5e82ddb999336d0ea9f4979223ba98ee9109a67f3c03b1ea0540a2b5234"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-baseline-recent-1024.json.gz",
+      "bytes": 3051893,
+      "sha256": "ba2715ea16de20d3d097c1bee23d6f76f47c8f6417289d6657fc818404a9ad9c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-baseline-recent-2048-failures.json.gz",
+      "bytes": 2976586,
+      "sha256": "a326b82d3aab37be10d932bcd27578ad6c2537017a9bb97dc8b50ad9db6a5619"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-baseline-recent-2048.json.gz",
+      "bytes": 3091839,
+      "sha256": "d912e62fc89235f0b86c59014d4c3d062038e57de82246d50593b2f6ee1d4db9"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-baseline-recent-4096-failures.json.gz",
+      "bytes": 3075255,
+      "sha256": "3a38e8fea852dedcca92c13ef9dde7c7318fd5ae738af4d72419e90c427720bd"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-baseline-recent-4096.json.gz",
+      "bytes": 3185775,
+      "sha256": "5ef44b506712b56211febbdbb71a747acfec5c62afe4a8ac48fa984154d6a042"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-baseline-recent-512-failures.json.gz",
+      "bytes": 2925983,
+      "sha256": "2a8e7b0704f0b6e7edf15deb74173147e607073d2f7e8a801cd82b508f10540b"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-baseline-recent-512.json.gz",
+      "bytes": 3031308,
+      "sha256": "667c5715364281a8974b606f1c19f4d460af9cea5086837e1a2ffcb6b57c90d9"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-hardened-historical-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-hardened-historical-1024.json.gz",
+      "bytes": 34118,
+      "sha256": "7e57199330cb6c7e1499c85414d41d5bcec74718a366f4bc6244909f7f82e666"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-hardened-historical-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-hardened-historical-2048.json.gz",
+      "bytes": 34120,
+      "sha256": "9da445019e53bd54732816cf5dae9df356e66382c5139e5aee30e453be77b0cb"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-hardened-historical-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-hardened-historical-4096.json.gz",
+      "bytes": 34137,
+      "sha256": "c4d0d95b94e42ba1fe9e679472f17da12e29ca676c0b71e12397941f90c30a8d"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-hardened-historical-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-hardened-historical-512.json.gz",
+      "bytes": 34114,
+      "sha256": "66bdfe4c3bbc1e11fc3f77bb87976873f639bac5f7f5555840b835eb52f58035"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-hardened-recent-1024-failures.json.gz",
+      "bytes": 2941092,
+      "sha256": "44fb0f6948ad3da3ed974f93e1c0fc960f98f018cc46376782bf29318b2636cd"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-hardened-recent-1024.json.gz",
+      "bytes": 3054161,
+      "sha256": "ce411b8f0997f6f1ab5a360c2a321d66804aba7f8589ea2c4f3ac6279d13ca44"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-hardened-recent-2048-failures.json.gz",
+      "bytes": 2979565,
+      "sha256": "469493569c02d63ecbe78cb2c0ce13ead34ba46473acfa667051fe2cac714c25"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-hardened-recent-2048.json.gz",
+      "bytes": 3094794,
+      "sha256": "fd31cdcc256bde322d812cf24efec92f8e85866abe8c3fe8a1bda6a9b9c6722d"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-hardened-recent-4096-failures.json.gz",
+      "bytes": 3077716,
+      "sha256": "f591185d4039cc6e304f4851ba58d9b26398863b4fa87211b1e3c0a1a22f64a8"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-hardened-recent-4096.json.gz",
+      "bytes": 3187963,
+      "sha256": "408b49bdf7988a474ed0016336eb36de6604976120e009e821c8776e2308fb07"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-hardened-recent-512-failures.json.gz",
+      "bytes": 2928482,
+      "sha256": "76b4ec0f95a5fbefae630ce7aaf5b39309d2d9d46f4288b8601892cb13a3ea5b"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/development50-hardened-recent-512.json.gz",
+      "bytes": 3034088,
+      "sha256": "574b8fac10da6a97115ee931136e0995179d258ec4309f248e8dfc5f8ae035b0"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-baseline-historical-1024-failures.json.gz",
+      "bytes": 4401,
+      "sha256": "edd482174548e3fc313108be8d9b9291089661181fb88daad864e32d73164553"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-baseline-historical-1024.json.gz",
+      "bytes": 28934,
+      "sha256": "14c6c4f92f30ee2ef63a3ddc0b9cade944b209fb8bd38d09732c5827bc620987"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-baseline-historical-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-baseline-historical-2048.json.gz",
+      "bytes": 28599,
+      "sha256": "3837fc794d9200ccab5b165b16f91536ddcb6789f752bc0561a8c694fd96c788"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-baseline-historical-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-baseline-historical-4096.json.gz",
+      "bytes": 28611,
+      "sha256": "6424b15708e048456eb09a9c5e00167e29f8ba56939e1aeb140565fe54af82ff"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-baseline-historical-512-failures.json.gz",
+      "bytes": 8958,
+      "sha256": "8cbf46763e58705f19d95d1af6f1b2923bb1c3cadbaabd575b2fb6617dcbbf99"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-baseline-historical-512.json.gz",
+      "bytes": 28243,
+      "sha256": "3c0616c98599133912ddf9ccf62fd2d81ec8090e304fe0edd59b57644c05a1b1"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-baseline-recent-1024-failures.json.gz",
+      "bytes": 512437,
+      "sha256": "d82f6f4116374ab2da675dc5fbe0d9dd33c579da10a969d3e213fa03040837f2"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-baseline-recent-1024.json.gz",
+      "bytes": 560872,
+      "sha256": "0077aa40f02791d906336c9fa529bcebadaf7dcc5e765ff2cb75924848f9c732"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-baseline-recent-2048-failures.json.gz",
+      "bytes": 516739,
+      "sha256": "5e3cb11227c44f2a679f5de371d08edb5c05a5c3baff5a53cc5e3d5e19b56714"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-baseline-recent-2048.json.gz",
+      "bytes": 584076,
+      "sha256": "fdb356a025c589a6eb17a5da8d9113563e0b83fe3157973925e0823da27488fe"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-baseline-recent-4096-failures.json.gz",
+      "bytes": 558695,
+      "sha256": "ff71fffb9b7255a9e089d1ba4dde0aaa5a0b29c7477f3882faa368720c63d787"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-baseline-recent-4096.json.gz",
+      "bytes": 647639,
+      "sha256": "6a299aeee4e245ab386edd852bd75bd5c74a7aa65093b56e90cd4c9f7b792999"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-baseline-recent-512-failures.json.gz",
+      "bytes": 502513,
+      "sha256": "a7849f56c7c920493451592a440d4715f739d60b76b788bced5d1036a537bc1d"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-baseline-recent-512.json.gz",
+      "bytes": 551011,
+      "sha256": "d55896cb7c8b1f5faa814854d94dc2ce7e52ccd55df6485d82244477dc98784f"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-hardened-historical-1024-failures.json.gz",
+      "bytes": 3061,
+      "sha256": "1c413750fd2a0fffe61c58c0b77d0d683391a479ed34e7059792743baf1d8088"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-hardened-historical-1024.json.gz",
+      "bytes": 21030,
+      "sha256": "b63e0c5d162609b60acc0274f186e1951ef172705e922be7bf72f4db60118057"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-hardened-historical-2048-failures.json.gz",
+      "bytes": 3053,
+      "sha256": "e2af4cc96220dd2064573cb5ed0106adcf62f48abb5826f2956a49b0704b032d"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-hardened-historical-2048.json.gz",
+      "bytes": 21054,
+      "sha256": "b9843c6d90181e20f3e861f0273980ee240a341868bd01f4b867c99de7c98630"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-hardened-historical-4096-failures.json.gz",
+      "bytes": 3067,
+      "sha256": "bad50fa3b3cad3e7beb4759d6cceca1e74edc28a6e6fd55011c008101cb148f5"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-hardened-historical-4096.json.gz",
+      "bytes": 21055,
+      "sha256": "dafb87f92cb73856d09bd53d118e9223c7764027be890d420a98b1ecf4fd396b"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-hardened-historical-512-failures.json.gz",
+      "bytes": 3062,
+      "sha256": "b65c15001d19c067f909b64cccbc250531bf14cfe00788551e7e4255af1de8e3"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-hardened-historical-512.json.gz",
+      "bytes": 21021,
+      "sha256": "5ce768b03068bda4b921bc630d97e3295f3d456c47e2c63f3dec4ad9991244ed"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-hardened-recent-1024-failures.json.gz",
+      "bytes": 513982,
+      "sha256": "e581582be1a5be80f403481514f22bd3f404338b2d544ace585687be1502458c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-hardened-recent-1024.json.gz",
+      "bytes": 562467,
+      "sha256": "703672f5799c5260f32736a115a82293becfbba53a0122829bb2cb0bdac42987"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-hardened-recent-2048-failures.json.gz",
+      "bytes": 518653,
+      "sha256": "c224a71b0d71ca8fa31971eb811f3cd4d612b47198f8d86bd99ef40bdbd46c74"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-hardened-recent-2048.json.gz",
+      "bytes": 586162,
+      "sha256": "511cf4437b259fbb3e500aa4be15f70e6e7e4db1e59d18cacc2194c111f8c700"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-hardened-recent-4096-failures.json.gz",
+      "bytes": 560487,
+      "sha256": "f5819ce025fd43cd112984400b16735c6a700d9bfae30ccab04664b32290d200"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-hardened-recent-4096.json.gz",
+      "bytes": 649803,
+      "sha256": "9a8cac7a9522c3f48682b63ef3251761beb0accbaadc9b966dfa1930bf09e3e8"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-hardened-recent-512-failures.json.gz",
+      "bytes": 504162,
+      "sha256": "1cc2f5a0c57870ece88701caf926252d971a31502354b178fbca77ad1b2e572d"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/original60-hardened-recent-512.json.gz",
+      "bytes": 552567,
+      "sha256": "b0023de0488447e850fe06a70c8fd91fb7df5420163956137548b7e25420e558"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-initial/summary.json.gz",
+      "bytes": 2851,
+      "sha256": "eab8f04c6db1b5705351f8043303f89721cd1cf4551e2e20bf5dfdc7ada2f811"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development-run.log",
+      "bytes": 23244,
+      "sha256": "dd396eddcd418064179a33931792ec346fbf3278ae2ee05d517290f1fb6142be"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-baseline-historical-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-baseline-historical-1024.json.gz",
+      "bytes": 36158,
+      "sha256": "6e7aa0855f9c2e823451fc81bc6be89998ebdb68a17c28bd8905c1814b526f62"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-baseline-historical-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-baseline-historical-2048.json.gz",
+      "bytes": 36160,
+      "sha256": "9c6a9ccf279d31890771c23f0658b0b1ed2018f1acf7da45f4da3159cbaa0223"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-baseline-historical-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-baseline-historical-4096.json.gz",
+      "bytes": 36183,
+      "sha256": "92ae248f244152cdbd824db679e97a984ead07736712ba5a3196aef7b34128a2"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-baseline-historical-512-failures.json.gz",
+      "bytes": 15795,
+      "sha256": "321b4e31fededad9b64a11d446cfe00791cbb9ed350888ad2aac8e64f66a0a91"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-baseline-historical-512.json.gz",
+      "bytes": 35644,
+      "sha256": "d9147dc9f56ab6acb34f8109387b1d5058c761a676c243d323bd157b2f20d57e"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-baseline-recent-1024-failures.json.gz",
+      "bytes": 2939464,
+      "sha256": "b8ac95cdf3c0065dbf7202a49034aad53a5ed7fa7dde27ef20073baafbc54222"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-baseline-recent-1024.json.gz",
+      "bytes": 3052501,
+      "sha256": "cbfd0b16efe815c9dc24aa1297408a48317b63b8e9d5f57cba2477c6571a9119"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-baseline-recent-2048-failures.json.gz",
+      "bytes": 2977538,
+      "sha256": "047b32a58a01671b7e6c86015ab06eac0770bd70172c67d94459892a27b54258"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-baseline-recent-2048.json.gz",
+      "bytes": 3092792,
+      "sha256": "6bbf9e476b197e6442e75d33d45a531fc7556ac66ac3318f22e3fe158b557fd2"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-baseline-recent-4096-failures.json.gz",
+      "bytes": 3075910,
+      "sha256": "7a182d7990c25a03af4bac9d9f9576e5828145228f98e155734f691566a8abe0"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-baseline-recent-4096.json.gz",
+      "bytes": 3186422,
+      "sha256": "046d03b3951048a482c5358d2b3f10b729b12ccd46bbdc906fc919dc36a0c679"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-baseline-recent-512-failures.json.gz",
+      "bytes": 2926673,
+      "sha256": "e8b57999ffb2c166e3bc06f224294018000a51a62e8b36541fb290b68e63866e"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-baseline-recent-512.json.gz",
+      "bytes": 3031934,
+      "sha256": "cc9bed131449a59cad0120842d1f516b38ae5b69f26586c2204aa1a5bcc7f980"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-hardened-historical-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-hardened-historical-1024.json.gz",
+      "bytes": 214636,
+      "sha256": "1cbf779444a18ae2d62e8ca3deeec8faf4c03826384d7831f75e6be26fe49018"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-hardened-historical-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-hardened-historical-2048.json.gz",
+      "bytes": 214659,
+      "sha256": "9fad42e2d982713da9f2fbe626035bc1bb49ce0bb2fc806b5f3ce105595fbce8"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-hardened-historical-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-hardened-historical-4096.json.gz",
+      "bytes": 214640,
+      "sha256": "4dfb65857d19c101aee5877b800f7aefbae12f84e68ff2cd6ca459d176d16e19"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-hardened-historical-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-hardened-historical-512.json.gz",
+      "bytes": 214635,
+      "sha256": "703657f7bd6b60eca5b99d46d8f06ae8bcf44832de1c22d07b2bfa7bd0f0e462"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-hardened-recent-1024-failures.json.gz",
+      "bytes": 2942608,
+      "sha256": "a79bdef8dc2134d74f077bd520b926a6aa21e21a3e50326158e2c5ab8e54fd5b"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-hardened-recent-1024.json.gz",
+      "bytes": 3056192,
+      "sha256": "d108e9058f6ef639848edb5a34a929218ca5bae26e23dd4ddbc1da0f28769574"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-hardened-recent-2048-failures.json.gz",
+      "bytes": 2981217,
+      "sha256": "28e5d385fa0540b4d86add3a10f5e5f94506a0bd42459f459a9320bab30921d0"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-hardened-recent-2048.json.gz",
+      "bytes": 3096625,
+      "sha256": "6b981e47a44fae10567b1c3acde3c5ef287f69c999db072597db39ff8f8340fb"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-hardened-recent-4096-failures.json.gz",
+      "bytes": 3079520,
+      "sha256": "027a831fe9b958ace0493eb8d6f2615cc84656ba5857fcc5e99b9ba9b78ce86b"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-hardened-recent-4096.json.gz",
+      "bytes": 3189772,
+      "sha256": "21e541541e60c1661643871ab30fa47efcd05b15430d309a84abefbe3ac98fed"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-hardened-recent-512-failures.json.gz",
+      "bytes": 2930358,
+      "sha256": "46c1f0e66092f926429037b8703f684cc746ebc2fd035508bf9fb126306ff791"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/development50-hardened-recent-512.json.gz",
+      "bytes": 3036280,
+      "sha256": "8033ccb3023fc6d3ce2f7688a060df5ee36d337f36b2bc43418c4e0b61f3d8fd"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-baseline-historical-1024-failures.json.gz",
+      "bytes": 4433,
+      "sha256": "325d0874926b867a12aeade7df3361587e0d4f281bdfac0a64ba42c710dd4c33"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-baseline-historical-1024.json.gz",
+      "bytes": 29198,
+      "sha256": "fbc841e435cf73fda61b5c2cba03723d28ef78163665496c06ae6b9bed2d3604"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-baseline-historical-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-baseline-historical-2048.json.gz",
+      "bytes": 28914,
+      "sha256": "7c66e26ab9d92c4be9802d3265fdde1afc2b615721e727bd880b114bbb0336da"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-baseline-historical-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-baseline-historical-4096.json.gz",
+      "bytes": 28901,
+      "sha256": "6a1286a0b9457a84c5f47f18cc952564dc0dd0d4d272547b08b7fa7f310c38ea"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-baseline-historical-512-failures.json.gz",
+      "bytes": 8979,
+      "sha256": "970a08206f55fb25cd5c970b610925d774be814198eaf55d376ba65d07063fc9"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-baseline-historical-512.json.gz",
+      "bytes": 28432,
+      "sha256": "fb7152dde30e497cdbbec72662091d55d5fa7b4ba9e4fcc79f14103c8ff4f179"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-baseline-recent-1024-failures.json.gz",
+      "bytes": 513065,
+      "sha256": "9c82480c91143fd1a3807c0cc57c6c7546de04de968d25d5507e4d271dbf97f3"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-baseline-recent-1024.json.gz",
+      "bytes": 561587,
+      "sha256": "9f8e7118e47d60b35482e4404bb4f3fa2b58fb38e48219cea85afaadf43d1299"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-baseline-recent-2048-failures.json.gz",
+      "bytes": 517416,
+      "sha256": "39dd72c42594a1de99f7bc4751d2415ba29a9e684a2ba1f399febae41af32ce3"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-baseline-recent-2048.json.gz",
+      "bytes": 584804,
+      "sha256": "242c17fd134946c5ecff332d7a98efcf81a6febe5545472557c3bda33c81f371"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-baseline-recent-4096-failures.json.gz",
+      "bytes": 559184,
+      "sha256": "e8dd83b40e5df366012ff3e4dadd99ca325847f83fd875787e1d48b6a61afa9e"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-baseline-recent-4096.json.gz",
+      "bytes": 648356,
+      "sha256": "eec3de001b9780619e861d313eca1fccff785b0346bf85dfdf7bbf8932841886"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-baseline-recent-512-failures.json.gz",
+      "bytes": 503026,
+      "sha256": "68585874bfaea4d09c5c74e0a0583fa5a65baf69b50c62090f3a2067303a81f0"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-baseline-recent-512.json.gz",
+      "bytes": 551642,
+      "sha256": "2f5642056cb15269ae4f101953737c3baa66e58754cf8eee1515d942776c1699"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-hardened-historical-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-hardened-historical-1024.json.gz",
+      "bytes": 101458,
+      "sha256": "6d853d844625d7dcb48ba14e9596d0d60ecab792f33ae2658cf206d785a79073"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-hardened-historical-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-hardened-historical-2048.json.gz",
+      "bytes": 101468,
+      "sha256": "e9d7a0bf83f9f777cac15a6aa89b36ca4b0c46fc3bd700f0faf86bea07689636"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-hardened-historical-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-hardened-historical-4096.json.gz",
+      "bytes": 101478,
+      "sha256": "5fc5f54523a55d260ac24852dfd296a7bcd9d01e9df4b1bb4b1328333cdc1636"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-hardened-historical-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-hardened-historical-512.json.gz",
+      "bytes": 101471,
+      "sha256": "56f0688fb35655b5a23b96f28689109d2cf6720bc6d3f034a0657604c1d89ac8"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-hardened-recent-1024-failures.json.gz",
+      "bytes": 515436,
+      "sha256": "24c7d8ade3db7e42d9aa0f8e5ab92bc5dc8e70aae6c5d6f7da7baf68c547a034"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-hardened-recent-1024.json.gz",
+      "bytes": 564014,
+      "sha256": "fc555869c91603f2ec6b45b0f1cb6a505f1750af2b470eed300c88ad5063036e"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-hardened-recent-2048-failures.json.gz",
+      "bytes": 519920,
+      "sha256": "9bd6244d30b463a1e50e342870f81fc09c438147a11632334badc09e6225a223"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-hardened-recent-2048.json.gz",
+      "bytes": 587603,
+      "sha256": "b024502e7b848c3c048f130b228963a216926c914a34427add8660648eee1feb"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-hardened-recent-4096-failures.json.gz",
+      "bytes": 561718,
+      "sha256": "93f6c4444c4e7ff5907bdd5288eb0a5cf0da303e02d9fc7a2b76c8ce65dc0ee3"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-hardened-recent-4096.json.gz",
+      "bytes": 651296,
+      "sha256": "d84582b03b61b85c9ea61cbc124f2840b9e8c9d17b7f0d2dc1d345e2307b85a4"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-hardened-recent-512-failures.json.gz",
+      "bytes": 505605,
+      "sha256": "1f5e9456589b2e3752ec5a571877348621ea4ad8d13ae7c881ff27a01aab18e5"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/original60-hardened-recent-512.json.gz",
+      "bytes": 554081,
+      "sha256": "c230c205ac09e27ab62ae89badcc33a1977a26d73c66380733d7c0e53bf94450"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/development/summary.json",
+      "bytes": 34090,
+      "sha256": "b0781a2c5c5ab0aebd4d58ae17ff34562823a7b828abb2e00ea722336ae7117e"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final-run.log",
+      "bytes": 34796,
+      "sha256": "b69ca21a478fb6fe1c148c0c85c2cd009ded7d715e53e0e1d13ec00a1ec2d11d"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final-typecheck.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final-unit-tests.log",
+      "bytes": 6028,
+      "sha256": "ba5b3504e631882f16a6a062eec6e2d8d0299d6f007347a84fe579430ee5582e"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final-workspace-build.log",
+      "bytes": 4596,
+      "sha256": "e5418105d2e6592fe3e7ac81ce4d5313ae44b237f31f1f3fd8137a0196a88810"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final-workspace-typecheck.log",
+      "bytes": 2400,
+      "sha256": "6bf981a9525a3c272a36f3aad14e14fa1a6ec7a428198046b0d2bfda7cc543f4"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-baseline-historical-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-baseline-historical-1024.json.gz",
+      "bytes": 36153,
+      "sha256": "b8031ba3cdfd896f3e61cd1a21393643989eba73c05dcc9a1b108ecf2ac541ff"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-baseline-historical-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-baseline-historical-2048.json.gz",
+      "bytes": 36146,
+      "sha256": "3b047cebd9889bb0e9bf338ff5bf994604279adfa7165582961fd0874eb75e74"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-baseline-historical-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-baseline-historical-4096.json.gz",
+      "bytes": 36165,
+      "sha256": "39a05be917acb704a77e4020bb58450baedc11bce239c5994cf2b5eab84f0fd3"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-baseline-historical-512-failures.json.gz",
+      "bytes": 15804,
+      "sha256": "92e858977233e3931db62fe50d8bf7bf529bbc16a4e014cc77157999bcd1992b"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-baseline-historical-512.json.gz",
+      "bytes": 35663,
+      "sha256": "44d5fbeb50618582a2278de2da19fd92f01734caeb338d45d084cb93965610e3"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-baseline-recent-1024-failures.json.gz",
+      "bytes": 2939451,
+      "sha256": "af8bd8444ce64581afae387313e3d82e28d623eb0b2873814cc9dcd3b2aabed5"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-baseline-recent-1024.json.gz",
+      "bytes": 3052496,
+      "sha256": "670957ec98cacc3cbdc4ac915c8cc1b6ce37261d246219d249867484bd322602"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-baseline-recent-2048-failures.json.gz",
+      "bytes": 2977516,
+      "sha256": "266a282e017ab8e76b9d5b8125f1112fd69a7d98c9029a7bb11f7cce5263d44e"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-baseline-recent-2048.json.gz",
+      "bytes": 3092777,
+      "sha256": "d101e339799ab304dc6eab6c5e88c62b9431b62fb715c205b9bc07128418e8b0"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-baseline-recent-4096-failures.json.gz",
+      "bytes": 3075924,
+      "sha256": "2d9c9415673a42cb503f6aeacd0f1f7df58f4ba3b14072090f57a749e57f7f4c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-baseline-recent-4096.json.gz",
+      "bytes": 3186437,
+      "sha256": "ce876a5ce0e8f0535db27b14067fd980e57ce9eac11ce3e5a00ee69e983bdeda"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-baseline-recent-512-failures.json.gz",
+      "bytes": 2926681,
+      "sha256": "2f0e572d420a4fceedae25f01bd22765152428618d6f2ca734fcc9ec77c71960"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-baseline-recent-512.json.gz",
+      "bytes": 3031962,
+      "sha256": "9e43b9e69f7ca427d0b55139b6a99894967abbabb58e5fff8bd4fe66b5fb4902"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-hardened-historical-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-hardened-historical-1024.json.gz",
+      "bytes": 214635,
+      "sha256": "2d1d6b4d600fcc165b086bbc3143bb4b1c44fbdee3f127b73eb10e15e190e118"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-hardened-historical-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-hardened-historical-2048.json.gz",
+      "bytes": 214633,
+      "sha256": "f9106078de939a296771b9a07602dce14aab1560030c406d4a94b010a5cb2046"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-hardened-historical-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-hardened-historical-4096.json.gz",
+      "bytes": 214639,
+      "sha256": "5cb818dbd06a3a0596ba43ee29f74005de7907a66c9ff240ccfe685fb024753c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-hardened-historical-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-hardened-historical-512.json.gz",
+      "bytes": 214617,
+      "sha256": "14a54986b07f1522ca4ae38f7e193348896670b042042845c51103bc4a28d772"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-hardened-recent-1024-failures.json.gz",
+      "bytes": 2942594,
+      "sha256": "b94b48ef1ab6c1df18e564d15f35574584e5bb084aa0637acee40acf5141f403"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-hardened-recent-1024.json.gz",
+      "bytes": 3056176,
+      "sha256": "df50e943e3a7e0d21afb7f1673eaf8734d490e2ce8198f15af8f313e6536a0c0"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-hardened-recent-2048-failures.json.gz",
+      "bytes": 2981135,
+      "sha256": "dd06acf401356523891b2d28ba3c2a6d8df1fbebe9a20e92cced45c5725a97f9"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-hardened-recent-2048.json.gz",
+      "bytes": 3096563,
+      "sha256": "4dd437fd5d5909154e86017533fe0bcb1ab8d194d73477c0f996a6d952f507e0"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-hardened-recent-4096-failures.json.gz",
+      "bytes": 3079519,
+      "sha256": "70aaf0824ce40fbffcce9c81436a4c6d825e14a6f6675dd1dfe448dd63488bab"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-hardened-recent-4096.json.gz",
+      "bytes": 3189786,
+      "sha256": "7e97c4116e15555fe5028829d1309732dd90a1c40824df8cea49b1aa67ca02d2"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-hardened-recent-512-failures.json.gz",
+      "bytes": 2930368,
+      "sha256": "e90923c0c9f72b90c5d697b8b887201ff562346eebd2a7394c09cb1c62a91be2"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/development50-hardened-recent-512.json.gz",
+      "bytes": 3036318,
+      "sha256": "0ee29db1f9bedd2e71fa9811934afa78f7f97b3846401b15878b0775ef368d8e"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-baseline-historical-1024-failures.json.gz",
+      "bytes": 20627,
+      "sha256": "099593a8fabed4ebcd5b70346b92aa4864df210ffae103f12eac94c82e45dcbe"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-baseline-historical-1024.json.gz",
+      "bytes": 94564,
+      "sha256": "8fd8e1bfac37bee68dd6f29c976131074701f758dbb9e63fee0465efde5dd56a"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-baseline-historical-2048-failures.json.gz",
+      "bytes": 4292,
+      "sha256": "a8dc47d5cf93bb4d7225d8eb7c1a84e444e8ad8ecf6486e52665ee4e49e5c87e"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-baseline-historical-2048.json.gz",
+      "bytes": 102865,
+      "sha256": "008829b95dea587a450c6436439e9fea00e1798e06b372091ec0ef3ff6256a8b"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-baseline-historical-4096-failures.json.gz",
+      "bytes": 4276,
+      "sha256": "dbe21b3f16a7f7848cb3f2253d0c2d7108d6d1c380553b60284e34cf7ee9cfa3"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-baseline-historical-4096.json.gz",
+      "bytes": 117245,
+      "sha256": "9a0a5d48d59cc41d17da447ff25523ca30a43655d7798af874f5015311ac4782"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-baseline-historical-512-failures.json.gz",
+      "bytes": 13811,
+      "sha256": "8450c519369f366880bf88bfb327ac8f1413bd77d497cee8a6caa3a1f8710416"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-baseline-historical-512.json.gz",
+      "bytes": 85307,
+      "sha256": "bf28afaacc87859c105a87dc0a6285f5b0b75c35e8b45613547edad1f5313280"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-baseline-recent-1024-failures.json.gz",
+      "bytes": 3161557,
+      "sha256": "3e634a4b5d447157ffce0e7eb3cecd748bda9aa0a01b48515664add23bdaa203"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-baseline-recent-1024.json.gz",
+      "bytes": 3277589,
+      "sha256": "f992a2799b00e2d7a15a508b30236fd2ea266124199d5133bbb11a5292e7529f"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-baseline-recent-2048-failures.json.gz",
+      "bytes": 3197899,
+      "sha256": "95cac91e7f241e77f6ddb7e87b0dd89cbea14840d9af400661548b5245cf27df"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-baseline-recent-2048.json.gz",
+      "bytes": 3317164,
+      "sha256": "1f606c4f6df67f200af7c5de2bf6de73af106bb7d184cfcf048acce180b96a1f"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-baseline-recent-4096-failures.json.gz",
+      "bytes": 3297492,
+      "sha256": "5f1f7e47e44afec312e902e2ab3adc55d8c231dc41ed730a3d831a3d99fc06cf"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-baseline-recent-4096.json.gz",
+      "bytes": 3410793,
+      "sha256": "3e954b00478cde0455e1307125fb645e5bf44a5e9ef74b81d2e60dfdfbc52137"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-baseline-recent-512-failures.json.gz",
+      "bytes": 3147110,
+      "sha256": "566431d5c69cf4894f99bd7e20e5c3de530a54855715878c79c9540bf0a20f7a"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-baseline-recent-512.json.gz",
+      "bytes": 3258686,
+      "sha256": "22ca7c947651a1a02e3ed6ffbb8bc34922c1a5091cb0c337016374020e1de908"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-hardened-historical-1024-failures.json.gz",
+      "bytes": 39190,
+      "sha256": "e7c509ce81c47b0df1a2291c22ee6365617f2c532685d6f17f145220c382e94a"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-hardened-historical-1024.json.gz",
+      "bytes": 218082,
+      "sha256": "1a815368f3e91039d81238e8e6d94a20d06d527d9e21671d92500bccbf3d7353"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-hardened-historical-2048-failures.json.gz",
+      "bytes": 39199,
+      "sha256": "add1450e6672316809685614a0aca39a0f8948ddedbd87c0d512b77c0aafad3f"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-hardened-historical-2048.json.gz",
+      "bytes": 218107,
+      "sha256": "3bc33df66c4dee2cd1507e4b6fba8174b8a5c25423717c96c9708460d542fc65"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-hardened-historical-4096-failures.json.gz",
+      "bytes": 39186,
+      "sha256": "dd65d8341bdd3ea5b6791000b9ff082f4660f86a6ee1d2f9b0b92fa72fd4f3ec"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-hardened-historical-4096.json.gz",
+      "bytes": 218089,
+      "sha256": "55e47b79428074782efdfbc0c224a0c74ada300971ed8a055ac444a23e51e8f5"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-hardened-historical-512-failures.json.gz",
+      "bytes": 39192,
+      "sha256": "360be990711d310184a24a2c223f326dc3d6af69cec76820ef449354d91377b9"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-hardened-historical-512.json.gz",
+      "bytes": 218097,
+      "sha256": "286fffd8612a4a1ba3a174e4acd032e6365b022cdb4ec5198e4e0ec28c3655c5"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-hardened-recent-1024-failures.json.gz",
+      "bytes": 3164849,
+      "sha256": "0cdfae6897689de4f44cd2ef2da0c2a1e53ec3db541397d57362bfea935ea913"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-hardened-recent-1024.json.gz",
+      "bytes": 3283184,
+      "sha256": "c0135b4d0974ad288cecb8be168bc0889513dd494578eb5a6edeaf8e21911cd9"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-hardened-recent-2048-failures.json.gz",
+      "bytes": 3201712,
+      "sha256": "4c7a256965b5155bba034c18ea7ced01d859f9b94ef5a42fd3ccb060620120c1"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-hardened-recent-2048.json.gz",
+      "bytes": 3320986,
+      "sha256": "425ba56e6a66ff93a3bc8720eb3f8f7484ab62f82ca12b6adb71205f44508deb"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-hardened-recent-4096-failures.json.gz",
+      "bytes": 3301310,
+      "sha256": "9d91652e0c94eab2b07b22d84d6c65b1a903fb09cfc805ea77dbe6d07102a214"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-hardened-recent-4096.json.gz",
+      "bytes": 3415097,
+      "sha256": "daa3e925dafa7660fd484d5f79e9a511f4c2b76999f713b9e3150609ad264a06"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-hardened-recent-512-failures.json.gz",
+      "bytes": 3150726,
+      "sha256": "6f4f8c63e1c31dff84aeba0ee0cb34cab20ddcee899a8f0ebad6584a7b7066fc"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/frozen50-hardened-recent-512.json.gz",
+      "bytes": 3263079,
+      "sha256": "f25b0fbc878248d62398b3d4d586b0348e64e7badb2422f2ea52b42cc990ddab"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-baseline-historical-1024-failures.json.gz",
+      "bytes": 4431,
+      "sha256": "fede517cdf2ba95564ecba867b3ede31ec677bab83e9ebb7096bd40c1f297a43"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-baseline-historical-1024.json.gz",
+      "bytes": 29209,
+      "sha256": "2be20101b692d9a215fed4feb00abe7f2f8354946ae39d76de5410de01b95005"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-baseline-historical-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-baseline-historical-2048.json.gz",
+      "bytes": 28909,
+      "sha256": "ad88f9e2c5c8134551dbf3fce5f296587352ce2abb5ff92f10f6ef15d002ff51"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-baseline-historical-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-baseline-historical-4096.json.gz",
+      "bytes": 28900,
+      "sha256": "2db02c6708e6593112a2c96ffe6345addbe53a8f4abaa2e5d644dedd4ef353c1"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-baseline-historical-512-failures.json.gz",
+      "bytes": 8977,
+      "sha256": "a4ac71b1ff9fc71da14eaadfbf015ce164b46a7ec462eb77952a535ae3da8f65"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-baseline-historical-512.json.gz",
+      "bytes": 28429,
+      "sha256": "1090bc118e6a957585fb8c923f8e3cd64afc04a237496032b851aa50621468bf"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-baseline-recent-1024-failures.json.gz",
+      "bytes": 513076,
+      "sha256": "3795e531b76a9523bae4473ef4ebe56903a0ad544246c7320a6deb122c1d8fe0"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-baseline-recent-1024.json.gz",
+      "bytes": 561589,
+      "sha256": "c5e38b5165846a1261580650fbe9cd54ffd424eaa8256d24137e600d768c4546"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-baseline-recent-2048-failures.json.gz",
+      "bytes": 517411,
+      "sha256": "504f919a5baeef0e9f96a4fb4e7687e44b8fd5278279b6f0bc336bc8f4621deb"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-baseline-recent-2048.json.gz",
+      "bytes": 584805,
+      "sha256": "7d569a9261312ace03f33e037833f0ec2a7c2dffb7cc5334b47420a701c3a097"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-baseline-recent-4096-failures.json.gz",
+      "bytes": 559176,
+      "sha256": "e439304b53f5a58a4f91411665081776381778a5694fd6fb6a2064294f820238"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-baseline-recent-4096.json.gz",
+      "bytes": 648347,
+      "sha256": "3cc4fdeaf18c30815181fa8009aad33dc02944d9e53aae14b624e1a8b1120124"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-baseline-recent-512-failures.json.gz",
+      "bytes": 503043,
+      "sha256": "61e7d9d85681ab00136ca63e4abaea6a6bba511bf68637c38489bf27157f3b58"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-baseline-recent-512.json.gz",
+      "bytes": 551668,
+      "sha256": "6d4aaa552a091ac966f053328cee2663db804ee9e1d80984f3856c9e11aa80e7"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-hardened-historical-1024-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-hardened-historical-1024.json.gz",
+      "bytes": 101455,
+      "sha256": "c642fac974e07db4a0a7984d920f647efa50c41fafad916c711ef7e3b9aa4528"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-hardened-historical-2048-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-hardened-historical-2048.json.gz",
+      "bytes": 101459,
+      "sha256": "c222e313fd56706c37222431e7c29f9e0127582b22f3efea7d36d03792e77c12"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-hardened-historical-4096-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-hardened-historical-4096.json.gz",
+      "bytes": 101476,
+      "sha256": "9ffd356c45f0d0e94bda54e8b738d454f29556af547d2d1b84966a15fc6508a5"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-hardened-historical-512-failures.json.gz",
+      "bytes": 23,
+      "sha256": "c56c0d08573b7497eaa9c28aa6d0c61275e182c852871520143db6558d354f2c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-hardened-historical-512.json.gz",
+      "bytes": 101478,
+      "sha256": "38b494888dcf7181ff27b72f30f07736e7771f9b508dacf0fb1ba7a0f5972ad1"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-hardened-recent-1024-failures.json.gz",
+      "bytes": 515445,
+      "sha256": "7070aa192ef57310b4fde8836df669938e74454a80004dc6bc291e38258e2fee"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-hardened-recent-1024.json.gz",
+      "bytes": 564021,
+      "sha256": "fdb5091b7e5f43e177c57d302a69b35f0633ad779e1e97613dedab35e87fd687"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-hardened-recent-2048-failures.json.gz",
+      "bytes": 519923,
+      "sha256": "1e70de746d6a15f2aa1084a16892532c9da8ce475ad0b9b4d95b34fbb7d2186e"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-hardened-recent-2048.json.gz",
+      "bytes": 587598,
+      "sha256": "98bfee916e57160996100bba7f3aaa330f2d38041b9cb71cc2408fee04d9ae65"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-hardened-recent-4096-failures.json.gz",
+      "bytes": 561717,
+      "sha256": "a25c529453632fcce022e2754f4ab8d0c9ba73de0014129638b0c0e34b2fdd71"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-hardened-recent-4096.json.gz",
+      "bytes": 651298,
+      "sha256": "d68748f3cfcc277280b764a87e996b6039dce670155aa7d6deb0044f8d3e36c0"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-hardened-recent-512-failures.json.gz",
+      "bytes": 505598,
+      "sha256": "e8f8325d43ba594aaac15cc91dc520c473685decb2eae4a7efcaa586d4a54290"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/original60-hardened-recent-512.json.gz",
+      "bytes": 554070,
+      "sha256": "11ac4519660d805d36f8594cff08f5aefacadcd3680019c20ce704a5798b2fae"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/final/summary.json",
+      "bytes": 49815,
+      "sha256": "15f55547ba59bce488e2604fb1910f035a804067001c6b4178b117dd13bf813f"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/main-exclusive-paths.log",
+      "bytes": 1164,
+      "sha256": "5ca89fe42b383ab6bce7cb05a277ba3a92811f5219bd6cf091c0a917f0e70911"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/typecheck.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/unit-tests.log",
+      "bytes": 6022,
+      "sha256": "2cba3eaf10f374946739a5ae6dddaa54a78d913215ee6778c189350b37579631"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/verification.json",
+      "bytes": 8814,
+      "sha256": "349fa35c22ed43f355148d2feb1cabad2877f16539e9677c9ee089427f5cf858"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/workspace-build.log",
+      "bytes": 4594,
+      "sha256": "d69936dc460629d698af5c331f8fcaaeefb9bf61449c9ca349a09bc0069cf04f"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/evidence/workspace-typecheck.log",
+      "bytes": 2400,
+      "sha256": "966e287efaa3b04f75e0ab64acefecefabdd1dcf626a2ff1c3455f672c680a8e"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/fixtures/.gitattributes",
+      "bytes": 8,
+      "sha256": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/fixtures/complex-history-1000.json",
+      "bytes": 1149490,
+      "sha256": "18231cb879f00ed0b3a7bf5bc936815ab17160463b7b1e65296cca6824a68c9f"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/fixtures/development-questions.json",
+      "bytes": 36513,
+      "sha256": "5d207224323ea0eca9920ddc9a163187981a51ea213505d8eee692bf88da8e88"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/fixtures/freeze-manifest.json",
+      "bytes": 1048,
+      "sha256": "8d57df608e343cc8940fe1e0da2091d2ca5aa1dca2d9bf9f990edc16443cc599"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/fixtures/frozen-questions.json",
+      "bytes": 29083,
+      "sha256": "0ca371a9135b2e58572550da31e2b3e26827a6ef6225422db11267eb3507fdc6"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/freeze.ts",
+      "bytes": 2534,
+      "sha256": "62bb6986916d61444eb98328514d827af91239c0125042bebe40256cbf8db2e1"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/interfaces.ts",
+      "bytes": 1026,
+      "sha256": "aebdaf5b26baf96a1747448a06c7a3ed4d60cd60ffad38a23ebfad45a1ed3144"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/oracle-authoring.ts",
+      "bytes": 3648,
+      "sha256": "2ce0591aa9c3fc75fd33783e4f0763b8ece0ff79c9d9260c56335cb6d7d5963c"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/package.json",
+      "bytes": 117,
+      "sha256": "edc9aee4c8b1e619b7712896d154e4a03deb9b9a519fbe4a9d35e11d77439eb8"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/query.ts",
+      "bytes": 840,
+      "sha256": "d48477db45e2287303bca452e31076aeffeadfb80bdfa4fa78bab39859f03c10"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/retrieval.test.ts",
+      "bytes": 4784,
+      "sha256": "b9d88b5d65fda812b31c1c4831b0fa51d82d19d30f8d263c41b7c6138b19059a"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/retrieval.ts",
+      "bytes": 12655,
+      "sha256": "11f898c2d6086ff8e48b17582ffc773859046e62777bb1b63586b787209332cf"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/tsconfig.json",
+      "bytes": 171,
+      "sha256": "7258ffc819bc58a8663125ded5fe4822a5c6cde6d7d2b8c1260bc737adccfe4e"
+    },
+    {
+      "path": "tests/experiments/p6-longmem-hardening/verify.ts",
+      "bytes": 3464,
+      "sha256": "856e455d5ddb155e7efe82f476597280957983f841053bab6482a334dbf275b5"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/README.md",
+      "bytes": 8315,
+      "sha256": "c3bffb445bef06ca0822c71ba09c78ef91094afb43e839b735ca5454e71ea2e3"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/adversarial.ts",
+      "bytes": 1068,
+      "sha256": "278de026f616b4228fb62dc27abcc32bb9c3c94cb7e3f3976080e5352c1ed3ab"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/anchors.json",
+      "bytes": 11525,
+      "sha256": "89d16efe6581e8dc6bfda8c3513a93de4def4e854baa32487446b0f166820e54"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/dataset.ts",
+      "bytes": 4372,
+      "sha256": "fb3f99d8752f3a11ff7b75357ba66db901f3e833ea1837c6de90592619773077"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/evaluate.ts",
+      "bytes": 7194,
+      "sha256": "25710d231dda5eea4912d7b85ce53297fcde40b8e7ad2700afd19916623fee2d"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/gold.ts",
+      "bytes": 9628,
+      "sha256": "33cada65515bbed6dd81996a14654994c55272b8490a2a4ebc73587e1ffac199"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/invariants.test.ts",
+      "bytes": 9991,
+      "sha256": "cbf5086eb567153974e5eb0a34dad341464a9268d30860914feef28da7dd0d33"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/package.json",
+      "bytes": 138,
+      "sha256": "8b3d43dfdd944ad4015d41acad7f2a3fbc73e355646e8b394f7156a9dbe1d7a0"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/query.ts",
+      "bytes": 1374,
+      "sha256": "518656fc7cef38dc3890621725c6149d78e7ceb1afd11e0c817f8d2b63fe8725"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/retrieval.ts",
+      "bytes": 13350,
+      "sha256": "2180e98af278bd0abd7f70e7d0d98b76a91e62710cf71d2280fa3bf99eaf61b2"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/review-boundaries.test.ts",
+      "bytes": 3312,
+      "sha256": "130186337914be0ed6a7d3929e00a717b5bb2358ced7d1b6ea024f47bfde93aa"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/run.ts",
+      "bytes": 4784,
+      "sha256": "ba22490be8f5d2c2c0b3454a671f08510eecd94781ea02a1bf1da88be8bc4d34"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/tsconfig.json",
+      "bytes": 189,
+      "sha256": "9318ea87214d2537c7c2067fc2f02701a3584ebd5f72d68e88f42d9b7291bbef"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/types.ts",
+      "bytes": 1964,
+      "sha256": "5c5f65b6f1c02fabce0cab8b810e960635d8eaafb49df21f189d298b85913d93"
+    },
+    {
+      "path": "tests/experiments/p6-longmem/verify-evidence.ts",
+      "bytes": 3484,
+      "sha256": "c427c02623bf33dd2883548a2726d45df6583f904a33c6c76dd734e174fe189a"
+    }
+  ]
+}

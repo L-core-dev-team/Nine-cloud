@@ -1,0 +1,6 @@
+AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+  assert.ok(q)
+
+    at main (C:\Users\11954\Desktop\水龙吟专用\项目\Nine-cloud-P6-integration-ready-20261013\tests\experiments\p6-integration-ready\verify-performance.cjs:9:478)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)

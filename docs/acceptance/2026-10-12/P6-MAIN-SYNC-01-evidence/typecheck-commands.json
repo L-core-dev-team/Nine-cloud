@@ -1,0 +1,31 @@
+[
+  {
+    "args": [
+      "C:\\Users\\11954\\Desktop\\水龙吟专用\\临时\\S-FINAL\\tools\\node_modules\\pnpm\\bin\\pnpm.cjs",
+      "typecheck"
+    ],
+    "started": "2026-10-12T04:48:38.079Z",
+    "finished": "2026-10-12T04:48:42.674Z",
+    "exitCode": 0
+  },
+  {
+    "args": [
+      "node_modules/typescript/bin/tsc",
+      "-p",
+      "tests/experiments/p6-longmem/tsconfig.json"
+    ],
+    "started": "2026-10-12T04:48:42.674Z",
+    "finished": "2026-10-12T04:48:42.855Z",
+    "exitCode": 0
+  },
+  {
+    "args": [
+      "node_modules/typescript/bin/tsc",
+      "-p",
+      "tests/experiments/p6-longmem-hardening/tsconfig.json"
+    ],
+    "started": "2026-10-12T04:48:42.855Z",
+    "finished": "2026-10-12T04:48:43.049Z",
+    "exitCode": 0
+  }
+]

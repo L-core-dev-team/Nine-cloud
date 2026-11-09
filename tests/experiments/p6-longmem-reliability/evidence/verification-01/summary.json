@@ -1,0 +1,101 @@
+{
+  "verifiedAt": "2026-10-13T06:38:58.569Z",
+  "sourceHead": "add233a7a6173f021df8f694ec9c68a8250b98ae",
+  "main": "2647439e0cccc9a136606a81131519f53253f125",
+  "queries": 3600,
+  "pass": 3564,
+  "fail": 36,
+  "spanChecks": 5028,
+  "scopeRecords": 28000,
+  "invalidWorldLabels": 21,
+  "checks": [
+    {
+      "kind": "complex",
+      "count": 1000,
+      "testedSourceSha": "1323c17d9d41408917b44cfb99f53c0db7b4f280",
+      "records": 400,
+      "restoredRoot": "a3c4a3283eaf7bc8a9d9d4b0f9e93ed137a319a87933373bebc5d09b7d025087",
+      "unboundWorldLabelsExcluded": 0
+    },
+    {
+      "kind": "complex",
+      "count": 3000,
+      "testedSourceSha": "1323c17d9d41408917b44cfb99f53c0db7b4f280",
+      "records": 400,
+      "restoredRoot": "147d945779eb432a974f36ae2248e9dc328d0e2ccfd119fc0d718a0441ee0cb2",
+      "unboundWorldLabelsExcluded": 0
+    },
+    {
+      "kind": "complex",
+      "count": 10000,
+      "testedSourceSha": "1323c17d9d41408917b44cfb99f53c0db7b4f280",
+      "records": 400,
+      "restoredRoot": "5dccdbe15429e9bf1e3df3afcf4cb5d1c73115b636c3a616f4ed5f9a2f28f6bb",
+      "unboundWorldLabelsExcluded": 0
+    },
+    {
+      "kind": "prose",
+      "count": 1000,
+      "testedSourceSha": "add233a7a6173f021df8f694ec9c68a8250b98ae",
+      "records": 800,
+      "restoredRoot": "b1372d1cf8d0a44dd1c9afd7a4048ddc617974b204510bfa53df73c35717cdfb",
+      "unboundWorldLabelsExcluded": 7
+    },
+    {
+      "kind": "prose",
+      "count": 3000,
+      "testedSourceSha": "add233a7a6173f021df8f694ec9c68a8250b98ae",
+      "records": 800,
+      "restoredRoot": "0f68c54524d4117eeeb1139dc51f4cc0ed9cf0e285bb176b4700b78616111d5f",
+      "unboundWorldLabelsExcluded": 7
+    },
+    {
+      "kind": "prose",
+      "count": 10000,
+      "testedSourceSha": "add233a7a6173f021df8f694ec9c68a8250b98ae",
+      "records": 800,
+      "restoredRoot": "3420d422f48560ad1c8cf7c677725f3c9ad09308609f55c79ed39aac00c37114",
+      "unboundWorldLabelsExcluded": 7
+    }
+  ],
+  "oldArtifactsUnchanged": true,
+  "productionMatchesMain": true,
+  "sourceLocks": [
+    {
+      "folder": "p6-longmem-hardening",
+      "file": "complex-history-1000.json",
+      "sha256": "18231cb879f00ed0b3a7bf5bc936815ab17160463b7b1e65296cca6824a68c9f"
+    },
+    {
+      "folder": "p6-longmem-hardening",
+      "file": "development-questions.json",
+      "sha256": "5d207224323ea0eca9920ddc9a163187981a51ea213505d8eee692bf88da8e88"
+    },
+    {
+      "folder": "p6-longmem-hardening",
+      "file": "frozen-questions.json",
+      "sha256": "0ca371a9135b2e58572550da31e2b3e26827a6ef6225422db11267eb3507fdc6"
+    },
+    {
+      "folder": "p6-longmem-prose",
+      "file": "history-1000.json",
+      "sha256": "2963dc2589b6f56a4de0fe3dee2ee01a70ae0c2a6a33325de88acd75ad302414"
+    },
+    {
+      "folder": "p6-longmem-prose",
+      "file": "development.json",
+      "sha256": "697ab2ab93385cfa971835f7cd33b5f1b0c2637375ea0c332c605d807bbfd95b"
+    },
+    {
+      "folder": "p6-longmem-prose",
+      "file": "holdout.json",
+      "sha256": "2c7e89694f28269cf9fbc92157db475a9c93a25aff6952612bab033d93cec033"
+    }
+  ],
+  "remainingUniqueQuestions": [
+    "H-10-0",
+    "H-14-2",
+    "H-16-1"
+  ],
+  "crashRecovery": true
+}

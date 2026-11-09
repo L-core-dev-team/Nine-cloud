@@ -1,0 +1,1 @@
+{"pid":4512,"root":"5dccdbe15429e9bf1e3df3afcf4cb5d1c73115b636c3a616f4ed5f9a2f28f6bb","count":10000,"saved":10000,"duplicates":0,"writeMs":8264.4,"writeP50Ms":0.7716000000000349,"writeP95Ms":1.0677000000005137,"duplicateMs":1.4872999999988679,"dbBytes":23334912,"bodyBytes":1873663,"heapUsed":37332208,"sqlite":"WAL + synchronous FULL"}
