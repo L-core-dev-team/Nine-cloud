@@ -22,3 +22,4 @@ scripts/*
 !scripts/verify-auth-mail.mjs
 !scripts/api-production-smoke.mjs
 !scripts/api-account-expiry.mjs
+!scripts/p1-rule-semantic-source-digest.mjs

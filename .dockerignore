@@ -26,3 +26,4 @@ deployment/runtime
 deployment/backups
 
 !scripts/api-account-expiry.mjs
+!scripts/p1-rule-semantic-source-digest.mjs
