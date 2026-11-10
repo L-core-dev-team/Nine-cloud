@@ -1,5 +1,5 @@
 import {ISOLATED_PLAYTEST} from '../playtest-channel';
-import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type FormEvent } from 'react';
 import { ActionIntentSchema, SaveEnvelopeSchema, TurnReceiptSchema, type SaveEnvelope, type TurnReceipt } from '@jiuxiao/contracts';
 import { CloudHttpError, cloudRequest } from '../cloud-sync';
 import { createIdempotencyKey, readActionDraft, writeActionDraft } from '../storage';
@@ -75,6 +75,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
 
   const sending = useRef(false);
   const resultRegion = useRef<HTMLElement>(null);
+  const presentingReceipt = useRef<string | null>(null);
   const [notice, setNotice] = useState('正在读取服务端存档……');
   // P3 cache uses API/account/save scope; legacy draft is read only during owned-save migration.
   const changeText=(value:string)=>{setText(value);const current=bridge.current;if(current)void current.edit(value).then(()=>current.ready()).catch(()=>{setCacheReady(false);setNotice('草稿未保存：本机存储不可用或另一页面已修改。请保留输入并重新进入核对，当前不能提交。');});};
@@ -86,7 +87,6 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
       else sessionStorage.removeItem(key);
     } catch { /* The in-memory recovery request remains available. */ }
   }, [saveId, pendingTurn]);
-  useEffect(() => { if (receipt) resultRegion.current?.scrollIntoView({ block: 'nearest' }); }, [receipt]);
 
   const refresh = useCallback(async (restorePresentation = false) => {
     setNotFound(false);
@@ -257,6 +257,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
         setNotice(plan.message);
         return;
       }
+      presentingReceipt.current=nextReceipt.idempotencyKey;
       setReceipt(nextReceipt);
       const resultNarrative = result.narrative && typeof result.narrative === 'object'
         ? result.narrative as Record<string, unknown> : undefined;
@@ -327,6 +328,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
       if(confirmed.saveId!==saveId||confirmed.idempotencyKey!==target.idempotencyKey)throw new Error('INVALID_RECEIPT');
       const local=await bridge.current?.finish(target.idempotencyKey,confirmed,'服务端已确认此行动；原正文将从剧情记录读取。');
       if(!local)throw new Error('GAME_CACHE_UNAVAILABLE');
+      presentingReceipt.current=confirmed.idempotencyKey;
       setReceipt(confirmed);setPendingTurn(null);setText(local.draft);await refresh();setNotice('已从服务端恢复回执；没有重新结算。');
     }catch{setNotice('暂时无法查询，待决请求保持不变。');}finally{setBusy(false);}
   }
@@ -354,6 +356,22 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
   }
   const eventRows=projectReceiptEvents(receipt);
   const currentInHistory=history.some(row=>row.receipt.idempotencyKey===receipt?.idempotencyKey&&!!row.text);
+  useLayoutEffect(()=>{
+    // A real reply first renders while its local cache is being committed, then
+    // becomes a taller history entry. Re-align both phases and the settled UI.
+    // Passive archive/cache restoration never overrides a reader's saved anchor.
+    if(!receipt||presentingReceipt.current!==receipt.idempotencyKey)return;
+    const result=resultRegion.current,reading=result?.closest<HTMLElement>('.story-reading');
+    if(!result||!reading)return;
+    const target=receipt.decision.status==='accepted'?(result.querySelector<HTMLElement>('p')??result):result;
+    const padding=Number.parseFloat(getComputedStyle(reading).paddingTop)||0;
+    reading.scrollTop+=target.getBoundingClientRect().top-reading.getBoundingClientRect().top-padding;
+    if(!busy&&!pendingTurn&&(receipt.decision.status!=='accepted'||currentInHistory)){
+      presentingReceipt.current=null;
+      if(receipt.decision.status==='accepted')rememberPosition({entryId:receipt.idempotencyKey,
+        fraction:Math.max(0,Math.min(1,(reading.getBoundingClientRect().top-result.getBoundingClientRect().top)/Math.max(1,result.offsetHeight)))});
+    }
+  },[receipt,currentInHistory,busy,pendingTurn,rememberPosition]);
   const canAct=cacheReady&&!!save&&!busy&&!refreshBusy&&!saveNeedsRefresh&&!pendingTurn&&!rulesUnavailable;
   return <GameShell saveId={saveId} readingReady={!!save&&cacheReady&&!refreshBusy} immersive readingScope={cacheKey} readingPosition={readingPosition} onReadingPositionChange={rememberPosition}>
     <header className="story-header"><div><span className="eyebrow">{ISOLATED_PLAYTEST?'九霄 · 隔离试玩':'九霄 · 行旅'}</span><h1>{scene}</h1></div>
@@ -364,7 +382,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
       <div className="story-reading" role="region" tabIndex={0} aria-label="剧情记录">
         {nextBefore!==null&&<button className="quiet-action" onClick={()=>void loadEarlier()}>读取更早的经历</button>}
         {save&&!!opening.length&&<article className="story-prose" data-reading-id="opening" aria-label="故事开场">{opening.map((line,index)=><p key={index}>{line}</p>)}</article>}
-        {save&&history.map(row=><article className="story-prose story-history-entry" data-reading-id={row.receipt.idempotencyKey} data-story-revision={row.receipt.resultingRevision} key={row.receipt.idempotencyKey}>
+        {save&&history.map(row=><article ref={row.receipt.idempotencyKey===receipt?.idempotencyKey?resultRegion:undefined} className="story-prose story-history-entry" data-reading-id={row.receipt.idempotencyKey} data-story-revision={row.receipt.resultingRevision} key={row.receipt.idempotencyKey}>
           <span className="story-turn-kind">{turnLabel(row.receipt)}{row.source==='local-cache'?' · 本机保留的原文':''}</span>
           {row.text?<div data-testid={row.receipt.idempotencyKey===receipt?.idempotencyKey?'p2-narrative':undefined}>{row.text.split(/\n+/).map((line,index)=><p key={index}>{line}</p>)}</div>
             :<p className="quiet-note">这段经历的原剧情尚未留存，行动记录仍在。</p>}
@@ -376,7 +394,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
         </section>}
         {save&&!!narrative&&!currentInHistory&&receipt?.decision.status==='accepted'&&<section data-reading-id={receipt?.idempotencyKey} ref={resultRegion} className="story-prose" aria-live="polite"><p data-testid="p2-narrative">{narrative}</p></section>}
         {!save&&<section className="story-action-feedback"><h2>{notFound?'找不到这份存档':'行旅尚未载入'}</h2><p data-testid="p2-status" role="status">{notice}</p><div className="actions"><button onClick={()=>void reloadSave()} disabled={refreshBusy}>重新读取存档</button><button onClick={notFound?onHome:onLogin}>{notFound?'回到首页':'账号与云档'}</button></div></section>}
-        <section className="story-reading-end" ref={receipt?.decision.status==='accepted'?resultRegion:undefined} />
+        <section className="story-reading-end" />
       </div>
       {save&&<section className={`story-action-area${pendingTurn&&!busy?' story-awaiting-confirmation':''}`} aria-label="接下来怎么做">
         {draftConflict!==undefined&&<details open className="story-draft-conflict"><summary>还有一段未保存的输入</summary><p>另一页面已保存不同草稿。请先复制下面这段文字保留，再核对已保存的草稿；当前不能提交行动。</p><textarea aria-label="尚未保存的输入" readOnly value={draftConflict}/><button type="button" onClick={()=>{bridge.current?.discardJournal();window.location.reload();}}>使用已保存的草稿</button></details>}
