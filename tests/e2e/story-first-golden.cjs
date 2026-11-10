@@ -155,7 +155,18 @@ async function stop(child) {
     await page.addInitScript(()=>{
       window.__storyPerf={};
       document.addEventListener('click',event=>{if(event.target.closest?.('[data-testid="p2-submit-action"]')) {
-        window.__storyPerf={expectedRevision:document.querySelectorAll('[data-story-revision]').length+1,start:performance.now(),scrollBefore:document.querySelector('.story-reading')?.scrollTop??0};
+        const p=window.__storyPerf={expectedRevision:document.querySelectorAll('[data-story-revision]').length+1,start:performance.now(),scrollBefore:document.querySelector('.story-reading')?.scrollTop??0,
+          previousReadingId:document.querySelector('[data-testid="p2-narrative"]')?.closest('[data-reading-id]')?.getAttribute('data-reading-id')??null};
+        const visible=()=>{
+          if(window.__storyPerf!==p)return;
+          const narrative=document.querySelector('[data-testid="p2-narrative"]'),reading=document.querySelector('.story-reading');
+          const paragraph=narrative?.matches('p')?narrative:narrative?.querySelector('p');
+          if(paragraph&&reading&&narrative.closest('[data-reading-id]')?.getAttribute('data-reading-id')!==p.previousReadingId){
+            const a=paragraph.getBoundingClientRect(),b=reading.getBoundingClientRect(),line=Number.parseFloat(getComputedStyle(paragraph).lineHeight)||16;
+            if(a.top>=b.top&&Math.min(a.bottom,a.top+line)<=b.bottom){p.firstVisibleTextMs=performance.now()-p.start;return;}
+          }
+          if(performance.now()-p.start<30000)requestAnimationFrame(visible);
+        };requestAnimationFrame(visible);
       }},true);
       new MutationObserver(()=>{
         const p=window.__storyPerf;if(!p.start)return;
@@ -163,8 +174,8 @@ async function stop(child) {
         const button=document.querySelector('[data-testid="p2-submit-action"]');
         if(button?.textContent.includes('正在')&&!p.busyMs)p.busyMs=performance.now()-p.start;
         const rows=document.querySelectorAll('[data-story-revision]');
-        if(rows.length>=(p.expectedRevision??Infinity)&&!p.firstTextMs){p.firstTextMs=performance.now()-p.start;p.completeTextMs=p.firstTextMs;}
-        if(p.firstTextMs&&input&&!input.disabled&&!p.inputReadyMs){p.inputReadyMs=performance.now()-p.start;p.scrollAfter=document.querySelector('.story-reading')?.scrollTop??0;}
+        if(rows.length>=(p.expectedRevision??Infinity)&&!p.firstTextDomMs){p.firstTextDomMs=performance.now()-p.start;p.completeTextDomMs=p.firstTextDomMs;}
+        if(p.firstTextDomMs&&input&&!input.disabled&&!p.inputReadyMs){p.inputReadyMs=performance.now()-p.start;p.scrollAfter=document.querySelector('.story-reading')?.scrollTop??0;}
       }).observe(document,{subtree:true,childList:true,attributes:true,characterData:true});
       try { new PerformanceObserver(list=>{const p=window.__storyPerf;if(p.start)p.layoutShift=(p.layoutShift??0)+list.getEntries().reduce((sum,e)=>sum+e.value,0);}).observe({type:'layout-shift',buffered:false}); }catch{}
     });
@@ -197,10 +208,16 @@ async function stop(child) {
       await page.waitForFunction(()=>!document.querySelector('[data-testid="p2-action-input"]').disabled);
       assert.equal(await page.locator('.story-history-entry').last().getAttribute('data-reading-id'),body.receipt.idempotencyKey,'the visible story must belong to the real receipt forwarded by the harness');
       assert.equal(await page.getByTestId('p2-narrative').textContent(),body.narrative.text.split(/\n+/).join(''),'the browser must render the complete upstream narrative');
+      const feedbackPosition=await page.getByTestId('p2-narrative').locator('p').first().evaluate(paragraph=>{
+        const reading=paragraph.closest('.story-reading');const p=paragraph.getBoundingClientRect(),r=reading.getBoundingClientRect();
+        return {top:p.top,bottom:p.bottom,readingTop:r.top,readingBottom:r.bottom,fullyVisible:p.top>=r.top&&p.bottom<=r.bottom};
+      });
+      assert.equal(feedbackPosition.fullyVisible,true,`settled turn ${revision} must show its first feedback paragraph: ${JSON.stringify(feedbackPosition)}`);
+      await page.waitForFunction(()=>window.__storyPerf.firstVisibleTextMs>0);
       const api=await page.evaluate(async id=>await (await fetch(`/api/games/${id}/story`)).json(),saveId);
       assert.equal(api.items.length,revision);assert.equal(api.items.at(-1).text,body.narrative.text,'archive must retain the complete exact returned text, including approved hints');
       const perf=await page.evaluate(()=>window.__storyPerf);timings.push({revision,...perf,apiRoundTripMs:apiRoundTrips.get(body.receipt.idempotencyKey)??null,httpAndUIWallMs:Date.now()-started});
-      snapshots.push({revision,text:body.narrative.text,events:body.receipt.decision.events.map(e=>e.type),responseSha256:realTurnReplies.get(body.receipt.idempotencyKey).sha256});return body;
+      snapshots.push({revision,text:body.narrative.text,events:body.receipt.decision.events.map(e=>e.type),responseSha256:realTurnReplies.get(body.receipt.idempotencyKey).sha256,feedbackPosition});return body;
     }
     await act('对岑九说：这石头怎么办',1);
     await suggest('acquire:src_ferry_shore');
@@ -229,6 +246,9 @@ async function stop(child) {
     releaseStoryResponse();heldStoryResponse = null;
     await page.waitForFunction(()=>!document.querySelector('[data-testid="p2-action-input"]').disabled);
     assert.deepEqual(await page.locator('.story-history-entry').allTextContents(),originalHistory,'all story paragraphs must return unchanged after reload');
+    assert.equal(await page.locator('.story-history-entry').last().locator('p').first().evaluate(p=>{
+      const a=p.getBoundingClientRect(),b=p.closest('.story-reading').getBoundingClientRect();return a.top>=b.top&&a.bottom<=b.bottom;
+    }),true,'refresh must retain the newest presented story anchor when the reader did not scroll elsewhere');
     const history=await page.evaluate(async id=>await (await fetch(`/api/games/${id}/story`)).json(),saveId);assert.equal(history.items.length,10);
     const archive=await pool.query('SELECT count(*)::int AS count FROM story_narratives WHERE save_id=$1',[saveId]);assert.equal(archive.rows[0].count,10);
     await assert.rejects(pool.query('UPDATE story_narratives SET narrative_text=$2 WHERE save_id=$1',[saveId,'must not overwrite']),/STORY_NARRATIVE_IMMUTABLE/);
