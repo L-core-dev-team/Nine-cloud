@@ -120,7 +120,8 @@ jobs:
         run: pnpm test:integration
         env:
           TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jiuxiao_test
-      - run: pnpm exec playwright install --with-deps chromium
+      - name: Install Chromium with bounded official-source recovery
+        run: bash scripts/build/install-ci-chromium.sh
       - name: Verify card entry mounting capability (mock API browser display)
         run: node tests/e2e/card-availability.cjs
       - run: pnpm test:e2e
@@ -161,6 +162,14 @@ jobs:
             test-results/review-bundle/
             test-results/cloud/
             test-results/turns/
+      - name: Preserve browser installation diagnostics
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: browser-install-diagnostics-${{ github.event.pull_request.head.sha || github.sha }}
+          retention-days: 14
+          if-no-files-found: ignore
+          path: test-results/ci-install/
 
   badge:
     # The repository is private, so the native Actions badge 404s for
