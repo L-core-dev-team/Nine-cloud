@@ -1,3 +1,5 @@
+import { localCardOptions, verifyLocalCardSchema } from './card-import/local-runtime.js';
+import { eraseCardImports } from './card-import/host.js';
 import { ensureP1NarrativeHints } from './services/p1-narrative-hints.js';
 import { StoryArchive } from './services/story-archive.js';
 import {configureAccountQuota} from './services/account-rate-limit.js';
@@ -31,7 +33,12 @@ if(process.env.NODE_ENV==='production'&&process.env.STORY_ARCHIVE_ENABLED==='tru
 const pool = new Pool({ connectionString: databaseUrl, max: 5, connectionTimeoutMillis: 3_000 });
 configureAccountQuota(pool);
 pool.on('error', () => { console.error('Database connection unavailable.'); });
-const emailAuth = createEmailAuthRuntime(pool, process.env);
+const cards = localCardOptions(pool, process.env);
+const emailAuth = createEmailAuthRuntime(pool, process.env, cards ? { beforeDelete: eraseCardImports } : undefined);
+if (cards) {
+  if (!emailAuth) throw new Error('CARD_AUTH_REQUIRED');
+  await verifyLocalCardSchema(pool);
+}
 if(process.env.AUTH_MAIL_PREFLIGHT==='true')await emailAuth?.verifyMail();
 const plugin=emailAuth?await loadConfiguredTurnPlugin(process.env):undefined;
 const preparedRuntime=plugin?prepareTurnRuntime(plugin,await loadNarrativeSlots(process.env.NARRATIVE_CONFIG_PATH,process.env),Number(process.env.NARRATIVE_OUTPUT_BUDGET||32768)):undefined;
@@ -57,7 +64,7 @@ const app = createApp({ query: sql => pool.query(sql) }, emailAuth ? {
   ...(storyArchive?{storyArchive}:{}),
   auth: { resolveOwnerId: async request => (await emailAuth.service.resolve(sessionToken(request)))?.ownerId || null },
   memoryRecall: turnRepository.recallObservationPage ? { reader: turnRepository.recallObservationPage } : undefined,
-} : undefined);
+} : undefined, cards);
 
 const server = serve({ fetch: app.fetch, port, hostname });
 console.log(`jiuxiao-api listening on ${hostname}:${port}`);

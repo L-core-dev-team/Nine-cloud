@@ -1,0 +1,212 @@
+{
+  "scope": "LOCAL_TEST_ONLY",
+  "database": "new loopback PostgreSQL 18.4 instance port 55491; synthetic data only",
+  "credentials": "not included; role-specific test fixture grants are not a production installer",
+  "tests": [
+    {
+      "command": "pnpm --filter @jiuxiao/contracts --filter @jiuxiao/content --filter @jiuxiao/domain build",
+      "exitCode": 0,
+      "status": "PASS",
+      "log": {
+        "file": "main-integration-foundation-build-20261111.log",
+        "bytes": 264,
+        "sha256": "314d747d9a4bb9c3aac3f9f277cc84d4b010da6b372acc135fa9914171aea106"
+      }
+    },
+    {
+      "command": "pnpm --filter @jiuxiao/api typecheck && pnpm --filter @jiuxiao/web typecheck",
+      "exitCode": 0,
+      "status": "PASS",
+      "log": {
+        "file": "main-integration-typecheck-final-20261111.log",
+        "bytes": 188,
+        "sha256": "5d34d490080b53cf38aeb854b8ee09b06eb75d0771f6718104bdf4c3016218d2"
+      }
+    },
+    {
+      "command": "pnpm --filter @jiuxiao/api build",
+      "exitCode": 0,
+      "status": "PASS",
+      "log": {
+        "file": "main-integration-api-build-final-20261111.log",
+        "bytes": 24,
+        "sha256": "f876ec7553e281fa587d8701697920d525b114d9d39b68dbbc592bcfec6b09ce"
+      }
+    },
+    {
+      "command": "pnpm --filter @jiuxiao/web build",
+      "exitCode": 0,
+      "status": "PASS",
+      "log": {
+        "file": "main-integration-web-build-final-20261111.log",
+        "bytes": 1209,
+        "sha256": "e9507fb67cac170e332de22d7238d8fd2cab09bc8dcc49cec0dced6d070b6005"
+      }
+    },
+    {
+      "command": "pnpm --filter @jiuxiao/api test",
+      "exitCode": 0,
+      "status": "PASS",
+      "passed": 387,
+      "skipped": 87,
+      "databaseGuardPassed": 7,
+      "log": {
+        "file": "main-integration-api-unit-final-20261111.log",
+        "bytes": 1253,
+        "sha256": "36987b69e535515af29d0ecaa0faaaa064b6310dad92c141bb98a05beb1caf5b"
+      }
+    },
+    {
+      "command": "pnpm --filter @jiuxiao/web test",
+      "exitCode": 0,
+      "status": "PASS",
+      "passed": 255,
+      "log": {
+        "file": "main-integration-web-unit-20261111.log",
+        "bytes": 893,
+        "sha256": "111688c5ab6bc05c28e6e3bb2b48ea897a359653a95b0d6180997fc6290b92da"
+      }
+    },
+    {
+      "command": "pnpm --filter @jiuxiao/api exec vitest run src/card-import/host.integration.test.ts src/card-import/card-import.integration.test.ts src/card-import/joint-host.integration.test.ts --maxWorkers=1",
+      "exitCode": 0,
+      "status": "PASS",
+      "passed": 35,
+      "log": {
+        "file": "main-integration-card-pg-20261111.log",
+        "bytes": 439,
+        "sha256": "76f5acae244bc70dbb634478bbab425ac31fb2e1169922969048ab3d6edd8635"
+      }
+    },
+    {
+      "command": "pnpm --filter @jiuxiao/api exec vitest run src/services/account-lifecycle.integration.test.ts src/services/story-archive.integration.test.ts src/services/server-turn.integration.test.ts src/services/main-integration-lifecycle.integration.test.ts --maxWorkers=1",
+      "exitCode": 0,
+      "status": "PASS",
+      "passed": 23,
+      "includesEarlierTwoCompositionTests": true,
+      "log": {
+        "file": "main-integration-native-lifecycle-pg-final-20261111.log",
+        "bytes": 439,
+        "sha256": "0165a497acc65fe69fd49754b26251b2b27456405c4b3f961b41e98db5545d81"
+      }
+    },
+    {
+      "command": "pnpm --filter @jiuxiao/api exec vitest run src/services/main-integration-lifecycle.integration.test.ts --maxWorkers=1",
+      "exitCode": 0,
+      "status": "PASS",
+      "passed": 4,
+      "supersedesEarlierTwoCompositionTests": true,
+      "log": {
+        "file": "main-integration-erasure-final-20261111.log",
+        "bytes": 235,
+        "sha256": "9f485ab73d8fa03771566c44703375cb0f8e1e20907f906e6dea0e8dd59340e5"
+      }
+    },
+    {
+      "command": "node tests/e2e/local-node-card-host.mjs",
+      "exitCode": 0,
+      "status": "PASS",
+      "log": {
+        "file": "main-integration-ordinary-host-final-20261111.log",
+        "bytes": 199,
+        "sha256": "e5912f286c2ffed7dd857e99d017425128ea7631ae86827350cb3e5877407b94"
+      }
+    },
+    {
+      "command": "node tests/e2e/card-ui-s1-real.cjs",
+      "exitCode": 0,
+      "status": "PASS",
+      "log": {
+        "file": "main-integration-s1-browser-20261111.log",
+        "bytes": 786,
+        "sha256": "7474a0c87e443f1e770f7e25d9aa0182ee632475fb885fd30e1dcb00c87e4a56"
+      }
+    },
+    {
+      "command": "node tests/e2e/card-ui-s2-real.cjs",
+      "exitCode": 0,
+      "status": "PASS",
+      "log": {
+        "file": "main-integration-s2-browser-20261111.log",
+        "bytes": 648,
+        "sha256": "17035a4c245642038a8157c3b6c438ee0150e5d09206143dd5718b63768abdb4"
+      }
+    },
+    {
+      "command": "node tests/e2e/story-first-golden.cjs",
+      "exitCode": 0,
+      "status": "PASS",
+      "log": {
+        "file": "main-integration-story-browser-20261111.log",
+        "bytes": 5449,
+        "sha256": "3934d1348abd47443b6f325c3bc065edb653fba9f3132e368cae69247a03c10a"
+      }
+    }
+  ],
+  "uniquePgCount": 60,
+  "configurationNotes": [
+    "Set per-suite TEST_DATABASE_URL / CARD_IMPORT_*_TEST_DATABASE_URL / JOINT_TEST_DATABASE_URL / MAIN_COMPOSITION_TEST_DATABASE_URL to isolated jiuxiao_test_* databases as guarded by source tests.",
+    "Set CARD_UI_TEST_DATABASE_URL for browser fixtures. S1/S2 use explicit test host on 8788 and Vite on 5174; synthetic provider, actual Cookie/Session.",
+    "Ordinary Node entry runs from built index.js, explicit local synthetic flag; no migration or external model request.",
+    "Browser emulation is not a physical mobile keyboard test.",
+    "Story golden retains its original NOT_PROVEN and HUMAN_REQUIRED qualifications."
+  ],
+  "retainedFailureLogs": [
+    {
+      "file": "main-integration-api-unit-20261111.log",
+      "bytes": 4719,
+      "sha256": "97e6896f2cc1d7620d8e3b89c55931949cd294b46450b930544622f22237ff12",
+      "status": "FAIL_THEN_TARGETED_RECHECK_PASSED"
+    },
+    {
+      "file": "main-integration-unit-20261111.log",
+      "bytes": 4053,
+      "sha256": "24cccf85b6fd1c4549633f7032713d78a405b1bdf4bd0d8893dd243f413eaa8d",
+      "status": "FAIL_THEN_TARGETED_RECHECK_PASSED"
+    },
+    {
+      "file": "main-integration-unit-retry-20261111.log",
+      "bytes": 3536,
+      "sha256": "7d7b17e2221632cc6dbbf1752938f99875e1d2f53346c20076e9b4fd9db9c3d0",
+      "status": "FAIL_THEN_TARGETED_RECHECK_PASSED"
+    },
+    {
+      "file": "main-integration-build-20261111.log",
+      "bytes": 5357,
+      "sha256": "154851384ec0920bc61a154dad59d89efc6ff29a5e4ed38534994b86bdde9a19",
+      "status": "FAIL_THEN_TARGETED_RECHECK_PASSED"
+    },
+    {
+      "file": "main-integration-build-retry-20261111.log",
+      "bytes": 2007,
+      "sha256": "c5206af30c29b882c8bf5943f0dcc67c7de3227b044715d2f34b2ef59206feb5",
+      "status": "FAIL_THEN_TARGETED_RECHECK_PASSED"
+    },
+    {
+      "file": "main-integration-native-lifecycle-pg-20261111.log",
+      "bytes": 6024,
+      "sha256": "5ac65abc3e6570dc7664f4fdabb4847f52e8030029b3a1c35fc820569b767e71",
+      "status": "FAIL_THEN_TARGETED_RECHECK_PASSED"
+    },
+    {
+      "file": "main-integration-native-lifecycle-pg-retry-20261111.log",
+      "bytes": 4214,
+      "sha256": "df54ad10f3b84172499209e58947604b223e7ec41eaa5922c5d993ca5aa82c14",
+      "status": "FAIL_THEN_TARGETED_RECHECK_PASSED"
+    },
+    {
+      "file": "main-integration-ordinary-host-20261111.log",
+      "bytes": 531,
+      "sha256": "53fa62c1d6e750cb5949cf14e91d443c9a4a863184e890932c030e652eb52d1d",
+      "status": "FAIL_THEN_TARGETED_RECHECK_PASSED"
+    }
+  ],
+  "notVerified": [
+    "Full T1 publication chain",
+    "Remote CI",
+    "Real model/token billing",
+    "Physical devices",
+    "Production migration/release",
+    "Cross-system Supabase deletion atomicity"
+  ]
+}

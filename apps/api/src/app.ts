@@ -1,3 +1,4 @@
+import { cardImportHost, type CardImportHostOptions } from './card-import/host.js';
 import type { StoryArchive } from './services/story-archive.js';
 import { Hono } from 'hono';
 import { mountServerTurnRoutes, type ServerTurnRouteDependencies } from './routes/turns.js';
@@ -25,7 +26,8 @@ export function createApp(database?: ReadinessDatabase, cloudSaves?: {
   service: CloudSaveService;
   auth: CloudSaveRouteAuth;
   archive?: CloudArchiveLifecycle;
-}, emailAuth?: { service: AuthSessionService; routesService?: AuthSessionService; supabaseAuth?: SupabaseAuthService | undefined; origin: string; cookieSameSite?: 'Strict' | 'None'; trustedProxyAddresses?: readonly string[]; privacyPolicyUrl?: string | null; privacyPolicyVersion?: string | null; lifecycle?: AccountLifecycle; exporter?: AccountExport; accountQuota?: AccountQuotaLimiter; emailCaptcha?: ((token: unknown, remoteIp?: string) => Promise<void>) | undefined }, turns?: ServerTurnRouteDependencies & {storyArchive?:StoryArchive;readReceipt?:(owner:string,saveId:string,key:string)=>Promise<import('@jiuxiao/contracts').TurnReceipt|null>;games?:AuthoritativeGameService;memoryRecall?:{reader:AuthorizedRecallPageReader}|undefined}) {
+}, emailAuth?: { service: AuthSessionService; routesService?: AuthSessionService; supabaseAuth?: SupabaseAuthService | undefined; origin: string; cookieSameSite?: 'Strict' | 'None'; trustedProxyAddresses?: readonly string[]; privacyPolicyUrl?: string | null; privacyPolicyVersion?: string | null; lifecycle?: AccountLifecycle; exporter?: AccountExport; accountQuota?: AccountQuotaLimiter; emailCaptcha?: ((token: unknown, remoteIp?: string) => Promise<void>) | undefined }, turns?: ServerTurnRouteDependencies & {storyArchive?:StoryArchive;readReceipt?:(owner:string,saveId:string,key:string)=>Promise<import('@jiuxiao/contracts').TurnReceipt|null>;games?:AuthoritativeGameService;memoryRecall?:{reader:AuthorizedRecallPageReader}|undefined}, cards?: CardImportHostOptions) {
+  if (cards && !emailAuth) throw new Error('CARD_AUTH_REQUIRED');
   const app = new Hono();
   if (emailAuth) mountAuth(app, emailAuth.routesService ?? emailAuth.service, emailAuth.origin, emailAuth.cookieSameSite, emailAuth.trustedProxyAddresses,
     () => ({ ...(emailAuth.supabaseAuth?.providers() ?? { email: true, phone: false }),
@@ -34,6 +36,8 @@ export function createApp(database?: ReadinessDatabase, cloudSaves?: {
     emailAuth.emailCaptcha);
   if (emailAuth?.supabaseAuth) mountSupabasePhoneAuth(app, emailAuth.supabaseAuth, emailAuth.service, emailAuth.origin, emailAuth.cookieSameSite, emailAuth.trustedProxyAddresses);
   if (emailAuth?.lifecycle && emailAuth.exporter) mountAccount(app, emailAuth.service, emailAuth.lifecycle, emailAuth.exporter, emailAuth.origin, emailAuth.cookieSameSite, emailAuth.accountQuota);
+
+  if (cards && emailAuth) app.route('/api/card-import', cardImportHost(cards, emailAuth.service, emailAuth.origin));
 
   app.get('/health', c => c.json({ status: 'ok', service: 'jiuxiao-api',
     saveSchemaVersion: SAVE_SCHEMA_VERSION }));
