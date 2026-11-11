@@ -12,7 +12,7 @@ export function mountAccount(app:Hono,auth:Pick<AuthSessionService,'resolve'>,li
  // require an email session. Guests upgrade through /api/auth/guest/upgrade and
  // become an email session before any of this becomes reachable.
  const ownerFor=async(req:Request)=>{const token=sessionToken(req);const session=await auth.resolve(token);if(!session||session.kind!=='email')return null;const expected=req.headers.get('x-jiuxiao-account');return token&&(!expected||session.ownerId===expected)?{owner:session.ownerId,hash:hashToken(token)}:null;};
- app.get('/api/account/capabilities',async c=>await ownerFor(c.req.raw)?c.json(lifecycle.capabilities()):c.json({code:'UNAUTHENTICATED'},401));
+ app.get('/api/account/capabilities',async c=>await ownerFor(c.req.raw)?c.json(await lifecycle.capabilities()):c.json({code:'UNAUTHENTICATED'},401));
  app.get('/api/account/export',async c=>{
   const account=await ownerFor(c.req.raw);if(!account)return c.json({code:'UNAUTHENTICATED'},401);
   if(!await quota(account.owner,'export',6,3_600_000))return c.json({code:'RATE_LIMITED'},429);

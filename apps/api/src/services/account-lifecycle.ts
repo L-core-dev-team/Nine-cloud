@@ -1,3 +1,4 @@
+import { eraseNarrativeForOwner } from './narrative-publication-repository.js';
 import { createHash, createHmac, randomInt, randomUUID, timingSafeEqual } from 'node:crypto';
 import type { Pool,PoolClient } from 'pg';
 import { normalizeEmail, type AuthMailSender } from './email-auth.js';
@@ -7,8 +8,10 @@ export class AccountLifecycleError extends Error {constructor(readonly code:stri
 export class AccountLifecycle {
  constructor(private readonly pool:Pool,private readonly send:AuthMailSender,private readonly secret:string,readonly policyVersion:string|null=null,readonly deletionEnabled=false,private readonly policyValid:()=>boolean=()=>true,
   private readonly onEmailChange?: (client:PoolClient,ownerId:string,newEmail:string)=>Promise<void>,
-  private readonly beforeDelete?: (client:PoolClient,ownerId:string)=>Promise<void>){if(Buffer.byteLength(secret)<32)throw new Error('AUTH_SECRET_REQUIRED');}
- capabilities(){return {emailChange:true,close:Boolean(this.policyVersion&&this.policyValid()),permanentDelete:Boolean(this.policyVersion&&this.deletionEnabled&&this.policyValid()),policyVersion:this.policyVersion};}
+  private readonly beforeDelete?: (client:PoolClient,ownerId:string)=>Promise<void>,
+  private readonly erasurePool?: Pool){if(Buffer.byteLength(secret)<32)throw new Error('AUTH_SECRET_REQUIRED');}
+ private async erasureIdentity(c:PoolClient){const row=(await c.query("SELECT pg_has_role(session_user,'jiuxiao_narrative_erasure','MEMBER') AS authorized,rolsuper,rolcreatedb,rolcreaterole,rolbypassrls FROM pg_roles WHERE rolname=session_user")).rows[0];return Boolean(row?.authorized&&!row.rolsuper&&!row.rolcreatedb&&!row.rolcreaterole&&!row.rolbypassrls);}
+ async capabilities(){let ready=false;if(this.erasurePool&&this.policyVersion&&this.deletionEnabled&&this.policyValid()){let c:PoolClient|undefined;try{c=await this.erasurePool.connect();ready=await this.erasureIdentity(c);}catch{ready=false;}finally{c?.release();}}return {emailChange:true,close:Boolean(this.policyVersion&&this.policyValid()),permanentDelete:ready,policyVersion:this.policyVersion};}
  async cancel(owner:string,sessionHash:string,id:string){const result=await this.pool.query("UPDATE account_operations SET phase='cancelled',digest=NULL WHERE id=$1 AND owner_id=$2 AND session_hash=$3 AND phase IN ('old','new','ready','failed')",[id,owner,sessionHash]);return {status:result.rowCount?'cancelled':'already_inactive'};}
  private digest(id:string,phase:string,email:string,code:string){return createHmac('sha256',this.secret).update(`account-operation\0${id}\0${phase}\0${email}\0${code}`).digest('hex');}
  private async account(c:PoolClient,owner:string,sessionHash:string){return (await c.query('SELECT a.id,a.email FROM auth_accounts a JOIN auth_sessions s ON s.owner_id=a.id WHERE a.id=$1 AND s.token_hash=$2 AND s.expires_at>now() AND a.closed_at IS NULL FOR UPDATE OF a',[owner,sessionHash])).rows[0];}
@@ -49,10 +52,13 @@ export class AccountLifecycle {
   return {phase};
  }
  async complete(owner:string,sessionHash:string,id:string,confirmation:string){
-  const c=await this.pool.connect();
+  const selected=(await this.pool.query('SELECT operation FROM account_operations WHERE id=$1 AND owner_id=$2 AND session_hash=$3',[id,owner,sessionHash])).rows[0]?.operation;
+  if(selected==='delete'&&!this.erasurePool)throw new AccountLifecycleError('ERASURE_UNAVAILABLE');
+  const c=await (selected==='delete'?this.erasurePool!:this.pool).connect();
   try{await c.query('BEGIN');const account=await this.account(c,owner,sessionHash);if(!account)throw new AccountLifecycleError('UNAUTHENTICATED');
    const row=(await c.query('SELECT * FROM account_operations WHERE id=$1 AND owner_id=$2 AND session_hash=$3 FOR UPDATE',[id,owner,sessionHash])).rows[0];
-   if(!row||row.phase!=='ready'||row.old_email!==account.email||new Date(row.expires_at).getTime()<=Date.now())throw new AccountLifecycleError('INVALID_OPERATION');
+   if(!row||row.operation!==selected||row.phase!=='ready'||row.old_email!==account.email||new Date(row.expires_at).getTime()<=Date.now())throw new AccountLifecycleError('INVALID_OPERATION');
+   if(row.operation==='delete' && !await this.erasureIdentity(c))throw new AccountLifecycleError('ERASURE_UNAVAILABLE');
    const required={email_change:'CHANGE_EMAIL',close:'CLOSE_ACCOUNT',delete:'DELETE_ACCOUNT'}[row.operation as AccountOperation];
    if(confirmation!==required)throw new AccountLifecycleError('CONFIRMATION_REQUIRED');
    if(row.operation!=='email_change'&&(!this.policyVersion||!this.policyValid()))throw new AccountLifecycleError('DATA_POLICY_NOT_READY');
@@ -69,6 +75,7 @@ export class AccountLifecycle {
     // Transaction-local proof ID: authorizes the erasure-only delete triggers below
     // (including authorized observations), game data, and ledger erasure; other mutations stay blocked.
     await c.query("SELECT set_config('jiuxiao.account_erasure_operation',$1,true)",[id]);
+    await eraseNarrativeForOwner(c,owner);
     for(const table of ['npc_memory_observation_supersessions','npc_authorized_observation_outbox','turn_events','turn_requests','npc_memory_journals'])await c.query(`DELETE FROM ${table} t USING game_saves s WHERE t.save_id=s.id AND s.owner_id=$1`,[owner]);
     await c.query('DELETE FROM cloud_archive_trash WHERE owner_id=$1',[owner]);await c.query('DELETE FROM game_saves WHERE owner_id=$1',[owner]);
     await c.query('DELETE FROM entitlement_ledger_entries WHERE owner_id=$1',[owner]);await c.query('DELETE FROM entitlement_balances WHERE owner_id=$1',[owner]);
@@ -84,13 +91,16 @@ export class AccountLifecycle {
  /** Scheduled, policy-approved erasure. Account lock serializes recovery vs expiry. */
  async expireClosed(apply=false){
   if(!this.policyVersion||!this.policyValid()||!this.deletionEnabled)throw new AccountLifecycleError('DATA_POLICY_NOT_READY');
-  const c=await this.pool.connect();try{await c.query('BEGIN');
+  if(!this.erasurePool)throw new AccountLifecycleError('ERASURE_UNAVAILABLE');
+  const c=await this.erasurePool.connect();try{await c.query('BEGIN');
+   if(!await this.erasureIdentity(c))throw new AccountLifecycleError('ERASURE_UNAVAILABLE');
    const rows=(await c.query("SELECT id,email,is_guest FROM auth_accounts WHERE closed_at<=now()-interval '30 days' OR (is_guest=true AND closed_at IS NULL AND last_seen_at<=now()-interval '90 days') ORDER BY id LIMIT $1 FOR UPDATE SKIP LOCKED",[this.beforeDelete?1:100])).rows;
    if(apply)for(const account of rows){
     const owner=account.id,id=randomUUID();
     await this.beforeDelete?.(c,owner);
     await c.query("INSERT INTO account_operations(id,owner_id,session_hash,operation,old_email,phase,expires_at) VALUES($1,$2,'scheduled-expiry','delete',NULL,'ready',now()+interval '1 minute')",[id,owner]);
     await c.query("SELECT set_config('jiuxiao.account_erasure_operation',$1,true)",[id]);
+    await eraseNarrativeForOwner(c,owner);
     for(const table of ['npc_memory_observation_supersessions','npc_authorized_observation_outbox','turn_events','turn_requests','npc_memory_journals'])await c.query(`DELETE FROM ${table} t USING game_saves s WHERE t.save_id=s.id AND s.owner_id=$1`,[owner]);
     for(const table of ['cloud_archive_trash','game_saves','entitlement_ledger_entries','entitlement_balances'])await c.query(`DELETE FROM ${table} WHERE owner_id=$1`,[owner]);
     await c.query('DELETE FROM auth_challenges WHERE email=$1',[account.email]);
