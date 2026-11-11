@@ -18,6 +18,9 @@ for path in paths:
         continue
     old = path.read_text()
     new = re.sub(r'https?://azure\.archive\.ubuntu\.com/ubuntu(?=[/\s]|$)', 'https://archive.ubuntu.com/ubuntu', old)
+    # Current hosted images can use mirror+file rather than a literal URI.
+    new = new.replace('mirror+file:/etc/apt/apt-mirrors.txt', 'https://archive.ubuntu.com/ubuntu')
+    new = new.replace('mirror+file:/etc/apt/apt-mirrors-security.txt', 'https://security.ubuntu.com/ubuntu')
     if new != old:
         path.write_text(new)
         print('Selected official Ubuntu archive in', path.name)
@@ -28,12 +31,17 @@ bounded_install() {
   local attempt code
   for attempt in 1 2; do
     echo "stage=$stage attempt=$attempt (240 second bound)"
-    if timeout --kill-after=10s 240s "$@"; then return 0; else code=$?; fi
+    if [[ "$stage" == os-dependencies ]]; then
+      # Root must own the timeout group too, so a timed-out apt child cannot retain dpkg locks.
+      if sudo env "PATH=$PATH" timeout --kill-after=10s 240s "$@"; then return 0; else code=$?; fi
+    else
+      if timeout --kill-after=10s 240s "$@"; then return 0; else code=$?; fi
+    fi
     echo "stage=$stage attempt=$attempt exit=$code"
     [[ "$attempt" == 2 ]] || sleep 5
   done
   return "$code"
 }
-bounded_install os-dependencies pnpm exec playwright install-deps chromium
+bounded_install os-dependencies "$(command -v pnpm)" exec playwright install-deps chromium
 bounded_install chromium pnpm exec playwright install chromium
 echo 'Chromium installation completed; browser tests must still pass.'

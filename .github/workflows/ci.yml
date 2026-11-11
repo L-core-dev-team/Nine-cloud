@@ -120,6 +120,10 @@ jobs:
         run: pnpm test:integration
         env:
           TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jiuxiao_test
+      - name: Test card sessions and restricted erasure in separate ephemeral databases
+        run: node scripts/build/card-pg-ci.mjs
+        env:
+          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jiuxiao_test
       - name: Install Chromium with bounded official-source recovery
         run: bash scripts/build/install-ci-chromium.sh
       - name: Verify card entry mounting capability (mock API browser display)
@@ -162,6 +166,7 @@ jobs:
             test-results/review-bundle/
             test-results/cloud/
             test-results/turns/
+            test-results/card-pg/
       - name: Preserve browser installation diagnostics
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

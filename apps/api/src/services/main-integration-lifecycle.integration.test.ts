@@ -14,7 +14,7 @@ const url = process.env.MAIN_COMPOSITION_TEST_DATABASE_URL;
 if (url) assertLocalCardDatabase(url, /^\/jiuxiao_test_main[0-9]+$/);
 describe.skipIf(!url)('new main + cards + opt-in erasure pool', () => {
   const admin = new Pool({ connectionString: url });
-  const connection = (user: string) => { const u = new URL(url!); u.username = user; u.password = ''; return u.href; };
+  const connection = (user: string) => { const u = new URL(url!); u.username = user; u.password = process.env.MAIN_COMPOSITION_TEST_ROLE_PASSWORD || ''; return u.href; };
   const runtime = new Pool({ connectionString: url ? connection('joint_runtime') : undefined });
   const erasure = new Pool({ connectionString: url ? connection('joint_eraser') : undefined });
   const secret = 'synthetic-main-integration-session-secret-0000';
