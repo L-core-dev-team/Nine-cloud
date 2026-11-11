@@ -10,13 +10,11 @@ import { PostgresCloudSaveRepository } from '../services/postgres-cloud-save-rep
 import { createPostgresServerTurnRepository } from '../services/postgres-server-turn.js';
 import { AuthoritativeGameService } from '../services/authoritative-game.js';
 import { ServerTurnService, type ServerTurnRules } from '../services/server-turn.js';
+import { assertLocalCardDatabase } from './local-runtime.js';
 
 // A and B through one host and the same real local session/PG. Synthetic rules/model/mail only.
 const url = process.env.JOINT_TEST_DATABASE_URL;
-if (url) {
-  const u = new URL(url);
-  if (u.hostname !== '127.0.0.1' || !/^\/jiuxiao_test_joint_[0-9_]+$/.test(u.pathname)) throw Error('ISOLATED_JOINT_TEST_DATABASE_REQUIRED');
-}
+if (url) assertLocalCardDatabase(url, /^\/jiuxiao_test_joint_[0-9_]+$/);
 describe.skipIf(!url)('joint card and native receipt host', () => {
   const pool = new Pool({ connectionString: url, max: 6 });
   const secret = 'synthetic-joint-local-secret-not-a-production-credential';

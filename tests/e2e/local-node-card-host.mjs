@@ -7,9 +7,10 @@ import { once } from 'node:events';
 import net from 'node:net';
 import { EmailAuthService } from '../../apps/api/dist/services/email-auth.js';
 import { PostgresEmailAuthRepository } from '../../apps/api/dist/services/postgres-email-auth.js';
+import { assertLocalCardDatabase } from '../../apps/api/dist/card-import/local-runtime.js';
 const { Pool } = createRequire(new URL('../../apps/api/package.json', import.meta.url))('pg');
 const databaseUrl = process.env.MAIN_COMPOSITION_TEST_DATABASE_URL;
-if (!databaseUrl || new URL(databaseUrl).hostname !== '127.0.0.1' || !/^\/jiuxiao_test_main\d+$/.test(new URL(databaseUrl).pathname)) throw Error('ISOLATED_DATABASE_REQUIRED');
+assertLocalCardDatabase(databaseUrl, /^\/jiuxiao_test_main\d+$/);
 const pool = new Pool({ connectionString: databaseUrl });
 const secret = randomBytes(32).toString('hex');
 let code;
@@ -30,6 +31,9 @@ try {
   let ready = false;
   for (let i = 0; i < 80; i++) { try { if ((await fetch(origin + '/ready')).ok) { ready = true; break; } } catch {} if (child.exitCode !== null) throw Error('HOST_EXITED: ' + errors); await new Promise(r => setTimeout(r, 100)); }
   assert(ready, errors);
+  const capabilities = await request('/api/auth/providers', 'GET', undefined, '');
+  assert.equal(capabilities.status, 200);
+  assert.equal((await capabilities.json()).cardImport, true);
   assert.equal((await request('/api/auth/session')).status, 200);
   assert.equal((await request('/api/card-import/cards', 'GET', undefined, '')).status, 401);
   const raw = Buffer.from(JSON.stringify({ name: '普通入口测试卡', description: '合成', personality: '友好', scenario: '测试', first_mes: '默认开场', mes_example: '示例', alternate_greetings: ['备用开场'] }));

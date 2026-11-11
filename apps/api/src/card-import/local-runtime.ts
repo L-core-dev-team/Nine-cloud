@@ -1,13 +1,21 @@
 import type { Pool } from 'pg';
 import type { CardImportHostOptions } from './host.js';
 
+/** Reject libpq query overrides before constructing a test pool. Never proves database ownership. */
+export function assertLocalCardDatabase(raw: string | undefined, database = /^\/jiuxiao_test_[a-z0-9_]+$/): URL {
+  let target: URL;
+  try { target = new URL(raw || ''); } catch { throw new Error('CARD_TEST_DATABASE_REQUIRED'); }
+  if (!['postgres:', 'postgresql:'].includes(target.protocol) || target.hostname !== '127.0.0.1' ||
+      target.search || target.hash || !database.test(target.pathname)) throw new Error('CARD_TEST_DATABASE_REQUIRED');
+  return target;
+}
+
 /** Explicit local integration host. Never enables paid requests or installs schema. */
 export function localCardOptions(pool: Pool, env: NodeJS.ProcessEnv): CardImportHostOptions | undefined {
   if (!env.CARD_LOCAL_MODE) return undefined;
   if (env.CARD_LOCAL_MODE !== 'synthetic' || !['development', 'test'].includes(env.NODE_ENV ?? '') ||
       !['127.0.0.1', 'localhost'].includes(env.API_HOST || '127.0.0.1')) throw new Error('CARD_LOCAL_ONLY');
-  const target = new URL(env.DATABASE_URL || '');
-  if (target.hostname !== '127.0.0.1' || !/^\/jiuxiao_test_[a-z0-9_]+$/.test(target.pathname)) throw new Error('CARD_TEST_DATABASE_REQUIRED');
+  assertLocalCardDatabase(env.DATABASE_URL);
   return { pool, model: async (input, signal) => {
     signal.throwIfAborted();
     const last = input.messages.at(-1);

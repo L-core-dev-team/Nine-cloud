@@ -23,7 +23,7 @@ export type AuthSessionService = {
   createGuest?: EmailAuthService['createGuest'];
   upgradeGuest?: (ownerId: string, tokenValue: string | null, emailValue: unknown, code: unknown, confirmation: unknown) => Promise<GuestUpgradeResult>;
 };
-export function mountAuth(app: Hono, service: AuthSessionService, origin: string, sameSite: 'Strict' | 'None' = 'Strict', trustedProxyAddresses: readonly string[] = [], providerStatus: () => { email: boolean; phone: boolean; emailCaptcha?: boolean; privacyPolicyUrl?: string | null; privacyPolicyVersion?: string | null } = () => ({ email: true, phone: false }), emailCaptchaVerifier?: TurnstileVerifier): void {
+export function mountAuth(app: Hono, service: AuthSessionService, origin: string, sameSite: 'Strict' | 'None' = 'Strict', trustedProxyAddresses: readonly string[] = [], providerStatus: () => { email: boolean; phone: boolean; emailCaptcha?: boolean; cardImport?: boolean; privacyPolicyUrl?: string | null; privacyPolicyVersion?: string | null } = () => ({ email: true, phone: false }), emailCaptchaVerifier?: TurnstileVerifier): void {
   const url = new URL(origin);
   const local = url.protocol === 'http:' && ['127.0.0.1', 'localhost'].includes(url.hostname);
   if (origin !== url.origin || (url.protocol !== 'https:' && !local)) throw new Error('AUTH_PUBLIC_ORIGIN must be an exact HTTPS origin');

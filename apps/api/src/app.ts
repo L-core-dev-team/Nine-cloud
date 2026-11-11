@@ -31,7 +31,7 @@ export function createApp(database?: ReadinessDatabase, cloudSaves?: {
   const app = new Hono();
   if (emailAuth) mountAuth(app, emailAuth.routesService ?? emailAuth.service, emailAuth.origin, emailAuth.cookieSameSite, emailAuth.trustedProxyAddresses,
     () => ({ ...(emailAuth.supabaseAuth?.providers() ?? { email: true, phone: false }),
-      emailCaptcha: Boolean(emailAuth.emailCaptcha),
+      emailCaptcha: Boolean(emailAuth.emailCaptcha), cardImport: Boolean(cards),
       privacyPolicyUrl: emailAuth.privacyPolicyUrl ?? null, privacyPolicyVersion: emailAuth.privacyPolicyVersion ?? null }),
     emailAuth.emailCaptcha);
   if (emailAuth?.supabaseAuth) mountSupabasePhoneAuth(app, emailAuth.supabaseAuth, emailAuth.service, emailAuth.origin, emailAuth.cookieSameSite, emailAuth.trustedProxyAddresses);

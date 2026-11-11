@@ -4,9 +4,10 @@ import { randomUUID } from 'node:crypto';
 import { Pool } from 'pg';
 import { CardImportService } from './service.js';
 import { createCardImportRouter } from './router.js';
+import { assertLocalCardDatabase } from './local-runtime.js';
 const url = process.env.CARD_IMPORT_TEST_DATABASE_URL;
 const enabled = !!url;
-if (url) { const u = new URL(url); if (u.hostname !== '127.0.0.1' || !/^\/jiuxiao_test_card_import_[0-9_]+$/.test(u.pathname)) throw new Error('Isolated card test database required'); }
+if (url) assertLocalCardDatabase(url, /^\/jiuxiao_test_card_import_[0-9_]+$/);
 const pool = new Pool({ connectionString: url });
 const card = {name:'合成人物', description:'测试',personality:'静',scenario:'场景',first_mes:'你好',mes_example:'例子',extensions:{retained:true}};
 const raw = (v: unknown) => Buffer.from(JSON.stringify(v));

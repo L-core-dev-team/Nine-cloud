@@ -5,8 +5,9 @@ import { createApp } from '../app.js';
 import { EmailAuthService } from '../services/email-auth.js';
 import { PostgresEmailAuthRepository } from '../services/postgres-email-auth.js';
 import { CardImportService } from './service.js';
+import { assertLocalCardDatabase } from './local-runtime.js';
 const url=process.env.CARD_IMPORT_HOST_TEST_DATABASE_URL;
-if(url){const u=new URL(url);if(u.hostname!=='127.0.0.1'||!/^\/jiuxiao_test_card_host_[0-9_]+$/.test(u.pathname))throw Error('ISOLATED_HOST_TEST_DATABASE_REQUIRED');}
+if(url)assertLocalCardDatabase(url,/^\/jiuxiao_test_card_host_[0-9_]+$/);
 const pool=new Pool({connectionString:url,max:4});
 const secret='synthetic-commit-recovery-fixture-not-a-production-secret';
 let code='';

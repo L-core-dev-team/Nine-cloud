@@ -8,9 +8,10 @@ import { AccountExport } from './account-export.js';
 import { eraseCardImports } from '../card-import/host.js';
 import { CardImportService } from '../card-import/service.js';
 import { createApp } from '../app.js';
+import { assertLocalCardDatabase } from '../card-import/local-runtime.js';
 
 const url = process.env.MAIN_COMPOSITION_TEST_DATABASE_URL;
-if (url) { const u = new URL(url); if (u.hostname !== '127.0.0.1' || !/^\/jiuxiao_test_main[0-9]+$/.test(u.pathname)) throw Error('ISOLATED_DATABASE_REQUIRED'); }
+if (url) assertLocalCardDatabase(url, /^\/jiuxiao_test_main[0-9]+$/);
 describe.skipIf(!url)('new main + cards + opt-in erasure pool', () => {
   const admin = new Pool({ connectionString: url });
   const connection = (user: string) => { const u = new URL(url!); u.username = user; u.password = ''; return u.href; };
