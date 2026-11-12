@@ -42,6 +42,6 @@ bounded_install() {
   done
   return "$code"
 }
-bounded_install os-dependencies "$(command -v pnpm)" exec playwright install-deps chromium
-bounded_install chromium pnpm exec playwright install chromium
+bounded_install os-dependencies "$(command -v node)" "$PWD/node_modules/playwright/cli.js" install-deps chromium
+bounded_install chromium "$(command -v node)" "$PWD/node_modules/playwright/cli.js" install chromium
 echo 'Chromium installation completed; browser tests must still pass.'
