@@ -129,7 +129,8 @@ jobs:
         run: bash scripts/build/install-ci-chromium.sh
       - name: Verify card entry mounting capability (mock API browser display)
         run: node tests/e2e/card-availability.cjs
-      - name: Run browser E2E with retained diagnostics
+      # This name is part of write-closeout-packets.mjs's evidence contract.
+      - name: Run pnpm test:e2e
         timeout-minutes: 20
         run: |
           set -o pipefail

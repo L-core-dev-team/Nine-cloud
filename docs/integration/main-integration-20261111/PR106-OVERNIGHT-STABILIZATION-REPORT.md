@@ -19,6 +19,7 @@
 | `34eaeb7d4a1a1e425758bdba88a172c8d04761f8` / 43049326807 | FAIL：Ubuntu 新镜像的 mirror+file 路径未被第一版替换；用户进程 timeout 未完全终止 sudo apt，出现锁竞争。原日志保留。 |
 | `f30342018755c0b6ea60efc3044cd98c7c945aa7` / 43051545548 | 33 项 card PG PASS；安装 FAIL：sudo pnpm 试图重装依赖，非交互下 ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY。安装诊断上传 PASS；其他下游未运行。 |
 | `0d1560959d7533d3a0d7736db01067ca93ae6005` / 43145914759 | PASS：2026-11-12 03:23:54 UTC verify 完成，Chromium、33 项 card PG、入口浏览器、原生 E2E、SMTP/云浏览器、备份恢复、review bundle 与证据上传全部成功。CodeQL 成功；badge / Supabase Preview 按边界 SKIPPED。 |
+| `336bfe41c899ba9ff88dc16fcebd0913da1cd4c1` / 43148238251 | 所有测试及备份恢复 PASS，最终 verify FAIL：新增日志时改名了 E2E 步骤，精确证据校验器仍要求 `Run pnpm test:e2e`，因此拒绝出包。只恢复原步骤名，保留超时/日志与全部校验；不是网络故障。诊断包上传 PASS，工程包 SKIPPED。 |
 
 后续增加浏览器步骤 20 分钟硬上限和 runner.log 留存；仅在原生 PG 设置成功且任务未取消时，独立执行既有备份恢复。恢复脚本只操作本次 CI PostgreSQL 服务中的随机新 restore 数据库，并核对源库不变。工程证据包仍要求全部前置成功；失败诊断包不能替代验收包。
 
@@ -56,4 +57,4 @@
 
 参考：[Playwright CI](https://playwright.dev/docs/ci)、[浏览器安装](https://playwright.dev/docs/browsers)、[Ubuntu 主归档](https://documentation.ubuntu.com/project/how-ubuntu-is-made/concepts/package-archive/)。使用项目锁定版本 CLI；不因缓存命中跳过系统依赖检查。
 
-最终提交与远端 CI 状态在同文件后续追加；本文检查点不冒称未来结果。
+最新提交与最终 CI 状态以 PR #106 的固定 SHA 回执及 Checks 为准；本文保留各执行检查点，不冒称未来结果。本地报告不因先前 SHA 通过而自动认定后续 SHA 通过。最终主线库备份记录不代表 card schema 或生产数据库恢复验收。
