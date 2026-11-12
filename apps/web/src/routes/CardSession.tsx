@@ -59,7 +59,7 @@ function CardSessionForOwner({ owner, sessionId, onBack }: Props) {
     catch (e) { if (!controller.signal.aborted) setMessage(cardError(e)); }
     finally { if (!controller.signal.aborted) setBusy(false); }
   }
-  function back() { if (pending && pending.status !== 'failed' && !window.confirm('当前请求尚未确认。离开后请求标识不会保留，可能无法恢复；仍要离开吗？')) return; onBack(); }
+  function back() { if (pending && pending.status !== 'failed' && !window.confirm('当前请求尚未确认。原请求标识已保存在本标签页，返回后请查询；离开不会撤销已提交的行动。仍要离开吗？')) return; onBack(); }
   return <GameShell saveId={`card-${sessionId}`} readingReady={!!session} readingScope={`card:${owner}:${sessionId}`} onReadingPositionChange={ignorePosition}>
     <header className="game-topline card-session-heading"><div><h1>{members?'角色卡群聊':'角色卡会话'}</h1><span>独立会话 · 修订 {session?.revision ?? '—'}</span></div><button className="secondary" onClick={back}>返回卡库</button></header>
     <div className="game-workspace card-session"><div className={`story-column${members?' card-group-column':''}`}>

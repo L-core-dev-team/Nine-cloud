@@ -117,6 +117,7 @@ jobs:
           REVIEW_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jiuxiao_test
       - name: Run PostgreSQL integration tests
+        id: native_pg
         run: pnpm test:integration
         env:
           TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jiuxiao_test
@@ -128,7 +129,12 @@ jobs:
         run: bash scripts/build/install-ci-chromium.sh
       - name: Verify card entry mounting capability (mock API browser display)
         run: node tests/e2e/card-availability.cjs
-      - run: pnpm test:e2e
+      - name: Run browser E2E with retained diagnostics
+        timeout-minutes: 20
+        run: |
+          set -o pipefail
+          mkdir -p test-results/ci-browser
+          pnpm test:e2e 2>&1 | tee test-results/ci-browser/runner.log
         env:
           TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jiuxiao_test
       - name: Test durable turn UI recovery with synthetic receipts
@@ -140,6 +146,7 @@ jobs:
           TEST_SMTP_URL: smtp://127.0.0.1:11025
           MAILPIT_API_URL: http://127.0.0.1:18025
       - name: Verify isolated database backup restoration
+        if: ${{ !cancelled() && steps.native_pg.outcome == 'success' }}
         run: node tests/integration/database-restore.mjs
         env:
           TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/jiuxiao_test
@@ -167,14 +174,17 @@ jobs:
             test-results/cloud/
             test-results/turns/
             test-results/card-pg/
-      - name: Preserve browser installation diagnostics
+      - name: Preserve CI installation and test diagnostics
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: browser-install-diagnostics-${{ github.event.pull_request.head.sha || github.sha }}
+          name: ci-test-diagnostics-${{ github.event.pull_request.head.sha || github.sha }}
           retention-days: 14
           if-no-files-found: ignore
-          path: test-results/ci-install/
+          path: |
+            test-results/ci-install/
+            test-results/ci-browser/
+            test-results/card-pg/
 
   badge:
     # The repository is private, so the native Actions badge 404s for
