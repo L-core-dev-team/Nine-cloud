@@ -1,0 +1,839 @@
+{
+  "baseline": "d41351f602efd3c6e526f4577b83b387bfe2116a",
+  "sourceDecisions": [
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": ".github/workflows/ci.yml",
+      "sourceBlob": "42b1acada4f4e9a51dd4c98137149fb2c3738e35",
+      "mainBlob": "ae5635ef154f215d6afd7e0921885fa77e58e013",
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/app.ts",
+      "sourceBlob": "a90219a1225135af1ac6aae89cdada9c6313f9d0",
+      "mainBlob": "44ad0b448a9fcc59f6739d1ab83213fd815ee89e",
+      "decision": "ADAPTED"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/card-import/card-import.integration.test.ts",
+      "sourceBlob": "c48aad61e2d07ad576f937666ddf8e156fd5b9e9",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/card-import/card-model-provider.test.ts",
+      "sourceBlob": "8b37810813be4af76dadbebb60920c236dc42637",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/card-import/card-model-provider.ts",
+      "sourceBlob": "bf5ac11960f8d961a9c794a14a54623932c5dc70",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/card-import/card-provider-runtime.ts",
+      "sourceBlob": "ee857d7b5dca5021384120555458a3b2f688358a",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/card-import/commit-recovery.integration.test.ts",
+      "sourceBlob": "733bbca247da7d823bf0f6de59afb2578302f562",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/card-import/context-service.test.ts",
+      "sourceBlob": "d41cc4bb9755a2bc5d69ba1096e803d137264314",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/card-import/context.test.ts",
+      "sourceBlob": "2deebdf2fac0b05fb64fa392534400489c159718",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/card-import/context.ts",
+      "sourceBlob": "9cac08fcd64ab7e880102fce6e559f0a846d1a09",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/card-import/export.test.ts",
+      "sourceBlob": "cfd8eac4b6221d53874775d14105d18e73582ab0",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/card-import/export.ts",
+      "sourceBlob": "eb5031fe025d0faa42e67807f5a2d95794940ac0",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/card-import/host.integration.test.ts",
+      "sourceBlob": "a0af53dec7b2275b70e3141af1fb23943c50dd0a",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/card-import/host.ts",
+      "sourceBlob": "9331178ededb105e3c1142ae6ec7ac05de9097dd",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/card-import/joint-host.integration.test.ts",
+      "sourceBlob": "94fb81dcbedfe10ad2b890717c96862de9281c7b",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/card-import/parser.test.ts",
+      "sourceBlob": "340a45f81e4ab1008615d3f0e148e639a185670e",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/card-import/parser.ts",
+      "sourceBlob": "4ee66bbfa41a45f8b0a248deb977910cda647e34",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/card-import/provider-egress-pinning.test.ts",
+      "sourceBlob": "8b5768fdde2ed39a047805da84b7f7129fca0b2b",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/card-import/provider-egress.test.ts",
+      "sourceBlob": "70f6a4c1399c3e0047636a90b359f5882e4769ed",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/card-import/provider-egress.ts",
+      "sourceBlob": "fa9e148839f8e3255fc948668836eb5e0869ea8f",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/card-import/router.test.ts",
+      "sourceBlob": "653886f4b729215c8ce79e6f02be9b45bff320d6",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/card-import/router.ts",
+      "sourceBlob": "706ed30ac4eab32571119dc19b8e29073f0557af",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/card-import/schema.sql",
+      "sourceBlob": "c5b0132bc25b08916a8d805b672fcbdb589bcab2",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/card-import/service.ts",
+      "sourceBlob": "562ce203d3c7fbd4335409a64c0a23a8d5016726",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/card-import/worldbook.test.ts",
+      "sourceBlob": "2849bb609b417b6d125bb685260cbb50403c9faa",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/card-import/worldbook.ts",
+      "sourceBlob": "942fd6ce6d1863cd45ae6d3fc7d7bf17f72cdaab",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/index.ts",
+      "sourceBlob": "c380925943ab8d447dd89ce0f104faba278171c6",
+      "mainBlob": "4abac1643f7f85fed0073f9f5c800f5679597180",
+      "decision": "ADAPTED"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/routes/game-recovery.integration.test.ts",
+      "sourceBlob": "a4b56c7a15dd2f6c654222d8b27191f024fe0f19",
+      "mainBlob": null,
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/routes/game-recovery.test.ts",
+      "sourceBlob": "8765689dbd29229e419f708bb3a2ab0e4cbc64d9",
+      "mainBlob": "3b14217813b504a511c8597a084b3345f3040365",
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/routes/games.ts",
+      "sourceBlob": "39c3fd80a81880d50b918d313b5b7b759a5a8647",
+      "mainBlob": "fd99a8ebb3f451c1657960065b075921e0f98ccd",
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/services/__snapshots__/provider-golden.test.ts.snap",
+      "sourceBlob": "79e5d03795583b10467fc6e87bcbd80c5eb5e67a",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/services/provider-golden.test.ts",
+      "sourceBlob": "cb83a4da813fa1556a965afb4d2eed54044a2ba0",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/api/src/services/provider-transport-boundary.test.ts",
+      "sourceBlob": "d102c84af62508afb0e79e554e73ee51602d1550",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/web/card-ui-fixture.html",
+      "sourceBlob": "bad917adf69ac4a99f0b27b3fa28805b80254d83",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/web/src/card-import-client.test.ts",
+      "sourceBlob": "adbf3a8c06272bf5e2792e4f1608c7f1c13c544b",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/web/src/card-import-client.ts",
+      "sourceBlob": "3dfdfb8e18935aab6f6525a8547ff62569ca8322",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/web/src/card-ui-fixture.tsx",
+      "sourceBlob": "0167b3dcc1ef61b3feab322bf11798e973affb01",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/web/src/cloud-game-cache.test.ts",
+      "sourceBlob": "3a7df488d04976b6f09a623e3ae28ceb6d400243",
+      "mainBlob": "02f801662f719eb4fc5b1fc64ec7e22c4197d1f9",
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/web/src/cloud-game-cache.ts",
+      "sourceBlob": "51e7da0025ab89ec2fa0ddbc9acc030e69e36f0f",
+      "mainBlob": "eafe8c5a0462d0ff8d39a26015432dcf035a235f",
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/web/src/components/GameShell.tsx",
+      "sourceBlob": "0f153d69d225a5a512e918aae7b18d73e3d4ddbb",
+      "mainBlob": "442cb97a47d00cb141e1f73d9a5d4ec74c468e65",
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/web/src/components/game-shell.css",
+      "sourceBlob": "59a0bef9f5a2869759339b872800fdee14b96420",
+      "mainBlob": "eeeda59b8602bdd5bd52e1f143ba359535a4b52a",
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/web/src/game-publications.test.ts",
+      "sourceBlob": "570c245eec180c18d61d555312e6cf7eb5304182",
+      "mainBlob": null,
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/web/src/game-publications.ts",
+      "sourceBlob": "e3c2f78ade58f9885eb542150140c5179b7c6e94",
+      "mainBlob": null,
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/web/src/game-receipt-validation.test.ts",
+      "sourceBlob": "e0a9fce5957f11e84554f316103a4baa890d75fd",
+      "mainBlob": null,
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/web/src/game-receipt-validation.ts",
+      "sourceBlob": "51df404137517b3b7ea0b53b3ef37cfab4bd9ebc",
+      "mainBlob": null,
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/web/src/local-action-draft.test.ts",
+      "sourceBlob": "bb9bb2bbea574762a4d3092c61ebd2c28a38d41b",
+      "mainBlob": null,
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/web/src/main.tsx",
+      "sourceBlob": "37921211ff65978a95c196a40db66a05f993d298",
+      "mainBlob": "3560f0c0f2a52239929e697faba8a7e325dd8a42",
+      "decision": "ADAPTED"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/web/src/routes/AccountLifecyclePanel.tsx",
+      "sourceBlob": "8f84319f337fc922f1d0bfb0d160d27feb105f61",
+      "mainBlob": "6e45251aad11d850e008bc23a6a2066639337161",
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/web/src/routes/CardArea.tsx",
+      "sourceBlob": "14680cb2b43c62ae05f82737ffa6b5f1ee4c0afa",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/web/src/routes/CardLibrary.tsx",
+      "sourceBlob": "12c8f43c6eef90f88a2bae2b46db9fcfebd1b907",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/web/src/routes/CardSession.tsx",
+      "sourceBlob": "a6f8ced9a6d5e51778fa3baec60a3f3306032e74",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/web/src/routes/CloudGame.tsx",
+      "sourceBlob": "b0dc903827d93b3a8d0b31069363fabe7018a83d",
+      "mainBlob": "901524b0d5adcb38d4a06bc5ffdc807619ac506c",
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/web/src/routes/CloudSettings.tsx",
+      "sourceBlob": "1075456c4e3a84aef908c6a8ef94e6a0bcdf73d0",
+      "mainBlob": "f59c2ad8fe0d615991a29353d7daa11a87f66380",
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/web/src/routes/WorldbookPanel.tsx",
+      "sourceBlob": "92ecf94461e372ccc3740e05e4405888e69f0047",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/web/src/routes/card-ui.css",
+      "sourceBlob": "87269a22a2500d2c48d7f4794de7c784706f8c1d",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/web/src/routes/cloud-game-errors.test.ts",
+      "sourceBlob": "210ac24e1314a6fa68eccb06999d3be2e029aea4",
+      "mainBlob": "210ac24e1314a6fa68eccb06999d3be2e029aea4",
+      "decision": "ALREADY_IN_MAIN"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/web/src/routes/cloud-game-errors.ts",
+      "sourceBlob": "8294cd0b52e18c43f9fc405da28b8db74b14c1cb",
+      "mainBlob": "8294cd0b52e18c43f9fc405da28b8db74b14c1cb",
+      "decision": "ALREADY_IN_MAIN"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/web/src/storage.ts",
+      "sourceBlob": "04874b887c7d7fa497a368c6a70f83d1fdcbd1d3",
+      "mainBlob": "e5c3551be54467e00b58fa0652ddee26737966d7",
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "apps/web/src/use-cloud-game-session.ts",
+      "sourceBlob": "6edc3ae0ed980d2b4b674df8f164ae471d2eae1a",
+      "mainBlob": "36965b1f375698f07e07d39f51b3d032e5e37e54",
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "docs/integration/b-f01-e01-minimal-fix-01/E01-METADATA-CORRECTION.json",
+      "sourceBlob": "70999241fabb672c929e19d3dd54bb2fca03b4ed",
+      "mainBlob": null,
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "docs/integration/b-f01-e01-minimal-fix-01/README.md",
+      "sourceBlob": "12160b453002c949fd6ad81a27d2cac7474de7d4",
+      "mainBlob": null,
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "docs/integration/card-core-20261103/CARD-03B-CLOSEOUT-MIGRATION-PLAN.md",
+      "sourceBlob": "186a89eba3cf7b1cc69fa74b8ad2a44d723054d1",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "docs/integration/card-core-20261103/CARD-CORE-ARCHITECTURE.md",
+      "sourceBlob": "d3782ba862c62adee24b167b07c99658e655d822",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "docs/integration/card-core-20261103/CARD-CORE-BASELINE.md",
+      "sourceBlob": "a7efd075c7e22ca219ccdec18b293c59ba9864eb",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "docs/integration/card-core-20261103/CARD-CORE-CLOSE-02.md",
+      "sourceBlob": "dc093e91234b7de3dbafc58097dc225f45bd9599",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "docs/integration/card-core-20261103/CARD-CORE-HANDOVER.md",
+      "sourceBlob": "e1752db78115a45b25474f5118fa250b6c300b95",
+      "mainBlob": null,
+      "decision": "ADAPTED"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "docs/integration/card-core-20261103/CARD-CORE-TEST-MATRIX.md",
+      "sourceBlob": "1ed6fe07e7d7e4598335987cade04695e07a6cc8",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "docs/integration/card-core-20261103/CARD-FIELD-COMPATIBILITY.md",
+      "sourceBlob": "7eced6042caa2e5b3937ec138620a2af3b2fe9df",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "docs/integration/card-core-20261103/CARD-INTEGRATION-06A-DATABASE.md",
+      "sourceBlob": "ec88540ab559410faa5bbf4006a1af340c4e812b",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "docs/integration/card-core-20261103/CARD-INTEGRATION-06A-PROVIDER-AND-HTTP.md",
+      "sourceBlob": "71f060f315a87348c6854487324782ce70dd8cb3",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "docs/integration/card-core-20261103/CARD-INTEGRATION-06A-UI-CONTRACT.md",
+      "sourceBlob": "6dcff62b7abadc2b781d6bf581874cf97afd1a8f",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "docs/integration/card-core-20261103/CARD-INTEGRATION-06A-upgrade-TEST-ONLY.sql",
+      "sourceBlob": "ca1989f4d1a7b66dcd8bb8c8655e1aac8b603a85",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "docs/integration/card-core-20261103/CARD-PROVIDER-INTEGRATION.md",
+      "sourceBlob": "8f613b7e7ae54b399afa85bc7e805bd79a4753cb",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "docs/integration/card-core-20261103/CARD-UI-S1-RECEIPT.md",
+      "sourceBlob": "f91f23da80851623f4d6715ace7b21accb0d4d0f",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "docs/integration/card-core-20261103/CARD-UI-S2-RECEIPT.md",
+      "sourceBlob": "8de152cf3c5a4259d1539ed826ce2d8c8014df78",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "docs/integration/card-core-20261103/CARD-WORLDBOOK-05B-RUNTIME-VERIFY.md",
+      "sourceBlob": "1f243bc55aa4603c5e621fee444612f53b0eb16c",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "docs/integration/card-core-20261103/CARD-WORLDBOOK-COMPATIBILITY.md",
+      "sourceBlob": "04a77fdaf0ca9699f5ad6c3403b6de3b64ab25cf",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "packages/db/drizzle/0021_recall_upgrade_compatibility.sql",
+      "sourceBlob": "bb686c9bfde25a3cddc2b86aff885771ee1542a1",
+      "mainBlob": "bb686c9bfde25a3cddc2b86aff885771ee1542a1",
+      "decision": "ALREADY_IN_MAIN"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "packages/db/drizzle/meta/_journal.json",
+      "sourceBlob": "acd0a51d839a5472f28d868696d02added13381d",
+      "mainBlob": "bc8e76123604c166277fb4e38620198c27d5e070",
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "packages/domain/src/provider-http.ts",
+      "sourceBlob": "adb07590261c5dafabce576cd4ac3ee322f99368",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "packages/domain/src/provider-narrative.ts",
+      "sourceBlob": "7223d84b96d3b1ef72276e9272cd67e2aae1182b",
+      "mainBlob": "b251ed5c860156cb345a2271e43d8926dc778472",
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "packages/domain/src/provider-protocol.ts",
+      "sourceBlob": "5a90466d4fdb23c5f67f9798f6d285c660feb60b",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "scripts/p3-final-migration-check.cjs",
+      "sourceBlob": "cc751dc16692a5b052de42e3ba0dd8fc5fc45768",
+      "mainBlob": "f525698b2191a3fd764dc972f4d07eb0df7632d0",
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "tests/e2e/card-ui-s1-host.mjs",
+      "sourceBlob": "8fcb8c0fd472108fd599473bb4b714cb443d1ec2",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "tests/e2e/card-ui-s1-real.cjs",
+      "sourceBlob": "4d028b62d826b59e6a221ccda892a249fcf24e2e",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "tests/e2e/card-ui-s2-pagination.cjs",
+      "sourceBlob": "c7e8cd98d84da94f3471dab46ddfbecae527fcab",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "tests/e2e/card-ui-s2-real.cjs",
+      "sourceBlob": "005a15ed57bb7a5df87abf64ac4181520b91b15f",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "tests/e2e/card-ui.cjs",
+      "sourceBlob": "2361e071afdd36ae2ff4d87055bdc4b006067faf",
+      "mainBlob": null,
+      "decision": "REUSED_EXACT"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "tests/e2e/cloud-game-recovery.cjs",
+      "sourceBlob": "123fbb7c337a2f27aade43d3df6d93a45de6df79",
+      "mainBlob": "3c011d6e501dc85f2e75df311e0d7654a86d359e",
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "tests/e2e/cloud-logout-faults.cjs",
+      "sourceBlob": "09c87806429c14ac014b6b1fcd8689c49c07b500",
+      "mainBlob": null,
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "tests/e2e/cloud-narrative-reading.cjs",
+      "sourceBlob": "8942461fcaabe5118ed317d4aaf6b5c3ae4d904f",
+      "mainBlob": null,
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "tests/e2e/game-link-decoding.cjs",
+      "sourceBlob": "81964c0e3097fc6a99daa121978492a5814add61",
+      "mainBlob": null,
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "tests/e2e/game-receipt-fixture.cjs",
+      "sourceBlob": "212dfcdc18e4e2bf33ac44fa8185bf9e55525bad",
+      "mainBlob": null,
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "tests/e2e/local-history-provenance.cjs",
+      "sourceBlob": "b635706f8414cd8be13a19346bf1d49a4432cdcd",
+      "mainBlob": null,
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "card",
+      "sourceCommit": "7fe1d72de8aa977c56490b665f61567fdef8bc45",
+      "path": "tests/e2e/stress-audit.cjs",
+      "sourceBlob": "3c6c103dd8f8c1289d8744ac2bd262ec441a1bb7",
+      "mainBlob": "ffb80aca1e87f7760feec57fd84d617686244335",
+      "decision": "MAIN_RETAINED_NO_OLD_BRANCH_OVERWRITE"
+    },
+    {
+      "source": "t1",
+      "sourceCommit": "cb697877221a29192a2108fd5f6fef8fc19ce403",
+      "path": "apps/api/src/routes/account.ts",
+      "sourceBlob": "f10ea5fb0bd3abe8fecc95ae4594b7e6b1531eba",
+      "mainBlob": "6dc7b946c1b23c21dccd41747a1fea337f47e791",
+      "decision": "ADAPTED_IDENTITY_ONLY"
+    },
+    {
+      "source": "t1",
+      "sourceCommit": "cb697877221a29192a2108fd5f6fef8fc19ce403",
+      "path": "apps/api/src/services/account-lifecycle.integration.test.ts",
+      "sourceBlob": "fd1e90330f107b0aa0bb10d18b566557f1dd04e3",
+      "mainBlob": "bc5f26e792cb002797d91423858d096a4c29f7a9",
+      "decision": "ADAPTED_IDENTITY_ONLY"
+    },
+    {
+      "source": "t1",
+      "sourceCommit": "cb697877221a29192a2108fd5f6fef8fc19ce403",
+      "path": "apps/api/src/services/account-lifecycle.ts",
+      "sourceBlob": "094ff3ae9273819cddf5094314813015d0e017a0",
+      "mainBlob": "e028404e35eebf67d8326cf0cf9bd22e84b68830",
+      "decision": "ADAPTED_IDENTITY_ONLY"
+    },
+    {
+      "source": "t1",
+      "sourceCommit": "cb697877221a29192a2108fd5f6fef8fc19ce403",
+      "path": "apps/api/src/services/auth-runtime.ts",
+      "sourceBlob": "684849136b7ad42c24f9c13c5544a70ab6cebc7c",
+      "mainBlob": "9a65b80a61a058477e486594448b0efe64f546aa",
+      "decision": "ADAPTED_IDENTITY_ONLY"
+    },
+    {
+      "source": "t1",
+      "sourceCommit": "cb697877221a29192a2108fd5f6fef8fc19ce403",
+      "path": "apps/api/src/services/narrative-publication-repository.ts",
+      "sourceBlob": "f24644746bc28ca976ef7d2feccd981d8827c204",
+      "mainBlob": null,
+      "decision": "DEFERRED_T1_SCHEMA_OR_EVIDENCE"
+    },
+    {
+      "source": "t1",
+      "sourceCommit": "cb697877221a29192a2108fd5f6fef8fc19ce403",
+      "path": "tests/t1-identity-testonly/PUBLIC-REVIEW.md",
+      "sourceBlob": "501d0a1501806f4526c68159132b6575f22f1a49",
+      "mainBlob": null,
+      "decision": "DEFERRED_T1_SCHEMA_OR_EVIDENCE"
+    },
+    {
+      "source": "t1",
+      "sourceCommit": "cb697877221a29192a2108fd5f6fef8fc19ce403",
+      "path": "tests/t1-identity-testonly/lifecycle-lock.TEST_ONLY.sql",
+      "sourceBlob": "cacbaeb6b45093662825d14786cb13bd54684a59",
+      "mainBlob": null,
+      "decision": "DEFERRED_T1_SCHEMA_OR_EVIDENCE"
+    },
+    {
+      "source": "dedup",
+      "sourceCommit": "0936e548b90c0242dcc15e05a6306574a83ded81",
+      "path": "docs/integration/dual-track-20261025/NINE-CLOUD-NO-DUP-BASELINE.md",
+      "sourceBlob": "a42032f79772e2b5047390a5da78943b271a4077",
+      "mainBlob": null,
+      "decision": "ADAPTED"
+    }
+  ],
+  "newIntegrationOnly": [
+    "apps/api/src/card-import/local-runtime.ts",
+    "apps/api/src/card-import/local-runtime.test.ts",
+    "apps/api/src/services/main-integration-lifecycle.integration.test.ts",
+    "tests/e2e/local-node-card-host.mjs"
+  ],
+  "notes": [
+    "MAIN_RETAINED does not assert full equivalence: newer main implementation retained; no old wholesale extraction.",
+    "Formal migration journal, protected rule inputs and main gameplay components unchanged."
+  ]
+}

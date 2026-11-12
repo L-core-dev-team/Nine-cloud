@@ -12,7 +12,7 @@ export function mountAccount(app:Hono,auth:Pick<AuthSessionService,'resolve'>,li
  // require an email session. Guests upgrade through /api/auth/guest/upgrade and
  // become an email session before any of this becomes reachable.
  const ownerFor=async(req:Request)=>{const token=sessionToken(req);const session=await auth.resolve(token);if(!session||session.kind!=='email')return null;const expected=req.headers.get('x-jiuxiao-account');return token&&(!expected||session.ownerId===expected)?{owner:session.ownerId,hash:hashToken(token)}:null;};
- app.get('/api/account/capabilities',async c=>await ownerFor(c.req.raw)?c.json(lifecycle.capabilities()):c.json({code:'UNAUTHENTICATED'},401));
+ app.get('/api/account/capabilities',async c=>await ownerFor(c.req.raw)?c.json(await lifecycle.capabilities()):c.json({code:'UNAUTHENTICATED'},401));
  app.get('/api/account/export',async c=>{
   const account=await ownerFor(c.req.raw);if(!account)return c.json({code:'UNAUTHENTICATED'},401);
   if(!await quota(account.owner,'export',6,3_600_000))return c.json({code:'RATE_LIMITED'},429);
@@ -30,6 +30,6 @@ export function mountAccount(app:Hono,auth:Pick<AuthSessionService,'resolve'>,li
    if(typeof value.confirmation!=='string')return c.json({code:'CONFIRMATION_REQUIRED'},400);
    const result=await lifecycle.complete(account.owner,account.hash,value.operationId,value.confirmation);
    c.header('Set-Cookie',authCookie('',0,origin,sameSite));return c.json(result);
-  }catch(error){const code=error instanceof AccountLifecycleError?error.code:error instanceof TypeError?'INVALID_EMAIL':'ACCOUNT_OPERATION_UNAVAILABLE';return c.json({code},code==='RATE_LIMITED'?429:code==='UNAUTHENTICATED'||code==='INVALID_OR_EXPIRED_CODE'?401:code==='DATA_POLICY_NOT_READY'?503:code==='EMAIL_UNAVAILABLE'?409:code==='ACCOUNT_OPERATION_UNAVAILABLE'?503:400);}
+  }catch(error){const code=error instanceof AccountLifecycleError?error.code:error instanceof TypeError?'INVALID_EMAIL':'ACCOUNT_OPERATION_UNAVAILABLE';return c.json({code},code==='RATE_LIMITED'?429:code==='UNAUTHENTICATED'||code==='INVALID_OR_EXPIRED_CODE'?401:(code==='DATA_POLICY_NOT_READY'||code==='ERASURE_UNAVAILABLE')?503:code==='EMAIL_UNAVAILABLE'?409:code==='ACCOUNT_OPERATION_UNAVAILABLE'?503:400);}
  });
 }

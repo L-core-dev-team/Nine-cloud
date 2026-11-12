@@ -24,6 +24,7 @@ import type { SaveCommitResult } from './idb';
 import { mediaUrlForBrowser } from './media-compat';
 import { CloudHttpError, cloudRequest } from './cloud-sync';
 import { CloudGame } from './routes/CloudGame';
+import { useCardAvailability } from './card-availability';
 import './design-system/tokens.css';
 import './style.css';
 import './components/liquid-glass.css';
@@ -32,6 +33,7 @@ import { LiquidGlass, LiquidGlassFilters } from './components/LiquidGlass';
 
 const AiSettings = lazy(() => import('./ai-settings').then(module => ({ default: module.AiSettings })));
 const CloudSettings = lazy(() => import('./routes/CloudSettings').then(module => ({ default: module.CloudSettings })));
+const CardArea = lazy(() => import('./routes/CardArea').then(module => ({ default: module.CardArea })));
 const GraphicsSettingsPage = lazy(() => import('./routes/GraphicsSettings').then(module => ({ default: module.GraphicsSettingsPage })));
 
 const fields = [
@@ -168,6 +170,7 @@ function FilingNotices() {
 }
 
 function WorldHub({ saves }: { saves: LocalSave[] }) {
+  const cardsAvailable = useCardAvailability();
   let activeSaveId = '';
   try { activeSaveId = sessionStorage.getItem('jiuxiao_active_save_id') || ''; } catch { /* Use the first available save. */ }
   const save = saves.find(item => item.saveId === activeSaveId) || saves[0];
@@ -179,6 +182,7 @@ function WorldHub({ saves }: { saves: LocalSave[] }) {
       <div className="lobby-actions">
         {save && <button className="primary" onClick={() => go(`/game/${save.saveId}`)}>继续游玩<span>{save.name} · 存档版本 {save.revision}</span></button>}
         <button className="primary" onClick={() => go('/new')}>新开一局<span>进入角色创建，择定出身与地域</span></button>
+        {cardsAvailable === true && <button className="secondary" onClick={() => go('/cards')}>角色卡模式<span>导入角色卡，开启独立会话</span></button>}
         <button className="secondary" onClick={() => go('/intro')}>作品简介<span>先读一段九霄的天地与玩法</span></button>
         <button className="secondary" onClick={() => go('/world')}>阅读世界设定<span>查阅已审核的世界资料</span></button>
         <button className="secondary" onClick={() => go('/settings/ai')}>AI 设置<span>配置五个岗位与连接信息</span></button>
@@ -805,7 +809,7 @@ function App() {
     const copied = { ...archive, saveId: createSaveId(), name: `${archive.name}（云端副本）`, updatedAt: new Date().toISOString() };
     const expected = readSaves(); const result = await commitSaves(expected, [copied, ...expected]);
     setSaves(result.saves); if (result.ok) setNotice(commitSuccessMessage(result, '云端档已恢复为新副本。')); return result.ok ? copied : null;
-  }} /> : currentRoute === '/settings/graphics' ? <GraphicsSettingsPage settings={graphicsSettings} onChange={updateGraphicsSettings} renderer={rendererStatus} ambientAudioActive={ambientAudioActive} onToggleAmbientAudio={() => { void toggleAmbientAudio(); }} onPreviewScene={onScenePreview} /> : currentRoute === '/lobby' ? <WorldHub saves={saves} /> : currentRoute === '/saves' ? <SaveManager saves={saves} onExport={exportFile}
+  }} /> : currentRoute === '/settings/graphics' ? <GraphicsSettingsPage settings={graphicsSettings} onChange={updateGraphicsSettings} renderer={rendererStatus} ambientAudioActive={ambientAudioActive} onToggleAmbientAudio={() => { void toggleAmbientAudio(); }} onPreviewScene={onScenePreview} /> : currentRoute === '/cards' || currentRoute.startsWith('/cards/session/') ? <CardArea key={currentRoute} sessionId={currentRoute.startsWith('/cards/session/') ? decodeURIComponent(currentRoute.slice('/cards/session/'.length)) : undefined} onBack={() => go(currentRoute.startsWith('/cards/session/') ? '/cards' : '/lobby')} onSession={id => go(`/cards/session/${encodeURIComponent(id)}`)} onLogin={() => go('/settings/cloud')} /> : currentRoute === '/lobby' ? <WorldHub saves={saves} /> : currentRoute === '/saves' ? <SaveManager saves={saves} onExport={exportFile}
     onRename={async (save, name) => {
       const trimmed = name.trim();
       if (!trimmed || trimmed.length > 40) return false;

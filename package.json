@@ -7,6 +7,8 @@
     "node": ">=24"
   },
   "scripts": {
+    "dev:cards": "node scripts/dev/cards.mjs",
+    "test:cards-demo": "node tests/e2e/cards-dev-demo.cjs",
     "dev:web": "pnpm --filter @jiuxiao/contracts build && pnpm --filter @jiuxiao/web dev",
     "dev:api": "pnpm --filter @jiuxiao/contracts build && pnpm --filter @jiuxiao/domain build && pnpm --filter @jiuxiao/api dev",
     "typecheck": "pnpm --filter @jiuxiao/contracts build && pnpm --filter @jiuxiao/content build && pnpm --filter @jiuxiao/domain build && pnpm -r --filter=!@jiuxiao/scene-studio --filter=!@jiuxiao/scene-gate typecheck",
