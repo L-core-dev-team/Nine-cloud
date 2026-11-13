@@ -20,7 +20,7 @@
     "@jiuxiao/contracts": "workspace:*",
     "@jiuxiao/content": "workspace:*",
     "@jiuxiao/domain": "workspace:*",
-    "hono": "4.13.12",
+    "hono": "4.13.16",
     "nodemailer": "10.1.4",
     "pg": "8.23.1"
   },
