@@ -12,6 +12,6 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
-  "dependencies": { "three": "0.186.1" },
-  "devDependencies": { "@types/three": "0.186.0" }
+  "dependencies": { "three": "0.187.0" },
+  "devDependencies": { "@types/three": "0.187.0" }
 }
