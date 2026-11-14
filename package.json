@@ -36,10 +36,10 @@
     "test:environment-runtime": "node tests/integration/environment-runtime.mjs"
   },
   "devDependencies": {
-    "@types/node": "26.6.3",
-    "playwright": "1.63.0",
+    "@types/node": "26.6.6",
+    "playwright": "1.65.0",
     "typescript": "7.0.2",
     "typescript-compiler-api": "npm:typescript@6.0.2",
-    "vitest": "5.0.3"
+    "vitest": "5.1.0"
   }
 }
