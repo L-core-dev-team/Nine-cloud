@@ -8,13 +8,14 @@ export class CardHttpError extends Error {
 export type ParsedCardFile = { kind: string; format: string; document: Record<string, unknown> | null; name: string; warnings: string[]; assetRefs: string[] };
 export type ImportItem = { id: string; filename: string; kind: string; error: string | null; sha256: string; parsed?: ParsedCardFile | null; duplicate?: boolean };
 export type CardItem = { name?: string; id: string; import_id: string; parent_id: string | null; metadata: { source: string; notes: string; links: { importId: string; uri: string }[] }; parsed?: ParsedCardFile };
+export type CardModelStatus = {mode:'synthetic'|'provider';available:boolean;reason?:string;binding?:string;model?:string;protocol?:string;contextWindow?:number;maxOutputTokens?:number;counting?:string;remainingCalls?:number};
 export type SessionItem = { id: string; card_id: string; revision: number; greeting?: string };
 export type PersonaItem = { id: string; version_id: string; name: string; is_default: boolean };
 export type GroupMember = {id:string;card_id:string;ordinal:number;display_name:string};
 export type GroupHistoryItem = {key:string;action:string;resulting_revision:number;mode:string;selected:string[];ordinal:number;participant_id:string;body:string};
 export type RecentRequest = RequestItem & { action: string; expected_revision: number };
 export type HistoryItem = { key: string; action: string; narrative: string; resulting_revision: number };
-export type RequestItem = { key: string; status: 'unknown' | 'pending' | 'completed' | 'failed'; error?: string | null; narrative?: string | null; resulting_revision?: number | null; expires_at?: string | null };
+export type RequestItem = { key: string; status: 'unknown' | 'pending' | 'completed' | 'failed'; error?: string | null; narrative?: string | null; resulting_revision?: number | null; expires_at?: string | null; model_snapshot?: CardModelStatus | null };
 
 async function bytesBounded(response: Response, limit: number): Promise<Uint8Array> {
   if (!response.body) return new Uint8Array();
@@ -54,6 +55,7 @@ export class CardImportClient {
   }
   private async list<T>(path: string): Promise<T[]> { const value = await this.request(path); if (!Array.isArray(value)) throw new Error('INVALID_CARD_RESPONSE'); return value as T[]; }
   private async item<T>(path: string, method = 'GET', body?: unknown): Promise<T> { const value = await this.request(path, method, body); if (!object(value)) throw new Error('INVALID_CARD_RESPONSE'); return value as T; }
+  modelStatus() { return this.item<CardModelStatus>('/model'); }
   imports() { return this.list<ImportItem>('/imports'); }
   import(id: string) { return this.item<ImportItem>(`/imports/${encodeURIComponent(id)}`); }
   async upload(file: File, kind: 'card' | 'worldbook' | 'attachment') {
@@ -80,11 +82,11 @@ export class CardImportClient {
   groupStrategy(id:string){return this.item<{strategy:'manual'|'auto'}>(`/sessions/${encodeURIComponent(id)}/group-strategy`);}
   setGroupStrategy(id:string,strategy:'manual'|'auto'){return this.item<{strategy:'manual'|'auto'}>(`/sessions/${encodeURIComponent(id)}/group-strategy`,'PUT',{strategy});}
   groupHistory(id:string,after:number){return this.list<GroupHistoryItem>(`/sessions/${encodeURIComponent(id)}/group-history?after=${after}`);}
-  groupAction(id:string,body:{idempotencyKey:string;expectedRevision:number;action:string;mode:'manual'|'auto'|'multi';participantIds:string[]}){return this.item<RequestItem>(`/sessions/${encodeURIComponent(id)}/group-actions`,'POST',body);}
+  groupAction(id:string,body:{idempotencyKey:string;expectedRevision:number;action:string;mode:'manual'|'auto'|'multi';participantIds:string[];modelBinding?:string}){return this.item<RequestItem>(`/sessions/${encodeURIComponent(id)}/group-actions`,'POST',body);}
   requests(id:string) { return this.list<RecentRequest>(`/sessions/${encodeURIComponent(id)}/requests`); }
   session(id: string) { return this.item<SessionItem>(`/sessions/${encodeURIComponent(id)}`); }
   history(id: string, after: number) { return this.list<HistoryItem>(`/sessions/${encodeURIComponent(id)}/history?after=${after}`); }
-  action(id: string, body: { idempotencyKey: string; expectedRevision: number; action: string }) { return this.item<RequestItem>(`/sessions/${encodeURIComponent(id)}/actions`, 'POST', body); }
+  action(id: string, body: { idempotencyKey: string; expectedRevision: number; action: string; modelBinding?: string }) { return this.item<RequestItem>(`/sessions/${encodeURIComponent(id)}/actions`, 'POST', body); }
   requestStatus(id: string, key: string) { return this.item<RequestItem>(`/sessions/${encodeURIComponent(id)}/requests/${encodeURIComponent(key)}`); }
   recover(id: string, key: string) { return this.item<RequestItem>(`/sessions/${encodeURIComponent(id)}/requests/${encodeURIComponent(key)}/recover`, 'POST'); }
   async remove(type: 'imports' | 'cards' | 'sessions', id: string) { await this.request(`/${type}/${encodeURIComponent(id)}`, 'DELETE', undefined, 'empty'); }
@@ -93,7 +95,7 @@ export class CardImportClient {
 
 export function cardError(error: unknown): string {
   if (error instanceof CardHttpError) {
-    const messages: Record<string, string> = { GENERATION_EXPIRED:'请求已过期，未再生成。', WORLDBOOK_UNSUPPORTED_KEY:'该世界书包含暂不支持的关键词（包括正则），请修改后再试。', WORLDBOOK_UNSUPPORTED_FEATURE:'该世界书包含暂不支持的高级功能，请修改后再试。', WORLDBOOK_UNSUPPORTED_GROUP:'该世界书的分组设置暂不支持。', WORLDBOOK_RECURSION_LIMIT:'世界书递归超过安全限制，未生成回复。', GROUP_OUTPUT_INVALID:'模型回复的角色归属无法确认，未保存任何发言。', AUTH_REQUIRED: '请重新登录。', ACCOUNT_MISMATCH: '账号已变化，请重新打开角色卡。', ORIGIN_REJECTED: '请求来源不被允许。', NOT_FOUND: '资料不存在或不属于当前账号。', RESOURCE_IN_USE: '资料仍被其他卡片或版本引用，不能删除。', CONFIRMATION_CONFLICT: '该导入项已有不同的确认结果，请核对已有卡片。', MISSING_OR_DUPLICATE_ASSET: '请为每个资源地址选择对应的导入文件。', ATTACHMENT_NOT_FOUND: '绑定的附件不可用，请重新选择。', MODEL_NOT_CONFIGURED: '角色卡模型尚未配置。', REQUEST_PENDING: '此会话已有待处理请求；如原请求标识已丢失，目前无法在此页面恢复。', REVISION_CONFLICT: '会话已更新，请重新读取历史。', RATE_LIMITED: '请求过于频繁，请稍后再试。', IMPORT_QUOTA: '导入空间已满。', SESSION_QUOTA: '会话数量已达上限。', CARD_NOT_READY: '此文件无法确认为角色卡。' };
+    const messages: Record<string, string> = { MODEL_PROVIDER_FAILED:'供应商调用未完成，不会自动重试；请保留原请求标识。', MODEL_CONTEXT_LIMIT:'必要上下文超过模型预算，未发送模型请求。', MODEL_NOT_AUTHORIZED:'此账号没有宿主模型使用资格。', MODEL_APPROVAL_REQUIRED:'外部模型调用待授权。', MODEL_APPROVAL_EXPIRED:'外部模型调用授权已过期。', MODEL_CREDENTIAL_MISSING:'本机宿主尚未配置凭据。', MODEL_CONFIG_INVALID:'本机模型配置缺失或无效。', MODEL_BINDING_CHANGED:'模型配置已变化，请重新读取会话后确认。', MODEL_APPROVAL_CHANGED:'授权配置已变化，需由宿主重新确认。', MODEL_CALL_LIMIT:'获准调用次数已用尽。', MODEL_CONCURRENCY_LIMIT:'模型已有进行中的调用，请稍后主动提交。', GENERATION_EXPIRED:'请求已过期，未再生成。', WORLDBOOK_UNSUPPORTED_KEY:'该世界书包含暂不支持的关键词（包括正则），请修改后再试。', WORLDBOOK_UNSUPPORTED_FEATURE:'该世界书包含暂不支持的高级功能，请修改后再试。', WORLDBOOK_UNSUPPORTED_GROUP:'该世界书的分组设置暂不支持。', WORLDBOOK_RECURSION_LIMIT:'世界书递归超过安全限制，未生成回复。', GROUP_OUTPUT_INVALID:'模型回复的角色归属无法确认，未保存任何发言。', AUTH_REQUIRED: '请重新登录。', ACCOUNT_MISMATCH: '账号已变化，请重新打开角色卡。', ORIGIN_REJECTED: '请求来源不被允许。', NOT_FOUND: '资料不存在或不属于当前账号。', RESOURCE_IN_USE: '资料仍被其他卡片或版本引用，不能删除。', CONFIRMATION_CONFLICT: '该导入项已有不同的确认结果，请核对已有卡片。', MISSING_OR_DUPLICATE_ASSET: '请为每个资源地址选择对应的导入文件。', ATTACHMENT_NOT_FOUND: '绑定的附件不可用，请重新选择。', MODEL_NOT_CONFIGURED: '角色卡模型尚未配置。', REQUEST_PENDING: '此会话已有待处理请求；如原请求标识已丢失，目前无法在此页面恢复。', REVISION_CONFLICT: '会话已更新，请重新读取历史。', RATE_LIMITED: '请求过于频繁，请稍后再试。', IMPORT_QUOTA: '导入空间已满。', SESSION_QUOTA: '会话数量已达上限。', CARD_NOT_READY: '此文件无法确认为角色卡。' };
     return (error.code && messages[error.code]) || `请求未完成（${error.code || error.status}）。`;
   }
   return error instanceof Error && error.message === 'FILE_SIZE' ? '请选择不超过 8 MiB 的非空文件。' : '请求未完成，请检查网络后核对结果。';

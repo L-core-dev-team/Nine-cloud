@@ -1,4 +1,4 @@
-// Local synthetic demonstration only. Never accepts an existing DATABASE_URL.
+// Local synthetic by default; provider mode requires an explicit private config. Never accepts an existing DATABASE_URL.
 import { spawn, spawnSync } from 'node:child_process';
 import { readFile, writeFile, mkdir, readdir, access, open } from 'node:fs/promises';
 import { readFileSync, unlinkSync } from 'node:fs';
@@ -12,9 +12,11 @@ import net from 'node:net';
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const args = process.argv.slice(2).filter(x => x !== '--');
 const init = args.includes('--init'), check = args.includes('--check');
+const providerAt=args.indexOf('--provider-config');
+const providerPath=providerAt<0?undefined:resolve(args[providerAt+1]||'');
 const binAt = args.indexOf('--postgres-bin');
 const bin = binAt < 0 ? undefined : resolve(args[binAt + 1] || '');
-if (args.some((x,i) => !['--init','--check','--postgres-bin'].includes(x) && !(binAt>=0 && i===binAt+1)) || (binAt>=0&&!args[binAt+1])) throw Error('Unknown dev:cards argument');
+if (args.some((x,i) => !['--init','--check','--postgres-bin','--provider-config'].includes(x) && !(binAt>=0 && i===binAt+1) && !(providerAt>=0 && i===providerAt+1)) || (binAt>=0&&!args[binAt+1]) || (providerAt>=0&&!args[providerAt+1])) throw Error('Unknown dev:cards argument');
 if (Number(process.versions.node.split('.')[0]) < 24) throw Error('Node >=24 required');
 if(process.env.NODE_ENV==='production')throw Error('Production mode cannot start the local demonstration');
 const manifest = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'));
@@ -115,8 +117,15 @@ let stopping=false;
 const stop=()=>{if(stopping)return;stopping=true;process.stdin.pause();process.stdin.unref?.();for(const p of children)if(p.exitCode===null)p.kill();console.log('Application stopped. Dedicated database and all data retained.');};
 process.on('SIGINT',stop);process.on('SIGTERM',stop);
 process.stdin.setEncoding('utf8');process.stdin.on('data',value=>{if(value.trim()==='stop'){stop();process.stdin.pause();}});
-child(process.execPath,[join(root,'scripts/dev/cards-host.mjs')]);
+// Only this explicitly selected host receives the one declared model key. Never pass it to Vite/build/PG.
+const providerEnv=providerPath?{CARD_LOCAL_MODE:'provider',CARD_LOCAL_CONFIG:providerPath}:{};
+if(providerPath){
+  let config;try{const raw=await readFile(providerPath,'utf8');if(raw.length>16000)throw Error();config=JSON.parse(raw);}catch{throw Error('Invalid local provider configuration');}
+  if(config.keyEnv!=='NARRATIVE_KEY_CARD_LOCAL')throw Error('Unsupported local credential variable');
+  if(config.approved===true && process.env.NARRATIVE_KEY_CARD_LOCAL)providerEnv.NARRATIVE_KEY_CARD_LOCAL=process.env.NARRATIVE_KEY_CARD_LOCAL;
+}
+child(process.execPath,[join(root,'scripts/dev/cards-host.mjs')],root,providerEnv);
 // Launcher owns stdin/shutdown. Vite must not exit when its detached stdin ends.
 child(process.execPath,['node_modules/vite/bin/vite.js','--host','127.0.0.1','--port',String(state.webPort),'--strictPort','--mode','cards-local'],join(root,'apps/web'),{CI:'true',JIUXIAO_API_TARGET:`http://127.0.0.1:${state.apiPort}`,VITE_API_BASE_URL:'/api'});
 for(const p of children)p.on('exit',code=>{if(!stopping){process.exitCode=code||1;stop();}});
-console.log(`Local synthetic UI: http://127.0.0.1:${state.webPort}/lobby\nUse demo@example.invalid; request a code in the UI and read it in this terminal. No external email/model is contacted.\nDatabase stays on loopback port ${state.port}. Ctrl+C stops the app, never deletes its volume/data.\nExample card: docs/examples/cards-demo.json`);
+console.log(`${providerPath?'Controlled provider':'Local synthetic'} UI: http://127.0.0.1:${state.webPort}/lobby\nUse demo@example.invalid; request a code in the UI and read it in this terminal. ${providerPath?'Provider calls require server-approved owner, budget and durable allowance.':'No external email/model is contacted.'}\nDatabase stays on loopback port ${state.port}. Ctrl+C stops the app, never deletes its volume/data.\nExample card: docs/examples/cards-demo.json`);

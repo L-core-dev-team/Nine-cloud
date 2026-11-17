@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "approvalId": "REPLACE-WITH-REVIEWED-APPROVAL-ID",
+  "approved": false,
+  "expiresAt": "2026-12-01T00:00:00Z",
+  "allowedOwners": [],
+  "protocol": "openai-chat",
+  "model": "gpt-4o-2024-08-06",
+  "baseUrl": "https://api.openai.com/v1",
+  "keyEnv": "NARRATIVE_KEY_CARD_LOCAL",
+  "contextWindow": 128000,
+  "maxOutputTokens": 512,
+  "maxCalls": 0,
+  "maxConcurrent": 1
+}

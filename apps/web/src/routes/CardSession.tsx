@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
-import { CardHttpError, CardImportClient, cardError, type HistoryItem, type RequestItem, type SessionItem, type GroupMember, type GroupHistoryItem } from '../card-import-client';
+import { CardHttpError, CardImportClient, cardError, type HistoryItem, type RequestItem, type SessionItem, type GroupMember, type GroupHistoryItem, type CardModelStatus } from '../card-import-client';
 import { GameShell } from '../components/GameShell';
 import './card-ui.css';
 
@@ -10,6 +10,8 @@ function CardSessionForOwner({ owner, sessionId, onBack }: Props) {
   const api = useMemo(() => new CardImportClient(owner, controller.signal), [owner, controller]);
   const [session, setSession] = useState<SessionItem | null>(null), [history, setHistory] = useState<HistoryItem[]>([]);
   const [members,setMembers]=useState<GroupMember[]|null>(null),[groupHistory,setGroupHistory]=useState<GroupHistoryItem[]>([]),[strategy,setStrategy]=useState<'manual'|'auto'>('manual'),[mode,setMode]=useState<'manual'|'auto'|'multi'>('manual'),[speakers,setSpeakers]=useState<string[]>([]);
+  const [model,setModel]=useState<CardModelStatus|null>(null);
+  const [requestModel,setRequestModel]=useState<CardModelStatus|null>(null);
   const [opening, setOpening] = useState('');
   const [text, setText] = useState(''), [pending, setPending] = useState<{ key: string; action: string; revision: number; status: RequestItem['status']; error?: string | null } | null>(null);
   const [recoveryBlocked,setRecoveryBlocked]=useState(true);
@@ -18,6 +20,8 @@ function CardSessionForOwner({ owner, sessionId, onBack }: Props) {
   const pendingKey=`jx-card-pending:${location.origin}:${import.meta.env.VITE_API_BASE_URL||'/api'}:${owner}:${sessionId}`;
   const clearPending=()=>{try{sessionStorage.removeItem(pendingKey);}catch{/* result can still be queried */}};
   async function load() {
+    const status=await api.modelStatus();
+    if(!controller.signal.aborted)setModel(status);
     const current = await api.session(sessionId);
     let group:GroupMember[]|null=null;try{group=await api.group(sessionId);}catch(e){if(!(e instanceof CardHttpError&&e.code==='NOT_GROUP_SESSION'))throw e;}
     let cursor=0;const rows:HistoryItem[]=[];const segments:GroupHistoryItem[]=[];
@@ -35,20 +39,21 @@ function CardSessionForOwner({ owner, sessionId, onBack }: Props) {
   }, [pending]);
   async function apply(result: RequestItem, current: NonNullable<typeof pending>) {
     if (!['unknown', 'pending', 'completed', 'failed'].includes(result.status) || result.key !== current.key) throw new Error('INVALID_CARD_RESPONSE');
+    if(result.model_snapshot)setRequestModel(result.model_snapshot);
     if (result.status === 'completed') { await load(); clearPending(); setPending(null); setText(''); setMessage('行动已完成，历史已更新。'); }
-    else { setPending({ ...current, status: result.status, error: result.error ?? null }); setMessage(result.status === 'failed' ? `行动未完成：${result.error ? cardError(new CardHttpError(400,result.error)) : '生成失败'} 可由你决定是否重新提交。` : result.status === 'unknown' ? '服务端尚未确认这次请求；请保留当前页面并继续查询，不要创建新请求。' : '行动仍在处理；请继续查询。'); }
+    else { const latest=await api.modelStatus().catch(()=>null);if(!controller.signal.aborted)setModel(latest); setPending({ ...current, status: result.status, error: result.error ?? null }); setMessage(result.status === 'failed' ? `行动未完成：${result.error ? cardError(new CardHttpError(400,result.error)) : '生成失败'} 可由你决定是否重新提交。` : result.status === 'unknown' ? '服务端尚未确认这次请求；请保留当前页面并继续查询，不要创建新请求。' : '行动仍在处理；请继续查询。'); }
   }
   async function submit(event: FormEvent) {
-    event.preventDefault(); if (!session || pending || busy || recoveryBlocked || !text.trim()) return;
+    event.preventDefault(); if (!session || pending || busy || recoveryBlocked || !model?.available || !text.trim()) return;
     if(members && ((mode==='manual'&&speakers.length!==1)||(mode==='multi'&&(speakers.length<2||speakers.length>3)))){setMessage('请选择所需的群聊参与角色。');return;}
-    const current = { key: crypto.randomUUID(), action: text, revision: session.revision, status: 'unknown' as const };
+    const current = { key: crypto.randomUUID(), action: text, revision: session.revision, status: 'unknown' as const, modelBinding:model?.binding };
     try{sessionStorage.setItem(pendingKey,JSON.stringify(current));}catch{setMessage('本机无法保存请求标识，未提交行动。');return;}
     setPending(current); setBusy(true); setMessage('正在提交行动……');
-    try { await apply(members ? await api.groupAction(sessionId,{idempotencyKey:current.key,expectedRevision:current.revision,action:current.action,mode,participantIds:mode==='auto'?[]:speakers}) : await api.action(sessionId, { idempotencyKey: current.key, expectedRevision: current.revision, action: current.action }), current); }
+    try { await apply(members ? await api.groupAction(sessionId,{idempotencyKey:current.key,expectedRevision:current.revision,action:current.action,mode,participantIds:mode==='auto'?[]:speakers,...(current.modelBinding?{modelBinding:current.modelBinding}:{})}) : await api.action(sessionId, { idempotencyKey: current.key, expectedRevision: current.revision, action: current.action, ...(current.modelBinding?{modelBinding:current.modelBinding}:{}) }), current); }
     catch (e) {
       if (!controller.signal.aborted) {
         // These responses occur before the candidate records a new request.
-        if (e instanceof CardHttpError && ['MODEL_NOT_CONFIGURED', 'RATE_LIMITED', 'AUTH_REQUIRED', 'ACCOUNT_MISMATCH', 'ORIGIN_REJECTED', 'REVISION_CONFLICT'].includes(e.code || '')) { clearPending(); setPending(null); setMessage(cardError(e)); if (e.code === 'REVISION_CONFLICT') await load().catch(() => {}); }
+        if (e instanceof CardHttpError && ['MODEL_NOT_AUTHORIZED','MODEL_APPROVAL_REQUIRED','MODEL_APPROVAL_EXPIRED','MODEL_CREDENTIAL_MISSING','MODEL_CONFIG_INVALID','MODEL_BINDING_CHANGED','MODEL_NOT_CONFIGURED', 'RATE_LIMITED', 'AUTH_REQUIRED', 'ACCOUNT_MISMATCH', 'ORIGIN_REJECTED', 'REVISION_CONFLICT'].includes(e.code || '')) { clearPending(); setPending(null); setMessage(cardError(e)); if (e.code === 'REVISION_CONFLICT') await load().catch(() => {}); }
         else { setMessage(`${cardError(e)} 本次结果未知，请查询原请求。`); }
       }
     } finally { if (!controller.signal.aborted) setBusy(false); }
@@ -62,6 +67,7 @@ function CardSessionForOwner({ owner, sessionId, onBack }: Props) {
   function back() { if (pending && pending.status !== 'failed' && !window.confirm('当前请求尚未确认。原请求标识已保存在本标签页，返回后请查询；离开不会撤销已提交的行动。仍要离开吗？')) return; onBack(); }
   return <GameShell saveId={`card-${sessionId}`} readingReady={!!session} readingScope={`card:${owner}:${sessionId}`} onReadingPositionChange={ignorePosition}>
     <header className="game-topline card-session-heading"><div><h1>{members?'角色卡群聊':'角色卡会话'}</h1><span>独立会话 · 修订 {session?.revision ?? '—'}</span></div><button className="secondary" onClick={back}>返回卡库</button></header>
+    <section className="card card-ui-section" aria-label="角色卡模型状态"><p>{!model?'正在核验宿主模型…':model.mode==='synthetic'?'合成演示（非真实 AI）':model.model?`宿主模型：${model.model} · ${model.protocol} · 输出上限 ${model.maxOutputTokens} tokens`:'宿主模型不可用'}</p>{model?.reason&&<p role="status">{cardError(new CardHttpError(403,model.reason))}</p>}{model?.counting&&<p>本地文本 token 估算并预留余量；不等于供应商账单。剩余调用：{model.remainingCalls??'待授权'}</p>}{requestModel?.model&&<p>最近核实请求固定模型：{requestModel.model}</p>}</section>
     <div className="game-workspace card-session"><div className={`story-column${members?' card-group-column':''}`}>
       <div className="story-reading" role="region" tabIndex={0} aria-label="角色卡会话历史"><p role="status" className="card-session-status">{message}</p>
         {members && <section className="card card-ui-section" aria-label="群聊参与者"><h2>参与角色</h2><p>{members.map(m=>`${m.display_name||'未命名角色'} · ${m.id.slice(0,8)}`).join('、')}</p><p>默认策略：{strategy==='auto'?'自动轮流':'手动指定'}</p><div className="actions"><button type="button" disabled={busy||!!pending} onClick={()=>void (async()=>{try{const next=strategy==='manual'?'auto':'manual';const saved=await api.setGroupStrategy(sessionId,next);if(!controller.signal.aborted){setStrategy(saved.strategy);setMode(saved.strategy);}}catch(e){if(!controller.signal.aborted)setMessage(cardError(e));}})()}>切换默认策略</button></div></section>}
@@ -73,7 +79,7 @@ function CardSessionForOwner({ owner, sessionId, onBack }: Props) {
           {pending.status !== 'failed' ? <div className="actions"><button disabled={busy} onClick={() => void query(false)}>查询原请求</button><button disabled={busy} onClick={() => void query(true)}>核对过期请求</button></div> : <button disabled={busy} onClick={() => { clearPending(); setPending(null); setMessage('可以修改行动并主动再次提交。'); }}>准备新行动</button>}</section>}
       </div>
       {members && <div className="card-ui-form card-group-controls"><label>本次发言方式<select value={mode} disabled={busy||!!pending} onChange={e=>{setMode(e.target.value as 'manual'|'auto'|'multi');setSpeakers([]);}}><option value="manual">手动指定</option><option value="auto">自动轮流</option><option value="multi">多角色一起回复</option></select></label>{mode!=='auto'&&<div role="group" aria-label="选择发言角色">{members.map(m=><label className="card-ui-check" key={m.id}><input type={mode==='manual'?'radio':'checkbox'} name="card-speaker" checked={speakers.includes(m.id)} disabled={busy||!!pending} onChange={e=>setSpeakers(old=>mode==='manual'?[m.id]:e.target.checked?[...old,m.id]:old.filter(id=>id!==m.id))}/>{m.display_name||'未命名角色'} · {m.id.slice(0,8)}</label>)}</div>}</div>}
-      <form className="intent-composer" onSubmit={e => void submit(e)}><label htmlFor="card-action">你要做什么？</label><textarea id="card-action" aria-label="角色卡行动" value={text} maxLength={8000} onChange={e => setText(e.target.value)} disabled={!session || busy || !!pending || recoveryBlocked} /><button className="primary" type="submit" disabled={!session || busy || !!pending || recoveryBlocked || !text.trim()}>{busy ? '处理中…' : '提交行动'}</button></form>
+      <form className="intent-composer" onSubmit={e => void submit(e)}><label htmlFor="card-action">你要做什么？</label><textarea id="card-action" aria-label="角色卡行动" value={text} maxLength={8000} onChange={e => setText(e.target.value)} disabled={!session || busy || !!pending || recoveryBlocked} /><button className="primary" type="submit" disabled={!session || busy || !!pending || recoveryBlocked || !model?.available || !text.trim()}>{busy ? '处理中…' : '提交行动'}</button></form>
     </div></div>
   </GameShell>;
 }
