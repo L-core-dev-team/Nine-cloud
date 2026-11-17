@@ -112,7 +112,7 @@ pnpm(['--filter','@jiuxiao/contracts','--filter','@jiuxiao/content','--filter','
 const children=[];
 const child=(file,argv,cwd=root,extra={})=>{const p=spawn(file,argv,{cwd,env:{...env,...extra},windowsHide:true,stdio:['ignore','inherit','inherit']});children.push(p);return p;};
 let stopping=false;
-const stop=()=>{if(stopping)return;stopping=true;process.stdin.pause();for(const p of children)if(p.exitCode===null)p.kill();console.log('Application stopped. Dedicated database and all data retained.');};
+const stop=()=>{if(stopping)return;stopping=true;process.stdin.pause();process.stdin.unref?.();for(const p of children)if(p.exitCode===null)p.kill();console.log('Application stopped. Dedicated database and all data retained.');};
 process.on('SIGINT',stop);process.on('SIGTERM',stop);
 process.stdin.setEncoding('utf8');process.stdin.on('data',value=>{if(value.trim()==='stop'){stop();process.stdin.pause();}});
 child(process.execPath,[join(root,'scripts/dev/cards-host.mjs')]);
