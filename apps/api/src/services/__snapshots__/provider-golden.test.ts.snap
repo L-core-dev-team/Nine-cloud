@@ -1,0 +1,118 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`original provider golden fixtures > anthropic-messages 1`] = `
+{
+  "body": {
+    "max_tokens": 42,
+    "messages": [
+      {
+        "content": "{"instruction":"只叙述已提交回执中的结果。npcMemories 是按 NPC 授权和存档记忆策略过滤后的观察，只能帮助对应 NPC 表达，不得改变回执中的事实、规则结果或玩家状态。npcUtterances 是绑定当前直接发言 NPC 的作者文本，逐字保留，不得转给其他 NPC。playerConditionLines 是规则投影允许呈现的玩家身体状态，只用于描述，不可推断原因或改变事实。没有被检索出的记忆不代表事件没有发生。候选文本仅是表达建议，不得新增权威状态或规则。","role":"story","receipt":{"decision":{"status":"accepted"}},"npcMemories":[],"playerConditionLines":[],"npcUtterances":[],"candidates":{"director":"hint"}}",
+        "role": "user",
+      },
+    ],
+    "model": "synthetic-model",
+    "stream": false,
+    "temperature": 0.5,
+    "top_p": 0.8,
+  },
+  "credentials": "omit",
+  "headers": {
+    "anthropic-version": "2023-06-01",
+    "content-type": "application/json",
+    "x-api-key": "synthetic-key",
+  },
+  "redirect": "error",
+  "result": {
+    "outputTokens": 2,
+    "text": "hello",
+  },
+  "url": "https://fixture.invalid/v1/messages",
+}
+`;
+
+exports[`original provider golden fixtures > gemini-content 1`] = `
+{
+  "body": {
+    "contents": [
+      {
+        "parts": [
+          {
+            "text": "{"instruction":"只叙述已提交回执中的结果。npcMemories 是按 NPC 授权和存档记忆策略过滤后的观察，只能帮助对应 NPC 表达，不得改变回执中的事实、规则结果或玩家状态。npcUtterances 是绑定当前直接发言 NPC 的作者文本，逐字保留，不得转给其他 NPC。playerConditionLines 是规则投影允许呈现的玩家身体状态，只用于描述，不可推断原因或改变事实。没有被检索出的记忆不代表事件没有发生。候选文本仅是表达建议，不得新增权威状态或规则。","role":"story","receipt":{"decision":{"status":"accepted"}},"npcMemories":[],"playerConditionLines":[],"npcUtterances":[],"candidates":{"director":"hint"}}",
+          },
+        ],
+        "role": "user",
+      },
+    ],
+    "generationConfig": {
+      "maxOutputTokens": 42,
+      "temperature": 0.5,
+      "topP": 0.8,
+    },
+  },
+  "credentials": "omit",
+  "headers": {
+    "content-type": "application/json",
+    "x-goog-api-key": "synthetic-key",
+  },
+  "redirect": "error",
+  "result": {
+    "outputTokens": 2,
+    "text": "hello",
+  },
+  "url": "https://fixture.invalid/v1beta/models/synthetic-model:generateContent",
+}
+`;
+
+exports[`original provider golden fixtures > openai-chat 1`] = `
+{
+  "body": {
+    "max_tokens": 42,
+    "messages": [
+      {
+        "content": "{"instruction":"只叙述已提交回执中的结果。npcMemories 是按 NPC 授权和存档记忆策略过滤后的观察，只能帮助对应 NPC 表达，不得改变回执中的事实、规则结果或玩家状态。npcUtterances 是绑定当前直接发言 NPC 的作者文本，逐字保留，不得转给其他 NPC。playerConditionLines 是规则投影允许呈现的玩家身体状态，只用于描述，不可推断原因或改变事实。没有被检索出的记忆不代表事件没有发生。候选文本仅是表达建议，不得新增权威状态或规则。","role":"story","receipt":{"decision":{"status":"accepted"}},"npcMemories":[],"playerConditionLines":[],"npcUtterances":[],"candidates":{"director":"hint"}}",
+        "role": "user",
+      },
+    ],
+    "model": "synthetic-model",
+    "stream": false,
+    "temperature": 0.5,
+    "top_p": 0.8,
+  },
+  "credentials": "omit",
+  "headers": {
+    "authorization": "Bearer synthetic-key",
+    "content-type": "application/json",
+  },
+  "redirect": "error",
+  "result": {
+    "outputTokens": 2,
+    "text": "hello",
+  },
+  "url": "https://fixture.invalid/v1/chat/completions",
+}
+`;
+
+exports[`original provider golden fixtures > openai-responses 1`] = `
+{
+  "body": {
+    "input": "{"instruction":"只叙述已提交回执中的结果。npcMemories 是按 NPC 授权和存档记忆策略过滤后的观察，只能帮助对应 NPC 表达，不得改变回执中的事实、规则结果或玩家状态。npcUtterances 是绑定当前直接发言 NPC 的作者文本，逐字保留，不得转给其他 NPC。playerConditionLines 是规则投影允许呈现的玩家身体状态，只用于描述，不可推断原因或改变事实。没有被检索出的记忆不代表事件没有发生。候选文本仅是表达建议，不得新增权威状态或规则。","role":"story","receipt":{"decision":{"status":"accepted"}},"npcMemories":[],"playerConditionLines":[],"npcUtterances":[],"candidates":{"director":"hint"}}",
+    "max_output_tokens": 42,
+    "model": "synthetic-model",
+    "store": false,
+    "stream": false,
+    "temperature": 0.5,
+    "top_p": 0.8,
+  },
+  "credentials": "omit",
+  "headers": {
+    "authorization": "Bearer synthetic-key",
+    "content-type": "application/json",
+  },
+  "redirect": "error",
+  "result": {
+    "outputTokens": 2,
+    "text": "hello",
+  },
+  "url": "https://fixture.invalid/v1/responses",
+}
+`;

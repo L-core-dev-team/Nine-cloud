@@ -1,0 +1,14 @@
+import { createRequire } from 'node:module';
+const requireApi=createRequire(new URL('../../apps/api/package.json',import.meta.url));
+const {serve}=requireApi('@hono/node-server');
+const pg=requireApi('pg');
+import { readdir, readFile } from 'node:fs/promises';
+import { createApp } from '../../apps/api/dist/app.js';
+import { EmailAuthService } from '../../apps/api/dist/services/email-auth.js';
+import { PostgresEmailAuthRepository } from '../../apps/api/dist/services/postgres-email-auth.js';
+import { assertLocalCardDatabase } from '../../apps/api/dist/card-import/local-runtime.js';
+const url=process.env.CARD_UI_TEST_DATABASE_URL;assertLocalCardDatabase(url,/^\/jiuxiao_test_card_host_\d+_\d+$/);
+const pool=new pg.Pool({connectionString:url});const migrations=new URL('../../packages/db/drizzle/',import.meta.url);for(const f of (await readdir(migrations)).filter(x=>/^\d{4}_.*\.sql$/.test(x)).sort())await pool.query(await readFile(new URL(f,migrations),'utf8'));await pool.query(await readFile(new URL('../../apps/api/src/card-import/schema.sql',import.meta.url),'utf8'));
+const mail=new Map(),secret='local-synthetic-card-ui-test-secret-000000';const auth=new EmailAuthService(new PostgresEmailAuthRepository(pool,secret),async(e,c)=>mail.set(e,c),secret);
+const origin=process.env.CARD_UI_TEST_ORIGIN??'http://127.0.0.1:5173';if(!/^http:\/\/127\.0\.0\.1:\d+$/.test(origin))throw Error('TEST_ORIGIN_REQUIRED');const app=createApp(undefined,undefined,{service:auth,origin},undefined,{pool,model:async(input)=>{const last=input.messages.at(-1);let payload;try{payload=JSON.parse(last?.content??'');}catch{}return payload?.output_contract?.startsWith('JSON object')?JSON.stringify({messages:payload.selected_participant_ids.map((participantId,index)=>({participantId,text:`合成群聊回复 ${index+1}`}))}):'合成模型回复';}});
+serve({hostname:'127.0.0.1',port:Number(process.env.CARD_UI_TEST_PORT??8787),fetch:r=>{const u=new URL(r.url);if(u.pathname==='/__test/code')return Response.json({code:mail.get(u.searchParams.get('email'))});return app.fetch(r);}},()=>console.log('TEST_HOST_READY'));

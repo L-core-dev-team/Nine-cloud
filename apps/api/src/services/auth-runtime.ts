@@ -5,7 +5,7 @@ import { isIP } from 'node:net';
 import { createHash,randomUUID } from 'node:crypto';
 import { AuthFailure,classifyMailFailure } from './auth-failure.js';
 import { SesApiError, normalizeSesCredential, sendEmailViaSesApi, readSesTemplate } from './tencent-ses-api.js';
-import type { Pool } from 'pg';
+import type { Pool, PoolClient } from 'pg';
 import { EmailAuthService, normalizeEmail } from './email-auth.js';
 import { PostgresEmailAuthRepository } from './postgres-email-auth.js';
 import { AccountLifecycle } from './account-lifecycle.js';
@@ -14,7 +14,7 @@ import { SupabaseAuthService } from './supabase-auth.js';
 import { createTurnstileVerifier, type TurnstileVerifier } from './turnstile.js';
 
 /** Disabled by default; explicit enablement requires every deployment input. */
-export function createEmailAuthRuntime(pool: Pool, env: NodeJS.ProcessEnv) {
+export function createEmailAuthRuntime(pool: Pool, env: NodeJS.ProcessEnv, lifecycleOptions?: { erasurePool?: Pool | null; beforeDelete?: (client: PoolClient, ownerId: string) => Promise<void> }) {
   const localAuthEnabled = env.AUTH_ENABLED === 'true';
   const supabaseAuthEnabled = env.SUPABASE_AUTH_ENABLED === 'true';
   if (!localAuthEnabled && !supabaseAuthEnabled) return undefined;
@@ -143,7 +143,10 @@ export function createEmailAuthRuntime(pool: Pool, env: NodeJS.ProcessEnv) {
       await client.query(`UPDATE auth_external_identities SET revoked_at=now()
         WHERE owner_id=$1 AND identity_kind='email' AND revoked_at IS NULL`, [ownerId]);
     } : undefined,
-    supabaseAuthEnabled ? async (client, ownerId) => supabaseAuth!.deleteOwnerAuthUsers(client, ownerId) : undefined);
+    (supabaseAuthEnabled || lifecycleOptions?.beforeDelete) ? async (client, ownerId) => {
+      if (supabaseAuthEnabled) await supabaseAuth!.deleteOwnerAuthUsers(client, ownerId);
+      await lifecycleOptions?.beforeDelete?.(client, ownerId);
+    } : undefined, lifecycleOptions?.erasurePool);
   // SMTP 有连接可握手；SES API 为无状态 HTTP，凭证只能验证「已配置且合法」，不发真实邮件。
   // 因此预检返回 MAIL_CHANNEL_CONFIGURED，delivery 仍为 NOT_TESTED。
   const verifyMail = mailer === 'smtp'

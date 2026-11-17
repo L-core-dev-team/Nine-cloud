@@ -1,0 +1,44 @@
+.card-library { display: grid; gap: 1rem; width: min(900px, 100%); margin: 0 auto; padding: 1rem 0 max(1rem, env(safe-area-inset-bottom)); }
+.card-ui-heading, .card-session-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.card-ui-heading h1, .card-ui-heading p { margin: .25rem 0; }
+.card-ui-status { margin: 0; overflow-wrap: anywhere; }
+.card-ui-section { display: grid; gap: .75rem; min-width: 0; padding: 1rem; overflow-wrap: anywhere; }
+.card-ui-section h2, .card-ui-section p { margin: 0; }
+.card-ui-form { display: grid; gap: .75rem; }
+.card-ui-form label { display: grid; gap: .35rem; min-width: 0; }
+.card-ui-form input, .card-ui-form select, .card-ui-form textarea { box-sizing: border-box; max-width: 100%; min-width: 0; min-height: 44px; font-size: 16px; }
+.card-ui-form .card-ui-check { display: flex; align-items: center; gap: .5rem; }
+.card-ui-check input { min-height: 0; }
+.card-ui-list { display: grid; gap: .75rem; margin: 0; padding: 0; list-style: none; }
+.card-ui-list li { display: grid; gap: .5rem; padding: .75rem; border: 1px solid var(--line); border-radius: var(--jx-radius-control); overflow-wrap: anywhere; }
+.card-library button, .card-library summary, .card-session button { min-height: 44px; }
+.card-library .actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+.card-library code { overflow-wrap: anywhere; }
+.game-frame .card-session { display: grid; grid-template-columns: minmax(0, 1fr); }
+.game-frame .card-session .story-column { display: grid; grid-template-rows: minmax(0, 1fr) auto; min-width: 0; }
+.card-session-status { overflow-wrap: anywhere; }
+.card-session-turn { margin: .75rem 0; padding: .75rem; }
+.card-session-turn p { white-space: pre-wrap; overflow-wrap: anywhere; }
+.card-session-turn h2, .card-session-turn h3 { font-size: 1rem; }
+.card-session-pending { display: grid; gap: .5rem; padding: .75rem; }
+.card-session-pending p { margin: 0; }
+.card-session-pending .actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+@media (max-width: 480px) { .card-library { padding-inline: .25rem; } .card-ui-heading { align-items: flex-start; } }
+/* GameShell hides its native top line on short screens; this independent page
+   needs its own visible return control. */
+@media (max-height: 600px) { .game-frame .card-session-heading { display: flex; } .card-session-heading h1 { font-size: 1rem; } }
+
+.card-library input:not([type="checkbox"]) { min-height: 44px; font-size: 16px; max-width: 100%; }
+
+.game-frame .card-session .card-group-column { grid-template-rows: minmax(0,1fr) auto auto; }
+.card-group-controls { padding: .35rem .6rem; max-height: min(22dvh, 150px); overflow-y: auto; }
+.card-group-controls select { min-height: 44px; font-size: 16px; max-width: 100%; }
+.card-group-controls [role="group"] { display:flex; flex-wrap:wrap; gap:.5rem; }
+.card-group-controls .card-ui-check { display:flex; align-items:center; min-height:44px; gap:.3rem; }
+
+/* Group controls must not inherit the global full-width input rule. */
+.card-ui-check input { width: auto; padding: 0; flex: 0 0 auto; }
+.card-group-controls .card-ui-check { width: auto; min-width: max-content; white-space: nowrap; }
+.game-frame .card-session .card-ui-section h2 { font-size: 1rem; }
+.game-frame .card-session .card-ui-section { padding: .5rem; gap: .25rem; }
+.game-frame .card-session .story-reading { gap: .5rem; }

@@ -86,7 +86,7 @@ suite('account lifecycle, isolated PostgreSQL only',()=>{
   expect((await pool.query('SELECT attempts FROM account_operations WHERE id=$1',[op.operationId])).rows[0].attempts).toBe(5);
   await expect(lifecycle.verify(f.owner,f.hash,op.operationId,code)).rejects.toThrow('INVALID_OR_EXPIRED_CODE');
  });
- it('data policy pending disables closure/deletion without proof or mail writes',async()=>{const f=await fixture();const pending=new AccountLifecycle(pool,mail,secret);expect(pending.capabilities()).toMatchObject({close:false,permanentDelete:false});await expect(pending.begin(f.owner,f.hash,'delete')).rejects.toThrow('DATA_POLICY_NOT_READY');});
+ it('data policy pending disables closure/deletion without proof or mail writes',async()=>{const f=await fixture();const pending=new AccountLifecycle(pool,mail,secret);expect(await pending.capabilities()).toMatchObject({close:false,permanentDelete:false});await expect(pending.begin(f.owner,f.hash,'delete')).rejects.toThrow('DATA_POLICY_NOT_READY');});
  it('recovers only during the 30-day grace period, erases expired accounts and minimizes audit emails',async()=>{
   const f=await fixture(),id=await ready(f,'close');await lifecycle.complete(f.owner,f.hash,id,'CLOSE_ACCOUNT');
   expect((await pool.query('SELECT old_email,new_email FROM account_operations WHERE id=$1',[id])).rows[0]).toEqual({old_email:null,new_email:null});
