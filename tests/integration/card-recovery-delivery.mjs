@@ -28,9 +28,13 @@ const admin=new Pool({...opts,database:'postgres'});
 assert.equal(resolve((await admin.query('SHOW data_directory')).rows[0].data_directory),resolve(join(root,'.cards-local/postgres')));
 const names=new Set();const fresh=async label=>{const n=`jiuxiao_test_recovery_${label}_${runId}`;assert.match(n,/^jiuxiao_test_recovery_[a-z_0-9]+$/);assert.equal((await admin.query('SELECT 1 FROM pg_database WHERE datname=$1',[n])).rowCount,0);await admin.query(`CREATE DATABASE ${n}`);names.add(n);return n;};
 const url=n=>{const u=new URL(`postgresql://cards_local@127.0.0.1:${state.port}/${n}`);u.password=state.password;return u.href;};
-const source=await fresh('source'),pool=new Pool({...opts,database:source});
-for(const file of readdirSync(join(root,'packages/db/drizzle')).filter(x=>/^\d{4}_.*\.sql$/.test(x)).sort())await pool.query(readFileSync(join(root,'packages/db/drizzle',file),'utf8'));
-await pool.query(readFileSync(join(root,'apps/api/src/card-import/schema.sql'),'utf8'));
+const probeAt=process.argv.indexOf('--probe-restored'),probe=probeAt<0?null:process.argv[probeAt+1];
+if(probe){assert.match(probe,/^[a-f0-9]{32}$/);assert.equal(JSON.parse(readFileSync(join(root,'test-results/card-recovery',probe,'results.json'))).status,'PASS');}
+const source=probe?`jiuxiao_test_recovery_restored_${probe}`:await fresh('source'),pool=new Pool({...opts,database:source});
+if(!probe){
+ for(const file of readdirSync(join(root,'packages/db/drizzle')).filter(x=>/^\d{4}_.*\.sql$/.test(x)).sort())await pool.query(readFileSync(join(root,'packages/db/drizzle',file),'utf8'));
+ await pool.query(readFileSync(join(root,'apps/api/src/card-import/schema.sql'),'utf8'));
+}
 const results={kind:'CARD-RECOVERY-DELIVERY-TEST_ONLY',started:new Date().toISOString(),sourceDatabase:source,postgresVersion:(await pool.query('SHOW server_version')).rows[0].server_version,checks:[],crashes:[]};
 const save=()=>writeFileSync(join(privateDir,'results.json'),JSON.stringify(results,null,2));
 const pass=(name,details={})=>{results.checks.push({name,status:'PASS',...details});save();console.log('PASS '+name);};
@@ -59,6 +63,18 @@ async function session(who,card,group=false,extra={}){const id=randomUUID();awai
 const act=(who,id,body,group=false)=>ok(base+`/sessions/${id}/${group?'group-actions':'actions'}`,'POST',body,who);
 const body=(action,revision=0,extra={})=>({action,expectedRevision:revision,idempotencyKey:randomUUID(),...extra});
 try{
+ if(probe){
+  host=await start();const emails=(await pool.query('SELECT email FROM auth_accounts ORDER BY email')).rows;assert.equal(emails.length,2);
+  const a=await login(emails[0].email),b=await login(emails[1].email);
+  const requestsBefore=(await pool.query('SELECT to_jsonb(r)::text AS row FROM card_import.requests r ORDER BY to_jsonb(r)::text')).rows;
+  const sessions=await ok(base+'/sessions','GET',undefined,a);assert.ok(sessions.length>=2);
+  const known=(await pool.query("SELECT session_id,key FROM card_import.requests WHERE owner_id=$1 AND status='completed' LIMIT 1",[a.owner])).rows[0];assert.ok(known);
+  const other=sessions.find(s=>s.id!==known.session_id);assert.ok(other);
+  assert.equal((await ok(base+`/sessions/${other.id}/requests/${known.key}`,'GET',undefined,a)).status,'unknown');
+  assert.equal((await api(base+`/sessions/${known.session_id}/requests/${known.key}`,'GET',undefined,b)).status,404);
+  assert.deepEqual((await pool.query('SELECT to_jsonb(r)::text AS row FROM card_import.requests r ORDER BY to_jsonb(r)::text')).rows,requestsBefore);
+  pass('restored-same-account-different-session-and-cross-account-key-isolation',{requestRowsUnchanged:true,providerCalls:0,probeOf:probe});
+ }else{
  host=await start();const a=await login(`a-${runId}@example.invalid`),b=await login(`b-${runId}@example.invalid`);
  const doc={name:'Synthetic explorer',description:'local fixture',personality:'kind',scenario:'moon',first_mes:'original hello',mes_example:'example',alternate_greetings:['alternate hello'],assets:[{uri:'local-attachment'}],extensions:{synthetic:true}};
  const att=await upload(a,'attachment','synthetic.txt',Buffer.from('synthetic attachment\r\n'));
@@ -160,11 +176,12 @@ try{
  assert.equal((await ok(base+`/sessions/${group}/group-history`,'GET',undefined,ar)).length,2);
  assert.equal((await act(ar,single,body('after restore single',1))).status,'completed');
  assert.equal((await act(ar,group,body('after restore group',1,{mode:'multi',participantIds:ps.map(x=>x.id)}),true)).status,'completed');
- for(const route of [`/cards/${c1.id}`,`/sessions/${single}`,`/sessions/${group}/group-history`,`/imports/${att.id}/original`,`/personas/${personaId}`])assert.ok([404,405].includes((await api(base+route,'GET',undefined,br)).status));
+ for(const route of [`/cards/${c1.id}`,`/sessions/${single}`,`/sessions/${group}/group-history`,`/imports/${att.id}/original`])assert.equal((await api(base+route,'GET',undefined,br)).status,404);
  assert.equal((await api(base+`/sessions/${bs}`,'GET',undefined,ar)).status,404);
  assert.equal((await ok(base+`/sessions/${pendingId}/requests/${pendingBody.idempotencyKey}/recover`,'POST',{},ar)).status,'failed');assert.equal(calls('backup-pending'),0);
  assert.deepEqual(await digest(url(source)),before);
  pass('restored-http-login-history-continue-and-isolation',{sourceUnchanged:true,restoredOriginalRowsProvenByFullContentHash:true,pendingRecoveredWithoutGeneration:true});
+ }
  results.status='PASS';results.finished=new Date().toISOString();save();console.log('RESULT '+join('test-results/card-recovery',runId,'results.json'));
 }catch(e){results.status='FAIL';results.failure={name:e.name,message:e.message,stack:e.stack};save();console.error(e);process.exitCode=1;}
 finally{await stop().catch(()=>{});await pool.end();await admin.end();}

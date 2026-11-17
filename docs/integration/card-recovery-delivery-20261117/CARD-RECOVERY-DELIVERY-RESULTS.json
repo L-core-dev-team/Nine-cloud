@@ -1,0 +1,318 @@
+{
+  "task": "NINE-CLOUD-CARD-RECOVERY-DELIVERY-01",
+  "scope": "LOCAL_TEST_ONLY",
+  "baseCommit": "0fae425e96ef51ca2c096043d00013244326723f",
+  "baseTree": "1ff7c816c48634e0d9d9b7782118d2b2c96b0286",
+  "branch": "codex/card-recovery-delivery-20261117",
+  "testedProductCheckpoint": {
+    "commit": "7d5cec95f92c15bf87a536c3de6702a692f89a54",
+    "tree": "d64860ba096400f24d87e48cf79024e29f7ea0a3"
+  },
+  "finalCandidateIdentity": "Resolve HEAD and HEAD^{tree} of the commit containing this report; exact final values are in the delivery receipt. No self-referential commit hash is embedded.",
+  "backup": {
+    "kind": "CARD-RECOVERY-DELIVERY-TEST_ONLY",
+    "started": "2026-11-17T05:45:42.013Z",
+    "sourceDatabase": "jiuxiao_test_recovery_source_5353fc5fa76f4869875479776f3de8ae",
+    "postgresVersion": "18.4",
+    "checks": [
+      {
+        "name": "nonempty-linked-fixture-created-through-http",
+        "status": "PASS",
+        "accounts": 2,
+        "rawJsonSha256": "09429edf1bcd313aba5077a74ed16876726992d388e9d9c13951856fdf77b254",
+        "rawPngSha256": "965bb0016782edd2ae875e7806ede1f13365a0217c46e3403817c155b8945d6b"
+      },
+      {
+        "name": "wrong-or-source-target-refused",
+        "status": "PASS"
+      },
+      {
+        "name": "nonempty-target-refused",
+        "status": "PASS"
+      },
+      {
+        "name": "truncated-dump-fails-with-empty-target",
+        "status": "PASS"
+      },
+      {
+        "name": "corrupt-dump-fails-with-empty-target",
+        "status": "PASS"
+      },
+      {
+        "name": "restore-interruption-transaction-rollback",
+        "status": "PASS",
+        "processPid": 25504,
+        "backendPid": 29412,
+        "level": "actual psql process + its verified blocked backend termination"
+      },
+      {
+        "name": "full-catalog-restore-identical",
+        "status": "PASS",
+        "sourceUnchanged": true,
+        "sameInstanceNewDatabase": true,
+        "counts": {
+          "card_import.cards": 7,
+          "card_import.duplicate_requests": 3,
+          "card_import.global_worldbooks": 1,
+          "card_import.group_messages": 2,
+          "card_import.group_participant_worldbooks": 2,
+          "card_import.group_participants": 2,
+          "card_import.group_settings": 1,
+          "card_import.group_turns": 1,
+          "card_import.imports": 8,
+          "card_import.links": 6,
+          "card_import.persona_versions": 2,
+          "card_import.personas": 1,
+          "card_import.requests": 4,
+          "card_import.session_personas": 4,
+          "card_import.session_worldbooks": 4,
+          "card_import.sessions": 5,
+          "public.account_lifecycle_audit": 0,
+          "public.account_operations": 0,
+          "public.account_rate_limits": 1,
+          "public.archive_retention_purge_receipts": 0,
+          "public.auth_accounts": 2,
+          "public.auth_challenges": 2,
+          "public.auth_external_identities": 0,
+          "public.auth_ip_mail_limits": 1,
+          "public.auth_mail_limits": 1,
+          "public.auth_provider_account_limits": 0,
+          "public.auth_provider_ip_limits": 0,
+          "public.auth_sessions": 2,
+          "public.cloud_archive_trash": 0,
+          "public.entitlement_balances": 0,
+          "public.entitlement_ledger_entries": 0,
+          "public.game_saves": 0,
+          "public.npc_authorized_observation_outbox": 0,
+          "public.npc_memory_journals": 0,
+          "public.npc_memory_observation_supersessions": 0,
+          "public.story_narratives": 0,
+          "public.turn_events": 0,
+          "public.turn_requests": 0
+        },
+        "logicalSha256": "554da161e8448761994ee806d7dff0729e8a1a7818726fead700e7b663afab04",
+        "structureSha256": "e88fc69e92b16a338afd5eccd86147fcd5ec1e6c2e7d451bbbcd888848ade398",
+        "dumpSha256": "bb4260d4210ece6a813632e13db70e4426b76b94fc65b075c196668d4489c26c"
+      },
+      {
+        "name": "restored-http-login-history-continue-and-isolation",
+        "status": "PASS",
+        "sourceUnchanged": true,
+        "restoredOriginalRowsProvenByFullContentHash": true,
+        "pendingRecoveredWithoutGeneration": true
+      }
+    ],
+    "crashes": [],
+    "status": "PASS",
+    "finished": "2026-11-17T05:46:47.385Z"
+  },
+  "realProcessCrashes": {
+    "status": "PASS",
+    "cases": [
+      {
+        "window": "registered",
+        "status": "PASS",
+        "checkpoint": "pending-committed-before-model",
+        "killedPid": 30420,
+        "exitCode": null,
+        "signal": "SIGKILL",
+        "tcp": "ECONNRESET",
+        "observedAfterRestart": "pending",
+        "final": "failed-expired",
+        "modelInvocations": 0,
+        "historyRows": 0
+      },
+      {
+        "window": "model",
+        "status": "PASS",
+        "checkpoint": "provider-in-flight",
+        "killedPid": 25940,
+        "exitCode": null,
+        "signal": "SIGKILL",
+        "tcp": "ECONNRESET",
+        "observedAfterRestart": "pending",
+        "final": "failed-expired",
+        "modelInvocations": 1,
+        "historyRows": 0
+      },
+      {
+        "window": "segment",
+        "status": "PASS",
+        "checkpoint": "first-segment-uncommitted",
+        "killedPid": 15264,
+        "exitCode": null,
+        "signal": "SIGKILL",
+        "tcp": "ECONNRESET",
+        "observedAfterRestart": "pending",
+        "final": "failed-expired",
+        "modelInvocations": 1,
+        "historyRows": 0
+      },
+      {
+        "window": "committed",
+        "status": "PASS",
+        "checkpoint": "response-committed-before-http",
+        "killedPid": 15216,
+        "exitCode": null,
+        "signal": "SIGKILL",
+        "tcp": "ECONNRESET",
+        "observedAfterRestart": "completed",
+        "final": "completed",
+        "modelInvocations": 1,
+        "historyRows": 2
+      }
+    ],
+    "attemptOverall": "FAIL due to later missing pg_dump executable, not crash assertions",
+    "subsequentBackupOnlyRun": "5353fc5fa76f4869875479776f3de8ae"
+  },
+  "restoredRequestIsolation": [
+    {
+      "name": "restored-same-account-different-session-and-cross-account-key-isolation",
+      "status": "PASS",
+      "requestRowsUnchanged": true,
+      "providerCalls": 0,
+      "probeOf": "5353fc5fa76f4869875479776f3de8ae"
+    }
+  ],
+  "sourceBrowser": {
+    "status": "PASS",
+    "scope": "LOCAL_DEMO_REAL_PG_COOKIE_SYNTHETIC",
+    "width": 360,
+    "import": true,
+    "chat": true,
+    "refresh": true,
+    "focusDraft": true,
+    "logoutIsolation": true,
+    "competingLauncherRejected": true,
+    "productionCalls": false,
+    "delivery": {
+      "noGit": true,
+      "pathWithSpaces": true,
+      "singleAndMultiUi": true,
+      "refresh": true,
+      "restartRetainsHistory": true,
+      "portConflictRejected": true,
+      "staleLockRejected": true,
+      "stateIdentityUnchanged": true
+    }
+  },
+  "sourceSnapshot": {
+    "status": "PASS",
+    "productCandidate": "7d5cec95f92c15bf87a536c3de6702a692f89a54",
+    "fixedRuntimeFiles": 485,
+    "zipSha256": "809effa3641f3a2e3199e82c5ddd4162c8c579ec242a4fdc2393794ae1a45528",
+    "lockSha256": "39622962d6be88c712eec59539cbbf0cd8e8a64238cc905f447e31f1784cca2e",
+    "noGit": true,
+    "exclusions": [
+      "unrelated historical test archives and missing historical test blobs",
+      "large native scene media",
+      "non-runtime documentation and outputs"
+    ],
+    "scope": "Runtime source snapshot, not a complete repository archive"
+  },
+  "build": {
+    "launcherApiContractsContentDomain": "PASS",
+    "snapshotWebTypecheck": "PASS",
+    "snapshotWebBuild": "PASS",
+    "changedJsSyntax": "PASS",
+    "diffCheck": "PASS",
+    "priorGitHubCI": "NOT_RUN (already green, intentionally not repeated)"
+  },
+  "limitations": [
+    {
+      "item": "second-instance backup restore",
+      "status": "NOT_RUN"
+    },
+    {
+      "item": "second Windows machine",
+      "status": "NOT_VERIFIED"
+    },
+    {
+      "item": "Docker startup",
+      "status": "BLOCKED",
+      "reason": "Docker unavailable; no installation attempted"
+    },
+    {
+      "item": "complete repository ZIP including historical evidence and native scene media",
+      "status": "NOT_VERIFIED",
+      "reason": "Local partial-clone blobs missing; tested 485-file runtime source snapshot with explicit exclusions"
+    },
+    {
+      "item": "production minimum database ACL",
+      "status": "NOT_VERIFIED",
+      "reason": "Existing isolated dev launcher uses its own bootstrap login; tested account isolation is the HTTP service boundary"
+    },
+    {
+      "item": "real provider exactly-once billing and output",
+      "status": "NOT_VERIFIED"
+    },
+    {
+      "item": "application simulated cancellation or real network-only disconnect without process exit",
+      "status": "NOT_RUN",
+      "reason": "This task adds actual process exit with TCP interruption; prior cancellation tests not substituted"
+    },
+    {
+      "item": "production migration/deployment/content moderation",
+      "status": "NOT_RUN"
+    }
+  ],
+  "failuresRetained": [
+    {
+      "stage": "fixture construction",
+      "status": "FAIL",
+      "cause": "copy strategy rejected asset-bearing import lacking bindings; replaced only duplicate-strategy fixture with asset-free synthetic card, retained linked originals"
+    },
+    {
+      "stage": "backup tool discovery",
+      "status": "FAIL",
+      "cause": "bundled server bin has no pg_dump (ENOENT); reused already installed PostgreSQL 18.6 client tools"
+    },
+    {
+      "stage": "first dependency install",
+      "status": "FAIL",
+      "cause": "offline metadata missing / interrupted optional native binding installation; clean second install using same lock succeeded"
+    },
+    {
+      "stage": "pnpm exec test invocation",
+      "status": "FAIL",
+      "cause": "npm_execpath absent; used existing pnpm test:cards-demo lifecycle, no gate bypass"
+    },
+    {
+      "stage": "documented launcher stop",
+      "status": "FAIL",
+      "cause": "paused stdin remained referenced; one-line unref fix verified by subsequent browser stop/restart"
+    }
+  ],
+  "evidence": [
+    {
+      "localIgnoredPath": "test-results/card-recovery/5353fc5fa76f4869875479776f3de8ae/results.json",
+      "sha256": "d5c58e76af76018d1435a8590a26fa9906e02336850814227a06db39cb76a8b7"
+    },
+    {
+      "localIgnoredPath": "test-results/card-recovery/7e08f5cd7e0d4a6593174309c52b1e90/results.json",
+      "sha256": "788fe375f9b3f276c993a95b58e8c37f7fa43230b40e49c7bf15a49bf1766d60"
+    },
+    {
+      "localIgnoredPath": "test-results/card-recovery/7810f9c07f974142bcb8651c6c4261d4/results.json",
+      "sha256": "40a56f641d576ecd43ab422410c6fa5e4d9a2007f50e2a78ee532e0477864b04"
+    },
+    {
+      "localIgnoredPath": "test-results/source-delivery/source-delivery-result.json",
+      "sha256": "646c829f85ff7ff0fb0b289eb5de7fc597cb43de21dd6071005ccf81da82eb76"
+    },
+    {
+      "localIgnoredPath": "test-results/source-delivery/source-byte-verification.json",
+      "sha256": "b71a13dc91beb6d9aab619038c8f6a8d9e73600e336c2baae8b3e936ced94a31"
+    },
+    {
+      "localIgnoredPath": "test-results/source-delivery/source-delivery-group.png",
+      "sha256": "0d70a3e08e7204cfece4ad4f887e4264079fd6ec5a3b7b8450e0069b81cf5403"
+    }
+  ],
+  "publishing": {
+    "push": false,
+    "prChanged": false,
+    "mainChanged": false,
+    "productionAccess": false
+  }
+}
