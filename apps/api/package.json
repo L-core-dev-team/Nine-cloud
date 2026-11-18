@@ -22,7 +22,8 @@
     "@jiuxiao/domain": "workspace:*",
     "hono": "4.13.12",
     "nodemailer": "10.1.4",
-    "pg": "8.23.1"
+    "pg": "8.23.1",
+    "js-tiktoken": "1.0.21"
   },
   "devDependencies": {
     "@types/nodemailer": "8.0.2",

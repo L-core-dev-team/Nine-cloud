@@ -12,7 +12,7 @@ const state=JSON.parse(await readFile(new URL('../../.cards-local/state.json',im
 if(process.env.NODE_ENV!=='development'||state.root!==fileURLToPath(new URL('../../',import.meta.url))||!state.installed)throw Error('LOCAL_DEMO_IDENTITY_REQUIRED');
 const url=new URL(`postgresql://cards_local@127.0.0.1:${state.port}/jiuxiao_test_cards_demo`);url.password=state.password;
 const pool=new Pool({connectionString:url.href,max:6});
-const cards=localCardOptions(pool,{NODE_ENV:'development',CARD_LOCAL_MODE:'synthetic',DATABASE_URL:url.href,API_HOST:'127.0.0.1'});
+const cards=localCardOptions(pool,{NODE_ENV:'development',CARD_LOCAL_MODE:process.env.CARD_LOCAL_MODE||'synthetic',CARD_LOCAL_CONFIG:process.env.CARD_LOCAL_CONFIG,NARRATIVE_KEY_CARD_LOCAL:process.env.NARRATIVE_KEY_CARD_LOCAL,DATABASE_URL:url.href,API_HOST:'127.0.0.1'});
 await verifyLocalCardSchema(pool);
 const origin=`http://127.0.0.1:${state.webPort}`;
 const auth=new EmailAuthService(new PostgresEmailAuthRepository(pool,state.secret),async(email,code)=>{

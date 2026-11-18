@@ -60,7 +60,7 @@ CREATE TABLE card_import.requests (
  owner_id text NOT NULL, session_id uuid NOT NULL, key uuid NOT NULL,
  fingerprint text NOT NULL, expected_revision integer NOT NULL, action text NOT NULL,
  status text NOT NULL CHECK(status IN ('pending','completed','failed')),
- narrative text, error text, resulting_revision integer,
+ narrative text, error text, resulting_revision integer, model_snapshot jsonb,
  expires_at timestamptz NOT NULL, created_at timestamptz NOT NULL DEFAULT now(),
  PRIMARY KEY(owner_id,session_id,key),
  FOREIGN KEY(owner_id,session_id) REFERENCES card_import.sessions(owner_id,id) ON DELETE CASCADE
@@ -96,4 +96,15 @@ CREATE TABLE card_import.group_messages (
 CREATE TABLE card_import.group_settings (
  owner_id text NOT NULL, session_id uuid NOT NULL, strategy text NOT NULL DEFAULT 'manual' CHECK(strategy IN ('manual','auto')),
  PRIMARY KEY(owner_id,session_id), FOREIGN KEY(owner_id,session_id) REFERENCES card_import.sessions(owner_id,id) ON DELETE CASCADE
+);
+
+-- Local candidate only. Durable allowance must survive request/session removal and restart.
+-- No prompts, credentials, or provider error payloads are stored here.
+CREATE TABLE card_import.model_allowances (
+ approval_id text PRIMARY KEY, binding text NOT NULL, used integer NOT NULL CHECK(used>=0)
+);
+CREATE TABLE card_import.model_calls (
+ approval_id text NOT NULL REFERENCES card_import.model_allowances(approval_id),
+ owner_id text NOT NULL, session_id uuid NOT NULL, key uuid NOT NULL,
+ PRIMARY KEY(approval_id,owner_id,session_id,key)
 );
