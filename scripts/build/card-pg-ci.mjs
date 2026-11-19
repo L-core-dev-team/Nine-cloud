@@ -38,6 +38,6 @@ try{
 }finally{
   await admin.end();
   await mkdir(join(root,'test-results/card-pg'),{recursive:true});
-  await writeFile(join(root,'test-results/card-pg/results.json'),JSON.stringify({scope:'EPHEMERAL_CI_SYNTHETIC',results}));
+  await writeFile(join(root,'test-results/card-pg/results.json'),JSON.stringify({scope:localData?'LOCAL_EPHEMERAL_SYNTHETIC':'EPHEMERAL_CI_SYNTHETIC',results}));
   // Databases disappear with the CI service. Never issue DROP DATABASE or remove persistent volumes.
 }

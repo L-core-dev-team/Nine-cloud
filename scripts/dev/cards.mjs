@@ -135,7 +135,10 @@ if(providerPath){
   if(config.keyEnv!=='NARRATIVE_KEY_CARD_LOCAL')throw Error('Unsupported local credential variable');
   if(config.approved===true && process.env.NARRATIVE_KEY_CARD_LOCAL)providerEnv.NARRATIVE_KEY_CARD_LOCAL=process.env.NARRATIVE_KEY_CARD_LOCAL;
 }
-child(process.execPath,[join(root,'scripts/dev/cards-host.mjs')],root,providerEnv);
+// The subprocess receives the restricted login, trusted local ports and synthetic
+// session secret. Installer credentials stay in the launcher-owned state file.
+const runtimeConfig={root,port:state.port,webPort:state.webPort,apiPort:state.apiPort,appPassword:state.appPassword,secret:state.secret};
+child(process.execPath,[join(root,'scripts/dev/cards-host.mjs')],root,{...providerEnv,CARD_DEMO_RUNTIME:JSON.stringify(runtimeConfig)});
 // Launcher owns stdin/shutdown. Vite must not exit when its detached stdin ends.
 child(process.execPath,['node_modules/vite/bin/vite.js','--host','127.0.0.1','--port',String(state.webPort),'--strictPort','--mode','cards-local'],join(root,'apps/web'),{CI:'true',JIUXIAO_API_TARGET:`http://127.0.0.1:${state.apiPort}`,VITE_API_BASE_URL:'/api'});
 for(const p of children)p.on('exit',code=>{if(!stopping){process.exitCode=code||1;stop();}});

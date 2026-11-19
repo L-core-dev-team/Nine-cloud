@@ -188,6 +188,8 @@ jobs:
             test-results/cloud/
             test-results/turns/
             test-results/card-pg/
+            test-results/card-real-play/*/receipt.json
+            test-results/remaining-closeout/t1-pending-implementation.json
       - name: Preserve CI installation and test diagnostics
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

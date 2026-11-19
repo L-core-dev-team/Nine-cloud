@@ -13,6 +13,7 @@ import { NarrativePublicationRepository, eraseNarrativeForOwner } from './narrat
 import { NarrativeOutboxWorker } from './narrative-outbox-worker.js';
 import { prepareNarrativeV2Runtime } from './narrative-v2-runtime.js';
 import { mountNarrativePublications } from '../routes/narrative-publications.js';
+import { createP1SaveMemoryPolicy } from './p1-memory-policy.js';
 import { AccountLifecycle } from './account-lifecycle.js';
 import { sessionToken } from '../routes/auth.js';
 import { EmailAuthService, hashToken } from './email-auth.js';
@@ -43,11 +44,12 @@ describe.skipIf(!adminUrl)('T1 pending protected patch on an isolated synthetic 
   };
   const service=new ServerTurnService(actual,rules,undefined,20000,undefined,port);
   let guestNumber=0;
-  async function fixture(){
+  async function fixture(mode?:'continue'|'forgetting'){
     const guest=await issuer.createGuest('127.0.0.'+String(++guestNumber));if(!guest)throw Error('FIXTURE_CREATION_FAILED');
     const saveId='save-'+randomUUID(),owner=guest.session.ownerId;
-    await admin.query("INSERT INTO game_saves(id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,snapshot) VALUES($1,$2,0,1,'synthetic','synthetic','synthetic',$3::jsonb)",
-      [saveId,owner,JSON.stringify({playerId:'player',locationId:'somewhere',elapsedMinutes:0,facts:{gameMinute:0}})]);
+    await admin.query("INSERT INTO game_saves(id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,snapshot,memory_mode,memory_policy) VALUES($1,$2,0,$4,'synthetic','synthetic','synthetic',$3::jsonb,$5,$6)",
+      [saveId,owner,JSON.stringify({playerId:'player',locationId:'somewhere',elapsedMinutes:0,facts:{gameMinute:0}}),
+        mode?2:1,mode??null,mode?JSON.stringify(createP1SaveMemoryPolicy(mode,0,'synthetic')):null]);
     const intent=(revision=0):ActionIntent=>({kind:'move',actorId:'player',saveId,expectedRevision:revision,idempotencyKey:randomUUID(),payload:{destinationId:'gate'}});
     return {owner,saveId,intent,cookie:'jx_session='+guest.token,token:guest.token};
   }
@@ -97,7 +99,7 @@ describe.skipIf(!adminUrl)('T1 pending protected patch on an isolated synthetic 
       GRANT UPDATE(last_seen_at) ON auth_accounts TO ${r};
       GRANT UPDATE(revision,schema_version,canon_version,canon_artifact_hash,rule_version,memory_policy_version,memory_mode,
         memory_policy,branch_id,parent_branch_id,fork_revision,created_policy_version,source_migration_id,snapshot,updated_at) ON game_saves TO ${r};
-      GRANT INSERT ON turn_requests,turn_events,npc_memory_journals TO ${r};
+      GRANT INSERT ON turn_requests,turn_events,npc_memory_journals,npc_authorized_observation_outbox TO ${r};
       GRANT UPDATE(narrative_updated_at) ON turn_requests TO ${r};
       GRANT UPDATE(schema_version,revision,payload,updated_at) ON npc_memory_journals TO ${r};
       GRANT SELECT,DELETE ON auth_accounts,auth_sessions,auth_challenges,cloud_archive_trash,game_saves,
@@ -126,6 +128,42 @@ describe.skipIf(!adminUrl)('T1 pending protected patch on an isolated synthetic 
       expect((await admin.query('SELECT 1 FROM '+t+' WHERE save_id=$1',[f.saveId])).rowCount,t).toBe(0);
     }
     expect(await writes.queued()).toEqual([]);
+  });
+  it.each(['continue','forgetting'] as const)('pins %s P5 memory from a real same-turn grant on the original transaction client',async mode=>{
+    const f=await fixture(mode),policy=createP1SaveMemoryPolicy(mode,0,'synthetic');
+    const talk:ServerTurnRules={...rules,
+      decide:(_action,save)=>({status:'accepted',outcome:'success',nextRevision:save.revision+1,events:[{
+        id:randomUUID(),saveId:f.saveId,type:'talk.occurred',branchId:'root',beforeRevision:save.revision,
+        afterRevision:save.revision+1,occurredAt:new Date().toISOString(),source:'RULES',ruleVersion:'synthetic',
+        payload:{npcId:'npc-speaker',topicTag:'topic_route',outcome:'on_topic'},
+      }]}),
+      grantsForEvent:event=>['npc-speaker','npc-other'].map(npcId=>{
+        const summary='topic_route '+npcId+' turn '+event.afterRevision;
+        return {npcId,eventId:event.id,channel:'witnessed',authorizationPolicyVersion:'visibility-v1',
+          authorizedFields:['summary'],authorizedFacts:{summary},visibleSummary:summary};
+      }),
+      policyForNpc:()=>mode+'-v1',
+    };
+    const abort=new AbortController();
+    const transact={...actual,async commitAcceptedTurn(input:Parameters<typeof actual.commitAcceptedTurn>[0]){
+      const result=await actual.commitAcceptedTurn(input);abort.abort();return result;
+    }};
+    const sender=new ServerTurnService(transact,talk,undefined,20000,undefined,port),intent=f.intent();
+    expect(await sender.execute(f.owner,intent,true,abort.signal)).toMatchObject({status:'accepted'});
+    const snapshot=async()=>(await admin.query('SELECT context FROM public.narrative_context_snapshots WHERE save_id=$1 AND request_key=$2',
+      [f.saveId,intent.idempotencyKey])).rows[0].context;
+    const saved=await snapshot();
+    expect(saved.hints.memoryPolicyIdentity).toMatchObject({mode,policy});
+    expect(saved.hints.npcMemories).toMatchObject([{npcId:'npc-speaker',observations:[{summary:'topic_route npc-speaker turn 1'}]}]);
+    expect(JSON.stringify(saved.hints.npcMemories)).not.toContain('npc-other');
+    expect(await sender.execute(f.owner,f.intent(1),false)).toMatchObject({status:'accepted',narrative:{status:'not_requested'}});
+    expect(await snapshot()).toEqual(saved);
+    const lease=await writes.claim(f.owner,f.saveId,intent.idempotencyKey);
+    expect(lease?.context).toEqual(saved);
+    if(!lease)throw Error('EXPECTED_LEASE');
+    await writes.publish(lease,'memory snapshot proof');
+    const read=await reads.presentation(f.owner,f.saveId,intent.idempotencyKey);
+    expect(JSON.stringify(read)).not.toContain('npcMemories');
   });
   it('durably publishes once, reads with two fresh hosts/cookies, rejects foreign session, paginates and preserves 0024',async()=>{
     const f=await fixture(),other=await fixture(),intent=await heldTurn(f);
