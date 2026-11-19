@@ -141,8 +141,7 @@ export class SupabaseAuthService {
     if (!updated || !isVerified(updated, 'email', newEmail)) throw new Error('SUPABASE_EMAIL_UPDATE_UNCONFIRMED');
   }
 
-  /** Remove every Supabase Auth user mapped to this app owner before local erasure. */
-  async deleteOwnerAuthUsers(client: PoolClient, ownerId: string): Promise<void> {
+  async erasureSubjects(client: PoolClient, ownerId: string): Promise<string[]> {
     const rows = await client.query(`SELECT DISTINCT provider_subject FROM auth_external_identities WHERE owner_id=$1`, [ownerId]);
     if (!rows.rowCount) throw new Error('SUPABASE_IDENTITIES_NOT_FOUND');
     for (const row of rows.rows) {
@@ -150,8 +149,12 @@ export class SupabaseAuthService {
       if (!/^[0-9a-f-]{36}$/i.test(subject)) throw new Error('SUPABASE_IDENTITY_INVALID');
       const shared = await client.query(`SELECT 1 FROM auth_external_identities WHERE provider_subject=$1 AND owner_id<>$2 LIMIT 1`, [subject, ownerId]);
       if (shared.rowCount) throw new Error('SUPABASE_IDENTITY_SHARED');
-      await this.adminDeleteUser(subject);
     }
+    return rows.rows.map(row => String(row.provider_subject));
+  }
+
+  async deleteOwnerAuthUsers(client: PoolClient, ownerId: string): Promise<void> {
+    for (const subject of await this.erasureSubjects(client, ownerId)) await this.adminDeleteUser(subject);
   }
 
   async phoneStatus(ownerId: string): Promise<{ phoneLinked: boolean }> {
@@ -267,10 +270,10 @@ export class SupabaseAuthService {
   }
 
   /** A missing user is already in the desired deleted state. */
-  private async adminDeleteUser(subject: string): Promise<void> {
+  async adminDeleteUser(subject: string): Promise<void> {
     const response = await this.adminFetch(`/auth/v1/admin/users/${encodeURIComponent(subject)}`, 'DELETE');
     if (response.status === 404) return;
-    if (!response.ok) throw new Error('SUPABASE_ADMIN_UNAVAILABLE');
+    if (!response.ok) throw new Error(response.status >= 400 && response.status < 500 ? 'SUPABASE_DELETE_REJECTED' : 'SUPABASE_ADMIN_UNAVAILABLE');
   }
 
   private isPhoneOnlyUser(user: SupabaseUser, expectedDigest: string): boolean {

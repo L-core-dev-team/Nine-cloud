@@ -170,7 +170,8 @@ function createWorkerApp(pool: Pool, env: WorkerRuntimeEnv): Hono {
         await client.query(`UPDATE auth_external_identities SET revoked_at=now()
           WHERE owner_id=$1 AND identity_kind='email' AND revoked_at IS NULL`, [ownerId]);
       },
-      async (client, ownerId) => supabaseAuth.deleteOwnerAuthUsers(client, ownerId),
+      undefined, null, undefined,
+      {subjects:(client,owner)=>supabaseAuth.erasureSubjects(client,owner),remove:subject=>supabaseAuth.adminDeleteUser(subject)},
     ),
     exporter: new AccountExport(pool),
   };

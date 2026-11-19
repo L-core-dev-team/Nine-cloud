@@ -10,7 +10,8 @@ const requireApi=createRequire(new URL('../../apps/api/package.json',import.meta
 const {Pool}=requireApi('pg'),{serve}=requireApi('@hono/node-server');
 const state=JSON.parse(await readFile(new URL('../../.cards-local/state.json',import.meta.url),'utf8'));
 if(process.env.NODE_ENV!=='development'||state.root!==fileURLToPath(new URL('../../',import.meta.url))||!state.installed)throw Error('LOCAL_DEMO_IDENTITY_REQUIRED');
-const url=new URL(`postgresql://cards_local@127.0.0.1:${state.port}/jiuxiao_test_cards_demo`);url.password=state.password;
+if(!/^[a-f0-9]{64}$/.test(state.appPassword))throw Error('LOCAL_RUNTIME_IDENTITY_REQUIRED');
+const url=new URL(`postgresql://cards_demo_app@127.0.0.1:${state.port}/jiuxiao_test_cards_demo`);url.password=state.appPassword;
 const pool=new Pool({connectionString:url.href,max:6});
 const cards=localCardOptions(pool,{NODE_ENV:'development',CARD_LOCAL_MODE:process.env.CARD_LOCAL_MODE||'synthetic',CARD_LOCAL_CONFIG:process.env.CARD_LOCAL_CONFIG,NARRATIVE_KEY_CARD_LOCAL:process.env.NARRATIVE_KEY_CARD_LOCAL,DATABASE_URL:url.href,API_HOST:'127.0.0.1'});
 await verifyLocalCardSchema(pool);

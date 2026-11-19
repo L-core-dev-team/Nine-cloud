@@ -49,7 +49,7 @@ if (await exists(stateFile)) {
   if (!init) throw Error('First run: pnpm dev:cards --init [--postgres-bin <bin>]. Creates a NEW dedicated database only.');
   if (await exists(stateDir)) throw Error('.cards-local exists without valid state; preserve it for inspection.');
   const port = async()=>{const s=net.createServer();s.listen(0,'127.0.0.1');await once(s,'listening');const p=s.address().port;await new Promise(r=>s.close(r));return p;};
-  state = {format:'jiuxiao-cards-demo-v1',root,id:randomUUID(),mode:bin?'native':'docker',bin,port:await port(),apiPort:await port(),webPort:await port(),password:randomBytes(32).toString('hex'),secret:randomBytes(32).toString('hex'),installed:false};
+  state = {format:'jiuxiao-cards-demo-v1',root,id:randomUUID(),mode:bin?'native':'docker',bin,port:await port(),apiPort:await port(),webPort:await port(),appPassword:randomBytes(32).toString('hex'),password:randomBytes(32).toString('hex'),secret:randomBytes(32).toString('hex'),installed:false};
   await mkdir(stateDir); await writeFile(stateFile,JSON.stringify(state),{mode:0o600});
 }
 const dataDir=join(stateDir,'postgres'), label=`jiuxiao-cards-${state.id}`, volume=`${label}-data`;
@@ -98,13 +98,24 @@ try {
     const dir=join(root,'packages/db/drizzle');
     const files=(await readdir(dir)).filter(x=>/^\d{4}_.*\.sql$/.test(x)).sort();
     const sources=await Promise.all(files.map(x=>readFile(join(dir,x),'utf8')));
-    sources.push(await readFile(join(root,'apps/api/src/card-import/schema.sql'),'utf8'));
-    const digest=createHash('sha256').update(sources.join('\n')).digest('hex');
+    const cardAcl=await readFile(join(root,'packages/db/permissions/card-access.sql'),'utf8');
+    const localAuthAcl=await readFile(join(root,'packages/db/permissions/card-local-auth.sql'),'utf8');
+    const digest=createHash('sha256').update([...sources,cardAcl,localAuthAcl].join('\n')).digest('hex');
     if(!state.installed){
       const count=Number((await pool.query("SELECT count(*) FROM pg_tables WHERE schemaname NOT IN ('pg_catalog','information_schema')")).rows[0].count);
       if(count)throw Error('Nonempty uninitialized database: preserve it; no automatic repair or migration');
-      for(const sql of sources.slice(0,-1))await pool.query(sql);
-      const client=await pool.connect();try{await client.query('BEGIN');await client.query(sources.at(-1));await client.query('COMMIT');}catch(e){await client.query('ROLLBACK');throw e;}finally{client.release();}
+      if(!/^[a-f0-9]{64}$/.test(state.appPassword))throw Error('Missing isolated runtime identity; keep the old database intact.');
+      const setup=await pool.connect();
+      try {
+        await setup.query('BEGIN');
+        for(const sql of sources)await setup.query(sql);
+        await setup.query("CREATE ROLE jiuxiao_card_runtime NOLOGIN; CREATE ROLE jiuxiao_card_erasure NOLOGIN");
+        await setup.query(`CREATE ROLE cards_demo_app LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOBYPASSRLS PASSWORD '${state.appPassword}'`);
+        await setup.query('GRANT jiuxiao_card_runtime TO cards_demo_app');
+        await setup.query(cardAcl);
+        await setup.query(localAuthAcl);
+        await setup.query('COMMIT');
+      }catch(e){await setup.query('ROLLBACK');throw e;}finally{setup.release();}
       state.installed=true;state.schemaDigest=digest;await writeFile(stateFile,JSON.stringify(state),{mode:0o600});
     }else if(state.schemaDigest!==digest)throw Error('Schema changed: no automatic upgrade of preserved demo data. Review a new isolated copy.');
     await pool.query('SELECT greeting_index,recursive_worldbook FROM card_import.sessions LIMIT 0');

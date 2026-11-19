@@ -17,7 +17,7 @@ export function mountGames(
   auth: CloudSaveRouteAuth,
   turns?: ServerTurnService,
   memoryRecall?: { reader: AuthorizedRecallPageReader },
-  storyArchive?: StoryArchive,
+  storyArchive?: Pick<StoryArchive,'read'>,
   readReceipt?: (owner: string, saveId: string, key: string) => Promise<TurnReceipt | null>,
 ) {
   // Recovery is read-only. Absence is NOT proof that an in-flight turn was never sent.

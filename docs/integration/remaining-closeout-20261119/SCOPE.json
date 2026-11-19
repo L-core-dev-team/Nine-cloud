@@ -1,0 +1,453 @@
+{
+  "base": "1bd7bb5ff6e6221378a7cb1292e559fb19bfbfbc",
+  "entries": [
+    {
+      "work": "M1",
+      "path": "apps/api/src/card-import/local-provider.ts",
+      "symbol": "validateLocalProvider / localProviderOptions",
+      "change": "Admit one replacement, preserve immutable bindings and old-key recovery",
+      "source": "main PR110; official replacement documentation",
+      "acceptance": "replacement wire profile, budget and durable original-key regressions"
+    },
+    {
+      "work": "M1",
+      "path": "apps/api/src/card-import/model-budget.ts",
+      "symbol": "cardFitsBudget",
+      "change": "Separate verified model budget estimates before dispatch",
+      "source": "main PR110; official replacement documentation",
+      "acceptance": "replacement wire profile, budget and durable original-key regressions"
+    },
+    {
+      "work": "M1",
+      "path": "packages/domain/src/provider-protocol.ts",
+      "symbol": "createProviderTransport",
+      "change": "Map the replacement output limit without changing native requests",
+      "source": "main PR110; official replacement documentation",
+      "acceptance": "replacement wire profile, budget and durable original-key regressions"
+    },
+    {
+      "work": "M1",
+      "path": "apps/api/src/card-import/model-budget.test.ts",
+      "symbol": "profile tests",
+      "change": "Exercise bounded estimate and old config identity",
+      "source": "main PR110; official replacement documentation",
+      "acceptance": "replacement wire profile, budget and durable original-key regressions"
+    },
+    {
+      "work": "M1",
+      "path": "docs/examples/cards-provider.example.json",
+      "symbol": "private config template",
+      "change": "Demonstrate explicit disabled replacement",
+      "source": "main PR110; official replacement documentation",
+      "acceptance": "replacement wire profile, budget and durable original-key regressions"
+    },
+    {
+      "work": "M2",
+      "path": "packages/db/drizzle/0025_card_install_upgrade.sql",
+      "symbol": "card_import catalog",
+      "change": "Check known legacy structures, drain writers, install and grant limited roles",
+      "source": "main card_import schema and 06A upgrade fixture",
+      "acceptance": "fresh/known legacy catalogs, limited identities, failure retry and second instance"
+    },
+    {
+      "work": "M2",
+      "path": "tests/integration/card-install-upgrade.mjs",
+      "symbol": "two disposable clusters",
+      "change": "Exercise upgrade, refusal, rollback, limited roles and restore",
+      "source": "main card_import schema and 06A upgrade fixture",
+      "acceptance": "fresh/known legacy catalogs, limited identities, failure retry and second instance"
+    },
+    {
+      "work": "M2",
+      "path": "scripts/dev/cards.mjs",
+      "symbol": "fresh installer",
+      "change": "Avoid double install and preserve old database manifest refusal",
+      "source": "main card_import schema and 06A upgrade fixture",
+      "acceptance": "fresh/known legacy catalogs, limited identities, failure retry and second instance"
+    },
+    {
+      "work": "M2",
+      "path": "apps/api/src/card-import/host.integration.test.ts",
+      "symbol": "PG fixture",
+      "change": "Use migrated schema once",
+      "source": "main card_import schema and 06A upgrade fixture",
+      "acceptance": "fresh/known legacy catalogs, limited identities, failure retry and second instance"
+    },
+    {
+      "work": "M2",
+      "path": "apps/api/src/card-import/joint-host.integration.test.ts",
+      "symbol": "PG fixture",
+      "change": "Use migrated schema once",
+      "source": "main card_import schema and 06A upgrade fixture",
+      "acceptance": "fresh/known legacy catalogs, limited identities, failure retry and second instance"
+    },
+    {
+      "work": "M2",
+      "path": "packages/db/drizzle/meta/_journal.json",
+      "symbol": "idx 25 onward",
+      "change": "Append reviewed migrations in dependency order",
+      "source": "main card_import schema and 06A upgrade fixture",
+      "acceptance": "fresh/known legacy catalogs, limited identities, failure retry and second instance"
+    },
+    {
+      "work": "M3",
+      "path": "packages/db/drizzle/0026_account_recovery_governance.sql",
+      "symbol": "model calls and erasure delivery",
+      "change": "Track uncertain consumption and independent remote deletion without retaining content",
+      "source": "main AccountLifecycle, model_allowances/model_calls and Supabase identity mapping",
+      "acceptance": "atomic local erasure, durable external outcomes and restored data quarantine"
+    },
+    {
+      "work": "M3",
+      "path": "apps/api/src/card-import/schema.sql",
+      "symbol": "model_calls",
+      "change": "Keep isolated schema compatible with metering results",
+      "source": "main AccountLifecycle, model_allowances/model_calls and Supabase identity mapping",
+      "acceptance": "atomic local erasure, durable external outcomes and restored data quarantine"
+    },
+    {
+      "work": "M3",
+      "path": "apps/api/src/card-import/local-provider.ts",
+      "symbol": "outbound ledger",
+      "change": "Distinguish charged unknown result from acknowledged success; suppress restored authorizations",
+      "source": "main AccountLifecycle, model_allowances/model_calls and Supabase identity mapping",
+      "acceptance": "atomic local erasure, durable external outcomes and restored data quarantine"
+    },
+    {
+      "work": "M3",
+      "path": "apps/api/src/card-import/host.ts",
+      "symbol": "eraseCardImports",
+      "change": "Remove request locators without reducing used count",
+      "source": "main AccountLifecycle, model_allowances/model_calls and Supabase identity mapping",
+      "acceptance": "atomic local erasure, durable external outcomes and restored data quarantine"
+    },
+    {
+      "work": "M3",
+      "path": "apps/api/src/services/account-lifecycle.ts",
+      "symbol": "complete/expireClosed",
+      "change": "Record remote deletion work on same PG client; run T1 cleanup after transaction proof",
+      "source": "main AccountLifecycle, model_allowances/model_calls and Supabase identity mapping",
+      "acceptance": "atomic local erasure, durable external outcomes and restored data quarantine"
+    },
+    {
+      "work": "M3",
+      "path": "apps/api/src/services/auth-runtime.ts",
+      "symbol": "createEmailAuthRuntime",
+      "change": "Compose external deletion and proof hooks on server side",
+      "source": "main AccountLifecycle, model_allowances/model_calls and Supabase identity mapping",
+      "acceptance": "atomic local erasure, durable external outcomes and restored data quarantine"
+    },
+    {
+      "work": "M3",
+      "path": "apps/api/src/services/supabase-auth.ts",
+      "symbol": "deleteOwnerAuthUsers",
+      "change": "Prepare and deliver remote deletion with 404 idempotence",
+      "source": "main AccountLifecycle, model_allowances/model_calls and Supabase identity mapping",
+      "acceptance": "atomic local erasure, durable external outcomes and restored data quarantine"
+    },
+    {
+      "work": "M3",
+      "path": "apps/api/src/worker.ts",
+      "symbol": "lifecycle constructor",
+      "change": "Use same deletion behavior on edge host",
+      "source": "main AccountLifecycle, model_allowances/model_calls and Supabase identity mapping",
+      "acceptance": "atomic local erasure, durable external outcomes and restored data quarantine"
+    },
+    {
+      "work": "M3",
+      "path": "scripts/dev/cards-restore-quarantine.mjs",
+      "symbol": "restore target",
+      "change": "Explicit quarantine before serving restored content",
+      "source": "main AccountLifecycle, model_allowances/model_calls and Supabase identity mapping",
+      "acceptance": "atomic local erasure, durable external outcomes and restored data quarantine"
+    },
+    {
+      "work": "M4",
+      "path": "apps/api/src/services/server-turn.ts",
+      "symbol": "submit/completed",
+      "change": "Register native accepted turn without changing rules",
+      "source": "b0a22eb7 / cb697877; current main StoryArchive",
+      "acceptance": "fenced worker, authorized reader, transactional register/erase, original loader rejects unsigned overlay"
+    },
+    {
+      "work": "M4",
+      "path": "apps/api/src/services/npc-memory-turn-transaction.ts",
+      "symbol": "commitAcceptedTurn",
+      "change": "Register within existing transaction and handle unknown commit",
+      "source": "b0a22eb7 / cb697877; current main StoryArchive",
+      "acceptance": "fenced worker, authorized reader, transactional register/erase, original loader rejects unsigned overlay"
+    },
+    {
+      "work": "M4",
+      "path": "apps/api/src/services/postgres-server-turn.ts",
+      "symbol": "repository wiring",
+      "change": "Carry registration port",
+      "source": "b0a22eb7 / cb697877; current main StoryArchive",
+      "acceptance": "fenced worker, authorized reader, transactional register/erase, original loader rejects unsigned overlay"
+    },
+    {
+      "work": "M4",
+      "path": "apps/api/src/services/narrative-ownership-v2.ts",
+      "symbol": "ownership",
+      "change": "Read trusted legacy and distinguish unknown",
+      "source": "b0a22eb7 / cb697877; current main StoryArchive",
+      "acceptance": "fenced worker, authorized reader, transactional register/erase, original loader rejects unsigned overlay"
+    },
+    {
+      "work": "M4",
+      "path": "apps/api/src/services/narrative-publication-repository.ts",
+      "symbol": "publish/history/delete",
+      "change": "Enforce fence and ownership",
+      "source": "b0a22eb7 / cb697877; current main StoryArchive",
+      "acceptance": "fenced worker, authorized reader, transactional register/erase, original loader rejects unsigned overlay"
+    },
+    {
+      "work": "M4",
+      "path": "apps/api/src/services/narrative-outbox-worker.ts",
+      "symbol": "claim/render/publish",
+      "change": "Reject late attempts",
+      "source": "b0a22eb7 / cb697877; current main StoryArchive",
+      "acceptance": "fenced worker, authorized reader, transactional register/erase, original loader rejects unsigned overlay"
+    },
+    {
+      "work": "M4",
+      "path": "apps/api/src/services/narrative-v2-runtime.ts",
+      "symbol": "composition",
+      "change": "Separate worker login and startup gate",
+      "source": "b0a22eb7 / cb697877; current main StoryArchive",
+      "acceptance": "fenced worker, authorized reader, transactional register/erase, original loader rejects unsigned overlay"
+    },
+    {
+      "work": "M4",
+      "path": "apps/api/src/routes/narrative-publications.ts",
+      "symbol": "read routes",
+      "change": "Use authenticated owner for sources and history",
+      "source": "b0a22eb7 / cb697877; current main StoryArchive",
+      "acceptance": "fenced worker, authorized reader, transactional register/erase, original loader rejects unsigned overlay"
+    },
+    {
+      "work": "M4",
+      "path": "apps/api/src/routes/games.ts",
+      "symbol": "turn receipt recovery",
+      "change": "Expose known committed publication without regeneration",
+      "source": "b0a22eb7 / cb697877; current main StoryArchive",
+      "acceptance": "fenced worker, authorized reader, transactional register/erase, original loader rejects unsigned overlay"
+    },
+    {
+      "work": "M4",
+      "path": "apps/api/src/app.ts",
+      "symbol": "createApp",
+      "change": "Mount optional authenticated publication reader",
+      "source": "b0a22eb7 / cb697877; current main StoryArchive",
+      "acceptance": "fenced worker, authorized reader, transactional register/erase, original loader rejects unsigned overlay"
+    },
+    {
+      "work": "M4",
+      "path": "apps/api/src/index.ts",
+      "symbol": "Node host",
+      "change": "Choose single writer and close worker resources",
+      "source": "b0a22eb7 / cb697877; current main StoryArchive",
+      "acceptance": "fenced worker, authorized reader, transactional register/erase, original loader rejects unsigned overlay"
+    },
+    {
+      "work": "M4",
+      "path": "packages/db/pending/0027_narrative_publication.sql",
+      "symbol": "v1 publication",
+      "change": "Install after current 0024 without replacing archive",
+      "source": "b0a22eb7 / cb697877; current main StoryArchive",
+      "acceptance": "fenced worker, authorized reader, transactional register/erase, original loader rejects unsigned overlay"
+    },
+    {
+      "work": "M4",
+      "path": "packages/db/pending/0028_narrative_ownership.sql",
+      "symbol": "v2 ownership",
+      "change": "Fenced upgrade and qualified legacy reads",
+      "source": "b0a22eb7 / cb697877; current main StoryArchive",
+      "acceptance": "fenced worker, authorized reader, transactional register/erase, original loader rejects unsigned overlay"
+    },
+    {
+      "work": "M4",
+      "path": "apps/api/src/services/narrative-publication.integration.test.ts",
+      "symbol": "combined PG tests",
+      "change": "Verify atomicity, history, identity and late results",
+      "source": "b0a22eb7 / cb697877; current main StoryArchive",
+      "acceptance": "fenced worker, authorized reader, transactional register/erase, original loader rejects unsigned overlay"
+    },
+    {
+      "work": "M5",
+      "path": "tests/integration/card-real-play.mjs",
+      "symbol": "mock protocol browser host",
+      "change": "Make isolated browser-to-PG acceptance mandatory and release resources",
+      "source": "existing verify and card-real-play harness",
+      "acceptance": "mandatory isolated verify on PR HEAD and reproducible operating steps"
+    },
+    {
+      "work": "M5",
+      "path": ".github/workflows/ci.yml",
+      "symbol": "verify",
+      "change": "Run new candidate acceptance on disposable services",
+      "source": "existing verify and card-real-play harness",
+      "acceptance": "mandatory isolated verify on PR HEAD and reproducible operating steps"
+    },
+    {
+      "work": "M5",
+      "path": "docs/integration/remaining-closeout-20261119/SCOPE.json",
+      "symbol": "handoff",
+      "change": "Record candidate scope, measured results and operating instructions",
+      "source": "existing verify and card-real-play harness",
+      "acceptance": "mandatory isolated verify on PR HEAD and reproducible operating steps"
+    },
+    {
+      "work": "M5",
+      "path": "docs/integration/remaining-closeout-20261119/RESULTS.json",
+      "symbol": "handoff",
+      "change": "Record candidate scope, measured results and operating instructions",
+      "source": "existing verify and card-real-play harness",
+      "acceptance": "mandatory isolated verify on PR HEAD and reproducible operating steps"
+    },
+    {
+      "work": "M5",
+      "path": "docs/integration/remaining-closeout-20261119/CLOSEOUT.md",
+      "symbol": "handoff",
+      "change": "Record candidate scope, measured results and operating instructions",
+      "source": "existing verify and card-real-play harness",
+      "acceptance": "mandatory isolated verify on PR HEAD and reproducible operating steps"
+    },
+    {
+      "work": "M2",
+      "path": "packages/db/permissions/card-access.sql",
+      "symbol": "card roles",
+      "change": "Grant scoped runtime and erasure privileges separately",
+      "source": "0025 and current repository callsites",
+      "acceptance": "fresh/known legacy catalogs, limited identities, failure retry and second instance"
+    },
+    {
+      "work": "M2",
+      "path": "tests/integration/fixtures/card-schema-054daa0.sql",
+      "symbol": "historical DDL",
+      "change": "Build actual legacy fixture without repository history",
+      "source": "054daa0",
+      "acceptance": "fresh/known legacy catalogs, limited identities, failure retry and second instance"
+    },
+    {
+      "work": "M2",
+      "path": "tests/integration/fixtures/card-schema-pre110.sql",
+      "symbol": "historical DDL",
+      "change": "Exercise unmodified pre110 layout",
+      "source": "fd1e4737",
+      "acceptance": "fresh/known legacy catalogs, limited identities, failure retry and second instance"
+    },
+    {
+      "work": "M4",
+      "path": "docs/integration/remaining-closeout-20261119/t1-authority.PENDING.patch",
+      "symbol": "protected transaction overlay",
+      "change": "Apply only on isolated signed-candidate test copy",
+      "source": "b0a22eb7",
+      "acceptance": "fenced worker, authorized reader, transactional register/erase, original loader rejects unsigned overlay"
+    },
+    {
+      "work": "M4",
+      "path": "scripts/build/t1-authority-ci.mjs",
+      "symbol": "isolated overlay verification",
+      "change": "Check protected patch compilation and composition without changing approved source",
+      "source": "main/accepted T1",
+      "acceptance": "fenced worker, authorized reader, transactional register/erase, original loader rejects unsigned overlay"
+    },
+    {
+      "work": "M3",
+      "path": "apps/api/src/services/external-erasure.ts",
+      "symbol": "stageExternalErasure/deliverExternalErasure",
+      "change": "Pin remote subject in local transaction and record idempotent outcomes separately",
+      "source": "existing Supabase adapter and AccountLifecycle",
+      "acceptance": "atomic local erasure, durable external outcomes and restored data quarantine"
+    },
+    {
+      "work": "M3",
+      "path": "packages/db/permissions/erasure-delivery.sql",
+      "symbol": "queue grants",
+      "change": "Separate delivery role from player-facing permissions",
+      "source": "AccountLifecycle and existing role model",
+      "acceptance": "atomic local erasure, durable external outcomes and restored data quarantine"
+    },
+    {
+      "work": "M2",
+      "path": "scripts/dev/cards-host.mjs",
+      "symbol": "demo host identity",
+      "change": "Pass runtime DSN rather than installer login",
+      "source": "local startup",
+      "acceptance": "fresh/known legacy catalogs, limited identities, failure retry and second instance"
+    },
+    {
+      "work": "M2",
+      "path": "tests/e2e/card-ui-s1-host.mjs",
+      "symbol": "test schema install",
+      "change": "Reuse single migrated schema when starting demo",
+      "source": "existing S1 harness",
+      "acceptance": "fresh/known legacy catalogs, limited identities, failure retry and second instance"
+    },
+    {
+      "work": "M3",
+      "path": "tests/integration/card-real-play.mjs",
+      "symbol": "ledger outcomes",
+      "change": "Verify acknowledged vs unknown disposition with same request key",
+      "source": "local-provider",
+      "acceptance": "atomic local erasure, durable external outcomes and restored data quarantine"
+    },
+    {
+      "work": "M2",
+      "path": "tests/integration/fixtures/card-schema-pr110.sql",
+      "symbol": "existing ledger",
+      "change": "Verify previously consumed allowances survive catalog upgrade",
+      "source": "4d681b92",
+      "acceptance": "fresh/known legacy catalogs, limited identities, failure retry and second instance"
+    },
+    {
+      "work": "M3",
+      "path": "apps/api/src/services/main-integration-lifecycle.integration.test.ts",
+      "symbol": "real restricted deletion fixture",
+      "change": "Grant DELETE only to existing eraser on added model_calls cleanup and test durable delivery scenarios",
+      "source": "PR106 erasure suite",
+      "acceptance": "atomic local erasure, durable external outcomes and restored data quarantine"
+    },
+    {
+      "work": "M3",
+      "path": "apps/web/src/routes/AccountLifecyclePanel.tsx",
+      "symbol": "completion status",
+      "change": "Show pending external deletion supplied by authoritative endpoint",
+      "source": "current account completion UI",
+      "acceptance": "atomic local erasure, durable external outcomes and restored data quarantine"
+    },
+    {
+      "work": "M5",
+      "path": "scripts/build/card-pg-ci.mjs",
+      "symbol": "ephemeral cluster gate",
+      "change": "Run same existing host/erasure suites in a verified newly-created native test cluster and retain evidence",
+      "source": "GitHub PG fixture",
+      "acceptance": "mandatory isolated verify on PR HEAD and reproducible operating steps"
+    },
+    {
+      "work": "M5",
+      "path": "tests/integration/run-local-card-pg.mjs",
+      "symbol": "create disposable cluster",
+      "change": "Bind local runner to new cluster directory and dedicated DB, stop on all paths",
+      "source": "card-real-play native fixture",
+      "acceptance": "mandatory isolated verify on PR HEAD and reproducible operating steps"
+    },
+    {
+      "work": "M2",
+      "path": "packages/db/permissions/card-local-auth.sql",
+      "symbol": "demo auth login",
+      "change": "Use identical restricted session grants during fresh install and restored-session rehearsal",
+      "source": "existing verified session SQL",
+      "acceptance": "fresh/known legacy catalogs, limited identities, failure retry and second instance"
+    },
+    {
+      "work": "M3",
+      "path": "apps/api/src/index.ts",
+      "symbol": "erasurePool",
+      "change": "Permit a distinct login only in a local development/test process, validate the paired database and refuse production use",
+      "source": "AccountLifecycle and HTTP host",
+      "acceptance": "atomic local erasure, durable external outcomes and restored data quarantine"
+    }
+  ]
+}

@@ -40,7 +40,6 @@ describe.skipIf(!url)('joint card and native receipt host', () => {
   beforeAll(async () => {
     const base = new URL('../../../../packages/db/drizzle/', import.meta.url);
     for (const f of (await readdir(base)).filter(f => /^\d{4}_.*\.sql$/.test(f)).sort()) await pool.query(await readFile(new URL(f, base), 'utf8'));
-    await pool.query(await readFile(new URL('./schema.sql', import.meta.url), 'utf8'));
   });
   afterAll(async () => { await pool.end(); });
   it('keeps both routes mounted with session isolation and no native changes from card play', async () => {

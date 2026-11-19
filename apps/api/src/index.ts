@@ -34,7 +34,22 @@ const pool = new Pool({ connectionString: databaseUrl, max: 5, connectionTimeout
 configureAccountQuota(pool);
 pool.on('error', () => { console.error('Database connection unavailable.'); });
 const cards = localCardOptions(pool, process.env);
-const emailAuth = createEmailAuthRuntime(pool, process.env, cards ? { beforeDelete: eraseCardImports } : undefined);
+const erasureUrl = process.env.ACCOUNT_ERASURE_DATABASE_URL;
+if (erasureUrl) {
+  if (!['test', 'development'].includes(process.env.NODE_ENV ?? '')) throw Error('LOCAL_ERASURE_HOST_REQUIRED');
+  const runtimeTarget = new URL(databaseUrl), deleteTarget = new URL(erasureUrl);
+  if (!['postgres:', 'postgresql:'].includes(deleteTarget.protocol) || !['127.0.0.1', '[::1]'].includes(deleteTarget.hostname)
+      || deleteTarget.hostname !== runtimeTarget.hostname || (deleteTarget.port || '5432') !== (runtimeTarget.port || '5432')
+      || deleteTarget.pathname !== runtimeTarget.pathname || deleteTarget.pathname.length < 2
+      || deleteTarget.search || runtimeTarget.search || !deleteTarget.username || deleteTarget.username === runtimeTarget.username) {
+    throw Error('LOCAL_ERASURE_DATABASE_IDENTITY_REQUIRED');
+  }
+}
+const erasurePool = erasureUrl ? new Pool({connectionString: erasureUrl, max: 2, connectionTimeoutMillis: 3000}) : undefined;
+erasurePool?.on('error', () => { console.error('Erasure connection unavailable.'); });
+const emailAuth = createEmailAuthRuntime(pool, process.env, {
+  ...(cards ? {beforeDelete: eraseCardImports} : {}), ...(erasurePool ? {erasurePool} : {}),
+});
 if (cards) {
   if (!emailAuth) throw new Error('CARD_AUTH_REQUIRED');
   await verifyLocalCardSchema(pool);
@@ -70,7 +85,7 @@ const server = serve({ fetch: app.fetch, port, hostname });
 console.log(`jiuxiao-api listening on ${hostname}:${port}`);
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {
   process.on(signal, () => server.close(() => {
-    void pool.end().then(
+    void Promise.all([pool.end(), erasurePool?.end()]).then(
       () => process.exit(0),
       () => {
         console.error('Failed to close the database pool cleanly.');

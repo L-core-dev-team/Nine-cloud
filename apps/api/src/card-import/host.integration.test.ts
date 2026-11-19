@@ -33,14 +33,17 @@ const native=async()=>{const out:Record<string,unknown>={};for(const t of ['game
 describe.skipIf(!url)('existing host + real PostgreSQL session integration',()=>{
  beforeAll(async()=>{
   const migrationRoot=new URL('../../../../packages/db/drizzle/',import.meta.url);
-  for(const f of (await readdir(migrationRoot)).filter(f=>/^\d{4}_.*\.sql$/.test(f)).sort())await pool.query(await readFile(new URL(f,migrationRoot),'utf8'));
-  const sql=await readFile(new URL('./schema.sql',import.meta.url),'utf8');
+  const files=(await readdir(migrationRoot)).filter(f=>/^\d{4}_.*\.sql$/.test(f)).sort();
+  const cards='0025_card_install_upgrade.sql';
+  for(const f of files.filter(f=>f<cards))await pool.query(await readFile(new URL(f,migrationRoot),'utf8'));
+  const sql=await readFile(new URL(cards,migrationRoot),'utf8');
   const install=await pool.connect();try {
-   await install.query('BEGIN');await expect(install.query(sql.replace('CREATE TABLE card_import.cards','SELECT 1/0; CREATE TABLE card_import.cards'))).rejects.toThrow();await install.query('ROLLBACK');
+   await install.query('BEGIN');await expect(install.query(sql.replace("PERFORM set_config('search_path',previous_path,true);","RAISE EXCEPTION 'FAULT_AFTER_CARD_INSTALL';"))).rejects.toThrow();await install.query('ROLLBACK');
    expect((await install.query("SELECT to_regnamespace('card_import') AS n")).rows[0].n).toBeNull();
    await install.query('BEGIN');await install.query(sql);await install.query('COMMIT');
    await install.query('BEGIN');await expect(install.query(sql)).rejects.toThrow();await install.query('ROLLBACK');
   } finally { install.release(); }
+  for(const f of files.filter(f=>f>cards))await pool.query(await readFile(new URL(f,migrationRoot),'utf8'));
  });
  afterAll(async()=>{await pool.end();});
  it('group sessions pin participants, attribute output and preserve atomic idempotent history',async()=>{

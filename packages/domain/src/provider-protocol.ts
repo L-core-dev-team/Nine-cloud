@@ -36,6 +36,10 @@ export function createProviderTransport(config:ProviderConfig,env:Record<string,
    if(input.mode==='legacy') body=config.protocol==='openai-responses'?{model:config.model,input:input.prompt,...sample,max_output_tokens:input.maxOutputTokens,store:false,stream:false}:{model:config.model,messages:[{role:'user',content:input.prompt}],...sample,max_tokens:input.maxOutputTokens,stream:false};
    else if(config.protocol==='openai-responses') body={model:config.model,input:[{role:'system',content:input.system},...turns],...sample,max_output_tokens:input.maxOutputTokens,store:false,stream:false};
    else if(config.protocol==='anthropic-messages') body={model:config.model,system:input.system,messages:turns,...sample,max_tokens:input.maxOutputTokens,stream:false};
+   else if(config.model==='gpt-6-luna') {
+    body={model:config.model,messages:[{role:'developer',content:input.system},...turns],
+     reasoning_effort:'none',max_completion_tokens:input.maxOutputTokens,store:false,stream:false};
+   }
    else body={model:config.model,messages:[{role:'system',content:input.system},...turns],...sample,max_tokens:input.maxOutputTokens,stream:false};
   }
   try{
@@ -43,7 +47,10 @@ export function createProviderTransport(config:ProviderConfig,env:Record<string,
    if(!data||data.error)throw new Error('INVALID_PROVIDER_OUTPUT');
    const parts=(rows:unknown)=>Array.isArray(rows)?rows.filter(p=>p&&p.thought!==true&&(p.type===undefined||p.type==='text'||p.type==='output_text')).map(p=>typeof p.text==='string'?p.text:'').join(''):'';
    let output='',tokens:unknown;
-   if(config.protocol==='openai-chat'){const c=data.choices?.[0];output=typeof c?.message?.content==='string'?c.message.content:parts(c?.message?.content);tokens=data.usage?.completion_tokens;}
+   if(config.protocol==='openai-chat'){const c=data.choices?.[0];
+    // Do not persist a partial or refused card reply as a completed turn.
+    if(input.mode==='card' && config.model==='gpt-6-luna' && (c?.finish_reason!=='stop' || c.message?.refusal || c.message?.tool_calls))throw new Error('INVALID_PROVIDER_OUTPUT');
+    output=typeof c?.message?.content==='string'?c.message.content:parts(c?.message?.content);tokens=data.usage?.completion_tokens;}
    else if(config.protocol==='openai-responses'){output=(Array.isArray(data.output)?data.output:[]).filter((p:{type?:string})=>p.type==='message').map((p:{content?:unknown})=>parts(p.content)).join('');tokens=data.usage?.output_tokens;}
    else if(config.protocol==='anthropic-messages'){output=parts(data.content);tokens=data.usage?.output_tokens;}
    else{output=parts(data.candidates?.[0]?.content?.parts);tokens=data.usageMetadata?.candidatesTokenCount;}

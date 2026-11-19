@@ -106,5 +106,6 @@ CREATE TABLE card_import.model_allowances (
 CREATE TABLE card_import.model_calls (
  approval_id text NOT NULL REFERENCES card_import.model_allowances(approval_id),
  owner_id text NOT NULL, session_id uuid NOT NULL, key uuid NOT NULL,
+ outcome text NOT NULL DEFAULT 'unknown' CHECK (outcome IN ('unknown','acknowledged')),
  PRIMARY KEY(approval_id,owner_id,session_id,key)
 );
