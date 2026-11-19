@@ -36,7 +36,7 @@ let listenerPorts=[];
 const mark=name=>{results.push({name,status:'PASS'});console.log(`PASS ${name}`);};
 try {
 run('initdb',['-D',join(dir,'pg'),'-U','card_test_admin','-A','scram-sha-256','--encoding=UTF8','--no-locale',`--pwfile=${join(dir,'password')}`]);
-run('pg_ctl',['-D',join(dir,'pg'),'-l',join(dir,'pg.log'),'-o',`-h 127.0.0.1 -p ${pgPort}`,'-w','start']);
+run('pg_ctl',['-D',join(dir,'pg'),'-l',join(dir,'pg.log'),'-o',`-c unix_socket_directories= -h 127.0.0.1 -p ${pgPort}`,'-w','start']);
  started=true;
  admin=new Pool({connectionString:url.href});
  assert.equal(resolve((await admin.query('SHOW data_directory')).rows[0].data_directory),resolve(join(dir,'pg')));

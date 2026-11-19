@@ -18,7 +18,7 @@ await writeFile(join(dir,'password'),password,{mode:0o600});
 pg('initdb',['-D',data,'-U','fixture_owner','-A','scram-sha-256','--encoding=UTF8','--no-locale','--pwfile='+join(dir,'password')]);
 let started=false,failure;
 try{
- pg('pg_ctl',['-D',data,'-l',join(dir,'postgres.log'),'-o','-h 127.0.0.1 -p '+port,'-w','start']);started=true;
+ pg('pg_ctl',['-D',data,'-l',join(dir,'postgres.log'),'-o','-c unix_socket_directories= -h 127.0.0.1 -p '+port,'-w','start']);started=true;
  const u=new URL('postgresql://fixture_owner@127.0.0.1:'+port+'/postgres');u.password=password;
  const pool=new Pool({connectionString:u.href});
  try{if(await realpath((await pool.query('SHOW data_directory')).rows[0].data_directory)!==await realpath(data))throw Error('wrong instance');

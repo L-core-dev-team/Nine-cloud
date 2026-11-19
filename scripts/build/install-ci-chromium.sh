@@ -42,6 +42,22 @@ bounded_install() {
   done
   return "$code"
 }
-bounded_install os-dependencies "$(command -v node)" "$PWD/node_modules/playwright/cli.js" install-deps chromium
 bounded_install chromium "$(command -v node)" "$PWD/node_modules/playwright/cli.js" install chromium
+probe_chromium() {
+  timeout --kill-after=5s 30s node --input-type=module <<'NODE'
+import { chromium } from 'playwright';
+const browser = await chromium.launch();
+try {
+  const page = await browser.newPage();
+  await page.setContent('<title>runner-probe</title>');
+  if (await page.title() !== 'runner-probe') throw Error('Chromium renderer probe failed');
+} finally {
+  await browser.close();
+}
+NODE
+}
+if ! probe_chromium; then
+  bounded_install os-dependencies "$(command -v node)" "$PWD/node_modules/playwright/cli.js" install-deps chromium
+  probe_chromium
+fi
 echo 'Chromium installation completed; browser tests must still pass.'

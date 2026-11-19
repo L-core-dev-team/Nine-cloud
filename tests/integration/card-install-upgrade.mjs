@@ -54,7 +54,7 @@ async function cluster(name){
   const db={data,port:await port(),started:false};
   instances.push(db);
   execFileSync(exe(serverBin,'initdb'),['-D',data,'-U','fixture_installer','-A','scram-sha-256','--encoding=UTF8','--no-locale','--pwfile='+passwordFile],{...flags,env,stdio:'pipe'});
-  execFileSync(exe(serverBin,'pg_ctl'),['-D',data,'-l',join(dir,name+'.log'),'-o','-h 127.0.0.1 -p '+db.port,'-w','start'],{...flags,env,stdio:'ignore'});
+  execFileSync(exe(serverBin,'pg_ctl'),['-D',data,'-l',join(dir,name+'.log'),'-o','-c unix_socket_directories= -h 127.0.0.1 -p '+db.port,'-w','start'],{...flags,env,stdio:'ignore'});
   db.started=true;
   const admin=connection(db);
   assert.equal(resolve((await admin.query('SHOW data_directory')).rows[0].data_directory),resolve(data));

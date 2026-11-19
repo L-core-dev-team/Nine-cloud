@@ -448,6 +448,13 @@
       "change": "Permit a distinct login only in a local development/test process, validate the paired database and refuse production use",
       "source": "AccountLifecycle and HTTP host",
       "acceptance": "atomic local erasure, durable external outcomes and restored data quarantine"
+    },
+    {
+      "work": "M5",
+      "path": "scripts/build/install-ci-chromium.sh",
+      "symbol": "bounded_install / hosted Chromium launch",
+      "change": "Check the pinned browser on the hosted image before requesting redundant APT packages; retain signed OS dependency recovery and all E2E gates",
+      "source": "CI run 44520435353: Ubuntu package index unavailable twice"
     }
   ]
 }
