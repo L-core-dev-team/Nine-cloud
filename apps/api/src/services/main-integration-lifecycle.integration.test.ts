@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises';
+import { deliverExternalErasure } from './external-erasure.js';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { randomUUID, createHash } from 'node:crypto';
 import { Pool } from 'pg';
@@ -59,7 +61,9 @@ describe.skipIf(!url)('new main + cards + opt-in erasure pool', () => {
     await admin.query('GRANT SELECT ON auth_accounts,auth_sessions,account_operations TO joint_runtime; GRANT UPDATE(last_seen_at) ON auth_accounts TO joint_runtime; GRANT UPDATE(phase) ON account_operations TO joint_runtime');
     await admin.query('GRANT SELECT,DELETE ON auth_accounts,auth_sessions,auth_challenges,cloud_archive_trash,game_saves,entitlement_ledger_entries,entitlement_balances,turn_events,turn_requests,npc_memory_journals,npc_authorized_observation_outbox,npc_memory_observation_supersessions TO joint_eraser');
     await admin.query('GRANT SELECT,INSERT,UPDATE ON account_operations TO joint_eraser; GRANT INSERT ON account_lifecycle_audit TO joint_eraser; GRANT SELECT,DELETE ON account_rate_limits TO joint_eraser; GRANT UPDATE(closed_at) ON auth_accounts TO joint_eraser; GRANT UPDATE(revision) ON game_saves TO joint_eraser');
-    for (const table of ['group_settings','group_messages','group_turns','group_participant_worldbooks','group_participants','requests','session_worldbooks','session_personas','sessions','persona_versions','personas','global_worldbooks','duplicate_requests','links','cards','imports']) await admin.query(`GRANT SELECT,DELETE ON card_import.${table} TO joint_eraser`);
+    await admin.query('GRANT SELECT ON public.auth_external_identities TO joint_eraser');
+    await admin.query(await readFile(new URL('../../../../packages/db/permissions/erasure-delivery.sql', import.meta.url),'utf8'));
+    for (const table of ['model_calls','group_settings','group_messages','group_turns','group_participant_worldbooks','group_participants','requests','session_worldbooks','session_personas','sessions','persona_versions','personas','global_worldbooks','duplicate_requests','links','cards','imports']) await admin.query(`GRANT SELECT,DELETE ON card_import.${table} TO joint_eraser`);
   });
   afterAll(async () => { await Promise.all([runtime.end(), erasure.end(), admin.end()]); });
   it('uses real restricted session and dedicated session_user; rollback restores record and audit hashes', async () => {
@@ -73,6 +77,43 @@ describe.skipIf(!url)('new main + cards + opt-in erasure pool', () => {
     expect((await admin.query('SELECT 1 FROM card_import.imports WHERE owner_id=$1', [f.owner])).rowCount).toBe(0);
     expect((await admin.query('SELECT 1 FROM account_lifecycle_audit WHERE owner_digest=$1', [createHash('sha256').update(f.owner).digest('hex')])).rowCount).toBe(1);
     expect((await call(f.cookie, { operationId: f.id, confirmation: 'DELETE_ACCOUNT' })).status).toBe(401);
+  });
+  it('durably separates local erasure, remote uncertainty and acknowledgement recovery', async () => {
+    const a=await fixture(), b=await fixture(), subject=randomUUID(), approval=randomUUID();
+    const insertIdentity=(owner:string)=>admin.query("INSERT INTO auth_external_identities(provider_subject,identity_kind,identifier_digest,owner_id,verified_at) VALUES($1,'email',$2,$3,now())",[subject,'d'.repeat(64),owner]);
+    await insertIdentity(a.owner);
+    await admin.query('INSERT INTO card_import.model_allowances VALUES($1,$2,0)',[approval,'synthetic-binding']);
+    await admin.query('UPDATE card_import.model_allowances SET used=used+1 WHERE approval_id=$1',[approval]);
+    await admin.query('INSERT INTO card_import.model_calls(approval_id,owner_id,session_id,key) VALUES($1,$2,$3,$4)',[approval,a.owner,randomUUID(),randomUUID()]);
+    const contacted:string[]=[];
+    let timeout=true;
+    const remote={subjects:async()=>[subject],remove:async(id:string)=>{contacted.push(id);if(timeout)throw Error('unknown');}};
+    await expect(admin.query('DELETE FROM auth_accounts WHERE id=$1',[a.owner])).rejects.toThrow('CARD_ERASURE_REQUIRED');
+    let abortLocal=true;
+    const composed=new AccountLifecycle(runtime,send,secret,'synthetic-retention',true,()=>true,undefined,eraseCardImports,erasure,
+      async()=>{if(abortLocal)throw Error('LOCAL_ROLLBACK');},remote);
+    await expect(composed.complete(a.owner,a.hash,a.id,'DELETE_ACCOUNT')).rejects.toThrow('LOCAL_ROLLBACK');
+    expect(contacted).toEqual([]);
+    expect((await admin.query('SELECT owner_id FROM card_import.model_calls WHERE approval_id=$1',[approval])).rows).toEqual([{owner_id:a.owner}]);
+    abortLocal=false;
+    expect(await composed.complete(a.owner,a.hash,a.id,'DELETE_ACCOUNT')).toMatchObject({localErasure:'completed',remoteErasure:'pending'});
+    expect((await admin.query('SELECT used FROM card_import.model_allowances WHERE approval_id=$1',[approval])).rows[0].used).toBe(1);
+    expect((await admin.query('SELECT 1 FROM card_import.model_calls WHERE approval_id=$1',[approval])).rowCount).toBe(0);
+    expect((await admin.query('SELECT 1 FROM auth_accounts WHERE id=$1',[b.owner])).rowCount).toBe(1);
+    await expect(insertIdentity(b.owner)).rejects.toThrow('IDENTITY_ERASURE_IN_PROGRESS');
+    await expect(composed.complete(a.owner,a.hash,a.id,'DELETE_ACCOUNT')).rejects.toThrow();
+    timeout=false;
+    await admin.query(`CREATE FUNCTION public.joint_test_delivery_ack() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
+      IF NEW.operation_id='${a.id}' THEN RAISE EXCEPTION 'ACK_LOST'; END IF; RETURN NEW; END $$;
+      CREATE TRIGGER joint_test_delivery_ack BEFORE UPDATE ON account_erasure_delivery FOR EACH ROW EXECUTE FUNCTION public.joint_test_delivery_ack()`);
+    try{await expect(deliverExternalErasure(erasure,remote,a.id)).rejects.toThrow('ACK_LOST');}
+    finally{await admin.query('DROP TRIGGER joint_test_delivery_ack ON account_erasure_delivery; DROP FUNCTION joint_test_delivery_ack()');}
+    expect(await deliverExternalErasure(erasure,remote,a.id)).toBe('completed');
+    expect(await deliverExternalErasure(erasure,remote,a.id)).toBe('completed');
+    expect(contacted).toEqual([subject,subject,subject]);
+    expect((await admin.query('SELECT state,pending_subject FROM account_erasure_delivery WHERE operation_id=$1',[a.id])).rows).toEqual([{state:'completed',pending_subject:null}]);
+    await expect(runtime.query('SELECT * FROM account_erasure_delivery')).rejects.toThrow();
+    expect((await admin.query("SELECT finish_erasure_retention('synthetic-retention',now()) AS n")).rows[0].n).toBe(1);
   });
   it('denies cross-owner, wrong confirmation and disabled/invalid erasure identity without fallback', async () => {
     const a = await fixture(), b = await fixture();

@@ -1,19 +1,31 @@
 import { createHash, createHmac, randomInt, randomUUID, timingSafeEqual } from 'node:crypto';
+import { stageExternalErasure, deliverExternalErasure, type RemoteErasure } from './external-erasure.js';
 import type { Pool,PoolClient } from 'pg';
 import { normalizeEmail, type AuthMailSender } from './email-auth.js';
 export type AccountOperation='email_change'|'close'|'delete';
 export class AccountLifecycleError extends Error {constructor(readonly code:string){super(code);}}
-/** Optional erasurePool: undefined preserves the existing main lifecycle; null explicitly disables
- * dedicated erasure. This only composes identity; T1 narrative cleanup remains deferred
- * until its migration and post-proof callback order are approved. The existing beforeDelete
- * hook is not a substitute for that post-proof step. No T1 tables are installed implicitly. */
+/** Undefined retains local PG behavior; null disables erasure. Content cleanup requiring
+ * operation proof runs on the same client after the proof has been established. */
 /** All workflow proof is HMAC'd, bound to the original owner/session, single use and durable. */
 export class AccountLifecycle {
  constructor(private readonly pool:Pool,private readonly send:AuthMailSender,private readonly secret:string,readonly policyVersion:string|null=null,readonly deletionEnabled=false,private readonly policyValid:()=>boolean=()=>true,
   private readonly onEmailChange?: (client:PoolClient,ownerId:string,newEmail:string)=>Promise<void>,
   private readonly beforeDelete?: (client:PoolClient,ownerId:string)=>Promise<void>,
-  private readonly erasurePool?: Pool | null){if(Buffer.byteLength(secret)<32)throw new Error('AUTH_SECRET_REQUIRED');}
- private async erasureIdentity(c:PoolClient){const row=(await c.query("SELECT pg_has_role(session_user,'jiuxiao_narrative_erasure','MEMBER') AS authorized,rolsuper,rolcreatedb,rolcreaterole,rolbypassrls FROM pg_roles WHERE rolname=session_user")).rows[0];return Boolean(row?.authorized&&!row.rolsuper&&!row.rolcreatedb&&!row.rolcreaterole&&!row.rolbypassrls);}
+  private readonly erasurePool?: Pool | null,
+  private readonly afterProof?: (client:PoolClient,owner:string)=>Promise<void>,
+  private readonly remoteErasure?: RemoteErasure){if(Buffer.byteLength(secret)<32)throw new Error('AUTH_SECRET_REQUIRED');}
+ private async erasureIdentity(c:PoolClient){
+  const result=await c.query(`SELECT current_user=session_user
+    AND pg_has_role(session_user,'jiuxiao_narrative_erasure','MEMBER')
+    AND NOT EXISTS(SELECT 1 FROM pg_roles r WHERE pg_has_role(session_user,r.oid,'MEMBER') AND
+      (r.rolsuper OR r.rolcreatedb OR r.rolcreaterole OR r.rolbypassrls OR r.rolreplication
+       OR r.rolname IN ('jiuxiao_narrative_operator','jiuxiao_narrative_schema_owner','jiuxiao_narrative_lock_owner',
+                         'jiuxiao_card_runtime','jiuxiao_narrative_runtime','jiuxiao_narrative_worker')))
+    AND NOT EXISTS(SELECT 1 FROM pg_class t JOIN pg_namespace n ON n.oid=t.relnamespace
+      WHERE n.nspname IN ('card_import','public') AND t.relkind IN ('r','p') AND pg_has_role(session_user,t.relowner,'MEMBER'))
+    AS allowed`);
+  return result.rows[0]?.allowed===true;
+ }
  async capabilities(){let ready=this.erasurePool===undefined&&Boolean(this.policyVersion&&this.deletionEnabled&&this.policyValid());if(this.erasurePool&&this.policyVersion&&this.deletionEnabled&&this.policyValid()){let c:PoolClient|undefined;try{c=await this.erasurePool.connect();ready=await this.erasureIdentity(c);}catch{ready=false;}finally{c?.release();}}return {emailChange:true,close:Boolean(this.policyVersion&&this.policyValid()),permanentDelete:ready,policyVersion:this.policyVersion};}
  async cancel(owner:string,sessionHash:string,id:string){const result=await this.pool.query("UPDATE account_operations SET phase='cancelled',digest=NULL WHERE id=$1 AND owner_id=$2 AND session_hash=$3 AND phase IN ('old','new','ready','failed')",[id,owner,sessionHash]);return {status:result.rowCount?'cancelled':'already_inactive'};}
  private digest(id:string,phase:string,email:string,code:string){return createHmac('sha256',this.secret).update(`account-operation\0${id}\0${phase}\0${email}\0${code}`).digest('hex');}
@@ -57,6 +69,7 @@ export class AccountLifecycle {
  async complete(owner:string,sessionHash:string,id:string,confirmation:string){
   const selected=(await this.pool.query('SELECT operation FROM account_operations WHERE id=$1 AND owner_id=$2 AND session_hash=$3',[id,owner,sessionHash])).rows[0]?.operation;
   if(selected==='delete'&&this.erasurePool===null)throw new AccountLifecycleError('ERASURE_UNAVAILABLE');
+  let released=false;
   const c=await (selected==='delete'&&this.erasurePool?this.erasurePool:this.pool).connect();
   try{await c.query('BEGIN');const account=await this.account(c,owner,sessionHash);if(!account)throw new AccountLifecycleError('UNAUTHENTICATED');
    const row=(await c.query('SELECT * FROM account_operations WHERE id=$1 AND owner_id=$2 AND session_hash=$3 FOR UPDATE',[id,owner,sessionHash])).rows[0];
@@ -78,6 +91,10 @@ export class AccountLifecycle {
     // Transaction-local proof ID: authorizes the erasure-only delete triggers below
     // (including authorized observations), game data, and ledger erasure; other mutations stay blocked.
     await c.query("SELECT set_config('jiuxiao.account_erasure_operation',$1,true)",[id]);
+    if(this.afterProof)await this.afterProof(c,owner);
+    else if((await c.query("SELECT to_regclass('public.narrative_receipt_ownership') IS NOT NULL AS installed")).rows[0]?.installed)
+      throw new AccountLifecycleError('NARRATIVE_ERASURE_NOT_CONFIGURED');
+    if(this.remoteErasure)await stageExternalErasure(c,this.remoteErasure,owner,id,this.policyVersion!);
     for(const table of ['npc_memory_observation_supersessions','npc_authorized_observation_outbox','turn_events','turn_requests','npc_memory_journals'])await c.query(`DELETE FROM ${table} t USING game_saves s WHERE t.save_id=s.id AND s.owner_id=$1`,[owner]);
     await c.query('DELETE FROM cloud_archive_trash WHERE owner_id=$1',[owner]);await c.query('DELETE FROM game_saves WHERE owner_id=$1',[owner]);
     await c.query('DELETE FROM entitlement_ledger_entries WHERE owner_id=$1',[owner]);await c.query('DELETE FROM entitlement_balances WHERE owner_id=$1',[owner]);
@@ -87,13 +104,26 @@ export class AccountLifecycle {
    await c.query("UPDATE account_operations SET phase='completed',digest=NULL,old_email=NULL,new_email=NULL WHERE owner_id=$1",[owner]);
    if(row.operation==='delete')await c.query('DELETE FROM auth_accounts WHERE id=$1',[owner]);
    await c.query("INSERT INTO account_lifecycle_audit(id,owner_digest,operation,policy_version) VALUES($1,$2,$3,$4)",[randomUUID(),createHash('sha256').update(owner).digest('hex'),row.operation,this.policyVersion??'email-change']);
-   await c.query('COMMIT');console.info(JSON.stringify({event:'account_lifecycle_completed',operation:row.operation,operationId:id,policyVersion:this.policyVersion,liveDatabaseOnly:true}));return {status:row.operation==='email_change'?'email_changed':row.operation==='close'?'account_closed':'account_deleted',dataHandling:row.operation==='close'?'30_day_grace_then_policy_erasure':row.operation==='delete'?'live_database_removed_backups_under_host_policy':'unchanged',policyVersion:this.policyVersion};
-  }catch(error){await c.query('ROLLBACK');if((error as {code?:string}).code==='23505')throw new AccountLifecycleError('EMAIL_UNAVAILABLE');throw error;}finally{c.release();}
+   await c.query('COMMIT');
+   c.release();released=true;
+   let remoteStatus:'completed'|'pending'|undefined;
+   if(row.operation==='delete' && this.remoteErasure){
+    try{remoteStatus=await deliverExternalErasure(this.erasurePool??this.pool,this.remoteErasure,id);}
+    catch{remoteStatus='pending';}
+   }
+   console.info(JSON.stringify({event:'account_lifecycle_completed',operation:row.operation,operationId:id,policyVersion:this.policyVersion,liveDatabaseOnly:true}));return {status:row.operation==='email_change'?'email_changed':row.operation==='close'?'account_closed':remoteStatus==='pending'?'remote_erasure_pending':'account_deleted',...(remoteStatus?{localErasure:'completed',remoteErasure:remoteStatus}:{}),dataHandling:row.operation==='close'?'30_day_grace_then_policy_erasure':row.operation==='delete'?'live_database_removed_backups_under_host_policy':'unchanged',policyVersion:this.policyVersion};
+  }catch(error){if(!released)await c.query('ROLLBACK');if((error as {code?:string}).code==='23505')throw new AccountLifecycleError('EMAIL_UNAVAILABLE');throw error;}finally{if(!released)c.release();}
  }
  /** Scheduled, policy-approved erasure. Account lock serializes recovery vs expiry. */
  async expireClosed(apply=false){
   if(!this.policyVersion||!this.policyValid()||!this.deletionEnabled)throw new AccountLifecycleError('DATA_POLICY_NOT_READY');
   if(this.erasurePool===null)throw new AccountLifecycleError('ERASURE_UNAVAILABLE');
+  if(apply&&this.remoteErasure){
+   if(!this.erasurePool)throw new AccountLifecycleError('ERASURE_UNAVAILABLE');
+   const identity=await this.erasurePool.connect();
+   try{if(!await this.erasureIdentity(identity))throw new AccountLifecycleError('ERASURE_UNAVAILABLE');}finally{identity.release();}
+   await deliverExternalErasure(this.erasurePool,this.remoteErasure);
+  }
   const c=await (this.erasurePool??this.pool).connect();try{await c.query('BEGIN');
    if(this.erasurePool!==undefined&&!await this.erasureIdentity(c))throw new AccountLifecycleError('ERASURE_UNAVAILABLE');
    const rows=(await c.query("SELECT id,email,is_guest FROM auth_accounts WHERE closed_at<=now()-interval '30 days' OR (is_guest=true AND closed_at IS NULL AND last_seen_at<=now()-interval '90 days') ORDER BY id LIMIT $1 FOR UPDATE SKIP LOCKED",[this.beforeDelete?1:100])).rows;
@@ -102,6 +132,10 @@ export class AccountLifecycle {
     await this.beforeDelete?.(c,owner);
     await c.query("INSERT INTO account_operations(id,owner_id,session_hash,operation,old_email,phase,expires_at) VALUES($1,$2,'scheduled-expiry','delete',NULL,'ready',now()+interval '1 minute')",[id,owner]);
     await c.query("SELECT set_config('jiuxiao.account_erasure_operation',$1,true)",[id]);
+    if(this.afterProof)await this.afterProof(c,owner);
+    else if((await c.query("SELECT to_regclass('public.narrative_receipt_ownership') IS NOT NULL AS installed")).rows[0]?.installed)
+      throw new AccountLifecycleError('NARRATIVE_ERASURE_NOT_CONFIGURED');
+    if(this.remoteErasure)await stageExternalErasure(c,this.remoteErasure,owner,id,this.policyVersion!);
     for(const table of ['npc_memory_observation_supersessions','npc_authorized_observation_outbox','turn_events','turn_requests','npc_memory_journals'])await c.query(`DELETE FROM ${table} t USING game_saves s WHERE t.save_id=s.id AND s.owner_id=$1`,[owner]);
     for(const table of ['cloud_archive_trash','game_saves','entitlement_ledger_entries','entitlement_balances'])await c.query(`DELETE FROM ${table} WHERE owner_id=$1`,[owner]);
     await c.query('DELETE FROM auth_challenges WHERE email=$1',[account.email]);

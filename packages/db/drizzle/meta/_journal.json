@@ -176,6 +176,20 @@
       "when": 1794124800000,
       "tag": "0024_story_narratives",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1794124800001,
+      "tag": "0025_card_install_upgrade",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1794124800002,
+      "tag": "0026_account_recovery_governance",
+      "breakpoints": true
     }
   ]
 }

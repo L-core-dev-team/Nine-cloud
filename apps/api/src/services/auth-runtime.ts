@@ -14,7 +14,7 @@ import { SupabaseAuthService } from './supabase-auth.js';
 import { createTurnstileVerifier, type TurnstileVerifier } from './turnstile.js';
 
 /** Disabled by default; explicit enablement requires every deployment input. */
-export function createEmailAuthRuntime(pool: Pool, env: NodeJS.ProcessEnv, lifecycleOptions?: { erasurePool?: Pool | null; beforeDelete?: (client: PoolClient, ownerId: string) => Promise<void> }) {
+export function createEmailAuthRuntime(pool: Pool, env: NodeJS.ProcessEnv, lifecycleOptions?: { afterProof?: (client: PoolClient,ownerId:string)=>Promise<void>; erasurePool?: Pool | null; beforeDelete?: (client: PoolClient, ownerId: string) => Promise<void> }) {
   const localAuthEnabled = env.AUTH_ENABLED === 'true';
   const supabaseAuthEnabled = env.SUPABASE_AUTH_ENABLED === 'true';
   if (!localAuthEnabled && !supabaseAuthEnabled) return undefined;
@@ -143,10 +143,8 @@ export function createEmailAuthRuntime(pool: Pool, env: NodeJS.ProcessEnv, lifec
       await client.query(`UPDATE auth_external_identities SET revoked_at=now()
         WHERE owner_id=$1 AND identity_kind='email' AND revoked_at IS NULL`, [ownerId]);
     } : undefined,
-    (supabaseAuthEnabled || lifecycleOptions?.beforeDelete) ? async (client, ownerId) => {
-      if (supabaseAuthEnabled) await supabaseAuth!.deleteOwnerAuthUsers(client, ownerId);
-      await lifecycleOptions?.beforeDelete?.(client, ownerId);
-    } : undefined, lifecycleOptions?.erasurePool);
+    lifecycleOptions?.beforeDelete, lifecycleOptions?.erasurePool ?? (supabaseAuthEnabled ? null : lifecycleOptions?.erasurePool), lifecycleOptions?.afterProof,
+    supabaseAuth ? {subjects:(c,owner)=>supabaseAuth!.erasureSubjects(c,owner),remove:id=>supabaseAuth!.adminDeleteUser(id)} : undefined);
   // SMTP 有连接可握手；SES API 为无状态 HTTP，凭证只能验证「已配置且合法」，不发真实邮件。
   // 因此预检返回 MAIL_CHANNEL_CONFIGURED，delivery 仍为 NOT_TESTED。
   const verifyMail = mailer === 'smtp'

@@ -4,9 +4,10 @@ import { randomBytes } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { join } from 'node:path';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile, realpath } from 'node:fs/promises';
 const root=fileURLToPath(new URL('../../',import.meta.url));
-if(process.env.GITHUB_ACTIONS!=='true'||process.env.RUNNER_ENVIRONMENT!=='github-hosted')throw Error('Ephemeral GitHub-hosted runner only');
+const localData=process.env.CARD_LOCAL_CI_DATA;
+if(!localData&&(process.env.GITHUB_ACTIONS!=='true'||process.env.RUNNER_ENVIRONMENT!=='github-hosted'))throw Error('Ephemeral hosted or dedicated test cluster required');
 const target=new URL(process.env.TEST_DATABASE_URL||'');
 if(!['postgres:','postgresql:'].includes(target.protocol)||!['localhost','127.0.0.1'].includes(target.hostname)||target.pathname!=='/jiuxiao_test'||target.search||target.hash)throw Error('Dedicated CI service database required');
 target.hostname='127.0.0.1';
@@ -22,6 +23,7 @@ function suite(files,env){
   if(r.error||r.status!==0)throw Error(`Card PG suite failed (${r.status??r.error?.code})`);
 }
 try{
+  if(localData && await realpath((await admin.query('SHOW data_directory')).rows[0].data_directory)!==await realpath(localData))throw Error('Incorrect local fixture cluster');
   for(const name of [host,joint])await admin.query(`CREATE DATABASE ${name}`);
   suite(['src/card-import/host.integration.test.ts'],{CARD_IMPORT_HOST_TEST_DATABASE_URL:url(host)});
   suite(['src/card-import/joint-host.integration.test.ts'],{JOINT_TEST_DATABASE_URL:url(joint)});
@@ -36,6 +38,6 @@ try{
 }finally{
   await admin.end();
   await mkdir(join(root,'test-results/card-pg'),{recursive:true});
-  await writeFile(join(root,'test-results/card-pg/results.json'),JSON.stringify({scope:'EPHEMERAL_CI_SYNTHETIC',results}));
+  await writeFile(join(root,'test-results/card-pg/results.json'),JSON.stringify({scope:localData?'LOCAL_EPHEMERAL_SYNTHETIC':'EPHEMERAL_CI_SYNTHETIC',results}));
   // Databases disappear with the CI service. Never issue DROP DATABASE or remove persistent volumes.
 }

@@ -1,0 +1,282 @@
+--- a/apps/api/src/services/server-turn.ts
++++ b/apps/api/src/services/server-turn.ts
+@@ -1,3 +1,4 @@
++import type { NarrativeV2Port } from './narrative-ownership-v2.js';
+ import { randomUUID } from 'node:crypto';
+ import {
+   ActionIntentSchema, DomainEventSchema, SaveEnvelopeSchema, TurnReceiptSchema,
+@@ -40,6 +41,8 @@
+ }
+ export type NarrativeResult =
+   | { status: 'not_requested' }
++  | { status: 'pending' | 'running'; wait?: 'cancelled' | 'timeout' }
++  | { status: 'ownership_unknown' | 'legacy_body_unavailable' | 'integrity_failure' | 'status_unavailable' }
+   | { status: 'received'; text: string; source: 'model' | 'deterministic' }
+   | { status: 'failed'; code: 'NARRATIVE_UNAVAILABLE' | 'NARRATIVE_TIMEOUT' | 'NARRATIVE_CANCELLED' };
+ export type ServerTurnResult =
+@@ -58,6 +61,7 @@
+     private readonly narrator?: Narrator,
+     private readonly narrativeTimeoutMs = 20_000,
+     private readonly deterministicNarrative?: DeterministicNarrative,
++    private readonly narrativeV2?: NarrativeV2Port,
+   ) {
+     if (!Number.isInteger(narrativeTimeoutMs) || narrativeTimeoutMs < 1 || narrativeTimeoutMs > 120_000) {
+       throw new TypeError('Invalid narrative timeout');
+@@ -129,7 +133,8 @@
+     const committed = await this.repository.commitAcceptedTurn({ ownerId, expectedRevision: save.revision,
+       receipt: prepared.receipt, save: prepared.save,
+       events: committedEvents,
+-      previousJournal: journal, nextJournal: next.journal, authorizedObservations: next.authorizedObservations });
++      previousJournal: journal, nextJournal: next.journal, authorizedObservations: next.authorizedObservations,
++      requestNarrative, ...(cancellation ? {cancellation} : {}) });
+     if (committed.kind === 'not_found') return { status: 'not_found' };
+     if (committed.kind === 'idempotency_conflict') return { status: 'idempotency_conflict' };
+     if (committed.kind === 'conflict' || committed.kind === 'memory_conflict') {
+@@ -141,6 +146,17 @@
+   private async completed(ownerId:string, raw: TurnReceipt, duplicate: boolean, requestNarrative: boolean, cancellation?: AbortSignal, save?: SaveEnvelope): Promise<ServerTurnResult> {
+     const receipt = TurnReceiptSchema.parse(raw);
+     if (receipt.decision.status !== 'accepted') return { status: 'decision', receipt };
++    if (this.narrativeV2) {
++      // Deployment adapter selects the protocol; persistent metadata decides each receipt's owner.
++      // Reads never start workers or re-claim failed work, including duplicate requests.
++      let narrative: NarrativeResult;
++      try { narrative = await this.narrativeV2.read(ownerId,receipt,cancellation); }
++      catch(error) {
++        narrative = {status:error instanceof Error && /CORRUPT|INTEGRITY|MISMATCH/.test(error.message)
++          ? 'integrity_failure' : 'status_unavailable'};
++      }
++      return {status:'accepted',duplicate,receipt,narrative};
++    }
+     let narrative: NarrativeResult = { status: 'not_requested' };
+     if (requestNarrative) {
+       const attemptId=randomUUID();
+--- a/apps/api/src/services/npc-memory-turn-transaction.ts
++++ b/apps/api/src/services/npc-memory-turn-transaction.ts
+@@ -39,6 +39,7 @@
+
+ interface ReceiptRow extends QueryResultRow {
+   result: unknown;
++  current_revision?: number;
+ }
+
+ interface JournalRow extends QueryResultRow {
+@@ -84,6 +85,8 @@
+   nextJournal: NpcMemoryJournal;
+   authorizedObservations: readonly AuthorizedObservationOutboxRecord[];
+   authorizedSupersessions?: readonly AuthorizedObservationSupersessionRecord[];
++  requestNarrative?: boolean;
++  cancellation?: AbortSignal;
+ };
+
+ export type AcceptedTurnCommitResult =
+@@ -124,19 +127,24 @@
+  * and journal on the server; this repository never decides gameplay or visibility.
+  */
+ export class PostgresNpcMemoryTurnRepository {
+-  constructor(private readonly database: Database, private readonly requiresLiveAccount = false,private readonly guard?: (client:PoolClient,commit:AcceptedTurnCommitInput)=>Promise<void>) {}
++  constructor(private readonly database: Database, private readonly requiresLiveAccount = false,private readonly guard?: (client:PoolClient,commit:AcceptedTurnCommitInput)=>Promise<void>, private readonly registerNarrative?: (client:PoolClient,commit:AcceptedTurnCommitInput)=>Promise<void>) {}
+
+   async getReceiptForOwner(ownerId: string, saveId: string, requestId: string): Promise<TurnReceipt | null> {
+     const owner = normalizeOwnerId(ownerId);
+     if (!isValidId(saveId) || !/^[0-9a-f-]{36}$/i.test(requestId)) throw new TypeError('Invalid turn identity');
+     const result = await this.database.query<ReceiptRow>(
+-      'SELECT r.result FROM turn_requests r JOIN game_saves s ON s.id = r.save_id ' +
++      'SELECT r.result,s.revision AS current_revision FROM turn_requests r JOIN game_saves s ON s.id = r.save_id ' +
+       'WHERE r.save_id = $1 AND s.owner_id = $2 AND r.idempotency_key = $3 ' +
+-      'AND NOT EXISTS (SELECT 1 FROM cloud_archive_trash t WHERE t.save_id = s.id) LIMIT 1',
++      'AND NOT EXISTS (SELECT 1 FROM cloud_archive_trash t WHERE t.save_id = s.id) ' +
++      (this.requiresLiveAccount ? 'AND EXISTS (SELECT 1 FROM auth_accounts a WHERE a.id=s.owner_id AND a.closed_at IS NULL) ' : '') + 'LIMIT 1',
+       [saveId, owner, requestId],
+     );
+     if (!result.rows[0]) return null;
+-    return TurnReceiptSchema.parse(result.rows[0].result);
++    const receipt=TurnReceiptSchema.parse(result.rows[0].result);
++    const currentRevision=Number(result.rows[0].current_revision);
++    if(receipt.saveId!==saveId || receipt.idempotencyKey!==requestId || !Number.isSafeInteger(currentRevision)
++      || currentRevision<receipt.resultingRevision) throw Error('TURN_RECEIPT_IDENTITY_OR_REVISION_MISMATCH');
++    return receipt;
+   }
+   async getForOwner(ownerId: string, saveId: string): Promise<NpcMemoryJournal | null> {
+     const owner = normalizeOwnerId(ownerId);
+@@ -272,11 +280,13 @@
+     const commit = normalizeCommit(input);
+     const client = await this.database.connect();
+     let inTransaction = false;
++    let commitAttempted = false;
++    let released = false;
+
+     try {
+       await client.query('BEGIN');
+       inTransaction = true;
+-      if (this.requiresLiveAccount && !(await client.query('SELECT id FROM auth_accounts WHERE id=$1 AND closed_at IS NULL '+(this.guard?'FOR UPDATE':'FOR KEY SHARE'), [commit.ownerId])).rowCount) {
++      if (this.requiresLiveAccount && !(await client.query('SELECT id FROM auth_accounts WHERE id=$1 AND closed_at IS NULL '+(this.guard||this.registerNarrative?'FOR UPDATE':'FOR KEY SHARE'), [commit.ownerId])).rowCount) {
+         return await rollbackWith(client, () => { inTransaction = false; return { kind: 'not_found' }; });
+       }
+
+@@ -430,20 +440,33 @@
+         [commit.save.saveId, commit.nextJournal.revision, serializeNpcMemoryJournal(commit.nextJournal)],
+       );
+
++      await this.registerNarrative?.(client,commit);
++      if (commit.cancellation?.aborted) throw Error('TURN_CANCELLED_BEFORE_COMMIT');
++      commitAttempted = true;
+       await client.query('COMMIT');
+       inTransaction = false;
+       return { kind: 'committed', receipt: commit.receipt, save: commit.save, journal: commit.nextJournal };
+     } catch (error) {
+-      if (inTransaction) {
++      if (inTransaction && !commitAttempted) {
+         try {
+           await client.query('ROLLBACK');
+         } catch {
+           // Preserve the original failure; PostgreSQL will discard an open transaction on release.
+         }
+       }
++      if (commitAttempted) {
++        // A COMMIT transport error is ambiguous. Drop this connection before a new read.
++        client.release(true); released = true;
++        let recovered: TurnReceipt | null = null;
++        try { recovered = await this.getReceiptForOwner(commit.ownerId,commit.save.saveId,commit.receipt.idempotencyKey); }
++        catch { /* Remains unknown; never resubmit an action here. */ }
++        if (recovered && canonicalJson(recovered) === canonicalJson(commit.receipt))
++          return {kind:'duplicate',receipt:recovered};
++        throw new TurnCommitOutcomeUnknown(commit.save.saveId,commit.receipt.idempotencyKey);
++      }
+       throw error;
+     } finally {
+-      client.release();
++      if (!released) client.release();
+     }
+   }
+ }
+@@ -610,3 +633,7 @@
+   await client.query('ROLLBACK');
+   return createResult();
+ }
++
++export class TurnCommitOutcomeUnknown extends Error {
++  constructor(readonly saveId:string,readonly requestKey:string) { super('TURN_COMMIT_OUTCOME_UNKNOWN'); }
++}
+--- a/apps/api/src/services/postgres-server-turn.ts
++++ b/apps/api/src/services/postgres-server-turn.ts
+@@ -1,3 +1,4 @@
++import type { NarrativeV2Port } from './narrative-ownership-v2.js';
+ import {assertDataPolicy,checkQuota,type DataPolicy} from './data-policy.js';
+ import type { Pool } from 'pg';
+ import { PostgresCloudSaveRepository } from './postgres-cloud-save-repository.js';
+@@ -5,7 +6,7 @@
+ import type { ServerTurnRepository } from './server-turn.js';
+
+ /** Host-side adapter only: it does not publish or supply gameplay rules. */
+-export function createPostgresServerTurnRepository(pool: Pool, requiresLiveAccount = false,policy?:()=>DataPolicy|undefined): ServerTurnRepository {
++export function createPostgresServerTurnRepository(pool: Pool, requiresLiveAccount = false,policy?:()=>DataPolicy|undefined,narrativeV2?:NarrativeV2Port): ServerTurnRepository {
+   const saves = new PostgresCloudSaveRepository(pool);
+   const turns = new PostgresNpcMemoryTurnRepository(pool, requiresLiveAccount,policy?async(c,commit)=>{
+     const p=policy();assertDataPolicy(p);
+@@ -14,7 +15,7 @@
+     const memoryPolicyJson=commit.save.schemaVersion===1?null:JSON.stringify(commit.save.memoryPolicy);
+     const next=Number((await c.query('SELECT octet_length($1::jsonb::text)+coalesce(octet_length($2::jsonb::text),0) AS bytes',[JSON.stringify(commit.save.state),memoryPolicyJson])).rows[0].bytes);
+     checkQuota(p,{count:current.count,bytes:Number(current.bytes)},next,Number(before.bytes));
+-  }:undefined);
++  }:undefined,narrativeV2?.register);
+   return {
+     loadSave: async(owner,id)=>{const save=await saves.getForOwner(owner,id);if(save&&!((await pool.query('SELECT verify_turn_event_chain($1) AS ok',[id])).rows[0].ok))throw new Error('EVENT_INTEGRITY_FAILED');return save;},
+     getReceiptForOwner: (owner, id, key) => turns.getReceiptForOwner(owner, id, key),
+--- a/apps/api/src/index.ts
++++ b/apps/api/src/index.ts
+@@ -1,3 +1,4 @@
++import { prepareNarrativeV2Runtime, eraseNarrativeForOwner } from './services/narrative-v2-runtime.js';
+ import { localCardOptions, verifyLocalCardSchema } from './card-import/local-runtime.js';
+ import { eraseCardImports } from './card-import/host.js';
+ import { ensureP1NarrativeHints } from './services/p1-narrative-hints.js';
+@@ -34,6 +35,14 @@
+ configureAccountQuota(pool);
+ pool.on('error', () => { console.error('Database connection unavailable.'); });
+ const cards = localCardOptions(pool, process.env);
++const t1Enabled = process.env.NARRATIVE_T1_V2_ENABLED === 'true';
++if (t1Enabled && (process.env.NODE_ENV === 'production' || process.env.STORY_ARCHIVE_ENABLED === 'true'
++    || !process.env.NARRATIVE_WORKER_DATABASE_URL || !process.env.NARRATIVE_RENDERER_VERSION)) {
++  throw Error('NARRATIVE_T1_ISOLATED_PAIRED_RUNTIME_REQUIRED');
++}
++const installed = (await pool.query("SELECT to_regclass('public.narrative_writer_fence') AS relation")).rows[0].relation;
++if (installed && !t1Enabled) throw Error('LEGACY_WRITER_DISABLED_BY_DURABLE_FENCE');
++const workerPool = t1Enabled ? new Pool({connectionString:process.env.NARRATIVE_WORKER_DATABASE_URL,max:2,connectionTimeoutMillis:3000}) : undefined;
+ const erasureUrl = process.env.ACCOUNT_ERASURE_DATABASE_URL;
+ if (erasureUrl) {
+   if (!['test', 'development'].includes(process.env.NODE_ENV ?? '')) throw Error('LOCAL_ERASURE_HOST_REQUIRED');
+@@ -49,6 +58,7 @@
+ erasurePool?.on('error', () => { console.error('Erasure connection unavailable.'); });
+ const emailAuth = createEmailAuthRuntime(pool, process.env, {
+   ...(cards ? {beforeDelete: eraseCardImports} : {}), ...(erasurePool ? {erasurePool} : {}),
++  ...(t1Enabled ? {erasurePool:erasurePool ?? null,afterProof:eraseNarrativeForOwner} : {}),
+ });
+ if (cards) {
+   if (!emailAuth) throw new Error('CARD_AUTH_REQUIRED');
+@@ -60,7 +70,12 @@
+ const runtime=preparedRuntime&&plugin?await connectActionTextRuntime(preparedRuntime,plugin):undefined;
+ const dataPolicy=process.env.NODE_ENV==='production'?loadDataPolicy(process.env.ACCOUNT_DATA_POLICY_PATH):undefined;
+ const cloudRepository=process.env.NODE_ENV==='production'?new PolicyCloudSaveRepository(pool,dataPolicy):new PostgresCloudSaveRepository(pool,true);
+-const turnRepository=createPostgresServerTurnRepository(pool, true,process.env.NODE_ENV==='production'?()=>dataPolicy:undefined);
++if (t1Enabled && (!runtime?.rules || !runtime.narrativeFallback || !emailAuth)) throw Error('NARRATIVE_AUTHORIZED_RULES_REQUIRED');
++const v2 = workerPool && runtime?.narrativeFallback ? await prepareNarrativeV2Runtime({
++  pool,workerPool,rendererVersion:process.env.NARRATIVE_RENDERER_VERSION!,render:runtime.narrativeFallback,
++  limits:{maxUtf16:Number(process.env.NARRATIVE_MAX_UTF16),maxUtf8:Number(process.env.NARRATIVE_MAX_UTF8)},
++}) : undefined;
++const turnRepository=createPostgresServerTurnRepository(pool, true,process.env.NODE_ENV==='production'?()=>dataPolicy:undefined,v2?.port);
+ const storyArchive=process.env.STORY_ARCHIVE_ENABLED==='true'?new StoryArchive(pool):undefined;
+ if(storyArchive)await pool.query('SELECT narrative_text FROM story_narratives LIMIT 0');
+ const narrator=runtime?.narrator;
+@@ -73,24 +88,32 @@
+   auth: { resolveOwnerId: async request => (await emailAuth.service.resolve(sessionToken(request)))?.ownerId || null },
+ } : undefined, emailAuth, emailAuth ? {
+   // No author rules are bundled: absent host plugin remains fail closed.
+-  service: new ServerTurnService(turnRepository,runtime?.rules,retainedNarrator,120_000,retainedFallback),
++  service: new ServerTurnService(turnRepository,runtime?.rules,retainedNarrator,120_000,retainedFallback,v2?.port),
+   readReceipt: (owner,saveId,key)=>turnRepository.getReceiptForOwner(owner,saveId,key),
+   games: new AuthoritativeGameService(cloudRepository,runtime),
+-  ...(storyArchive?{storyArchive}:{}),
++  ...(v2 ? {publication:v2.publication,storyArchive:{read:v2.publication.story.bind(v2.publication)}} : storyArchive ? {storyArchive} : {}),
+   auth: { resolveOwnerId: async request => (await emailAuth.service.resolve(sessionToken(request)))?.ownerId || null },
+   memoryRecall: turnRepository.recallObservationPage ? { reader: turnRepository.recallObservationPage } : undefined,
+ } : undefined, cards);
+
++let draining:Promise<unknown>|undefined;
++const dispatch = v2 ? setInterval(()=>{
++  if (!draining) draining=v2.worker.drain().catch(()=>{console.error('Narrative worker unavailable.');})
++    .finally(()=>{draining=undefined;});
++},500) : undefined;
+ const server = serve({ fetch: app.fetch, port, hostname });
+ console.log(`jiuxiao-api listening on ${hostname}:${port}`);
+ for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+-  process.on(signal, () => server.close(() => {
+-    void Promise.all([pool.end(), erasurePool?.end()]).then(
++  process.once(signal, () => {
++    clearInterval(dispatch);
++    server.close(() => {
++    void Promise.resolve(draining).then(()=>Promise.all([workerPool?.end(),erasurePool?.end(),pool.end()])).then(
+       () => process.exit(0),
+       () => {
+         console.error('Failed to close the database pool cleanly.');
+         process.exit(1);
+       },
+     );
+-  }));
++    });
++  });
+ }
+--- a/apps/api/src/routes/games.ts
++++ b/apps/api/src/routes/games.ts
+@@ -1,3 +1,4 @@
++import { TurnCommitOutcomeUnknown } from '../services/npc-memory-turn-transaction.js';
+ import type { StoryArchive } from '../services/story-archive.js';
+ import type { Hono } from 'hono';
+ import { ActionIntentSchema, TurnReceiptSchema, type TurnReceipt } from '@jiuxiao/contracts';
+@@ -143,6 +144,8 @@
+       const response = serverTurnHttpResponse(result);
+       return c.json(response.body, response.status);
+     } catch (error) {
++      if (error instanceof TurnCommitOutcomeUnknown) return c.json({code:'TURN_COMMIT_OUTCOME_UNKNOWN',
++        saveId:error.saveId,requestKey:error.requestKey,recovery:'query_original_receipt'},503);
+       if (error instanceof SaveSchemaNotReadyError) return c.json({ code: 'SAVE_SCHEMA_NOT_READY' }, 503);
+       return c.json({ code: 'TURN_UNAVAILABLE' }, 503);
+     }

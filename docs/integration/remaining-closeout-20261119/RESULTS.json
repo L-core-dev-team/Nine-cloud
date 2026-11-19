@@ -1,0 +1,114 @@
+{
+  "task": "NINE-CLOUD-REMAINING-CLOSEOUT-01",
+  "base": "1bd7bb5ff6e6221378a7cb1292e559fb19bfbfbc",
+  "implementation": {
+    "commit": "a1ce54984aa07e0db1e2ae7d0efa32636c6ce643",
+    "tree": "b5ff05e91bdc708fcc295294f44717e155576de0"
+  },
+  "evidenceBoundary": "Local observations span the development worktree and verified byte-identical modules. GitHub verify checks out the PR head; consult that SHA's check run for final combined results.",
+  "runs": [
+    {
+      "work": "M1",
+      "status": "PASS",
+      "command": "Windows; five workspace package builds and three protocol/config unit suites",
+      "observation": "25 unit cases; all five builds exit 0",
+      "exit": 0
+    },
+    {
+      "work": "M1/M5",
+      "status": "PASS",
+      "command": "node tests/integration/card-real-play.mjs",
+      "observation": "27 checks, 21 localhost mock protocol calls, real Cookie/PG/Chrome, includes ordinary compiled Node host. Local receipt SHA256 96b556f5f91bbf5e0fd566a80a0d8f6eaa5767c62e1225db9cdbe4af73a12f4c",
+      "exit": 0
+    },
+    {
+      "work": "M2/M3",
+      "status": "PASS",
+      "command": "node tests/integration/card-install-upgrade.mjs (new PG 18.4 clusters)",
+      "observation": "Fresh + 054daa0, fd1e4737, PR110 fixtures; retired roles and actual old connection, pending refusal, hashes, rollback/retry; second instance restoration, authenticated continuity and cold restore denial following consumption and erasure",
+      "exit": 0
+    },
+    {
+      "work": "M3",
+      "status": "PASS",
+      "command": "node tests/integration/run-local-card-pg.mjs",
+      "observation": "28 card host, 1 joint host, 5 restricted account lifecycle cases. Local failure before remote delivery, PG success with ambiguous remote DELETE, successful remote deletion with lost PG acknowledgement, idempotent resumption, deidentification and synthetic retention cutoff",
+      "exit": 0
+    },
+    {
+      "work": "M4",
+      "status": "PASS",
+      "command": "node scripts/build/t1-authority-ci.mjs",
+      "observation": "Disposable patch application; original loader rejects pending digest; 7 real PG lifecycle/HTTP/ownership/Continue/Forgetting cases. Unfinished generations and privileged old writer refuse migration",
+      "exit": 0
+    },
+    {
+      "work": "M5",
+      "status": "PASS",
+      "command": "CARD_TEST_CLEANUP_PROBE=1 node tests/integration/card-real-play.mjs",
+      "observation": "Injected mid-run exception; database, HTTP/protocol, Vite and browser stopped; tested sockets refused connections",
+      "exit": 0
+    },
+    {
+      "work": "M5",
+      "status": "PASS",
+      "command": "pnpm typecheck",
+      "observation": "6 scoped workspaces; TypeScript exit 0",
+      "exit": 0
+    },
+    {
+      "work": "M5",
+      "status": "PASS",
+      "command": "pnpm install --frozen-lockfile --offline; pnpm dev:cards --init --postgres-bin <bin>; restart without --init",
+      "observation": "Windows, fresh no-Git path containing spaces, 360px Chrome with restricted actual runtime; temporary Erasure membership refused startup, exit 1 expected, role revoked",
+      "exit": 0
+    },
+    {
+      "work": "M1",
+      "status": "BLOCKED",
+      "command": "new model LIVE",
+      "observation": "No new approval; actual external attempts 0, actual provider tokens and billing record unavailable",
+      "exit": null
+    },
+    {
+      "work": "M3",
+      "status": "BLOCKED",
+      "command": "real Supabase account lifecycle",
+      "observation": "No dedicated authorized external test tenant",
+      "exit": null
+    },
+    {
+      "work": "M4",
+      "status": "BLOCKED",
+      "command": "signed golden runtime",
+      "observation": "Original loader rejects new aggregate. Original authority and new aggregate listed in CLOSEOUT.md",
+      "exit": null
+    },
+    {
+      "work": "M4",
+      "status": "REUSED",
+      "command": "b0a22eb7 original exception record",
+      "observation": "14 historical LOCAL_TEST_ONLY; T03 DEFERRED only on original candidate; T09 provenance exception not a pass",
+      "exit": null
+    },
+    {
+      "work": "M5",
+      "status": "NOT RUN",
+      "command": "production, private legacy database, physical second device",
+      "observation": "Outside authorized execution",
+      "exit": null
+    }
+  ],
+  "localFailures": [
+    "Sandbox denied package symlink/loopback; isolated tools subsequently executed with required access.",
+    "Browser asserted during loading and shared test account hit a limit; harness now waits for actual model status and isolates accounts.",
+    "Immutable save schema rejected a fixture update; fixture now sets mode at creation."
+  ],
+  "realGeneration": {
+    "externalRequests": 0,
+    "oldAuthorization": "closed",
+    "amountEstimatedUSD": 0,
+    "providerUsage": null
+  },
+  "ci": "Use GitHub Actions jiuxiao-workspace / verify on exact Draft PR HEAD. Uploaded receipts exclude password files, raw backups, DB directories, screenshots and provider bodies."
+}

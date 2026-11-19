@@ -4,11 +4,11 @@ import { CardError, record } from './parser.js';
 import { createCardProvider } from './card-provider-runtime.js';
 import type { CardImportHostOptions } from './host.js';
 import type { ModelStatus } from './model-access.js';
-import { CARD_TOKEN_METHOD, cardFitsBudget } from './model-budget.js';
+import { CARD_MODELS, CARD_TOKEN_METHOD, LUNA_TOKEN_METHOD, cardFitsBudget, type CardModelId } from './model-budget.js';
 
 export type LocalProviderConfig = {
  version: 1; approvalId: string; approved: boolean; expiresAt: string; allowedOwners: string[];
- protocol: 'openai-chat'; model: 'gpt-4o-2024-08-06'; baseUrl: 'https://api.openai.com/v1';
+ protocol: 'openai-chat'; model: CardModelId; baseUrl: 'https://api.openai.com/v1';
  keyEnv: 'NARRATIVE_KEY_CARD_LOCAL'; contextWindow: number; maxOutputTokens: number;
  maxCalls: number; maxConcurrent: number;
 };
@@ -16,8 +16,9 @@ export function validateLocalProvider(value: unknown): LocalProviderConfig {
  if(!record(value) || Object.keys(value).some(k=>!['version','approvalId','approved','expiresAt','allowedOwners','protocol','model','baseUrl','keyEnv','contextWindow','maxOutputTokens','maxCalls','maxConcurrent'].includes(k)) ||
  value.version!==1 || typeof value.approvalId!=='string' || !/^[a-zA-Z0-9_-]{8,80}$/.test(value.approvalId) || typeof value.approved!=='boolean' ||
  typeof value.expiresAt!=='string' || !Number.isFinite(Date.parse(value.expiresAt)) || !Array.isArray(value.allowedOwners) || value.allowedOwners.length>10 || value.allowedOwners.some(x=>typeof x!=='string'||!x||x.length>200) ||
- value.protocol!=='openai-chat'||value.model!=='gpt-4o-2024-08-06'||value.baseUrl!=='https://api.openai.com/v1'||value.keyEnv!=='NARRATIVE_KEY_CARD_LOCAL') throw new CardError('MODEL_CONFIG_INVALID',503);
- for(const [v,min,max] of [[value.contextWindow,2048,128000],[value.maxOutputTokens,1,16384],[value.maxCalls,0,100],[value.maxConcurrent,1,4]]) if(typeof v!=='number'||!Number.isSafeInteger(v)||v<Number(min)||v>Number(max))throw new CardError('MODEL_CONFIG_INVALID',503);
+ value.protocol!=='openai-chat'||typeof value.model!=='string'||!Object.hasOwn(CARD_MODELS,value.model)||value.baseUrl!=='https://api.openai.com/v1'||value.keyEnv!=='NARRATIVE_KEY_CARD_LOCAL') throw new CardError('MODEL_CONFIG_INVALID',503);
+ const limits=CARD_MODELS[value.model as CardModelId];
+ for(const [v,min,max] of [[value.contextWindow,2048,limits.context],[value.maxOutputTokens,1,limits.output],[value.maxCalls,0,100],[value.maxConcurrent,1,4]]) if(typeof v!=='number'||!Number.isSafeInteger(v)||v<Number(min)||v>Number(max))throw new CardError('MODEL_CONFIG_INVALID',503);
  if(Number(value.maxOutputTokens)+1024>=Number(value.contextWindow))throw new CardError('MODEL_CONFIG_INVALID',503);
  return structuredClone(value) as LocalProviderConfig;
 }
@@ -32,7 +33,7 @@ export function localProviderOptions(pool: Pool, raw: unknown, env: Record<strin
  const publicStatus=(owner:string):ModelStatus=> {
   const reason=denial(owner);
   if(reason==='MODEL_NOT_AUTHORIZED')return {mode:'provider',available:false,reason};
-  return {mode:'provider',available:!reason,...(reason?{reason}:{}),binding,model:config.model,protocol:config.protocol,contextWindow:config.contextWindow,maxOutputTokens:config.maxOutputTokens,counting:CARD_TOKEN_METHOD};
+  return {mode:'provider',available:!reason,...(reason?{reason}:{}),binding,model:config.model,protocol:config.protocol,contextWindow:config.contextWindow,maxOutputTokens:config.maxOutputTokens,counting:config.model==='gpt-6-luna'?LUNA_TOKEN_METHOD:CARD_TOKEN_METHOD};
  };
  const requireOwner=(owner:string)=>{const reason=denial(owner);if(reason)throw new CardError(reason,403);};
  return {pool, modelAccess:{
@@ -43,11 +44,11 @@ export function localProviderOptions(pool: Pool, raw: unknown, env: Record<strin
    return {...s,remainingCalls:remaining,...(row&&row.binding!==binding?{available:false,reason:'MODEL_APPROVAL_CHANGED'}:remaining===0?{available:false,reason:'MODEL_CALL_LIMIT'}:{})};
   },
   async admit(_client,owner,expected) {requireOwner(owner);if(expected!==binding)throw new CardError('MODEL_BINDING_CHANGED',409);return publicStatus(owner);},
-  fits:input=>cardFitsBudget(input,config.contextWindow,config.maxOutputTokens),
+  fits:input=>cardFitsBudget(input,config.contextWindow,config.maxOutputTokens,config.model),
  }, model:async(input,signal,call)=>{
   if(!call)throw new CardError('MODEL_NOT_AUTHORIZED',403);
   requireOwner(call.owner);
-  if(!cardFitsBudget(input,config.contextWindow,config.maxOutputTokens))throw new CardError('MODEL_CONTEXT_LIMIT',413);
+  if(!cardFitsBudget(input,config.contextWindow,config.maxOutputTokens,config.model))throw new CardError('MODEL_CONTEXT_LIMIT',413);
   signal.throwIfAborted();
   // One dedicated connection holds a cluster-wide session lock through HTTP cancellation.
   // Counts are committed before send and never refunded, even on ambiguous failure/restart.
@@ -57,6 +58,10 @@ export function localProviderOptions(pool: Pool, raw: unknown, env: Record<strin
    if(slot===undefined)throw new CardError('MODEL_CONCURRENCY_LIMIT',429);
    await c.query('BEGIN');
    try {
+    // Match AccountLifecycle and the request host: lock the active account before
+    // the allowance. Erasure cannot remove owner data midway through a reservation.
+    const active=await c.query('SELECT id FROM auth_accounts WHERE id=$1 AND closed_at IS NULL FOR SHARE',[call.owner]);
+    if(!active.rowCount)throw new CardError('ACCOUNT_UNAVAILABLE',401);
     await c.query('INSERT INTO card_import.model_allowances(approval_id,binding,used) VALUES($1,$2,0) ON CONFLICT DO NOTHING',[config.approvalId,binding]);
     const quota=(await c.query('SELECT binding,used FROM card_import.model_allowances WHERE approval_id=$1 FOR UPDATE',[config.approvalId])).rows[0];
     if(quota.binding!==binding)throw new CardError('MODEL_APPROVAL_CHANGED',409);
@@ -69,7 +74,17 @@ export function localProviderOptions(pool: Pool, raw: unknown, env: Record<strin
     await c.query('COMMIT');
    }catch(e){await c.query('ROLLBACK');throw e;}
    requireOwner(call.owner);signal.throwIfAborted();
-   try{return await provider!(input,signal);}catch{throw new CardError(signal.aborted?'GENERATION_CANCELLED':'MODEL_PROVIDER_FAILED',502);}
+   let reply:string;
+   try{reply=await provider!(input,signal);}catch{throw new CardError(signal.aborted?'GENERATION_CANCELLED':'MODEL_PROVIDER_FAILED',502);}
+   // Only an acknowledged, parseable provider response is known. A transport
+   // error or loss of the database acknowledgement never refunds the reservation.
+   try {
+    const recorded=await c.query(
+     "UPDATE card_import.model_calls SET outcome='acknowledged' WHERE approval_id=$1 AND owner_id=$2 AND session_id=$3 AND key=$4 AND outcome='unknown'",
+     [config.approvalId,call.owner,call.sessionId,call.key]);
+    if(recorded.rowCount!==1)throw new Error('ACKNOWLEDGEMENT_MISSING');
+   }catch{throw new CardError('MODEL_USAGE_UNCONFIRMED',503);}
+   return reply;
   }finally{
    // Never return a possibly locked connection to the pool after an unlock failure.
    let destroy=false;
