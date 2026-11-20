@@ -141,7 +141,7 @@
       "work": "M3",
       "path": "apps/api/src/services/supabase-auth.ts",
       "symbol": "deleteOwnerAuthUsers",
-      "change": "Prepare and deliver remote deletion with 404 idempotence",
+      "change": "Prepare and deliver remote deletion; a DELETE 404 confirms absence only with Auth error_code=user_not_found",
       "source": "main AccountLifecycle, model_allowances/model_calls and Supabase identity mapping",
       "acceptance": "atomic local erasure, durable external outcomes and restored data quarantine"
     },
