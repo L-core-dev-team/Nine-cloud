@@ -66,7 +66,7 @@
     {
       "work": "M1",
       "status": "BLOCKED",
-      "command": "new model LIVE",
+      "command": "new model LIVE (historical M1 implementation checkpoint)",
       "observation": "No new approval; actual external attempts 0, actual provider tokens and billing record unavailable",
       "exit": null
     },
@@ -105,10 +105,23 @@
     "Immutable save schema rejected a fixture update; fixture now sets mode at creation."
   ],
   "realGeneration": {
+    "scope": "Original M1 implementation only; subsequent LIVE receipt below",
     "externalRequests": 0,
     "oldAuthorization": "closed",
     "amountEstimatedUSD": 0,
     "providerUsage": null
+  },
+  "cardLunaLive01": {
+    "status": "LIMITED_LIVE_PASS",
+    "commit": "cd25360c7929e10f8b2b0fad342fedd943d4f323",
+    "tree": "2a1b66a29623b1461e7f42bd84cf9f1e27eff17c",
+    "passed": ["single-persona-book", "single-continue", "group-manual", "group-multi", "cancel-after-outbound", "client-response-loss"],
+    "externalRequests": 6, "ledgerUsed": 6, "ledgerLimit": 6, "recoveryExtraOutbound": 0,
+    "knownUsage": {"responses": 5, "inputTokens": 1359, "outputTokens": 156},
+    "cancelledRequestUsage": "unknown",
+    "clientResponseLostAfterAppSave": true,
+    "usd": {"knownStandard": 0.00021390, "cancelReserve": 0.00506880, "standardPlusReserve": 0.00528270, "knownRateMargin": 0.00070515, "conservativeTotal": 0.00598785, "finalBill": null},
+    "approvalClosed": true, "appStopped": true, "databaseStopped": true
   },
   "ci": "Use GitHub Actions jiuxiao-workspace / verify on exact Draft PR HEAD. Uploaded receipts exclude password files, raw backups, DB directories, screenshots and provider bodies."
 }
