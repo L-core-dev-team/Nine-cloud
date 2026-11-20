@@ -10,6 +10,7 @@ import { once } from 'node:events';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { restoreQuarantined } from '../../scripts/dev/cards-restore-quarantine.mjs';
+import { runReconciliationCases } from './m3-reconciliation-pg.mjs';
 import { eraseCardImports } from '../../apps/api/dist/card-import/host.js';
 import { createApp } from '../../apps/api/dist/app.js';
 import { EmailAuthService } from '../../apps/api/dist/services/email-auth.js';
@@ -177,9 +178,7 @@ async function verifyRestricted(db,name){
   const c=await eraser.connect();
   try{await c.query('BEGIN');await c.query("DELETE FROM card_import.group_settings WHERE owner_id='a'");await c.query('ROLLBACK');}finally{c.release();}
 }
-let primaryError;
-try {
-  const first=await cluster('first'),second=await cluster('second');
+async function upgradeCases(first,second) {
   const fresh=await createBase(first,'jiuxiao_test_fresh');
   await fresh.query(install);
   await fresh.query('GRANT jiuxiao_card_erasure TO cards_demo_app');
@@ -270,6 +269,24 @@ try {
       ok('post-backup consumption and committed synthetic account erasure: quarantined stale restore denies login and all prior authorizations');
     }
   }
+}
+let primaryError;
+try {
+  const first=await cluster('first'),second=await cluster('second');
+  if(!process.argv.includes('--m3-only'))await upgradeCases(first,second);
+  const name='jiuxiao_test_reconciliation';
+  const source=await createBase(first,name);
+  await source.query(install);await source.query(governance);await source.query(acl);
+  const archive=join(dir,'m3-synthetic.dump');
+  const url=new URL(`postgresql://fixture_installer@127.0.0.1:${second.db.port}/postgres`);
+  url.password=password;
+  await runReconciliationCases({
+    source, catalog:connection(second.db,'postgres','cards_demo_app'),
+    dump:()=>execFileSync(exe(clientBin,'pg_dump'),['-h','127.0.0.1','-p',String(first.db.port),'-U','fixture_installer','-d',name,'-Fc','-f',archive],
+      {...flags,env:{...env,PGPASSWORD:password},stdio:'pipe'}),
+    archive,restore:()=>restoreQuarantined({maintenanceUrl:url.href,dataDirectory:second.db.data,archive,clientBin,collectReview:true}),
+    player:db=>connection(second.db,db,'cards_demo_app'),ok
+  });
 } catch(e){primaryError=e;}
 const failed=[];
 for(const p of pools)try{await p.end();}catch(e){failed.push(e);}
