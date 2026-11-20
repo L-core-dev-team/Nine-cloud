@@ -15,7 +15,10 @@ const root = fileURLToPath(new URL('../../', import.meta.url));
 const purpose = 'NINE-CLOUD-M3-SUPABASE-LIVE';
 const mode = process.argv[2] ?? '--check';
 const git = (...args) => {
-  const r = spawnSync('git', args, { cwd: root, encoding: 'utf8', timeout: 10_000 });
+  // Local checkout inspection never needs the test project's service key.
+  const env = Object.fromEntries(Object.entries(process.env).filter(([key]) =>
+    /^(PATH|PATHEXT|SYSTEMROOT|WINDIR|COMSPEC|TEMP|TMP|HOME|USERPROFILE|LOCALAPPDATA|APPDATA)$/i.test(key)));
+  const r = spawnSync('git', ['--no-optional-locks', ...args], { cwd: root, env, encoding: 'utf8', timeout: 10_000 });
   if (r.status !== 0) throw Error('TEST_CHECKOUT_REQUIRED');
   return r.stdout.trim();
 };
@@ -26,7 +29,7 @@ const json = (value, status = 200) => Response.json(value, { status });
 const notFound = () => json({ code: 404, error_code: 'user_not_found', msg: 'User not found' }, 404);
 
 // Uses no sockets: exercises the same HTTP boundary and application adapter.
-function simulatedAuth() {
+function simulatedAuth(faults) {
   const rows = new Map();
   return async (input, init = {}) => {
     const url = new URL(input instanceof Request ? input.url : input);
@@ -37,6 +40,10 @@ function simulatedAuth() {
       if (rows.has(user.id)) return json({ code: 'conflict' }, 422);
       rows.set(user.id, { ...user, email_confirmed_at: new Date().toISOString() });
       return json(rows.get(user.id));
+    }
+    if (method === 'DELETE' && faults.gateway404) {
+      faults.gateway404 = false;
+      return json({ error_code: 'route_not_found' }, 404);
     }
     if (!rows.has(id)) return notFound();
     if (method === 'GET') return json(rows.get(id));
@@ -124,8 +131,9 @@ async function run() {
   // Planned UUIDs are persisted before POST, including for unknown creation outcomes.
   await writeFile(join(output, 'private-users.json'), JSON.stringify({ runId, projectRef: config.projectRef, users }), { mode: 0o600 });
   const originalFetch = globalThis.fetch;
+  const faults = { gateway404: false };
   const boundary = createAdminBoundary({
-    config, runId, users, fetchImpl: simulation ? simulatedAuth() : originalFetch.bind(globalThis),
+    config, runId, users, fetchImpl: simulation ? simulatedAuth(faults) : originalFetch.bind(globalThis),
   });
   globalThis.fetch = boundary.fetch;
   const receipt = {
@@ -318,6 +326,13 @@ async function run() {
     await erased(lost); assert.equal(await lookup(lost.user), null);
     assert.equal((await admin.query('SELECT state FROM account_erasure_delivery WHERE operation_id=$1', [lost.operation])).rows[0].state, 'unknown');
     record('remote-success-lost-ack-is-pending');
+    if (simulation) {
+      faults.gateway404 = true;
+      assert.equal(await deliverExternalErasure(erasure, remote, lost.operation), 'pending');
+      assert.deepEqual((await admin.query('SELECT state,pending_subject FROM account_erasure_delivery WHERE operation_id=$1', [lost.operation])).rows,
+        [{ state: 'unknown', pending_subject: lost.user.id }]);
+      record('gateway-404-retains-original-delivery');
+    }
     assert.equal(await deliverExternalErasure(erasure, remote, lost.operation), 'completed');
     const recovered = boundary.requests.length;
     assert.equal(await deliverExternalErasure(erasure, remote, lost.operation), 'completed');

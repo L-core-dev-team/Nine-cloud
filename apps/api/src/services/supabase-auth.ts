@@ -272,7 +272,11 @@ export class SupabaseAuthService {
   /** A missing user is already in the desired deleted state. */
   async adminDeleteUser(subject: string): Promise<void> {
     const response = await this.adminFetch(`/auth/v1/admin/users/${encodeURIComponent(subject)}`, 'DELETE');
-    if (response.status === 404) return;
+    if (response.status === 404) {
+      const error: unknown = await response.json().catch(() => null);
+      if (error && typeof error === 'object' && 'error_code' in error && error.error_code === 'user_not_found') return;
+      throw new Error('SUPABASE_ADMIN_UNAVAILABLE');
+    }
     if (!response.ok) throw new Error(response.status >= 400 && response.status < 500 ? 'SUPABASE_DELETE_REJECTED' : 'SUPABASE_ADMIN_UNAVAILABLE');
   }
 

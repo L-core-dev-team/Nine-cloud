@@ -25,7 +25,7 @@
    - tests/integration/supabase-erasure-live-guard.test.mjs
 4. 本说明。
 
-应用路由、删除事务、Supabase 业务适配器、旧备份政策、T1 待签补丁和生产开关均不属于本次修改。
+初版六文件修复与测试覆盖上述内容。收口复核另修正 Supabase 业务适配器对 DELETE 404 的确认条件，并为测试入口的 Git 子进程限定环境变量。缺少明确 Auth 错误码 `error_code=user_not_found` 时，删除投递保留原操作号及待投递身份，状态为 unknown。隔离模拟另覆盖网关 404 后的同号恢复。
 
 scripts/api-account-expiry.mjs 的旧云端拒绝继续保留。该维护入口没有完整装配专用删除身份和清理钩子，**不得将它当作本次恢复命令**。本入口只按已登记的 operationId 调用既有 deliverExternalErasure()，不扫描其他用户。
 
@@ -56,7 +56,15 @@ scripts/api-account-expiry.mjs 的旧云端拒绝继续保留。该维护入口�
 
 --simulate 用内存模拟 Auth 响应，外部 Supabase 请求为 0。每轮新建回环地址的 PostgreSQL 集群，使用真实业务模块、受限登录和已有迁移；结果明确记为 SIMULATION_PASS，不记为 LIVE。
 
-### 2. 真实验收的最小输入
+### 2. 道主准备独立测试项目
+
+1. 在 [Supabase 官方控制台](https://supabase.com/dashboard)选择能管理的组织，再选 **New project**。查看套餐、区域与费用后，由道主决定是否创建专用空项目。给它起容易区分的测试名称。建项目时的数据库密码保存在自己的密码管理器，此联测不连接云端 Postgres。
+2. 打开新项目的 **Connect**，复制 Project URL。打开 **Settings → General** 核对项目 ID（ref），在 **Settings → API Keys** 复制 publishable key。这三项可用于标识和配置测试目标。该项目专用的服务端 secret key 只在执行当天放进本机进程环境，避免进入聊天、命令历史、文件或截图。[官方密钥说明](https://supabase.com/docs/guides/api/api-keys)
+3. 核对项目名与 ref，在 **Authentication → Users** 清除筛选，确认用户列表为空。确认这个新项目没有连接现有应用、导入任务或玩家注册入口。发现任何已有用户即停止，保留其数据。测试前无需手动添加用户。[用户管理](https://supabase.com/docs/guides/auth/managing-user-data)
+4. 道主单独批准该 ref、本轮候选及三个合成账号的创建和最终删除后，由执行者在干净候选中按下表设置本机配置，先运行 `--check`，通过后仅执行一轮 `--live`。入口预登记三个账号，并分别检验正常删除、失败恢复、对照账号保全。一次运行最多 40 次 HTTP 分派、最多 6 次 DELETE（含恢复与收尾）。
+5. 结束后核对脱敏回执中三个标签均为 `confirmed_absent`、`databaseStopped=true`，再刷新同一项目的 **Authentication → Users**，确认回到空列表。如果出现 `UNCONFIRMED` 或列表有残留，保留仓库外私密清单，只按本轮三个 UUID 核查；批量删除及重新运行都会超出本轮清理范围。撤下本机进程密钥。
+
+### 3. 真实验收的最小输入
 
 必须明确指定一个专用非生产 Supabase 项目，以及允许本轮创建并最终删除三个合成账号。项目 ref、NODE_ENV 和确认值只能绑定指定目标，不能自动证明该项目没有真实用户。不能使用仓库模板中的历史项目地址代替这一确认。
 
