@@ -164,8 +164,13 @@ describe('SupabaseAuthService provider boundary', () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
+  it.each([null, { code: 404, error_code: 'route_not_found' }, 'gateway'])('keeps an unconfirmed DELETE 404 recoverable: %j', async body => {
+    vi.stubGlobal('fetch', vi.fn(async () => new Response(typeof body === 'string' ? body : JSON.stringify(body), { status: 404 })));
+    await expect(service(poolFixture().pool).adminDeleteUser(subject)).rejects.toThrow('SUPABASE_ADMIN_UNAVAILABLE');
+  });
+
   it('deletes all distinct mapped Auth users and treats an already missing remote user as complete', async () => {
-    const fetch = vi.fn(async () => new Response(null, { status: 404 })); vi.stubGlobal('fetch', fetch);
+    const fetch = vi.fn(async () => jsonResponse({ code: 404, error_code: 'user_not_found' }, 404)); vi.stubGlobal('fetch', fetch);
     const secondSubject = '66666666-2222-4333-8444-555555555555';
     const f = poolFixture(sql => {
       if (sql.includes('SELECT DISTINCT provider_subject')) return { rows: [{ provider_subject: subject }, { provider_subject: secondSubject }] };
