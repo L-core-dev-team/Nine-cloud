@@ -18,7 +18,7 @@ export async function stageExternalErasure(client: PoolClient, remote: RemoteEra
   }
 }
 
-/** Called only after local commit. A lost acknowledgement is retried as DELETE (404 is success). */
+/** Deliver after local commit. On DELETE 404, only Supabase Auth error_code=user_not_found confirms absence. */
 export async function deliverExternalErasure(pool: Pool, remote: RemoteErasure, operation?: string) {
   const client = await pool.connect();
   try {
