@@ -2,9 +2,10 @@ import { readFile } from 'node:fs/promises';
 import { deliverExternalErasure } from './external-erasure.js';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { randomUUID, createHash } from 'node:crypto';
-import { Pool } from 'pg';
+import { Pool, type PoolClient } from 'pg';
 import { AccountLifecycle } from './account-lifecycle.js';
 import { EmailAuthService, hashToken } from './email-auth.js';
+import { SupabaseAuthService } from './supabase-auth.js';
 import { PostgresEmailAuthRepository } from './postgres-email-auth.js';
 import { AccountExport } from './account-export.js';
 import { eraseCardImports } from '../card-import/host.js';
@@ -24,6 +25,13 @@ describe.skipIf(!url)('new main + cards + opt-in erasure pool', () => {
   const send = async (email: string, code: string) => { mail.set(email, code); };
   const issuer = new EmailAuthService(new PostgresEmailAuthRepository(admin, secret), send, secret);
   const resolver = new EmailAuthService(new PostgresEmailAuthRepository(runtime, secret), send, secret);
+  const supabase = new SupabaseAuthService(runtime, resolver, {
+    url: 'https://project.supabase.co', publishableKey: 'sb_publishable_synthetic_only',
+    adminKey: 'sb_secret_' + 's'.repeat(32), identitySecret: secret,
+    enabledEmail: true, enabledPhone: false, phoneHookConfigured: false, phoneCaptchaConfigured: false,
+    allowedPhonePrefixes: [], phoneBudgetCents: 0, phoneMonthlySegments: 0,
+    phoneIpHourlyLimit: 0, phoneIpDailyLimit: 0, phoneOwnerHourlyLimit: 0, phoneOwnerDailyLimit: 0,
+  });
   const origin = 'https://integration.example.invalid';
   const tracked: { user: string; pid: number }[] = [];
   let fail = false;
@@ -61,7 +69,6 @@ describe.skipIf(!url)('new main + cards + opt-in erasure pool', () => {
     await admin.query('GRANT SELECT ON auth_accounts,auth_sessions,account_operations TO joint_runtime; GRANT UPDATE(last_seen_at) ON auth_accounts TO joint_runtime; GRANT UPDATE(phase) ON account_operations TO joint_runtime');
     await admin.query('GRANT SELECT,DELETE ON auth_accounts,auth_sessions,auth_challenges,cloud_archive_trash,game_saves,entitlement_ledger_entries,entitlement_balances,turn_events,turn_requests,npc_memory_journals,npc_authorized_observation_outbox,npc_memory_observation_supersessions TO joint_eraser');
     await admin.query('GRANT SELECT,INSERT,UPDATE ON account_operations TO joint_eraser; GRANT INSERT ON account_lifecycle_audit TO joint_eraser; GRANT SELECT,DELETE ON account_rate_limits TO joint_eraser; GRANT UPDATE(closed_at) ON auth_accounts TO joint_eraser; GRANT UPDATE(revision) ON game_saves TO joint_eraser');
-    await admin.query('GRANT SELECT ON public.auth_external_identities TO joint_eraser');
     await admin.query(await readFile(new URL('../../../../packages/db/permissions/erasure-delivery.sql', import.meta.url),'utf8'));
     for (const table of ['model_calls','group_settings','group_messages','group_turns','group_participant_worldbooks','group_participants','requests','session_worldbooks','session_personas','sessions','persona_versions','personas','global_worldbooks','duplicate_requests','links','cards','imports']) await admin.query(`GRANT SELECT,DELETE ON card_import.${table} TO joint_eraser`);
   });
@@ -87,7 +94,7 @@ describe.skipIf(!url)('new main + cards + opt-in erasure pool', () => {
     await admin.query('INSERT INTO card_import.model_calls(approval_id,owner_id,session_id,key) VALUES($1,$2,$3,$4)',[approval,a.owner,randomUUID(),randomUUID()]);
     const contacted:string[]=[];
     let timeout=true;
-    const remote={subjects:async()=>[subject],remove:async(id:string)=>{contacted.push(id);if(timeout)throw Error('unknown');}};
+    const remote={subjects:(client:PoolClient,owner:string)=>supabase.erasureSubjects(client,owner),remove:async(id:string)=>{contacted.push(id);if(timeout)throw Error('unknown');}};
     await expect(admin.query('DELETE FROM auth_accounts WHERE id=$1',[a.owner])).rejects.toThrow('CARD_ERASURE_REQUIRED');
     let abortLocal=true;
     const composed=new AccountLifecycle(runtime,send,secret,'synthetic-retention',true,()=>true,undefined,eraseCardImports,erasure,
@@ -114,6 +121,24 @@ describe.skipIf(!url)('new main + cards + opt-in erasure pool', () => {
     expect((await admin.query('SELECT state,pending_subject FROM account_erasure_delivery WHERE operation_id=$1',[a.id])).rows).toEqual([{state:'completed',pending_subject:null}]);
     await expect(runtime.query('SELECT * FROM account_erasure_delivery')).rejects.toThrow();
     expect((await admin.query("SELECT finish_erasure_retention('synthetic-retention',now()) AS n")).rows[0].n).toBe(1);
+  });
+  it('reads real Supabase erasure mappings with column-only privileges and rejects shared subjects', async () => {
+    const a = await fixture(), b = await fixture(), subject = randomUUID();
+    const digest = (kind: string) => createHash('sha256').update(`${subject}:${kind}`).digest('hex');
+    await admin.query("INSERT INTO auth_external_identities(provider_subject,identity_kind,identifier_digest,owner_id,verified_at) VALUES($1,'email',$2,$3,now())", [subject, digest('email'), a.owner]);
+    const client = await erasure.connect();
+    try {
+      expect((await client.query('SELECT session_user AS identity')).rows[0].identity).toBe('joint_eraser');
+      expect(await supabase.erasureSubjects(client, a.owner)).toEqual([subject]);
+      await admin.query("INSERT INTO auth_external_identities(provider_subject,identity_kind,identifier_digest,owner_id,verified_at) VALUES($1,'phone',$2,$3,now())", [subject, digest('phone'), b.owner]);
+      await expect(supabase.erasureSubjects(client, a.owner)).rejects.toThrow('SUPABASE_IDENTITY_SHARED');
+      await expect(client.query('SELECT identifier_digest FROM auth_external_identities WHERE provider_subject=$1', [subject])).rejects.toMatchObject({ code: '42501' });
+      await expect(client.query('UPDATE auth_external_identities SET owner_id=$2 WHERE provider_subject=$1', [subject, a.owner])).rejects.toMatchObject({ code: '42501' });
+      await expect(client.query('DELETE FROM auth_external_identities WHERE provider_subject=$1', [subject])).rejects.toMatchObject({ code: '42501' });
+    } finally { client.release(); }
+    await expect(runtime.query('SELECT provider_subject,owner_id FROM auth_external_identities WHERE provider_subject=$1', [subject])).rejects.toMatchObject({ code: '42501' });
+    await expect(runtime.query('SET ROLE jiuxiao_narrative_erasure')).rejects.toMatchObject({ code: '42501' });
+    expect((await admin.query('SELECT owner_id FROM auth_external_identities WHERE provider_subject=$1 ORDER BY owner_id', [subject])).rows.map(row => row.owner_id).sort()).toEqual([a.owner, b.owner].sort());
   });
   it('denies cross-owner, wrong confirmation and disabled/invalid erasure identity without fallback', async () => {
     const a = await fixture(), b = await fixture();
