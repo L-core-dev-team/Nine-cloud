@@ -303,6 +303,13 @@ export class CardImportService {
         groupSelected=(await this.pool.query('SELECT selected FROM card_import.group_turns WHERE owner_id=$1 AND session_id=$2 AND key=$3',[owner,id,key])).rows[0].selected;
         const speaker=participants.find(p=>p.id===groupSelected[0]);
         if(!speaker)throw new CardError('INVALID_PARTICIPANTS');
+        // The group's opening belongs to the session card, even after the speaker changes.
+        // Send it in the same attributed format as subsequent group history.
+        if (character.first_mes) {
+          const opener = participants.find(p => p.card_id === session.card_id);
+          if (!opener) throw new CardError('INVALID_PARTICIPANTS');
+          character.first_mes = JSON.stringify([{ participantId: opener.id, text: character.first_mes }]);
+        }
         const speakerDocument=speaker.parsed.document;const speakerData=record(speakerDocument.data)?speakerDocument.data:speakerDocument;
         for(const field of ['name','description','personality','scenario','mes_example','system_prompt','post_history_instructions']) { if(speakerData[field]!==undefined)character[field]=speakerData[field]; else delete character[field]; }
         character.group_participants=participants.map(p=>{const doc=p.parsed.document;const d=record(doc.data)?doc.data:doc;return {participantId:p.id,name:p.display_name,description:d.description,personality:d.personality,scenario:d.scenario};});

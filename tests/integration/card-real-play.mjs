@@ -110,7 +110,7 @@ run('pg_ctl',['-D',join(dir,'pg'),'-l',join(dir,'pg.log'),'-o',`-c unix_socket_d
  const mount=(cfg=config,timeoutMs=1000)=>{expectedWireModel=cfg.model;app=createApp(undefined,undefined,{service:auth,origin},undefined,{...localProviderOptions(pool,cfg,{NARRATIVE_KEY_CARD_LOCAL:'synthetic-not-a-vendor-key'},factory),timeoutMs});};
  const upload=async(data,kind='card',account=a)=>{const r=await http(prefix+'/imports','POST',{filename:kind+'.json',kind,bytesBase64:Buffer.from(JSON.stringify(data)).toString('base64'),rightsConfirmed:true},account.cookie);assert.equal(r.status,200);return r.body.id;};
  const book=await upload({entries:[{keys:['forest'],content:'LOCAL_BOOK_MARKER',enabled:true}]},'worldbook');
- const makeCard=async(name,account=a,associatedBook=book)=>{const i=await upload({name,description:'fictional person',personality:'kind',scenario:'forest',mes_example:'example',first_mes:'default',alternate_greetings:['alternate marker'],character_book:{entries:[{keys:['forest'],content:'CHAR_BOOK_MARKER',enabled:true}]}},'card',account);const r=await http(prefix+'/cards','POST',{importId:i,parentId:null,source:'synthetic',notes:'',links:associatedBook?[{importId:associatedBook,uri:'book://test'}]:[]},account.cookie);assert.equal(r.status,200);return r.body.id;};
+ const makeCard=async(name,account=a,associatedBook=book)=>{const i=await upload({name,description:'fictional person',personality:'kind',scenario:'forest',mes_example:'example',first_mes:`${name} opening`,alternate_greetings:['alternate marker'],character_book:{entries:[{keys:['forest'],content:'CHAR_BOOK_MARKER',enabled:true}]}},'card',account);const r=await http(prefix+'/cards','POST',{importId:i,parentId:null,source:'synthetic',notes:'',links:associatedBook?[{importId:associatedBook,uri:'book://test'}]:[]},account.cookie);assert.equal(r.status,200);return r.body.id;};
  const card=await makeCard('A'),card2=await makeCard('B');
  const persona=(await http(prefix+'/personas','POST',{id:randomUUID(),name:'LOCAL_PERSONA',description:'player identity',extensions:{}},a.cookie)).body;
  const session=async(cardId=card,account=a,selectedPersona=persona.id)=>{const id=randomUUID();assert.equal((await http(prefix+'/sessions','POST',{id,cardId,greetingIndex:1-1,personaVersionId:selectedPersona,recursiveWorldbook:false},account.cookie)).status,200);return id;};
@@ -151,6 +151,12 @@ run('pg_ctl',['-D',join(dir,'pg'),'-l',join(dir,'pg.log'),'-o',`-c unix_socket_d
  body.modelBinding=status.binding;
  const act=async(action='forest',extra={})=>http(prefix+`/sessions/${id}/actions`,'POST',{idempotencyKey:randomUUID(),expectedRevision:(await http(prefix+`/sessions/${id}`,'GET',undefined,a.cookie)).body.revision,action,modelBinding:status.binding,...extra},a.cookie);
  const first=await act();assert.equal(first.body.status,'completed');assert.match(JSON.stringify(seen.at(-1)),/LOCAL_PERSONA/);assert.match(JSON.stringify(seen.at(-1)),/LOCAL_BOOK_MARKER/);assert.match(JSON.stringify(seen.at(-1)),/alternate marker/);mark('single + Persona + alternate greeting + selected worldbooks over HTTP protocol');
+ const singleWire=seen.at(-1).messages;
+ assert.deepEqual(singleWire.filter(m=>m.role==='assistant').map(m=>m.content),['alternate marker']);
+ const singleData=JSON.parse(singleWire[1].content);
+ assert.equal(singleData.character.name,'A');
+ assert.equal(singleData.player_persona.name,'LOCAL_PERSONA');
+ assert.ok(singleData.world_before_character.includes('LOCAL_BOOK_MARKER'));
  before=sent;const old=await http(prefix+`/sessions/${id}/requests/${first.body.key}`,'GET',undefined,a.cookie);assert.equal(old.body.status,'completed');assert.equal(old.body.model_snapshot.binding,status.binding);assert.equal(sent,before);
  const outcome=async (key)=>(await pool.query('SELECT outcome FROM card_import.model_calls WHERE approval_id=$1 AND owner_id=$2 AND session_id=$3 AND key=$4',[config.approvalId,a.owner,id,key])).rows[0]?.outcome;
  assert.equal(await outcome(first.body.key),'acknowledged');
@@ -185,12 +191,31 @@ run('pg_ctl',['-D',join(dir,'pg'),'-l',join(dir,'pg.log'),'-o',`-c unix_socket_d
  const participants=(await http(prefix+`/sessions/${gid}/group`,'GET',undefined,a.cookie)).body;
  const manual={idempotencyKey:randomUUID(),expectedRevision:0,action:'forest manual',mode:'manual',participantIds:[participants[1].id],modelBinding:status.binding};
  assert.equal((await http(prefix+`/sessions/${gid}/group-actions`,'POST',manual,a.cookie)).body.status,'completed');
+ // Check the serialized provider request, including every assistant message in order.
+ function checkGroupWire(members, selectedIds, expectedHistory) {
+   const messages = seen.at(-1).messages;
+   const source = members[0];
+   const current = members.find(member => member.id === selectedIds[0]);
+   assert.equal(JSON.parse(messages[1].content).character.name, current.display_name);
+   const contract = JSON.parse(messages.at(-1).content.split('\n\n---\n\n').at(-1));
+   assert.deepEqual(contract.selected_participant_ids, selectedIds);
+   assert.deepEqual(messages.filter(m => m.role === 'assistant').map(m => JSON.parse(m.content)), [
+     [{ participantId: source.id, text: source.display_name + ' opening' }],
+     ...expectedHistory,
+   ]);
+ }
+ checkGroupWire(participants, manual.participantIds, []);
+
  const manualHistory=(await http(prefix+`/sessions/${gid}/group-history`,'GET',undefined,a.cookie)).body;
  assert.deepEqual(manualHistory.map(m=>m.participant_id),manual.participantIds);
  mark('manual group saved with server-validated selected participant');
  const groupBody={idempotencyKey:randomUUID(),expectedRevision:1,action:'forest',mode:'multi',participantIds:participants.map(p=>p.id),modelBinding:status.binding};
  assert.equal((await http(prefix+`/sessions/${gid}/group-actions`,'POST',groupBody,a.cookie)).body.status,'completed');const groupHistory=(await http(prefix+`/sessions/${gid}/group-history`,'GET',undefined,a.cookie)).body;
  assert.deepEqual(groupHistory.map(m=>m.participant_id),[...manual.participantIds,...groupBody.participantIds]);
+ checkGroupWire(participants, groupBody.participantIds, [
+   [{ participantId: participants[1].id, text: 'local protocol reply' }],
+ ]);
+ mark('group opening keeps its original participant in manual and multi requests');
  before=sent;fail='group';assert.equal((await http(prefix+`/sessions/${gid}/group-actions`,'POST',{...groupBody,idempotencyKey:randomUUID(),expectedRevision:2},a.cookie)).body.error,'GROUP_OUTPUT_INVALID');fail='';
  assert.equal(sent,before+1);assert.deepEqual((await http(prefix+`/sessions/${gid}/group-history`,'GET',undefined,a.cookie)).body,groupHistory);mark('multi output attribution and invalid structure no partial history/no retry');
  // Seed bounded completed history; verify trimming affects only transmitted context.
@@ -286,6 +311,32 @@ run('pg_ctl',['-D',join(dir,'pg'),'-l',join(dir,'pg.log'),'-o',`-c unix_socket_d
  await page.reload();await page.getByText('forest browser',{exact:true}).waitFor();
  // Group UI consumes the same fixed model and protocol path.
  await page.goto(origin+`/cards/session/${uiGroupId}`);await page.getByLabel('角色卡行动').waitFor();await page.getByLabel('角色卡行动').fill('forest group browser');await page.getByLabel('本次发言方式').selectOption('auto');await page.getByRole('button',{name:'提交行动',exact:true}).click();await page.getByText('行动已完成，历史已更新。',{exact:true}).waitFor();mark('group browser automatic speaker uses protocol');
+ const uiMembers = (await http(prefix+`/sessions/${uiGroupId}/group`, 'GET', undefined, ui.cookie)).body;
+ checkGroupWire(uiMembers, [uiMembers[0].id], []);
+ await page.reload();
+ await page.getByText('forest group browser', {exact:true}).waitFor();
+ await page.getByLabel('本次发言方式').selectOption('manual');
+ await page.getByLabel(/Browser B ·/).check();
+ await page.getByLabel('角色卡行动').fill('forest after refresh');
+ const submitted = page.waitForRequest(request => request.method() === 'POST' && request.url().endsWith('/group-actions'));
+ await page.getByRole('button', {name:'提交行动',exact:true}).click();
+ await page.getByText('行动已完成，历史已更新。',{exact:true}).waitFor();
+ checkGroupWire(uiMembers, [uiMembers[1].id], [
+   [{ participantId: uiMembers[0].id, text: 'local protocol reply' }],
+ ]);
+ const restoredHistory = (await http(prefix+`/sessions/${uiGroupId}/group-history`, 'GET', undefined, ui.cookie)).body;
+ assert.deepEqual(restoredHistory.map(m=>m.participant_id), uiMembers.map(m=>m.id));
+ mark('refreshed group keeps opening and real A turn attributed to A when B is selected');
+ const original = (await submitted).postDataJSON();
+ const callsBeforeReplay = sent;
+ const lookup = await http(prefix+`/sessions/${uiGroupId}/requests/${original.idempotencyKey}`, 'GET', undefined, ui.cookie);
+ const replayed = await http(prefix+`/sessions/${uiGroupId}/group-actions`, 'POST', original, ui.cookie);
+ assert.equal(lookup.body.status, 'completed');
+ assert.equal(replayed.body.key, original.idempotencyKey);
+ assert.equal(replayed.body.resulting_revision, lookup.body.resulting_revision);
+ assert.deepEqual((await http(prefix+`/sessions/${uiGroupId}/group-history`, 'GET', undefined, ui.cookie)).body, restoredHistory);
+ assert.equal(sent, callsBeforeReplay);
+ mark('group original-key lookup and replay add zero protocol requests and zero history');
  await page.screenshot({path:join(dir,'browser.png'),fullPage:true});mark('browser 390 UI -> local HTTP protocol -> PG -> refresh');
  mount({...config,approved:false});await page.reload();await page.getByText('外部模型调用待授权。',{exact:true}).waitFor();assert.equal(await page.getByRole('button',{name:'提交行动',exact:true}).isDisabled(),true);mark('browser unapproved mode disables send');mount();await page.reload();await page.getByLabel('角色卡行动').waitFor();
  await page.getByLabel('本次发言方式').selectOption('auto');delay=300;before=sent;await page.getByLabel('角色卡行动').fill('owner A late marker');await page.getByRole('button',{name:'提交行动',exact:true}).click();
