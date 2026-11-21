@@ -1,4 +1,4 @@
-import { isCharacterProfile, type CharacterProfile, type ProfileField } from '../../../api/src/services/character-profile';
+import { isCharacterProfile, type CharacterProfile, type ProfileField } from '../../../../packages/contracts/dist/character-profile.js';
 import {ISOLATED_PLAYTEST} from '../playtest-channel';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type FormEvent } from 'react';
 import { ActionIntentSchema, SaveEnvelopeSchema, TurnReceiptSchema, type SaveEnvelope, type TurnReceipt } from '@jiuxiao/contracts';

@@ -1,5 +1,5 @@
 import { MemoryModeSchema, SaveEnvelopeSchema, type MemoryMode } from '@jiuxiao/contracts';
-import { isCharacterProfile, profileLimits, type CharacterProfile } from '../../api/src/services/character-profile';
+import { isCharacterProfile, profileLimits, type CharacterProfile } from '../../../packages/contracts/dist/character-profile.js';
 import { cloudRequest } from './cloud-sync';
 import { createIdempotencyKey } from './storage';
 

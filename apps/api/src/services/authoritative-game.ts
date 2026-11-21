@@ -7,7 +7,7 @@ import {approvedPlayerActions,approvedLabel} from './approved-player-actions.js'
 import { createP1SaveMemoryPolicy } from './p1-memory-policy.js';
 import { PROLOGUE_V1_CONTENT_PACK } from '@jiuxiao/content/p1-review-candidate';
 import { P1_REVIEW_RULE_APPROVAL } from './p1-review-rule-approval.js';
-import { isCharacterProfile, type CharacterProfile } from './character-profile.js';
+import { isCharacterProfile, type CharacterProfile } from '../../../../packages/contracts/dist/character-profile.js';
 export type GameRepository={latestReceiptForOwner?(owner:string,id:string):Promise<TurnReceipt|null>;getForOwner(owner:string,id:string):Promise<SaveEnvelope|null>;getProfileForOwner?(owner:string,id:string):Promise<CharacterProfile|null>;createForOwner(owner:string,save:SaveEnvelope,profile?:CharacterProfile):Promise<boolean>};
 
 /** Hashes the exact source artifact bytes used to identify this save's Canon input. */

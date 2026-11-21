@@ -1,4 +1,4 @@
-import { isCharacterProfile, type CharacterProfile } from './character-profile.js';
+import { isCharacterProfile, type CharacterProfile } from '../../../../packages/contracts/dist/character-profile.js';
 import type { SaveEnvelope } from '@jiuxiao/contracts';
 import { SaveEnvelopeSchema, TurnReceiptSchema } from '@jiuxiao/contracts';
 import { isDeepStrictEqual } from 'node:util';

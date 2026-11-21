@@ -1,5 +1,5 @@
 import type { Pool } from 'pg';
-import type { CharacterProfile } from './character-profile.js';
+import type { CharacterProfile } from '../../../../packages/contracts/dist/character-profile.js';
 import type { SaveEnvelope } from '@jiuxiao/contracts';
 import { PostgresCloudSaveRepository } from './postgres-cloud-save-repository.js';
 import { assertDataPolicy, type DataPolicy } from './data-policy.js';
