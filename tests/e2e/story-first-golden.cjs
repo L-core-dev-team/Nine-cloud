@@ -191,6 +191,8 @@ async function stop(child) {
     await page.getByRole('button',{name:/新开一局/}).click();
     await page.getByRole('textbox',{name:'姓名',exact:true}).fill('黄金流程验收行者');
     await page.getByRole('button',{name:'下一步',exact:true}).click();
+    await page.getByRole('textbox',{name:'修为',exact:true}).fill('大乘期');
+    await page.getByRole('textbox',{name:'天赋 / 特殊设定',exact:true}).fill('合成测试天赋');
     await page.getByRole('button',{name:'下一步',exact:true}).click();
     await page.getByTestId('create-server-game').click();
     await page.getByRole('alert').filter({hasText:'建档结果尚未确认'}).waitFor();
@@ -205,7 +207,7 @@ async function stop(child) {
     const saveId=new URL(page.url()).pathname.split('/').at(-1);
     assert.deepEqual(creations.map(row => row.status), [201, 200]);
     assert.deepEqual(creations[1].request, creations[0].request);
-    assert.equal(creations[1].request.choices.memoryMode, 'continue');
+    assert.deepEqual(creations[1].request.choices, {memoryMode:'continue'});
     assert.ok(creations.every(row => row.id === saveId));
     assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_saves WHERE owner_id=$1',[ownerId])).rows[0].n, 1);
     assert.equal(await page.evaluate(owner => sessionStorage.getItem('jx_character_game:' + owner), ownerId), null);
@@ -306,6 +308,8 @@ async function stop(child) {
     const foreign=await browser.newContext();const foreignPage=await foreign.newPage();await foreignPage.route('**/api/**',async route=>{const url=new URL(route.request().url());const response=await route.fetch({url:`${apiOrigin}${url.pathname}${url.search}`});await route.fulfill({response})});await foreignPage.goto(webOrigin);
     const unauthorized=await foreignPage.evaluate(async id=>{const r=await fetch(`/api/games/${id}/story`);return {status:r.status,body:await r.json()}},saveId);assert.equal(unauthorized.status,401);
     const foreignOwner=await foreignPage.evaluate(async()=>{const r=await fetch('/api/auth/guest',{method:'POST',headers:{'content-type':'application/json'},body:'{}'});return {status:r.status,body:await r.json()}});assert.ok(foreignOwner.status<300,JSON.stringify(foreignOwner));
+    const foreignGameStatus=await foreignPage.evaluate(async id=>(await fetch(`/api/games/${id}`)).status,saveId);
+    assert.equal(foreignGameStatus,404,'authenticated foreign account must not read this save');
     const denied=await foreignPage.evaluate(async id=>(await fetch(`/api/games/${id}/story`)).status,saveId);assert.equal(denied,404,'authenticated foreign account must not read another story');await foreign.close();
     assert.deepEqual(pageErrors,[]);
     require('node:fs').writeFileSync(join(evidenceDir,'golden-story-evidence.json'),JSON.stringify({saveId,source:'real PostgreSQL and unmodified signed review rules; no story or turn stubs',snapshots,timings,contrast,archiveRows:10,fullRestore:true,foreignAccessStatus:unauthorized.status,authenticatedForeignAccessStatus:denied,immutableAndIdempotent:true,forgedReceiptRejected:true,earlierCursor:true,otherSaveEmpty:true,memoryInfluence:'BLOCKED_PENDING_AUTHOR_REVIEW',knownNarrativeDefect:'post-clearance static observation still mentions grey-feather crows; author-approved state variants required',finalQuest:rows.rows[0].snapshot.facts.questState},null,2));

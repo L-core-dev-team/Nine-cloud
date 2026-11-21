@@ -1,5 +1,6 @@
 import { MemoryModeSchema, SaveEnvelopeSchema, type MemoryMode } from '@jiuxiao/contracts';
 import { cloudRequest } from './cloud-sync';
+import { createIdempotencyKey } from './storage';
 
 type CreationStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
 type WorkspaceChoices = { name: string; goal: string };
@@ -15,7 +16,7 @@ async function sendCreation<T>(
 ) {
   let serialized = storage.getItem(key);
   if (serialized === null) {
-    serialized = JSON.stringify({ idempotencyKey: crypto.randomUUID(), choices });
+    serialized = JSON.stringify({ idempotencyKey: createIdempotencyKey(), choices });
     storage.setItem(key, serialized);
   }
   const request: unknown = JSON.parse(serialized);
