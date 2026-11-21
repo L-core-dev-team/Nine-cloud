@@ -1,10 +1,17 @@
 import { MemoryModeSchema, SaveEnvelopeSchema, type MemoryMode } from '@jiuxiao/contracts';
+import { isCharacterProfile, profileLimits, type CharacterProfile } from '../../api/src/services/character-profile';
 import { cloudRequest } from './cloud-sync';
 import { createIdempotencyKey } from './storage';
 
 type CreationStorage = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
 type WorkspaceChoices = { name: string; goal: string };
-type CharacterChoices = { memoryMode: MemoryMode };
+type CharacterChoices = { memoryMode: MemoryMode; characterProfile?: CharacterProfile };
+
+export function characterChoices(memoryMode: MemoryMode, form: Record<string, string>): CharacterChoices {
+  const profile = Object.fromEntries(Object.keys(profileLimits)
+    .filter(key => form[key]?.trim()).map(key => [key, form[key]!.trim()]));
+  return Object.keys(profile).length ? { memoryMode, characterProfile: profile } : { memoryMode };
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -16,6 +23,7 @@ async function sendCreation<T>(
 ) {
   let serialized = storage.getItem(key);
   if (serialized === null) {
+    if (!accepts(choices)) throw new Error('INVALID_GAME_CHOICES');
     serialized = JSON.stringify({ idempotencyKey: createIdempotencyKey(), choices });
     storage.setItem(key, serialized);
   }
@@ -43,9 +51,10 @@ export async function createAuthoritativeGame(owner: string, choices: WorkspaceC
 }
 
 // This tab's three-step form has a separate pending request for each authenticated account.
-export async function createCharacterGame(owner: string, memoryMode: MemoryMode, storage: CreationStorage = sessionStorage) {
-  const result = await sendCreation(owner, `jx_character_game:${owner}`, { memoryMode }, storage,
-    (v): v is CharacterChoices => isRecord(v) && Object.keys(v).length === 1 && MemoryModeSchema.safeParse(v.memoryMode).success);
+export async function createCharacterGame(owner: string, choices: CharacterChoices, storage: CreationStorage = sessionStorage) {
+  const result = await sendCreation(owner, `jx_character_game:${owner}`, choices, storage,
+    (v): v is CharacterChoices => isRecord(v) && Object.keys(v).every(k => k === 'memoryMode' || k === 'characterProfile')
+      && MemoryModeSchema.safeParse(v.memoryMode).success && (v.characterProfile === undefined || isCharacterProfile(v.characterProfile)));
   if (result.save.schemaVersion !== 3 || result.save.memoryMode !== result.choices.memoryMode
     || (!result.duplicate && result.save.revision !== 0)) throw new Error('INVALID_GAME_RESPONSE');
   return result;

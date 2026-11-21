@@ -189,15 +189,21 @@ async function stop(child) {
     await page.goto(webOrigin);
     await page.getByRole('button',{name:'进入世界',exact:true}).click();
     await page.getByRole('button',{name:/新开一局/}).click();
-    await page.getByRole('textbox',{name:'姓名',exact:true}).fill('黄金流程验收行者');
+    const profile = {name:'黄金流程验收行者', personality:'耐心', origin:'渡口船工', appearance:'<b>青衫</b>', goal:'修好渡船'};
+    await page.getByRole('textbox',{name:'姓名',exact:true}).fill(profile.name);
+    await page.getByRole('textbox',{name:'性格',exact:true}).fill(profile.personality);
+    await page.getByRole('textbox',{name:'身份',exact:true}).fill(profile.origin);
+    await page.getByRole('textbox',{name:'外貌',exact:true}).fill(profile.appearance);
     await page.getByRole('button',{name:'下一步',exact:true}).click();
     await page.getByRole('textbox',{name:'修为',exact:true}).fill('大乘期');
     await page.getByRole('textbox',{name:'天赋 / 特殊设定',exact:true}).fill('合成测试天赋');
     await page.getByRole('button',{name:'下一步',exact:true}).click();
+    await page.getByRole('textbox',{name:'补充目标',exact:true}).fill(profile.goal);
     await page.getByTestId('create-server-game').click();
     await page.getByRole('alert').filter({hasText:'建档结果尚未确认'}).waitFor();
     assert.equal(creations[0].status, 201);
     await page.reload();
+    await page.getByRole('textbox',{name:'姓名',exact:true}).fill('修改后的草稿');
     await page.getByRole('button',{name:'下一步',exact:true}).click();
     await page.getByRole('button',{name:'下一步',exact:true}).click();
     await page.locator('input[name="p2-memory-mode"][value="forgetting"]').check();
@@ -207,17 +213,43 @@ async function stop(child) {
     const saveId=new URL(page.url()).pathname.split('/').at(-1);
     assert.deepEqual(creations.map(row => row.status), [201, 200]);
     assert.deepEqual(creations[1].request, creations[0].request);
-    assert.deepEqual(creations[1].request.choices, {memoryMode:'continue'});
+    assert.deepEqual(creations[1].request.choices, {memoryMode:'continue',characterProfile:profile});
     assert.ok(creations.every(row => row.id === saveId));
     assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_saves WHERE owner_id=$1',[ownerId])).rows[0].n, 1);
     assert.equal(await page.evaluate(owner => sessionStorage.getItem('jx_character_game:' + owner), ownerId), null);
+    async function checkProfile() {
+      await page.getByRole('button',{name:'人物 · 行囊',exact:true}).click();
+      const section=page.getByRole('region',{name:'玩家设定'});
+      await section.waitFor();
+      assert.deepEqual(await section.locator('dd').allTextContents(),Object.values(profile));
+      assert.equal(await section.locator('dd *').count(),0);
+      await page.getByRole('button',{name:'关闭资料面板'}).click();
+      const stored=(await pool.query('SELECT character_profile,snapshot FROM game_saves WHERE id=$1',[saveId])).rows[0];
+      assert.deepEqual(stored.character_profile,profile);
+      assert.ok(!JSON.stringify(stored.snapshot).includes(profile.name));
+      assert.ok(!JSON.stringify(stored.snapshot).includes('大乘期'));
+    }
+    await checkProfile();
     const conflict = await page.evaluate(async request => {
       const response = await fetch('/api/games', {method:'POST', headers:{'content-type':'application/json'},
-        body:JSON.stringify({...request, choices:{memoryMode:'forgetting'}})});
+        body:JSON.stringify({...request, choices:{...request.choices,characterProfile:{name:'冲突'}}})});
       return {status:response.status, code:(await response.json()).code};
     }, creations[0].request);
     assert.deepEqual(conflict,{status:409,code:'IDEMPOTENCY_CONFLICT'});
     await page.waitForFunction(()=>!document.querySelector('[data-testid="p2-action-input"]').disabled);
+    const badProfiles=[{realm:'越权'},{name:5},{name:'x'.repeat(81)},{goal:'\u0000'},[],null,
+      {origin:'山'.repeat(500),appearance:'海'.repeat(500),goal:'舟'.repeat(500)}];
+    for(const bad of badProfiles){
+      const result=await page.evaluate(async profile=>{
+        const r=await fetch('/api/games',{method:'POST',headers:{'content-type':'application/json'},
+          body:JSON.stringify({idempotencyKey:crypto.randomUUID(),choices:{characterProfile:profile}})});
+        return [r.status,(await r.json()).code];
+      },bad);
+      assert.deepEqual(result,[400,'INVALID_CHARACTER_PROFILE']);
+    }
+    const malformed=await page.evaluate(async()=> (await fetch('/api/games',{method:'POST',headers:{'content-type':'application/json'},body:'{"choices":'})).status);
+    assert.equal(malformed,400);
+    assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_saves WHERE owner_id=$1',[ownerId])).rows[0].n,1);
     const snapshots=[];
     async function suggest(id) {
       const payload=await page.evaluate(async id=>await (await fetch(`/api/games/${id}/action-suggestions`)).json(),saveId);
@@ -255,6 +287,7 @@ async function stop(child) {
     await page.waitForFunction(()=>!document.querySelector('[data-testid="p2-action-input"]').disabled);
     await suggest('acquire:src_ferry_shore');await act(null,2);
     await act('去渡口作业位',3);
+    await checkProfile();
     await act('使用避水符在渡口作业位',4);
     await suggest('combat:npc_shuiyuya');await act(null,5);
     await suggest('return-to-location');await act(null,6);
@@ -278,6 +311,7 @@ async function stop(child) {
       const a=p.getBoundingClientRect(),b=p.closest('.story-reading').getBoundingClientRect();return a.top>=b.top&&a.bottom<=b.bottom;
     }),true,'refresh must retain the newest presented story anchor when the reader did not scroll elsewhere');
     const history=await page.evaluate(async id=>await (await fetch(`/api/games/${id}/story`)).json(),saveId);assert.equal(history.items.length,10);
+    await checkProfile();
     const archive=await pool.query('SELECT count(*)::int AS count FROM story_narratives WHERE save_id=$1',[saveId]);assert.equal(archive.rows[0].count,10);
     await assert.rejects(pool.query('UPDATE story_narratives SET narrative_text=$2 WHERE save_id=$1',[saveId,'must not overwrite']),/STORY_NARRATIVE_IMMUTABLE/);
     const contrast=[];

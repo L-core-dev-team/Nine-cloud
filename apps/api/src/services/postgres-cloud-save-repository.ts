@@ -1,3 +1,4 @@
+import { isCharacterProfile, type CharacterProfile } from './character-profile.js';
 import type { SaveEnvelope } from '@jiuxiao/contracts';
 import { SaveEnvelopeSchema, TurnReceiptSchema } from '@jiuxiao/contracts';
 import { isDeepStrictEqual } from 'node:util';
@@ -134,17 +135,17 @@ export class PostgresCloudSaveRepository implements CloudSaveRepository {
 
   private async accountUsage(client: PoolClient, ownerId: string) {
     const result = await client.query<{ count: number; bytes: string }>(
-      'SELECT count(*)::int AS count, coalesce(sum(octet_length(snapshot::text) + coalesce(octet_length(memory_policy::text), 0)), 0)::bigint AS bytes FROM game_saves WHERE owner_id=$1',
+      'SELECT count(*)::int AS count, coalesce(sum(octet_length(snapshot::text) + coalesce(octet_length(memory_policy::text), 0) + coalesce(octet_length(character_profile::text), 0)), 0)::bigint AS bytes FROM game_saves WHERE owner_id=$1',
       [ownerId],
     );
     return { count: result.rows[0]!.count, bytes: Number(result.rows[0]!.bytes) };
   }
 
-  private async persistedPayloadBytes(client: PoolClient, save: SaveEnvelope): Promise<number> {
+  private async persistedPayloadBytes(client: PoolClient, save: SaveEnvelope, profile?: CharacterProfile): Promise<number> {
     const policy = save.schemaVersion !== 1 ? JSON.stringify(save.memoryPolicy) : null;
     const result = await client.query<{ bytes: number }>(
-      'SELECT (octet_length($1::jsonb::text) + coalesce(octet_length($2::jsonb::text), 0))::int AS bytes',
-      [JSON.stringify(save.state), policy],
+      'SELECT (octet_length($1::jsonb::text) + coalesce(octet_length($2::jsonb::text), 0) + coalesce(octet_length($3::jsonb::text), 0))::int AS bytes',
+      [JSON.stringify(save.state), policy, profile ? JSON.stringify(profile) : null],
     );
     return result.rows[0]!.bytes;
   }
@@ -174,18 +175,32 @@ export class PostgresCloudSaveRepository implements CloudSaveRepository {
     return result.rows[0] ? rowToEnvelope(result.rows[0]) : null;
   }
 
-  async createForOwner(ownerId: string, save: SaveEnvelope): Promise<boolean> {
+  async getProfileForOwner(ownerId: string, saveId: string): Promise<CharacterProfile | null> {
+    const result = await this.pool.query(
+      'SELECT character_profile FROM game_saves WHERE owner_id=$1 AND id=$2 AND NOT EXISTS (SELECT 1 FROM cloud_archive_trash WHERE save_id=$2)',
+      [ownerId, saveId],
+    );
+    const profile: unknown = result.rows[0]?.character_profile;
+    if (profile == null) return null;
+    if (!isCharacterProfile(profile)) throw new Error('INVALID_STORED_CHARACTER_PROFILE');
+    return profile;
+  }
+
+  async createForOwner(ownerId: string, save: SaveEnvelope, profile?: CharacterProfile): Promise<boolean> {
     requirePersistableSave(save);
+    if (profile !== undefined && (save.schemaVersion !== 3 || !isCharacterProfile(profile))) throw new TypeError('INVALID_CHARACTER_PROFILE');
     if (Buffer.byteLength(JSON.stringify(save), 'utf8') > this.limits().perSaveBytes) throw new CloudCapacityError();
     return this.capacityTransaction(ownerId, async client => {
+      // A concurrent retry may have committed while this request waited for the owner lock.
+      if ((await client.query('SELECT 1 FROM game_saves WHERE owner_id=$1 AND id=$2', [ownerId, save.saveId])).rowCount) return false;
       const usage = await this.accountUsage(client, ownerId);
-      const bytes = await this.persistedPayloadBytes(client, save);
+      const bytes = await this.persistedPayloadBytes(client, save, profile);
       this.checkCapacity(usage, bytes, null);
       const result = await client.query(
       `${this.requiresLiveAccount ? 'WITH live_account AS (SELECT id FROM auth_accounts WHERE id=$2 AND closed_at IS NULL FOR KEY SHARE) ' : ''}INSERT INTO game_saves
         (id, owner_id, revision, schema_version, canon_version, canon_artifact_hash, rule_version, memory_policy_version, memory_mode, memory_policy,
-          branch_id, parent_branch_id, fork_revision, created_policy_version, source_migration_id, snapshot)
-       ${this.requiresLiveAccount ? 'SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb,$11,$12,$13,$14,$15,$16::jsonb FROM live_account' : 'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11, $12, $13, $14, $15, $16::jsonb)'}
+          branch_id, parent_branch_id, fork_revision, created_policy_version, source_migration_id, snapshot, character_profile)
+       ${this.requiresLiveAccount ? 'SELECT $1,$2,$3,$4,$5,$6,$7,$8,$9,$10::jsonb,$11,$12,$13,$14,$15,$16::jsonb,$17::jsonb FROM live_account' : 'VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::jsonb, $11, $12, $13, $14, $15, $16::jsonb,$17::jsonb)'}
        ON CONFLICT (id) DO NOTHING`,
       [save.saveId, ownerId, save.revision, save.schemaVersion, save.canonVersion,
         save.schemaVersion === 3 ? save.canonArtifactHash : null,
@@ -195,7 +210,7 @@ export class PostgresCloudSaveRepository implements CloudSaveRepository {
         save.schemaVersion === 3 ? save.parentBranchId : null,
         save.schemaVersion === 3 ? save.forkRevision : null,
         save.schemaVersion === 3 ? save.createdPolicyVersion : null,
-        save.schemaVersion === 3 ? save.sourceMigrationId : null, JSON.stringify(save.state)],
+        save.schemaVersion === 3 ? save.sourceMigrationId : null, JSON.stringify(save.state), profile ? JSON.stringify(profile) : null],
     );
       return result.rowCount === 1;
     });
@@ -212,11 +227,12 @@ export class PostgresCloudSaveRepository implements CloudSaveRepository {
     requirePersistableSave(input.next);
     if (Buffer.byteLength(JSON.stringify(input.next), 'utf8') > this.limits().perSaveBytes) throw new CloudCapacityError();
     return this.capacityTransaction(input.ownerId, async client => {
-    const current = await client.query<{ revision: number; bytes: number; schema_version: number; canon_artifact_hash: string | null; memory_mode: string | null; memory_policy_version: string; memory_policy: unknown | null;
+    const current = await client.query<{ revision: number; bytes: number; profile_bytes: number; schema_version: number; canon_artifact_hash: string | null; memory_mode: string | null; memory_policy_version: string; memory_policy: unknown | null;
       branch_id: string | null; parent_branch_id: string | null; fork_revision: number | null; created_policy_version: string | null; source_migration_id: string | null }>(
       `SELECT revision, schema_version, canon_artifact_hash, memory_mode, memory_policy_version, memory_policy,
          branch_id, parent_branch_id, fork_revision, created_policy_version, source_migration_id,
-         (octet_length(snapshot::text) + coalesce(octet_length(memory_policy::text), 0))::int AS bytes FROM game_saves WHERE id=$1 AND owner_id=$2
+         coalesce(octet_length(character_profile::text), 0) AS profile_bytes,
+         (octet_length(snapshot::text) + coalesce(octet_length(memory_policy::text), 0) + coalesce(octet_length(character_profile::text), 0))::int AS bytes FROM game_saves WHERE id=$1 AND owner_id=$2
        AND NOT EXISTS (SELECT 1 FROM cloud_archive_trash t WHERE t.save_id=game_saves.id) FOR UPDATE`,
       [input.saveId, input.ownerId],
     );
@@ -240,7 +256,7 @@ export class PostgresCloudSaveRepository implements CloudSaveRepository {
     }
     const usage = await this.accountUsage(client, input.ownerId);
     const bytes = await this.persistedPayloadBytes(client, input.next);
-    this.checkCapacity(usage, bytes, current.rows[0].bytes);
+    this.checkCapacity(usage, bytes + current.rows[0].profile_bytes, current.rows[0].bytes);
     const result = await client.query(
       `${this.requiresLiveAccount ? 'WITH live_account AS (SELECT id FROM auth_accounts WHERE id=$2 AND closed_at IS NULL FOR KEY SHARE) ' : ''}UPDATE game_saves
        SET revision = $4, schema_version = $5, canon_version = $6, canon_artifact_hash = $7, rule_version = $8,

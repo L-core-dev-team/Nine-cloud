@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { beforeAll, afterAll, describe, expect, it } from 'vitest';
 import { Pool } from 'pg';
 import { CloudCapacityError, CloudSaveService } from './cloud-save-service.js';
+import { PolicyCloudSaveRepository } from './policy-cloud-save-repository.js';
 import { PostgresCloudSaveRepository } from './postgres-cloud-save-repository.js';
 
 const databaseUrl = process.env.TEST_DATABASE_URL;
@@ -37,6 +38,7 @@ suite('PostgresCloudSaveRepository (TEST_DATABASE_URL)', () => {
     expect((await pool.query('SELECT memory_mode,memory_policy FROM game_saves WHERE id=$1', [saveId])).rows)
       .toEqual([{ memory_mode: null, memory_policy: null }]);
     expect(await service.get(ownerB, saveId)).toBeNull();
+    expect(await new PostgresCloudSaveRepository(pool).getProfileForOwner(ownerA,saveId)).toBeNull();
     expect(await service.list(ownerB)).toEqual([]);
 
     const competitors = await Promise.all([
@@ -81,6 +83,7 @@ suite('PostgresCloudSaveRepository (TEST_DATABASE_URL)', () => {
     };
     expect(await service.create(ownerA, initial)).toMatchObject({ kind: 'created', save: initial });
     expect(await service.get(ownerA, v2SaveId)).toEqual(initial);
+    expect(await new PostgresCloudSaveRepository(pool).getProfileForOwner(ownerA,v2SaveId)).toBeNull();
     const storedColumns = await pool.query('SELECT schema_version,memory_mode,memory_policy,memory_policy_version,branch_id,parent_branch_id,fork_revision,created_policy_version,source_migration_id FROM game_saves WHERE id=$1', [v2SaveId]);
     expect(storedColumns.rows[0]).toMatchObject({ schema_version: 2, memory_mode: 'forgetting', memory_policy: { policyVersion: 'forgetting-v1' }, memory_policy_version: 'forgetting-v1', branch_id: null, parent_branch_id: null, fork_revision: null, created_policy_version: null, source_migration_id: null });
     const incompletePolicyId = `s6-v2-incomplete-${randomUUID()}`;
@@ -133,6 +136,23 @@ suite('PostgresCloudSaveRepository (TEST_DATABASE_URL)', () => {
     };
     expect(await service.create(ownerA, initial)).toMatchObject({ kind: 'created', save: initial });
     expect(await service.get(ownerA, v3SaveId)).toEqual(initial);
+    expect((await pool.query('SELECT character_profile FROM game_saves WHERE id=$1',[v3SaveId])).rows).toEqual([{character_profile:null}]);
+    const profile = {name:'合成额度',origin:'山'.repeat(500)};
+    const policy = {version:'test',approvedBy:['Bird','LYL'],expiresAt:'2099-01-01T00:00:00Z',maxSaves:20,
+      perSaveBytes:100000,totalBytes:100000,trashRetentionDays:1,backupPolicy:'test'};
+    const candidate = {...initial,saveId:randomUUID()};
+    const size = (await pool.query('SELECT octet_length($1::jsonb::text)+octet_length($2::jsonb::text) AS base,octet_length($3::jsonb::text) AS extra',
+      [JSON.stringify(candidate.state),JSON.stringify(candidate.memoryPolicy),JSON.stringify(profile)])).rows[0];
+    const limited = new PolicyCloudSaveRepository(pool,{...policy,perSaveBytes:size.base+size.extra-1});
+    await expect(limited.createForOwner(ownerA,candidate,profile)).rejects.toThrow(CloudCapacityError);
+    const ownerBytes = async () => Number((await pool.query('SELECT sum(octet_length(snapshot::text)+coalesce(octet_length(memory_policy::text),0)+coalesce(octet_length(character_profile::text),0)) AS bytes FROM game_saves WHERE owner_id=$1',[ownerA])).rows[0].bytes);
+    const totalBytes = await ownerBytes()+size.base+size.extra;
+    const exact = new PolicyCloudSaveRepository(pool,{...policy,perSaveBytes:size.base+size.extra,totalBytes});
+    expect(await exact.createForOwner(ownerA,candidate,profile)).toBe(true);
+    expect(await ownerBytes()).toBe(totalBytes);
+    await expect(exact.createForOwner(ownerA,{...candidate,saveId:randomUUID()})).rejects.toThrow(CloudCapacityError);
+    expect((await exact.replaceForOwner({ownerId:ownerA,saveId:candidate.saveId,expectedRevision:0,next:{...candidate,revision:1}})).kind).toBe('updated');
+    expect(await exact.getProfileForOwner(ownerA,candidate.saveId)).toEqual(profile);
     expect((await pool.query('SELECT schema_version,canon_artifact_hash,branch_id,parent_branch_id,fork_revision,created_policy_version,source_migration_id FROM game_saves WHERE id=$1', [v3SaveId])).rows[0])
       .toEqual({ schema_version: 3, canon_artifact_hash: `sha256:${'d'.repeat(64)}`, branch_id: 'root', parent_branch_id: null, fork_revision: 0, created_policy_version: 'continue-v1', source_migration_id: null });
     await expect(pool.query("UPDATE game_saves SET created_policy_version='changed' WHERE id=$1", [v3SaveId]))

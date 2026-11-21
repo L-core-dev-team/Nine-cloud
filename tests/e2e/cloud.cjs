@@ -43,7 +43,7 @@ async function latestCode(email) {
     // out of the isolated Mailpit inbox. The runtime defaults to the Tencent SES
     // API, so SMTP has to be requested explicitly or the API refuses to start
     // and none of the mail assertions below would ever be exercised.
-    AUTH_ENABLED: 'true', AUTH_MAILER: 'smtp', AUTH_PUBLIC_ORIGIN: origin, AUTH_SECRET: randomUUID() + randomUUID(), AUTH_MAIL_FROM: 'test@example.invalid', SMTP_URL: process.env.TEST_SMTP_URL || 'smtp://127.0.0.1:11025' });
+    NODE_ENV: 'test', TURN_RULES_MODULE: join(root,'apps/api/dist/services/p1-prologue-plugin.js'), AUTH_ENABLED: 'true', AUTH_MAILER: 'smtp', AUTH_PUBLIC_ORIGIN: origin, AUTH_SECRET: randomUUID() + randomUUID(), AUTH_MAIL_FROM: 'test@example.invalid', SMTP_URL: process.env.TEST_SMTP_URL || 'smtp://127.0.0.1:11025' });
   run(join(root, 'apps/web/node_modules/vite/bin/vite.js'), ['preview', '--host', '127.0.0.1', '--port', String(webPort), '--strictPort'], join(root, 'apps/web'), { JIUXIAO_API_TARGET: `http://127.0.0.1:${apiPort}` });
   await ready(`http://127.0.0.1:${apiPort}/ready`); await ready(origin);
   const edge = 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
@@ -90,8 +90,16 @@ async function latestCode(email) {
     assert.equal(recovered.revision, 3); assert.deepEqual(recovered.state, next.state);
     const accountBefore = await page.evaluate(async()=>(await(await fetch('/api/auth/session')).json()).account);
     await page.locator('.cloud-security > summary').click();
+    const nativeProfile={name:'合成行者',goal:'修补渡船'};
+    const nativeSaveId=await page.evaluate(async characterProfile=>{
+      const r=await fetch('/api/games',{method:'POST',headers:{'content-type':'application/json'},
+        body:JSON.stringify({idempotencyKey:crypto.randomUUID(),choices:{memoryMode:'continue',characterProfile}})});
+      if(r.status!==201)throw new Error('profile create '+r.status);
+      return (await r.json()).save.saveId;
+    },nativeProfile);
     const accountDownloadPromise=page.waitForEvent('download');await page.getByRole('button',{name:'导出账号全部资料',exact:true}).click();
     const accountDownload=await accountDownloadPromise;const accountText=readFileSync(await accountDownload.path(),'utf8');const accountBundle=JSON.parse(accountText);
+    assert.deepEqual(accountBundle.data.saves.find(row=>row.id===nativeSaveId)?.character_profile,nativeProfile);
     assert.equal(accountBundle.account.id,accountBefore.id);assert.equal(accountBundle.client.independentLocalSaves.length,2);assert.ok(accountBundle.data.saves.some(row=>row.id===remote.saveId));assert.ok(!accountText.includes('never-upload-this-key'));assert.ok(!accountText.includes('session_hash'));
     const newEmail=`changed-${randomUUID()}@example.invalid`;await page.getByLabel('新邮箱',{exact:true}).fill(newEmail);await page.getByRole('button',{name:'验证旧邮箱',exact:true}).click();
     await page.getByLabel('旧邮箱操作验证码',{exact:true}).fill(await latestCode(accountBefore.email));await page.getByRole('button',{name:'核验操作验证码',exact:true}).click();
@@ -100,6 +108,12 @@ async function latestCode(email) {
     await page.getByText('账户操作完成，所有会话已退出。本机独立存档保留。',{exact:true}).waitFor();
     assert.equal(await pageC.evaluate(async()=>(await fetch('/api/auth/session')).status),401);await login(page,newEmail);
     assert.equal((await page.evaluate(async()=>(await(await fetch('/api/auth/session')).json()).account)).id,accountBefore.id);
+    await page.goto(`${origin}/game/${encodeURIComponent(nativeSaveId)}`);
+    await page.getByRole('button',{name:'人物 · 行囊',exact:true}).click();
+    const profileView=page.getByRole('region',{name:'玩家设定'});
+    await profileView.waitFor();
+    assert.deepEqual(await profileView.locator('dd').allTextContents(),Object.values(nativeProfile));
+    await page.goto(`${origin}/settings/cloud`);
     const output = join(root, 'test-results/cloud'); mkdirSync(output, { recursive: true });
     await page.screenshot({ path: join(output, 'cloud-conflict-390.png'), fullPage: true });
     writeFileSync(join(output, 'report.json'), JSON.stringify({ kind: 'isolated-smtp-postgres-browser', viewports: [[390,844],[430,932],[393,852]], checks: ['SMTP login', 'offline queue survives reload', 'redacted archive roundtrip', 'two-account read refusal', 'two-device CAS conflict', 'restore preserves local original', 'redacted cloud download', 'soft deletion preserves local saves', 'verified backup restoration', 'full account export excludes credentials', 'old then new email proof', 'email change revokes other device session', 'new email login keeps same owner'] }, null, 2));

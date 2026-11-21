@@ -5,6 +5,7 @@ import { PostgresNpcMemoryTurnRepository } from './npc-memory-turn-transaction.j
 import {Pool} from 'pg';
 import {describe,it,expect,afterAll} from 'vitest';
 import {AccountLifecycle} from './account-lifecycle.js';
+import {createP1SaveMemoryPolicy} from './p1-memory-policy.js';
 import {AccountExport} from './account-export.js';
 import {EmailAuthService,hashToken} from './email-auth.js';
 import {PostgresEmailAuthRepository} from './postgres-email-auth.js';
@@ -59,7 +60,19 @@ suite('account lifecycle, isolated PostgreSQL only',()=>{
   await pool.query("INSERT INTO entitlement_balances(owner_id,entitlement_key,available_units) VALUES($1,'fixture',1)",[f.owner]);
   await pool.query("INSERT INTO entitlement_ledger_entries(id,owner_id,entitlement_key,entry_type,delta_units,balance_after,idempotency_key,request_hash) VALUES($1,$2,'fixture','grant',1,1,$3,$4)",[randomUUID(),f.owner,randomUUID(),'a'.repeat(64)]);
   await expect(pool.query('DELETE FROM entitlement_ledger_entries WHERE owner_id=$1',[f.owner])).rejects.toThrow('append-only');
+  const profile={name:'合成删除对象',goal:'测试资料跟随存档行'};
+  const policy=createP1SaveMemoryPolicy('continue');
+  const profileSaveId=randomUUID();ids.push(profileSaveId);
+  const repo=new PostgresCloudSaveRepository(pool,true);
+  await repo.createForOwner(f.owner,{schemaVersion:3,saveId:profileSaveId,revision:0,canonVersion:'fixture',
+    canonArtifactHash:`sha256:${'e'.repeat(64)}`,ruleVersion:'fixture',memoryPolicyVersion:policy.policyVersion,
+    memoryMode:'continue',memoryPolicy:policy,branchId:'root',parentBranchId:null,forkRevision:0,createdPolicyVersion:policy.policyVersion,
+    sourceMigrationId:null,state:{playerId:'p',locationId:'gate',elapsedMinutes:0,facts:{}}},profile);
+  const bundle=await exporter.read(f.owner);
+  expect(bundle?.data.saves).toEqual(expect.arrayContaining([expect.objectContaining({id:profileSaveId,character_profile:profile})]));
+  expect(await repo.getProfileForOwner(b.owner,profileSaveId)).toBeNull();
   const id=await ready(f,'delete');expect(await lifecycle.complete(f.owner,f.hash,id,'DELETE_ACCOUNT')).toMatchObject({status:'account_deleted'});
+  expect((await pool.query('SELECT character_profile FROM game_saves WHERE id=$1',[profileSaveId])).rows).toEqual([]);
   expect((await pool.query('SELECT id FROM auth_accounts WHERE id=$1',[f.owner])).rowCount).toBe(0);expect((await pool.query('SELECT id FROM game_saves WHERE id=$1',[saveId])).rowCount).toBe(0);expect(await auth.resolve(f.token)).toBeNull();expect(await auth.resolve(b.token)).not.toBeNull();
   for(const table of ['turn_requests','npc_memory_journals','npc_authorized_observation_outbox','cloud_archive_trash'])expect((await pool.query(`SELECT save_id FROM ${table} WHERE save_id=$1`,[saveId])).rowCount).toBe(0);
   for(const table of ['entitlement_balances','entitlement_ledger_entries'])expect((await pool.query(`SELECT owner_id FROM ${table} WHERE owner_id=$1`,[f.owner])).rowCount).toBe(0);
