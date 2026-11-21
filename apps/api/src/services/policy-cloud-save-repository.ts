@@ -1,4 +1,5 @@
 import type { Pool } from 'pg';
+import type { CharacterProfile } from '../../../../packages/contracts/dist/character-profile.js';
 import type { SaveEnvelope } from '@jiuxiao/contracts';
 import { PostgresCloudSaveRepository } from './postgres-cloud-save-repository.js';
 import { assertDataPolicy, type DataPolicy } from './data-policy.js';
@@ -9,9 +10,9 @@ export class PolicyCloudSaveRepository extends PostgresCloudSaveRepository {
     super(database, true, policy);
   }
 
-  override async createForOwner(owner: string, save: SaveEnvelope) {
+  override async createForOwner(owner: string, save: SaveEnvelope, profile?: CharacterProfile) {
     assertDataPolicy(this.policy);
-    return super.createForOwner(owner, save);
+    return super.createForOwner(owner, save, profile);
   }
 
   override async replaceForOwner(input: Parameters<PostgresCloudSaveRepository['replaceForOwner']>[0]) {

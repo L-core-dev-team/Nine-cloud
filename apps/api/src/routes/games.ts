@@ -40,7 +40,7 @@ export function mountGames(
     try {
       const result = await service.read(owner, c.req.param('saveId'));
       if (result.status === 'not_found') return c.json({ code: 'NOT_FOUND' }, 404);
-      return c.json({ save: result.save, latestReceipt: result.latestReceipt, opening: result.opening, scene: result.scene });
+      return c.json({ save: result.save, characterProfile: result.characterProfile, latestReceipt: result.latestReceipt, opening: result.opening, scene: result.scene });
     } catch (error) {
       if (error instanceof SaveSchemaNotReadyError) return c.json({ code: 'SAVE_SCHEMA_NOT_READY' }, 503);
       return c.json({ code: 'GAME_UNAVAILABLE' }, 503);
@@ -163,6 +163,7 @@ export function mountGames(
     try {
       const result = await service.create(owner, value.idempotencyKey, value.choices as Record<string, unknown>);
       if (result.status === 'rules_not_ready') return c.json({ code: 'RULES_NOT_READY' }, 503);
+      if (result.status === 'invalid_character_profile') return c.json({ code: 'INVALID_CHARACTER_PROFILE' }, 400);
       if (result.status === 'invalid_memory_mode') return c.json({ code: 'INVALID_MEMORY_MODE' }, 400);
       if (result.status === 'conflict') return c.json({ code: 'IDEMPOTENCY_CONFLICT' }, 409);
       return c.json(result, result.duplicate ? 200 : 201);

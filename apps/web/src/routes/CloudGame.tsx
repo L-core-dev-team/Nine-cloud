@@ -1,3 +1,4 @@
+import { isCharacterProfile, type CharacterProfile, type ProfileField } from '../../../../packages/contracts/dist/character-profile.js';
 import {ISOLATED_PLAYTEST} from '../playtest-channel';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type FormEvent } from 'react';
 import { ActionIntentSchema, SaveEnvelopeSchema, TurnReceiptSchema, type SaveEnvelope, type TurnReceipt } from '@jiuxiao/contracts';
@@ -33,6 +34,7 @@ export function CloudGame(props: CloudGameProps) {
 
 function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGameProps) {
   const [showState, setShowState] = useState(false);
+  const [profile, setProfile] = useState<CharacterProfile | null>(null);
   const [save, setSave] = useState<SaveEnvelope | null>(null);
   const [suggestions, setSuggestions] = useState<ActionSuggestion[]>([]);
   const [receipt, setReceipt] = useState<TurnReceipt | null>(null);
@@ -119,6 +121,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
       }
     }
     if(abort.current.signal.aborted)throw new Error('GAME_SESSION_CHANGED');
+    setProfile(isCharacterProfile(response.characterProfile) ? response.characterProfile : null);
     setSave(next);
     const sceneValue=response.scene as {location?:unknown;inventory?:unknown}|undefined;
     setInventory(Array.isArray(sceneValue?.inventory)?sceneValue.inventory.filter((item):item is {name:string;quantity:number}=>!!item&&typeof item.name==='string'&&Number.isSafeInteger(item.quantity)&&item.quantity>0):[]);
@@ -426,7 +429,9 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
       </section>}
     </div>
     {showActions&&<GameInfoDialog label="当前可以尝试" onClose={()=>setShowActions(false)}><p>选择一项填入行动框，确认后才会执行。</p><div className="story-all-actions">{suggestions.map(suggestionButton)}</div></GameInfoDialog>}
-    {showState&&save&&<GameInfoDialog label="人物与行囊" onClose={()=>setShowState(false)}><p>当前地点：{scene}</p><p>体力：{String(save?.state.facts.stamina??'未记录')}</p><h2>行囊</h2>{inventory.length?<ul>{inventory.map(item=><li key={item.name}>{item.name} ×{item.quantity}</li>)}</ul>:<p>暂无可显示的随身物品。</p>}<p>人物身份、修为等建角资料尚未映射到服务器规则状态。</p><details><summary>存档与技术详情</summary><pre>{JSON.stringify(save,null,2)}</pre></details><button className="quiet-action" onClick={onLogin}>账号与存档管理</button></GameInfoDialog>}
+    {showState&&save&&<GameInfoDialog label="人物与行囊" onClose={()=>setShowState(false)}>
+      {profile && <section aria-label="玩家设定"><h2>玩家设定</h2><dl>{Object.entries({name:"姓名",personality:"性格",origin:"出身",appearance:"外貌",goal:"个人目标"}).map(([key,label]) => profile[key as ProfileField] && <div key={key}><dt>{label}</dt><dd>{profile[key as ProfileField]}</dd></div>)}</dl></section>}
+      <h2>规则状态</h2><p>当前地点：{scene}</p><p>体力：{String(save?.state.facts.stamina??'未记录')}</p><h2>行囊</h2>{inventory.length?<ul>{inventory.map(item=><li key={item.name}>{item.name} ×{item.quantity}</li>)}</ul>:<p>暂无可显示的随身物品。</p>}<details><summary>存档与技术详情</summary><pre>{JSON.stringify(save,null,2)}</pre></details><button className="quiet-action" onClick={onLogin}>账号与存档管理</button></GameInfoDialog>}
   </GameShell>;
 }
 

@@ -50,7 +50,12 @@ try {
         await migrate(drizzle(pool), { migrationsFolder: historicalFolder(20) });
         const historical = await hasRecallSchema(pool);
         assert.deepEqual(historical, { column_present: false, table_present: false }, 'Historical 0020 must reproduce its skipped upgrade');
+        await migrate(drizzle(pool), { migrationsFolder: historicalFolder(26) });
+        await pool.query("INSERT INTO game_saves(id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,snapshot) VALUES('old-save','upgrade-preserve',0,1,'c','r','m',$1::jsonb)",[JSON.stringify({playerId:'p',locationId:'old',elapsedMinutes:0,facts:{}})]);
+        const oldRow=(await pool.query("SELECT to_jsonb(s) AS row FROM game_saves s WHERE id='old-save'")).rows[0].row;
+        assert.ok(!Object.hasOwn(oldRow,'character_profile'));
         await migrate(drizzle(pool), { migrationsFolder: migrations });
+        assert.deepEqual((await pool.query("SELECT to_jsonb(s) AS row FROM game_saves s WHERE id='old-save'")).rows[0].row,{...oldRow,character_profile:null});
         assert.deepEqual((await pool.query("SELECT to_jsonb(a) AS row FROM auth_accounts a WHERE id='upgrade-preserve'")).rows[0].row, before, 'Upgrade must preserve the existing account');
         evidence.push({ kind, historicalRecallSchemaMissing: true, existingAccountPreserved: true });
       } else {
@@ -58,6 +63,8 @@ try {
         evidence.push({ kind });
       }
       assert.deepEqual(await hasRecallSchema(pool), { column_present: true, table_present: true }, 'Current migrations must install the recall schema');
+      const column=(await pool.query("SELECT data_type,is_nullable,column_default FROM information_schema.columns WHERE table_schema='public' AND table_name='game_saves' AND column_name='character_profile'")).rows;
+      assert.deepEqual(column,[{data_type:'jsonb',is_nullable:'YES',column_default:null}]);
       // A disposable event-trigger fixture proves PUBLIC revocation leaves its
       // owner and installed DDL trigger usable; no production table is touched.
       await pool.query("CREATE FUNCTION public.rls_auto_enable() RETURNS event_trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS 'BEGIN RETURN; END'; CREATE EVENT TRIGGER security_fixture_ddl ON ddl_command_end EXECUTE FUNCTION public.rls_auto_enable()");

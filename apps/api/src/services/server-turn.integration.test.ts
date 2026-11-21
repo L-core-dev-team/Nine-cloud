@@ -70,6 +70,27 @@ suite('ServerTurnService on isolated PostgreSQL (synthetic rules only)', () => {
     expect(await new ServerTurnService(repository).execute(owner, { ...intent, expectedRevision: 1, idempotencyKey: randomUUID() })).toEqual({ status: 'rules_not_ready' });
     expect(await repository.loadSave(owner, saveId)).toMatchObject({ revision: 1 });
   });
+  it('counts the fixed profile against turn quotas and rolls back the over-limit turn', async () => {
+    const id = 'turn-profile-' + randomUUID();
+    templateIds.push(id);
+    const state = { playerId: 'fixture-player', locationId: 'origin', elapsedMinutes: 0, facts: { gameMinute: 0 } };
+    const profile = { appearance: '青'.repeat(200) };
+    await pool.query(`INSERT INTO game_saves
+      (id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,snapshot,character_profile)
+      VALUES ($1,$2,0,1,$3,$3,$3,$4,$5)`, [id, owner, 'fixture-only', state, profile]);
+    const policy = { version: 'fixture', expiresAt: '2099-01-01', approvedBy: ['Bird','LYL'],
+      maxSaves: 20, perSaveBytes: 512, totalBytes: 100000, trashRetentionDays: 1, backupPolicy: 'fixture' };
+    const service = new ServerTurnService(createPostgresServerTurnRepository(pool, false, () => policy), rules);
+    const request = { ...intent, saveId: id, idempotencyKey: randomUUID() };
+    await expect(service.execute(owner, request)).rejects.toThrow('CLOUD_QUOTA_EXCEEDED');
+    expect((await pool.query('SELECT revision,character_profile FROM game_saves WHERE id=$1',[id])).rows)
+      .toEqual([{ revision: 0, character_profile: profile }]);
+    expect(await repository.getReceiptForOwner(owner, id, request.idempotencyKey)).toBeNull();
+    policy.perSaveBytes = 2048;
+    expect(await service.execute(owner, request)).toMatchObject({ status: 'accepted', duplicate: false });
+    expect((await pool.query('SELECT revision,character_profile FROM game_saves WHERE id=$1',[id])).rows)
+      .toEqual([{ revision: 1, character_profile: profile }]);
+  });
   it('persists clarifications as receipt-only transactions and validates the linked follow-up', async () => {
     const id = 'turn-clarify-save-' + randomUUID(); templateIds.push(id);
     await pool.query('INSERT INTO game_saves (id, owner_id, revision, schema_version, canon_version, rule_version, memory_policy_version, snapshot) VALUES ($1, $2, 0, 1, $3, $3, $3, $4::jsonb)',

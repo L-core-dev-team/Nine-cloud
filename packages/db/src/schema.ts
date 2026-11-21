@@ -79,6 +79,7 @@ export const gameSaves = pgTable('game_saves', {
   forkRevision: integer('fork_revision'),
   createdPolicyVersion: text('created_policy_version'),
   sourceMigrationId: text('source_migration_id'),
+  characterProfile: jsonb('character_profile'),
   snapshot: jsonb('snapshot').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),

@@ -2,13 +2,14 @@ import {ISOLATED_PLAYTEST} from './playtest-channel';
 import {claimCharacterDraftId} from './idb';
 import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { SAVE_SCHEMA_VERSION, SaveEnvelopeSchema, type MemoryMode } from '@jiuxiao/contracts';
+import { SAVE_SCHEMA_VERSION, type MemoryMode } from '@jiuxiao/contracts';
 import { SCENE_MANIFEST, sceneForLocation, type SceneId } from '@jiuxiao/content/scenes';
 import type { CanonRuntimeEntry } from '@jiuxiao/content/worldbook';
 import { ReadableData } from './components/ReadableData';
 import { GameShell, GameInfoDialog } from './components/GameShell';
 import { CHARACTER_OPTIONS } from './character-options';
 import { TurnWorkspace } from './routes/TurnWorkspace';
+import { characterChoices, createCharacterGame } from './game-creation';
 import { INTERNAL_TURN_WORKSPACE_ENABLED } from './internal-turn-workspace';
 import { Landing } from './pages/Landing/Landing';
 import { GlassHeader } from './components/GlassHeader';
@@ -257,7 +258,7 @@ function SaveManager({ saves, onRename, onDelete, onExport }: {
 
 function NewCharacter({ onSaved, onCreateServerGame, onBack }: {
   onSaved: (save: LocalSave, memoryMode: MemoryMode) => Promise<boolean>;
-  onCreateServerGame: (memoryMode: MemoryMode) => Promise<void>;
+  onCreateServerGame: (choices: ReturnType<typeof characterChoices>) => Promise<void>;
   onBack?: () => void;
 }) {
   const [form, setForm] = useState<Record<string, string>>(readDraft);
@@ -299,15 +300,16 @@ function NewCharacter({ onSaved, onCreateServerGame, onBack }: {
     if (submittingRef.current) return;
     submittingRef.current = true; setSubmitting(true); setError('');
     try {
-      await onCreateServerGame(memoryMode);
+      await onCreateServerGame(characterChoices(memoryMode, form));
       clearDraft();
     } catch (cause) {
       const code = cause instanceof CloudHttpError ? cause.code : undefined;
       setError(code === 'UNAUTHENTICATED' ? '游客会话未能建立。请重试；邮箱登录仍可从“账号与云档”使用。'
         : code === 'RATE_LIMITED' ? '游客创建过于频繁，请稍后重试。'
         : code === 'RULES_NOT_READY' ? '服务器尚未装载已批准的规则运行时。存档没有创建，规则门禁保持关闭。'
+          : (code === 'INVALID_CHARACTER_PROFILE' || (cause instanceof Error && cause.message === 'INVALID_GAME_CHOICES')) ? '人物自述超出限制或含无效字符。姓名最多80字，性格320字，出身、外貌和目标各500字，合计最多4096字节。'
           : code === 'INVALID_MEMORY_MODE' ? '服务器拒绝了当前记忆模式。存档没有创建。'
-            : '服务端规则存档未创建。草稿仍保留，已有本地存档不受影响。');
+            : '建档结果尚未确认。请在本标签页用原账号重试，将核对原请求并保留首次提交的记忆模式。');
     } finally { submittingRef.current = false; setSubmitting(false); }
   }
   return <section className="page character-creation"><span className="eyebrow">建角 · {stepNames[step]}</span><h2>把自己写进山门。</h2>
@@ -326,7 +328,7 @@ function NewCharacter({ onSaved, onCreateServerGame, onBack }: {
     }}><option value="">选择后仍可自由修改</option>{CHARACTER_OPTIONS[key]!.map(option => <option key={option} value={option}>{option}</option>)}</select></label>}</div>)}</div>
     <p className="quiet-note">备选文字只填写角色草稿；修为、灵根与天赋仍须经过开局规则确认，不直接授予能力。</p>
     {step === 2 && <section className="character-summary" aria-label="角色提交前摘要"><h3>回看行传</h3><dl>{fields.map(([key, label]) => <div key={key}><dt>{label}</dt><dd>{form[key]?.trim() || (key === 'region' ? '中州天枢域' : key === 'name' ? '无名修士' : '未填写')}</dd></div>)}</dl></section>}
-  {step === 2 && <fieldset className="character-summary" aria-label="NPC 记忆模式"><legend>NPC 记忆模式</legend><label><input type="radio" name="p2-memory-mode" value="continue" checked={memoryMode === 'continue'} onChange={() => setMemoryMode('continue')} />存档与继续：授权可见事件永久可回忆</label><label><input type="radio" name="p2-memory-mode" value="forgetting" checked={memoryMode === 'forgetting'} onChange={() => setMemoryMode('forgetting')} />真实遗忘：同一批事件按游戏时间与 NPC 亲历事件衰减</label><small>未登录时，创建服务端存档会自动建立游客会话，不需身份输入；会话有效 7 天。请在到期前刷新或升级邮箱。丢失或清除站点数据后，无法凭存档编号找回云档；连续 90 天无活动后，在线云档进入服务器获批的清理范围。角色表单中的出身、修为与外貌尚未映射进规则状态；本按钮只创建所选记忆模式的规则存档。本地存档入口仍保留。</small></fieldset>}
+  {step === 2 && <fieldset className="character-summary" aria-label="NPC 记忆模式"><legend>NPC 记忆模式</legend><label><input type="radio" name="p2-memory-mode" value="continue" checked={memoryMode === 'continue'} onChange={() => setMemoryMode('continue')} />存档与继续：授权可见事件永久可回忆</label><label><input type="radio" name="p2-memory-mode" value="forgetting" checked={memoryMode === 'forgetting'} onChange={() => setMemoryMode('forgetting')} />真实遗忘：同一批事件按游戏时间与 NPC 亲历事件衰减</label><small>未登录时，创建服务端存档会自动建立游客会话，不需身份输入；会话有效 7 天。请在到期前刷新或升级邮箱。丢失或清除站点数据后，无法凭存档编号找回云档；连续 90 天无活动后，在线云档进入服务器获批的清理范围。姓名、性格、出身、外貌和目标会随服务端存档保存，可在「人物 · 行囊」中查看。修为、灵根和天赋仍由游戏规则决定。本地存档入口仍保留。</small></fieldset>}
     {error && <p className="error" role="alert">{error}</p>}
     <div className="actions"><button className="secondary" onClick={() => step ? setStep(step - 1) : (onBack ?? (() => go('/lobby')))()}>{step ? '上一步' : '返回山门'}</button>
       {step < 2 ? <button className="primary" onClick={() => { setError(''); setStep(step + 1); }}>下一步</button> : <>
@@ -743,6 +745,15 @@ function App() {
     }).catch(() => setNotice('无法读取该补充资料，存档未修改。')).finally(() => supplementBusySaveIdsRef.current.delete(save.saveId));
   }
   const currentRoute = route();
+  const confirmedCreation = useRef<{ path: string; acknowledge: () => void } | null>(null);
+  useLayoutEffect(() => {
+    const pending = confirmedCreation.current;
+    if (pending && pending.path === currentRoute) {
+      try { pending.acknowledge(); }
+      catch { setNotice('存档已确认，但浏览器未能清除建档回执。再次提交时可能会恢复此存档。'); }
+      confirmedCreation.current = null;
+    }
+  }, [currentRoute]);
   const game = currentRoute.startsWith('/game/') ? saves.find(save => save.saveId === currentRoute.split('/')[2]) : undefined;
   let activeSaveId = '';
   try { activeSaveId = sessionStorage.getItem('jiuxiao_active_save_id') || ''; } catch { /* Use the first available save. */ }
@@ -782,7 +793,7 @@ function App() {
     const result = await commitSaves(saves, [persisted, ...saves]);
     if (!result.ok) { setSaves(result.saves); setNotice(result.reason === 'conflict' ? '存档列表刚有变化，角色尚未创建。请确认后重试。' : '浏览器数据库不可写，角色尚未创建。草稿仍保留。'); return false; }
     setSaves(result.saves); if (result.warning) setNotice(commitSuccessMessage(result, '角色与新存档已创建。')); go(`/game/${save.saveId}`); return true;
-    }} onCreateServerGame={async memoryMode => {
+    }} onCreateServerGame={async choices => {
       let session: Record<string, unknown>;
       let createdGuest = false;
       try {
@@ -796,15 +807,12 @@ function App() {
       if (!account || typeof account !== 'object' || !('id' in account) || typeof account.id !== 'string') {
         throw new CloudHttpError(401, 'UNAUTHENTICATED');
       }
-      const result = await cloudRequest('/api/games', 'POST', {
-        idempotencyKey: createIdempotencyKey(),
-        choices: { memoryMode },
-      }, account.id);
-      const save = SaveEnvelopeSchema.parse(result.save);
-      if (save.schemaVersion !== 3 || save.memoryMode !== memoryMode || save.revision !== 0) throw new Error('INVALID_GAME_RESPONSE');
+      const result = await createCharacterGame(account.id, choices);
+      const path = `/game/${encodeURIComponent(result.save.saveId)}`;
+      confirmedCreation.current = { path, acknowledge: result.acknowledge };
       setNotice(createdGuest ? '本局游客会话已建立，有效期 7 天。请在到期前刷新或升级邮箱；丢失会话后无法凭存档编号找回云档。'
         : '服务端规则存档已建立。事实状态保存在服务端数据库。');
-      go(`/game/${encodeURIComponent(save.saveId)}`);
+      go(path);
     }} onBack={() => go('/lobby')} /> : currentRoute === '/intro' ? <Introduction onStart={() => go('/new')} onWorld={() => go('/world')} /> : currentRoute === '/world' ? <World onClose={returnFromReading} save={returningToJourney ? saves.find(item => worldReturnTarget === `/game/${item.saveId}`) : activeSave} onImportSupplement={importSupplement} isReturningToJourney={returningToJourney} /> : currentRoute === '/settings/ai' ? <AiSettings onClose={returnFromReading} /> : currentRoute === '/settings/cloud' ? <CloudSettings saves={saves} onRestore={async archive => {
     const copied = { ...archive, saveId: createSaveId(), name: `${archive.name}（云端副本）`, updatedAt: new Date().toISOString() };
     const expected = readSaves(); const result = await commitSaves(expected, [copied, ...expected]);
