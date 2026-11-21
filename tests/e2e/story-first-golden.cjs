@@ -133,11 +133,18 @@ async function stop(child) {
       return captured.body;
     }
     let heldStoryResponse = null;
+    const creations = [];
     await page.route('**/api/**', async route => {
       const source = new URL(route.request().url());
       if (source.pathname === '/api/auth/code' && route.request().method() === 'POST') otpRequestCount += 1;
       const began=performance.now();
       const response = await route.fetch({ url: `${apiOrigin}${source.pathname}${source.search}` });
+      if (source.pathname === '/api/games' && route.request().method() === 'POST' && creations.length < 2) {
+        const body = await response.json();
+        creations.push({ request: route.request().postDataJSON(), status: response.status(), id: body.save?.saveId });
+        // The API has already replied after COMMIT. Lose only the first browser response.
+        if (creations.length === 1) return route.abort('connectionreset');
+      }
       if(source.pathname.endsWith('/turns')&&route.request().method()==='POST') {
         const sent=route.request().postDataJSON();const key=sent.idempotencyKey??sent.intent?.idempotencyKey;
         const bytes=await response.body();
@@ -186,9 +193,28 @@ async function stop(child) {
     await page.getByRole('button',{name:'下一步',exact:true}).click();
     await page.getByRole('button',{name:'下一步',exact:true}).click();
     await page.getByTestId('create-server-game').click();
+    await page.getByRole('alert').filter({hasText:'建档结果尚未确认'}).waitFor();
+    assert.equal(creations[0].status, 201);
+    await page.reload();
+    await page.getByRole('button',{name:'下一步',exact:true}).click();
+    await page.getByRole('button',{name:'下一步',exact:true}).click();
+    await page.locator('input[name="p2-memory-mode"][value="forgetting"]').check();
+    await page.getByTestId('create-server-game').click();
     await page.getByTestId('p2-cloud-game').waitFor();
     await page.locator('[aria-label="故事开场"]').waitFor();
     const saveId=new URL(page.url()).pathname.split('/').at(-1);
+    assert.deepEqual(creations.map(row => row.status), [201, 200]);
+    assert.deepEqual(creations[1].request, creations[0].request);
+    assert.equal(creations[1].request.choices.memoryMode, 'continue');
+    assert.ok(creations.every(row => row.id === saveId));
+    assert.equal((await pool.query('SELECT count(*)::int AS n FROM game_saves WHERE owner_id=$1',[ownerId])).rows[0].n, 1);
+    assert.equal(await page.evaluate(owner => sessionStorage.getItem('jx_character_game:' + owner), ownerId), null);
+    const conflict = await page.evaluate(async request => {
+      const response = await fetch('/api/games', {method:'POST', headers:{'content-type':'application/json'},
+        body:JSON.stringify({...request, choices:{memoryMode:'forgetting'}})});
+      return {status:response.status, code:(await response.json()).code};
+    }, creations[0].request);
+    assert.deepEqual(conflict,{status:409,code:'IDEMPOTENCY_CONFLICT'});
     await page.waitForFunction(()=>!document.querySelector('[data-testid="p2-action-input"]').disabled);
     const snapshots=[];
     async function suggest(id) {

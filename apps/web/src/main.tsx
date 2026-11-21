@@ -2,13 +2,14 @@ import {ISOLATED_PLAYTEST} from './playtest-channel';
 import {claimCharacterDraftId} from './idb';
 import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { SAVE_SCHEMA_VERSION, SaveEnvelopeSchema, type MemoryMode } from '@jiuxiao/contracts';
+import { SAVE_SCHEMA_VERSION, type MemoryMode } from '@jiuxiao/contracts';
 import { SCENE_MANIFEST, sceneForLocation, type SceneId } from '@jiuxiao/content/scenes';
 import type { CanonRuntimeEntry } from '@jiuxiao/content/worldbook';
 import { ReadableData } from './components/ReadableData';
 import { GameShell, GameInfoDialog } from './components/GameShell';
 import { CHARACTER_OPTIONS } from './character-options';
 import { TurnWorkspace } from './routes/TurnWorkspace';
+import { createCharacterGame } from './game-creation';
 import { INTERNAL_TURN_WORKSPACE_ENABLED } from './internal-turn-workspace';
 import { Landing } from './pages/Landing/Landing';
 import { GlassHeader } from './components/GlassHeader';
@@ -307,7 +308,7 @@ function NewCharacter({ onSaved, onCreateServerGame, onBack }: {
         : code === 'RATE_LIMITED' ? '游客创建过于频繁，请稍后重试。'
         : code === 'RULES_NOT_READY' ? '服务器尚未装载已批准的规则运行时。存档没有创建，规则门禁保持关闭。'
           : code === 'INVALID_MEMORY_MODE' ? '服务器拒绝了当前记忆模式。存档没有创建。'
-            : '服务端规则存档未创建。草稿仍保留，已有本地存档不受影响。');
+            : '建档结果尚未确认。请在本标签页用原账号重试，将核对原请求并保留首次提交的记忆模式。');
     } finally { submittingRef.current = false; setSubmitting(false); }
   }
   return <section className="page character-creation"><span className="eyebrow">建角 · {stepNames[step]}</span><h2>把自己写进山门。</h2>
@@ -743,6 +744,15 @@ function App() {
     }).catch(() => setNotice('无法读取该补充资料，存档未修改。')).finally(() => supplementBusySaveIdsRef.current.delete(save.saveId));
   }
   const currentRoute = route();
+  const confirmedCreation = useRef<{ path: string; acknowledge: () => void } | null>(null);
+  useLayoutEffect(() => {
+    const pending = confirmedCreation.current;
+    if (pending && pending.path === currentRoute) {
+      try { pending.acknowledge(); }
+      catch { setNotice('存档已确认，但浏览器未能清除建档回执。再次提交时可能会恢复此存档。'); }
+      confirmedCreation.current = null;
+    }
+  }, [currentRoute]);
   const game = currentRoute.startsWith('/game/') ? saves.find(save => save.saveId === currentRoute.split('/')[2]) : undefined;
   let activeSaveId = '';
   try { activeSaveId = sessionStorage.getItem('jiuxiao_active_save_id') || ''; } catch { /* Use the first available save. */ }
@@ -796,15 +806,12 @@ function App() {
       if (!account || typeof account !== 'object' || !('id' in account) || typeof account.id !== 'string') {
         throw new CloudHttpError(401, 'UNAUTHENTICATED');
       }
-      const result = await cloudRequest('/api/games', 'POST', {
-        idempotencyKey: createIdempotencyKey(),
-        choices: { memoryMode },
-      }, account.id);
-      const save = SaveEnvelopeSchema.parse(result.save);
-      if (save.schemaVersion !== 3 || save.memoryMode !== memoryMode || save.revision !== 0) throw new Error('INVALID_GAME_RESPONSE');
+      const result = await createCharacterGame(account.id, memoryMode);
+      const path = `/game/${encodeURIComponent(result.save.saveId)}`;
+      confirmedCreation.current = { path, acknowledge: result.acknowledge };
       setNotice(createdGuest ? '本局游客会话已建立，有效期 7 天。请在到期前刷新或升级邮箱；丢失会话后无法凭存档编号找回云档。'
         : '服务端规则存档已建立。事实状态保存在服务端数据库。');
-      go(`/game/${encodeURIComponent(save.saveId)}`);
+      go(path);
     }} onBack={() => go('/lobby')} /> : currentRoute === '/intro' ? <Introduction onStart={() => go('/new')} onWorld={() => go('/world')} /> : currentRoute === '/world' ? <World onClose={returnFromReading} save={returningToJourney ? saves.find(item => worldReturnTarget === `/game/${item.saveId}`) : activeSave} onImportSupplement={importSupplement} isReturningToJourney={returningToJourney} /> : currentRoute === '/settings/ai' ? <AiSettings onClose={returnFromReading} /> : currentRoute === '/settings/cloud' ? <CloudSettings saves={saves} onRestore={async archive => {
     const copied = { ...archive, saveId: createSaveId(), name: `${archive.name}（云端副本）`, updatedAt: new Date().toISOString() };
     const expected = readSaves(); const result = await commitSaves(expected, [copied, ...expected]);
