@@ -10,6 +10,18 @@ describe('card HTTP boundary before service calls',()=>{
   expect((await post('/sessions/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa/actions',{action:'x'.repeat(8001)})).status).toBe(400);
   expect((await post('/imports',{}, {'x-jiuxiao-account':'B'})).status).toBe(403);
  });
+ it.each([
+   {mode:'manual',requireAllSelected:true}, {mode:'auto',requireAllSelected:true},
+   {requireAllSelected:true}, {mode:'multi',requireAllSelected:'true'}, {mode:'multi',requireAllSelected:null},
+ ])('rejects invalid strict multi options before admission: %o',async options=>{
+   const response=await post('/sessions/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa/group-actions',{action:'test',...options});
+   expect(response.status).toBe(400);
+   expect(await response.json()).toMatchObject({error:'INVALID_GROUP_MODE'});
+ });
+ it('rejects a strict flag on a single-character action',async()=>{
+   const response=await post('/sessions/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa/actions',{action:'test',requireAllSelected:true});
+   expect(await response.json()).toMatchObject({error:'INVALID_GROUP_MODE'});
+ });
  it('rejects malformed attachment links and unsupported methods',async()=>{
   expect((await post('/cards',{links:[{}]})).status).toBe(400);
   expect((await app.request('/native/turns')).status).toBe(404);
