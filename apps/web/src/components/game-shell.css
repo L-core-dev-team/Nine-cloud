@@ -1,3 +1,6 @@
+@layer jx.legacy, jx.tokens, jx.base, jx.materials, jx.components, jx.layouts, jx.pages, jx.overrides;
+/* Legacy styles live in the lowest cascade layer (JX-UI-E-01). */
+@layer jx.legacy {
 /* This contract is confined to game routes. Professional AI styles stay frozen. */
 body:has(.game-frame) { overflow: hidden; }
 .jx-shell:has(.game-frame) { position: fixed; inset: var(--jx-game-viewport-top, 0px) 0 auto; height: var(--jx-game-viewport-height, 100dvh); min-height: 0; }
@@ -79,4 +82,6 @@ body:has(.game-frame) { overflow: hidden; }
   .game-frame .intent-composer > p, .game-frame .save-conflict-actions { grid-column: 1 / -1; }
   .game-frame .game-statusline { display: none; }
   .game-frame .game-archive-toggle { margin: 0; }
+}
+
 }

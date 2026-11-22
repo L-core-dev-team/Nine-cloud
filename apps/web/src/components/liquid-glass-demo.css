@@ -1,3 +1,6 @@
+@layer jx.legacy, jx.tokens, jx.base, jx.materials, jx.components, jx.layouts, jx.pages, jx.overrides;
+/* Legacy styles live in the lowest cascade layer (JX-UI-E-01). */
+@layer jx.legacy {
 /* Development-only visual acceptance page; loaded with the prototype module. */
 @supports (backdrop-filter: url(#jx-liquid-glass-refract)) or (-webkit-backdrop-filter: url(#jx-liquid-glass-refract)) {
   .liquid-lab [data-liquid-glass] {
@@ -172,4 +175,6 @@ body:has(.liquid-lab),
   .liquid-lab-scene-grid figure:last-child { display: none; }
   .liquid-lab-status { gap: 5px 12px; font-size: 10px; }
   .liquid-lab-float { right: 17px; bottom: 52px; width: 54px; height: 54px; }
+}
+
 }

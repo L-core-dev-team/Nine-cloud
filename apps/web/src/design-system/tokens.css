@@ -1,3 +1,6 @@
+@layer jx.legacy, jx.tokens, jx.base, jx.materials, jx.components, jx.layouts, jx.pages, jx.overrides;
+/* Legacy styles live in the lowest cascade layer (JX-UI-E-01). */
+@layer jx.legacy {
 /* Shared primitives, semantic materials, and component aliases. */
 :root {
   color-scheme: dark;
@@ -117,4 +120,6 @@
   --jx-glass-highlight: rgba(255, 255, 255, 0.78);
   --jx-glass-shadow: 0 10px 28px rgba(38, 55, 69, 0.16);
   --jx-glass-glow: rgba(109, 143, 160, 0.2);
+}
+
 }

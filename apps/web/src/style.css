@@ -1,3 +1,4 @@
+@layer jx.legacy, jx.tokens, jx.base, jx.materials, jx.components, jx.layouts, jx.pages, jx.overrides;
 
 /* Keep font resets short only when family, weight, size, and line-height are authored together.
    Use longhand declarations for tokenized role sizes and responsive size overrides. */
@@ -10,6 +11,8 @@
   font-display: swap;
 }
 
+/* Legacy styles live in the lowest cascade layer so JX-UI-E-01 layers can restyle without specificity contests. */
+@layer jx.legacy {
 * { box-sizing: border-box; }
 body {
   min-width: 320px;
@@ -1558,4 +1561,6 @@ body:has(.ai-page) header :is(.ambient-toggle, .theme-toggle, .menu):focus-visib
   .landing-read-save::before, .landing-read-save::after, .portal-enter::after { display: none; }
   .landing-read-save > small, :root[data-theme='day'] .landing-read-save > small { background: var(--jx-surface-opaque); -webkit-backdrop-filter: none; backdrop-filter: none; }
   @media (max-width: 900px) { .game-rail { background: var(--jx-surface-opaque) !important; -webkit-backdrop-filter: none; backdrop-filter: none; } }
+}
+
 }
