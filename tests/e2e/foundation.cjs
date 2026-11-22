@@ -191,9 +191,12 @@ async function ready(url) {
       }));
       await page.reload();
       assert.equal(await page.locator('h1').innerText(), '九霄');
-      // Below 720px the landing lockup intentionally stacks its two phrases.
-      // Desktop keeps them on one line. Both measurements stay inside the header.
-      assert.equal(await page.locator('.brand').innerText(), width === 390 ? '踏月过山门，\n天地任君行。' : '踏月过山门，天地任君行。');
+      // JX-UI-E-01 D-3: the header keeps only the seal and the 九霄 wordmark; the
+      // verse moved into the landing hero, where it is set as two lines at every width.
+      assert.equal(await page.locator('.brand').innerText(), '九霄');
+      assert.equal(await page.locator('.brand').getAttribute('aria-label'), '九霄首页');
+      assert.equal(await page.locator('.hero-verse').innerText(), '踏月过山门，\n天地任君行。');
+      assert.ok(await page.locator('.hero-verse').isVisible(), 'the landing verse must stay visible');
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), await page.evaluate(() => document.documentElement.clientWidth), 'landing should not overflow horizontally');
       await page.evaluate(() => document.fonts.ready);
       assert.equal(await page.evaluate(() => document.fonts.check('400 64px "Ma Shan Zheng Brand"', '九霄月下山门修途自此启程踏月过山门天地任君行进入世界风')), true);

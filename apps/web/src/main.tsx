@@ -30,6 +30,13 @@ import './design-system/tokens.css';
 import './style.css';
 import './components/liquid-glass.css';
 import './pages/Landing/landing.css';
+import './design-system/tokens-v2.css';
+import './design-system/jx-e.css';
+import { primaryDestinations, isCurrentDestination } from './components/GlassHeader';
+import { MoonGate } from './ui/Ornaments';
+import { pickResumeSave, relativeTime } from './ui/resume';
+import { readRecent, recentPath, recordRecent } from './ui/recent';
+import './pages/lobby-e.css';
 import { LiquidGlass, LiquidGlassFilters } from './components/LiquidGlass';
 
 const AiSettings = lazy(() => import('./ai-settings').then(module => ({ default: module.AiSettings })));
@@ -66,6 +73,14 @@ function canonCategoryLabel(category: string): string {
 }
 
 const route = () => window.location.pathname.replace(/\/+$/, '') || '/';
+/** JX-UI-E-01 three-layer system: 灵境 lobby / 书阁 story / 案头 tool (docs/design/JX-UI-E-01/03 §4.2). */
+type JxLayer = 'lobby' | 'story' | 'tool';
+const layerForRoute = (path: string): JxLayer => {
+  if (path === '/' || path === '/lobby' || path === '/intro' || path === '/saves' || path === '/cards') return 'lobby';
+  if (path.startsWith('/game/') || path.startsWith('/cards/session/') || path === '/world' || path === '/turns') return 'story';
+  return 'tool';
+};
+const routeKeyFor = (path: string): string => path === '/' ? 'home' : path.startsWith('/game/') ? 'game' : path.startsWith('/cards/session/') ? 'card-session' : path.replace(/^\/(settings\/)?/, '').replace(/\//g, '-');
 const go = (path: string) => {
   const sourceRoute = route();
   if (sourceRoute.startsWith('/game/')) {
@@ -136,6 +151,8 @@ function Shell({ children, saves, notice, noticeAction, theme, onThemeChange, on
   const nextThemeLabel = theme === 'night' ? '晴昼' : '夜色';
   const themeAction = () => { onThemeChange(); setMenu(false); };
   const isLanding = route() === '/';
+  const currentRoute = route();
+  const cardsAvailable = useCardAvailability() === true;
   const showSkipLink = route() !== '/settings/ai';
   const showNavigation = !isLanding;
   const scene = SCENE_MANIFEST.find(candidate => candidate.id === sceneId);
@@ -149,7 +166,7 @@ function Shell({ children, saves, notice, noticeAction, theme, onThemeChange, on
     '--jx-gate-poster': `url("${mediaUrlForBrowser(gatePoster)}")`,
     '--jx-paper-texture': `url("${mediaUrlForBrowser(paperTexture)}")`,
   } as CSSProperties;
-  return <><LiquidGlassFilters /><div className={isLanding ? 'jx-shell landing-shell' : 'jx-shell'} style={backgroundStyle} data-jx-motion={graphicsSettings.reducedMotion ? 'reduced' : undefined} data-jx-data-saver={graphicsSettings.dataSaver || undefined}>{showSkipLink && <a className="skip-to-content" href="#main-content" onClick={event => { event.preventDefault(); document.getElementById("main-content")?.focus(); }}>跳到主要内容</a>}<SceneAtmosphere sceneId={sceneId} theme={theme} settings={graphicsSettings} /><GlassHeader showNavigation={showNavigation} theme={theme} menuOpen={menu} ambientAudioActive={ambientAudioActive} onNavigate={go} onThemeChange={onThemeChange} onToggleMenu={() => setMenu(open => !open)} onToggleAmbientAudio={onToggleAmbientAudio} />{menu && <div className="menu-overlay" aria-hidden="true" onClick={() => setMenu(false)} />}{menu && <LiquidGlass as="aside" variant="regular"><strong>{saves.length ? `${saves.length} 份本地存档` : '暂无存档'}</strong>{showNavigation && <><button onClick={() => { setMenu(false); go('/lobby'); }}>回到山门</button><button onClick={() => { setMenu(false); go('/new'); }}>新开一局</button><button onClick={() => { setMenu(false); go('/world'); }}>阅读世界设定</button><button onClick={() => { setMenu(false); go('/settings/ai'); }}>AI 设置</button><button onClick={() => { setMenu(false); go('/settings/graphics'); }}>画面与声音</button><button onClick={() => { setMenu(false); go('/settings/cloud'); }}>账号与云档</button></>}<button onClick={() => { setMenu(false); onExport(); }}>导出存档</button><button onClick={themeAction}>切换到{nextThemeLabel}配色</button><label>导入旧档 / JSON<input type="file" accept=".json,.txt,.html,.htm" onChange={event => { const file = event.target.files?.[0]; if (file) { setMenu(false); onImport(file); } event.currentTarget.value = ''; }} /></label></LiquidGlass>}{notice && (route().startsWith('/game/') && /^(本局游客|服务端规则存档已建立)/.test(notice)?<details className="notice game-session-notice"><summary>关于这份存档</summary><p>{notice}</p>{noticeAction}</details>:<p className="notice" role="status">{notice} {noticeAction}</p>)}<main id={showSkipLink ? "main-content" : undefined} tabIndex={showSkipLink ? -1 : undefined}>{children}</main><footer>{route().startsWith('/game/')?<details className="game-footer-details"><summary>法律、备案与存档说明</summary><div><span>本地优先 · API 密钥不写入存档</span><span>契约 v{SAVE_SCHEMA_VERSION}</span><nav className="footer-legal" aria-label="法律与反馈"><a href="/privacy">隐私政策</a><a href="/privacy-rights">隐私权利</a><a href="/terms">用户协议</a><a href="/feedback">问题反馈</a></nav><span className="footer-ai-note">部分视觉素材由 AI 生成（《人工智能生成合成内容标识办法》标识）</span><FilingNotices /></div></details>:<><span>本地优先 · API 密钥不写入存档</span><span>契约 v{SAVE_SCHEMA_VERSION}</span><nav className="footer-legal" aria-label="法律与反馈"><a href="/privacy">隐私政策</a><a href="/privacy-rights">隐私权利</a><a href="/terms">用户协议</a><a href="/feedback">问题反馈</a></nav><span className="footer-ai-note">部分视觉素材由 AI 生成（《人工智能生成合成内容标识办法》标识）</span><FilingNotices /></>}</footer></div></>;}
+  return <><LiquidGlassFilters /><div className={isLanding ? 'jx-shell landing-shell' : 'jx-shell'} style={backgroundStyle} data-jx-layer={layerForRoute(currentRoute)} data-jx-route={routeKeyFor(currentRoute)} data-jx-motion={graphicsSettings.reducedMotion ? 'reduced' : undefined} data-jx-data-saver={graphicsSettings.dataSaver || undefined}>{showSkipLink && <a className="skip-to-content" href="#main-content" onClick={event => { event.preventDefault(); document.getElementById("main-content")?.focus(); }}>跳到主要内容</a>}<SceneAtmosphere sceneId={sceneId} theme={theme} settings={graphicsSettings} /><GlassHeader showNavigation={showNavigation} theme={theme} menuOpen={menu} ambientAudioActive={ambientAudioActive} currentRoute={currentRoute} cardsAvailable={cardsAvailable} onNavigate={go} onThemeChange={onThemeChange} onToggleMenu={() => setMenu(open => !open)} onToggleAmbientAudio={onToggleAmbientAudio} />{menu && <div className="menu-overlay" aria-hidden="true" onClick={() => setMenu(false)} />}{menu && <LiquidGlass as="aside" variant="regular"><strong>{saves.length ? `${saves.length} 份本地存档` : '暂无存档'}</strong>{showNavigation && <><button onClick={() => { setMenu(false); go('/lobby'); }}>回到山门</button><button onClick={() => { setMenu(false); go('/new'); }}>新开一局</button><button onClick={() => { setMenu(false); go('/world'); }}>阅读世界设定</button><button onClick={() => { setMenu(false); go('/settings/ai'); }}>AI 设置</button><button onClick={() => { setMenu(false); go('/settings/graphics'); }}>画面与声音</button><button onClick={() => { setMenu(false); go('/settings/cloud'); }}>账号与云档</button></>}<button onClick={() => { setMenu(false); onExport(); }}>导出存档</button><button onClick={themeAction}>切换到{nextThemeLabel}配色</button><label>导入旧档 / JSON<input type="file" accept=".json,.txt,.html,.htm" onChange={event => { const file = event.target.files?.[0]; if (file) { setMenu(false); onImport(file); } event.currentTarget.value = ''; }} /></label></LiquidGlass>}{notice && (route().startsWith('/game/') && /^(本局游客|服务端规则存档已建立)/.test(notice)?<details className="notice game-session-notice"><summary>关于这份存档</summary><p>{notice}</p>{noticeAction}</details>:<p className="notice" role="status">{notice} {noticeAction}</p>)}<main id={showSkipLink ? "main-content" : undefined} tabIndex={showSkipLink ? -1 : undefined}>{children}</main>{layerForRoute(currentRoute) === 'lobby' && !isLanding && <nav className="jx-bottom-nav" aria-label="主要去处（底部）">{primaryDestinations(cardsAvailable).map(item => <button key={item.path} type="button" aria-current={isCurrentDestination(item.path, currentRoute) ? 'page' : undefined} onClick={() => go(item.path)}>{item.short}</button>)}</nav>}<footer>{route().startsWith('/game/')?<details className="game-footer-details"><summary>法律、备案与存档说明</summary><div><span>本地优先 · API 密钥不写入存档</span><span>契约 v{SAVE_SCHEMA_VERSION}</span><nav className="footer-legal" aria-label="法律与反馈"><a href="/privacy">隐私政策</a><a href="/privacy-rights">隐私权利</a><a href="/terms">用户协议</a><a href="/feedback">问题反馈</a></nav><span className="footer-ai-note">部分视觉素材由 AI 生成（《人工智能生成合成内容标识办法》标识）</span><FilingNotices /></div></details>:<><span>本地优先 · API 密钥不写入存档</span><span>契约 v{SAVE_SCHEMA_VERSION}</span><nav className="footer-legal" aria-label="法律与反馈"><a href="/privacy">隐私政策</a><a href="/privacy-rights">隐私权利</a><a href="/terms">用户协议</a><a href="/feedback">问题反馈</a></nav><span className="footer-ai-note">部分视觉素材由 AI 生成（《人工智能生成合成内容标识办法》标识）</span><FilingNotices /></>}</footer></div></>;}
 
 function FilingNotices() {
   return (
@@ -170,26 +187,62 @@ function FilingNotices() {
   );
 }
 
+const LOBBY_GATES = {
+  journey: '/scenes/candidate/mountain-gate.desktop.webp',
+  cards: '/scenes/candidate/atlas/character_dan_room_cultivator.webp',
+  world: '/scenes/candidate/atlas/world_jiuxiao.webp',
+} as const;
+
+/** P02 · 大厅：继续行旅最醒目；三处去处用月洞门；工具入口降为安静的一行。 */
 function WorldHub({ saves }: { saves: LocalSave[] }) {
   const cardsAvailable = useCardAvailability();
-  let activeSaveId = '';
-  try { activeSaveId = sessionStorage.getItem('jiuxiao_active_save_id') || ''; } catch { /* Use the first available save. */ }
-  const save = saves.find(item => item.saveId === activeSaveId) || saves[0];
+  const save = pickResumeSave(saves);
+  const recent = useMemo(() => readRecent(), []);
+  const recentItems = (recent ?? []).filter(item => !(item.kind === 'game' && item.id === save?.saveId)).slice(0, 4);
+  const resumeScene = save ? SCENE_MANIFEST.find(candidate => candidate.id === sceneForLocation(save.location)) : undefined;
+  const resumeImage = mediaUrlForBrowser(resumeScene?.desktopPoster ?? LOBBY_GATES.journey);
   return <>
     <section className="page lobby-page">
-      <span className="eyebrow">山门之内</span>
-      <h2>选择去处</h2>
-      <p>{ISOLATED_PLAYTEST?'这是隔离试玩站。创建游客存档后，可通过文字和建议行动体验已批准的开场。':'先创建角色，再探索世界。当前公开体验可保存角色和行动草稿；服务器剧情回合尚未开放。'}</p>
-      <div className="lobby-actions">
-        {save && <button className="primary" onClick={() => go(`/game/${save.saveId}`)}>继续游玩<span>{save.name} · 存档版本 {save.revision}</span></button>}
-        <button className="primary" onClick={() => go('/new')}>新开一局<span>进入角色创建，择定出身与地域</span></button>
-        {cardsAvailable === true && <button className="secondary" onClick={() => go('/cards')}>角色卡模式<span>导入角色卡，开启独立会话</span></button>}
-        <button className="secondary" onClick={() => go('/intro')}>作品简介<span>先读一段九霄的天地与玩法</span></button>
-        <button className="secondary" onClick={() => go('/world')}>阅读世界设定<span>查阅已审核的世界资料</span></button>
-        <button className="secondary" onClick={() => go('/settings/ai')}>AI 设置<span>配置五个岗位与连接信息</span></button>
-        {saves.length > 0 && <button className="secondary" onClick={() => go('/saves')}>管理存档<span>改名、导出或删除本地档案</span></button>}
-        <button className="quiet-action" onClick={() => save ? go(`/game/${save.saveId}`) : go('/new')}>跳过设置<span>{save ? '不调整 AI，直接回到最近存档' : '不配置 AI，先创建角色'}</span></button>
+      <div className="lobby-head">
+        <h2>选择去处</h2>
+        <p>{ISOLATED_PLAYTEST?'这是隔离试玩站。创建游客存档后，可通过文字和建议行动体验已批准的开场。':'先创建角色，再探索世界。当前公开体验可保存角色和行动草稿；服务器剧情回合尚未开放。'}</p>
       </div>
+      <div className="lobby-top">
+        {save
+          ? <article className="lobby-resume" aria-label="继续行旅" style={{ '--jx-resume-image': `url("${resumeImage}")` } as CSSProperties}>
+              <div className="lobby-resume-body">
+                <span className="lobby-resume-kicker">继续行旅</span>
+                <strong className="lobby-resume-name">{save.name}</strong>
+                <span className="lobby-resume-meta">{[save.location, `第 ${save.revision} 回合`, relativeTime(save.updatedAt)].filter(Boolean).join('　')}</span>
+              </div>
+              <button className="primary lobby-resume-action" onClick={() => go(`/game/${save.saveId}`)}>继续游玩<span>{save.name} · 存档版本 {save.revision}</span></button>
+            </article>
+          : <article className="lobby-resume lobby-resume--first" aria-label="开始第一次行旅" style={{ '--jx-resume-image': `url("${mediaUrlForBrowser(LOBBY_GATES.journey)}")` } as CSSProperties}>
+              <div className="lobby-resume-body">
+                <span className="lobby-resume-kicker">还没有存档</span>
+                <strong className="lobby-resume-name">从山门开始第一次行旅</strong>
+                <span className="lobby-resume-meta">新开一局，择定出身与地域；存档只保存在这台设备上。</span>
+              </div>
+            </article>}
+        {recentItems.length > 0 && <section className="lobby-recent" aria-label="本机最近打开">
+          <h3>本机最近打开</h3>
+          <ul>{recentItems.map(item => <li key={`${item.kind}:${item.id}`}><button type="button" onClick={() => go(recentPath(item))}><span>{item.label}</span><time dateTime={item.openedAt}>{relativeTime(item.openedAt)}</time></button></li>)}</ul>
+          <p className="lobby-recent-note">只记录在这台设备上，换设备或清除浏览器数据后不保留。</p>
+        </section>}
+      </div>
+      <div className="lobby-gates" role="group" aria-label="去处">
+        <button className="lobby-gate" onClick={() => go('/new')}><MoonGate image={mediaUrlForBrowser(LOBBY_GATES.journey)} /><span className="lobby-gate-name">新开一局</span><span className="lobby-gate-desc">修仙行旅，择定出身与地域</span></button>
+        {cardsAvailable === true && <button className="lobby-gate" onClick={() => go('/cards')}><MoonGate image={mediaUrlForBrowser(LOBBY_GATES.cards)} /><span className="lobby-gate-name">角色卡模式</span><span className="lobby-gate-desc">导入角色卡，开启独立会话</span></button>}
+        <button className="lobby-gate" onClick={() => go('/world')}><MoonGate image={mediaUrlForBrowser(LOBBY_GATES.world)} /><span className="lobby-gate-name">阅读世界设定</span><span className="lobby-gate-desc">查阅已审核的世界资料</span></button>
+      </div>
+      <nav className="lobby-tools" aria-label="设置与档案">
+        {saves.length > 0 && <button onClick={() => go('/saves')}>管理存档</button>}
+        <button onClick={() => go('/settings/ai')}>AI 设置</button>
+        <button onClick={() => go('/settings/graphics')}>画面与声音</button>
+        <button onClick={() => go('/settings/cloud')}>账号与云档</button>
+        <button onClick={() => go('/intro')}>作品简介</button>
+        <button className="lobby-skip" onClick={() => save ? go(`/game/${save.saveId}`) : go('/new')}>跳过设置<span>{save ? '不调整 AI，直接回到最近存档' : '不配置 AI，先创建角色'}</span></button>
+      </nav>
     </section>
     {saves.length > 1 && <section className="home-saves">
       <h2>其他行囊 <small>{saves.length - 1} 份本地存档</small></h2>
@@ -755,6 +808,16 @@ function App() {
     }
   }, [currentRoute]);
   const game = currentRoute.startsWith('/game/') ? saves.find(save => save.saveId === currentRoute.split('/')[2]) : undefined;
+  useEffect(() => {
+    // 本机最近打开 (presentation-only, localStorage jx_recent_v1).
+    if (currentRoute.startsWith('/game/')) {
+      const id = currentRoute.split('/')[2] ?? '';
+      const opened = saves.find(item => item.saveId === id);
+      if (opened) recordRecent({ kind: 'game', id, label: opened.location ? `${opened.name} · ${opened.location}` : opened.name });
+    } else if (currentRoute.startsWith('/cards/session/')) {
+      recordRecent({ kind: 'card', id: decodeURIComponent(currentRoute.slice('/cards/session/'.length)), label: '角色卡会话' });
+    }
+  }, [currentRoute, saves]);
   let activeSaveId = '';
   try { activeSaveId = sessionStorage.getItem('jiuxiao_active_save_id') || ''; } catch { /* Use the first available save. */ }
   const activeSave = saves.find(item => item.saveId === activeSaveId) || saves[0];
@@ -852,7 +915,7 @@ function App() {
       const branch = { ...stale, saveId: createSaveId(), name: `${stale.name}（冲突分支）`, createdAt: now, updatedAt: now };
       const result = await commitSaves(saves, [branch, ...saves]);
       setSaves(result.saves); if (result.ok && result.warning) setNotice(commitSuccessMessage(result, '冲突内容已另存为独立分支；原存档保持不变。')); return result.ok;
-    }} /> : <CloudGame saveId={decodeURIComponent(currentRoute.slice('/game/'.length))} onBack={() => go('/lobby')} onHome={() => go('/')} onLogin={() => go('/settings/cloud')} onWorld={() => go('/world')} /> : <Landing saves={saves} onEnter={() => go('/lobby')} onReadSave={() => go('/saves')} />;
+    }} /> : <CloudGame saveId={decodeURIComponent(currentRoute.slice('/game/'.length))} onBack={() => go('/lobby')} onHome={() => go('/')} onLogin={() => go('/settings/cloud')} onWorld={() => go('/world')} /> : <Landing saves={saves} onEnter={() => go('/lobby')} onReadSave={() => go('/saves')} onContinue={save => go(`/game/${save.saveId}`)} />;
   const migrationAction = legacyText ? <button className="notice-action" onClick={migrateLegacyLibrary}>下载原文备份并迁移</button> : undefined;
   const storageNotice = indexedDbReady ? notice : `${notice} IndexedDB 回退模式。`;
   const activeScene = scenePreview ?? (game ? sceneForLocation(game.location) : 'mountain-gate');
@@ -862,6 +925,9 @@ function App() {
 
 const root = document.getElementById('root');
 if (!root) throw new Error('Missing root');
+// Self-hosted serif (D-4) loads after first paint so its large @font-face table never blocks rendering.
+const loadReadingFont = () => { void import('./design-system/fonts.css'); };
+if (typeof window.requestIdleCallback === 'function') window.requestIdleCallback(loadReadingFont, { timeout: 1500 }); else setTimeout(loadReadingFont, 200);
 const initialRoute = route();
 if (import.meta.env.DEV && initialRoute === '/__liquid-glass') {
   const LiquidGlassDemo = lazy(() => import('./components/LiquidGlassDemo').then(module => ({ default: module.LiquidGlassDemo })));

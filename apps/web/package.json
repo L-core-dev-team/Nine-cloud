@@ -10,11 +10,12 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@jiuxiao/contracts": "workspace:*",
+    "@fontsource/noto-serif-sc": "5.3.1",
     "@jiuxiao/content": "workspace:*",
+    "@jiuxiao/contracts": "workspace:*",
+    "@jiuxiao/domain": "workspace:*",
     "react": "19.3.0",
-    "react-dom": "19.3.0",
-    "@jiuxiao/domain": "workspace:*"
+    "react-dom": "19.3.0"
   },
   "devDependencies": {
     "@types/react": "19.3.0",

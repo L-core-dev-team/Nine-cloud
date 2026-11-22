@@ -1,0 +1,336 @@
+/*
+ * JX-UI-E-01 semantic tokens (tokens-v2).
+ * Source of truth: docs/design/JX-UI-E-01/tokens-v2-草案.css and 01-设计总纲.md §4–§9.
+ * Primitive spacing/radius/type tokens stay in tokens.css (locked by design-token-audit).
+ * Components reference the semantic tokens (--jx-bg-*, --jx-fg-*, --jx-surface-*), never --jx-c-*.
+ */
+@layer jx.legacy, jx.tokens, jx.base, jx.materials, jx.components, jx.layouts, jx.pages, jx.overrides;
+@layer jx.tokens {
+  /* ------------------------------------------------------------------ */
+  /* 原始色阶（Primitive）                                                 */
+  /* ------------------------------------------------------------------ */
+  :root {
+    /* 玄：夜色基底 */
+    --jx-c-xuan-950: #050e15;
+    --jx-c-xuan-900: #081722;
+    --jx-c-xuan-850: #0c1e29;
+    --jx-c-xuan-800: #10242f;
+    --jx-c-xuan-700: #132a35;
+    --jx-c-xuan-600: #1e3a47;
+    --jx-c-xuan-500: #2d4e5c;
+    --jx-c-xuan-400: #4a6b78;
+
+    /* 月白：夜间文字 */
+    --jx-c-yue-50: #f1eee8;
+    --jx-c-yue-100: #e2ded5;
+    --jx-c-yue-200: #c9c5bc; /* 柔夜正文 */
+    --jx-c-yue-300: #aeb8bc;
+    --jx-c-yue-500: #8c9aa1;
+
+    /* 纸与墨：晴昼 */
+    --jx-c-zhi-50: #fbf9f4;
+    --jx-c-zhi-100: #f7f4ed;
+    --jx-c-zhi-200: #f3efe6;
+    --jx-c-zhi-300: #e7e1d4;
+    --jx-c-zhi-400: #d3cbba;
+    --jx-c-mo-800: #273139;
+    --jx-c-mo-600: #4a5660;
+    --jx-c-mo-500: #5f6a73;
+
+    /* 灵玉：唯一交互强调色 */
+    --jx-c-jade-300: #a6e3d9;
+    --jx-c-jade-400: #79cfc4;
+    --jx-c-jade-500: #4fb3a7;
+    --jx-c-jade-700: #1d6b63;
+    --jx-c-jade-800: #165650;
+
+    /* 香槟金：仪式色 */
+    --jx-c-gold-300: #e6d3ac;
+    --jx-c-gold-400: #d4b987;
+    --jx-c-gold-700: #7d6236;
+
+    /* 星雾：仅大气渲染 */
+    --jx-c-xingwu-400: #9c9bcf;
+    --jx-c-xingwu-800: #2b2a4a;
+
+    /* 朱印：仅品牌印记 */
+    --jx-c-seal-600: #a73846;
+
+    /* 状态 */
+    --jx-c-danger-night: #f0907c;
+    --jx-c-danger-day: #a83a2c;
+    --jx-c-warning-night: #e6c36e;
+    --jx-c-warning-day: #7e5b10;
+    --jx-c-success-night: #a4cf86;
+    --jx-c-success-day: #3c6e33;
+    --jx-c-info-night: #8db8e8;
+    --jx-c-info-day: #2c5c90;
+
+    /* 矿彩灵纹：群像色（夜） */
+    --jx-c-pigment-1-night: #86abe0; /* 石青 */
+    --jx-c-pigment-2-night: #74c3a2; /* 石绿 */
+    --jx-c-pigment-3-night: #ea9178; /* 朱砂 */
+    --jx-c-pigment-4-night: #ddbe66; /* 藤黄 */
+    --jx-c-pigment-5-night: #e68faa; /* 胭脂 */
+    --jx-c-pigment-6-night: #d4a27c; /* 赭石 */
+    --jx-c-pigment-7-night: #a1aaea; /* 花青 */
+    --jx-c-pigment-8-night: #c6cdd1; /* 月白 */
+    /* 矿彩灵纹（昼） */
+    --jx-c-pigment-1-day: #2e5a99;
+    --jx-c-pigment-2-day: #2b7458;
+    --jx-c-pigment-3-day: #a3402a;
+    --jx-c-pigment-4-day: #7c5e14;
+    --jx-c-pigment-5-day: #9e3a5b;
+    --jx-c-pigment-6-day: #875231;
+    --jx-c-pigment-7-day: #46519a;
+    --jx-c-pigment-8-day: #56616a;
+
+    /* ---------------------------------------------------------------- */
+    /* 字体                                                              */
+    /* ---------------------------------------------------------------- */
+    --jx-font-brand: "Ma Shan Zheng Brand", "Kaiti SC", "STKaiti", "KaiTi", serif;
+    --jx-font-literary: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", serif;
+    --jx-font-literary-kai: "Kaiti SC", "STKaiti", "KaiTi", "BiauKai", serif; /* 阅读偏好"楷"：使用系统楷体，不下载 */
+    --jx-font-ui: system-ui, -apple-system, "PingFang SC", "HarmonyOS Sans SC", "MiSans",
+      "Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans SC", "Source Han Sans SC", sans-serif;
+
+    /* 语义字号（映射到已锁定的原始字号） */
+    --jx-text-caption: var(--jx-type-caption); /* 12px */
+    --jx-text-ui: var(--jx-type-small); /* 14px */
+    --jx-text-ui-strong: var(--jx-type-body); /* 16px */
+    --jx-text-h3: var(--jx-type-subhead); /* 20px */
+    --jx-text-h2: var(--jx-type-section); /* 24px */
+    --jx-text-h1: clamp(var(--jx-type-page), 2.4vw + 1rem, var(--jx-type-display)); /* 32→40px */
+    --jx-text-display: clamp(6rem, 14vw, 10.5rem); /* 首页"九霄" */
+
+    /* 阅读偏好（由 ReadingPrefs 在阅读页根节点覆盖） */
+    --jx-reading-size: 1.125rem; /* 18px */
+    --jx-reading-leading: 1.9;
+    --jx-reading-measure: 38em;
+    --jx-reading-para-gap: 0.85em;
+    --jx-reading-indent: 0;
+    --jx-reading-font: var(--jx-font-literary);
+
+    /* ---------------------------------------------------------------- */
+    /* 动效                                                              */
+    /* ---------------------------------------------------------------- */
+    --jx-dur-instant: 80ms;
+    --jx-dur-quick: 140ms;
+    --jx-dur-base: 220ms;
+    --jx-dur-panel: 320ms;
+    --jx-dur-scene: 600ms;
+    --jx-dur-ceremony: 1400ms;
+    --jx-ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --jx-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+    --jx-ease-ink: cubic-bezier(0.33, 0, 0.15, 1);
+
+    /* ---------------------------------------------------------------- */
+    /* 层级                                                              */
+    /* ---------------------------------------------------------------- */
+    --jx-z-scene: 0;
+    --jx-z-atmosphere: 1;
+    --jx-z-content: 10;
+    --jx-z-rail: 20;
+    --jx-z-composer: 30;
+    --jx-z-header: 40;
+    --jx-z-drawer: 50;
+    --jx-z-overlay: 60;
+    --jx-z-dialog: 70;
+    --jx-z-toast: 80;
+    --jx-z-skip: 90;
+
+    /* ---------------------------------------------------------------- */
+    /* 布局                                                              */
+    /* ---------------------------------------------------------------- */
+    /* 断点（供 @media 与 @container 参照；CSS 变量不能直接用于媒体查询）
+       compact < 600 · medium 600–1023 · expanded 1024–1439 · large ≥ 1440 */
+    --jx-gutter: clamp(16px, 4vw, 64px);
+    --jx-content-max-lobby: 1440px;
+    --jx-content-max-tool: 1280px;
+    --jx-rail-w: 64px;
+    --jx-rail-w-open: 240px;
+    --jx-drawer-w: clamp(320px, 26vw, 360px);
+    --jx-header-h-lobby: 64px;
+    --jx-header-h-compact: 52px;
+    --jx-bottom-nav-h: 56px;
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 语义 Token · 夜（默认）                                              */
+  /* ------------------------------------------------------------------ */
+  :root,
+  :root[data-theme="night"] {
+    --jx-bg-canvas: var(--jx-c-xuan-900);
+    --jx-surface-reading: var(--jx-c-xuan-850);
+    --jx-surface-1: var(--jx-c-xuan-800);
+    --jx-surface-2: var(--jx-c-xuan-700);
+    --jx-surface-3: var(--jx-c-xuan-600);
+    --jx-surface-sunken: var(--jx-c-xuan-950);
+
+    --jx-fg-strong: var(--jx-c-yue-50);
+    --jx-fg-body: var(--jx-c-yue-100);
+    --jx-fg-secondary: var(--jx-c-yue-300);
+    --jx-fg-muted: var(--jx-c-yue-500);
+    --jx-fg-on-accent: var(--jx-c-xuan-900);
+
+    --jx-line-subtle: rgb(174 184 188 / 0.12);
+    --jx-line-default: rgb(174 184 188 / 0.22);
+    --jx-line-strong: rgb(174 184 188 / 0.4);
+    --jx-line-ornament: rgb(212 185 135 / 0.45);
+
+    --jx-accent: var(--jx-c-jade-400);
+    --jx-accent-hover: var(--jx-c-jade-300);
+    --jx-accent-soft: rgb(121 207 196 / 0.14);
+    --jx-ornament: var(--jx-c-gold-400);
+    --jx-seal: var(--jx-c-seal-600);
+    --jx-focus-ring: var(--jx-c-jade-300);
+
+    --jx-status-danger: var(--jx-c-danger-night);
+    --jx-status-warning: var(--jx-c-warning-night);
+    --jx-status-success: var(--jx-c-success-night);
+    --jx-status-info: var(--jx-c-info-night);
+
+    --jx-pigment-1: var(--jx-c-pigment-1-night);
+    --jx-pigment-2: var(--jx-c-pigment-2-night);
+    --jx-pigment-3: var(--jx-c-pigment-3-night);
+    --jx-pigment-4: var(--jx-c-pigment-4-night);
+    --jx-pigment-5: var(--jx-c-pigment-5-night);
+    --jx-pigment-6: var(--jx-c-pigment-6-night);
+    --jx-pigment-7: var(--jx-c-pigment-7-night);
+    --jx-pigment-8: var(--jx-c-pigment-8-night);
+
+    /* 材质 */
+    --jx-mat-jade-fill: linear-gradient(160deg, rgb(19 42 53 / 0.55), rgb(8 23 34 / 0.38));
+    --jx-mat-jade-blur: blur(18px) saturate(140%);
+    --jx-mat-jade-rim: rgb(166 227 217 / 0.26);
+    --jx-mat-frost-fill: rgb(12 30 41 / 0.9);
+    --jx-mat-frost-blur: blur(24px) saturate(120%);
+    --jx-mat-metal-fill: var(--jx-c-xuan-800);
+    --jx-mat-metal-rim: rgb(212 185 135 / 0.3);
+    --jx-mat-highlight: inset 0 1px 0 rgb(241 238 232 / 0.07);
+    --jx-shadow-float: 0 18px 48px rgb(3 10 17 / 0.36);
+    --jx-shadow-raise: 0 6px 18px rgb(3 10 17 / 0.28);
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 语义 Token · 昼                                                      */
+  /* ------------------------------------------------------------------ */
+  :root[data-theme="day"] {
+    --jx-bg-canvas: var(--jx-c-zhi-200);
+    --jx-surface-reading: var(--jx-c-zhi-100);
+    --jx-surface-1: var(--jx-c-zhi-50);
+    --jx-surface-2: #ffffff;
+    --jx-surface-3: var(--jx-c-zhi-300);
+    --jx-surface-sunken: var(--jx-c-zhi-300);
+
+    --jx-fg-strong: #1b242b;
+    --jx-fg-body: var(--jx-c-mo-800);
+    --jx-fg-secondary: var(--jx-c-mo-600);
+    --jx-fg-muted: var(--jx-c-mo-500);
+    --jx-fg-on-accent: #ffffff;
+
+    --jx-line-subtle: rgb(39 49 57 / 0.1);
+    --jx-line-default: rgb(39 49 57 / 0.18);
+    --jx-line-strong: rgb(39 49 57 / 0.36);
+    --jx-line-ornament: rgb(125 98 54 / 0.45);
+
+    --jx-accent: var(--jx-c-jade-700);
+    --jx-accent-hover: var(--jx-c-jade-800);
+    --jx-accent-soft: rgb(29 107 99 / 0.1);
+    --jx-ornament: var(--jx-c-gold-700);
+    --jx-focus-ring: var(--jx-c-jade-700);
+
+    --jx-status-danger: var(--jx-c-danger-day);
+    --jx-status-warning: var(--jx-c-warning-day);
+    --jx-status-success: var(--jx-c-success-day);
+    --jx-status-info: var(--jx-c-info-day);
+
+    --jx-pigment-1: var(--jx-c-pigment-1-day);
+    --jx-pigment-2: var(--jx-c-pigment-2-day);
+    --jx-pigment-3: var(--jx-c-pigment-3-day);
+    --jx-pigment-4: var(--jx-c-pigment-4-day);
+    --jx-pigment-5: var(--jx-c-pigment-5-day);
+    --jx-pigment-6: var(--jx-c-pigment-6-day);
+    --jx-pigment-7: var(--jx-c-pigment-7-day);
+    --jx-pigment-8: var(--jx-c-pigment-8-day);
+
+    --jx-mat-jade-fill: linear-gradient(160deg, rgb(251 249 244 / 0.72), rgb(243 239 230 / 0.55));
+    --jx-mat-jade-rim: rgb(29 107 99 / 0.22);
+    --jx-mat-frost-fill: rgb(251 249 244 / 0.92);
+    --jx-mat-metal-fill: var(--jx-c-zhi-50);
+    --jx-mat-metal-rim: rgb(125 98 54 / 0.32);
+    --jx-mat-highlight: inset 0 1px 0 rgb(255 255 255 / 0.7);
+    --jx-shadow-float: 0 18px 48px rgb(39 49 57 / 0.14);
+    --jx-shadow-raise: 0 6px 18px rgb(39 49 57 / 0.1);
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 层：灵境 / 书阁 / 案头                                               */
+  /* ------------------------------------------------------------------ */
+  [data-jx-layer="lobby"] {
+    --jx-header-fill: var(--jx-mat-jade-fill);
+    --jx-header-blur: var(--jx-mat-jade-blur);
+    --jx-page-font: var(--jx-font-ui);
+    --jx-heading-font: var(--jx-font-literary);
+  }
+
+  [data-jx-layer="story"] {
+    --jx-header-fill: var(--jx-surface-1);
+    --jx-header-blur: none;
+    --jx-page-font: var(--jx-font-ui);
+    --jx-heading-font: var(--jx-font-literary);
+    --jx-ornament-opacity: 0.35;
+    --jx-scene-dim: 0.2; /* 场景亮度 */
+    --jx-scene-blur: 8px;
+  }
+
+  [data-jx-layer="tool"] {
+    --jx-header-fill: var(--jx-surface-1);
+    --jx-header-blur: none;
+    --jx-page-font: var(--jx-font-ui);
+    --jx-heading-font: var(--jx-font-ui);
+    --jx-ornament: transparent; /* 案头层不用仪式色 */
+  }
+
+  /* 阅读偏好：柔夜 */
+  [data-jx-layer="story"][data-jx-reading-theme="soft"] {
+    --jx-fg-body: var(--jx-c-yue-200);
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* 降级                                                                */
+  /* ------------------------------------------------------------------ */
+  @media (prefers-reduced-transparency: reduce) {
+    :root {
+      --jx-mat-jade-fill: var(--jx-surface-1);
+      --jx-mat-jade-blur: none;
+      --jx-mat-frost-fill: var(--jx-surface-1);
+      --jx-mat-frost-blur: none;
+    }
+  }
+
+  [data-jx-data-saver] {
+    --jx-mat-jade-fill: var(--jx-surface-1);
+    --jx-mat-jade-blur: none;
+    --jx-mat-frost-fill: var(--jx-surface-1);
+    --jx-mat-frost-blur: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      --jx-dur-quick: 1ms;
+      --jx-dur-base: 1ms;
+      --jx-dur-panel: 1ms;
+      --jx-dur-scene: 1ms;
+      --jx-dur-ceremony: 1ms;
+    }
+  }
+
+  [data-jx-motion="reduced"] {
+    --jx-dur-quick: 1ms;
+    --jx-dur-base: 1ms;
+    --jx-dur-panel: 1ms;
+    --jx-dur-scene: 1ms;
+    --jx-dur-ceremony: 1ms;
+  }
+}
