@@ -1,5 +1,6 @@
 // Real TCP/Cookie/PG + local protocol server. Never connects to a model vendor.
 import assert from 'node:assert/strict';
+import { verifyHistoryRecall } from './card-history-recall.mjs';
 import { createServer } from 'node:http';
 import { once } from 'node:events';
 import { randomUUID,randomBytes } from 'node:crypto';
@@ -44,6 +45,7 @@ run('pg_ctl',['-D',join(dir,'pg'),'-l',join(dir,'pg.log'),'-o',`-c unix_socket_d
  for(const f of (await readdir(join(root,'packages/db/drizzle'))).filter(f=>/^\d{4}_.*\.sql$/.test(f)).sort())await pool.query(await readFile(join(root,'packages/db/drizzle',f),'utf8'));
  // The journaled card migration creates the schema once.
  const protocolErrors=[];
+ let plainReply = 'local protocol reply';
  let expectedWireModel;
  protocol=createServer((r,s)=>{void (async()=>{
   let raw='';for await(const part of r)raw+=part;const body=JSON.parse(raw);sent++;seen.push(body);
@@ -58,7 +60,7 @@ run('pg_ctl',['-D',join(dir,'pg'),'-l',join(dir,'pg.log'),'-o',`-c unix_socket_d
   if(fail==='401'||fail==='429'||fail==='500'){s.writeHead(Number(fail));s.end('SECRET_PROVIDER_BODY_MUST_NOT_LEAK');return;}
   if(fail==='invalid'){s.end('{}');return;}
   let group;try{group=JSON.parse(body.messages.at(-1).content.split('\n\n---\n\n').at(-1));}catch{}
-  const text=group?.output_contract?.startsWith('JSON object')?fail==='group'?'not-json':JSON.stringify({messages:group.selected_participant_ids.map(participantId=>({participantId,text:'local protocol group reply'}))}):'local protocol reply';
+  const text=group?.output_contract?.startsWith('JSON object')?fail==='group'?'not-json':JSON.stringify({messages:group.selected_participant_ids.map(participantId=>({participantId,text:'local protocol group reply'}))}):plainReply;
   s.setHeader('content-type','application/json');s.end(JSON.stringify({choices:[{message:{content:text},finish_reason:fail==='truncated'?'length':'stop'}],usage:{completion_tokens:15}}));
  })().catch(error=>{
   protocolErrors.push(error);results.push({name:'local protocol contract',status:'FAIL',error:error.message});
@@ -343,6 +345,9 @@ run('pg_ctl',['-D',join(dir,'pg'),'-l',join(dir,'pg.log'),'-o',`-c unix_socket_d
  for(let i=0;i<200&&sent===before;i++)await new Promise(r=>setTimeout(r,10));assert.equal(sent,before+1);
  await context.clearCookies();await context.addCookies([{name:'jx_session',value:b.cookie.slice('jx_session='.length),url:origin,httpOnly:true}]);await page.reload();await new Promise(r=>setTimeout(r,600));delay=0;assert.ok(!(await page.locator('body').innerText()).includes('owner A late marker'));mark('account switch isolates late browser result');
  await context.clearCookies();await page.reload();assert.equal((await http(prefix+`/sessions/${id}/history`)).status,401);mark('signed-out history rejected');assert.deepEqual(protocolErrors,[]);
+ await verifyHistoryRecall({pool, login, http, makeCard, session, mount, config, context, page, origin, seen, mark,
+   setReply: value => { plainReply = value; }});
+ assert.deepEqual(protocolErrors, []);
  }catch(e){executionError=e;if(e!==injected)results.push({name:'execution',status:'FAIL',error:e.message});}
 finally{
  const errors=[];
