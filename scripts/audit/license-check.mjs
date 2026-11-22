@@ -50,6 +50,12 @@ export const reviewedPackages = new Map([
   // @speed-highlight/core ships a verbatim CC0-1.0 LICENSE file at the package
   // root. CC0 is a public-domain dedication with no conditions. Reviewed 2026-10-08.
   ['@speed-highlight/core', { license: 'CC0-1.0', evidence: 'LICENSE file in package root is CC0 1.0 Universal' }],
+  // @fontsource/noto-serif-sc ships Noto Serif SC under SIL OFL 1.1 (LICENSE file
+  // in the package root, copied to apps/web/public/fonts/OFL-NotoSerifSC.txt). OFL
+  // permits bundling and redistribution with software; the font is shipped
+  // unmodified as woff2 subsets and is never sold on its own. JX-UI-E-01 D-4.
+  // Reviewed 2026-11-22.
+  ['@fontsource/noto-serif-sc', { license: 'OFL-1.1', evidence: 'package LICENSE is SIL Open Font License 1.1; font embedded unmodified, licence text shipped in public/fonts' }],
   // @img/sharp-libvips-linux-x64 is the prebuilt libvips shared library that
   // sharp loads at runtime. libvips is LGPL-3.0-or-later; sharp itself is
   // Apache-2.0. The LGPL obligation is satisfied because we consume libvips as

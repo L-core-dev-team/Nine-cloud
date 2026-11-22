@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from 'react';
 import './game-shell.css';
 import './story-first.css';
 import type { ReadingPosition } from '../cloud-game-cache';
@@ -65,8 +65,10 @@ export function GameShell({ saveId, children, archive, readingReady = true, imme
       shell.style.removeProperty('--jx-game-viewport-height'); shell.style.removeProperty('--jx-game-viewport-top');
     };
   }, []);
+  const newReply = useNewReplyNotice(frame, readingReady);
   return <section ref={frame} className={`game-page game-frame${immersive?' immersive-game':''}`}>
     {children}
+    {newReply.visible && <button type="button" className="jx-new-reply" style={newReply.style} onClick={newReply.reveal}>有新回复</button>}
     {archive && <button className="game-archive-toggle secondary" onClick={() => setShowArchive(true)}>旧档资料与迁移核对</button>}
     {showArchive && <GameInfoDialog label="旧档资料与迁移核对" onClose={() => setShowArchive(false)}>{archive}</GameInfoDialog>}
   </section>;
@@ -92,3 +94,55 @@ export function GameInfoDialog({ label, onClose, children }: { label: string; on
     <div className="game-info-dialog-body">{children}</div>
   </dialog>;
 }
+
+/**
+ * 有新回复 (P05 rule 2): when entries are appended below the visible part of the
+ * reading column while the reader is looking at older text, show a notice instead
+ * of scrolling. Presentation only; it never moves the reader unless they click.
+ * New entries also receive data-jx-new for the reading-level ink-in fade.
+ */
+function useNewReplyNotice(frame: RefObject<HTMLElement | null>, ready: boolean) {
+  const [target, setTarget] = useState<HTMLElement | null>(null);
+  const [style, setStyle] = useState<CSSProperties>();
+  useEffect(() => {
+    if (!ready) return;
+    const reading = frame.current?.querySelector<HTMLElement>('.story-reading');
+    if (!reading) return;
+    const place = () => {
+      const rect = reading.getBoundingClientRect();
+      setStyle({ position: 'fixed', left: `${rect.left + rect.width / 2}px`, top: `${Math.max(rect.top + 8, rect.bottom - 52)}px`, bottom: 'auto' });
+    };
+    const observer = new MutationObserver(records => {
+      const added: HTMLElement[] = [];
+      for (const record of records) for (const node of record.addedNodes) {
+        if (node instanceof HTMLElement && node.matches('[data-reading-id]')) added.push(node);
+      }
+      if (!added.length) return;
+      for (const node of added) node.dataset.jxNew = '1';
+      const first = added[0]!;
+      const readingRect = reading.getBoundingClientRect();
+      const below = first.getBoundingClientRect().top > readingRect.bottom - 24;
+      if (below) { place(); setTarget(first); }
+    });
+    observer.observe(reading, { childList: true, subtree: true });
+    const clear = () => {
+      setTarget(current => {
+        if (!current) return current;
+        const rect = current.getBoundingClientRect();
+        return rect.top < reading.getBoundingClientRect().bottom - 24 ? null : current;
+      });
+    };
+    reading.addEventListener('scroll', clear, { passive: true });
+    return () => { observer.disconnect(); reading.removeEventListener('scroll', clear); };
+  }, [frame, ready]);
+  const reveal = useCallback(() => {
+    if (!target) return;
+    const reading = target.closest<HTMLElement>('.story-reading');
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches || !!document.querySelector('.jx-shell[data-jx-motion="reduced"]');
+    if (reading) reading.scrollTo({ top: reading.scrollTop + target.getBoundingClientRect().top - reading.getBoundingClientRect().top - 16, behavior: reduce ? 'auto' : 'smooth' });
+    target.focus?.({ preventScroll: true });
+    setTarget(null);
+  }, [target]);
+  return { visible: !!target, style, reveal };
+}
+

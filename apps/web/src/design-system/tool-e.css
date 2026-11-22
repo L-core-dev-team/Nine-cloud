@@ -1,0 +1,20 @@
+/*
+ * 案头层（JX-UI-E-01 P08-b/P09/P10）：清楚、高效的现代工具界面。
+ * The professional AI editor keeps its frozen colours (tests/e2e/foundation.cjs);
+ * only typography, which that contract explicitly reopens, changes there.
+ */
+@layer jx.legacy, jx.tokens, jx.base, jx.materials, jx.components, jx.layouts, jx.pages, jx.overrides;
+
+@layer jx.pages {
+  .jx-shell[data-jx-layer='tool'] > main { font-family: var(--jx-font-ui); }
+  /* D6: buttons, labels and form controls use the UI voice; page titles keep the literary voice. */
+  .jx-shell :is(.ai-page, .ai-actionbar, .glass-dialog) { font-family: var(--jx-font-ui); }
+  .jx-shell :is(.ai-page, .ai-actionbar, .glass-dialog) :is(p, li, label, input, select, textarea, button, small, span, strong, summary, dd, dt, td, th, legend) { font-family: inherit; }
+  .jx-shell[data-jx-layer='tool'] :is(h1, .ai-title) { font-family: var(--jx-font-literary); }
+  .jx-shell[data-jx-layer='tool'] :is(input, select, textarea, button) { font-family: inherit; }
+  .jx-shell[data-jx-layer='tool'] :is(.tabular, td, .renderer-readout) { font-variant-numeric: tabular-nums; }
+
+  /* 世界书工作台（角色卡世界书管理） */
+  .card-library section[aria-label='世界书管理'] { font-family: var(--jx-font-ui); }
+  .card-library section[aria-label='世界书管理'] :is(textarea, pre, code) { font-family: ui-monospace, 'SF Mono', 'Cascadia Mono', 'Noto Sans Mono CJK SC', monospace; font-size: var(--jx-type-small); }
+}
