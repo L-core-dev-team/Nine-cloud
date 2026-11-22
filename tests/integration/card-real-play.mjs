@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { verifyHistoryRecall } from './card-history-recall.mjs';
 import { createServer } from 'node:http';
 import { once } from 'node:events';
+import { verifyStrictMulti } from './card-strict-multi.mjs';
 import { randomUUID,randomBytes } from 'node:crypto';
 import { readFile,readdir,mkdir,writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
@@ -45,8 +46,10 @@ run('pg_ctl',['-D',join(dir,'pg'),'-l',join(dir,'pg.log'),'-o',`-c unix_socket_d
  for(const f of (await readdir(join(root,'packages/db/drizzle'))).filter(f=>/^\d{4}_.*\.sql$/.test(f)).sort())await pool.query(await readFile(join(root,'packages/db/drizzle',f),'utf8'));
  // The journaled card migration creates the schema once.
  const protocolErrors=[];
- let plainReply = 'local protocol reply';
+ const defaultReply = 'local protocol reply';
+ let plainReply = defaultReply;
  let expectedWireModel;
+ let multiFixtureReply;
  protocol=createServer((r,s)=>{void (async()=>{
   let raw='';for await(const part of r)raw+=part;const body=JSON.parse(raw);sent++;seen.push(body);
   assert.equal(r.url,'/v1/chat/completions');assert.equal(r.headers.authorization,'Bearer synthetic-not-a-vendor-key');assert.equal(body.model,expectedWireModel);
@@ -60,7 +63,13 @@ run('pg_ctl',['-D',join(dir,'pg'),'-l',join(dir,'pg.log'),'-o',`-c unix_socket_d
   if(fail==='401'||fail==='429'||fail==='500'){s.writeHead(Number(fail));s.end('SECRET_PROVIDER_BODY_MUST_NOT_LEAK');return;}
   if(fail==='invalid'){s.end('{}');return;}
   let group;try{group=JSON.parse(body.messages.at(-1).content.split('\n\n---\n\n').at(-1));}catch{}
-  const text=group?.output_contract?.startsWith('JSON object')?fail==='group'?'not-json':JSON.stringify({messages:group.selected_participant_ids.map(participantId=>({participantId,text:'local protocol group reply'}))}):plainReply;
+  let text = plainReply;
+  if (group?.output_contract && multiFixtureReply !== undefined) {
+    text = multiFixtureReply;
+  } else if (group?.output_contract?.startsWith('JSON object')) {
+    text = fail === 'group' ? 'not-json' : JSON.stringify({messages:
+      group.selected_participant_ids.map(participantId => ({participantId, text:'local protocol group reply'}))});
+  }
   s.setHeader('content-type','application/json');s.end(JSON.stringify({choices:[{message:{content:text},finish_reason:fail==='truncated'?'length':'stop'}],usage:{completion_tokens:15}}));
  })().catch(error=>{
   protocolErrors.push(error);results.push({name:'local protocol contract',status:'FAIL',error:error.message});
@@ -340,13 +349,21 @@ run('pg_ctl',['-D',join(dir,'pg'),'-l',join(dir,'pg.log'),'-o',`-c unix_socket_d
  assert.equal(sent, callsBeforeReplay);
  mark('group original-key lookup and replay add zero protocol requests and zero history');
  await page.screenshot({path:join(dir,'browser.png'),fullPage:true});mark('browser 390 UI -> local HTTP protocol -> PG -> refresh');
+ try {
+   await verifyStrictMulti({pool, http, page, context, origin, login, makeCard, config, mount, seen, mark,
+     other: b, setReply: reply => { multiFixtureReply = reply; }});
+ } finally { multiFixtureReply = undefined; }
+ await context.clearCookies();await context.addCookies([{name:'jx_session',value:ui.cookie.slice('jx_session='.length),url:origin,httpOnly:true}]);
+ await page.goto(origin+`/cards/session/${uiGroupId}`);
  mount({...config,approved:false});await page.reload();await page.getByText('外部模型调用待授权。',{exact:true}).waitFor();assert.equal(await page.getByRole('button',{name:'提交行动',exact:true}).isDisabled(),true);mark('browser unapproved mode disables send');mount();await page.reload();await page.getByLabel('角色卡行动').waitFor();
  await page.getByLabel('本次发言方式').selectOption('auto');delay=300;before=sent;await page.getByLabel('角色卡行动').fill('owner A late marker');await page.getByRole('button',{name:'提交行动',exact:true}).click();
  for(let i=0;i<200&&sent===before;i++)await new Promise(r=>setTimeout(r,10));assert.equal(sent,before+1);
  await context.clearCookies();await context.addCookies([{name:'jx_session',value:b.cookie.slice('jx_session='.length),url:origin,httpOnly:true}]);await page.reload();await new Promise(r=>setTimeout(r,600));delay=0;assert.ok(!(await page.locator('body').innerText()).includes('owner A late marker'));mark('account switch isolates late browser result');
  await context.clearCookies();await page.reload();assert.equal((await http(prefix+`/sessions/${id}/history`)).status,401);mark('signed-out history rejected');assert.deepEqual(protocolErrors,[]);
- await verifyHistoryRecall({pool, login, http, makeCard, session, mount, config, context, page, origin, seen, mark,
-   setReply: value => { plainReply = value; }});
+ try {
+   await verifyHistoryRecall({pool, login, http, makeCard, session, mount, config, context, page, origin, seen, mark,
+     setReply: value => { plainReply = value; }});
+ } finally { plainReply = defaultReply; }
  assert.deepEqual(protocolErrors, []);
  }catch(e){executionError=e;if(e!==injected)results.push({name:'execution',status:'FAIL',error:e.message});}
 finally{

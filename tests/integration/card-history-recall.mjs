@@ -118,4 +118,26 @@ export async function verifyHistoryRecall({pool, login, http, makeCard, session,
     assert.doesNotMatch(JSON.stringify(seen.at(-1)),/私藏的黑石|不公开的暗号|玉笛|铜铃/);
   }
   mark('INPUT_PASS group recall sends only the explicitly shared original to another speaker and multi');
+
+  // Exercise all three fixes in the same budgeted provider request, with B selected first.
+  const selectedIds = [members[1].id, members[0].id];
+  const before = seen.length;
+  const result = await post(gid,57,'我们的共同目标是什么？',{
+    mode:'multi', participantIds:selectedIds, requireAllSelected:true,
+  });
+  assert.equal(result.body.resulting_revision,58);
+  assert.equal(seen.length,before+1);
+  const wire = seen.at(-1).messages;
+  assert.equal(wire[0].role,'developer');
+  assert.match(wire[0].content,/各回复恰好一次/);
+  for (const id of selectedIds) assert.ok(wire[0].content.includes(id));
+  assert.equal(data().character.name,members[1].display_name);
+  assert.deepEqual(JSON.parse(wire.find(m=>m.role==='assistant').content),[
+    {participantId:members[0].id,text:members[0].display_name+' opening'},
+  ]);
+  assert.deepEqual(data().untrusted_history_quotes,[{sessionId:gid,revision:2,key:publicTurn.key,source:'player',topic:'目标',quote:shared}]);
+  assert.doesNotMatch(JSON.stringify(wire),/私藏的黑石|不公开的暗号/);
+  const saved = (await api('/sessions/'+gid+'/group-history?after=57')).body;
+  assert.deepEqual(saved.map(row=>[row.key,row.participant_id]),selectedIds.map(id=>[result.body.key,id]));
+  mark('INTEGRATION_PASS strict multi retains opener attribution and authorized recall in one wire request and commits both speakers');
 }
