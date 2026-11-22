@@ -12,7 +12,7 @@
   /* 各工具区：月光磨砂面板，标题用界面字体。 */
   .card-library > .card-ui-section { padding: var(--jx-space-5); color: var(--jx-fg-body); background: var(--jx-mat-frost-fill); border: 0; border-radius: var(--jx-radius-panel); box-shadow: 0 0 0 1px var(--jx-line-subtle); -webkit-backdrop-filter: var(--jx-mat-frost-blur); backdrop-filter: var(--jx-mat-frost-blur); }
   .card-library > .card-ui-section h2 { color: var(--jx-fg-strong); font-family: var(--jx-font-ui); font-size: var(--jx-type-lead); font-weight: 600; }
-  .card-library :is(input:not([type='checkbox']):not([type='radio']), select, textarea) { color: var(--jx-fg-strong); background: var(--jx-surface-1); border: 1px solid var(--jx-line-default); border-radius: var(--jx-radius-control); padding-inline: var(--jx-space-3); }
+  .card-library :is(input:not([type='checkbox']):not([type='radio']), select, textarea) { color: var(--jx-fg-strong); background: var(--jx-surface-1); border: 1px solid var(--jx-line-control); border-radius: var(--jx-radius-control); padding-inline: var(--jx-space-3); }
   .card-library :is(input, select, textarea):focus-visible { border-color: var(--jx-accent); }
   .card-library input[type='checkbox'], .card-library input[type='radio'] { accent-color: var(--jx-accent); }
 

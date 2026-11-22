@@ -3,7 +3,7 @@
 
 @layer jx.pages {
   /* 返回条：不再占一条 80px 的空带。 */
-  .world-page .world-return-bar { margin: 0 0 var(--jx-space-4); padding: var(--jx-space-2) 0; background: transparent; border: 0; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .world-page .world-return-bar { margin-block: 0 var(--jx-space-4); padding-block: var(--jx-space-2); background: transparent; border: 0; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
   .world-page .world-return-bar strong { color: var(--jx-fg-muted); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); font-weight: 400; letter-spacing: 0; }
   .world-page .world-return-bar .secondary { min-height: 44px; }
 
@@ -11,20 +11,20 @@
 
   /* 正文 / 图鉴切换：分段控件。修正：选中态匹配 aria-pressed（2026-10-13 审阅 §6）。 */
   .world-page .world-view-switch { display: inline-flex; gap: var(--jx-space-optical-2); padding: var(--jx-space-optical-2); background: var(--jx-surface-1); border: 0; border-radius: var(--jx-radius-card); box-shadow: 0 0 0 1px var(--jx-line-subtle); -webkit-backdrop-filter: none; backdrop-filter: none; }
-  .world-page .world-view-switch button { min-height: 40px; padding: 0 var(--jx-space-4); color: var(--jx-fg-secondary); background: transparent; border: 0; border-radius: var(--jx-radius-control); box-shadow: none; font-family: var(--jx-font-ui); font-size: var(--jx-type-small); }
+  .world-page .world-view-switch button { min-height: 40px; padding: 0 var(--jx-space-4); color: var(--jx-fg-body); background: var(--jx-surface-1); border: 1px solid var(--jx-line-control); border-radius: var(--jx-radius-control); box-shadow: none; font-family: var(--jx-font-ui); font-size: var(--jx-type-small); }
   .world-page .world-view-switch button:hover { color: var(--jx-fg-strong); }
   .world-page .world-view-switch button[aria-pressed='true'] { color: var(--jx-fg-strong); background: var(--jx-accent-soft); box-shadow: inset 0 0 0 1px var(--jx-accent); }
 
   /* 搜索：案头式输入。 */
   .world-page .world-search { padding: 0; background: none; border: 0; box-shadow: none; color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); font-size: var(--jx-type-small); }
-  .world-page .world-search input { min-height: 48px; color: var(--jx-fg-strong); background: var(--jx-surface-1); border: 1px solid var(--jx-line-default); border-radius: var(--jx-radius-control); font-family: var(--jx-font-ui); font-size: var(--jx-type-input-min); }
+  .world-page .world-search input { min-height: 48px; color: var(--jx-fg-strong); background: var(--jx-surface-1); border: 1px solid var(--jx-line-control); border-radius: var(--jx-radius-control); font-family: var(--jx-font-ui); font-size: var(--jx-type-input-min); }
   .world-page .world-search input:focus-visible { border-color: var(--jx-accent); outline: 2px solid var(--jx-focus-ring); outline-offset: 1px; }
 
   /* 分类目录：数字表示真实条目数。 */
-  .world-page .worldbook-categories button { min-height: 40px; color: var(--jx-fg-body); background: var(--jx-surface-1); border: 1px solid var(--jx-line-default); border-radius: var(--jx-radius-pill); box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; font-family: var(--jx-font-ui); font-size: var(--jx-type-small); }
+  .world-page .worldbook-categories button { min-height: 40px; color: var(--jx-fg-body); background: var(--jx-surface-1); border: 1px solid var(--jx-line-control); border-radius: var(--jx-radius-pill); box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; font-family: var(--jx-font-ui); font-size: var(--jx-type-small); }
   .world-page .worldbook-categories button:hover { border-color: var(--jx-accent); }
   .world-page .worldbook-categories button[aria-pressed='true'] { color: var(--jx-fg-strong); background: var(--jx-accent-soft); border-color: var(--jx-accent); }
-  .world-page .worldbook-categories small { color: var(--jx-fg-muted); font-variant-numeric: tabular-nums; }
+  .world-page .worldbook-categories small { color: var(--jx-fg-secondary); font-variant-numeric: tabular-nums; }
 
   /* 条目：宣纸 / 夜笺阅读面，标题用书卷字体而非题字。 */
   .world-page .worldbook-entry { color: var(--jx-fg-body); background: var(--jx-surface-reading); border: 0; border-radius: var(--jx-radius-small); box-shadow: 0 0 0 1px var(--jx-line-subtle), 0 16px 40px rgb(3 10 17 / 0.22); -webkit-backdrop-filter: none; backdrop-filter: none; }
@@ -41,5 +41,6 @@
   :root .world-page > :is(p, .eyebrow) { background-color: transparent; }
   .world-page .eyebrow, .world-page .world-return-bar strong { color: var(--jx-fg-secondary); }
   .world-page .world-search { color: var(--jx-fg-body); }
-  .world-page .worldbook-categories { padding: 0; background: none; border: 0; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  /* 分类筛选保留一块成组的玻璃托盘（既有契约），去掉托盘描边以免与筛选按钮形成双重边框。 */
+  .world-page .worldbook-categories { border-color: transparent; box-shadow: none; }
 }

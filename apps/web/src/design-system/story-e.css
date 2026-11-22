@@ -86,7 +86,7 @@
   .story-reading > .story-action-feedback:first-child, .story-reading > :first-child .story-action-feedback { margin-top: 0; }
   .story-action-area .story-action-feedback { width: auto; max-width: none; margin: 0; border-left-color: var(--jx-status-warning); }
   .story-recovery-actions button, .game-frame .card-session-pending .actions button, .game-frame .card-session-pending > button, .card-library button:not([class]), .game-frame .card-session button:not([class]), .jx-shell > main > section.card > button:not([class]) {
-    min-height: 44px; padding: 0 var(--jx-space-4); color: var(--jx-fg-body); background: var(--jx-surface-2); border: 1px solid var(--jx-line-default); border-radius: var(--jx-radius-control);
+    min-height: 44px; padding: 0 var(--jx-space-4); color: var(--jx-fg-body); background: var(--jx-surface-2); border: 1px solid var(--jx-line-control); border-radius: var(--jx-radius-control);
     font-family: var(--jx-font-ui); font-size: var(--jx-type-small); transition: border-color var(--jx-dur-quick) var(--jx-ease-out);
   }
   :is(.story-recovery-actions button, .game-frame .card-session-pending .actions button, .game-frame .card-session-pending > button, .card-library button:not([class]), .game-frame .card-session button:not([class]), .jx-shell > main > section.card > button:not([class])):hover:not(:disabled) { border-color: var(--jx-accent); }
@@ -110,7 +110,7 @@
   .game-frame .intent-composer textarea:focus-visible, .story-composer textarea:focus-visible { outline: 2px solid var(--jx-focus-ring); outline-offset: 1px; }
   .story-action-instruction { color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); }
   .story-suggestion {
-    color: var(--jx-fg-body); background: var(--jx-surface-2); border: 1px solid var(--jx-line-default); border-radius: var(--jx-radius-pill);
+    color: var(--jx-fg-body); background: var(--jx-surface-2); border: 1px solid var(--jx-line-control); border-radius: var(--jx-radius-pill);
     font-family: var(--jx-font-ui); transition: border-color var(--jx-dur-quick) var(--jx-ease-out), background-color var(--jx-dur-quick) var(--jx-ease-out);
   }
   .story-suggestion:hover { border-color: var(--jx-accent); background: var(--jx-accent-soft); }

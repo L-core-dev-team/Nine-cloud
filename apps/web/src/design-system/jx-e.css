@@ -14,21 +14,24 @@
 /* Base                                                                */
 /* ------------------------------------------------------------------ */
 @layer jx.base {
-  .jx-shell { font-family: var(--jx-font-ui); font-feature-settings: normal; }
+  .jx-shell { font-family: var(--jx-font-ui); }
   .jx-shell :is(h1, h2, h3):not(:is(.ai-page, .ai-actionbar, .glass-dialog) *) { font-family: var(--jx-font-literary); text-wrap: balance; }
   .jx-shell[data-jx-layer='tool'] :is(h2, h3):not(:is(.ai-page, .ai-actionbar, .glass-dialog) *) { font-family: var(--jx-font-ui); font-weight: 600; }
   .jx-shell :focus-visible { outline: 2px solid var(--jx-focus-ring); outline-offset: 2px; }
   .jx-shell ::selection { background: rgb(121 207 196 / 0.3); color: inherit; }
   :root[data-theme='day'] .jx-shell ::selection { background: rgb(29 107 99 / 0.18); }
-  .jx-shell :is(.tabular, time, .jx-num) { font-variant-numeric: tabular-nums; }
+  .jx-shell :is(.tabular, time, .jx-num):not(:is(.ai-page, .ai-actionbar, .glass-dialog) *) { font-variant-numeric: tabular-nums; }
   /* Chinese text: punctuation compression, strict line breaking, CJK/Latin spacing (progressive). */
-  .jx-shell :is(p, li, h1, h2, h3, dd) { line-break: strict; text-spacing-trim: normal; text-autospace: normal; }
+  .jx-shell :is(p, li, h1, h2, h3, dd):not(:is(.ai-page, .ai-actionbar, .glass-dialog) *) { line-break: strict; text-spacing-trim: normal; text-autospace: normal; }
 }
 
 /* ------------------------------------------------------------------ */
 /* Layer canvases                                                      */
 /* ------------------------------------------------------------------ */
 @layer jx.layouts {
+  /* 灵境内页（大厅、卡库、档案）：场景保留，但压暗/淡化到文字可读。首页另有自己的暗角。 */
+  :root:not([data-theme='day']) .jx-shell[data-jx-layer='lobby']:not(.landing-shell)::before { filter: brightness(0.6); }
+  :root[data-theme='day'] .jx-shell[data-jx-layer='lobby']:not(.landing-shell)::after { background: rgb(243 239 230 / 0.64); opacity: 1; mix-blend-mode: normal; }
   /* 书阁：场景退场，只在页边隐约可见。 */
   .jx-shell[data-jx-layer='story']::before { filter: brightness(0.42) saturate(0.78) blur(5px); transform: scale(1.04); }
   :root[data-theme='day'] .jx-shell[data-jx-layer='story']::before { filter: saturate(0.6) blur(5px); }
@@ -70,7 +73,7 @@
   .jx-shell :is(button.primary, a.primary):not(:is(.ai-page, .ai-actionbar, .glass-dialog) *):active:not(:disabled) { transform: scale(0.98); }
   .jx-shell :is(button.primary):not(:is(.ai-page, .ai-actionbar, .glass-dialog) *) span { opacity: 0.78; }
   .jx-shell :is(button.secondary, a.secondary):not(:is(.ai-page, .ai-actionbar, .glass-dialog) *) {
-    color: var(--jx-fg-body); background: var(--jx-surface-2); border: 1px solid var(--jx-line-default); border-radius: var(--jx-radius-card);
+    color: var(--jx-fg-body); background: var(--jx-surface-2); border: 1px solid var(--jx-line-control); border-radius: var(--jx-radius-card);
     transition: border-color var(--jx-dur-quick) var(--jx-ease-out), background-color var(--jx-dur-quick) var(--jx-ease-out);
   }
   .jx-shell :is(button.secondary, a.secondary):not(:is(.ai-page, .ai-actionbar, .glass-dialog) *):hover:not(:disabled) { border-color: var(--jx-accent); background: var(--jx-surface-3); }
@@ -147,7 +150,7 @@
   .jx-shell > aside { font-family: var(--jx-font-ui); }
 
   /* 页脚：安静的两行。 */
-  .jx-shell > footer { gap: var(--jx-space-2) var(--jx-space-5); color: var(--jx-fg-muted); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); }
+  .jx-shell > footer { gap: var(--jx-space-2) var(--jx-space-5); color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); }
 
   /* 移动端灵境层底部导航。 */
   .jx-bottom-nav { display: none; }

@@ -5,15 +5,13 @@
   /* 淡墨叠层：用暗角保证文字对比，不再给每段文字套深色底。 */
   .landing-shell .hero::before {
     background:
-      radial-gradient(70% 70% at 0% 100%, rgb(5 14 21 / 0.86), rgb(5 14 21 / 0) 70%),
-      linear-gradient(0deg, rgb(5 14 21 / 0.72), rgb(5 14 21 / 0) 42%),
-      radial-gradient(46% 54% at 78% 40%, rgb(5 14 21 / 0.46), rgb(5 14 21 / 0) 72%);
+      radial-gradient(75% 75% at 0% 100%, rgb(5 14 21 / 0.9), rgb(5 14 21 / 0) 72%),
+      linear-gradient(0deg, rgb(5 14 21 / 0.94) 0%, rgb(5 14 21 / 0.82) 34%, rgb(5 14 21 / 0.3) 56%, rgb(5 14 21 / 0) 70%);
   }
   :root[data-theme='day'] .landing-shell .hero::before {
     background:
-      radial-gradient(70% 70% at 0% 100%, rgb(243 239 230 / 0.9), rgb(243 239 230 / 0) 70%),
-      linear-gradient(0deg, rgb(243 239 230 / 0.74), rgb(243 239 230 / 0) 42%),
-      radial-gradient(46% 54% at 78% 40%, rgb(243 239 230 / 0.5), rgb(243 239 230 / 0) 72%);
+      radial-gradient(75% 75% at 0% 100%, rgb(243 239 230 / 0.95), rgb(243 239 230 / 0) 72%),
+      linear-gradient(0deg, rgb(243 239 230 / 0.96) 0%, rgb(243 239 230 / 0.88) 36%, rgb(243 239 230 / 0.4) 58%, rgb(243 239 230 / 0) 72%);
   }
 
   .landing-shell .hero > .landing-copy {
@@ -25,6 +23,9 @@
 
   .hero-title-group { grid-area: title; justify-self: end; position: relative; display: grid; place-items: center; width: clamp(300px, min(36vw, 54svh), 500px); aspect-ratio: 1; margin-right: clamp(0px, 3vw, 64px); margin-bottom: calc(-0.2 * clamp(300px, min(36vw, 54svh), 500px)); }
   .hero-title-group .hero-armillary { position: absolute; inset: 0; width: 100%; height: 100%; color: var(--jx-ornament); }
+  /* 月晕：题字背后的一圈暗光（夜）或纸光（昼），让题字在任何场景局部都清晰。 */
+  .hero-title-group::before { content: ''; position: absolute; inset: 14%; border-radius: 50%; background: radial-gradient(closest-side, rgb(5 14 21 / 0.66), rgb(5 14 21 / 0.42) 62%, rgb(5 14 21 / 0)); pointer-events: none; }
+  :root[data-theme='day'] .hero-title-group::before { background: radial-gradient(closest-side, rgb(243 239 230 / 0.9), rgb(243 239 230 / 0.7) 62%, rgb(243 239 230 / 0)); }
   .hero-lockup { position: relative; display: flex; align-items: flex-end; gap: var(--jx-space-3); }
   .landing-shell .hero .hero-mark {
     margin: 0; writing-mode: vertical-rl; text-orientation: upright;
@@ -37,7 +38,7 @@
   .hero-entry { grid-area: entry; align-self: end; display: grid; gap: var(--jx-space-4); max-width: 34em; }
   .hero-verse { margin: 0; color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-size: var(--jx-text-verse); line-height: 1.7; letter-spacing: 0.12em; text-shadow: 0 1px 10px rgb(5 14 21 / 0.5); }
   :root[data-theme='day'] .hero-verse { text-shadow: none; }
-  :root .landing-shell .hero .hero-deck, :root[data-theme='day'] .landing-shell .hero .hero-deck { max-width: none; margin: 0; padding: 0; color: var(--jx-fg-secondary); background: none; font-size: var(--jx-type-small); letter-spacing: 0; line-height: 1.6; }
+  :root .landing-shell .hero .hero-deck, :root[data-theme='day'] .landing-shell .hero .hero-deck { max-width: none; margin: 0; padding: 0; color: var(--jx-fg-body); background: none; font-size: var(--jx-type-small); letter-spacing: 0; line-height: 1.6; }
   .hero-actions { display: flex; flex-wrap: wrap; align-items: stretch; gap: var(--jx-space-3); }
 
   /* 主入口：灵玉玻璃。保留 LiquidGlass 的透射，只染上灵玉青。 */
@@ -51,7 +52,7 @@
   .landing-shell .hero .landing-read-save > span { font-family: var(--jx-font-ui); font-size: var(--jx-type-small); font-weight: 600; }
   .landing-shell .hero .landing-read-save > small { padding: 0; background: none; color: var(--jx-fg-secondary); font-family: var(--jx-font-literary); font-size: var(--jx-type-small); }
 
-  .landing-status { display: flex; flex-wrap: wrap; gap: var(--jx-space-1) var(--jx-space-4); margin: 0; color: var(--jx-fg-secondary); font-size: var(--jx-type-caption); line-height: 1.7; }
+  .landing-status { display: flex; flex-wrap: wrap; gap: var(--jx-space-1) var(--jx-space-4); margin: 0; color: var(--jx-fg-body); font-size: var(--jx-type-caption); line-height: 1.7; }
   .landing-status > span:first-child:not([hidden]) { color: var(--jx-fg-body); }
   .landing-shell .landing-availability, :root[data-theme='day'] .landing-shell .landing-availability { max-width: 36em; margin: 0; padding: 0; color: inherit; background: none; font-size: inherit; line-height: inherit; }
   .landing-shell .landing-help { justify-content: flex-start; gap: var(--jx-space-5); }

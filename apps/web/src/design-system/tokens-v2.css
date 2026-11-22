@@ -202,6 +202,7 @@
     --jx-line-default: rgb(174 184 188 / 0.22);
     --jx-line-strong: rgb(174 184 188 / 0.4);
     --jx-line-ornament: rgb(212 185 135 / 0.45);
+    --jx-line-control: #7a8e98; /* ≥3:1 against surface-1 and the night canvas */
 
     --jx-accent: var(--jx-c-jade-400);
     --jx-accent-hover: var(--jx-c-jade-300);
@@ -258,6 +259,7 @@
     --jx-line-default: rgb(39 49 57 / 0.18);
     --jx-line-strong: rgb(39 49 57 / 0.36);
     --jx-line-ornament: rgb(125 98 54 / 0.45);
+    --jx-line-control: #6e7c86; /* ≥3:1 against paper surfaces */
 
     --jx-accent: var(--jx-c-jade-700);
     --jx-accent-hover: var(--jx-c-jade-800);

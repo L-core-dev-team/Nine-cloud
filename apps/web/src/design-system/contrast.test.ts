@@ -54,6 +54,13 @@ describe('JX-UI-E-01 palette contrast', () => {
       expect(contrast(token(foreground), token(background))).toBeGreaterThanOrEqual(minimum);
     });
   }
+  it('control boundaries meet WCAG 1.4.11 (≥ 3:1) in both themes', () => {
+    const lines = [...css.matchAll(/--jx-line-control:\s*(#[0-9a-fA-F]{6})/g)].map(match => match[1]!);
+    expect(lines).toHaveLength(2);
+    const [night, day] = lines as [string, string];
+    for (const surface of ['xuan-900', 'xuan-800', 'xuan-700']) expect(contrast(night, token(surface))).toBeGreaterThanOrEqual(3);
+    for (const surface of ['zhi-50', 'zhi-100', 'zhi-200']) expect(contrast(day, token(surface))).toBeGreaterThanOrEqual(3);
+  });
   for (let index = 1; index <= 8; index += 1) {
     it(`speaker pigment ${index} is readable in both themes`, () => {
       expect(contrast(token(`pigment-${index}-night`), token('xuan-850'))).toBeGreaterThanOrEqual(4.5);

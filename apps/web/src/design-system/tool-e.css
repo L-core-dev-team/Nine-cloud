@@ -12,7 +12,7 @@
   .jx-shell :is(.ai-page, .ai-actionbar, .glass-dialog) :is(p, li, label, input, select, textarea, button, small, span, strong, summary, dd, dt, td, th, legend) { font-family: inherit; }
   .jx-shell[data-jx-layer='tool'] :is(h1, .ai-title) { font-family: var(--jx-font-literary); }
   .jx-shell[data-jx-layer='tool'] :is(input, select, textarea, button) { font-family: inherit; }
-  .jx-shell[data-jx-layer='tool'] :is(.tabular, td, .renderer-readout) { font-variant-numeric: tabular-nums; }
+  .jx-shell[data-jx-layer='tool'] :is(.tabular, td, .renderer-readout):not(:is(.ai-page, .ai-actionbar, .glass-dialog) *) { font-variant-numeric: tabular-nums; }
 
   /* 世界书工作台（角色卡世界书管理） */
   .card-library section[aria-label='世界书管理'] { font-family: var(--jx-font-ui); }
