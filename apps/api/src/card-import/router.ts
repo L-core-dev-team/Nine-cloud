@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { readJson, type CloudSaveRouteAuth } from '../routes/saves.js';
 import { base64, CardError, record } from './parser.js';
-import { CardImportService } from './service.js';
+import { CardImportService, type GroupAction } from './service.js';
 import { exportCard } from './export.js';
 const uuid = (v: unknown): string => {
   if (typeof v !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v)) throw new CardError('INVALID_ID');
@@ -82,11 +82,26 @@ export function createCardImportRouter(service: CardImportService, auth: CloudSa
   app.get('/sessions/:id/group-strategy', async c => c.json(await service.groupStrategy(c.get('owner'),uuid(c.req.param('id')))));
   app.put('/sessions/:id/group-strategy', async c => {const b=await body(c.req.raw);if(b.strategy!=='manual'&&b.strategy!=='auto')throw new CardError('INVALID_GROUP_MODE');return c.json(await service.setGroupStrategy(c.get('owner'),uuid(c.req.param('id')),b.strategy));});
   app.get('/sessions/:id/group-history', async c => c.json(await service.groupHistory(c.get('owner'),uuid(c.req.param('id')),integer(Number(c.req.query('after')??0)))));
-  app.post('/sessions/:id/group-actions', async c => { const b=await body(c.req.raw),action=str(b.action,8000); if(!action.trim())throw new CardError('EMPTY_ACTION'); if(b.mode!==undefined&&b.mode!=='manual'&&b.mode!=='auto'&&b.mode!=='multi')throw new CardError('INVALID_GROUP_MODE'); if(b.participantIds!==undefined&&!Array.isArray(b.participantIds))throw new CardError('INVALID_PARTICIPANTS'); const participantIds=Array.isArray(b.participantIds)?b.participantIds.map(uuid):[]; if(b.mode==='auto'&&participantIds.length)throw new CardError('INVALID_PARTICIPANTS'); if(allowAction&&!await allowAction(c.get('owner')))throw new CardError('RATE_LIMITED',429); return c.json(await service.act(c.get('owner'),uuid(c.req.param('id')),uuid(b.idempotencyKey),integer(b.expectedRevision),action,c.req.raw.signal,{mode:b.mode??'default',participantIds},b.modelBinding===undefined?undefined:str(b.modelBinding,64))); });
+  app.post('/sessions/:id/group-actions', async c => {
+    const b = await body(c.req.raw), action = str(b.action, 8000);
+    if (!action.trim()) throw new CardError('EMPTY_ACTION');
+    if (b.mode !== undefined && b.mode !== 'manual' && b.mode !== 'auto' && b.mode !== 'multi') throw new CardError('INVALID_GROUP_MODE');
+    if (b.requireAllSelected !== undefined && typeof b.requireAllSelected !== 'boolean') throw new CardError('INVALID_GROUP_MODE');
+    if (b.requireAllSelected && b.mode !== 'multi') throw new CardError('INVALID_GROUP_MODE');
+    if (b.participantIds !== undefined && !Array.isArray(b.participantIds)) throw new CardError('INVALID_PARTICIPANTS');
+    const participantIds = Array.isArray(b.participantIds) ? b.participantIds.map(uuid) : [];
+    if (b.mode === 'auto' && participantIds.length) throw new CardError('INVALID_PARTICIPANTS');
+    if (allowAction && !await allowAction(c.get('owner'))) throw new CardError('RATE_LIMITED', 429);
+    // Omission and false preserve the exact pre-existing group fingerprint.
+    const group: GroupAction = {mode: b.mode ?? 'default', participantIds, ...(b.requireAllSelected === true ? {requireAllSelected: true} : {})};
+    return c.json(await service.act(c.get('owner'), uuid(c.req.param('id')), uuid(b.idempotencyKey), integer(b.expectedRevision),
+      action, c.req.raw.signal, group, b.modelBinding === undefined ? undefined : str(b.modelBinding, 64)));
+  });
   app.get('/sessions/:id', async c => c.json(await service.sessionWithGreeting(c.get('owner'), uuid(c.req.param('id')))));
   app.get('/sessions/:id/history', async c => c.json(await service.history(c.get('owner'), uuid(c.req.param('id')), integer(Number(c.req.query('after') ?? 0)))));
   app.post('/sessions/:id/actions', async c => {
     const b = await body(c.req.raw), action = str(b.action, 8000);
+    if (b.requireAllSelected !== undefined && b.requireAllSelected !== false) throw new CardError('INVALID_GROUP_MODE');
     if (!action.trim()) throw new CardError('EMPTY_ACTION');
     if (allowAction && !await allowAction(c.get('owner'))) throw new CardError('RATE_LIMITED', 429);
     return c.json(await service.act(c.get('owner'), uuid(c.req.param('id')), uuid(b.idempotencyKey), integer(b.expectedRevision), action, c.req.raw.signal, undefined,b.modelBinding===undefined?undefined:str(b.modelBinding,64)));

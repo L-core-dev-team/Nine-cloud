@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { once } from 'node:events';
+import { verifyStrictMulti } from './card-strict-multi.mjs';
 import { randomUUID,randomBytes } from 'node:crypto';
 import { readFile,readdir,mkdir,writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
@@ -45,6 +46,7 @@ run('pg_ctl',['-D',join(dir,'pg'),'-l',join(dir,'pg.log'),'-o',`-c unix_socket_d
  // The journaled card migration creates the schema once.
  const protocolErrors=[];
  let expectedWireModel;
+ let multiFixtureReply;
  protocol=createServer((r,s)=>{void (async()=>{
   let raw='';for await(const part of r)raw+=part;const body=JSON.parse(raw);sent++;seen.push(body);
   assert.equal(r.url,'/v1/chat/completions');assert.equal(r.headers.authorization,'Bearer synthetic-not-a-vendor-key');assert.equal(body.model,expectedWireModel);
@@ -59,7 +61,7 @@ run('pg_ctl',['-D',join(dir,'pg'),'-l',join(dir,'pg.log'),'-o',`-c unix_socket_d
   if(fail==='invalid'){s.end('{}');return;}
   let group;try{group=JSON.parse(body.messages.at(-1).content.split('\n\n---\n\n').at(-1));}catch{}
   const text=group?.output_contract?.startsWith('JSON object')?fail==='group'?'not-json':JSON.stringify({messages:group.selected_participant_ids.map(participantId=>({participantId,text:'local protocol group reply'}))}):'local protocol reply';
-  s.setHeader('content-type','application/json');s.end(JSON.stringify({choices:[{message:{content:text},finish_reason:fail==='truncated'?'length':'stop'}],usage:{completion_tokens:15}}));
+  s.setHeader('content-type','application/json');s.end(JSON.stringify({choices:[{message:{content:multiFixtureReply ?? text},finish_reason:fail==='truncated'?'length':'stop'}],usage:{completion_tokens:15}}));
  })().catch(error=>{
   protocolErrors.push(error);results.push({name:'local protocol contract',status:'FAIL',error:error.message});
   if(!s.headersSent)s.writeHead(500);
@@ -287,6 +289,10 @@ run('pg_ctl',['-D',join(dir,'pg'),'-l',join(dir,'pg.log'),'-o',`-c unix_socket_d
  // Group UI consumes the same fixed model and protocol path.
  await page.goto(origin+`/cards/session/${uiGroupId}`);await page.getByLabel('角色卡行动').waitFor();await page.getByLabel('角色卡行动').fill('forest group browser');await page.getByLabel('本次发言方式').selectOption('auto');await page.getByRole('button',{name:'提交行动',exact:true}).click();await page.getByText('行动已完成，历史已更新。',{exact:true}).waitFor();mark('group browser automatic speaker uses protocol');
  await page.screenshot({path:join(dir,'browser.png'),fullPage:true});mark('browser 390 UI -> local HTTP protocol -> PG -> refresh');
+ await verifyStrictMulti({pool, http, page, context, origin, login, makeCard, config, mount, seen, mark,
+   other: b, setReply: reply => { multiFixtureReply = reply; }});
+ await context.clearCookies();await context.addCookies([{name:'jx_session',value:ui.cookie.slice('jx_session='.length),url:origin,httpOnly:true}]);
+ await page.goto(origin+`/cards/session/${uiGroupId}`);
  mount({...config,approved:false});await page.reload();await page.getByText('外部模型调用待授权。',{exact:true}).waitFor();assert.equal(await page.getByRole('button',{name:'提交行动',exact:true}).isDisabled(),true);mark('browser unapproved mode disables send');mount();await page.reload();await page.getByLabel('角色卡行动').waitFor();
  await page.getByLabel('本次发言方式').selectOption('auto');delay=300;before=sent;await page.getByLabel('角色卡行动').fill('owner A late marker');await page.getByRole('button',{name:'提交行动',exact:true}).click();
  for(let i=0;i<200&&sent===before;i++)await new Promise(r=>setTimeout(r,10));assert.equal(sent,before+1);
