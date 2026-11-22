@@ -13,8 +13,10 @@
   .jx-shell[data-jx-size='22'] { --jx-reading-size: 1.375rem; }
   .jx-shell[data-jx-leading='compact'] { --jx-reading-leading: 1.7; }
   .jx-shell[data-jx-leading='loose'] { --jx-reading-leading: 2.1; }
-  .jx-shell[data-jx-measure='narrow'] { --jx-reading-measure: 32em; }
-  .jx-shell[data-jx-measure='wide'] { --jx-reading-measure: 46em; }
+  .jx-shell[data-jx-measure='narrow'] { --jx-reading-measure-n: 32; }
+  .jx-shell[data-jx-measure='wide'] { --jx-reading-measure-n: 46; }
+  /* Resolve the measure on the shell so it follows the reading size there (an absolute width, not em). */
+  .jx-shell { --jx-reading-measure: calc(var(--jx-reading-measure-n) * var(--jx-reading-size)); }
   .jx-shell[data-jx-reading-font='kai'] { --jx-reading-font: var(--jx-font-literary-kai); }
   .jx-shell[data-jx-paragraph='book'] { --jx-reading-indent: 2em; --jx-reading-para-gap: 0.35em; }
   .jx-shell[data-jx-reading-theme='soft'] { --jx-fg-body: var(--jx-c-yue-200); }
@@ -47,7 +49,7 @@
   /* ---- 角色卡会话：回合 = 批注 + 正文，不用气泡 ---- */
   .game-frame .story-reading { padding: clamp(20px, 3.4vw, 44px) clamp(16px, 4vw, 56px); }
   .game-frame .card-session .story-reading { display: block; }
-  .game-frame .story-reading .card-session-turn { display: block; margin: 0 auto; padding: 0; background: none; border: 0; box-shadow: none; border-radius: 0; }
+  .game-frame .story-reading .card-session-turn { display: block; width: 100%; margin: 0 auto; padding: 0; background: none; border: 0; box-shadow: none; border-radius: 0; }
   .game-frame .story-reading .card-session-turn + .card-session-turn { margin-top: var(--jx-reading-turn-gap); }
   .game-frame .story-reading .card-session-turn p { margin: 0 0 var(--jx-reading-para-gap); text-indent: var(--jx-reading-indent); }
   .game-frame .story-reading .card-session-turn .jx-turn-no { margin: 0 0 var(--jx-reading-note-gap); color: var(--jx-fg-muted); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); font-weight: 400; letter-spacing: 0; }
@@ -76,13 +78,13 @@
 
   /* 回执卡：失败与恢复 */
   .game-frame .card-session-pending, .story-action-feedback {
-    max-width: var(--jx-reading-measure); margin: var(--jx-reading-entry-gap) auto 0; padding: var(--jx-space-3) var(--jx-space-4);
+    width: 100%; max-width: var(--jx-reading-measure); margin: var(--jx-reading-entry-gap) auto 0; padding: var(--jx-space-3) var(--jx-space-4);
     color: var(--jx-fg-body); background: var(--jx-surface-2); border: 0; border-left: 3px solid var(--jx-status-warning); border-radius: var(--jx-radius-small);
     font-family: var(--jx-font-ui); font-size: var(--jx-type-small); line-height: 1.7; text-indent: 0;
   }
   .story-action-feedback { border-left-color: var(--jx-accent); }
   .story-reading > .story-action-feedback:first-child, .story-reading > :first-child .story-action-feedback { margin-top: 0; }
-  .story-action-area .story-action-feedback { max-width: none; margin: 0; border-left-color: var(--jx-status-warning); }
+  .story-action-area .story-action-feedback { width: auto; max-width: none; margin: 0; border-left-color: var(--jx-status-warning); }
   .story-recovery-actions button, .game-frame .card-session-pending .actions button, .game-frame .card-session-pending > button, .card-library button:not([class]), .game-frame .card-session button:not([class]), .jx-shell > main > section.card > button:not([class]) {
     min-height: 44px; padding: 0 var(--jx-space-4); color: var(--jx-fg-body); background: var(--jx-surface-2); border: 1px solid var(--jx-line-default); border-radius: var(--jx-radius-control);
     font-family: var(--jx-font-ui); font-size: var(--jx-type-small); transition: border-color var(--jx-dur-quick) var(--jx-ease-out);

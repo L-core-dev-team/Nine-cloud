@@ -39,5 +39,7 @@
 @layer jx.pages {
   /* 书阁层已压暗场景，介绍文字不再需要单独的深色底衬。 */
   :root .world-page > :is(p, .eyebrow) { background-color: transparent; }
+  .world-page .eyebrow, .world-page .world-return-bar strong { color: var(--jx-fg-secondary); }
+  .world-page .world-search { color: var(--jx-fg-body); }
   .world-page .worldbook-categories { padding: 0; background: none; border: 0; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
 }

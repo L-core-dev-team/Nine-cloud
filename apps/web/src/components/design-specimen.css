@@ -1,6 +1,9 @@
 /* /__design specimen (development only; excluded from the product audit like the liquid-glass demo). */
 @layer jx.legacy, jx.tokens, jx.base, jx.materials, jx.components, jx.layouts, jx.pages, jx.overrides;
 @layer jx.pages {
+  /* The story sample reuses .game-frame; keep the specimen page scrollable. */
+  body:has(.jx-specimen) { overflow: auto; }
+  .jx-shell.jx-specimen { position: static; height: auto; display: block; }
   .jx-specimen { min-height: 100vh; padding: 0 clamp(16px, 4vw, 56px) 64px; color: var(--jx-fg-body); background: var(--jx-bg-canvas); }
   .jx-specimen-bar { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; padding: 14px 0; background: var(--jx-bg-canvas); box-shadow: 0 1px 0 var(--jx-line-subtle); }
   .jx-specimen-brand { display: inline-flex; align-items: center; gap: 8px; color: var(--jx-fg-strong); font-family: var(--jx-font-brand); font-size: 22px; }

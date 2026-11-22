@@ -3,6 +3,9 @@
 
 @layer jx.pages {
   .card-library { width: min(1200px, 100%); gap: var(--jx-space-5); padding-block: var(--jx-space-6) var(--jx-space-7); font-family: var(--jx-font-ui); }
+  /* 页内标题用的是 <header>，不能继承全局顶栏的高度、底色与模糊。 */
+  .card-library > header.card-ui-heading, .game-frame header.card-session-heading { position: static; height: auto; padding: 0; background: none; border: 0; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .card-library > .card-ui-section { width: 100%; max-width: none; }
   .card-library .card-ui-heading h1 { color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-size: var(--jx-text-h1); font-weight: 600; letter-spacing: 0.04em; }
   .card-library .card-ui-heading p { color: var(--jx-fg-secondary); font-size: var(--jx-type-small); }
 
@@ -23,7 +26,7 @@
   .card-library .jx-card-shelf > li:is(:hover, :focus-within) .jx-scroll-frame { transform: translateY(-4px); }
   .card-library .jx-card-shelf > li:is(:hover, :focus-within) .jx-scroll-frame::after { opacity: 1; }
   .jx-scroll-name { color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-size: var(--jx-type-body); font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; }
-  .card-library .jx-card-shelf .actions { gap: var(--jx-space-1); }
+  .card-library .jx-card-shelf .actions { gap: var(--jx-space-1); margin: 0; }
   .card-library .jx-card-shelf .actions button { min-height: 36px; padding: 0 var(--jx-space-2); font-size: var(--jx-type-caption); }
   @media (max-width: 599px) {
     .card-library .jx-card-shelf { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--jx-space-4); }

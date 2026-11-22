@@ -31,13 +31,20 @@
 @layer jx.layouts {
   /* 书阁：场景退场，只在页边隐约可见。 */
   .jx-shell[data-jx-layer='story']::before { filter: brightness(0.42) saturate(0.78) blur(5px); transform: scale(1.04); }
-  :root[data-theme='day'] .jx-shell[data-jx-layer='story']::before { filter: brightness(1.04) saturate(0.6) blur(5px); }
+  :root[data-theme='day'] .jx-shell[data-jx-layer='story']::before { filter: saturate(0.6) blur(5px); }
+  /* 晴昼书阁：宣纸色遮罩让场景只剩淡影，保证页边文字对比。 */
+  :root[data-theme='day'] .jx-shell[data-jx-layer='story']::after { background: rgb(243 239 230 / 0.86); opacity: 1; mix-blend-mode: normal; }
   .jx-shell[data-jx-layer='story'] .scene-atmosphere { opacity: 0.45; }
   /* 案头：平光，不放场景。画面设置页保留场景用于预览。 */
-  .jx-shell[data-jx-layer='tool']:not([data-jx-route='graphics'])::before { background: radial-gradient(120% 80% at 80% -10%, rgb(43 42 74 / 0.22), transparent 60%), var(--jx-bg-canvas); }
+  /* 案头：场景只留极淡的影子（约 8%），保持品牌连续，工具内容在平光里。 */
+  .jx-shell[data-jx-layer='tool']:not([data-jx-route='graphics'])::before { background: linear-gradient(rgb(8 23 34 / 0.9), rgb(8 23 34 / 0.94)), var(--jx-scene-poster-desktop, url('/scenes/gate-moonlight.webp')) center / cover no-repeat; }
   .jx-shell[data-jx-layer='tool']:not([data-jx-route='graphics'])::after { opacity: 0; }
   .jx-shell[data-jx-layer='tool']:not([data-jx-route='graphics']) .scene-atmosphere { opacity: 0; }
-  :root[data-theme='day'] .jx-shell[data-jx-layer='tool']:not([data-jx-route='graphics'])::before { background: var(--jx-bg-canvas); }
+  :root[data-theme='day'] .jx-shell[data-jx-layer='tool']:not([data-jx-route='graphics'])::before { background: linear-gradient(rgb(243 239 230 / 0.92), rgb(243 239 230 / 0.95)), var(--jx-scene-poster-desktop, url('/scenes/gate-moonlight.webp')) center / cover no-repeat; }
+  @media (max-width: 720px) {
+    .jx-shell[data-jx-layer='tool']:not([data-jx-route='graphics'])::before { background-image: linear-gradient(rgb(8 23 34 / 0.9), rgb(8 23 34 / 0.94)), var(--jx-scene-poster-mobile, url('/scenes/gate-moonlight-mobile.webp')); }
+    :root[data-theme='day'] .jx-shell[data-jx-layer='tool']:not([data-jx-route='graphics'])::before { background-image: linear-gradient(rgb(243 239 230 / 0.92), rgb(243 239 230 / 0.95)), var(--jx-scene-poster-mobile, url('/scenes/gate-moonlight-mobile.webp')); }
+  }
 }
 
 /* ------------------------------------------------------------------ */

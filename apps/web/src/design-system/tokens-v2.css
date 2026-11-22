@@ -130,7 +130,8 @@
     /* 阅读偏好（由 ReadingPrefs 在阅读页根节点覆盖） */
     --jx-reading-size: 1.125rem; /* 18px */
     --jx-reading-leading: 1.9;
-    --jx-reading-measure: 38em;
+    --jx-reading-measure-n: 38; /* 行宽（字数），由阅读偏好覆盖 */
+    --jx-reading-measure: calc(var(--jx-reading-measure-n) * var(--jx-reading-size));
     --jx-reading-para-gap: 0.85em;
     --jx-reading-indent: 0;
     --jx-reading-font: var(--jx-font-literary);
