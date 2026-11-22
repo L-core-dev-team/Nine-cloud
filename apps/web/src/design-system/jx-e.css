@@ -89,10 +89,10 @@
   @keyframes jx-spin { to { transform: rotate(360deg); } }
 
   /* 朱印：字由 CSS 绘制，不进入 innerText。 */
-  .jx-seal { display: inline-grid; place-items: center; flex: none; width: 22px; height: 22px; border-radius: 3px; background: var(--jx-seal); box-shadow: inset 0 0 0 1.5px rgb(246 233 230 / 0.16); transform: rotate(-3deg); }
-  .jx-seal::before { content: '霄'; color: #f6e9e6; font-family: var(--jx-font-brand); font-size: 13px; line-height: 1; }
-  .jx-seal--lg { width: 46px; height: 46px; border-radius: 4px; }
-  .jx-seal--lg::before { content: '九霄'; writing-mode: vertical-rl; font-size: 17px; letter-spacing: 0; }
+  .jx-seal { display: inline-grid; place-items: center; flex: none; width: 22px; height: 22px; border-radius: var(--jx-radius-seal); background: var(--jx-seal); box-shadow: inset 0 0 0 1.5px rgb(246 233 230 / 0.16); transform: rotate(-3deg); }
+  .jx-seal::before { content: '霄'; color: #f6e9e6; font-family: var(--jx-font-brand); font-size: var(--jx-type-seal); line-height: 1; }
+  .jx-seal--lg { width: 46px; height: 46px; border-radius: var(--jx-radius-small); }
+  .jx-seal--lg::before { content: '九霄'; writing-mode: vertical-rl; font-size: var(--jx-type-seal-lg); letter-spacing: 0; }
 
   /* 首字占位 */
   .jx-monogram { position: relative; display: grid; place-items: center; overflow: hidden; background: radial-gradient(120% 80% at 50% 38%, color-mix(in srgb, var(--jx-monogram-pigment, var(--jx-pigment-1)) 36%, transparent), transparent 62%), linear-gradient(180deg, var(--jx-c-xuan-800), var(--jx-c-xuan-900)); color: rgb(241 238 232 / 0.9); font-family: var(--jx-font-literary); font-weight: 600; }
@@ -129,7 +129,7 @@
   .jx-shell > header nav button { position: relative; min-height: var(--jx-touch-target-min); padding: 0 var(--jx-space-3); color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); font-size: var(--jx-type-small); border-radius: var(--jx-radius-control); transition: color var(--jx-dur-quick) var(--jx-ease-out), background-color var(--jx-dur-quick) var(--jx-ease-out); }
   .jx-shell > header nav button:hover { color: var(--jx-fg-strong); background: rgb(174 184 188 / 0.08); }
   .jx-shell > header nav button[aria-current='page'] { color: var(--jx-fg-strong); }
-  .jx-shell > header nav button[aria-current='page']::after { content: ''; position: absolute; left: var(--jx-space-3); right: var(--jx-space-3); bottom: 6px; height: 2px; border-radius: 1px; background: var(--jx-accent); }
+  .jx-shell > header nav button[aria-current='page']::after { content: ''; position: absolute; left: var(--jx-space-3); right: var(--jx-space-3); bottom: 6px; height: 2px; border-radius: var(--jx-radius-hairline); background: var(--jx-accent); }
   .jx-shell > header .header-tools button { font-family: var(--jx-font-ui); }
 
   /* 书阁、案头：顶栏改为实色，让位给正文。 */
@@ -153,7 +153,7 @@
     .jx-shell[data-jx-layer='lobby']:not(.landing-shell) > footer { padding-bottom: calc(var(--jx-bottom-nav-h) + var(--jx-space-5) + env(safe-area-inset-bottom)); }
     .jx-bottom-nav button { position: relative; display: grid; place-items: center; min-height: 48px; padding: var(--jx-space-1); color: var(--jx-fg-secondary); background: none; border: 0; font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); }
     .jx-bottom-nav button[aria-current='page'] { color: var(--jx-fg-strong); }
-    .jx-bottom-nav button[aria-current='page']::before { content: ''; position: absolute; top: 2px; width: 18px; height: 2px; border-radius: 1px; background: var(--jx-accent); }
+    .jx-bottom-nav button[aria-current='page']::before { content: ''; position: absolute; top: 2px; width: 18px; height: 2px; border-radius: var(--jx-radius-hairline); background: var(--jx-accent); }
   }
   @media (prefers-reduced-transparency: reduce) {
     .jx-bottom-nav { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; background: var(--jx-surface-1) !important; }

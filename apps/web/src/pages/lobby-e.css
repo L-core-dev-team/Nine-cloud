@@ -19,8 +19,8 @@
   :root[data-theme='day'] .lobby-resume::before { background: linear-gradient(0deg, rgb(251 249 244 / 0.96) 10%, rgb(251 249 244 / 0.72) 52%, rgb(251 249 244 / 0.2)); }
   .lobby-resume-body { display: grid; gap: var(--jx-space-1); min-width: 0; }
   .lobby-resume-kicker { color: var(--jx-fg-secondary); font-size: var(--jx-type-small); }
-  .lobby-resume-name { color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-size: clamp(1.75rem, 1.3rem + 1.4vw, 2.25rem); font-weight: 600; line-height: 1.25; overflow-wrap: anywhere; }
-  .lobby-resume--first .lobby-resume-name { font-size: clamp(1.375rem, 1.1rem + 1vw, 1.75rem); }
+  .lobby-resume-name { color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-size: var(--jx-text-resume); font-weight: 600; line-height: 1.25; overflow-wrap: anywhere; }
+  .lobby-resume--first .lobby-resume-name { font-size: var(--jx-text-resume-first); }
   .lobby-resume-meta { color: var(--jx-fg-secondary); font-size: var(--jx-type-small); }
   .lobby-page .lobby-resume-action { min-width: 168px; min-height: 52px; padding: var(--jx-space-2) var(--jx-space-5); align-items: flex-start; justify-content: center; }
 

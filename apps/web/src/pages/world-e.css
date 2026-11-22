@@ -10,7 +10,7 @@
   .world-page h2 { color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-weight: 600; letter-spacing: 0.04em; }
 
   /* 正文 / 图鉴切换：分段控件。修正：选中态匹配 aria-pressed（2026-10-13 审阅 §6）。 */
-  .world-page .world-view-switch { display: inline-flex; gap: 2px; padding: 3px; background: var(--jx-surface-1); border: 0; border-radius: var(--jx-radius-card); box-shadow: 0 0 0 1px var(--jx-line-subtle); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .world-page .world-view-switch { display: inline-flex; gap: var(--jx-space-optical-2); padding: var(--jx-space-optical-2); background: var(--jx-surface-1); border: 0; border-radius: var(--jx-radius-card); box-shadow: 0 0 0 1px var(--jx-line-subtle); -webkit-backdrop-filter: none; backdrop-filter: none; }
   .world-page .world-view-switch button { min-height: 40px; padding: 0 var(--jx-space-4); color: var(--jx-fg-secondary); background: transparent; border: 0; border-radius: var(--jx-radius-control); box-shadow: none; font-family: var(--jx-font-ui); font-size: var(--jx-type-small); }
   .world-page .world-view-switch button:hover { color: var(--jx-fg-strong); }
   .world-page .world-view-switch button[aria-pressed='true'] { color: var(--jx-fg-strong); background: var(--jx-accent-soft); box-shadow: inset 0 0 0 1px var(--jx-accent); }
@@ -31,7 +31,7 @@
   :root[data-theme='day'] .world-page .worldbook-entry { box-shadow: 0 0 0 1px var(--jx-line-subtle), 0 12px 30px rgb(39 49 57 / 0.08); }
   .world-page .worldbook-entry-title { color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-weight: 600; letter-spacing: 0.04em; }
   .world-page .worldbook-body { color: var(--jx-fg-body); font-family: var(--jx-font-literary); line-height: 1.9; }
-  .world-page .worldbook-entry mark { color: inherit; background: rgb(121 207 196 / 0.24); border-radius: 2px; }
+  .world-page .worldbook-entry mark { color: inherit; background: rgb(121 207 196 / 0.24); border-radius: var(--jx-radius-mark); }
   :root[data-theme='day'] .world-page .worldbook-entry mark { background: rgb(29 107 99 / 0.16); }
   .world-page .worldbook-source { color: var(--jx-fg-muted); font-family: var(--jx-font-ui); }
 }

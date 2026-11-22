@@ -103,6 +103,30 @@
     --jx-text-h1: clamp(var(--jx-type-page), 2.4vw + 1rem, var(--jx-type-display)); /* 32→40px */
     --jx-text-display: clamp(6rem, 14vw, 10.5rem); /* 首页"九霄" */
 
+    /* 书阁节奏（em 随阅读字号缩放） */
+    --jx-reading-turn-gap: 2.2em;
+    --jx-reading-entry-gap: 1.6em;
+    --jx-reading-block-gap: 1.4em;
+    --jx-reading-speaker-gap: 1.2em;
+    --jx-reading-act-gap: 1em;
+    --jx-reading-note-gap: 0.6em;
+    --jx-reading-speaker-name-gap: 0.4em;
+    --jx-seal-offset: 0.45em;
+
+    /* 签名元素尺寸 */
+    --jx-radius-hairline: 1px;
+    --jx-radius-mark: 2px;
+    --jx-radius-seal: 3px;
+    --jx-type-seal: 0.8125rem;
+    --jx-type-seal-lg: 1.0625rem;
+    --jx-type-avatar: 0.8125rem;
+    --jx-text-brand-vertical: clamp(5.25rem, 9.5vw, 8.75rem);
+    --jx-text-brand-vertical-compact: clamp(4.25rem, 21vw, 5.5rem);
+    --jx-text-verse: clamp(1.125rem, 0.92rem + 0.7vw, 1.5rem);
+    --jx-text-resume: clamp(1.75rem, 1.3rem + 1.4vw, 2.25rem);
+    --jx-text-resume-first: clamp(1.375rem, 1.1rem + 1vw, 1.75rem);
+    --jx-text-monogram: clamp(2.5rem, 5vw, 4rem);
+
     /* 阅读偏好（由 ReadingPrefs 在阅读页根节点覆盖） */
     --jx-reading-size: 1.125rem; /* 18px */
     --jx-reading-leading: 1.9;

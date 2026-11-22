@@ -67,7 +67,8 @@ async function startPreview() {
   const prototypeMarkers = files.flatMap(file => {
     const source = readFileSync(join(assets, file), 'utf8');
     // The URL remains only as a redirect guard; the prototype module and CSS must be absent.
-    return /LiquidGlassDemo|liquid-lab/.test(source) ? [file] : [];
+    // JX-UI-E-01: the /__design specimen is development-only as well.
+    return /LiquidGlassDemo|liquid-lab|DesignSpecimen|jx-specimen/.test(source) ? [file] : [];
   });
   assert.deepEqual(prototypeMarkers, [], `Production assets must not contain the visual prototype: ${prototypeMarkers.join(', ')}`);
 
@@ -84,6 +85,10 @@ async function startPreview() {
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   try {
+    await page.goto(`${base}/__design`, { waitUntil: 'networkidle' });
+    await page.locator('.landing-shell').waitFor({ state: 'visible' });
+    assert.equal(await page.locator('.jx-specimen').count(), 0, 'Production URL must never render the design specimen');
+    assert.equal(new URL(page.url()).pathname, '/', 'Production specimen URL must return to the formal homepage');
     await page.goto(`${base}/__liquid-glass`, { waitUntil: 'networkidle' });
     await page.locator('.landing-shell').waitFor({ state: 'visible' });
     await page.evaluate(() => document.fonts.ready);

@@ -36,6 +36,7 @@ import { primaryDestinations, isCurrentDestination } from './components/GlassHea
 import { MoonGate } from './ui/Ornaments';
 import { pickResumeSave, relativeTime } from './ui/resume';
 import { readRecent, recentPath, recordRecent } from './ui/recent';
+import { useNavigationCardAvailability } from './ui/card-availability-cache';
 import './pages/lobby-e.css';
 import './design-system/story-e.css';
 import './design-system/tool-e.css';
@@ -156,7 +157,7 @@ function Shell({ children, saves, notice, noticeAction, theme, onThemeChange, on
   const themeAction = () => { onThemeChange(); setMenu(false); };
   const isLanding = route() === '/';
   const currentRoute = route();
-  const cardsAvailable = useCardAvailability() === true;
+  const cardsAvailable = useNavigationCardAvailability(layerForRoute(currentRoute) === 'lobby' && !isLanding);
   const [readingPrefs, setReadingPrefs] = useReadingPrefs();
   const [readingPrefsOpen, setReadingPrefsOpen] = useState(false);
   const storyLayer = layerForRoute(currentRoute) === 'story';
@@ -939,7 +940,11 @@ const initialRoute = route();
 if (import.meta.env.DEV && initialRoute === '/__liquid-glass') {
   const LiquidGlassDemo = lazy(() => import('./components/LiquidGlassDemo').then(module => ({ default: module.LiquidGlassDemo })));
   createRoot(root).render(<Suspense fallback={null}><LiquidGlassDemo /></Suspense>);
+} else if (import.meta.env.DEV && initialRoute === '/__design') {
+  // JX-UI-E-01 living specimen: development only, never shipped (03 §4.5).
+  const DesignSpecimen = lazy(() => import('./components/DesignSpecimen').then(module => ({ default: module.DesignSpecimen })));
+  createRoot(root).render(<Suspense fallback={null}><DesignSpecimen /></Suspense>);
 } else {
-  if (initialRoute === '/__liquid-glass') history.replaceState(history.state, '', '/');
+  if (initialRoute === '/__liquid-glass' || initialRoute === '/__design') history.replaceState(history.state, '', '/');
   createRoot(root).render(<App />);
 }

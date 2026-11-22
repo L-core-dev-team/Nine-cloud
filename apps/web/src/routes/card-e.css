@@ -19,7 +19,7 @@
   .jx-scroll-frame { position: relative; display: block; aspect-ratio: 2 / 3; overflow: hidden; border-radius: var(--jx-radius-small); background: var(--jx-surface-1); box-shadow: 0 0 0 1px var(--jx-line-ornament), 0 12px 28px rgb(3 10 17 / 0.36); transition: transform var(--jx-dur-base) var(--jx-ease-out); }
   .jx-scroll-frame::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(70% 45% at 50% 0%, rgb(241 238 232 / 0.24), transparent 70%); opacity: 0; transition: opacity var(--jx-dur-base) var(--jx-ease-out); }
   .jx-scroll-frame > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-  .jx-scroll-frame > .jx-scroll-monogram { position: absolute; inset: 0; font-size: clamp(2.5rem, 5vw, 4rem); }
+  .jx-scroll-frame > .jx-scroll-monogram { position: absolute; inset: 0; font-size: var(--jx-text-monogram); }
   .card-library .jx-card-shelf > li:is(:hover, :focus-within) .jx-scroll-frame { transform: translateY(-4px); }
   .card-library .jx-card-shelf > li:is(:hover, :focus-within) .jx-scroll-frame::after { opacity: 1; }
   .jx-scroll-name { color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-size: var(--jx-type-body); font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; }

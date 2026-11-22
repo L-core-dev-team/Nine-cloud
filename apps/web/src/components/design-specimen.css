@@ -1,0 +1,46 @@
+/* /__design specimen (development only; excluded from the product audit like the liquid-glass demo). */
+@layer jx.legacy, jx.tokens, jx.base, jx.materials, jx.components, jx.layouts, jx.pages, jx.overrides;
+@layer jx.pages {
+  .jx-specimen { min-height: 100vh; padding: 0 clamp(16px, 4vw, 56px) 64px; color: var(--jx-fg-body); background: var(--jx-bg-canvas); }
+  .jx-specimen-bar { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; padding: 14px 0; background: var(--jx-bg-canvas); box-shadow: 0 1px 0 var(--jx-line-subtle); }
+  .jx-specimen-brand { display: inline-flex; align-items: center; gap: 8px; color: var(--jx-fg-strong); font-family: var(--jx-font-brand); font-size: 22px; }
+  .jx-specimen-note { color: var(--jx-fg-muted); font-size: 13px; }
+  .jx-specimen-bar .secondary { margin-left: auto; min-height: 40px; padding: 0 16px; }
+  .jx-specimen-section { display: grid; gap: 20px; padding: 40px 0; border-bottom: 1px solid var(--jx-line-subtle); }
+  .jx-specimen-section h2 { margin: 0; color: var(--jx-fg-strong); font-size: 24px; }
+  .jx-specimen-section h2 small { color: var(--jx-fg-muted); font-family: var(--jx-font-ui); font-size: 13px; font-weight: 400; }
+  .jx-specimen-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .jx-specimen-swatches figure { margin: 0; overflow: hidden; border-radius: 12px; background: var(--jx-surface-1); box-shadow: 0 0 0 1px var(--jx-line-subtle); }
+  .jx-specimen-swatches figure > span { display: block; height: 64px; }
+  .jx-specimen-swatches figcaption { display: grid; gap: 2px; padding: 10px 12px; font-size: 12px; color: var(--jx-fg-secondary); }
+  .jx-specimen-swatches b { color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-size: 15px; }
+  .jx-specimen-swatches code { color: var(--jx-fg-muted); font-size: 11px; }
+  .jx-specimen-pigments { display: flex; flex-wrap: wrap; gap: 16px; }
+  .jx-specimen-pigments span { display: inline-flex; align-items: center; gap: 8px; color: var(--jx-speaker); font-family: var(--jx-font-literary); font-weight: 600; }
+  .jx-specimen-pigments i { width: 22px; height: 22px; border-radius: 50%; background: var(--jx-speaker); }
+  .jx-specimen-voices { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+  .jx-specimen-voices > div { padding: 20px; border-radius: 12px; background: var(--jx-surface-1); box-shadow: 0 0 0 1px var(--jx-line-subtle); }
+  .jx-specimen-voices small { color: var(--jx-fg-muted); font-size: 12px; }
+  .jx-specimen-brandword { margin: 8px 0 0; color: var(--jx-fg-strong); font-family: var(--jx-font-brand); font-size: 72px; line-height: 1; }
+  .jx-specimen-literary { margin: 8px 0 0; font-family: var(--jx-font-literary); font-size: 18px; line-height: 1.9; }
+  .jx-specimen-ui { margin: 8px 0 0; font-family: var(--jx-font-ui); font-size: 14px; font-variant-numeric: tabular-nums; }
+  .jx-specimen-ornaments { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 32px; }
+  .jx-specimen-ornaments figure { display: grid; justify-items: center; gap: 12px; margin: 0; }
+  .jx-specimen-ornaments figcaption { color: var(--jx-fg-secondary); font-size: 13px; }
+  .jx-specimen-ring { width: 160px; height: 160px; }
+  .jx-specimen-gate { display: block; width: 140px; }
+  .jx-specimen-monos { display: flex; gap: 8px; }
+  .jx-specimen-monos .jx-monogram { width: 56px; aspect-ratio: 2 / 3; border-radius: 4px; font-size: 24px; }
+  .jx-specimen-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .jx-specimen-row > button:not(.jx-reading-prefs-toggle) { min-height: 48px; padding: 0 20px; }
+  .jx-specimen-empty { max-width: 480px; border-radius: 16px; background: var(--jx-surface-1); box-shadow: 0 0 0 1px var(--jx-line-subtle); }
+  .jx-specimen-story { height: auto; }
+  .jx-specimen-story .story-reading { max-height: none; overflow: visible; }
+  .jx-specimen-novel { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 32px; padding: 32px; border-radius: 4px; background: var(--jx-surface-reading); box-shadow: 0 0 0 1px var(--jx-line-subtle); }
+  .jx-specimen-novel nav { display: grid; align-content: start; gap: 8px; color: var(--jx-fg-secondary); font-size: 13px; }
+  .jx-specimen-novel nav b { color: var(--jx-fg-strong); }
+  .jx-specimen-novel h3 { margin: 0 0 16px; color: var(--jx-fg-strong); font-size: 22px; text-align: center; letter-spacing: 0.1em; }
+  .jx-specimen-novel p { max-width: 36em; margin: 0 auto 0.35em; font-family: var(--jx-font-literary); font-size: 18px; line-height: 1.95; text-indent: 2em; text-align: justify; }
+  .jx-specimen-novel .jx-specimen-note-act { color: var(--jx-fg-secondary); font-family: var(--jx-font-literary-kai); font-size: 15px; }
+  @media (max-width: 700px) { .jx-specimen-novel { grid-template-columns: minmax(0, 1fr); } }
+}

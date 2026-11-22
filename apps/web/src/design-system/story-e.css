@@ -40,43 +40,43 @@
     max-width: var(--jx-reading-measure); margin-inline: auto;
   }
   .story-prose p { margin: 0 0 var(--jx-reading-para-gap); text-indent: var(--jx-reading-indent); }
-  .story-history-entry { border-top: 0; padding-top: 0; margin-top: 2.2em; }
-  .story-history-entry::before { content: ''; display: block; width: 40px; height: 1px; margin: 0 auto 1.6em; background: var(--jx-line-default); }
+  .story-history-entry { border-top: 0; padding-top: 0; margin-top: var(--jx-reading-turn-gap); }
+  .story-history-entry::before { content: ''; display: block; width: 40px; height: 1px; margin: 0 auto var(--jx-reading-entry-gap); background: var(--jx-line-default); }
   .story-turn-kind { color: var(--jx-fg-muted); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); letter-spacing: 0; text-indent: 0; }
 
   /* ---- 角色卡会话：回合 = 批注 + 正文，不用气泡 ---- */
   .game-frame .story-reading { padding: clamp(20px, 3.4vw, 44px) clamp(16px, 4vw, 56px); }
   .game-frame .card-session .story-reading { display: block; }
   .game-frame .story-reading .card-session-turn { display: block; margin: 0 auto; padding: 0; background: none; border: 0; box-shadow: none; border-radius: 0; }
-  .game-frame .story-reading .card-session-turn + .card-session-turn { margin-top: 2.2em; }
+  .game-frame .story-reading .card-session-turn + .card-session-turn { margin-top: var(--jx-reading-turn-gap); }
   .game-frame .story-reading .card-session-turn p { margin: 0 0 var(--jx-reading-para-gap); text-indent: var(--jx-reading-indent); }
-  .game-frame .story-reading .card-session-turn .jx-turn-no { margin: 0 0 0.6em; color: var(--jx-fg-muted); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); font-weight: 400; letter-spacing: 0; }
+  .game-frame .story-reading .card-session-turn .jx-turn-no { margin: 0 0 var(--jx-reading-note-gap); color: var(--jx-fg-muted); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); font-weight: 400; letter-spacing: 0; }
   .game-frame .story-reading .card-session-turn .jx-act {
-    margin: 0 0 1em; padding-left: var(--jx-space-3); border-left: 2px solid var(--jx-accent); text-indent: 0;
+    margin: 0 0 var(--jx-reading-act-gap); padding-left: var(--jx-space-3); border-left: 2px solid var(--jx-accent); text-indent: 0;
     color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); font-size: calc(var(--jx-reading-size) * 0.85); line-height: 1.65;
   }
-  .game-frame .story-reading .card-session-turn .jx-act::before { content: '你'; margin-right: 0.6em; color: var(--jx-fg-strong); font-weight: 600; }
+  .game-frame .story-reading .card-session-turn .jx-act::before { content: '你'; margin-right: var(--jx-reading-note-gap); color: var(--jx-fg-strong); font-weight: 600; }
   .game-frame .story-reading .card-session-turn .jx-narrative { white-space: pre-wrap; }
-  .jx-visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  .jx-visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: calc(-1 * var(--jx-space-optical-1)); overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
   /* 群像：矿彩署名 */
   .game-frame .story-reading .jx-speaker-turn { --jx-speaker: var(--jx-pigment-1); }
-  .game-frame .story-reading .jx-speaker-turn + .jx-speaker-turn { margin-top: 1.2em; }
-  .game-frame .story-reading .jx-speaker-turn .jx-speaker { display: flex; align-items: center; gap: var(--jx-space-2); margin: 0 0 0.4em; color: var(--jx-speaker); font-family: var(--jx-font-literary); font-size: var(--jx-type-small); font-weight: 600; letter-spacing: 0; }
-  .game-frame .story-reading .jx-speaker-turn .jx-speaker::before { content: attr(data-initial); display: inline-grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 50%; color: var(--jx-speaker); background: var(--jx-surface-2); box-shadow: 0 0 0 1.5px currentColor; font-size: 13px; }
-  .jx-speaker-avatar { display: inline-grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 50%; color: var(--jx-speaker); background: var(--jx-surface-2); box-shadow: 0 0 0 1.5px currentColor; font-size: 13px; }
+  .game-frame .story-reading .jx-speaker-turn + .jx-speaker-turn { margin-top: var(--jx-reading-speaker-gap); }
+  .game-frame .story-reading .jx-speaker-turn .jx-speaker { display: flex; align-items: center; gap: var(--jx-space-2); margin: 0 0 var(--jx-reading-speaker-name-gap); color: var(--jx-speaker); font-family: var(--jx-font-literary); font-size: var(--jx-type-small); font-weight: 600; letter-spacing: 0; }
+  .game-frame .story-reading .jx-speaker-turn .jx-speaker::before { content: attr(data-initial); display: inline-grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 50%; color: var(--jx-speaker); background: var(--jx-surface-2); box-shadow: 0 0 0 1.5px currentColor; font-size: var(--jx-type-avatar); }
+  .jx-speaker-avatar { display: inline-grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 50%; color: var(--jx-speaker); background: var(--jx-surface-2); box-shadow: 0 0 0 1.5px currentColor; font-size: var(--jx-type-avatar); }
   .jx-speaker-id { color: var(--jx-fg-muted); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); font-weight: 400; }
   .game-frame .story-reading .jx-speaker-turn > p:last-child { padding-left: var(--jx-space-3); border-left: 2px solid var(--jx-speaker); }
 
   /* 状态与模型信息：安静的说明条，不抢正文 */
-  .game-frame .card-session-status { max-width: var(--jx-reading-measure); margin: 0 auto 1.2em; color: var(--jx-fg-muted); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); }
+  .game-frame .card-session-status { max-width: var(--jx-reading-measure); margin: 0 auto var(--jx-reading-speaker-gap); color: var(--jx-fg-muted); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); }
   .game-frame .card-session > .story-column > .card-ui-section,
-  .game-frame .story-reading > .card-ui-section { max-width: var(--jx-reading-measure); margin: 0 auto 1.4em; padding: var(--jx-space-3) var(--jx-space-4); background: var(--jx-surface-2); border: 0; border-radius: var(--jx-radius-small); box-shadow: 0 0 0 1px var(--jx-line-subtle); font-family: var(--jx-font-ui); font-size: var(--jx-type-small); }
+  .game-frame .story-reading > .card-ui-section { max-width: var(--jx-reading-measure); margin: 0 auto var(--jx-reading-block-gap); padding: var(--jx-space-3) var(--jx-space-4); background: var(--jx-surface-2); border: 0; border-radius: var(--jx-radius-small); box-shadow: 0 0 0 1px var(--jx-line-subtle); font-family: var(--jx-font-ui); font-size: var(--jx-type-small); }
   .game-frame > .card-ui-section[aria-label='角色卡模型状态'] { margin: 0 0 var(--jx-space-2); padding: var(--jx-space-2) var(--jx-space-3); background: var(--jx-surface-1); border: 0; border-radius: var(--jx-radius-control); box-shadow: 0 0 0 1px var(--jx-line-subtle); color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); }
 
   /* 回执卡：失败与恢复 */
   .game-frame .card-session-pending, .story-action-feedback {
-    max-width: var(--jx-reading-measure); margin: 1.6em auto 0; padding: var(--jx-space-3) var(--jx-space-4);
+    max-width: var(--jx-reading-measure); margin: var(--jx-reading-entry-gap) auto 0; padding: var(--jx-space-3) var(--jx-space-4);
     color: var(--jx-fg-body); background: var(--jx-surface-2); border: 0; border-left: 3px solid var(--jx-status-warning); border-radius: var(--jx-radius-small);
     font-family: var(--jx-font-ui); font-size: var(--jx-type-small); line-height: 1.7; text-indent: 0;
   }
