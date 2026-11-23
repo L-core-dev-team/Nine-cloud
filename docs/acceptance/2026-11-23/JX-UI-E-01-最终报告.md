@@ -105,7 +105,7 @@
 - **修复**（`GameShell.tsx`）：恢复阅读位置后的 5 秒内，如果读者还没有自己滚动或触碰，每当字体加载完成（`document.fonts` 的 `loadingdone`）就再恢复一次。原生存档的像素位置和角色卡的条目锚点两条路径都加了。
 - **修复后**：同一脚本正常速度 8/8 通过，CPU 降速 4 倍 4/4 通过。
 - **受影响的回归已重跑**，全部通过：web 单测、typecheck、game-shell、cloud-game-cache / -recovery / -recovery-p3 / -shell、story-first-golden、p2-gameplay、p2-authoritative-idb、turns、s-final-quality、jx-ui-e-visual、foundation（本地补丁版）、card-real-play 40/40。
-- **待确认**：CI 结果要等这次推送后的运行。
+- **CI 已确认**：修复推送 `31f739b` 后，PR #120 的 CI `verify`（运行 45232706351，2026-11-23 17:54–18:10 UTC）通过，CodeQL 与三项代码分析也通过。
 
 
 没有删除断言、跳过测试或放宽超时。改动的测试都登记在[锚点变更记录](../../design/JX-UI-E-01/锚点变更记录.md)，新断言同等或更严格。
