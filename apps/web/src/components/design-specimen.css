@@ -39,11 +39,4 @@
   .jx-specimen-empty { max-width: 480px; border-radius: 16px; background: var(--jx-surface-1); box-shadow: 0 0 0 1px var(--jx-line-subtle); }
   .jx-specimen-story { height: auto; }
   .jx-specimen-story .story-reading { max-height: none; overflow: visible; }
-  .jx-specimen-novel { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 32px; padding: 32px; border-radius: 4px; background: var(--jx-surface-reading); box-shadow: 0 0 0 1px var(--jx-line-subtle); }
-  .jx-specimen-novel nav { display: grid; align-content: start; gap: 8px; color: var(--jx-fg-secondary); font-size: 13px; }
-  .jx-specimen-novel nav b { color: var(--jx-fg-strong); }
-  .jx-specimen-novel h3 { margin: 0 0 16px; color: var(--jx-fg-strong); font-size: 22px; text-align: center; letter-spacing: 0.1em; }
-  .jx-specimen-novel p { max-width: 36em; margin: 0 auto 0.35em; font-family: var(--jx-font-literary); font-size: 18px; line-height: 1.95; text-indent: 2em; text-align: justify; }
-  .jx-specimen-novel .jx-specimen-note-act { color: var(--jx-fg-secondary); font-family: var(--jx-font-literary-kai); font-size: 15px; }
-  @media (max-width: 700px) { .jx-specimen-novel { grid-template-columns: minmax(0, 1fr); } }
 }

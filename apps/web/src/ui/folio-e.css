@@ -1,0 +1,92 @@
+/* P12 · 成卷（JX-UI-E-01）。横排为书页；竖排为手卷：右起左行，上下裱绫，乌丝栏界行，玩家行动作朱批。 */
+@layer jx.legacy, jx.tokens, jx.base, jx.materials, jx.components, jx.layouts, jx.pages, jx.overrides;
+
+@layer jx.pages {
+  .jx-folio {
+    --folio-paper: var(--jx-surface-reading);
+    --folio-ink: var(--jx-fg-body);
+    --folio-zhu: var(--jx-c-pigment-3-night);
+    --folio-rule: rgb(232 236 238 / 0.075);
+    --folio-silk: var(--jx-c-xuan-900);
+    --folio-silk-edge: rgb(212 185 135 / 0.38);
+    --folio-band: clamp(20px, 4.5vh, 40px);
+    --folio-fiber: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .55 0 0 0 0 .5 0 0 0 0 .42 0 0 0 .05 0'/%3E%3C/filter%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012 .22' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .6 0 0 0 0 .55 0 0 0 0 .45 0 0 0 .07 -.02'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23a)'/%3E%3Crect width='100%25' height='100%25' filter='url(%23b)'/%3E%3C/svg%3E");
+    position: fixed; inset: 0; width: 100vw; max-width: none; height: 100dvh; max-height: none; margin: 0; padding: 0;
+    color: var(--folio-ink); background: var(--folio-paper); border: 0; border-radius: 0; box-shadow: none;
+    font-family: var(--jx-reading-font);
+  }
+  :root[data-theme='day'] .jx-folio { --folio-zhu: var(--jx-c-pigment-3-day); --folio-rule: rgb(39 49 57 / 0.13); --folio-silk: #dde2dc; --folio-silk-edge: rgb(39 49 57 / 0.32); }
+  .jx-folio[open] { display: flex; flex-direction: column; animation: jx-folio-open var(--jx-dur-scene) var(--jx-ease-ink) both; }
+  .jx-folio::backdrop { background: var(--jx-surface-reading); }
+  @keyframes jx-folio-open { from { opacity: 0; } }
+
+  /* 工具条：只放离开、目录与排版；其余界面全部退场。 */
+  .jx-folio-bar { display: flex; flex: none; align-items: center; gap: var(--jx-space-2); min-height: 52px; padding: 0 clamp(12px, 3vw, 32px); border-bottom: 1px solid var(--jx-line-subtle); font-family: var(--jx-font-ui); }
+  .jx-folio-title { flex: 1; min-width: 0; margin: 0; overflow: hidden; color: var(--jx-fg-secondary); font-family: var(--jx-font-literary); font-size: var(--jx-type-small); letter-spacing: 0.12em; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
+  .jx-shell .jx-folio-bar button { min-height: 40px; padding: 0 var(--jx-space-3); color: var(--jx-fg-secondary); background: none; border: 1px solid var(--jx-line-control); border-radius: var(--jx-radius-control); box-shadow: none; font-family: var(--jx-font-ui); font-size: var(--jx-type-small); }
+  .jx-shell .jx-folio-bar button:hover:not(:disabled) { color: var(--jx-fg-strong); border-color: var(--jx-line-control); }
+  .jx-shell .jx-folio-bar button[aria-pressed='true'], .jx-shell .jx-folio-bar button[aria-expanded='true'] { color: var(--jx-fg-strong); background: var(--jx-surface-1); border-color: var(--jx-line-control); }
+  .jx-folio-switch { display: inline-flex; gap: var(--jx-space-optical-2); }
+
+  .jx-folio > .jx-folio-toc { display: block; }
+  .jx-folio-toc { position: absolute; top: 52px; left: 0; z-index: 2; width: min(320px, 86vw); max-height: calc(100dvh - 52px); overflow-y: auto; padding: var(--jx-space-3) 0; background: var(--jx-surface-1); border-inline-end: 1px solid var(--jx-line-subtle); box-shadow: var(--jx-shadow-float); }
+  .jx-folio-toc ol { margin: 0; padding: 0; list-style: none; }
+  .jx-shell .jx-folio-toc button { display: flex; align-items: baseline; justify-content: space-between; gap: var(--jx-space-3); width: 100%; min-height: 44px; padding: 0 var(--jx-space-5); color: var(--jx-fg-body); background: none; border: 0; border-radius: 0; box-shadow: none; font-family: var(--jx-font-literary); font-size: var(--jx-type-body); text-align: start; }
+  .jx-shell .jx-folio-toc button:hover { color: var(--jx-fg-strong); background: var(--jx-surface-2); }
+  .jx-folio-toc small { color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); font-variant-numeric: tabular-nums; }
+
+  .jx-folio-scroll { flex: 1; min-height: 0; background-color: var(--folio-paper); background-image: var(--folio-fiber); }
+  .jx-folio-scroll:focus-visible { outline: 2px solid var(--jx-focus-ring); outline-offset: -4px; }
+  .jx-folio-text p { margin: 0; overflow-wrap: anywhere; }
+  .jx-folio[data-justify='true'] .jx-folio-text p { text-align: justify; }
+  .jx-zhupi { color: var(--folio-zhu); font-family: var(--jx-font-zhupi); font-size: var(--jx-type-zhupi); }
+  .jx-folio-speaker { margin-inline-end: var(--jx-reading-speaker-name-gap); color: var(--jx-speaker); font-weight: 600; }
+
+  /* —— 横排：书页 —— */
+  .jx-folio[data-orientation='horizontal'] .jx-folio-scroll { overflow-y: auto; }
+  .jx-folio[data-orientation='horizontal'] .jx-folio-text { box-sizing: content-box; max-inline-size: var(--jx-reading-measure); margin: 0 auto; padding: clamp(40px, 9vh, 96px) clamp(20px, 6vw, 64px) clamp(64px, 14vh, 140px); font-size: var(--jx-reading-size); line-height: var(--jx-reading-leading); }
+  .jx-folio[data-orientation='horizontal'] .jx-folio-head { margin-bottom: var(--jx-space-8); text-align: center; }
+  .jx-folio[data-orientation='horizontal'] .jx-folio-head h2 { margin: 0 0 var(--jx-space-3); color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-size: var(--jx-text-h1); font-weight: 600; letter-spacing: 0.2em; }
+  .jx-folio[data-orientation='horizontal'] .jx-folio-head p { color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); font-size: var(--jx-type-small); text-indent: 0; text-align: center; }
+  .jx-folio[data-orientation='horizontal'] .jx-folio-chapter { scroll-margin-top: var(--jx-space-6); }
+  .jx-folio[data-orientation='horizontal'] .jx-folio-chapter + .jx-folio-chapter { margin-top: var(--jx-space-8); }
+  .jx-folio[data-orientation='horizontal'] .jx-folio-chapter h3 { display: grid; justify-items: center; gap: var(--jx-space-1); margin: 0 0 var(--jx-space-6); color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-size: var(--jx-text-h2); font-weight: 600; letter-spacing: 0.3em; text-indent: 0.3em; }
+  .jx-folio[data-orientation='horizontal'] .jx-folio-chapter h3 small { color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); font-weight: 400; letter-spacing: 0.04em; text-indent: 0; font-variant-numeric: tabular-nums; }
+  .jx-folio[data-orientation='horizontal'] .jx-folio-text p { text-indent: 2em; }
+  .jx-folio[data-orientation='horizontal'] .jx-zhupi { margin: var(--jx-space-4) 0 var(--jx-space-2); padding-inline-start: var(--jx-reading-ge-4); text-indent: 0; line-height: 1.7; }
+  .jx-folio[data-orientation='horizontal'] .jx-folio-voice { margin-top: var(--jx-space-2); }
+
+  /* —— 竖排：手卷 —— 每一列宽都是一行高，所有块的宽度取其整数倍，乌丝栏才能对齐。 */
+  .jx-folio[data-orientation='vertical'] .jx-folio-scroll {
+    writing-mode: vertical-rl; overflow-x: auto; overflow-y: hidden; overscroll-behavior: contain;
+    background-image:
+      linear-gradient(to bottom, var(--folio-silk) 0 var(--folio-band), var(--folio-silk-edge) var(--folio-band) calc(var(--folio-band) + 1px), transparent calc(var(--folio-band) + 1px) calc(100% - var(--folio-band) - 1px), var(--folio-silk-edge) calc(100% - var(--folio-band) - 1px) calc(100% - var(--folio-band)), var(--folio-silk) calc(100% - var(--folio-band))),
+      var(--folio-fiber);
+  }
+  .jx-folio[data-orientation='vertical'] .jx-folio-text {
+    --lh: calc(var(--jx-reading-size) * 2);
+    box-sizing: border-box; block-size: auto; inline-size: 100%;
+    padding-block: calc(var(--lh) * 2);
+    padding-inline: calc(var(--folio-band) + clamp(20px, 5vh, 52px));
+    font-size: var(--jx-reading-size); line-height: var(--lh);
+    background: repeating-linear-gradient(to left, var(--folio-rule) 0 1px, transparent 1px var(--lh)) right top / auto no-repeat content-box;
+    font-feature-settings: 'vert' 1, 'vrt2' 1;
+  }
+  .jx-folio[data-orientation='vertical'] .jx-folio-text p { text-indent: 2em; }
+  .jx-folio[data-orientation='vertical'] .jx-folio-head { block-size: calc(var(--lh) * 5); margin-block-end: var(--lh); padding-inline-start: var(--jx-reading-ge-2); background: var(--folio-paper); box-shadow: -1px 0 0 var(--folio-silk-edge); }
+  .jx-folio[data-orientation='vertical'] .jx-folio-head h2 { margin: 0; color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-size: var(--jx-text-h1); font-weight: 600; line-height: calc(var(--lh) * 3); letter-spacing: 0.3em; }
+  .jx-folio[data-orientation='vertical'] .jx-folio-head p { color: var(--jx-fg-secondary); font-family: var(--jx-font-literary); font-size: var(--jx-type-small); text-indent: 0; }
+  .jx-folio[data-orientation='vertical'] .jx-folio-chapter { scroll-margin-inline: 0; scroll-margin-block: var(--lh); }
+  .jx-folio[data-orientation='vertical'] .jx-folio-chapter h3 { display: grid; margin: 0; margin-block-start: var(--lh); padding-inline-start: var(--jx-reading-ge-1); color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-size: var(--jx-text-h3); font-weight: 600; line-height: calc(var(--lh) * 2); letter-spacing: 0.2em; }
+  .jx-folio[data-orientation='vertical'] .jx-folio-chapter h3 small { padding-inline-start: var(--jx-reading-ge-2); color: var(--jx-fg-secondary); font-family: var(--jx-font-literary); font-size: var(--jx-type-caption); font-weight: 400; line-height: var(--lh); letter-spacing: 0.06em; }
+  .jx-folio[data-orientation='vertical'] .jx-folio-prologue + .jx-folio-chapter h3, .jx-folio[data-orientation='vertical'] .jx-folio-head + .jx-folio-chapter h3 { margin-block-start: 0; }
+  /* 朱批：低三格，小一号楷书，朱色——批语在古籍里的位置。 */
+  .jx-folio[data-orientation='vertical'] .jx-zhupi { padding-inline-start: var(--jx-reading-ge-3); text-indent: 0; }
+
+  @media (max-width: 599px) {
+    .jx-folio-title { display: none; }
+    .jx-folio-bar { justify-content: space-between; }
+  }
+  @media (prefers-reduced-motion: reduce) { .jx-folio[open] { animation: none; } }
+  @media (forced-colors: active) { .jx-zhupi { color: CanvasText; } }
+}

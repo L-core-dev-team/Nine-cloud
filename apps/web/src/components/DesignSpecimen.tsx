@@ -1,6 +1,8 @@
 import { useState, type CSSProperties } from 'react';
 import { ArmillaryRing, Monogram, MoonGate, Seal } from '../ui/Ornaments';
 import { ReadingPrefsDialog, useReadingPrefs } from '../ui/ReadingPrefs';
+import { Folio } from '../ui/Folio';
+import { FOLIO_SAMPLE } from './folio-sample';
 import '../design-system/tokens-v2.css';
 import '../design-system/jx-e.css';
 import '../design-system/story-e.css';
@@ -23,6 +25,7 @@ export function DesignSpecimen() {
   const [theme, setTheme] = useState<'night' | 'day'>(() => document.documentElement.dataset.theme === 'day' ? 'day' : 'night');
   const [drawKey, setDrawKey] = useState(0);
   const [prefsOpen, setPrefsOpen] = useState(false);
+  const [folioOpen, setFolioOpen] = useState(false);
   const [prefs, setPrefs] = useReadingPrefs();
   const toggleTheme = () => { const next = theme === 'night' ? 'day' : 'night'; document.documentElement.dataset.theme = next; setTheme(next); };
   return <div className="jx-shell jx-specimen" data-jx-layer="lobby">
@@ -80,13 +83,12 @@ export function DesignSpecimen() {
     </section>
 
     <section className="jx-specimen-section" data-jx-layer="story">
-      <h2>成卷 · 小说阅读模式 <small>概念稿，未实现</small></h2>
-      <article className="jx-specimen-novel">
-        <nav aria-label="目录（概念）"><b>目录</b><span>第一回　芦花渡</span><span>第二回　东门夜巡</span><span>第三回（第 21–30 回合）</span></nav>
-        <div><h3>第一回　芦花渡</h3><p>芦花渡的雾还没散。渡船靠在石阶下，船篷上落了一层薄霜。远处有人在吹埙，声音被水面压得很低。</p><p className="jx-specimen-note-act">你推门进去，看看屋里有没有人。</p><p>门轴发出一声干涩的响。屋里没有点灯，只有灶膛里一点将熄的炭火，把墙上挂着的蓑衣照出半个影子。</p></div>
-      </article>
-      <p className="jx-specimen-note">分章只按已存字段确定（地点变化或每 10 回合）；AI 章节标题、润色与 EPUB/PDF 导出没有接口，不进入可用产品。</p>
+      <h2>成卷 · 小说阅读模式</h2>
+      <p className="jx-specimen-note">只读：把已有会话重新排成书。横排为书页，竖排为手卷（右起左行、乌丝栏），玩家行动作朱批；每 10 次行动分一回。正式入口在构建开关 <code>VITE_JX_NOVEL_MODE=1</code> 后，默认关闭。下面用样张演示。</p>
+      <button type="button" className="secondary" onClick={() => setFolioOpen(true)}>打开成卷样张</button>
+      <p className="jx-specimen-note">概念稿，未实现：AI 章节标题、润色成小说、EPUB/PDF 导出——没有接口，且会调用真实 AI，不进入可用产品。</p>
     </section>
+    {folioOpen && <Folio book={FOLIO_SAMPLE} onClose={() => setFolioOpen(false)} />}
     {prefsOpen && <ReadingPrefsDialog prefs={prefs} onChange={setPrefs} onClose={() => setPrefsOpen(false)} />}
   </div>;
 }

@@ -91,6 +91,7 @@
     --jx-font-brand: "Ma Shan Zheng Brand", "Kaiti SC", "STKaiti", "KaiTi", serif;
     --jx-font-literary: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", serif;
     --jx-font-literary-kai: "Kaiti SC", "STKaiti", "KaiTi", "BiauKai", serif; /* 阅读偏好"楷"：使用系统楷体，不下载 */
+    --jx-font-zhupi: "Kaiti SC", "STKaiti", "KaiTi", "BiauKai", "Noto Serif SC", "Source Han Serif SC", serif; /* 朱批：系统楷体，缺失时回到书卷宋体（竖排需要竖排字宽） */
     --jx-font-ui: system-ui, -apple-system, "PingFang SC", "HarmonyOS Sans SC", "MiSans",
       "Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans SC", "Source Han Sans SC", sans-serif;
 
@@ -112,6 +113,11 @@
     --jx-reading-note-gap: 0.6em;
     --jx-reading-speaker-name-gap: 0.4em;
     --jx-seal-offset: 0.45em;
+    /* 古籍排版以“格”（一个字宽）计缩进：低一格、低二格…… */
+    --jx-reading-ge-1: 1em;
+    --jx-reading-ge-2: 2em;
+    --jx-reading-ge-3: 3em;
+    --jx-reading-ge-4: 4em;
 
     /* 签名元素尺寸 */
     --jx-radius-hairline: 1px;
@@ -123,6 +129,8 @@
     --jx-type-seal-xl: 2.125rem;
     --jx-type-macro: 0.82em; /* 卡片占位符 {{char}} 等，随正文缩放 */
     --jx-type-speaker-inline: 0.86em;
+    --jx-type-zhupi: 0.86em; /* 成卷：玩家行动的朱批，随正文缩放 */
+    --jx-type-folio-range: 0.42em;
     /* 人物志题签：按名字长度分三档 */
     --jx-text-tiqian-short: 1.625rem;
     --jx-text-tiqian-mid: 1.3125rem;
