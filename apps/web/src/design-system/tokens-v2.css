@@ -259,7 +259,7 @@
     --jx-line-default: rgb(39 49 57 / 0.18);
     --jx-line-strong: rgb(39 49 57 / 0.36);
     --jx-line-ornament: rgb(125 98 54 / 0.45);
-    --jx-line-control: #6e7c86; /* ≥3:1 against paper surfaces */
+    --jx-line-control: #5f6c75; /* ≥3:1 against paper surfaces and veiled paper canvases */
 
     --jx-accent: var(--jx-c-jade-700);
     --jx-accent-hover: var(--jx-c-jade-800);

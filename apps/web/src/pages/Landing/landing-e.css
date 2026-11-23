@@ -25,7 +25,7 @@
   .hero-title-group .hero-armillary { position: absolute; inset: 0; width: 100%; height: 100%; color: var(--jx-ornament); }
   /* 月晕：题字背后的一圈暗光（夜）或纸光（昼），让题字在任何场景局部都清晰。 */
   .hero-title-group::before { content: ''; position: absolute; inset: 14%; border-radius: 50%; background: radial-gradient(closest-side, rgb(5 14 21 / 0.66), rgb(5 14 21 / 0.42) 62%, rgb(5 14 21 / 0)); pointer-events: none; }
-  :root[data-theme='day'] .hero-title-group::before { background: radial-gradient(closest-side, rgb(243 239 230 / 0.9), rgb(243 239 230 / 0.7) 62%, rgb(243 239 230 / 0)); }
+  :root[data-theme='day'] .hero-title-group::before { inset: 4%; background: radial-gradient(closest-side, rgb(243 239 230 / 0.96), rgb(243 239 230 / 0.88) 58%, rgb(243 239 230 / 0.5) 80%, rgb(243 239 230 / 0)); }
   .hero-lockup { position: relative; display: flex; align-items: flex-end; gap: var(--jx-space-3); }
   .landing-shell .hero .hero-mark {
     margin: 0; writing-mode: vertical-rl; text-orientation: upright;

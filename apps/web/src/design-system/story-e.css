@@ -125,10 +125,10 @@
 
   /* ---- 顶行与地点铭牌 ---- */
   .game-frame .game-topline h1, .story-header h1 { color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-weight: 600; letter-spacing: 0.06em; }
-  .game-frame .game-topline > div > span, .story-header .eyebrow { color: var(--jx-fg-muted); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); letter-spacing: 0; }
-  .story-header { position: relative; padding: var(--jx-space-1) var(--jx-space-4) var(--jx-space-1) var(--jx-space-6); background: var(--jx-mat-metal-fill); border-radius: var(--jx-radius-small); box-shadow: 0 0 0 1px var(--jx-mat-metal-rim), var(--jx-mat-highlight); overflow: hidden; }
+  .game-frame .game-topline > div > span, .story-header .eyebrow { color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); letter-spacing: 0; }
+  .story-header { position: relative; padding: var(--jx-space-1) var(--jx-space-4) var(--jx-space-1) var(--jx-space-7); background: var(--jx-mat-metal-fill); border-radius: var(--jx-radius-small); box-shadow: 0 0 0 1px var(--jx-mat-metal-rim), var(--jx-mat-highlight); overflow: hidden; }
   .story-header::after {
-    content: ''; position: absolute; left: -54px; top: 50%; width: 132px; height: 132px; transform: translateY(-50%); pointer-events: none; opacity: 0.32;
+    content: ''; position: absolute; left: 12px; top: 50%; width: 28px; height: 28px; transform: translateY(-50%); pointer-events: none; opacity: 0.85;
     background: no-repeat center / contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='none' stroke='%23d4b987' stroke-linecap='round'%3E%3Ccircle cx='50' cy='50' r='45' stroke-width='.6'/%3E%3Cellipse cx='50' cy='50' rx='45' ry='15' transform='rotate(-18 50 50)' stroke-width='.5'/%3E%3Cpath d='M50 5v4M95 50h-4M50 95v-4M5 50h4M82 18l-2.5 2.5M82 82l-2.5-2.5' stroke-width='.6'/%3E%3C/g%3E%3C/svg%3E");
   }
   .story-utilities { position: relative; z-index: 1; color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); }

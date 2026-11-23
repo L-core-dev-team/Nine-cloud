@@ -42,6 +42,9 @@
   /* 案头：场景只留极淡的影子（约 8%），保持品牌连续，工具内容在平光里。 */
   .jx-shell[data-jx-layer='tool']:not([data-jx-route='graphics'])::before { background: linear-gradient(rgb(8 23 34 / 0.9), rgb(8 23 34 / 0.94)), var(--jx-scene-poster-desktop, url('/scenes/gate-moonlight.webp')) center / cover no-repeat; }
   .jx-shell[data-jx-layer='tool']:not([data-jx-route='graphics'])::after { opacity: 0; }
+  /* 画面设置保留完整场景以便预览；晴昼时加一层浅纸色，让说明文字可读。 */
+  :root[data-theme='day'] .jx-shell[data-jx-route='graphics']::after { background: rgb(243 239 230 / 0.6); opacity: 1; mix-blend-mode: normal; }
+  .jx-shell[data-jx-layer='tool'] .eyebrow:not(:is(.ai-page, .ai-actionbar, .glass-dialog) *) { color: var(--jx-fg-secondary); }
   .jx-shell[data-jx-layer='tool']:not([data-jx-route='graphics']) .scene-atmosphere { opacity: 0; }
   :root[data-theme='day'] .jx-shell[data-jx-layer='tool']:not([data-jx-route='graphics'])::before { background: linear-gradient(rgb(243 239 230 / 0.92), rgb(243 239 230 / 0.95)), var(--jx-scene-poster-desktop, url('/scenes/gate-moonlight.webp')) center / cover no-repeat; }
   @media (max-width: 720px) {
