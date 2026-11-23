@@ -74,6 +74,8 @@
   .game-frame .card-session-status { max-width: var(--jx-reading-measure); margin: 0 auto var(--jx-reading-speaker-gap); color: var(--jx-fg-muted); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); }
   .game-frame .card-session > .story-column > .card-ui-section,
   .game-frame .story-reading > .card-ui-section { max-width: var(--jx-reading-measure); margin: 0 auto var(--jx-reading-block-gap); padding: var(--jx-space-3) var(--jx-space-4); background: var(--jx-surface-2); border: 0; border-radius: var(--jx-radius-small); box-shadow: 0 0 0 1px var(--jx-line-subtle); font-family: var(--jx-font-ui); font-size: var(--jx-type-small); }
+  .game-frame > .card-ui-section[aria-label='角色卡模型状态'] { display: flex; flex-wrap: wrap; gap: var(--jx-space-optical-2) var(--jx-space-3); line-height: 1.5; }
+  .game-frame > .card-ui-section[aria-label='角色卡模型状态'] > p { margin: 0; }
   .game-frame > .card-ui-section[aria-label='角色卡模型状态'] { margin: 0 0 var(--jx-space-2); padding: var(--jx-space-2) var(--jx-space-3); background: var(--jx-surface-1); border: 0; border-radius: var(--jx-radius-control); box-shadow: 0 0 0 1px var(--jx-line-subtle); color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); }
 
   /* 回执卡：失败与恢复 */

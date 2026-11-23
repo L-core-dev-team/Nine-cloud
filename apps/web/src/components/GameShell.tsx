@@ -112,12 +112,19 @@ function useNewReplyNotice(frame: RefObject<HTMLElement | null>, ready: boolean)
       const rect = reading.getBoundingClientRect();
       setStyle({ position: 'fixed', left: `${rect.left + rect.width / 2}px`, top: `${Math.max(rect.top + 8, rect.bottom - 52)}px`, bottom: 'auto' });
     };
+    // History that loads or restores after mount is not a new reply: only entries
+    // appended to an already populated column, after the initial settle, count.
+    const settledAt = performance.now() + 1500;
+    let known = reading.querySelectorAll('[data-reading-id]').length;
     const observer = new MutationObserver(records => {
       const added: HTMLElement[] = [];
       for (const record of records) for (const node of record.addedNodes) {
         if (node instanceof HTMLElement && node.matches('[data-reading-id]')) added.push(node);
       }
       if (!added.length) return;
+      const hadHistory = known > 0;
+      known = reading.querySelectorAll('[data-reading-id]').length;
+      if (!hadHistory || performance.now() < settledAt || added.length > 6) return;
       for (const node of added) node.dataset.jxNew = '1';
       const first = added[0]!;
       const readingRect = reading.getBoundingClientRect();
