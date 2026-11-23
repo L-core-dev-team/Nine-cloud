@@ -44,3 +44,8 @@
   /* 分类筛选保留一块成组的玻璃托盘（既有契约），去掉托盘描边以免与筛选按钮形成双重边框。 */
   .world-page .worldbook-categories { border-color: transparent; box-shadow: none; }
 }
+
+/* CLS：设定正文分块异步载入；载入期间预留一屏高度，避免数据到达后把下方说明卡推下去。 */
+@layer jx.pages {
+  .world-page .worldbook-results:has(> .worldbook-loading) { min-height: 100svh; }
+}
