@@ -164,3 +164,18 @@
   .jx-segmented label:has(input:focus-visible) { outline: 2px solid var(--jx-focus-ring); outline-offset: 2px; }
   .jx-reading-prefs-note { margin: 0; color: var(--jx-fg-muted); font-size: var(--jx-type-caption); }
 }
+
+/* 手机书阁：顶栏 48px，标题行高固定，字体异步替换后输入栏仍完整留在视口内（P11）。 */
+@layer jx.pages {
+  @media (max-width: 599px) {
+    .jx-shell[data-jx-layer='story'] > header { height: var(--jx-header-h-story-compact); }
+    .game-frame .game-topline :is(h1, h2), .story-header h1 { line-height: 1.3; }
+  }
+}
+
+/* 游玩页外壳高度：取 visualViewport 写入值与 100dvh 的较小者。旋转或缩小窗口时，
+   dvh 与布局同步更新，避免 resize 事件到达前的一帧里输入栏被挤出视口；
+   软键盘弹出时可视高度更小，仍以它为准。 */
+@layer jx.pages {
+  .jx-shell:has(.game-frame) { height: min(var(--jx-game-viewport-height, 100dvh), 100dvh); }
+}

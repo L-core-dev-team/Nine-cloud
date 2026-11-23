@@ -177,6 +177,7 @@
     --jx-drawer-w: clamp(320px, 26vw, 360px);
     --jx-header-h-lobby: 64px;
     --jx-header-h-compact: 52px;
+    --jx-header-h-story-compact: 48px;
     --jx-bottom-nav-h: 56px;
   }
 
