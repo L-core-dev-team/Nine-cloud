@@ -1,0 +1,2006 @@
+{
+  "generatedAt": "2026-11-23T13:10:26.479Z",
+  "base": "vite preview of apps/web/dist, API offline (503)",
+  "records": [
+    {
+      "label": "default-360-night-home",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-360-night-lobby",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-360-night-world",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "story",
+      "errors": []
+    },
+    {
+      "label": "default-360-night-new",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-360-night-saves",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-360-night-intro",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-360-night-ai",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-360-night-graphics",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-360-night-cloud",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-360-night-cards",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-360-day-home",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-360-day-lobby",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-360-day-world",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "story",
+      "errors": []
+    },
+    {
+      "label": "default-360-day-new",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-360-day-saves",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-360-day-intro",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-360-day-ai",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-360-day-graphics",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-360-day-cloud",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-360-day-cards",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-390-night-home",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-390-night-lobby",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-390-night-world",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "story",
+      "errors": []
+    },
+    {
+      "label": "default-390-night-new",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-390-night-saves",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-390-night-intro",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-390-night-ai",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-390-night-graphics",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-390-night-cloud",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-390-night-cards",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-390-day-home",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-390-day-lobby",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-390-day-world",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "story",
+      "errors": []
+    },
+    {
+      "label": "default-390-day-new",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-390-day-saves",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-390-day-intro",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-390-day-ai",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-390-day-graphics",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-390-day-cloud",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-390-day-cards",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-430-night-home",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-430-night-lobby",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-430-night-world",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "story",
+      "errors": []
+    },
+    {
+      "label": "default-430-night-new",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-430-night-saves",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-430-night-intro",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-430-night-ai",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-430-night-graphics",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-430-night-cloud",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-430-night-cards",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-430-day-home",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-430-day-lobby",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-430-day-world",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "story",
+      "errors": []
+    },
+    {
+      "label": "default-430-day-new",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-430-day-saves",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-430-day-intro",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-430-day-ai",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-430-day-graphics",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-430-day-cloud",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-430-day-cards",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-768-night-home",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-768-night-lobby",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-768-night-world",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "story",
+      "errors": []
+    },
+    {
+      "label": "default-768-night-new",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-768-night-saves",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-768-night-intro",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-768-night-ai",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-768-night-graphics",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-768-night-cloud",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-768-night-cards",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-768-day-home",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-768-day-lobby",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-768-day-world",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "story",
+      "errors": []
+    },
+    {
+      "label": "default-768-day-new",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-768-day-saves",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-768-day-intro",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-768-day-ai",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-768-day-graphics",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-768-day-cloud",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-768-day-cards",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1024-night-home",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1024-night-lobby",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1024-night-world",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "story",
+      "errors": []
+    },
+    {
+      "label": "default-1024-night-new",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-1024-night-saves",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1024-night-intro",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1024-night-ai",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-1024-night-graphics",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-1024-night-cloud",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-1024-night-cards",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1024-day-home",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1024-day-lobby",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1024-day-world",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "story",
+      "errors": []
+    },
+    {
+      "label": "default-1024-day-new",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-1024-day-saves",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1024-day-intro",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1024-day-ai",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-1024-day-graphics",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-1024-day-cloud",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-1024-day-cards",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1440-night-home",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1440-night-lobby",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1440-night-world",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "story",
+      "errors": []
+    },
+    {
+      "label": "default-1440-night-new",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-1440-night-saves",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1440-night-intro",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1440-night-ai",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-1440-night-graphics",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-1440-night-cloud",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-1440-night-cards",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1440-day-home",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1440-day-lobby",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1440-day-world",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "story",
+      "errors": []
+    },
+    {
+      "label": "default-1440-day-new",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-1440-day-saves",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1440-day-intro",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1440-day-ai",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-1440-day-graphics",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-1440-day-cloud",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-1440-day-cards",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1920-night-home",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1920-night-lobby",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1920-night-world",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "story",
+      "errors": []
+    },
+    {
+      "label": "default-1920-night-new",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-1920-night-saves",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1920-night-intro",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1920-night-ai",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-1920-night-graphics",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-1920-night-cloud",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-1920-night-cards",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1920-day-home",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1920-day-lobby",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1920-day-world",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "story",
+      "errors": []
+    },
+    {
+      "label": "default-1920-day-new",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-1920-day-saves",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1920-day-intro",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "default-1920-day-ai",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-1920-day-graphics",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-1920-day-cloud",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "default-1920-day-cards",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "reduced-motion-390-night-home",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "reduced-motion-390-night-lobby",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "reduced-motion-390-night-world",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "story",
+      "errors": []
+    },
+    {
+      "label": "reduced-motion-390-night-new",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "reduced-motion-390-night-saves",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "reduced-motion-390-night-intro",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "reduced-motion-390-night-ai",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "reduced-motion-390-night-graphics",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "reduced-motion-390-night-cloud",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "reduced-motion-390-night-cards",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "reduced-motion-1440-night-home",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "reduced-motion-1440-night-lobby",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "reduced-motion-1440-night-world",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "story",
+      "errors": []
+    },
+    {
+      "label": "reduced-motion-1440-night-new",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "reduced-motion-1440-night-saves",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "reduced-motion-1440-night-intro",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "reduced-motion-1440-night-ai",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "reduced-motion-1440-night-graphics",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "reduced-motion-1440-night-cloud",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "reduced-motion-1440-night-cards",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "reduced-transparency-390-night-home",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "reduced-transparency-390-night-lobby",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "reduced-transparency-390-night-world",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "story",
+      "errors": []
+    },
+    {
+      "label": "reduced-transparency-390-night-new",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "reduced-transparency-390-night-saves",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "reduced-transparency-390-night-intro",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "reduced-transparency-390-night-ai",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "reduced-transparency-390-night-graphics",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "reduced-transparency-390-night-cloud",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "reduced-transparency-390-night-cards",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "reduced-transparency-1440-night-home",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "reduced-transparency-1440-night-lobby",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "reduced-transparency-1440-night-world",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "story",
+      "errors": []
+    },
+    {
+      "label": "reduced-transparency-1440-night-new",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "reduced-transparency-1440-night-saves",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "reduced-transparency-1440-night-intro",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "reduced-transparency-1440-night-ai",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "reduced-transparency-1440-night-graphics",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "reduced-transparency-1440-night-cloud",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "reduced-transparency-1440-night-cards",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "text-200-390-night-home",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "text-200-390-night-lobby",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "text-200-390-night-world",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "story",
+      "errors": []
+    },
+    {
+      "label": "text-200-390-night-new",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "text-200-390-night-saves",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "text-200-390-night-intro",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "text-200-390-night-ai",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "text-200-390-night-graphics",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "text-200-390-night-cloud",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "text-200-390-night-cards",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "text-200-1440-night-home",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "text-200-1440-night-lobby",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "text-200-1440-night-world",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "story",
+      "errors": []
+    },
+    {
+      "label": "text-200-1440-night-new",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "text-200-1440-night-saves",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "text-200-1440-night-intro",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    },
+    {
+      "label": "text-200-1440-night-ai",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "text-200-1440-night-graphics",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "text-200-1440-night-cloud",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "tool",
+      "errors": []
+    },
+    {
+      "label": "text-200-1440-night-cards",
+      "overflow": 0,
+      "header": true,
+      "primaryFound": true,
+      "primaryInViewport": true,
+      "clipped": [],
+      "layer": "lobby",
+      "errors": []
+    }
+  ]
+}
