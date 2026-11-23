@@ -74,7 +74,7 @@ export function GameShell({ saveId, children, archive, readingReady = true, imme
   </section>;
 }
 
-export function GameInfoDialog({ label, onClose, children }: { label: string; onClose: () => void; children: ReactNode }) {
+export function GameInfoDialog({ label, onClose, children, className }: { label: string; onClose: () => void; children: ReactNode; className?: string }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -83,7 +83,7 @@ export function GameInfoDialog({ label, onClose, children }: { label: string; on
     dialog.showModal();
     return () => { if (dialog.open) dialog.close(); if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true }); };
   }, []);
-  return <dialog ref={dialogRef} className="game-info-dialog" aria-label={`${label}详情`} onCancel={event => { event.preventDefault(); onClose(); }} onKeyDown={event => {
+  return <dialog ref={dialogRef} className={className ? `game-info-dialog ${className}` : 'game-info-dialog'} aria-label={`${label}详情`} onCancel={event => { event.preventDefault(); onClose(); }} onKeyDown={event => {
     if (event.key !== 'Tab') return;
     const controls = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), summary, [tabindex]:not([tabindex="-1"])')).filter(control => control.getClientRects().length > 0);
     const first = controls[0]; const last = controls.at(-1);

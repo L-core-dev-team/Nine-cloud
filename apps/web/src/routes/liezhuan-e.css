@@ -1,0 +1,153 @@
+/* P04 · 人物志「列传」（JX-UI-E-01）。立轴像为书衣，名字写在题签上，卡片字段按列传分章。 */
+@layer jx.legacy, jx.tokens, jx.base, jx.materials, jx.components, jx.layouts, jx.pages, jx.overrides;
+
+@layer jx.pages {
+  /* 抽屉：从右缘展开，像把一册书从书架抽出。 */
+  .game-info-dialog.jx-liezhuan-dialog {
+    --jx-lz-gutter: clamp(16px, 4.5vw, 52px);
+    --jx-lz-gold: var(--jx-c-gold-400);
+    --jx-lz-paper: #f4efe3;
+    --jx-lz-ink: #1f2a31;
+    width: min(840px, 100vw); max-width: 100vw; height: 100dvh; max-height: 100dvh; margin: 0 0 0 auto;
+    color: var(--jx-fg-body); background: var(--jx-surface-reading);
+    border: 0; border-inline-start: 1px solid var(--jx-line-ornament); border-radius: 0;
+    box-shadow: -32px 0 80px rgb(2 8 14 / 0.55);
+  }
+  :root[data-theme='day'] .game-info-dialog.jx-liezhuan-dialog { --jx-lz-gold: var(--jx-c-gold-700); color: var(--jx-fg-body); background: var(--jx-surface-reading); border-color: var(--jx-line-ornament); box-shadow: -24px 0 64px rgb(39 49 57 / 0.16); }
+  .game-info-dialog.jx-liezhuan-dialog[open] { animation: jx-lz-unroll var(--jx-dur-panel) var(--jx-ease-ink) both; }
+  .game-info-dialog.jx-liezhuan-dialog::backdrop { background: rgb(2 8 14 / 0.62); }
+  :root[data-theme='day'] .game-info-dialog.jx-liezhuan-dialog::backdrop { background: rgb(39 49 57 / 0.34); }
+  @keyframes jx-lz-unroll { from { clip-path: inset(0 0 0 100%); } to { clip-path: inset(0 0 0 0); } }
+
+  .jx-liezhuan-dialog .game-info-dialog-heading { padding: var(--jx-space-2) var(--jx-space-3) var(--jx-space-2) var(--jx-lz-gutter); border-bottom: 1px solid var(--jx-line-subtle); }
+  .jx-liezhuan-dialog .game-info-dialog-heading h2 { color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); font-size: var(--jx-type-small); font-weight: 400; letter-spacing: 0.08em; }
+  .jx-liezhuan-dialog .game-info-dialog-heading button { color: var(--jx-fg-secondary); border: 0; border-radius: var(--jx-radius-control); }
+  .jx-liezhuan-dialog .game-info-dialog-heading button:hover { color: var(--jx-fg-strong); background: var(--jx-surface-1); }
+  .jx-liezhuan-dialog .game-info-dialog-body { padding: 0; scroll-padding-top: var(--jx-space-8); }
+
+  /* 书衣 */
+  .jx-lz-cover {
+    display: grid; grid-template-columns: minmax(150px, 228px) minmax(0, 1fr); align-items: end; gap: var(--jx-space-6);
+    padding: var(--jx-space-6) var(--jx-lz-gutter);
+    background: linear-gradient(180deg, var(--jx-c-xuan-900), var(--jx-c-xuan-850));
+    border-bottom: 1px solid var(--jx-lz-gold);
+  }
+  :root[data-theme='day'] .jx-lz-cover { background: linear-gradient(180deg, var(--jx-c-zhi-50), var(--jx-c-zhi-100)); }
+  .jx-lz-portrait { position: relative; }
+  .jx-lz-portrait .jx-scroll-frame { box-shadow: 0 0 0 1px var(--jx-line-ornament), 0 22px 48px rgb(2 8 14 / 0.5); }
+  :root[data-theme='day'] .jx-lz-portrait .jx-scroll-frame { box-shadow: 0 0 0 1px var(--jx-line-ornament), 0 16px 36px rgb(39 49 57 / 0.2); }
+
+  /* 题签：贴在书衣左上的纸条，竖排右起，细墨框。 */
+  .jx-tiqian {
+    position: absolute; top: 7%; left: 8%; display: flex; flex-direction: column; align-items: center; min-height: 54%; max-width: 84%; margin: 0;
+    padding: var(--jx-space-3) var(--jx-space-2);
+    color: var(--jx-lz-ink); background: var(--jx-lz-paper);
+    border-radius: var(--jx-radius-hairline);
+    box-shadow: inset 0 0 0 3px var(--jx-lz-paper), inset 0 0 0 4px rgb(31 42 49 / 0.55), 0 1px 2px rgb(2 8 14 / 0.35), 0 6px 14px rgb(2 8 14 / 0.18);
+    font-family: var(--jx-font-literary); font-size: var(--jx-text-tiqian-short); font-weight: 600; line-height: 1.18;
+  }
+  .jx-tiqian > span { display: block; }
+  .jx-tiqian > span + span { margin-top: var(--jx-space-optical-2); }
+  .jx-tiqian > .jx-tq-run { writing-mode: vertical-rl; line-height: 1; letter-spacing: 0.04em; }
+  .jx-tiqian[data-length='mid'] { font-size: var(--jx-text-tiqian-mid); }
+  .jx-tiqian[data-length='long'] { display: block; min-height: 0; padding: var(--jx-space-2) var(--jx-space-3); font-size: var(--jx-text-tiqian-long); line-height: 1.4; overflow-wrap: anywhere; }
+
+  .jx-lz-colophon { display: grid; align-content: end; gap: var(--jx-space-3); min-width: 0; }
+  .jx-lz-colophon p { margin: 0; }
+  .jx-lz-byline { color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-size: var(--jx-type-lead); letter-spacing: 0.04em; }
+  .jx-lz-tags { color: var(--jx-fg-secondary); font-size: var(--jx-type-small); line-height: 1.7; }
+  .jx-lz-count { color: var(--jx-fg-secondary); font-size: var(--jx-type-small); font-variant-numeric: tabular-nums; }
+  .jx-lz-actions { display: grid; justify-items: start; gap: var(--jx-space-3); margin-top: var(--jx-space-3); }
+  .jx-lz-actions > .primary { justify-content: center; min-height: 48px; padding-inline: var(--jx-space-6); text-align: center; }
+  .jx-lz-tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--jx-space-2); }
+  .jx-shell .jx-lz-tools button.quiet-action { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 0 var(--jx-space-3); border-style: solid; border-color: var(--jx-line-control); border-radius: var(--jx-radius-control); font-size: var(--jx-type-small); }
+  .jx-lz-export { display: inline-flex; align-items: center; gap: 0; color: var(--jx-fg-secondary); font-size: var(--jx-type-small); }
+  .jx-lz-export > span { padding-inline-end: var(--jx-space-2); }
+  .jx-shell .jx-lz-export button.quiet-action { border-radius: 0; border-inline-start-width: 0; font-variant-numeric: tabular-nums; }
+  .jx-shell .jx-lz-export button.quiet-action:first-of-type { border-start-start-radius: var(--jx-radius-control); border-end-start-radius: var(--jx-radius-control); border-inline-start-width: 1px; }
+  .jx-shell .jx-lz-export button.quiet-action:last-of-type { border-start-end-radius: var(--jx-radius-control); border-end-end-radius: var(--jx-radius-control); }
+  .jx-shell .jx-lz-tools button.jx-lz-danger { color: var(--jx-status-danger); }
+  .jx-shell .jx-lz-tools button.jx-lz-danger:hover { border-color: var(--jx-status-danger); }
+
+  /* 目录：滚动时贴住顶部，只做跳转，不隐藏任何章节。 */
+  .jx-lz-index {
+    position: sticky; top: 0; z-index: 1; display: flex; gap: var(--jx-space-1); overflow-x: auto; scrollbar-width: none;
+    padding: 0 var(--jx-lz-gutter); background: var(--jx-surface-reading); border-bottom: 1px solid var(--jx-line-subtle);
+  }
+  .jx-lz-index::-webkit-scrollbar { display: none; }
+  .jx-shell .jx-liezhuan .jx-lz-index button { flex: none; min-height: 44px; padding: 0 var(--jx-space-3); color: var(--jx-fg-secondary); background: none; border: 0; border-radius: 0; box-shadow: none; font-family: var(--jx-font-literary); font-size: var(--jx-type-small); letter-spacing: 0.06em; }
+  .jx-shell .jx-liezhuan .jx-lz-index button:hover { color: var(--jx-fg-strong); box-shadow: inset 0 -1px 0 var(--jx-lz-gold); }
+
+  /* 章 */
+  .jx-lz-chapter { padding: 0 var(--jx-lz-gutter); max-inline-size: calc(var(--jx-reading-measure) + 2 * var(--jx-lz-gutter)); }
+  .jx-lz-chapter > h4 { display: flex; align-items: center; gap: var(--jx-space-3); margin: var(--jx-space-7) 0 var(--jx-space-4); color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-size: var(--jx-text-h3); font-weight: 600; letter-spacing: 0.12em; }
+  .jx-fishtail { flex: none; width: 16px; height: 10px; fill: var(--jx-lz-gold); }
+  .jx-lz-chapter > p { margin: 0 0 var(--jx-space-2); color: var(--jx-fg-body); font-size: var(--jx-type-body); line-height: 1.8; }
+  .jx-lz-prose p { margin: 0 0 var(--jx-reading-para-gap); color: var(--jx-fg-body); font-family: var(--jx-reading-font); font-size: var(--jx-reading-size); line-height: var(--jx-reading-leading); white-space: pre-line; overflow-wrap: anywhere; }
+  .jx-lz-prose p:last-child { margin-bottom: 0; }
+  .jx-macro { padding: 0 var(--jx-space-1); color: var(--jx-fg-secondary); background: var(--jx-surface-1); border-radius: var(--jx-radius-mark); box-shadow: inset 0 0 0 1px var(--jx-line-subtle); font-family: var(--jx-font-ui); font-size: var(--jx-type-macro); white-space: nowrap; }
+  .jx-aside { color: var(--jx-fg-secondary); }
+
+  .jx-lz-greetings { display: flex; flex-wrap: wrap; gap: var(--jx-space-optical-2); margin-bottom: var(--jx-space-4); }
+  .jx-shell .jx-liezhuan .jx-lz-greetings button { min-height: 40px; padding: 0 var(--jx-space-3); color: var(--jx-fg-body); background: var(--jx-surface-1); border: 1px solid var(--jx-line-control); border-radius: var(--jx-radius-control); box-shadow: none; font-family: var(--jx-font-ui); font-size: var(--jx-type-small); }
+  .jx-shell .jx-liezhuan .jx-lz-greetings button[aria-pressed='true'] { color: var(--jx-fg-strong); background: var(--jx-accent-soft); border-color: var(--jx-accent); }
+  .jx-lz-opening { margin: 0 0 var(--jx-space-4); padding: 0 0 0 var(--jx-space-5); border-inline-start: 1px solid var(--jx-lz-gold); }
+  .jx-lz-opening .jx-lz-prose p { font-family: var(--jx-font-literary-kai, var(--jx-font-literary)); }
+
+  .jx-lz-dialogue { display: grid; gap: var(--jx-space-2); }
+  .jx-lz-speech { display: grid; grid-template-columns: minmax(4.5em, max-content) minmax(0, 1fr); gap: var(--jx-space-3); margin: 0; font-size: var(--jx-reading-size); line-height: var(--jx-reading-leading); }
+  .jx-lz-speaker { color: var(--jx-speaker, var(--jx-fg-secondary)); font-family: var(--jx-font-ui); font-size: var(--jx-type-speaker-inline); font-weight: 600; line-height: inherit; text-align: end; overflow-wrap: anywhere; }
+  .jx-lz-speaker .jx-macro { color: inherit; }
+  .jx-lz-said { color: var(--jx-fg-body); font-family: var(--jx-reading-font); white-space: pre-line; overflow-wrap: anywhere; }
+  .jx-lz-note { margin: 0; color: var(--jx-fg-secondary); font-family: var(--jx-reading-font); font-size: var(--jx-reading-size); line-height: var(--jx-reading-leading); overflow-wrap: anywhere; }
+  .jx-lz-scene-break { width: 3em; height: 1px; margin: var(--jx-space-4) auto; background: var(--jx-line-default); border: 0; }
+
+  .jx-lz-facts { display: grid; gap: var(--jx-space-2); margin: 0; }
+  .jx-lz-facts > div { display: grid; grid-template-columns: 5em minmax(0, 1fr); gap: var(--jx-space-3); }
+  .jx-lz-facts dt { color: var(--jx-fg-secondary); font-size: var(--jx-type-small); }
+  .jx-lz-facts dd { margin: 0; color: var(--jx-fg-body); font-size: var(--jx-type-small); overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+  .jx-lz-pre { white-space: pre-line; }
+
+  /* 修订：案头式表单，落在列传之后。 */
+  .jx-lz-revision { max-inline-size: none; margin-top: var(--jx-space-7); padding-block: var(--jx-space-2) var(--jx-space-8); background: var(--jx-surface-sunken); border-top: 1px solid var(--jx-line-subtle); }
+  .jx-lz-revision > h4 { margin-top: var(--jx-space-5); }
+  .jx-lz-revision > p { color: var(--jx-fg-secondary); font-size: var(--jx-type-small); }
+  .jx-lz-revision .card-ui-form { max-inline-size: 44rem; margin-block: var(--jx-space-4); }
+  .jx-lz-revision .card-ui-form textarea { min-height: 96px; font-family: var(--jx-font-ui); line-height: 1.6; }
+  .jx-lz-revision .card-ui-form > label:first-child textarea { min-height: 48px; }
+  .jx-lz-revision details { margin-top: var(--jx-space-4); color: var(--jx-fg-secondary); font-size: var(--jx-type-small); }
+
+  @media (max-width: 699px) {
+    .game-info-dialog.jx-liezhuan-dialog { width: 100vw; border-inline-start: 0; }
+    .jx-lz-cover { grid-template-columns: 112px minmax(0, 1fr); align-items: start; gap: var(--jx-space-2) var(--jx-space-4); padding-block: var(--jx-space-5); }
+    .jx-lz-colophon { display: contents; }
+    .jx-lz-portrait { grid-column: 1; grid-row: 1 / span 4; }
+    .jx-lz-colophon > p { grid-column: 2; }
+    .jx-lz-byline { align-self: end; padding-top: var(--jx-space-4); }
+    .jx-lz-actions { grid-column: 1 / -1; margin-top: var(--jx-space-4); justify-items: stretch; }
+    .jx-tiqian { top: 6%; left: 7%; padding: var(--jx-space-2) var(--jx-space-1); }
+    .jx-tiqian[data-length='long'] { padding: var(--jx-space-1) var(--jx-space-2); }
+    .jx-tiqian[data-length='short'] { font-size: var(--jx-text-tiqian-mid); }
+    .jx-tiqian:is([data-length='mid'], [data-length='long']) { font-size: var(--jx-text-tiqian-long); }
+    .jx-lz-actions > .primary { width: 100%; }
+    .jx-lz-speech { grid-template-columns: minmax(0, 1fr); gap: 0; }
+    .jx-lz-speaker { text-align: start; }
+  }
+
+  /* 落印：会话建立后，品牌印落下一次（约 0.8 秒），随后入卷。 */
+  .jx-stamp { position: fixed; inset: 0; z-index: var(--jx-z-toast); display: grid; place-items: center; background: radial-gradient(circle at 50% 50%, rgb(2 8 14 / 0.42), rgb(2 8 14 / 0.16) 46%, transparent 70%); animation: jx-stamp-veil 820ms var(--jx-ease-out) both; }
+  :root[data-theme='day'] .jx-stamp { background: radial-gradient(circle at 50% 50%, rgb(247 244 237 / 0.7), rgb(247 244 237 / 0.3) 46%, transparent 70%); }
+  .jx-stamp::after { content: ''; grid-area: 1 / 1; width: 112px; height: 112px; border-radius: var(--jx-radius-small); animation: jx-stamp-ink 760ms 240ms var(--jx-ease-out) both; }
+  .jx-stamp .jx-seal--lg { grid-area: 1 / 1; width: 112px; height: 112px; border-radius: var(--jx-radius-small); box-shadow: inset 0 0 0 3px rgb(246 233 230 / 0.2), 0 10px 30px rgb(2 8 14 / 0.4); animation: jx-stamp-down 560ms var(--jx-ease-ink) both; }
+  .jx-stamp .jx-seal--lg::before { font-size: var(--jx-type-seal-xl); }
+  @keyframes jx-stamp-veil { from { opacity: 0; } 18% { opacity: 1; } }
+  @keyframes jx-stamp-down { from { opacity: 0; transform: scale(1.9) rotate(-14deg); filter: blur(6px); } 58% { opacity: 1; transform: scale(0.95) rotate(-2deg); filter: blur(0); } 78% { transform: scale(1.02) rotate(-3deg); } to { opacity: 1; transform: scale(1) rotate(-3deg); } }
+  @keyframes jx-stamp-ink { from { box-shadow: 0 0 0 0 rgb(167 56 70 / 0.5); transform: rotate(-3deg); } to { box-shadow: 0 0 0 36px rgb(167 56 70 / 0); transform: rotate(-3deg); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .game-info-dialog.jx-liezhuan-dialog[open], .jx-stamp, .jx-stamp::after, .jx-stamp .jx-seal--lg { animation: none; }
+  }
+  @media (forced-colors: active) {
+    .jx-tiqian { forced-color-adjust: none; color: CanvasText; background: Canvas; border: 1px solid CanvasText; }
+  }
+}

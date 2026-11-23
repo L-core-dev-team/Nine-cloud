@@ -120,6 +120,13 @@
     --jx-type-seal: 0.8125rem;
     --jx-type-seal-lg: 1.0625rem;
     --jx-type-avatar: 0.8125rem;
+    --jx-type-seal-xl: 2.125rem;
+    --jx-type-macro: 0.82em; /* 卡片占位符 {{char}} 等，随正文缩放 */
+    --jx-type-speaker-inline: 0.86em;
+    /* 人物志题签：按名字长度分三档 */
+    --jx-text-tiqian-short: 1.625rem;
+    --jx-text-tiqian-mid: 1.3125rem;
+    --jx-text-tiqian-long: 1.0625rem;
     --jx-text-brand-vertical: clamp(5.25rem, 9.5vw, 8.75rem);
     --jx-text-brand-vertical-compact: clamp(4.25rem, 21vw, 5.5rem);
     --jx-text-verse: clamp(1.125rem, 0.92rem + 0.7vw, 1.5rem);
