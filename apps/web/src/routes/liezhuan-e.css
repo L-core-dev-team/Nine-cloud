@@ -23,7 +23,7 @@
   .jx-liezhuan-dialog .game-info-dialog-heading h2 { color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); font-size: var(--jx-type-small); font-weight: 400; letter-spacing: 0.08em; }
   .jx-liezhuan-dialog .game-info-dialog-heading button { color: var(--jx-fg-secondary); border: 0; border-radius: var(--jx-radius-control); }
   .jx-liezhuan-dialog .game-info-dialog-heading button:hover { color: var(--jx-fg-strong); background: var(--jx-surface-1); }
-  .jx-liezhuan-dialog .game-info-dialog-body { padding: 0; scroll-padding-top: var(--jx-space-8); }
+  .jx-liezhuan-dialog .game-info-dialog-body { padding: 0; scroll-padding-top: var(--jx-space-8); background: var(--jx-paper-fiber) local; }
 
   /* 书衣 */
   .jx-lz-cover {

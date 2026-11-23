@@ -26,6 +26,7 @@
   .card-library .jx-card-shelf > li:is(:hover, :focus-within) .jx-scroll-frame { transform: translateY(-4px); }
   .card-library .jx-card-shelf > li:is(:hover, :focus-within) .jx-scroll-frame::after { opacity: 1; }
   .jx-scroll-name { color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-size: var(--jx-type-body); font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; }
+  .jx-scroll-meta { margin-top: calc(-1 * var(--jx-space-1)); color: var(--jx-fg-secondary); font-size: var(--jx-type-caption); font-variant-numeric: tabular-nums; }
   .card-library .jx-card-shelf .actions { gap: var(--jx-space-1); margin: 0; }
   .card-library .jx-card-shelf .actions button { min-height: 36px; padding: 0 var(--jx-space-2); font-size: var(--jx-type-caption); }
   @media (max-width: 599px) {

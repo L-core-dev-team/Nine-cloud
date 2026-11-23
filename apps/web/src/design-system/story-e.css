@@ -27,14 +27,21 @@
     --jx-accent: var(--jx-c-jade-700); --jx-status-warning: var(--jx-c-warning-day); --jx-status-danger: var(--jx-c-danger-day);
     --jx-pigment-1: var(--jx-c-pigment-1-day); --jx-pigment-2: var(--jx-c-pigment-2-day); --jx-pigment-3: var(--jx-c-pigment-3-day); --jx-pigment-4: var(--jx-c-pigment-4-day);
     --jx-pigment-5: var(--jx-c-pigment-5-day); --jx-pigment-6: var(--jx-c-pigment-6-day); --jx-pigment-7: var(--jx-c-pigment-7-day); --jx-pigment-8: var(--jx-c-pigment-8-day);
+    --jx-paper-fiber: var(--jx-paper-fiber-day);
     color-scheme: light;
   }
 
   /* ---- 纸面 ---- */
   .game-frame .story-reading, .immersive-game .story-reading {
-    color: var(--jx-fg-body); background: var(--jx-surface-reading); border-radius: var(--jx-radius-small);
+    color: var(--jx-fg-body); background: var(--jx-surface-reading) var(--jx-paper-fiber) local; border-radius: var(--jx-radius-small);
     box-shadow: 0 0 0 1px var(--jx-line-subtle), 0 24px 60px rgb(3 10 17 / 0.28);
     scroll-padding-block: var(--jx-space-6);
+    /* 入卷：正文像挂轴一样自上而下展开一次。遮罩只在动画期间存在，结束后不留在滚动层上。 */
+    animation: jx-unfurl calc(var(--jx-dur-scene) * 1.25) var(--jx-ease-ink) backwards;
+  }
+  @keyframes jx-unfurl {
+    from { -webkit-mask: linear-gradient(to bottom, #000 0 50%, transparent 62%) 0 100% / 100% 200% no-repeat; mask: linear-gradient(to bottom, #000 0 50%, transparent 62%) 0 100% / 100% 200% no-repeat; }
+    to { -webkit-mask: linear-gradient(to bottom, #000 0 50%, transparent 62%) 0 0 / 100% 200% no-repeat; mask: linear-gradient(to bottom, #000 0 50%, transparent 62%) 0 0 / 100% 200% no-repeat; }
   }
   :root[data-theme='day'] :is(.game-frame, .immersive-game) .story-reading { box-shadow: 0 0 0 1px var(--jx-line-subtle), 0 18px 40px rgb(39 49 57 / 0.1); }
   .story-prose, .game-frame .story-reading :is(.card-session-turn, .jx-prose) {

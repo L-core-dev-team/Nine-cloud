@@ -113,6 +113,9 @@
     --jx-reading-note-gap: 0.6em;
     --jx-reading-speaker-name-gap: 0.4em;
     --jx-seal-offset: 0.45em;
+    /* 纸纹：细噪点 + 横向长纤维，透明度极低，只给纸面一点手感，不影响文字对比。 */
+    --jx-paper-fiber-night: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='280'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .86 0 0 0 0 .9 0 0 0 0 .88 0 0 0 .03 0'/%3E%3C/filter%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.011 .2' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .86 0 0 0 0 .9 0 0 0 0 .88 0 0 0 .05 -.02'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23a)'/%3E%3Crect width='100%25' height='100%25' filter='url(%23b)'/%3E%3C/svg%3E");
+    --jx-paper-fiber-day: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='280'%3E%3Cfilter id='a'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .42 0 0 0 0 .36 0 0 0 0 .27 0 0 0 .045 0'/%3E%3C/filter%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.011 .2' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .42 0 0 0 0 .36 0 0 0 0 .27 0 0 0 .07 -.02'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23a)'/%3E%3Crect width='100%25' height='100%25' filter='url(%23b)'/%3E%3C/svg%3E");
     /* 古籍排版以“格”（一个字宽）计缩进：低一格、低二格…… */
     --jx-reading-ge-1: 1em;
     --jx-reading-ge-2: 2em;
@@ -203,6 +206,7 @@
   :root[data-theme="night"] {
     --jx-bg-canvas: var(--jx-c-xuan-900);
     --jx-surface-reading: var(--jx-c-xuan-850);
+    --jx-paper-fiber: var(--jx-paper-fiber-night);
     --jx-surface-1: var(--jx-c-xuan-800);
     --jx-surface-2: var(--jx-c-xuan-700);
     --jx-surface-3: var(--jx-c-xuan-600);
@@ -260,6 +264,7 @@
   :root[data-theme="day"] {
     --jx-bg-canvas: var(--jx-c-zhi-200);
     --jx-surface-reading: var(--jx-c-zhi-100);
+    --jx-paper-fiber: var(--jx-paper-fiber-day);
     --jx-surface-1: var(--jx-c-zhi-50);
     --jx-surface-2: #ffffff;
     --jx-surface-3: var(--jx-c-zhi-300);

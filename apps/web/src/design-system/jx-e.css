@@ -33,6 +33,8 @@
   :root:not([data-theme='day']) .jx-shell[data-jx-layer='lobby']:not(.landing-shell)::before { filter: brightness(0.6); }
   :root[data-theme='day'] .jx-shell[data-jx-layer='lobby']:not(.landing-shell)::after { background: rgb(243 239 230 / 0.64); opacity: 1; mix-blend-mode: normal; }
   /* 书阁：场景退场，只在页边隐约可见。 */
+  /* 入卷：从灵境进入书阁时，场景缓缓压暗、退远；返回时再亮起来。 */
+  .jx-shell::before { transition: filter calc(var(--jx-dur-scene) * 1.5) var(--jx-ease-ink), transform calc(var(--jx-dur-scene) * 1.5) var(--jx-ease-ink); }
   .jx-shell[data-jx-layer='story']::before { filter: brightness(0.42) saturate(0.78) blur(5px); transform: scale(1.04); }
   :root[data-theme='day'] .jx-shell[data-jx-layer='story']::before { filter: saturate(0.6) blur(5px); }
   /* 晴昼书阁：宣纸色遮罩让场景只剩淡影，保证页边文字对比。 */

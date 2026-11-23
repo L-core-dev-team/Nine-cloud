@@ -27,7 +27,7 @@
   .world-page .worldbook-categories small { color: var(--jx-fg-secondary); font-variant-numeric: tabular-nums; }
 
   /* 条目：宣纸 / 夜笺阅读面，标题用书卷字体而非题字。 */
-  .world-page .worldbook-entry { color: var(--jx-fg-body); background: var(--jx-surface-reading); border: 0; border-radius: var(--jx-radius-small); box-shadow: 0 0 0 1px var(--jx-line-subtle), 0 16px 40px rgb(3 10 17 / 0.22); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .world-page .worldbook-entry { color: var(--jx-fg-body); background: var(--jx-surface-reading) var(--jx-paper-fiber); border: 0; border-radius: var(--jx-radius-small); box-shadow: 0 0 0 1px var(--jx-line-subtle), 0 16px 40px rgb(3 10 17 / 0.22); -webkit-backdrop-filter: none; backdrop-filter: none; }
   :root[data-theme='day'] .world-page .worldbook-entry { box-shadow: 0 0 0 1px var(--jx-line-subtle), 0 12px 30px rgb(39 49 57 / 0.08); }
   .world-page .worldbook-entry-title { color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-weight: 600; letter-spacing: 0.04em; }
   .world-page .worldbook-body { color: var(--jx-fg-body); font-family: var(--jx-font-literary); line-height: 1.9; }
