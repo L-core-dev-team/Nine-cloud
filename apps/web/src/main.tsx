@@ -7,6 +7,7 @@ import { SCENE_MANIFEST, sceneForLocation, type SceneId } from '@jiuxiao/content
 import type { CanonRuntimeEntry } from '@jiuxiao/content/worldbook';
 import { ReadableData } from './components/ReadableData';
 import { GameShell, GameInfoDialog } from './components/GameShell';
+import { AiTwoModels } from './ui/AiTwoModels';
 import { CHARACTER_OPTIONS } from './character-options';
 import { TurnWorkspace } from './routes/TurnWorkspace';
 import { characterChoices, createCharacterGame } from './game-creation';
@@ -884,7 +885,7 @@ function App() {
       setNotice(createdGuest ? '本局游客会话已建立，有效期 7 天。请在到期前刷新或升级邮箱；丢失会话后无法凭存档编号找回云档。'
         : '服务端规则存档已建立。事实状态保存在服务端数据库。');
       go(path);
-    }} onBack={() => go('/lobby')} /> : currentRoute === '/intro' ? <Introduction onStart={() => go('/new')} onWorld={() => go('/world')} /> : currentRoute === '/world' ? <World onClose={returnFromReading} save={returningToJourney ? saves.find(item => worldReturnTarget === `/game/${item.saveId}`) : activeSave} onImportSupplement={importSupplement} isReturningToJourney={returningToJourney} /> : currentRoute === '/settings/ai' ? <AiSettings onClose={returnFromReading} /> : currentRoute === '/settings/cloud' ? <CloudSettings saves={saves} onRestore={async archive => {
+    }} onBack={() => go('/lobby')} /> : currentRoute === '/intro' ? <Introduction onStart={() => go('/new')} onWorld={() => go('/world')} /> : currentRoute === '/world' ? <World onClose={returnFromReading} save={returningToJourney ? saves.find(item => worldReturnTarget === `/game/${item.saveId}`) : activeSave} onImportSupplement={importSupplement} isReturningToJourney={returningToJourney} /> : currentRoute === '/settings/ai' ? <><AiTwoModels onCards={() => go("/cards")} /><AiSettings onClose={returnFromReading} /></> : currentRoute === '/settings/cloud' ? <CloudSettings saves={saves} onRestore={async archive => {
     const copied = { ...archive, saveId: createSaveId(), name: `${archive.name}（云端副本）`, updatedAt: new Date().toISOString() };
     const expected = readSaves(); const result = await commitSaves(expected, [copied, ...expected]);
     setSaves(result.saves); if (result.ok) setNotice(commitSuccessMessage(result, '云端档已恢复为新副本。')); return result.ok ? copied : null;

@@ -19,6 +19,7 @@ const files = [
   'apps/web/src/routes/card-e.css',
   'apps/web/src/routes/liezhuan-e.css',
   'apps/web/src/ui/folio-e.css',
+  'apps/web/src/ui/ai-two-e.css',
 ];
 const requiredTokens = new Map([
   ['--jx-space-1', '4px'],
