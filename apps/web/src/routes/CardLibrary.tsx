@@ -62,7 +62,8 @@ function CardLibraryForOwner({ owner, onSession, onBack }: Props) {
   }
   function download(id: string) { void run(async () => { const bytes = await api.original(id); const url = URL.createObjectURL(new Blob([new Uint8Array(bytes)], { type: 'application/octet-stream' })); const a = document.createElement('a'); a.href = url; a.download = 'original.bin'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); setMessage('已下载原文件。'); }); }
   const attachments = imports.filter(item => item.kind !== 'card' && !item.error);
-  const cardName = (card: CardItem) => card.name || imports.find(item => item.id === card.import_id)?.filename || card.id;
+  // 详情接口返回的卡片可能不带 name 字段；先用解析出的角色名，文件名只作最后的回退。
+  const cardName = (card: CardItem) => card.name || card.parsed?.name || imports.find(item => item.id === card.import_id)?.filename || card.id;
   return <section className="card-library" aria-label="角色卡资料库">
     <header className="card-ui-heading"><div><h1>角色卡资料库</h1><p>导入、核对并保存角色卡，或继续独立会话。</p></div><button className="secondary" onClick={onBack}>返回</button></header>
     <p role="status" className="card-ui-status">{message}</p>

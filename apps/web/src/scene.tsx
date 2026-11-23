@@ -8,7 +8,7 @@ export function MountainGateScene() {
   return <div className="scene" aria-hidden="true">
     <picture className="scene-picture">
       <source media="(max-width: 720px)" srcSet={mobilePoster} type={mobilePosterType} />
-      <img className="scene-base" src={desktopPoster} alt="" draggable={false} />
+      <img className="scene-base" src={desktopPoster} alt="" draggable={false} fetchPriority="high" />
     </picture>
     <div className="scene-mist scene-mist-back" />
     <div className="scene-mist scene-mist-front" />

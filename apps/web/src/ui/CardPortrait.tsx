@@ -37,15 +37,17 @@ function schedule<T>(task: () => Promise<T>): Promise<T> {
 async function decodeThumbnail(bytes: Uint8Array): Promise<string | null> {
   const isPng = bytes.length > 8 && bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47;
   if (!isPng || bytes.length > MAX_BYTES || typeof createImageBitmap !== 'function') return null;
-  const bitmap = await createImageBitmap(new Blob([bytes as BlobPart], { type: 'image/png' }));
+  const blob = new Blob([bytes as BlobPart], { type: 'image/png' });
+  // Decode straight to thumbnail width where supported; otherwise decode full size and scale on the canvas.
+  const bitmap = await createImageBitmap(blob, { resizeWidth: 360, resizeQuality: 'medium' }).catch(() => createImageBitmap(blob));
   const scale = Math.min(1, 360 / bitmap.width);
   const canvas = document.createElement('canvas');
   canvas.width = Math.max(1, Math.round(bitmap.width * scale));
   canvas.height = Math.max(1, Math.round(bitmap.height * scale));
   canvas.getContext('2d')?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
   bitmap.close();
-  const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/webp', 0.86));
-  return blob ? URL.createObjectURL(blob) : null;
+  const thumbnail = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/webp', 0.86));
+  return thumbnail ? URL.createObjectURL(thumbnail) : null;
 }
 
 function loadPortrait(importId: string, load: Loader): Promise<string | null> {
