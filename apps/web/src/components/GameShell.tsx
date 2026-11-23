@@ -3,6 +3,22 @@ import './game-shell.css';
 import './story-first.css';
 import type { ReadingPosition } from '../cloud-game-cache';
 
+/**
+ * The self-hosted reading serif arrives in unicode-range slices after first paint. When a
+ * slice lands just after the reading position was restored, the small reflow lets scroll
+ * anchoring nudge the column away from it. Re-apply the restore when fonts finish loading,
+ * for a short window after mount only, so a later font load never pulls a reader back.
+ */
+export function settleAfterFonts(restore: () => void, windowMs = 5000): () => void {
+  const fonts = typeof document !== 'undefined' ? document.fonts : undefined;
+  if (!fonts || typeof fonts.addEventListener !== 'function') return () => undefined;
+  const settle = () => restore();
+  fonts.addEventListener('loadingdone', settle);
+  const stop = () => { clearTimeout(timer); fonts.removeEventListener('loadingdone', settle); };
+  const timer = setTimeout(stop, windowMs);
+  return stop;
+}
+
 /** Presentation only: callers retain their own save, draft and turn handlers. */
 export function GameShell({ saveId, children, archive, readingReady = true, immersive = false, readingScope, readingPosition, onReadingPositionChange }: { saveId: string; children: ReactNode; archive?: ReactNode; readingReady?: boolean; immersive?: boolean; readingScope?: string | undefined; readingPosition?: ReadingPosition | undefined; onReadingPositionChange?: ((position: ReadingPosition) => void) | undefined }) {
   const frame = useRef<HTMLElement>(null);
@@ -31,19 +47,25 @@ export function GameShell({ saveId, children, archive, readingReady = true, imme
       };
       for (const event of ['wheel', 'touchstart', 'pointerdown', 'keydown']) reading.addEventListener(event, interacted, { passive: true });
       restore(); const animation = requestAnimationFrame(restore);
+      const stopSettling = settleAfterFonts(restore);
       reading.addEventListener('scroll', remember, { passive: true });
-      return () => { cancelAnimationFrame(animation); reading.removeEventListener('scroll', remember);
+      return () => { cancelAnimationFrame(animation); stopSettling(); reading.removeEventListener('scroll', remember);
         for (const event of ['wheel', 'touchstart', 'pointerdown', 'keydown']) reading.removeEventListener(event, interacted); };
     }
     const key = `jiuxiao_1_game_scroll_${saveId}`;
     let top = 0;
     try { const saved = Number(sessionStorage.getItem(key)); top = Number.isFinite(saved) ? Math.max(0, saved) : 0; } catch { /* Reading position is optional. */ }
+    let userMoved = false;
+    const interacted = () => { userMoved = true; };
     const restore = () => { reading.scrollTop = top; };
     const remember = () => { try { sessionStorage.setItem(key, String(reading.scrollTop)); } catch { /* Never affect the save or action draft. */ } };
     restore();
     const animation = requestAnimationFrame(restore);
+    for (const event of ['wheel', 'touchstart', 'pointerdown', 'keydown']) reading.addEventListener(event, interacted, { passive: true });
+    const stopSettling = settleAfterFonts(() => { if (!userMoved) restore(); });
     reading.addEventListener('scroll', remember, { passive: true });
-    return () => { cancelAnimationFrame(animation); reading.removeEventListener('scroll', remember); };
+    return () => { cancelAnimationFrame(animation); stopSettling(); reading.removeEventListener('scroll', remember);
+      for (const event of ['wheel', 'touchstart', 'pointerdown', 'keydown']) reading.removeEventListener(event, interacted); };
   }, [saveId, readingReady, readingScope, onReadingPositionChange]);
   useLayoutEffect(() => {
     const shell = frame.current?.closest<HTMLElement>('.jx-shell');
