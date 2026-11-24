@@ -18,7 +18,7 @@
 - **境界铭牌**：数据只取规则写入的修为，不由界面推算。铭牌是一枚玉璧，璧环就是修为进度；点开是“九重天”境界图，引用 Canon《修炼境界介绍》。云端游玩和本机 1.0 预览玩法都有；
 - **卡库缩略图接口**：在现有 Node 宿主和 PostgreSQL 上实现，不新增任何付费服务；
 - **体验与性能**：切换主题不再重建 WebGL；云端游玩页和内部回合工作台改为按需加载；
-- **已部署到正式站** <https://play.jiuxiaogame.cn/>（2026-11-24 12:34 UTC，部署 `e617890e`），记录见第 11 节。
+- **已部署到正式站** <https://play.jiuxiaogame.cn/>（2026-11-24 16:0x UTC，部署 `85adf881`，CI 已通过的 `c4c672f`），记录见第 11 节。
 
 仍未完成、所以结论仍是 PARTIAL 的部分：
 
@@ -281,15 +281,15 @@ pnpm dev:web
 
 | 项 | 值 |
 |---|---|
-| 时间 | 2026-11-24 12:34:57 UTC |
+| 时间 | 首次 2026-11-24 12:34:57 UTC（`e617890e`，`1509349`）；CI 通过后于约 16:05 UTC 更新为 `85adf881`（`c4c672f`） |
 | 站点 | <https://play.jiuxiaogame.cn/>、<https://jiuxiaogame.cn/>、<https://www.jiuxiaogame.cn/>（三个域名同一部署） |
 | Cloudflare Pages 项目 | `jiuxiaogame-public-demo`，生产环境 |
-| 部署 ID | `e617890e-64e5-44d4-9cae-4a8be2b091a1`（单次地址 <https://e617890e.jiuxiaogame-public-demo.pages.dev>） |
-| 源码 | `claude/pensive-ritchie-kef9p0` @ `1509349`，未合并 `main` |
+| 部署 ID | 现行 `85adf881`（单次地址 <https://85adf881.jiuxiaogame-public-demo.pages.dev>）；此前 `e617890e` |
+| 源码 | `claude/pensive-ritchie-kef9p0` @ `c4c672f`（CI 运行 45428707225 通过），未合并 `main` |
 | 构建 | 与项目生产配置相同：Node 24、pnpm 11.19.0、`JIUXIAO_BUILD_TARGET=release`（素材授权闸门通过）、`JIUXIAO_RELEASE_CHANNEL=preview-1`；先构建 contracts、content、domain，再构建 web；产物 321 个文件、25 MB，已检查不含本机路径 |
 | Functions | 仓库根目录 `functions/`（API 转发），与 `main` 相同，未改 |
 | 预览 | 先发到分支预览 <https://jx-ui-e-01.jiuxiaogame-public-demo.pages.dev> 核对，再发生产 |
-| 上线后核对 | 三个域名都返回新入口脚本 `index-BNCEDU8v.js`；`/health`、`/ready`、`/api/auth/providers` 经转发正常；首页、大厅、存档、画面设置、世界设定在 390 与 1440 宽度下 0 个页面错误、0 个失败请求；本机新开一局后境界铭牌与境界图正常 |
+| 上线后核对 | 三个域名都返回新入口脚本（现行 `index-CVXN4bqP.js`）；`/health`、`/ready`、`/api/auth/providers` 经转发正常；首页、大厅、存档、画面设置、世界设定在 390 与 1440 宽度下 0 个页面错误、0 个失败请求；本机新开一局后境界铭牌与境界图正常 |
 | 回滚点 | 上一个生产部署 `9a1c7ad0-e13e-4d7e-ad61-9e63e2528a24`（`main` @ `92bd397`，2026-11-10） |
 
 **一并上线的内容**：这个项目的 Git 自动构建（`github:push`）从 11-09 起全部停在“排队”，没有一次完成；生产环境一直由手动直传（`ad_hoc`）更新，上一次是 11-10 的 `92bd397`。本次同样是直传。本次部署的分支建在 `main` `f1fe6ea` 加 #119 之上，所以除本轮 UI 外，还带上了 `main` 已合并、但一直没有构建出来的 35 个提交，以及 #119 的 5 个提交。#119 在前端只改角色卡会话，正式站未开放角色卡模式，所以看不到。`main` 里有一项会在云端建角时多发人物描述字段；按 11-10 时的 API 代码，旧服务器会接收而不报错，只是不保存这项描述。API 服务器本身没有动。
