@@ -174,6 +174,11 @@ export function SceneAtmosphere({ sceneId, theme, settings }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const settingsRef = useRef(settings);
   settingsRef.current = settings;
+  // Theme only changes colours and one uniform. Read it from a ref so a theme switch
+  // repaints the current frame instead of tearing down and recompiling the WebGL programs
+  // (that rebuild cost ~160 ms of presentation delay on the theme button).
+  const themeRef = useRef(theme);
+  const repaintRef = useRef<(() => void) | null>(null);
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -371,12 +376,12 @@ export function SceneAtmosphere({ sceneId, theme, settings }: Props) {
       if (currentSettings.atmosphereEnabled) {
         const x = (Math.sin(time * 0.00008) + 1) * 0.5 * width;
         const mist = ctx2d.createRadialGradient(x, height * 0.72, 0, x, height * 0.72, width * 0.55);
-        mist.addColorStop(0, theme === 'day' ? 'rgba(238,242,236,.075)' : 'rgba(174,196,211,.085)');
+        mist.addColorStop(0, themeRef.current === 'day' ? 'rgba(238,242,236,.075)' : 'rgba(174,196,211,.085)');
         mist.addColorStop(1, 'rgba(170,190,206,0)');
         ctx2d.fillStyle = mist; ctx2d.fillRect(0, 0, width, height);
       }
       if (profile.particleCount > 0) {
-        const palette = sceneNumber === 3 ? '235,164,111' : theme === 'day' ? '248,244,229' : '202,218,226';
+        const palette = sceneNumber === 3 ? '235,164,111' : themeRef.current === 'day' ? '248,244,229' : '202,218,226';
         for (let index = 0; index < Math.min(profile.particleCount, 96); index += 1) {
           const seed = index * 127.1 + 311.7;
           const x = ((Math.sin(seed) * 43758.5453) % 1 + 1) % 1 * width + Math.sin(time * 0.00035 + index) * width * 0.014;
@@ -400,7 +405,7 @@ export function SceneAtmosphere({ sceneId, theme, settings }: Props) {
         gl.uniform1f(uniforms.uTime ?? null, time);
         gl.uniform1f(uniforms.uScene ?? null, sceneNumber);
         gl.uniform1f(uniforms.uFog ?? null, profile.fogStrength);
-        gl.uniform1f(uniforms.uDay ?? null, theme === 'day' ? 1 : 0);
+        gl.uniform1f(uniforms.uDay ?? null, themeRef.current === 'day' ? 1 : 0);
         gl.drawArrays(gl.TRIANGLES, 0, 6);
         if (particleProgram && particleBuffer && particleAttributeLocation >= 0 && profile.particleCount > 0) {
           gl.useProgram(particleProgram);
@@ -409,7 +414,7 @@ export function SceneAtmosphere({ sceneId, theme, settings }: Props) {
           gl.vertexAttribPointer(particleAttributeLocation, 4, gl.FLOAT, false, 0, 0);
           gl.uniform1f(particleUniforms.uTime ?? null, time);
           gl.uniform1f(particleUniforms.uScene ?? null, sceneNumber);
-          gl.uniform1f(particleUniforms.uDay ?? null, theme === 'day' ? 1 : 0);
+          gl.uniform1f(particleUniforms.uDay ?? null, themeRef.current === 'day' ? 1 : 0);
           gl.drawArrays(gl.POINTS, 0, profile.particleCount);
         }
       } else draw2d(time);
@@ -499,11 +504,13 @@ export function SceneAtmosphere({ sceneId, theme, settings }: Props) {
     setBackend(backend);
     resize();
     draw(0);
+    repaintRef.current = () => { if (live && !shouldAnimate()) draw(performance.now()); };
     postStatus(baseStatus());
     if (shouldAnimate()) raf = requestAnimationFrame(render);
     else { measuredFps = 0; postStatus({ ...baseStatus(), fps: 0 }); }
 
     return () => {
+      repaintRef.current = null;
       live = false; cancelAnimationFrame(raf); observer?.disconnect(); window.removeEventListener('resize', resize);
       window.removeEventListener('jx:graphics-settings-changed', onSettingsChanged);
       document.removeEventListener('visibilitychange', onVisibility); motionQuery?.removeEventListener('change', onMotionPreference);
@@ -513,7 +520,12 @@ export function SceneAtmosphere({ sceneId, theme, settings }: Props) {
       if (gl && program && !gpuLost) gl.deleteProgram(program);
       if (gl && particleProgram && !gpuLost) gl.deleteProgram(particleProgram);
     };
-  }, [sceneId, theme]);
+  }, [sceneId]);
+  useEffect(() => {
+    if (themeRef.current === theme) return;
+    themeRef.current = theme;
+    repaintRef.current?.();
+  }, [theme]);
 
   return <div ref={atmosphereRef} className="scene-atmosphere" aria-hidden="true"><video ref={videoRef} className="scene-atmosphere-video" muted loop playsInline preload="none" /><canvas ref={canvasRef} className="scene-atmosphere-canvas scene-atmosphere-webgl" /><canvas ref={fallbackCanvasRef} className="scene-atmosphere-canvas scene-atmosphere-2d" /><div className="scene-atmosphere-still" /></div>;
 }

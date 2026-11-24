@@ -9,7 +9,6 @@ import { ReadableData } from './components/ReadableData';
 import { GameShell, GameInfoDialog } from './components/GameShell';
 import { AiTwoModels } from './ui/AiTwoModels';
 import { CHARACTER_OPTIONS } from './character-options';
-import { TurnWorkspace } from './routes/TurnWorkspace';
 import { characterChoices, createCharacterGame } from './game-creation';
 import { INTERNAL_TURN_WORKSPACE_ENABLED } from './internal-turn-workspace';
 import { Landing } from './pages/Landing/Landing';
@@ -25,7 +24,6 @@ import { clearDraft, commitSaves, createIdempotencyKey, createSaveId, hydrateSav
 import type { SaveCommitResult } from './idb';
 import { mediaUrlForBrowser } from './media-compat';
 import { CloudHttpError, cloudRequest } from './cloud-sync';
-import { CloudGame } from './routes/CloudGame';
 import { useCardAvailability } from './card-availability';
 import './design-system/tokens.css';
 import './style.css';
@@ -47,6 +45,9 @@ import { ReadingPrefsDialog, readingPrefAttributes, useReadingPrefs } from './ui
 import { LiquidGlass, LiquidGlassFilters } from './components/LiquidGlass';
 
 const AiSettings = lazy(() => import('./ai-settings').then(module => ({ default: module.AiSettings })));
+// Route-only modules stay out of the first-load bundle: cloud play needs the rules contracts, the turn workspace is internal.
+const CloudGame = lazy(() => import('./routes/CloudGame').then(module => ({ default: module.CloudGame })));
+const TurnWorkspace = lazy(() => import('./routes/TurnWorkspace').then(module => ({ default: module.TurnWorkspace })));
 const CloudSettings = lazy(() => import('./routes/CloudSettings').then(module => ({ default: module.CloudSettings })));
 const CardArea = lazy(() => import('./routes/CardArea').then(module => ({ default: module.CardArea })));
 const GraphicsSettingsPage = lazy(() => import('./routes/GraphicsSettings').then(module => ({ default: module.GraphicsSettingsPage })));
