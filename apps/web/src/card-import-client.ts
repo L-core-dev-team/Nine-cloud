@@ -82,11 +82,11 @@ export class CardImportClient {
   groupStrategy(id:string){return this.item<{strategy:'manual'|'auto'}>(`/sessions/${encodeURIComponent(id)}/group-strategy`);}
   setGroupStrategy(id:string,strategy:'manual'|'auto'){return this.item<{strategy:'manual'|'auto'}>(`/sessions/${encodeURIComponent(id)}/group-strategy`,'PUT',{strategy});}
   groupHistory(id:string,after:number){return this.list<GroupHistoryItem>(`/sessions/${encodeURIComponent(id)}/group-history?after=${after}`);}
-  groupAction(id:string,body:{idempotencyKey:string;expectedRevision:number;action:string;mode:'manual'|'auto'|'multi';participantIds:string[];requireAllSelected?:boolean;modelBinding?:string}){return this.item<RequestItem>(`/sessions/${encodeURIComponent(id)}/group-actions`,'POST',body);}
+  groupAction(id:string,body:{idempotencyKey:string;expectedRevision:number;action:string;mode:'manual'|'auto'|'multi';participantIds:string[];requireAllSelected?:boolean;narrativeMode?:'original'|'novel';modelBinding?:string}){return this.item<RequestItem>(`/sessions/${encodeURIComponent(id)}/group-actions`,'POST',body);}
   requests(id:string) { return this.list<RecentRequest>(`/sessions/${encodeURIComponent(id)}/requests`); }
   session(id: string) { return this.item<SessionItem>(`/sessions/${encodeURIComponent(id)}`); }
   history(id: string, after: number) { return this.list<HistoryItem>(`/sessions/${encodeURIComponent(id)}/history?after=${after}`); }
-  action(id: string, body: { idempotencyKey: string; expectedRevision: number; action: string; modelBinding?: string }) { return this.item<RequestItem>(`/sessions/${encodeURIComponent(id)}/actions`, 'POST', body); }
+  action(id: string, body: { idempotencyKey: string; expectedRevision: number; action: string; narrativeMode?: 'original'|'novel'; modelBinding?: string }) { return this.item<RequestItem>(`/sessions/${encodeURIComponent(id)}/actions`, 'POST', body); }
   requestStatus(id: string, key: string) { return this.item<RequestItem>(`/sessions/${encodeURIComponent(id)}/requests/${encodeURIComponent(key)}`); }
   recover(id: string, key: string) { return this.item<RequestItem>(`/sessions/${encodeURIComponent(id)}/requests/${encodeURIComponent(key)}/recover`, 'POST'); }
   async remove(type: 'imports' | 'cards' | 'sessions', id: string) { await this.request(`/${type}/${encodeURIComponent(id)}`, 'DELETE', undefined, 'empty'); }

@@ -81,6 +81,8 @@ export async function verifyStrictMulti({pool,http,page,context,origin,login,mak
   await context.clearCookies();
   await context.addCookies([{name:'jx_session',value:owner.cookie.slice('jx_session='.length),url:origin,httpOnly:true}]);
   await page.goto(origin+'/cards/session/'+id);
+  assert.equal(await page.getByLabel('叙事模式').inputValue(), 'original');
+  await page.getByLabel('叙事模式').selectOption('novel');
   await page.getByLabel('本次发言方式').selectOption('multi');
   const toggle=page.getByLabel('要求每个选中角色都回复');
   assert.equal(await toggle.isChecked(),false);
@@ -96,6 +98,9 @@ export async function verifyStrictMulti({pool,http,page,context,origin,login,mak
   await page.getByRole('button',{name:'提交行动',exact:true}).click();
   const response=await pending, payload=response.request().postDataJSON();
   assert.equal(payload.requireAllSelected,true);
+  assert.equal(payload.narrativeMode, 'novel');
+  assert.ok(seen.at(-1).messages[0].content.includes('选定角色各回复恰好一次'));
+  assert.ok(seen.at(-1).messages[0].content.endsWith('把玩家下一步留给玩家。'));
   assert.deepEqual(payload.participantIds,[a,b,c]);
   assert.equal((await response.json()).resulting_revision,3);
   await page.getByText('行动已完成，历史已更新。',{exact:true}).waitFor();

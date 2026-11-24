@@ -19,6 +19,17 @@ function CardSessionForOwner({ owner, sessionId, onBack }: Props) {
   const ignorePosition = useCallback(() => {}, []);
   const pendingKey=`jx-card-pending:${location.origin}:${import.meta.env.VITE_API_BASE_URL||'/api'}:${owner}:${sessionId}`;
   const [requireAllSelected, setRequireAllSelected] = useState(false);
+  const narrativeKey = pendingKey + ':narrative-mode';
+  const [novel, setNovel] = useState(() => {
+    try { return sessionStorage.getItem(narrativeKey) === 'novel'; } catch { return false; }
+  });
+  function chooseNarration(enabled: boolean) {
+    setNovel(enabled);
+    try {
+      if (enabled) sessionStorage.setItem(narrativeKey, 'novel');
+      else sessionStorage.removeItem(narrativeKey);
+    } catch { /* This tab can still switch modes without storage. */ }
+  }
   const strictKey = pendingKey + ':strict-multi';
   function rememberStrict(enabled: boolean, ids: string[]) {
     setRequireAllSelected(enabled);
@@ -63,10 +74,18 @@ function CardSessionForOwner({ owner, sessionId, onBack }: Props) {
   async function submit(event: FormEvent) {
     event.preventDefault(); if (!session || pending || busy || recoveryBlocked || !model?.available || !text.trim()) return;
     if(members && ((mode==='manual'&&speakers.length!==1)||(mode==='multi'&&(speakers.length<2||speakers.length>3)))){setMessage('请选择所需的群聊参与角色。');return;}
-    const current = { key: crypto.randomUUID(), action: text, revision: session.revision, status: 'unknown' as const, modelBinding:model?.binding };
+    const current = { key: crypto.randomUUID(), action: text, revision: session.revision, status: 'unknown' as const, modelBinding:model?.binding, ...(novel ? { narrativeMode: 'novel' as const } : {}) };
     try{sessionStorage.setItem(pendingKey,JSON.stringify(current));}catch{setMessage('本机无法保存请求标识，未提交行动。');return;}
     setPending(current); setBusy(true); setMessage('正在提交行动……');
-    try { await apply(members ? await api.groupAction(sessionId,{idempotencyKey:current.key,expectedRevision:current.revision,action:current.action,mode,...(mode==='multi' && requireAllSelected ? {requireAllSelected:true} : {}),participantIds:mode==='auto'?[]:speakers,...(current.modelBinding?{modelBinding:current.modelBinding}:{})}) : await api.action(sessionId, { idempotencyKey: current.key, expectedRevision: current.revision, action: current.action, ...(current.modelBinding?{modelBinding:current.modelBinding}:{}) }), current); }
+    const body = { idempotencyKey: current.key, expectedRevision: current.revision, action: current.action,
+      ...(current.narrativeMode ? { narrativeMode: current.narrativeMode } : {}),
+      ...(current.modelBinding ? { modelBinding: current.modelBinding } : {}) };
+    try {
+      const result = members ? await api.groupAction(sessionId, { ...body, mode,
+        ...(mode === 'multi' && requireAllSelected ? { requireAllSelected: true } : {}),
+        participantIds: mode === 'auto' ? [] : speakers }) : await api.action(sessionId, body);
+      await apply(result, current);
+    }
     catch (e) {
       if (!controller.signal.aborted) {
         // These responses occur before the candidate records a new request.
@@ -84,7 +103,9 @@ function CardSessionForOwner({ owner, sessionId, onBack }: Props) {
   function back() { if (pending && pending.status !== 'failed' && !window.confirm('当前请求尚未确认。原请求标识已保存在本标签页，返回后请查询；离开不会撤销已提交的行动。仍要离开吗？')) return; onBack(); }
   return <GameShell saveId={`card-${sessionId}`} readingReady={!!session} readingScope={`card:${owner}:${sessionId}`} onReadingPositionChange={ignorePosition}>
     <header className="game-topline card-session-heading"><div><h1>{members?'角色卡群聊':'角色卡会话'}</h1><span>独立会话 · 修订 {session?.revision ?? '—'}</span></div><button className="secondary" onClick={back}>返回卡库</button></header>
-    <section className="card card-ui-section" aria-label="角色卡模型状态"><p>{!model?'正在核验宿主模型…':model.mode==='synthetic'?'合成演示（非真实 AI）':model.model?`宿主模型：${model.model} · ${model.protocol} · 输出上限 ${model.maxOutputTokens} tokens`:'宿主模型不可用'}</p>{model?.reason&&<p role="status">{cardError(new CardHttpError(403,model.reason))}</p>}{model?.counting&&<p>本地文本 token 估算并预留余量；不等于供应商账单。剩余调用：{model.remainingCalls??'待授权'}</p>}{requestModel?.model&&<p>最近核实请求固定模型：{requestModel.model}</p>}</section>
+    <section className="card card-ui-section" aria-label="角色卡模型状态"><p>{!model?'正在核验宿主模型…':model.mode==='synthetic'?'合成演示（非真实 AI）':model.model?`宿主模型：${model.model} · ${model.protocol} · 输出上限 ${model.maxOutputTokens} tokens`:'宿主模型不可用'}</p>{model?.reason&&<p role="status">{cardError(new CardHttpError(403,model.reason))}</p>}{model?.counting&&<p>本地文本 token 估算并预留余量；不等于供应商账单。剩余调用：{model.remainingCalls??'待授权'}</p>}<label>叙事模式<select value={novel ? 'novel' : 'original'} disabled={busy || !!pending || recoveryBlocked} onChange={e => chooseNarration(e.target.value === 'novel')}>
+      <option value="original">原始模式</option><option value="novel">小说叙事模式</option>
+    </select></label>{requestModel?.model&&<p>最近核实请求固定模型：{requestModel.model}</p>}</section>
     <div className="game-workspace card-session"><div className={`story-column${members?' card-group-column':''}`}>
       <div className="story-reading" role="region" tabIndex={0} aria-label="角色卡会话历史"><p role="status" className="card-session-status">{message}</p>
         {members && <section className="card card-ui-section" aria-label="群聊参与者"><h2>参与角色</h2><p>{members.map(m=>`${m.display_name||'未命名角色'} · ${m.id.slice(0,8)}`).join('、')}</p><p>默认策略：{strategy==='auto'?'自动轮流':'手动指定'}</p><div className="actions"><button type="button" disabled={busy||!!pending} onClick={()=>void (async()=>{try{const next=strategy==='manual'?'auto':'manual';const saved=await api.setGroupStrategy(sessionId,next);if(!controller.signal.aborted){rememberStrict(false,[]);setStrategy(saved.strategy);setMode(saved.strategy);}}catch(e){if(!controller.signal.aborted)setMessage(cardError(e));}})()}>切换默认策略</button></div></section>}

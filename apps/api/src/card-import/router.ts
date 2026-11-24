@@ -11,6 +11,11 @@ const str = (v: unknown, max: number): string => {
   if (typeof v !== 'string' || v.includes('\0') || v.length > max) throw new CardError('INVALID_TEXT');
   return v;
 };
+function narrativeMode(value: unknown) {
+  if (value === undefined || value === 'original') return 'original';
+  if (value === 'novel') return 'novel';
+  throw new CardError('INVALID_NARRATIVE_MODE');
+}
 const integer = (v: unknown): number => {
   if (typeof v !== 'number' || !Number.isSafeInteger(v) || v < 0) throw new CardError('INVALID_REVISION');
   return v;
@@ -95,7 +100,7 @@ export function createCardImportRouter(service: CardImportService, auth: CloudSa
     // Omission and false preserve the exact pre-existing group fingerprint.
     const group: GroupAction = {mode: b.mode ?? 'default', participantIds, ...(b.requireAllSelected === true ? {requireAllSelected: true} : {})};
     return c.json(await service.act(c.get('owner'), uuid(c.req.param('id')), uuid(b.idempotencyKey), integer(b.expectedRevision),
-      action, c.req.raw.signal, group, b.modelBinding === undefined ? undefined : str(b.modelBinding, 64)));
+      action, c.req.raw.signal, group, b.modelBinding === undefined ? undefined : str(b.modelBinding, 64), narrativeMode(b.narrativeMode)));
   });
   app.get('/sessions/:id', async c => c.json(await service.sessionWithGreeting(c.get('owner'), uuid(c.req.param('id')))));
   app.get('/sessions/:id/history', async c => c.json(await service.history(c.get('owner'), uuid(c.req.param('id')), integer(Number(c.req.query('after') ?? 0)))));
@@ -104,7 +109,7 @@ export function createCardImportRouter(service: CardImportService, auth: CloudSa
     if (b.requireAllSelected !== undefined && b.requireAllSelected !== false) throw new CardError('INVALID_GROUP_MODE');
     if (!action.trim()) throw new CardError('EMPTY_ACTION');
     if (allowAction && !await allowAction(c.get('owner'))) throw new CardError('RATE_LIMITED', 429);
-    return c.json(await service.act(c.get('owner'), uuid(c.req.param('id')), uuid(b.idempotencyKey), integer(b.expectedRevision), action, c.req.raw.signal, undefined,b.modelBinding===undefined?undefined:str(b.modelBinding,64)));
+    return c.json(await service.act(c.get('owner'), uuid(c.req.param('id')), uuid(b.idempotencyKey), integer(b.expectedRevision), action, c.req.raw.signal, undefined,b.modelBinding===undefined?undefined:str(b.modelBinding,64), narrativeMode(b.narrativeMode)));
   });
   app.get('/sessions/:id/requests', async c => c.json(await service.recentRequests(c.get('owner'), uuid(c.req.param('id')))));
   app.get('/sessions/:id/requests/:key', async c => c.json(await service.request(c.get('owner'), uuid(c.req.param('id')), uuid(c.req.param('key')))));

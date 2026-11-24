@@ -320,6 +320,42 @@ run('pg_ctl',['-D',join(dir,'pg'),'-l',join(dir,'pg.log'),'-o',`-c unix_socket_d
  await page.getByLabel('角色卡模型状态').filter({hasText:'gpt-6-luna'}).waitFor({timeout:15000});
  await page.getByLabel('角色卡行动').fill('forest browser');await page.getByRole('button',{name:'提交行动',exact:true}).click();await page.getByText('行动已完成，历史已更新。',{exact:true}).waitFor({timeout:15000});
  await page.reload();await page.getByText('forest browser',{exact:true}).waitFor();
+ const style = page.getByLabel('叙事模式');
+ assert.equal(await style.inputValue(), 'original');
+ const originalInstruction = seen.at(-1).messages[0].content;
+ async function sendWithStyle(value, action) {
+   await style.selectOption(value);
+   const count = sent;
+   await page.getByLabel('角色卡行动').fill(action);
+   const response = page.waitForResponse(r => r.request().method() === 'POST' && r.url().endsWith('/actions'));
+   await page.getByRole('button', {name:'提交行动',exact:true}).click();
+   const completed = await response;
+   assert.equal((await completed.json()).status, 'completed');
+   await page.getByText(action, {exact:true}).waitFor();
+   assert.equal(sent, count + 1);
+   return completed.request().postDataJSON();
+ }
+ const novelRequest = await sendWithStyle('novel', 'forest novel round');
+ const novelWire = seen.at(-1).messages;
+ assert.equal(novelRequest.narrativeMode, 'novel');
+ assert.ok(novelWire[0].content.startsWith(originalInstruction + '\n让人物下一步能做的事'));
+ assert.ok(novelWire[0].content.endsWith('把玩家下一步留给玩家。'));
+ assert.ok(novelWire.some(m => m.content === 'forest browser'));
+ const novelCount = sent;
+ const actionPath = prefix + '/sessions/' + uiId + '/actions';
+ assert.equal((await http(actionPath, 'POST', novelRequest, ui.cookie)).body.status, 'completed');
+ assert.equal((await http(actionPath, 'POST', {...novelRequest, narrativeMode:'original'}, ui.cookie)).status, 409);
+ assert.equal((await http(actionPath, 'POST', {...novelRequest, narrativeMode:'bad'}, ui.cookie)).status, 400);
+ assert.equal(sent, novelCount);
+ await page.reload(); await page.getByText('forest novel round', {exact:true}).waitFor();
+ assert.equal(await style.inputValue(), 'novel');
+ const switched = await sendWithStyle('original', 'forest original again');
+ assert.equal(switched.narrativeMode, undefined);
+ assert.equal(seen.at(-1).messages[0].content, originalInstruction);
+ const switchCount = sent;
+ assert.equal((await http(actionPath, 'POST', {...switched,narrativeMode:'original'}, ui.cookie)).body.status, 'completed');
+ assert.equal(sent, switchCount);
+ mark('browser switches style both ways; provider prompt, history, refresh and old fingerprints verified');
  // Group UI consumes the same fixed model and protocol path.
  await page.goto(origin+`/cards/session/${uiGroupId}`);await page.getByLabel('角色卡行动').waitFor();await page.getByLabel('角色卡行动').fill('forest group browser');await page.getByLabel('本次发言方式').selectOption('auto');await page.getByRole('button',{name:'提交行动',exact:true}).click();await page.getByText('行动已完成，历史已更新。',{exact:true}).waitFor();mark('group browser automatic speaker uses protocol');
  const uiMembers = (await http(prefix+`/sessions/${uiGroupId}/group`, 'GET', undefined, ui.cookie)).body;
