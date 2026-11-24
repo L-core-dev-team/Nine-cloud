@@ -39,6 +39,7 @@ import { pickResumeSave, relativeTime } from './ui/resume';
 import { readRecent, recentPath, recordRecent } from './ui/recent';
 import { useNavigationCardAvailability } from './ui/card-availability-cache';
 import './pages/lobby-e.css';
+import './pages/archive-e.css';
 import './design-system/story-e.css';
 import './design-system/tool-e.css';
 import './pages/world-e.css';
@@ -289,15 +290,30 @@ function SaveManager({ saves, onRename, onDelete, onExport }: {
     } catch { setFeedback('删除未完成。存档状态未确认，请重新载入列表后核对。'); }
     finally { busyRef.current = false; setBusy(false); }
   }
-  return <section className="page save-manager"><span className="eyebrow">本地档案</span><h2>存档管理</h2>
-    <p>改名只调整列表称呼。删除前请导出副本；其他标签页若改过同一存档，删除会被拒绝。</p>
-    {!saves.length && <p>目前没有本地存档。</p>}
-    <div className="save-manager-list">{saves.map(save => <article className="card" key={save.saveId}>
-      <div><h3>{save.name}</h3><p>{save.location} · 存档版本 {save.revision}</p></div>
+  const latestId = saves.reduce<LocalSave | null>((latest, save) => !latest || Date.parse(save.updatedAt) > Date.parse(latest.updatedAt) ? save : latest, null)?.saveId;
+  const waiting = saves.filter(save => (save.pendingQueue?.length ?? 0) > 0 || !!save.pending).length;
+  return <section className="page save-manager">
+    <h2>存档管理</h2>
+    <p className="save-manager-lede">改名只调整列表称呼。删除前请导出副本；其他标签页若改过同一存档，删除会被拒绝。</p>
+    {saves.length > 0 && <p className="save-manager-summary">本机共 {saves.length} 份存档{waiting ? `，其中 ${waiting} 份有待处理的行动` : ''}。</p>}
+    {!saves.length && <div className="save-manager-empty"><p>目前没有本地存档。</p><button className="primary" onClick={() => go('/new')}>开始新的行旅</button></div>}
+    <div className="save-manager-list">{saves.map(save => {
+      const origin = typeof save.character.origin === 'string' && save.character.origin.trim() ? save.character.origin.trim() : '';
+      const pending = (save.pendingQueue?.length ?? 0) > 0 || !!save.pending;
+      const marks = [save.saveId === latestId && saves.length > 1 ? '最近' : '', pending ? '有待处理行动' : '', save.legacyArchive ? '旧档迁入' : '', save.p2ReviewCandidate ? '审核候选' : ''].filter(Boolean);
+      return <article className="card jx-mingpai" key={save.saveId} data-latest={save.saveId === latestId ? 'true' : undefined} data-pending={pending ? 'true' : undefined} data-editing={editingId === save.saveId || deletingId === save.saveId ? 'true' : undefined}>
+      <div className="jx-mingpai-head"><h3>{save.name}</h3>{marks.length > 0 && <ul className="jx-mingpai-marks" aria-label="存档标记">{marks.map(mark => <li key={mark}>{mark}</li>)}</ul>}</div>
+      <dl className="jx-mingpai-facts">
+        <div><dt>所在</dt><dd>{save.location || '未记录'}</dd></div>
+        {origin && <div><dt>出身</dt><dd>{origin}</dd></div>}
+        <div><dt>记录</dt><dd>{save.messages.length} 段</dd></div>
+        <div><dt>上次</dt><dd><time dateTime={save.updatedAt}>{relativeTime(save.updatedAt) || '未记录'}</time></dd></div>
+      </dl>
+      <p className="jx-mingpai-revision">存档版本 {save.revision}</p>
       <div className="actions"><button className="secondary" disabled={busy} onClick={() => go(`/game/${save.saveId}`)}>打开</button>
         <button className="secondary" disabled={busy} onClick={() => onExport(save)}>导出</button>
         <button className="secondary" disabled={busy} onClick={() => { reviewedSaveRef.current = save; setEditingId(save.saveId); setDeletingId(null); setName(save.name); setFeedback(''); }}>改名</button>
-        <button className="quiet-action" disabled={busy} onClick={() => { reviewedSaveRef.current = save; setDeletingId(save.saveId); setEditingId(null); setConfirmation(''); setFeedback(''); }}>删除</button></div>
+        <button className="quiet-action jx-danger" disabled={busy} onClick={() => { reviewedSaveRef.current = save; setDeletingId(save.saveId); setEditingId(null); setConfirmation(''); setFeedback(''); }}>删除</button></div>
       {editingId === save.saveId && <form className="save-manager-form" onSubmit={event => {
         event.preventDefault(); if (busyRef.current) return; busyRef.current = true; setBusy(true);
         void onRename(reviewedSaveRef.current || save, name).then(ok => {
@@ -307,12 +323,13 @@ function SaveManager({ saves, onRename, onDelete, onExport }: {
       }}><label>新名称<input value={name} maxLength={40} onChange={event => setName(event.target.value)} disabled={busy} /></label>
         <button className="primary" type="submit" disabled={busy || !name.trim() || name.trim() === save.name}>{busy ? '正在保存…' : '保存名称'}</button>
         <button className="secondary" type="button" disabled={busy} onClick={() => setEditingId(null)}>取消</button></form>}
-      {deletingId === save.saveId && <div className="save-manager-form" role="group" aria-label={`确认删除${save.name}`}>
-        <p>此操作会移除本机这份存档。请先导出，并输入完整名称确认。</p>
+      {deletingId === save.saveId && <div className="save-manager-form jx-danger-zone" role="group" aria-label={`确认删除${save.name}`}>
+        <p>删除后无法恢复。如需保留，请先下载副本；然后输入完整名称“{save.name}”确认。</p>
+        <button className="secondary" type="button" disabled={busy} onClick={() => onExport(save)}>先下载副本</button>
         <label>确认名称<input value={confirmation} onChange={event => setConfirmation(event.target.value)} disabled={busy} /></label>
-        <button className="primary" disabled={busy || confirmation !== save.name} onClick={() => void removeReviewedSave(save)}>{busy ? '正在删除…' : '确认删除'}</button>
+        <button className="primary jx-danger" disabled={busy || confirmation !== save.name} onClick={() => void removeReviewedSave(save)}>{busy ? '正在删除…' : '确认删除'}</button>
         <button className="secondary" disabled={busy} onClick={() => setDeletingId(null)}>取消</button></div>}
-    </article>)}</div>
+    </article>; })}</div>
     {feedback && <p role="status">{feedback}</p>}
     <button className="secondary" onClick={() => go('/lobby')}>返回山门</button>
   </section>;

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { SCENE_MANIFEST, type SceneId } from '@jiuxiao/content/scenes';
 import { detectRendererEnvironment, type GraphicsSettings } from '../graphics-settings';
 import type { SceneRenderStatus } from '../scenes/SceneAtmosphere';
+import { mediaUrlForBrowser } from '../media-compat';
 
 type Props = {
   settings: GraphicsSettings;
@@ -44,10 +45,11 @@ export function GraphicsSettingsPage({ settings, onChange, renderer, ambientAudi
     <section className="graphics-section" aria-labelledby="scene-preview-title">
       <div className="graphics-section-heading"><div><span className="graphics-kicker">场景试览</span><h3 id="scene-preview-title">山门之外，尚有天地</h3></div><span className="graphics-status">固定素材 ID · 不接受外部地址</span></div>
       <div className="scene-choice-list" role="group" aria-label="预览场景">
-        {SCENE_MANIFEST.map(scene => <button key={scene.id} className="scene-choice" aria-pressed={preview === scene.id} onClick={() => { setPreview(scene.id); onPreviewScene(scene.id); }}>
+        {SCENE_MANIFEST.map(scene => { const poster = scene.desktopPoster; return <button key={scene.id} className="scene-choice" aria-pressed={preview === scene.id} onClick={() => { setPreview(scene.id); onPreviewScene(scene.id); }}>
+          {poster && <img className="scene-choice-view" src={mediaUrlForBrowser(poster)} alt="" loading="lazy" decoding="async" />}
           <strong>{scene.name}</strong>
           <small>{preview === scene.id && <b className="scene-choice-current">当前预览 · </b>}{scene.assetStatus === 'candidate-internal' ? '项目候选画面 · 来源与发布授权待核' : '程序化预览 · 正式画面待审核'}</small>
-        </button>)}
+        </button>; })}
       </div>
       <p className="quiet-note">候选画面已按四类固定场景接入预览。游戏内只按已结算地点切换；你的行动和模型都不能指定图片网址。来源、授权和双作者发布审核完成前，这些文件只作内部预览。</p>
     </section>

@@ -72,15 +72,3 @@
   }
 }
 
-/* P10 · 修行档案：每份存档是一只档案匣；删除用危险色并保留既有的输入确认流程。 */
-@layer jx.pages {
-  .save-manager h2 { color: var(--jx-fg-strong); font-size: var(--jx-text-h1); font-weight: 600; letter-spacing: 0.04em; }
-  .save-manager > p { color: var(--jx-fg-body); }
-  .save-manager-list .card { padding: var(--jx-space-5); color: var(--jx-fg-body); background: var(--jx-mat-frost-fill); border: 0; border-radius: var(--jx-radius-panel); box-shadow: 0 0 0 1px var(--jx-line-subtle), var(--jx-shadow-raise); -webkit-backdrop-filter: var(--jx-mat-frost-blur); backdrop-filter: var(--jx-mat-frost-blur); }
-  .save-manager-list h3 { color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-weight: 600; }
-  .save-manager-list .actions button.quiet-action { color: var(--jx-status-danger); border-color: var(--jx-status-danger); }
-  .save-manager-form { border-top-color: var(--jx-line-subtle); }
-  @media (prefers-reduced-transparency: reduce) {
-    .save-manager-list .card { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--jx-surface-1); }
-  }
-}

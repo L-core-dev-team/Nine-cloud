@@ -21,6 +21,8 @@ const files = [
   'apps/web/src/ui/folio-e.css',
   'apps/web/src/ui/ai-two-e.css',
   'apps/web/src/routes/worldbook-e.css',
+  'apps/web/src/pages/archive-e.css',
+  'apps/web/src/ui/realm-e.css',
 ];
 const requiredTokens = new Map([
   ['--jx-space-1', '4px'],

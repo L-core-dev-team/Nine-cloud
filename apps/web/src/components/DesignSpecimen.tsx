@@ -2,6 +2,9 @@ import { useState, type CSSProperties } from 'react';
 import { ArmillaryRing, Monogram, MoonGate, Seal } from '../ui/Ornaments';
 import { ReadingPrefsDialog, useReadingPrefs } from '../ui/ReadingPrefs';
 import { Folio } from '../ui/Folio';
+import { RealmChart, RealmPlaque } from '../ui/RealmSeal';
+import { realmStatusFromSave } from '../ui/realm';
+import { GameInfoDialog } from './GameShell';
 import { FOLIO_SAMPLE } from './folio-sample';
 import '../design-system/tokens-v2.css';
 import '../design-system/jx-e.css';
@@ -26,6 +29,9 @@ export function DesignSpecimen() {
   const [drawKey, setDrawKey] = useState(0);
   const [prefsOpen, setPrefsOpen] = useState(false);
   const [folioOpen, setFolioOpen] = useState(false);
+  const [cultivation, setCultivation] = useState(2400);
+  const [realmOpen, setRealmOpen] = useState(false);
+  const realm = realmStatusFromSave({ ruleVersion: 'prologue-v1', state: { facts: { cultivationProgress: cultivation } } })!;
   const [prefs, setPrefs] = useReadingPrefs();
   const toggleTheme = () => { const next = theme === 'night' ? 'day' : 'night'; document.documentElement.dataset.theme = next; setTheme(next); };
   return <div className="jx-shell jx-specimen" data-jx-layer="lobby">
@@ -81,6 +87,15 @@ export function DesignSpecimen() {
         <section className="card card-session-pending jx-receipt"><p>请求状态：unknown。请勿刷新或离开页面。</p><div className="actions"><button type="button">查询原请求</button><button type="button">核对过期请求</button></div></section>
       </div></div>
     </section>
+
+    <section className="jx-specimen-section" data-jx-layer="story">
+      <h2>境界铭牌 · 玉璧</h2>
+      <p className="jx-specimen-note">只读服务端权威存档：序章规则 prologue-v1 下境界恒为炼体期，璧环就是 cultivationProgress / 10000。下面的数值是样张，按钮只改样张数值，用来查看修为增加时的周天动画。</p>
+      <div className="jx-specimen-row"><RealmPlaque status={realm} onOpen={() => setRealmOpen(true)} />
+        <button type="button" className="secondary" onClick={() => setCultivation(value => Math.min(10_000, value + 800))}>修炼一刻（样张）</button>
+        <button type="button" className="quiet-action" onClick={() => setCultivation(2400)}>复位</button></div>
+    </section>
+    {realmOpen && <GameInfoDialog label="境界" className="jx-realm-dialog" onClose={() => setRealmOpen(false)}><RealmChart status={realm} /></GameInfoDialog>}
 
     <section className="jx-specimen-section" data-jx-layer="story">
       <h2>成卷 · 小说阅读模式</h2>
