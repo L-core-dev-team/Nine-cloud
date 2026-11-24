@@ -130,7 +130,8 @@
 | `pnpm test` | 通过 | web 319；api 477（51 跳过，比第二轮多 9 项缩略图测试）；domain 133；content 25；contracts 17 |
 | design-token-audit | 通过 | 19 个文件、6339 条声明 |
 | design-acceptance | 先失败，修后通过 | 画面设置页 8 处：白天主题下场景画面的浅色边缘贴着浅色页面，控件边界不足 3:1；夜间导语压在月亮上。另有一处测量时序问题：页面未挂载就量了文字位置。修法见锚点变更记录第 7 条，以及第 2 节的木框与题签。修后单页 620 段文字、112 处边界全过；foundation 内置的完整验收为 4804 段文字、786 处边界，0 失败 |
-| foundation（本地补丁版） | 通过 | 在**无并行任务**时全程通过。我在同时跑构建与部署时，1621 行（世界设定往返后的阅读位置）两次超时；加被动日志的两次与安静环境的一次都通过。判断为负载敏感，未改测试；以 CI 结果为准 |
+| foundation（本地补丁版） | 通过 | 在**无并行任务**时全程通过。我在同时跑构建与部署时，1621 行（世界设定往返后的阅读位置）两次超时；加被动日志的两次与安静环境的一次都通过。CI 上（运行 45394670601）这一行也通过了 |
+| CI `verify`（`1509349`） | **失败，已修** | 失败在 foundation 末尾内置的设计验收：夜间 390 宽度下四扇屏风的边界比为 1.0，取样点内外都落在页面底色上。原因：那一版把屏风设成 `border: 0`，边界只能按截图像素判断，对“测量之后页面又挪动”的情况很敏感；CI 机器较慢，首次进入画面设置页时发生了这种挪动。同页有真实边框的下拉框不受影响。修法：屏风恢复 1px 实线边框（颜色由全站切换按钮的无障碍边线接管，夜浅昼深，两种主题都 ≥3:1），审计改为按边框颜色判断，不再依赖像素位置。本机模拟“测量后挪动 30px”时，夜间转为通过 |
 | jx-ui-e-visual | 通过 | 200 张截图，含新画面设置页 |
 | game-shell、spatial-ui、liquid-glass-production-guard、cloud-game-*、prologue、p1-*、p2-*（含 `p2-local-gameplay`）、story-first-golden、auth-login-ui、filing-notice、card-availability、turns、professional-focus、s-final-quality、world-description-contrast | 通过 | |
 | `card-real-play` | 40/40 | 真实 PostgreSQL，经过新缩略图路由 |
