@@ -3,6 +3,7 @@ import { readJson, type CloudSaveRouteAuth } from '../routes/saves.js';
 import { base64, CardError, record } from './parser.js';
 import { CardImportService, type GroupAction } from './service.js';
 import { exportCard } from './export.js';
+import { THUMBNAIL_VERSION, ThumbnailRenderer } from './thumbnail.js';
 const uuid = (v: unknown): string => {
   if (typeof v !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(v)) throw new CardError('INVALID_ID');
   return v;
@@ -22,6 +23,9 @@ async function body(r: Request) {
   return result.value;
 }
 /** Unmounted independent router. Host supplies trusted authentication and model. */
+/** Shared across routers in one process; thumbnails are content-addressed, ownership is checked per request. */
+const thumbnails = new ThumbnailRenderer();
+
 export function createCardImportRouter(service: CardImportService, auth: CloudSaveRouteAuth, origin: string, allowAction?: (owner: string) => Promise<boolean>) {
   if (new URL(origin).origin !== origin) throw new Error('Expected exact trusted origin');
   const app = new Hono<{ Variables: { owner: string } }>();
@@ -56,6 +60,14 @@ export function createCardImportRouter(service: CardImportService, auth: CloudSa
   app.get('/imports/:id/original', async c => {
     const r = await service.readImport(c.get('owner'), uuid(c.req.param('id')));
     return new Response(new Uint8Array(r.original), { headers: { 'Content-Type': 'application/octet-stream', 'Content-Disposition': 'attachment; filename="original.bin"', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' } });
+  });
+  app.get('/imports/:id/thumbnail', async c => {
+    const r = await service.readImport(c.get('owner'), uuid(c.req.param('id')));
+    const etag = `"thumb-${THUMBNAIL_VERSION}-${String(r.sha256).slice(0, 32)}"`;
+    const cache = { 'Cache-Control': 'private, max-age=31536000, immutable', ETag: etag, Vary: 'Cookie, x-jiuxiao-account', 'X-Content-Type-Options': 'nosniff' };
+    if (c.req.header('If-None-Match') === etag) return new Response(null, { status: 304, headers: cache });
+    const data = await thumbnails.render(String(r.sha256), r.original as Uint8Array);
+    return new Response(new Uint8Array(data), { headers: { ...cache, 'Content-Type': 'image/jpeg' } });
   });
   app.get('/imports/:id/worldbook-export', async c => { const r=await service.readImport(c.get('owner'),uuid(c.req.param('id')));if(r.kind!=='worldbook'||!r.parsed?.document)throw new CardError('WORLDBOOK_NOT_READY',409);return new Response(JSON.stringify(r.parsed.document),{headers:{'Content-Type':'application/json; charset=utf-8','Content-Disposition':'attachment; filename="worldbook.json"','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}}); });
   app.post('/imports/:id/worldbook-versions', async c=>{const b=await body(c.req.raw);if(!record(b.changes))throw new CardError('INVALID_WORLDBOOK_EDIT');return c.json(await service.editWorldbook(c.get('owner'),uuid(c.req.param('id')),b.changes));});

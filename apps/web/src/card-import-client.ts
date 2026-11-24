@@ -91,6 +91,21 @@ export class CardImportClient {
   recover(id: string, key: string) { return this.item<RequestItem>(`/sessions/${encodeURIComponent(id)}/requests/${encodeURIComponent(key)}/recover`, 'POST'); }
   async remove(type: 'imports' | 'cards' | 'sessions', id: string) { await this.request(`/${type}/${encodeURIComponent(id)}`, 'DELETE', undefined, 'empty'); }
   async original(id: string) { return await this.request(`/imports/${encodeURIComponent(id)}/original`, 'GET', undefined, 'binary') as Uint8Array; }
+  /** Server-made JPEG thumbnail (immutable, privately cacheable). Read-only, so it uses the HTTP cache. */
+  async thumbnail(id: string): Promise<Blob> {
+    const deadline = AbortSignal.timeout(20_000);
+    const response = await fetch(apiRequestUrl(`/api/card-import/imports/${encodeURIComponent(id)}/thumbnail`), {
+      credentials: 'include', cache: 'default', signal: this.signal ? AbortSignal.any([deadline, this.signal]) : deadline,
+      headers: { 'x-jiuxiao-account': this.owner },
+    });
+    if (!response.ok) {
+      let data: unknown; try { data = JSON.parse(new TextDecoder().decode(await bytesBounded(response, 4096))); } catch { data = null; }
+      const value = object(data) ? data.error : undefined;
+      throw new CardHttpError(response.status, typeof value === 'string' && /^[A-Z_]{1,60}$/.test(value) ? value : undefined);
+    }
+    if (!(response.headers.get('content-type') ?? '').startsWith('image/jpeg')) throw new CardHttpError(415, 'THUMBNAIL_UNAVAILABLE');
+    return new Blob([await bytesBounded(response, 1024 * 1024) as BlobPart], { type: 'image/jpeg' });
+  }
 }
 
 export function cardError(error: unknown): string {

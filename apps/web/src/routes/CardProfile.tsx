@@ -93,12 +93,12 @@ function Fishtail() {
 type Chapter = { id: string; title: string; body: ReactNode };
 type Props = {
   card: CardItem; name: string; cards: CardItem[]; imports: ImportItem[]; sessions: SessionItem[];
-  load: (importId: string) => Promise<Uint8Array>; busy: boolean; startBlocked?: boolean;
+  load: (importId: string) => Promise<Uint8Array>; thumbnail?: ((importId: string) => Promise<Blob>) | undefined; busy: boolean; startBlocked?: boolean;
   onStart: (greetingIndex: number) => void; onDelete: () => void; onExport: (format: 'v2' | 'v3' | 'png') => void;
   revision: ReactNode; raw: ReactNode;
 };
 
-export function CardProfile({ card, name, cards, imports, sessions, load, busy, startBlocked, onStart, onDelete, onExport, revision, raw }: Props) {
+export function CardProfile({ card, name, cards, imports, sessions, load, thumbnail, busy, startBlocked, onStart, onDelete, onExport, revision, raw }: Props) {
   const data = cardData(card);
   const [greeting, setGreeting] = useState(-1);
   const body = useRef<HTMLDivElement>(null);
@@ -153,7 +153,7 @@ export function CardProfile({ card, name, cards, imports, sessions, load, busy, 
   return <article className="jx-liezhuan" ref={body} aria-label={`${name}人物志`}>
     <div className="jx-lz-cover">
       <div className="jx-lz-portrait">
-        <CardPortrait name={name} importId={card.import_id} load={load} skip={card.parsed?.format === 'json'} />
+        <CardPortrait name={name} importId={card.import_id} load={load} thumbnail={thumbnail} skip={card.parsed?.format === 'json'} />
         <h3 className="jx-tiqian" data-length={titleLength > 9 ? 'long' : titleLength > 5 ? 'mid' : 'short'}>{titleLength > 9 ? name : tiqianTokens(name).map((token, index) => <span key={index} className={/^[\x21-\x7e\s]+$/.test(token) ? 'jx-tq-run' : undefined}>{token}</span>)}</h3>
       </div>
       <div className="jx-lz-colophon">

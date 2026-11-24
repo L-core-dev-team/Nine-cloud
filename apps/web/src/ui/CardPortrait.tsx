@@ -50,18 +50,35 @@ async function decodeThumbnail(bytes: Uint8Array): Promise<string | null> {
   return thumbnail ? URL.createObjectURL(thumbnail) : null;
 }
 
-function loadPortrait(importId: string, load: Loader): Promise<string | null> {
+type ThumbnailLoader = (importId: string) => Promise<Blob>;
+/** Set false after the API answers without the thumbnail route (an older server); then only decode locally. */
+let serverThumbnails = true;
+
+async function serverOrLocal(importId: string, load: Loader, thumbnail?: ThumbnailLoader): Promise<string | null> {
+  if (thumbnail && serverThumbnails) {
+    try { return URL.createObjectURL(await thumbnail(importId)); }
+    catch (error) {
+      const code = (error as { code?: string; status?: number })?.code;
+      // A thumbnail-specific answer means this card has no usable image on the server either.
+      if (code === 'THUMBNAIL_UNAVAILABLE') return null;
+      if (code !== 'THUMBNAIL_BUSY') serverThumbnails = false;
+    }
+  }
+  return decodeThumbnail(await load(importId));
+}
+
+function loadPortrait(importId: string, load: Loader, thumbnail?: ThumbnailLoader): Promise<string | null> {
   if (cache.has(importId)) return Promise.resolve(cache.get(importId) ?? null);
   const pending = inflight.get(importId);
   if (pending) return pending;
   const task = schedule(async () => {
-    try { return await decodeThumbnail(await load(importId)); } catch { return null; }
+    try { return await serverOrLocal(importId, load, thumbnail); } catch { return null; }
   }).then(url => { remember(importId, url); inflight.delete(importId); return url; });
   inflight.set(importId, task);
   return task;
 }
 
-export function CardPortrait({ name, importId, load, skip }: { name: string; importId: string; load: Loader; skip?: boolean }) {
+export function CardPortrait({ name, importId, load, thumbnail, skip }: { name: string; importId: string; load: Loader; thumbnail?: ThumbnailLoader | undefined; skip?: boolean }) {
   const frame = useRef<HTMLSpanElement>(null);
   const [url, setUrl] = useState<string | null>(() => cache.get(importId) ?? null);
   useEffect(() => {
@@ -72,11 +89,11 @@ export function CardPortrait({ name, importId, load, skip }: { name: string; imp
     const observer = new IntersectionObserver(entries => {
       if (!entries.some(entry => entry.isIntersecting)) return;
       observer.disconnect();
-      void loadPortrait(importId, load).then(result => { if (alive) setUrl(result); });
+      void loadPortrait(importId, load, thumbnail).then(result => { if (alive) setUrl(result); });
     }, { rootMargin: '120px' });
     observer.observe(element);
     return () => { alive = false; observer.disconnect(); };
-  }, [importId, load, skip]);
+  }, [importId, load, thumbnail, skip]);
   return <span ref={frame} className="jx-scroll-frame" aria-hidden="true">
     {url ? <img src={url} alt="" decoding="async" /> : <Monogram name={name} className="jx-scroll-monogram" />}
   </span>;
