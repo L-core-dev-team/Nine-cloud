@@ -7,6 +7,9 @@ import { REALM_ORDER } from '@jiuxiao/content/realm-order';
  * - 序章规则 `prologue-v1`（作者 2026-10-03 签字的 P1-R02）：角色以炼体期起始，只累积
  *   `cultivationProgress`；满 10000 记为“炼体期圆满”；首段不设突破门槛，也不得推断突破阈值。
  * - 因此在 `prologue-v1` 存档里，境界恒为炼体期，进度就是 `cultivationProgress / 10000`。
+ * - 本机 1.0 预览玩法用候选内容绑定 `prologue-v1-candidate-*`：同一个 reducer
+ *   （`createPrologueV1RuleModule`）、同一组已签字数值 `PROLOGUE_V1`，候选的只是地点 / 物品 ID
+ *   与 Canon 版本号，所以修为同样是规则写入的权威值。
  * - 其他规则版本、本机叙事存档、旧档都没有权威境界，返回 null，界面不显示铭牌。
  */
 export type RealmName = typeof REALM_ORDER[number];
@@ -15,9 +18,12 @@ export type RealmStatus = { realm: RealmName; index: number; raw: number; max: n
 /** Mirrors PROLOGUE_V1.CULTIVATION_MAX; a unit test pins the two together. */
 export const PROLOGUE_CULTIVATION_MAX = 10_000;
 const PROLOGUE_RULE_VERSION = 'prologue-v1';
+const PROLOGUE_CANDIDATE_PREFIX = 'prologue-v1-candidate-';
 
 export function realmStatusFromSave(save: { ruleVersion?: unknown; state?: { facts?: unknown } } | null | undefined): RealmStatus | null {
-  if (!save || save.ruleVersion !== PROLOGUE_RULE_VERSION) return null;
+  if (!save) return null;
+  const version = save.ruleVersion;
+  if (typeof version !== 'string' || (version !== PROLOGUE_RULE_VERSION && !version.startsWith(PROLOGUE_CANDIDATE_PREFIX))) return null;
   const facts = save.state?.facts;
   const value = facts && typeof facts === 'object' ? (facts as { cultivationProgress?: unknown }).cultivationProgress : undefined;
   if (typeof value !== 'number' || !Number.isSafeInteger(value) || value < 0) return null;

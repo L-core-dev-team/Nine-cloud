@@ -73,6 +73,9 @@
   .jx-realm-canon .jx-realm-source { color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); }
 
   .story-header > div:first-child { min-width: 0; }
+  /* 本机预览玩法：铭牌挂在“人物与任务状态”的标题行右侧。 */
+  .p2-state-head { display: flex; align-items: center; justify-content: space-between; gap: var(--jx-space-3); flex-wrap: wrap; }
+  .p2-state-head h3 { margin: 0; }
   @media (max-width: 599px) {
     .jx-realm-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
     .jx-shell button.jx-realm { flex: none; padding: 0; }

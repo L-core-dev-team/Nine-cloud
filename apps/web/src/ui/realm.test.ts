@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { PROLOGUE_V1, REALM_ORDER } from '@jiuxiao/content';
+import { PROLOGUE_V1_RULEBOOK_CANDIDATE } from '@jiuxiao/content/p1-review-candidate';
 import { PROLOGUE_CULTIVATION_MAX, realmGlyph, realmPercent, realmStatusFromSave } from './realm';
 
 describe('境界铭牌 · 只读权威存档', () => {
@@ -14,6 +15,11 @@ describe('境界铭牌 · 只读权威存档', () => {
   it('marks 圆满 only when the value is full', () => {
     expect(realmPercent(realmStatusFromSave({ ruleVersion: 'prologue-v1', state: { facts: { cultivationProgress: 9_999 } } })!)).toBe(99);
     expect(realmStatusFromSave({ ruleVersion: 'prologue-v1', state: { facts: { cultivationProgress: 10_000 } } })?.perfected).toBe(true);
+  });
+  it('reads the local 1.0 preview save, which runs the same reducer on the candidate content binding', () => {
+    expect(realmStatusFromSave({ ruleVersion: PROLOGUE_V1_RULEBOOK_CANDIDATE.ruleVersion, state: { facts: { cultivationProgress: 800 } } })?.raw).toBe(800);
+    expect(realmStatusFromSave({ ruleVersion: 'prologue-v2', state: { facts: { cultivationProgress: 800 } } })).toBeNull();
+    expect(realmStatusFromSave({ ruleVersion: 'prologue-v1-draft', state: { facts: { cultivationProgress: 800 } } })).toBeNull();
   });
   it('shows nothing without an authoritative source', () => {
     expect(realmStatusFromSave(null)).toBeNull();

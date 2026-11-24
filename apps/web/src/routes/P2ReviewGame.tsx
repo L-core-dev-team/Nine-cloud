@@ -1,4 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react';
+import { GameInfoDialog } from '../components/GameShell';
+import { RealmChart, RealmPlaque } from '../ui/RealmSeal';
+import { realmStatusFromSave } from '../ui/realm';
 import {
   type ActionIntentInput,
   type Decision,
@@ -68,6 +71,7 @@ function P2ReviewGame({ save, onBack }: { save: LocalSave | undefined; onBack: (
   const [digestNotice, setDigestNotice] = useState('');
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState('正在读取本机权威存档……');
+  const [showRealm, setShowRealm] = useState(false);
 
   const refresh = useCallback(async (runtimeOverride?: P2ReviewGameplayRuntime): Promise<AuthoritySnapshot | null> => {
     if (!save?.p2ReviewCandidate) {
@@ -344,6 +348,8 @@ function P2ReviewGame({ save, onBack }: { save: LocalSave | undefined; onBack: (
   const receiptRuleVersion = receipt && 'rulesVersion' in receipt && typeof receipt.rulesVersion === 'string'
     ? receipt.rulesVersion : 'candidate receipt';
   const actionDisabled = busy || !snapshot?.chainValid || !snapshot.replayValid;
+  // 境界只读本机权威存档里的 prologue-v1 修为；规则引擎写入，界面不推算。
+  const realm = realmStatusFromSave(snapshot?.save);
 
   return <section className="page p2-review-game" data-testid="p2-review-gameplay">
     <span className="eyebrow">{import.meta.env.JIUXIAO_PREVIEW_1 ? '九霄 · 1.0 预览版' : '九霄 · 本机玩法审阅'}</span>
@@ -379,7 +385,7 @@ function P2ReviewGame({ save, onBack }: { save: LocalSave | undefined; onBack: (
         <div><small>NPC 记忆线</small><strong data-testid="p2-memory-mode">{memoryModeLabel(snapshot.save.memoryMode)}</strong></div>
       </section>
       {scene && <section className="card" aria-label="人物与任务状态" data-testid="p2-state-facts">
-        <h3>人物与任务状态</h3>
+        <div className="p2-state-head"><h3>人物与任务状态</h3>{realm && <RealmPlaque status={realm} onOpen={() => setShowRealm(true)} />}</div>
         <p>体力 {scene.playerFacts.stamina} · 灵力 {scene.playerFacts.spiritStamina} · 首段任务：{scene.playerFacts.quest}</p>
         <p>已知线索：{scene.playerFacts.clues.join('、') || '暂无'}；物品：{scene.playerFacts.inventory.join('、') || '暂无'}</p>
       </section>}
@@ -473,6 +479,7 @@ function P2ReviewGame({ save, onBack }: { save: LocalSave | undefined; onBack: (
     </>}
     {!snapshot && <p role="status">{notice}</p>}
     <button type="button" className="secondary" onClick={onBack}>返回山门</button>
+    {showRealm && realm && <GameInfoDialog label="境界" className="jx-realm-dialog" onClose={() => setShowRealm(false)}><RealmChart status={realm} /></GameInfoDialog>}
   </section>;
 }
 
