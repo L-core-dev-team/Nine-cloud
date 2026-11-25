@@ -7,3 +7,4 @@
 - AMC [Michelle MacLaren on Nippy](https://www.amc.com/blogs/better-call-saul-qa-michelle-maclaren-on-directing-carol-burnett-and-crafting-a-different-kind-of-setpiece--1055261)。光线、黑白与电影叙事。
 - 后续查证菜单：Blender [manual](https://docs.blender.org/manual/en/latest/)（本次glTF页面读取遇402，未核验全文）；Awwwards [winners](https://www.awwwards.com/annual-awards/winners/)、Lusion、Active Theory、Immersive Garden（本轮检索发现案例线索，未逐站实际交互；Claude应打开官方案例）。
 本轮是有依据的起点，不声称完成全世界设计作品、工具及数学物理的穷尽研究。
+- Anthropic [Harness design for long-running apps](https://www.anthropic.com/research/harness-design-long-running-apps)：官方研究讨论创作者/评价者分离、反复评价与设计原创性；实验的5–15轮是研究观察，不是对本项目效果的保证。另查 [Prompting best practices](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/prompt-templates-and-variables) 的前端设计建议、[Claude Code with Chrome](https://code.claude.com/docs/en/chrome) 的截图与浏览器走查能力（需核验当前环境权限）。

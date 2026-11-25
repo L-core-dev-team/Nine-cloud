@@ -26,7 +26,7 @@ web
 
 《九霄》不是通用聊天壳。它要把玩家、规则与持续存在的世界连接起来。角色、物品、地点、关系、任务、修为、伤势、秘密与历史最终都应成为可验证的状态，而非只存在于对话文本中。
 
-## Operating Context
+## Historical Operating Context（历史语境，非当前线上事实）
 
 - 可玩的旧原型仍是纯静态、移动优先的单 HTML；新建的 React/Web 与 Hono/API 只用于 1.0 工程预览。
 - 玩家自行配置模型 API；仓库和发布物不提供密钥。
@@ -34,7 +34,7 @@ web
 - 旧原型继续从 `work/` 构建；新版从 pnpm 工作区构建。不得直接手改大型生成 HTML。
 - 未来可能以 Web 技术封装并分发到 Android、iOS、HarmonyOS、Windows、macOS 和 PC 应用商店。当前仍以 Web 的响应式与渐进增强规则为准，不伪装成已完成的原生应用。
 
-## Capabilities and Constraints
+## Historical Capabilities and Constraints（历史基线，不是新方案选型限制）
 
 - 已有建角、剧情阅读、自然语言输入、BYOK AI、多 AI 岗位、存档导入导出、旧临江仙快照迁移、STM/LTM、失败恢复、结构化 JSON 兼容和移动端布局。
 - 1.0 按 S0–S8 分阶段重建入口、存档、规则、内容和在线服务；每阶段须有旧功能对照、可重复验证和回退路径。
@@ -43,11 +43,14 @@ web
 - React/TypeScript/Vite 已获 1.0 决策批准，用来建立页面和状态边界。第三方依赖固定版本并核对许可证。
 - S1 已有 Hono 健康端点和 Drizzle schema，但尚无账号、云同步、支付或社区接口；界面不得虚构这些能力。
 
+## Current engineering baseline（候选，非生产部署证明）
+以实际提交与运行环境为准：截至本轮读取，PR #120 叠加 #119，workspace 有 React/TypeScript/Vite、Hono/Node、PG、共享 contracts/domain/content、数据库与部署代码；旧 S1 描述不得当作现行服务能力。当前玩法、认证、云存档、角色卡和 API 实际可达状态必须逐项验证。技术与玩法可提出替代实现。
+
 ## Brand & Creative Freedom
 
 产品仍是《九霄》修仙世界，身份、视觉、页面结构、叙事与玩法均可自由重新设计；旧夜山、题字、粉晶、朱印、宋楷分工及既有技术只作为历史可选资源。允许探索世界级网站、游戏、影视、艺术和科学。设计优先于单项性能指标，长期可读可玩与可信状态并行；方案可建议后端、规则、内容、架构重构。任何真实玩法及数据契约变更需可验证、兼容或明确迁移与授权。
 
-## Evidence on Hand
+## Historical Evidence on Hand（旧原型资源，非当前源码清单）
 
 - 当前开发源码：`work/v1.js`、`work/v1.css`、`work/ui-replica.css`、`work/worldbook-ui.css`。
 - 构建入口：`work/build_v1.py`、`work/save_checkpoint.py`。
@@ -63,7 +66,7 @@ web
 2. 规则先于叙述：AI 描述结算结果，不能取代权威状态与规则。
 3. 渐进增强：基础流程在无 WebGL、低性能、减弱动效或离线条件下仍可完成。
 4. 长局可信：界面必须为持续状态、记忆、认知差异与历史追溯预留清晰容器。
-5. 单一核心，多端适配：先保持一套可信 Web 内核，再评估平台封装和原生差异。
+5. 多端体验：可重新评估单内核、多渲染内核、独立客户端或混合架构；用体验与实际工程证据决定。
 
 ## Accessibility & Inclusion
 
