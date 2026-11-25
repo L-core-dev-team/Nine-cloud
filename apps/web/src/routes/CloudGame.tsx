@@ -41,6 +41,8 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
   const [narrative, setNarrative] = useState('');
   const [opening, setOpening] = useState<string[]>([]);
   const [scene, setScene] = useState('行旅');
+  const [encounter,setEncounter]=useState<{waiting:boolean;risk:string;stage:number;total:number}|null>(null);
+  const [choiceHint,setChoiceHint]=useState('');
   const [inventory,setInventory]=useState<{name:string;quantity:number}[]>([]);
   const [history, setHistory] = useState<{receipt:TurnReceipt;text:string|null;source:string|null}[]>([]);
   const [historyUnavailable,setHistoryUnavailable] = useState(false);
@@ -126,6 +128,8 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
     const sceneValue=response.scene as {location?:unknown;inventory?:unknown}|undefined;
     setInventory(Array.isArray(sceneValue?.inventory)?sceneValue.inventory.filter((item):item is {name:string;quantity:number}=>!!item&&typeof item.name==='string'&&Number.isSafeInteger(item.quantity)&&item.quantity>0):[]);
     if(typeof sceneValue?.location==='string')setScene(sceneValue.location);
+    const crow=(response.scene as {greywing?:NonNullable<typeof encounter>}|undefined)?.greywing;
+    setEncounter(crow&&typeof crow.waiting==='boolean'&&typeof crow.risk==='string'&&Number.isSafeInteger(crow.stage)&&Number.isSafeInteger(crow.total)?crow:null);
     try {
       const archive=await gameRequest(`/api/games/${encodeURIComponent(saveId)}/story`);
       const rows=parseHistory(archive.items,saveId,next.revision);
@@ -308,6 +312,10 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
     event.preventDefault();
     const utterance = text.trim();
     if (!save || !utterance || busy || refreshBusy || saveNeedsRefresh || pendingTurn || rulesUnavailable) return;
+    if(encounter?.waiting&&!suggestions.some(item=>item.text===utterance.replace(/[。！]$/u,''))){
+      setChoiceHint('还没有出手。请选择一项应对，或输入对应的行动名称。');return;
+    }
+    setChoiceHint('');
     const clarificationOf = receipt?.decision.status === 'clarify' && receipt.decision.revision === save.revision
       ? receipt.idempotencyKey : undefined;
     const request: PendingTurn = {
@@ -401,7 +409,8 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
       </div>
       {save&&<section className={`story-action-area${pendingTurn&&!busy?' story-awaiting-confirmation':''}`} aria-label="接下来怎么做">
         {draftConflict!==undefined&&<details open className="story-draft-conflict"><summary>还有一段未保存的输入</summary><p>另一页面已保存不同草稿。请先复制下面这段文字保留，再核对已保存的草稿；当前不能提交行动。</p><textarea aria-label="尚未保存的输入" readOnly value={draftConflict}/><button type="button" onClick={()=>{bridge.current?.discardJournal();window.location.reload();}}>使用已保存的草稿</button></details>}
-        <p className="story-action-instruction">你可以描述自己的行动，九霄会根据当前世界规则决定结果。</p>
+        <p className="story-action-instruction">{encounter?.risk??'你可以描述自己的行动，九霄会根据当前世界规则决定结果。'}</p>
+        {encounter&&choiceHint&&<p role="status">{choiceHint}</p>}
         <div className="story-suggestions" aria-label="可编辑的行动建议">{suggestions.slice(0,3).map(suggestionButton)}{suggestions.length>1&&<button type="button" className={`story-suggestion${suggestions.length>3?'':' story-more-compact'}`} onClick={()=>setShowActions(true)}>更多行动</button>}</div>
         <form className="story-composer" aria-busy={busy||refreshBusy} onSubmit={submit}>
           <label htmlFor="p2-action-input">接下来，你想怎么做？</label>
@@ -430,6 +439,8 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
     </div>
     {showActions&&<GameInfoDialog label="当前可以尝试" onClose={()=>setShowActions(false)}><p>选择一项填入行动框，确认后才会执行。</p><div className="story-all-actions">{suggestions.map(suggestionButton)}</div></GameInfoDialog>}
     {showState&&save&&<GameInfoDialog label="人物与行囊" onClose={()=>setShowState(false)}>
+      {encounter&&<section aria-label="渡口交手"><h2>渡口交手</h2><p>本阶段 {encounter.stage} 分钟 · 交手累计 {encounter.total} 分钟</p>
+        <p>交手用的灵力耐力 {String(save.state.facts.spiritStamina)} · {Array.isArray(save.state.facts.injuryFlags)&&save.state.facts.injuryFlags.includes('crow_scratch')?'鸦爪擦伤（伤势记录）':'无鸦爪擦伤'}</p></section>}
       {profile && <section aria-label="玩家设定"><h2>玩家设定</h2><dl>{Object.entries({name:"姓名",personality:"性格",origin:"出身",appearance:"外貌",goal:"个人目标"}).map(([key,label]) => profile[key as ProfileField] && <div key={key}><dt>{label}</dt><dd>{profile[key as ProfileField]}</dd></div>)}</dl></section>}
       <h2>规则状态</h2><p>当前地点：{scene}</p><p>体力：{String(save?.state.facts.stamina??'未记录')}</p><h2>行囊</h2>{inventory.length?<ul>{inventory.map(item=><li key={item.name}>{item.name} ×{item.quantity}</li>)}</ul>:<p>暂无可显示的随身物品。</p>}<details><summary>存档与技术详情</summary><pre>{JSON.stringify(save,null,2)}</pre></details><button className="quiet-action" onClick={onLogin}>账号与存档管理</button></GameInfoDialog>}
   </GameShell>;
