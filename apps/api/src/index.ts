@@ -1,6 +1,6 @@
 import { localCardOptions, verifyLocalCardSchema } from './card-import/local-runtime.js';
 import { eraseCardImports } from './card-import/host.js';
-import { ensureP1NarrativeHints } from './services/p1-narrative-hints.js';
+import { nativeTurnService } from './services/native-story-host.js';
 import { StoryArchive } from './services/story-archive.js';
 import {configureAccountQuota} from './services/account-rate-limit.js';
 import {loadDataPolicy} from './services/data-policy-node.js';
@@ -13,7 +13,6 @@ import { CloudSaveService } from './services/cloud-save-service.js';
 import { PostgresCloudSaveRepository } from './services/postgres-cloud-save-repository.js';
 import { sessionToken } from './routes/auth.js';
 import { CloudArchiveLifecycle } from './services/cloud-archive-lifecycle.js';
-import { ServerTurnService } from './services/server-turn.js';
 import { createPostgresServerTurnRepository } from './services/postgres-server-turn.js';
 import { prepareTurnRuntime } from './services/turn-runtime.js';
 import { loadConfiguredTurnPlugin } from './services/preview-release-runtime.js';
@@ -63,17 +62,13 @@ const cloudRepository=process.env.NODE_ENV==='production'?new PolicyCloudSaveRep
 const turnRepository=createPostgresServerTurnRepository(pool, true,process.env.NODE_ENV==='production'?()=>dataPolicy:undefined);
 const storyArchive=process.env.STORY_ARCHIVE_ENABLED==='true'?new StoryArchive(pool):undefined;
 if(storyArchive)await pool.query('SELECT narrative_text FROM story_narratives LIMIT 0');
-const narrator=runtime?.narrator;
-const fallback=runtime?.narrativeFallback;
-const retainedNarrator=storyArchive&&narrator?((...args:Parameters<typeof narrator>)=>storyArchive.retain(args[0],'model',async()=>ensureP1NarrativeHints(await narrator(...args),args[0],args[2]??{npcMemories:[]}))):narrator;
-const retainedFallback=storyArchive&&fallback?((...args:Parameters<typeof fallback>)=>storyArchive.retain(args[0],'deterministic',()=>ensureP1NarrativeHints(fallback(...args),args[0],args[1]))):fallback;
 const app = createApp({ query: sql => pool.query(sql) }, emailAuth ? {
   service: new CloudSaveService(cloudRepository, true, true),
   archive: new CloudArchiveLifecycle(pool, true),
   auth: { resolveOwnerId: async request => (await emailAuth.service.resolve(sessionToken(request)))?.ownerId || null },
 } : undefined, emailAuth, emailAuth ? {
   // No author rules are bundled: absent host plugin remains fail closed.
-  service: new ServerTurnService(turnRepository,runtime?.rules,retainedNarrator,120_000,retainedFallback),
+  service: nativeTurnService(pool,turnRepository,runtime,storyArchive),
   readReceipt: (owner,saveId,key)=>turnRepository.getReceiptForOwner(owner,saveId,key),
   games: new AuthoritativeGameService(cloudRepository,runtime),
   ...(storyArchive?{storyArchive}:{}),

@@ -5,17 +5,24 @@ import { TurnReceiptSchema, type TurnReceipt } from '@jiuxiao/contracts';
 /** Stores only the exact text returned by a host narrator after a committed receipt. */
 export class StoryArchive {
  constructor(private readonly pool:Pool) {}
- async retain(receipt:TurnReceipt, source:'model'|'deterministic', render:()=>Promise<string>|string):Promise<string> {
+ async retain(receipt:TurnReceipt, source:'model'|'deterministic', render:()=>Promise<string>|string, once=false):Promise<string> {
   if(receipt.decision.status!=='accepted') throw new Error('STORY_REQUIRES_ACCEPTED_RECEIPT');
-  const committed=await this.pool.query('SELECT result FROM turn_requests WHERE save_id=$1 AND idempotency_key=$2',[receipt.saveId,receipt.idempotencyKey]);
+  const committed=await this.pool.query('SELECT result,narrative_attempt_id FROM turn_requests WHERE save_id=$1 AND idempotency_key=$2',[receipt.saveId,receipt.idempotencyKey]);
   if(!committed.rows[0] || !isDeepStrictEqual(TurnReceiptSchema.parse(committed.rows[0].result),receipt))throw new Error('STORY_RECEIPT_MISMATCH');
   const prior=await this.pool.query('SELECT narrative_text FROM story_narratives WHERE save_id=$1 AND idempotency_key=$2',[receipt.saveId,receipt.idempotencyKey]);
   if(prior.rows[0])return prior.rows[0].narrative_text;
+  if(committed.rows[0].narrative_attempt_id==='local-public-once')throw Error('STORY_PREVIOUS_ATTEMPT');
+  if(once){
+    const claim=await this.pool.query(`UPDATE turn_requests SET narrative_attempt_id='local-public-once',narrative_status='generating',narrative_updated_at=now()
+      WHERE save_id=$1 AND idempotency_key=$2 AND narrative_attempt_id IS NULL`,[receipt.saveId,receipt.idempotencyKey]);
+    if(claim.rowCount!==1)throw Error('STORY_PREVIOUS_ATTEMPT');
+  }
   const text=await render();
   if(typeof text!=='string'||!text.trim()||text.length>100000)throw new Error('INVALID_STORY_TEXT');
   await this.pool.query('INSERT INTO story_narratives(save_id,idempotency_key,revision,narrative_text,source) VALUES($1,$2,$3,$4,$5) ON CONFLICT DO NOTHING',[receipt.saveId,receipt.idempotencyKey,receipt.resultingRevision,text,source]);
   const winner=await this.pool.query('SELECT narrative_text FROM story_narratives WHERE save_id=$1 AND idempotency_key=$2',[receipt.saveId,receipt.idempotencyKey]);
   if(!winner.rows[0])throw new Error('STORY_NOT_SAVED');
+  if(once)await this.pool.query("UPDATE turn_requests SET narrative_status='received',narrative_updated_at=now() WHERE save_id=$1 AND idempotency_key=$2 AND narrative_attempt_id='local-public-once'",[receipt.saveId,receipt.idempotencyKey]);
   return winner.rows[0].narrative_text;
  }
  async read(ownerId:string,saveId:string,throughRevision:number,before?:number) {
