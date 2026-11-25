@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import {randomUUID} from 'node:crypto';
 
 const dist=fileURLToPath(new URL('../../../apps/web/dist/',import.meta.url));
-export async function listen({file,generate,source,port=0}){
+export async function listen({file,generate,source,port=0,allowStart=true}){
   const game=openGame(file,generate,source);
   const secret=randomUUID();
   let origin;
@@ -17,7 +17,7 @@ export async function listen({file,generate,source,port=0}){
       res.setHeader('Cache-Control','no-store');
       res.setHeader('Referrer-Policy','no-referrer');
       if(req.method==='POST'&&req.headers.origin!==origin){res.writeHead(403).end();return}
-      if(pathname==='/start' && req.method==='GET' && searchParams.get('ticket')===secret && !generate){
+      if(pathname==='/start' && req.method==='GET' && searchParams.get('ticket')===secret && allowStart){
         const old=await game.app.request('/api/auth/session',{headers:{cookie:req.headers.cookie??''}});
         const owner=(await old.json()).account.id;
         const saved=owner&&!searchParams.has('fresh')&&game.db.prepare('select id from saves where owner=? order by rowid desc limit 1').get(owner);
@@ -49,8 +49,11 @@ export async function listen({file,generate,source,port=0}){
 }
 if(process.argv[1]===fileURLToPath(import.meta.url)){
   const {spawn}=await import('node:child_process');
-  const server=await listen({file:resolve(process.argv[2]??'greywing-demo.sqlite'),port:47810});
-  console.log('离线试玩 · 关闭窗口即可结束。',server.startURL);
+  const {playerNarrator}=await import('./provider.mjs');
+  const key=process.env.NARRATIVE_KEY_CARD_LOCAL;
+  delete process.env.NARRATIVE_KEY_CARD_LOCAL;
+  const server=await listen({file:resolve(process.argv[2]??'greywing-demo.sqlite'),port:47811,generate:playerNarrator(key),source:'model'});
+  console.log('芦花渡试玩 · 关闭窗口即可结束。',server.startURL);
   const url=server.startURL+(process.argv.includes('--fresh')?'&fresh=1':'');
   if(process.argv.includes('--open'))spawn('rundll32.exe',['url.dll,FileProtocolHandler',url],{stdio:'ignore'}).unref();
 }

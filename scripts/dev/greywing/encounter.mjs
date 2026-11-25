@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import plugin from '../../../apps/api/dist/services/p1-prologue-plugin.js';
 import { AuthoritativeGameService } from '../../../apps/api/dist/services/authoritative-game.js';
+import { publicPrologueReceipt } from '../../../apps/api/dist/services/prologue-public-receipt.js';
 import { prepareTurn } from '../../../packages/domain/dist/event-log.js';
 import { applyStateDelta } from '../../../packages/domain/dist/state-delta.js';
 
@@ -91,8 +92,23 @@ export function passage(before,step,phase,action,priorText,encounterMinutes){
     鸦爪擦伤:f.injuryFlags.includes('crow_scratch'),领取奖励:f.questState.rewardClaimed};
   if(phase==='pending')record.眼前征兆=cue;
   else if(step.receipt.decision.events[0].type==='cultivate.attempted')record.吐纳结果=step.receipt.decision.events[0].payload.result==='fatigue'?'疲劳推进':'正常推进';
-  const messages=[{role:'developer',content:'写给玩家读的中文修仙正文。交手写清所选动作怎样招来回应，怎样抵达已提交的结果。余波只写本轮，承接眼前有用的代价。步法声息可写，不能增添伤势、物品、奖励或替玩家选下一步。分钟按回执，勿换算时辰。'}];
+  // Keep the numeric audit record above. Only scene-relevant material goes to the narrator.
+  const material=[record.现场+'。', '你选择'+action+'。'];
+  if(phase==='pending'){
+    material.push(cue,response);
+    if(selected[0]==='hold')material.push('可从落脚处写：你守住里侧。领鸦越过时你往空出的石沿迈一步，后面想落在路中的几只只得掠开；原先封着的那段石沿能走人了。');
+    if(selected[0]==='gap')material.push('可从落脚处写：你先占外沿，被回折的鸦爪擦中也没有让开。后队要落下时那里已站着人，只能从旁掠走，路中间便露出来了。');
+  }else if(record.吐纳结果){
+    const ticks=step.receipt.decision.events[0].payload.attemptedKecCount;
+    material.push(record.吐纳结果==='疲劳推进'?'这次吐纳到后来乏力，只能勉强推进。':'你稳住呼吸，修炼有了进展。','这一段吐纳实际经过 '+ticks+' 刻。');
+    if(f.injuryFlags.includes('crow_scratch'))material.push('先前的爪痕还在。');
+  }else if(step.receipt.decision.events.some(event=>event.type==='quest.reward_claimed')){
+    const view=publicPrologueReceipt(step.receipt,step.save.state);
+    const reward=view.本回合.find(row=>row.已领);
+    material.push('你已取得'+reward.已领+' ×'+reward.数量+'。',...reward.新通路.map(([from,to])=>from+'通往'+to+'的路可以走了。'));
+  }else material.push(response);
+  const messages=[{role:'developer',content:'用第二人称，写玩家在渡口能看见、听见、做到的事。交手写到脚下哪一段路真正能走，再收住；后续从交手结束以后写起。动作细节可据所给空间展开，前文只是文脉。用正文讲经历，勿谈后台或盘点数值。不要添置物品、改变伤势或替玩家选下一步。'}];
   if(priorText)messages.push({role:'assistant',content:priorText});
-  messages.push({role:'user',content:JSON.stringify(record)});
+  messages.push({role:'user',content:material.join('\n')});
   return {response,record,wire:{model:'gpt-6-luna',messages,reasoning_effort:'none',max_completion_tokens:512,service_tier:'default',stream:false,store:false}};
 }

@@ -41,7 +41,8 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
   const [narrative, setNarrative] = useState('');
   const [opening, setOpening] = useState<string[]>([]);
   const [scene, setScene] = useState('行旅');
-  const [encounter,setEncounter]=useState<{waiting:boolean;risk:string;stage:number;total:number}|null>(null);
+  const [encounter,setEncounter]=useState<{waiting:boolean;risk:string;stage:number;total:number;aiAvailable?:boolean;lastStatus?:string|null}|null>(null);
+  const [useAI,setUseAI]=useState(()=>{try{return sessionStorage.getItem('greywing-prose-'+saveId)==='ai';}catch{return false;}});
   const [choiceHint,setChoiceHint]=useState('');
   const [inventory,setInventory]=useState<{name:string;quantity:number}[]>([]);
   const [history, setHistory] = useState<{receipt:TurnReceipt;text:string|null;source:string|null}[]>([]);
@@ -133,7 +134,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
     try {
       const archive=await gameRequest(`/api/games/${encodeURIComponent(saveId)}/story`);
       const rows=parseHistory(archive.items,saveId,next.revision);
-      setHistory(previous=>mergeHistory(previous,rows));setNextBefore(typeof archive.nextBefore==='number'?archive.nextBefore:null);setHistoryUnavailable(false);
+      setHistory(previous=>mergeHistory(crow?previous.filter(old=>!rows.some(r=>r.receipt.idempotencyKey===old.receipt.idempotencyKey)):previous,rows));setNextBefore(typeof archive.nextBefore==='number'?archive.nextBefore:null);setHistoryUnavailable(false);
     } catch { setHistoryUnavailable(true); }
 
     setOpening(Array.isArray(response.opening) ? response.opening.filter((line): line is string => typeof line === 'string').slice(0, 20) : []);
@@ -218,7 +219,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
           ...(request.clarificationOf?{clarificationOf:request.clarificationOf}:{})};
         result = request.action ? await gameRequest('/api/turns','POST',{
           intent:ActionIntentSchema.parse({...identity,kind:request.action.kind,payload:request.action.payload}),requestNarrative,
-        }) : await gameRequest(`/api/games/${encodeURIComponent(saveId)}/turns`, 'POST', {
+        }) : await gameRequest(`/api/games/${encodeURIComponent(saveId)}/turns${encounter&&useAI?'?prose=ai':''}`, 'POST', {
           text: request.text, expectedRevision:request.expectedRevision,idempotencyKey:request.idempotencyKey,
           ...(request.clarificationOf?{clarificationOf:request.clarificationOf}:{}),requestNarrative,
         });
@@ -245,6 +246,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
               : '这份存档已在别处更新。最新修订已读取；请核对后再继续。');
           } catch { setNotice(plan.message); }
         } else {
+          if(encounter&&error instanceof CloudHttpError&&error.status===503){try{await refresh();}catch{/* Keep the original key available for lookup. */}}
           if (plan.next === 'reload' || plan.next === 'account' || plan.next === 'home') setSaveNeedsRefresh(true);
           setNotice(recovering && error instanceof CloudHttpError && error.code === 'RULES_NOT_READY'
             ? '服务器规则尚未就绪，暂时无法核对原请求。之前的行动结果仍待确认。'
@@ -312,6 +314,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
     event.preventDefault();
     const utterance = text.trim();
     if (!save || !utterance || busy || refreshBusy || saveNeedsRefresh || pendingTurn || rulesUnavailable) return;
+    if(encounter&&(blockedProse||(useAI&&!encounter.aiAvailable)))return;
     if(encounter?.waiting&&!suggestions.some(item=>item.text===utterance.replace(/[。！]$/u,''))){
       setChoiceHint('还没有出手。请选择一项应对，或输入对应的行动名称。');return;
     }
@@ -347,6 +350,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
     if (!pendingTurn || busy) return;
     // requestNarrative is presentation-only; keep the same action fingerprint/key
     // and omit another model call while resolving an ambiguous transport result.
+    if(encounter){await queryPendingTurn();return;}
     await sendTurn(pendingTurn, false, true);
   }
 
@@ -383,7 +387,8 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
         fraction:Math.max(0,Math.min(1,(reading.getBoundingClientRect().top-result.getBoundingClientRect().top)/Math.max(1,result.offsetHeight)))});
     }
   },[receipt,currentInHistory,busy,pendingTurn,rememberPosition]);
-  const canAct=cacheReady&&!!save&&!busy&&!refreshBusy&&!saveNeedsRefresh&&!pendingTurn&&!rulesUnavailable;
+  const blockedProse=encounter?.lastStatus&&encounter.lastStatus!=='received';
+  const canAct=!blockedProse&&!(encounter&&useAI&&!encounter.aiAvailable)&&cacheReady&&!!save&&!busy&&!refreshBusy&&!saveNeedsRefresh&&!pendingTurn&&!rulesUnavailable;
   return <GameShell saveId={saveId} readingReady={!!save&&cacheReady&&!refreshBusy} immersive readingScope={cacheKey} readingPosition={readingPosition} onReadingPositionChange={rememberPosition}>
     <header className="story-header"><div><span className="eyebrow">{ISOLATED_PLAYTEST?'九霄 · 隔离试玩':'九霄 · 行旅'}</span><h1>{scene}</h1></div>
       <div className="story-utilities"><span aria-live="polite">{busy?'正在记录…':pendingTurn?'结果待确认':save?(historyUnavailable?'进度已保存':'经历已保存'):'正在读取…'}</span>
@@ -394,7 +399,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
         {nextBefore!==null&&<button className="quiet-action" onClick={()=>void loadEarlier()}>读取更早的经历</button>}
         {save&&!!opening.length&&<article className="story-prose" data-reading-id="opening" aria-label="故事开场">{opening.map((line,index)=><p key={index}>{line}</p>)}</article>}
         {save&&history.map(row=><article ref={row.receipt.idempotencyKey===receipt?.idempotencyKey?resultRegion:undefined} className="story-prose story-history-entry" data-reading-id={row.receipt.idempotencyKey} data-story-revision={row.receipt.resultingRevision} key={row.receipt.idempotencyKey}>
-          <span className="story-turn-kind">{turnLabel(row.receipt)}{row.source==='local-cache'?' · 本机保留的原文':''}</span>
+          <span className="story-turn-kind">{turnLabel(row.receipt)}{encounter&&(row.source==='model'?' · AI 正文（已保存）':row.source==='deterministic'?' · 本地正文':row.source==='mock'?' · 模拟正文':'')}{row.source==='local-cache'?' · 本机保留的原文':''}</span>
           {row.text?<div data-testid={row.receipt.idempotencyKey===receipt?.idempotencyKey?'p2-narrative':undefined}>{row.text.split(/\n+/).map((line,index)=><p key={index}>{line}</p>)}</div>
             :<p className="quiet-note">这段经历的原剧情尚未留存，行动记录仍在。</p>}
         </article>)}
@@ -409,6 +414,12 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
       </div>
       {save&&<section className={`story-action-area${pendingTurn&&!busy?' story-awaiting-confirmation':''}`} aria-label="接下来怎么做">
         {draftConflict!==undefined&&<details open className="story-draft-conflict"><summary>还有一段未保存的输入</summary><p>另一页面已保存不同草稿。请先复制下面这段文字保留，再核对已保存的草稿；当前不能提交行动。</p><textarea aria-label="尚未保存的输入" readOnly value={draftConflict}/><button type="button" onClick={()=>{bridge.current?.discardJournal();window.location.reload();}}>使用已保存的草稿</button></details>}
+        {encounter&&<div><label>正文来源 <select aria-label="正文来源" value={useAI?'ai':'local'} disabled={busy||!!pendingTurn} onChange={e=>{
+          const ai=e.target.value==='ai';setUseAI(ai);try{sessionStorage.setItem('greywing-prose-'+saveId,ai?'ai':'local');}catch{/* choice lasts for this view */}
+        }}><option value="local">本地正文 · 免费</option><option value="ai">实时 AI 正文 · 按用量计费</option></select></label>
+        {useAI&&<small role="status">{!encounter.aiAvailable?'当前试玩进程未配置模型凭据。可选择本地正文。':busy?'正在等待 AI 正文…':'使用当前项目的 gpt-6-luna，每次有效行动最多生成一次。'}</small>}
+        {blockedProse&&<div role="alert">{encounter.lastStatus==='failed'?'供应商请求失败，行动已保存。':'行动已保存，正文状态待核实。'} 已暂停后续行动。<button type="button" onClick={()=>void reloadSave()}>重读原记录</button></div>}
+        </div>}
         <p className="story-action-instruction">{encounter?.risk??'你可以描述自己的行动，九霄会根据当前世界规则决定结果。'}</p>
         {encounter&&choiceHint&&<p role="status">{choiceHint}</p>}
         <div className="story-suggestions" aria-label="可编辑的行动建议">{suggestions.slice(0,3).map(suggestionButton)}{suggestions.length>1&&<button type="button" className={`story-suggestion${suggestions.length>3?'':' story-more-compact'}`} onClick={()=>setShowActions(true)}>更多行动</button>}</div>

@@ -1,3 +1,4 @@
+import { AsyncLocalStorage } from 'node:async_hooks';
 import { DatabaseSync } from 'node:sqlite';
 import { createRequire } from 'node:module';
 import { randomUUID } from 'node:crypto';
@@ -7,6 +8,7 @@ import { start, actions, choices, cue, resolveTurn, passage } from './encounter.
 const apiRequire=createRequire(new URL('../../../apps/api/package.json',import.meta.url));
 const {Hono}=apiRequire('hono');
 export function openGame(file,generate,source='deterministic'){
+  const requestedAI=new AsyncLocalStorage();
   const db=new DatabaseSync(file);
   db.exec(`PRAGMA busy_timeout=5000; PRAGMA synchronous=FULL;
     CREATE TABLE IF NOT EXISTS saves(id TEXT PRIMARY KEY, owner TEXT NOT NULL, revision INTEGER NOT NULL, snapshot TEXT NOT NULL, setup TEXT NOT NULL, phase TEXT NOT NULL, minutes INTEGER NOT NULL);
@@ -29,7 +31,7 @@ export function openGame(file,generate,source='deterministic'){
       const risk=row.phase==='pending'?choices.map(x=>x[2]).join(' '):'交手已经结束。'+rest+' 也可以先看看渡船。';
       return {...result,opening:['渡口作业位的石沿只容一人立足。',cue],
         scene:{...result.scene,location:result.save.state.facts.currentSublocationId?'芦花渡 · 作业位':'芦花渡 · 岸边',
-          greywing:{waiting:row.phase==='pending',risk,stage:record?.阶段分钟??0,total:row.minutes}}};
+          greywing:{waiting:row.phase==='pending',risk,aiAvailable:typeof generate==='function',lastStatus:last?.status??null,stage:record?.阶段分钟??0,total:row.minutes}}};
     },
     async actionSuggestions(owner,id){
       const row=find(owner,id);if(!row)return {status:'not_found'};
@@ -52,6 +54,9 @@ export function openGame(file,generate,source='deterministic'){
     if(step.status!=='prepared')return {status:step.receipt.decision.status,receipt:step.receipt};
     const previous=db.prepare('SELECT * FROM entries WHERE id=? ORDER BY revision DESC LIMIT 1').get(id);
     if(previous && previous.status!=='received')throw Error('PREVIOUS_PROSE_UNCONFIRMED');
+    const ai=requestedAI.getStore()===true;
+    if(ai&&(!generate||!narrative))throw Error('LIVE_PROSE_UNAVAILABLE');
+    const actualSource=ai?source:'deterministic';
     const input=passage(save,step,row.phase,intent.payload.text,previous?.text,row.minutes);
     const encoded=JSON.stringify(step.receipt);
     db.exec('BEGIN IMMEDIATE');
@@ -59,22 +64,27 @@ export function openGame(file,generate,source='deterministic'){
       // Compare-and-swap the snapshot and reserve narration in the same transaction.
       if(!db.prepare("UPDATE saves SET revision=?,snapshot=?,phase='done',minutes=? WHERE id=? AND revision=?").run(
         step.save.revision,JSON.stringify(step.save),input.record.交手累计分钟,id,row.revision).changes){
-        db.exec('ROLLBACK');return turns.execute(owner,intent,false,signal);
+        db.exec('ROLLBACK');return turns.execute(owner,intent,narrative,signal);
       }
-      db.prepare('INSERT INTO entries VALUES(?,?,?,?,?,?,?,?)').run(id,key,step.save.revision,encoded,null,source,'reserved',JSON.stringify(input.record));
+      db.prepare('INSERT INTO entries VALUES(?,?,?,?,?,?,?,?)').run(id,key,step.save.revision,encoded,null,actualSource,'reserved',JSON.stringify(input.record));
       db.exec('COMMIT');
     }catch(error){db.exec('ROLLBACK');throw error}
     try{
-      const text=generate&&narrative?await generate(input.wire,step.receipt,signal):input.response;
-      const actualSource=generate&&narrative?source:'deterministic';
+      const text=ai?await generate(input.wire,step.receipt,signal):input.response;
       db.prepare("UPDATE entries SET text=?,source=?,status='received' WHERE id=? AND k=?").run(text,actualSource,id,key);
       return {status:'accepted',receipt:step.receipt,narrative:{text,source:actualSource,status:'received'}};
     }catch(error){
-      db.prepare("UPDATE entries SET status='unconfirmed' WHERE id=? AND k=?").run(id,key);
+      db.prepare('UPDATE entries SET status=? WHERE id=? AND k=?').run(error.code==='PROVIDER_DECLINED'?'failed':'unconfirmed',id,key);
       throw error;
     }
   }};
   const app=new Hono();
+  app.use('/api/games/:id/turns',async(c,next)=>{
+    const mode=c.req.query('prose');
+    if(mode!==undefined && mode!=='ai')return c.json({code:'INVALID_PROSE_MODE'},400);
+    if(mode==='ai'&&!generate)return c.json({code:'LIVE_PROSE_UNAVAILABLE'},503);
+    return requestedAI.run(mode==='ai',next);
+  });
   const auth={resolveOwnerId:async req=>{
     const token=/^(?:.*; )?greywing=([a-f0-9-]{36})(?:;.*)?$/.exec(req.headers.get('cookie')??'')?.[1];
     return token?db.prepare('SELECT owner FROM sessions WHERE token=?').get(token)?.owner??null:null;

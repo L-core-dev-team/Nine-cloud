@@ -11,7 +11,9 @@ let calls=0,unknown=false;
 const generate=async wire=>{
   calls++;
   if(unknown)throw Error('MOCK_UNKNOWN');
-  return JSON.parse(wire.messages.at(-1).content).本轮已提交;
+  const material=wire.messages.at(-1).content;
+  assert(!/回执|本轮已提交|领取奖励|修炼结算/.test(material));
+  return '离线模拟：'+material.split('\n').slice(0,2).join(' ');
 };
 const browser=await browserForTrial();
 let server=await listen({file,generate,source:'mock'});
@@ -22,6 +24,9 @@ try{
     const tab=await context.newPage();
     await tab.goto(demo.startURL);
     await tab.getByText('渡口作业位的石沿只容一人立足。').waitFor();
+    await tab.getByLabel('正文来源').selectOption('ai');await tab.getByText(/当前试玩进程未配置模型凭据/).waitFor();
+    await tab.getByLabel('正文来源').selectOption('local');
+    const original=await play(tab,'等这阵过去');assert.equal(original.narrative.source,'deterministic');
     const url=tab.url();
     await tab.goto(demo.startURL);assert.equal(tab.url(),url);
     await tab.route(url.replace('/game/','/api/games/'),async route=>{
@@ -37,6 +42,8 @@ try{
   }finally{await context.close();await demo.close()}
   for(const [label,elapsed,stamina,spirit,fatigue] of [['守住作业位',30,15,75,true],['抢外沿空当',15,20,70,false]]){
     const trial=await server.create(),page=await enter(browser,server,trial);
+    assert.equal(await page.getByLabel('正文来源').inputValue(),'local');
+    await page.getByLabel('正文来源').selectOption('ai');
     const before=calls;
     for(const ambiguous of ['我不抢空当','想试试，不行再退']){
       await page.getByTestId('p2-action-input').fill(ambiguous);
@@ -56,11 +63,13 @@ try{
     await page.keyboard.press('Escape');
     const follow=await play(page,'吐纳一刻');
     assert.equal(follow.receipt.decision.events[0].payload.result,fatigue?'fatigue':'progress');
-    assert.equal(calls,before+2);await page.context().close();
+    assert.equal(calls,before+2);
+    await page.getByLabel('正文来源').selectOption('local');const local=await play(page,'观察渡船');assert.equal(local.narrative.source,'deterministic');
+    await page.reload();await page.getByText(/· 本地正文/).waitFor();assert.equal(calls,before+2);await page.context().close();
     console.log(label,'browser PASS',elapsed,stamina,spirit,follow.receipt.decision.events[0].payload.result);
   }
   const trial=await server.create(),url='/api/games/'+trial.id+'/turns',key=randomUUID();
-  const raw=(text,key,rev=7)=>server.app.request(url,{method:'POST',headers:{cookie:'greywing='+trial.token,'content-type':'application/json'},body:JSON.stringify({text,idempotencyKey:key,expectedRevision:rev,requestNarrative:true})});
+  const raw=(text,key,rev=7)=>server.app.request(url+'?prose=ai',{method:'POST',headers:{cookie:'greywing='+trial.token,'content-type':'application/json'},body:JSON.stringify({text,idempotencyKey:key,expectedRevision:rev,requestNarrative:true})});
   const count=calls;
   const results=await Promise.all([raw('等这阵过去',key),raw('等这阵过去',key)]);
   for(const r of results)assert.equal(r.status,200);

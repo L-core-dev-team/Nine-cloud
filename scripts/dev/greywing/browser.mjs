@@ -12,7 +12,7 @@ export async function enter(browser,server,trial){
 }
 export async function play(page,text){
   await page.getByTestId('p2-action-input').fill(text);
-  const result=page.waitForResponse(r=>r.request().method()==='POST' && r.url().endsWith('/turns'));
+  const result=page.waitForResponse(r=>r.request().method()==='POST' && new URL(r.url()).pathname.endsWith('/turns'));
   await page.getByTestId('p2-submit-action').click();
   const r=await result;
   assert.equal(r.status(),200);
