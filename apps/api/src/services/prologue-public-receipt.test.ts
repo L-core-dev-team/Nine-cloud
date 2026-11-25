@@ -30,5 +30,7 @@ describe('player-visible prologue receipt', () => {
     expect(JSON.stringify(visible)).toContain('渡槽淤了半尺');
     expect(JSON.stringify(visible)).not.toMatch(/刷子是新的|stateDelta|locationGraph|creationRequestHash/);
     expect(() => publicPrologueReceipt(observation,save.state,{...retreat,saveId:'unrelated'})).toThrow('PRIOR_RECEIPT_MISMATCH');
+    const gear = await step({kind:'observe',payload:{targetId:'obj_ferry_gear',method:'scan'}});
+    expect(publicPrologueReceipt(gear,save.state).本回合).toEqual([{观察:'舟具',方式:'扫视',所见:[]}]);
   });
 });

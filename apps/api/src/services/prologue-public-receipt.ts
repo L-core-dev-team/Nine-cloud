@@ -1,9 +1,11 @@
 import { PrologueV1FactsSchema, StateDeltaSchema, type TurnReceipt, type WorldState } from '@jiuxiao/contracts';
 import { PROLOGUE_V1_CONTENT_PACK } from '@jiuxiao/content/p1-review-candidate';
 
+import { approvedLabel } from './approved-player-actions.js';
+
 const entries = new Map<string, Readonly<Record<string, unknown>>>(PROLOGUE_V1_CONTENT_PACK.entries.map(e => [e.id, e.content]));
 function name(id: unknown): string {
-  const label = typeof id === 'string' ? entries.get(id)?.name : undefined;
+  const label = typeof id === 'string' ? approvedLabel(id) : undefined;
   if (typeof label !== 'string') throw Error('PUBLIC_NAME_UNAVAILABLE');
   return label;
 }
