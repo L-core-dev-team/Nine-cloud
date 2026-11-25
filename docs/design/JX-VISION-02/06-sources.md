@@ -1,0 +1,9 @@
+# 本轮研究来源（2026-11-25北京时间）
+- Anthropic Claude Code [Best practices](https://code.claude.com/docs/en/best-practices), [Memory](https://code.claude.com/docs/en/memory), [Skills](https://code.claude.com/docs/en/skills), [Permissions](https://code.claude.com/docs/en/permissions), [Claude Code on the web](https://code.claude.com/docs/en/claude-code-on-the-web)。区分探索/计划与实施；项目指令简洁、专题按需；Plan Mode可读文件/运行探索命令，不修改源代码。本任务还需提交方案MD，因此最后在授权的文档分支提交，不需要全程bypass permissions。
+- Apple [HIG Materials](https://developer.apple.com/design/human-interface-guidelines/materials), [Meet Liquid Glass](https://developer.apple.com/videos/play/wwdc2025/219/)。动态材料用于层级与导航，不是统一模糊；网页借鉴而非原生移植。
+- Huawei [设计规范](https://developer.huawei.com/consumer/cn/design/), [沉浸光感](https://developer.huawei.com/consumer/cn/doc/design-guides/immersivelight-0000002612101053/)。材质表达、动态透光、响应；Web实现需独立设计。
+- Three.js [docs](https://threejs.org/docs/), [WebGPU postprocessing](https://threejs.org/manual/pages/webgpu-postprocessing.html); MDN [WebGPU](https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API)。可研究GPU渲染和后处理；按实际浏览器支持与硬件选择。
+- PlayStation Blog [Ghost of Tsushima visual effects](https://blog.playstation.com/2021/01/12/how-stunning-visual-effects-bring-ghost-of-tsushima-to-life/), [Crafting the world](https://blog.playstation.com/2020/07/09/crafting-the-world-of-tsushima/), [Ghost of Yōtei tech deep dive](https://blog.playstation.com/2025/10/23/ghost-of-yotei-tech-deep-dive/)。风参与引导、环境反应、雾与大气散射。
+- AMC [Michelle MacLaren on Nippy](https://www.amc.com/blogs/better-call-saul-qa-michelle-maclaren-on-directing-carol-burnett-and-crafting-a-different-kind-of-setpiece--1055261)。光线、黑白与电影叙事。
+- 后续查证菜单：Blender [manual](https://docs.blender.org/manual/en/latest/)（本次glTF页面读取遇402，未核验全文）；Awwwards [winners](https://www.awwwards.com/annual-awards/winners/)、Lusion、Active Theory、Immersive Garden（本轮检索发现案例线索，未逐站实际交互；Claude应打开官方案例）。
+本轮是有依据的起点，不声称完成全世界设计作品、工具及数学物理的穷尽研究。
