@@ -33,7 +33,7 @@ export function createPostgresServerTurnRepository(pool: Pool, requiresLiveAccou
       // A late earlier attempt cannot overwrite the status of a newer retry.
       await pool.query(`UPDATE turn_requests r SET narrative_attempt_id=$4,narrative_status=$5,narrative_updated_at=now()
         FROM game_saves s WHERE r.save_id=s.id AND s.id=$2 AND s.owner_id=$1 AND r.idempotency_key=$3 AND r.result IS NOT NULL
-        AND r.narrative_attempt_id IS DISTINCT FROM 'local-public-once' AND ($5='generating' OR r.narrative_attempt_id=$4)`,[owner,id,key,attempt,status]);
+        AND r.narrative_attempt_id IS DISTINCT FROM 'local-public-once' AND r.narrative_attempt_id IS DISTINCT FROM 'local-public-recovery' AND ($5='generating' OR r.narrative_attempt_id=$4)`,[owner,id,key,attempt,status]);
     },
   };
 }

@@ -1,7 +1,10 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 import type { Pool } from 'pg';
 import { ActionIntentSchema, type ActionIntent, TurnReceiptSchema, WorldStateSchema, type TurnReceipt } from '@jiuxiao/contracts';
-import { ensureP1NarrativeHints } from './p1-narrative-hints.js';
+import { prepareTurn } from '@jiuxiao/domain';
+import { buildNarrativeMemoryContext } from './narrative-memory-context.js';
+import type { NarrativeContext } from './narrative-scheduler.js';
+import { buildP1NarrativeHints, ensureP1NarrativeHints } from './p1-narrative-hints.js';
 import { StoryArchive } from './story-archive.js';
 import { ServerTurnService, type ServerTurnRepository } from './server-turn.js';
 import type { prepareTurnRuntime } from './turn-runtime.js';
@@ -14,7 +17,8 @@ export interface PublicStoryWire {
 type LocalStoryProvider = (wire:PublicStoryWire, receipt:TurnReceipt, signal:AbortSignal) => Promise<string>;
 
 /** Local host injection only. The ordinary Node entry omits the final argument. */
-export function nativeTurnService(pool:Pool, repo:ServerTurnRepository, runtime?:Runtime, archive?:StoryArchive, projected?:LocalStoryProvider) {
+export function nativeTurnService(pool:Pool, repo:ServerTurnRepository, runtime?:Runtime, archive?:StoryArchive, projected?:LocalStoryProvider,
+  verifiedUnsentAction?: (owner:string, saveId:string, key:string) => Promise<ActionIntent | null>) {
   const narrator = runtime?.narrator, fallback = runtime?.narrativeFallback;
   if (!projected) {
     const retained = archive && narrator ? ((...args:Parameters<typeof narrator>) => archive.retain(args[0],'model',
@@ -33,7 +37,7 @@ export function nativeTurnService(pool:Pool, repo:ServerTurnRepository, runtime?
       return currentAction.run(intent, () => super.execute(owner,intent,narrative,signal));
     }
   }
-  return new LocalProjectedTurns(repository,runtime.rules,(receipt,signal,context = {npcMemories:[]}) =>
+  const render = (receipt:TurnReceipt, signal:AbortSignal, context:NarrativeContext = {npcMemories:[]}, recovery=false) =>
     archive.retain(receipt,'model',async () => {
       const current = await pool.query('SELECT snapshot FROM game_saves WHERE id=$1 AND revision=$2',[receipt.saveId,receipt.resultingRevision]);
       const action = currentAction.getStore();
@@ -56,5 +60,33 @@ export function nativeTurnService(pool:Pool, repo:ServerTurnRepository, runtime?
       const wire:PublicStoryWire = {model:'gpt-6-luna',messages,reasoning_effort:'none',max_completion_tokens:512,service_tier:'default',stream:false,store:false};
       signal.throwIfAborted();
       return ensureP1NarrativeHints(await projected(wire,receipt,signal),receipt,context);
-    },true),120_000);
+    },recovery ? 'recover-unsent' : true);
+  const turns = new LocalProjectedTurns(repository,runtime.rules,render,120_000);
+  if (!verifiedUnsentAction) return turns;
+  return Object.assign(turns, {
+    async recoverStory(owner:string, saveId:string, key:string, signal:AbortSignal) {
+      const receipt = await repo.getReceiptForOwner(owner,saveId,key);
+      if (!receipt || receipt.decision.status !== 'accepted') return null;
+      const save = await repo.loadSave(owner,saveId);
+      if (!save || save.ruleVersion !== runtime.rules.ruleVersion || save.schemaVersion === 1) return null;
+      const original = await verifiedUnsentAction(owner,saveId,key);
+      if (!original) return null;
+      const intent = ActionIntentSchema.parse(original);
+      if (intent.saveId !== saveId || intent.idempotencyKey !== key || intent.actorId !== save.state.playerId)
+        throw Error('STORY_REQUEST_MISMATCH');
+      // Reuse the original fingerprint check. Neither callback is permitted to settle a turn.
+      const forbid = ():never => { throw Error('STORY_REQUIRES_EXISTING_RECEIPT'); };
+      const replay = await prepareTurn({intent,save,priorReceipt:receipt,decide:forbid,reduce:forbid});
+      if (replay.status !== 'duplicate') throw Error('STORY_REQUEST_MISMATCH');
+      const stored = await pool.query('SELECT narrative_text FROM story_narratives WHERE save_id=$1 AND idempotency_key=$2',[saveId,key]);
+      if (stored.rowCount) return {text:String(stored.rows[0].narrative_text),revision:receipt.resultingRevision};
+      if (save.revision !== receipt.resultingRevision) throw Error('MATCHING_COMMITTED_STATE_REQUIRED');
+      const reader = repo.getAuthorizedObservationPage?.bind(repo);
+      const context = {...await buildNarrativeMemoryContext({ownerId:owner,receipt,save,...(reader ? {readAuthorizedPage:reader} : {})}),
+        ...buildP1NarrativeHints(receipt,save)};
+      const deadline = AbortSignal.any([signal,AbortSignal.timeout(120_000)]);
+      const text = await currentAction.run(intent,() => render(receipt,deadline,context,true));
+      return {text,revision:receipt.resultingRevision};
+    },
+  });
 }

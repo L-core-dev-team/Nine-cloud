@@ -6,9 +6,24 @@ import { consumeAccountQuota } from '../services/account-rate-limit.js';
 import { SaveSchemaNotReadyError } from '../services/save-storage-contract.js';
 import { serverTurnHttpResponse } from './turn-http.js';
 
-export type ServerTurnRouteDependencies = { service: ServerTurnService; auth: CloudSaveRouteAuth };
+export type ServerTurnRouteDependencies = { service: ServerTurnService & {
+  recoverStory?(owner:string,saveId:string,key:string,signal:AbortSignal):Promise<{text:string;revision:number}|null>;
+}; auth: CloudSaveRouteAuth };
 /** Client submits only an intent. Decisions, events, state and visibility stay server-owned. */
 export function mountServerTurnRoutes(app: Hono, { service, auth }: ServerTurnRouteDependencies) {
+  if (service.recoverStory) app.post('/api/games/:saveId/receipts/:key/narrative',async c => {
+    const owner = await auth.resolveOwnerId(c.req.raw).catch(() => null);
+    const expected = c.req.header('x-jiuxiao-account');
+    if (!owner || (expected !== undefined && expected !== owner)) return c.json({code:'UNAUTHENTICATED'},401);
+    if (!await consumeAccountQuota(owner,'turn',30,60_000)) return c.json({code:'RATE_LIMITED'},429);
+    const body = await readJson(c.req.raw,256);
+    if (!body.ok || !body.value || typeof body.value !== 'object' || Array.isArray(body.value) || Object.keys(body.value).length)
+      return c.json({code:'INVALID_RECOVERY'},400);
+    try {
+      const story = await service.recoverStory!(owner,c.req.param('saveId'),c.req.param('key'),c.req.raw.signal);
+      return story ? c.json(story) : c.json({code:'NOT_FOUND'},404);
+    } catch { return c.json({code:'STORY_RECOVERY_UNAVAILABLE'},409); }
+  });
   app.post('/api/turns', async c => {
     let owner: string | null;
     try { owner = await auth.resolveOwnerId(c.req.raw); } catch { owner = null; }
