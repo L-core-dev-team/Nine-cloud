@@ -15,6 +15,7 @@ import { EmailAuthService } from '../../apps/api/dist/services/email-auth.js';
 import { PostgresEmailAuthRepository } from '../../apps/api/dist/services/postgres-email-auth.js';
 import { localProviderOptions } from '../../apps/api/dist/card-import/local-provider.js';
 import { localCardOptions } from '../../apps/api/dist/card-import/local-runtime.js';
+import { GROUP_JSON_OUTPUT_CONTRACT } from '../../apps/api/dist/card-import/service.js';
 import { createCardEgressFetch } from '../../apps/api/dist/card-import/provider-egress.js';
 import { createCardModel } from '../../apps/api/dist/card-import/card-model-provider.js';
 import { createProviderTransport } from '../../packages/domain/dist/provider-narrative.js';
@@ -64,9 +65,11 @@ run('pg_ctl',['-D',join(dir,'pg'),'-l',join(dir,'pg.log'),'-o',`-c unix_socket_d
   if(fail==='invalid'){s.end('{}');return;}
   let group;try{group=JSON.parse(body.messages.at(-1).content.split('\n\n---\n\n').at(-1));}catch{}
   let text = plainReply;
-  if (group?.output_contract && multiFixtureReply !== undefined) {
+  // The output contract is trusted: read it from the leading system/developer message.
+  const jsonContract = body.messages[0].content.includes(GROUP_JSON_OUTPUT_CONTRACT);
+  if (group?.selected_participant_ids && multiFixtureReply !== undefined) {
     text = multiFixtureReply;
-  } else if (group?.output_contract?.startsWith('JSON object')) {
+  } else if (group?.selected_participant_ids && jsonContract) {
     text = fail === 'group' ? 'not-json' : JSON.stringify({messages:
       group.selected_participant_ids.map(participantId => ({participantId, text:'local protocol group reply'}))});
   }

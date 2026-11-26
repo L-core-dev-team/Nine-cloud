@@ -3,6 +3,7 @@ import { localProviderOptions } from './local-provider.js';
 import { CardError } from './parser.js';
 import type { Pool } from 'pg';
 import type { CardImportHostOptions } from './host.js';
+import { GROUP_JSON_OUTPUT_CONTRACT } from './service.js';
 
 /** Reject libpq query overrides before constructing a test pool. Never proves database ownership. */
 export function assertLocalCardDatabase(raw: string | undefined, database = /^\/jiuxiao_test_[a-z0-9_]+$/): URL {
@@ -30,9 +31,11 @@ export function localCardOptions(pool: Pool, env: NodeJS.ProcessEnv): CardImport
   return { pool, model: async (input, signal) => {
     signal.throwIfAborted();
     const last = input.messages.at(-1);
-    let payload: { output_contract?: string; selected_participant_ids?: string[] } = {};
+    let payload: { selected_participant_ids?: string[] } = {};
     try { payload = JSON.parse(last?.content ?? ''); } catch { /* Single speaker context. */ }
-    return payload.output_contract?.startsWith('JSON object')
+    // Follow the trusted system contract, as a real model is expected to.
+    const system = input.messages.find(message => message.role === 'system')?.content ?? '';
+    return system.includes(GROUP_JSON_OUTPUT_CONTRACT)
       ? JSON.stringify({ messages: (payload.selected_participant_ids ?? []).map(participantId => ({ participantId, text: '本地合成群聊回复（非真实模型）' })) })
       : '本地合成回复（非真实模型）';
   } };
