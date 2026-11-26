@@ -1,3 +1,5 @@
+> **2026-11-25 设计效力更新：** 作者认定方案E只是初版，现行艺术与全栈重构研究入口为 [VISION 02](https://github.com/L-core-dev-team/Nine-cloud/blob/docs/vision-02-art-direction/docs/design/JX-VISION-02/README.md)。本页原有布局、配色、材质、框架、性能优先、固定视觉配额与只改前端等限制不约束新方案；原文保留为历史或当前功能/证据参考。实际数据、Canon、权限、安全、许可和生产发布事实不因本声明改变。本阶段仅研究方案，不实施或部署。
+
 # Apple Liquid Glass 原始任务书
 
 记录日期：2026-10-13（Asia/Shanghai）。来源：刘佑林在本项目对话中直接提供的任务书。以下保留用户原文；不根据记录日期推断原消息的发送日期。实现对应关系和平台限制见 [任务书与验收映射](../acceptance/2026-10-12/Apple-Liquid-Glass-任务书与验收映射.md)，最新验证见 [最终本地验收](../acceptance/2026-10-13/UI1.0Pro-最终本地验收.md)。
