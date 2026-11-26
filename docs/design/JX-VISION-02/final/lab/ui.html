@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>九霄 · 界面形态（非生产）</title>
+<link rel="stylesheet" href="node_modules/@fontsource/noto-serif-sc/400.css">
+<link rel="stylesheet" href="node_modules/@fontsource/noto-serif-sc/600.css">
+<link rel="stylesheet" href="node_modules/lxgw-wenkai-webfont/lxgwwenkai-regular.css">
+<style>
+:root{--ink:#efe9dc;--dim:rgba(239,233,220,.76);--faint:rgba(239,233,220,.6);--line:rgba(239,233,220,.32);--zhu:#e0583a;--paper:#efe8da;--pink:#2a241c}
+*{box-sizing:border-box}html,body{margin:0;background:#07090c;color:var(--ink);font-family:"Noto Serif SC",serif}
+.st{position:relative;overflow:hidden}
+.bg{position:absolute;inset:0;background-size:cover;background-position:center}
+.scrim-b{position:absolute;left:0;right:0;bottom:0;height:52%;background:linear-gradient(to top,rgba(5,7,10,.86),rgba(5,7,10,.55) 55%,rgba(5,7,10,0))}
+.scrim-t{position:absolute;left:0;right:0;top:0;height:28%;background:linear-gradient(to bottom,rgba(5,7,10,.55),rgba(5,7,10,0))}
+.place{position:absolute;left:64px;top:52px}
+.place h1{margin:0;font-weight:600;font-size:34px;letter-spacing:.32em}
+.place p{margin:12px 0 0;font-size:14px;line-height:1.75;color:var(--dim);letter-spacing:.1em}
+.place b{font-weight:400;color:var(--ink)}
+.tabs{position:absolute;right:64px;top:58px;display:flex;gap:18px;font-size:15px;letter-spacing:.2em;color:var(--faint)}
+.tabs .on{color:var(--ink);border-bottom:1px solid var(--zhu);padding-bottom:4px}
+.read{position:absolute;left:64px;bottom:150px;width:680px}
+.read p{margin:0 0 .3em;font-size:20px;line-height:1.85;letter-spacing:.03em}
+.src{font-size:12px;letter-spacing:.18em;color:var(--faint);margin-bottom:10px}
+.pick{text-decoration:underline dotted rgba(239,233,220,.75);text-underline-offset:6px}
+.ledger{position:absolute;left:790px;bottom:168px;font-size:13px;line-height:2.1;color:var(--dim);border-left:1px solid var(--line);padding-left:14px;letter-spacing:.06em}
+.ledger b{font-weight:400;color:var(--ink)}
+.chips{position:absolute;left:64px;bottom:86px;display:flex;gap:10px}
+.chip{border:1px solid var(--line);border-radius:999px;padding:7px 15px;font-size:14px;background:rgba(6,8,12,.4);letter-spacing:.06em}
+.chip small{color:rgba(239,233,220,.74);font-size:12px;margin-left:8px}
+.ev{border-color:rgba(224,88,58,.6)}
+.input{position:absolute;left:64px;right:64px;bottom:32px;border-bottom:1px solid rgba(239,233,220,.6);display:flex;align-items:flex-end;padding-bottom:9px;font-size:18px;height:42px}
+.input .ph{color:var(--faint)}.input .go{margin-left:auto;font-size:15px;letter-spacing:.3em}
+.vit{position:absolute;right:64px;bottom:90px;font-size:13px;color:var(--dim);letter-spacing:.06em}
+.vit b{font-weight:400;color:var(--ink)}
+.anc{position:absolute;font-size:13px;letter-spacing:.12em;text-shadow:0 0 6px #000,0 0 2px #000;white-space:nowrap}
+.anc::after{content:"";position:absolute;left:50%;top:100%;width:1px;height:var(--l,26px);background:rgba(239,233,220,.55)}
+.voice{font-family:"LXGW WenKai"}
+.who{font-size:13px;letter-spacing:.2em;color:var(--dim);margin-right:12px}
+.mine{color:#f3d9c8}
+.card{position:absolute;right:64px;top:120px;width:260px;border-left:1px solid var(--line);padding-left:16px;font-size:14px;line-height:1.9;color:var(--dim)}
+.card h3{margin:0 0 6px;font-weight:600;font-size:20px;color:var(--ink);letter-spacing:.2em}
+/* reading mode */
+.page{position:absolute;left:0;right:0;top:120px;bottom:0;background:#ece5d6;color:#2a241c;padding:56px 0 0}
+.page .col{width:720px;margin:0 auto;position:relative}
+.page h2{font-weight:600;font-size:22px;letter-spacing:.3em;margin:0 0 6px}
+.page .meta{font-size:13px;color:#7a6f5e;letter-spacing:.15em;margin-bottom:26px}
+.page p{font-size:19px;line-height:1.95;margin:0 0 .2em}
+.page .t{position:absolute;left:-118px;width:100px;text-align:right;font-size:12.5px;color:#7a6f5e;letter-spacing:.08em;line-height:2.6}
+.page .act{color:#9b3a24;font-size:16px;margin:18px 0 6px}
+.page .lg{font-size:12.5px;color:#7a6f5e;margin:4px 0 16px;letter-spacing:.06em}
+.page .pick{text-decoration-color:#9b3a24}
+.zheng{position:absolute;right:64px;top:176px;width:230px;font-size:13.5px;line-height:2;color:#5c5244}
+.zheng h4{margin:0 0 8px;font-size:14px;letter-spacing:.3em;color:#2a241c}
+.zheng span{display:block;border:1px solid rgba(155,58,36,.45);padding:2px 10px;margin:0 0 8px;color:#7d2e1c}
+.head-sky{position:absolute;left:0;right:0;top:0;height:120px;background-size:cover;background-position:center 38%}
+/* chronicle */
+.line{position:absolute;left:120px;right:120px;top:300px;height:1px;background:rgba(239,233,220,.45)}
+.tick{position:absolute;top:286px;width:1px;height:28px;background:var(--zhu)}
+.tl{position:absolute;top:320px;font-size:12px;color:var(--dim);transform:translateX(-50%);white-space:nowrap}
+.hr{position:absolute;top:262px;font-size:12px;color:var(--faint);transform:translateX(-50%)}
+.thumbs{position:absolute;left:120px;right:120px;top:420px;display:flex;gap:14px}
+.thumbs div{flex:1;height:170px;background-size:cover;background-position:center;position:relative}
+.thumbs span{position:absolute;left:10px;bottom:8px;font-size:13px;text-shadow:0 0 6px #000}
+.annal{position:absolute;left:120px;top:640px;width:900px;font-size:15px;line-height:2.1;color:var(--dim)}
+.annal b{font-weight:400;color:var(--ink);margin-right:14px}
+.btns{position:absolute;right:120px;top:640px;display:flex;flex-direction:column;gap:10px;font-size:14px}
+.btns span{border:1px solid var(--line);padding:8px 18px;text-align:center}
+.note{position:absolute;right:16px;bottom:10px;font-size:11px;color:rgba(239,233,220,.45);letter-spacing:.1em}
+.page .note{color:#8a8070}
+</style></head>
+<body><div class="st" id="st"></div>
+<script>
+const q = new URLSearchParams(location.search); const mode = q.get('mode') || 'you';
+const C = JSON.parse(decodeURIComponent(q.get('cfg') || '%7B%7D'));
+const phone = q.get('phone') === '1'; const W = phone ? 390 : 1600, H = phone ? 844 : (mode === 'atlas' ? 1000 : 900);
+const st = document.getElementById('st'); st.style.width = W + 'px'; st.style.height = H + 'px';
+const h = [];
+const place = (extra = '') => `<div class="place"><h1>${C.place || '望气台'}</h1><p>序章　第一日<br>${C.time || '卯初二刻　05:30'}<br>任务　<b>通渡</b>　渡槽口被落石堵住${extra}</p></div>`;
+const tabs = (on) => `<div class="tabs">${['游','读','谈','观','忆'].map(t => `<span class="${t === on ? 'on' : ''}">${t}</span>`).join('')}</div>`;
+const anchors = () => (C.anchors || []).map(a => `<div class="anc" style="left:${a.x}px;top:${a.y - (a.l || 26) - 18}px;transform:translateX(-50%);--l:${a.l || 26}px">${a.t}</div>`).join('');
+if (mode === 'you') {
+  h.push(`<div class="bg" style="background-image:url(${C.bg})"></div><div class="scrim-b"></div><div class="scrim-t"></div>`, place(), tabs('游'), anchors());
+  h.push(`<div class="read"><div class="src">规则叙述　环视</div><p>台上没有人。木头朽了，踩上去还有声。</p><p>渡口一览无余。石从上游下来，堆在渡槽口，<span class="pick">最大的那块有门板高</span>。</p><p>灰羽鸦在石上落着，<span class="pick">几十只，一动不动</span>。</p></div>`);
+  h.push(`<div class="ledger">过一刻　<b>05:15 → 05:30</b><br>体力　<b>95 → 92</b><br>得　<b>落石线索</b></div>`);
+  h.push(`<div class="chips"><span class="chip">细察落石<small>两刻　体力 −6</small></span><span class="chip">下到芦花渡<small>一刻　体力 −5</small></span><span class="chip">走礁石小径<small>两刻　体力 −15</small></span><span class="chip ev">〔落石·门板高〕</span></div>`);
+  h.push(`<div class="vit">体力 <b>92</b> / 100　　心力 <b>100</b> / 100　　炼体　修为 <b>0</b> / 10000</div>`);
+  h.push(`<div class="input"><span class="ph">写下你要做的事，或把〔证〕放进来</span><span class="go">落笔</span></div>`);
+}
+if (mode === 'tan') {
+  h.push(`<div class="bg" style="background-image:url(${C.bg})"></div><div class="scrim-b"></div><div class="scrim-t"></div>`, place(), tabs('谈'));
+  h.push(`<div class="card"><h3>岑九</h3>芦花渡摆渡人<br><span style="color:var(--faint)">你只知道这些。</span></div>`);
+  h.push(`<div class="read"><div class="src">交谈　一刻</div><p class="mine"><span class="who">你</span>船怎么靠不上岸？</p><p class="voice"><span class="who" style="font-family:'Noto Serif SC'">岑九</span>船没坏。水浅了。</p><p class="mine"><span class="who">你</span>你能帮着把〔落石〕搬开吗？</p><p class="voice"><span class="who" style="font-family:'Noto Serif SC'">岑九</span>我这把骨头，搬不动那些石头。你自己掂量。</p></div>`);
+  h.push(`<div class="chips"><span class="chip">问鸦</span><span class="chip">问望气台</span><span class="chip">问南边那片白</span></div>`);
+  h.push(`<div class="input"><span class="ph">对岑九说……</span><span class="go">落笔</span></div>`);
+}
+if (mode === 'dou') {
+  h.push(`<div class="bg" style="background-image:url(${C.bg})"></div><div class="scrim-b"></div>`);
+  h.push(`<div class="read" style="bottom:110px"><div class="src">打鸦　两刻　结果：清障</div><p>鸦群炸开，又落回石头上。</p><p>石堆松了一层。</p></div>`);
+  h.push(`<div class="ledger" style="bottom:126px">体力　<b>−25</b><br>落石　<b>受阻 → 松动</b></div>`);
+  h.push(`<div class="input"><span class="ph">写下你要做的事</span><span class="go">落笔</span></div>`);
+}
+if (mode === 'du') {
+  h.push(`<div class="head-sky" style="background-image:url(${C.bg})"></div>`, `<div class="tabs" style="top:44px">${['游','读','谈','观','忆'].map(t => `<span class="${t === '读' ? 'on' : ''}">${t}</span>`).join('')}</div>`);
+  h.push(`<div class="page"><div class="col"><h2>序章　第一日</h2><div class="meta">芦花渡　望气台　·　卷宗</div>
+<div class="t">卯初　05:00</div><p>船底擦过沙洲，芦花没到膝。</p><p>渡口那边本该有船。</p><p>岸上一行新脚印，进去就没了。</p><p>篙在身后一点。「喏，到了。」</p>
+<div class="t" style="margin-top:14px">05:15</div><div class="act">去望气台看看。</div><div class="lg">移动　一刻　体力 100 → 95</div>
+<div class="t">05:30</div><div class="act">四下看看。</div><p>台上没有人。木头朽了，踩上去还有声。</p><p>渡口一览无余。石从上游下来，堆在渡槽口，<span class="pick">最大的那块有门板高</span>。</p>
+<div class="lg">环视　一刻　体力 95 → 92　得 落石线索</div></div>
+<div class="zheng"><h4>证</h4><span>〔落石·门板高〕</span><span>〔鸦·几十只，一动不动〕</span><div style="font-size:12px;color:#8a8070;margin-top:10px">摘下的证据只来自你读到的事实。</div></div>
+<div class="note">规则叙述与玩家原文；无 AI 改写</div></div>`);
+}
+if (mode === 'yi') {
+  h.push(`<div class="bg" style="background:#090b0f"></div>`, `<div class="place"><h1>一世浮生</h1><p>林青　·　序章　第一日</p></div>`, tabs('忆'));
+  h.push(`<div class="hr" style="left:120px">卯初</div><div class="hr" style="left:50%">午初</div><div class="hr" style="left:calc(100% - 120px)">酉初</div><div class="line"></div>`);
+  const span = W - 240, t = (m) => 120 + (m - 300) / 720 * span;
+  [[300, '到渡'], [315, '移动'], [330, '环视'], [360, '细察']].forEach(([m, n], i) => h.push(`<div class="tick" style="left:${t(m)}px"></div><div class="tl" style="left:${t(m) + (i % 2 ? 18 : 0)}px;top:${i % 2 ? 340 : 320}px">${n}</div>`));
+  h.push(`<div style="position:absolute;left:120px;top:226px;font-size:14px;letter-spacing:.2em;color:var(--dim)">今日长线</div>`);
+  h.push(`<div class="thumbs">${(C.thumbs || []).map(([u, n]) => `<div style="background-image:url(${u})"><span>${n}</span></div>`).join('')}</div>`);
+  h.push(`<div class="annal"><b>第一日</b>到芦花渡。登望气台。知渡槽口为落石所堵，石上有鸦，石缝铺新草。<br><b>地点</b>芦花渡、望气台　　<b>线索</b>落石线索、鸦群线索　　<b>人物</b>岑九（芦花渡摆渡人）</div>`);
+  h.push(`<div class="btns"><span>导出卷宗</span><span>删除此存档…</span></div>`);
+}
+if (mode === 'phone') {
+  h.push(`<div class="bg" style="background-image:url(${C.bg});bottom:auto;height:${C.kbd ? 200 : 430}px;background-position:${C.pos || 'center'}"></div>`);
+  h.push(`<div style="position:absolute;left:0;right:0;top:${C.kbd ? 140 : 370}px;height:60px;background:linear-gradient(to bottom,rgba(7,9,12,0),#07090c)"></div>`);
+  h.push(`<div class="place" style="left:20px;top:22px"><h1 style="font-size:22px">${C.place || '芦花渡'}</h1>${C.kbd ? '' : `<p style="font-size:12px;margin-top:8px">${C.time || '卯初一刻　05:15'}</p>`}</div>`);
+  const top = C.kbd ? 214 : 448;
+  if (!C.kbd) h.push(`<div style="position:absolute;left:20px;right:20px;top:${top}px"><div class="src">交谈　一刻</div><p class="mine" style="font-size:17px;line-height:1.8;margin:0 0 .3em"><span class="who">你</span>船怎么靠不上岸？</p><p class="voice" style="font-size:17px;line-height:1.8;margin:0"><span class="who" style="font-family:'Noto Serif SC'">岑九</span>船没坏。水浅了。</p></div><div style="position:absolute;left:20px;right:0;bottom:86px;display:flex;gap:8px;overflow:hidden"><span class="chip" style="padding:12px 14px;white-space:nowrap">问鸦</span><span class="chip" style="padding:12px 14px;white-space:nowrap">问望气台</span><span class="chip ev" style="padding:12px 14px;white-space:nowrap">〔落石·门板高〕</span></div><div class="input" style="left:20px;right:20px;bottom:26px;font-size:16px"><span class="ph">对岑九说……</span><span class="go">落笔</span></div>`);
+  else h.push(`<div style="position:absolute;left:20px;right:20px;top:${top}px;font-size:15px;color:var(--dim);line-height:1.8">灰羽鸦在石上落着，几十只，一动不动。</div><div style="position:absolute;left:20px;top:${H - 300 - 104}px;font-size:13px;color:var(--dim);letter-spacing:.1em">细察　<b style="font-weight:400;color:var(--ink)">落石</b>　两刻　体力 −6</div><div class="input" style="left:20px;right:20px;bottom:318px;font-size:16px"><span>细看那堆<span style="text-decoration:underline solid var(--zhu);text-decoration-thickness:2px;text-underline-offset:7px">落石</span></span><span class="go">落笔</span></div><div style="position:absolute;left:0;right:0;bottom:0;height:300px;background:#202329;color:#7d828c;font-size:12px;letter-spacing:.2em;display:flex;align-items:center;justify-content:center">系统键盘</div>`);
+}
+if (mode === 'atlas') {
+  h.push(`<div class="bg" style="background-image:url(${C.bg});background-size:1600px 1000px;background-position:center top"></div><div class="scrim-t"></div>`);
+  h.push(`<div class="place"><h1>万象天图</h1><p>天下　·　候选布局（非 Canon，待作者裁定）</p></div>`);
+  for (const [k, [x, y]] of Object.entries(C.anchors || {})) { const big = !/山脉|妖林|芦花/.test(k); h.push(`<div class="anc" style="left:${x}px;top:${y - 10}px;transform:translate(-50%,-50%);font-size:${big ? 20 : 14}px;letter-spacing:.3em;--l:0px">${k}</div>`); }
+  h.push(`<div style="position:absolute;right:64px;bottom:40px;width:420px;font-size:13px;line-height:1.9;color:var(--dim);text-align:right">Canon：万兽山脉东西横贯，人族分南北；洪荒妖林在山脉深处；中州居中；东瀚濒东海；冰神宫在极北。<br>候选：哪几域在北、哪几域在南；纬度、海岸线、地形均为程序生成。</div>`);
+}
+h.push(`<div class="note">非生产设计帧　${C.note || '画面：Blender 渲染 + AI 受控重绘（AIGC）'}</div>`);
+st.innerHTML = h.join('');
+document.fonts.ready.then(() => { document.title = 'ready'; });
+</script></body></html>
