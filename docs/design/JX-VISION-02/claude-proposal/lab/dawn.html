@@ -27,7 +27,7 @@ canvas{display:block}
 .ledger b{font-weight:400;color:var(--ink);font-variant-numeric:tabular-nums}
 .chips{position:absolute;left:64px;bottom:86px;display:flex;gap:10px}
 .chip{border:1px solid var(--line);border-radius:999px;padding:5px 14px;font-size:14px;color:var(--ink);background:rgba(6,8,12,.35);letter-spacing:.08em}
-.chip small{color:var(--faint);font-size:12px;margin-left:8px}
+.chip small{color:rgba(236,230,216,.72);font-size:12px;margin-left:8px}
 .input{position:absolute;left:64px;right:64px;bottom:34px;height:40px;border-bottom:1px solid rgba(236,230,216,.55);display:flex;align-items:flex-end;padding-bottom:8px;font-size:18px;letter-spacing:.06em}
 .input .ph{color:var(--faint)}
 .input .go{margin-left:auto;font-size:15px;color:var(--ink);letter-spacing:.3em}
@@ -50,8 +50,8 @@ body.phone .read{left:20px;right:20px;width:auto;top:var(--panel);bottom:auto;pa
 body.phone .read p{font-size:17px;line-height:1.8}
 body.phone .ledger{position:static;border-left:none;border-top:1px solid var(--line);margin-top:14px;padding:8px 0 0;font-size:12px;line-height:1.9}
 body.phone.kbdup .place p{display:none}body.phone.kbdup .place h1{font-size:18px}
-body.phone .chips{left:20px;right:20px;bottom:84px;flex-wrap:nowrap;overflow:hidden}
-body.phone .chip{font-size:13px;padding:6px 12px;white-space:nowrap}
+body.phone .chips{left:20px;right:20px;bottom:78px;flex-wrap:nowrap;overflow:hidden}
+body.phone .chip{font-size:14px;padding:13px 14px;white-space:nowrap}
 body.phone .chip small{display:none}
 body.phone .input{left:20px;right:20px;bottom:26px;font-size:16px}
 body.phone .parse{left:20px;right:auto}
@@ -108,7 +108,7 @@ const NIGHT = [0.00035, 0.0005, 0.0011];
 const sky = (d) => { const c = skyRadiance(d, sunDir, 10, 5); return c.map((v, i) => v + NIGHT[i]); };
 const lum = (c) => 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
 const refSky = sky(dirOf(1000, HZ - 300));
-const exposure = Math.min(900, (+(q.get('k')||0.03)) / Math.pow(Math.max(lum(refSky), 1e-5), 0.92));
+const exposure = Math.min(900, (+(q.get('k')||(0.03 + 0.15 * Math.max(0, Math.sin(se) - 0.12)))) / Math.pow(Math.max(lum(refSky), 1e-5), 0.92));
 const transmit = (() => { if (se < -0.02) return [0, 0, 0]; const m = 1 / (Math.sin(Math.max(se, 0.004)) + 0.15 * Math.pow(Math.max(se * 57.3, 0) + 3.885, -1.253)); return [5.8e-6, 13.5e-6, 33.1e-6].map((b) => Math.exp(-(b * 8000 + 21e-6 * 1.1 * 1200) * m)); })();
 const SUN_E = 22;
 const ambient = sky([0, 1, 0]).map((v) => v * 2.2);
@@ -123,7 +123,7 @@ const tm = (c) => { const l = Math.min(1, lum(c) * exposure * 1.6); const t = l 
 const rgb = (c, a = 1) => { const t = tm(c); return `rgba(${t[0]},${t[1]},${t[2]},${a})`; };
 // lit surface radiance: albedo under sky ambient + sun with a facing factor, then aerial perspective by distance (m)
 function shade(albedo, facing, dist, wx) {
-  const L = albedo.map((a, k) => a * (ambient[k] * 0.32 + SUN_E * transmit[k] * Math.max(0, facing) / Math.PI));
+  const L = albedo.map((a, k) => a * 2 * (ambient[k] * 0.6 + SUN_E * transmit[k] * Math.max(0, facing) / Math.PI));
   const T = Math.exp(-dist / 5200), h = hcol(wx);
   return L.map((v, k) => v * T + h[k] * (1 - T));
 }
@@ -214,17 +214,17 @@ reeds((x) => nearBank(x) + 8, -10, 2010, 2400, 26, 1000, 4);
 // settlement 芦花渡: a few low roofs behind the berth
 for (const [x, w, h] of [[1080, 80, 28], [1150, 60, 23], [1200, 66, 26], [1030, 50, 20], [1440, 60, 22]]) {
   const y = nearBank(x) + 62; ctx.fillStyle = rgb(shade([0.05, 0.045, 0.04], 0.2, 1300, x)); ctx.beginPath(); ctx.moveTo(x - w / 2 - 4, y - h * 0.45); ctx.lineTo(x, y - h); ctx.lineTo(x + w / 2 + 4, y - h * 0.45); ctx.lineTo(x + w / 2, y); ctx.lineTo(x - w / 2, y); ctx.closePath(); ctx.fill();
-  ctx.strokeStyle = rgb(shade([0.3, 0.27, 0.22], 0.8, 1300, x).map((v, k) => v + SUN_E * transmit[k] * 0.004), 0.8); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(x - w / 2 - 4, y - h * 0.45); ctx.lineTo(x, y - h); ctx.lineTo(x + w / 2 + 4, y - h * 0.45); ctx.stroke();
+  ctx.strokeStyle = rgb(shade([0.3, 0.27, 0.22], 0.8, 1300, x).map((v, k) => v + SUN_E * transmit[k] * 0.004), 0.35); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(x - w / 2 - 4, y - h * 0.45); ctx.lineTo(x, y - h); ctx.lineTo(x + w / 2 + 4, y - h * 0.45); ctx.stroke();
 }
 // berth and the stuck boat (船吃水太深，蹭着淤泥靠不上岸)
 const [bx, by] = ANCH.boat; ctx.fillStyle = rgb(shade([0.06, 0.05, 0.04], 0.2, 1300, bx));
 ctx.fillRect(1190, by + 10, 36, 3.5); for (let i = 0; i < 5; i++) ctx.fillRect(1191 + i * 8, by + 10, 2.2, 10);
-ctx.save(); ctx.translate(bx, by); ctx.rotate(-0.12); ctx.scale(1.9,1.9); ctx.beginPath(); ctx.moveTo(-17, 0); ctx.quadraticCurveTo(0, 6, 17, -2); ctx.lineTo(14, 2); ctx.quadraticCurveTo(0, 7, -14, 3); ctx.closePath(); ctx.fill(); ctx.restore();
+ctx.save(); ctx.translate(bx, by); ctx.rotate(-0.12); ctx.scale(1.9,1.9); ctx.beginPath(); ctx.moveTo(-17, 0); ctx.quadraticCurveTo(0, 6, 17, -2); ctx.lineTo(14, 2); ctx.quadraticCurveTo(0, 7, -14, 3); ctx.closePath(); ctx.fill(); ctx.strokeStyle = rgb(shade([0.35, 0.3, 0.24], 1, 1000, bx).map((v, k) => v + SUN_E * transmit[k] * 0.01), 0.45); ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(-17, 0); ctx.quadraticCurveTo(0, 6, 17, -2); ctx.stroke(); ctx.restore();
 // the rockslide at the channel mouth: stones from upstream, the largest as tall as a door
 const night = se < -0.06;
 const [rx, ry] = ANCH.rock; const rr = rng(21);
 const stoneCol = shade([0.11, 0.1, 0.09], sunDir[1] * 0.7 + 0.2, 1300, rx), stoneLit = shade([0.2, 0.18, 0.15], 0.9, 1300, rx).map((v, k) => v + SUN_E * transmit[k] * 0.006 * (sunScreen.front ? 1 : 0.4));
-const stones = []; for (let i = 0; i < 34; i++) stones.push([rx - 52 + rr() * 104, ry + 6 - rr() * 18 * (1 - Math.abs(rr() - 0.5)), 4 + rr() * 9]);
+const stones = []; for (let i = 0; i < 40; i++) stones.push([rx - 46 + rr() * 92, ry + 4 + rr() * 20 - rr() * 16 * (1 - Math.abs(rr() - 0.5)), 4 + rr() * 9]);
 stones.push([rx + 6, ry - 12, 16]);
 stones.sort((a, b) => a[1] - b[1]);
 const sideS = Math.sign(sunScreen.wx - rx) || 1;
@@ -236,7 +236,7 @@ for (const [x, y, r0] of stones) {
   ctx.moveTo(x, y - r0 * 0.1); for (let i = k0; i <= k1; i++) ctx.lineTo(pts[i][0], pts[i][1]); ctx.closePath(); ctx.globalAlpha = 0.55; ctx.fill(); ctx.globalAlpha = 1;
 }
 // crows: dozens, standing still on the stones (一动不动) — small dark marks with a 1px highlight
-const cr = rng(5); for (let i = 0; i < 38; i++) { const s = stones[Math.floor(cr() * stones.length)]; const x = s[0] + (cr() - 0.5) * s[2] * 2, y = s[1] - s[2] * 0.8 - cr() * 2; ctx.fillStyle = rgb(shade([0.02, 0.02, 0.025], 0, 1300, x)); const f = cr() < 0.5 ? 1 : -1; ctx.beginPath(); ctx.ellipse(x, y, 3.1, 1.9, -0.25 * f, 0, 7); ctx.fill(); ctx.beginPath(); ctx.arc(x + 2.6 * f, y - 2.1, 1.25, 0, 7); ctx.fill(); ctx.beginPath(); ctx.moveTo(x - 2.4 * f, y + 0.4); ctx.lineTo(x - 5.2 * f, y + 1.8); ctx.lineTo(x - 2 * f, y + 1.6); ctx.fill(); ctx.fillRect(x + 3.6 * f - (f < 0 ? 1.4 : 0), y - 2.3, 1.4, 0.6); }
+const cr = rng(5); ctx.save(); for (let i = 0; i < 42; i++) { const s = stones[i % stones.length]; const x = s[0] + (cr() - 0.5) * s[2] * 1.6, y = s[1] - s[2] * 0.85 - cr() * 1.5; ctx.fillStyle = rgb(shade([0.2, 0.2, 0.21], 0.4 + sunDir[1], 1000, x).map((v, k) => v + SUN_E * transmit[k] * 0.003)); const f = cr() < 0.5 ? 1 : -1; ctx.beginPath(); ctx.ellipse(x, y, 3.1, 1.9, -0.25 * f, 0, 7); ctx.fill(); ctx.beginPath(); ctx.arc(x + 2.6 * f, y - 2.1, 1.25, 0, 7); ctx.fill(); ctx.beginPath(); ctx.moveTo(x - 2.4 * f, y + 0.4); ctx.lineTo(x - 5.2 * f, y + 1.8); ctx.lineTo(x - 2 * f, y + 1.6); ctx.fill(); ctx.fillRect(x + 3.6 * f - (f < 0 ? 1.4 : 0), y - 2.3, 1.4, 0.6); } ctx.restore();
 
 // ---------- foreground: the old platform (木头朽了，踩上去还有声) frames the view ----------
 function post(x0, w, lean, seed) {
@@ -272,7 +272,7 @@ const kec = (m) => { const zh = ['子', '丑', '寅', '卯', '辰', '巳', '午'
 const st = { result: { stamina: 92 }, flight: { stamina: 92 }, clarify: { stamina: 92 }, study: { stamina: 86 }, night: { stamina: 86 } }[stage];
 const html = [];
 if (!bare) {
-  html.push(`<div class="place"><h1>望气台${kbd ? `<span style="font-size:12px;font-weight:400;letter-spacing:.1em;margin-left:12px;color:var(--dim)">${kec(minute)}</span>` : ''}</h1><p>序章　第一日<br>${kec(minute)}</p></div>`);
+  html.push(`<div class="place"><h1>望气台${kbd ? `<span style="font-size:12px;font-weight:400;letter-spacing:.1em;margin-left:12px;color:var(--dim)">${kec(minute)}</span>` : ''}</h1><p>序章　第一日<br>${kec(minute)}<br>任务　通渡　<span style="color:var(--ink)">渡槽口被落石堵住</span></p></div>`);
   html.push(`<div class="vitals">体力 <b>${st.stamina}</b> / 100　　灵力 <b>100</b> / 100　　炼体　修为 <b>0</b> / 10000</div>`);
 }
 const known = !bare; // after clue_rockslide the stones, crows, berth are named
@@ -288,27 +288,26 @@ if (stage === 'result') {
   html.push(`<div class="read"><p>台上没有人。木头朽了，踩上去还有声。</p><p>渡口一览无余。石从上游下来，堆在渡槽口，<span class="pick">最大的那块有门板高</span>。</p><p>灰羽鸦在石上落着，<span class="pick">几十只，一动不动</span>。</p></div>`);
   html.push(`<div class="ledger">过一刻　<b>05:15 → 05:30</b><br>体力　<b>95 → 92</b><br>得　<b>落石线索</b></div>`);
   html.push(chipsBase);
-  html.push(`<div class="input"><span class="ph">写下你要做的事</span><span class="go">落定</span></div>`);
+  html.push(`<div class="input"><span class="ph">写下你要做的事</span><span class="go">落笔</span></div>`);
 }
 if (stage === 'flight') {
-  html.push(`<div class="read"><p class="dimmed" style="font-size:15px">上一回合已收进今日长线，可随时回看。</p></div>`);
   html.push(`<div class="parse">细察　<b>落石</b>　一刻　体力 −6</div>`);
-  html.push(`<div class="input"><span>细看那堆<span class="tgt">落石</span></span><span class="pending">未落定</span><span class="go dimmed">落定</span></div>`);
+  html.push(`<div class="input"><span>细看那堆<span class="tgt">落石</span></span><span class="pending">结算中</span><span class="go dimmed">落笔</span></div>`);
 }
 if (stage === 'clarify') {
-  html.push(`<div class="ask"><p>这句话里有两件事。先做哪一件？</p><span class="opt">先下到芦花渡<small>移动　一刻　体力 −5</small></span><span class="opt">就在台上细看落石<small>细察　一刻　体力 −6</small></span></div>`);
-  html.push(`<div class="input"><span>去<span class="tgt">渡口</span>看看那堆<span class="tgt">石头</span></span><span class="pending">未落定</span><span class="go dimmed">落定</span></div>`);
+  html.push(`<div class="ask"><p>这句话里有两件事。先做哪一件？</p><span class="opt">先下到芦花渡<small>移动　一刻　体力 −5</small></span><span class="opt">就在台上细看落石<small>细察　一刻　体力 −6</small></span><span class="opt">改写这句话<small>不结算，不耗时</small></span></div>`);
+  html.push(`<div class="input"><span>去<span class="tgt">渡口</span>看看那堆<span class="tgt">石头</span></span><span class="pending">结算中</span><span class="go dimmed">落笔</span></div>`);
 }
 if (stage === 'study') {
   html.push(`<div class="read"><p>石头缝里铺着干草。<span class="pick">软的，是新铺的</span>。</p><p>干草边上压着一圈浅痕，<span class="pick">密密的</span>。</p></div>`);
   html.push(`<div class="ledger">过一刻　<b>05:30 → 05:45</b><br>体力　<b>92 → 86</b><br>得　<b>鸦群线索</b></div>`);
   html.push(chipsBase.replace('<span class="chip">细察落石<small>一刻　体力 −6</small></span>', ''));
-  html.push(`<div class="input"><span class="ph">写下你要做的事</span><span class="go">落定</span></div>`);
+  html.push(`<div class="input"><span class="ph">写下你要做的事</span><span class="go">落笔</span></div>`);
 }
 if (stage === 'night') {
   html.push(`<div class="read"><p>天光收尽了。渡口只剩水声。石堆成了一片黑。</p></div>`);
   html.push(`<div class="ledger">入暮　<b>酉初</b><br>通渡　<b>未完成</b></div>`);
-  html.push(`<div class="input"><span class="ph">写下你要做的事</span><span class="go">落定</span></div>`);
+  html.push(`<div class="input"><span class="ph">写下你要做的事</span><span class="go">落笔</span></div>`);
 }
 if (kbd) html.push(`<div class="kbd">系统键盘</div>`);
 ui.innerHTML = bare ? '' : html.join('');
@@ -329,7 +328,7 @@ if (stage === 'flight' || stage === 'clarify') {
   if (end) { draw(end, 1, 0.16); p = draw(end, 0.72, 0.85); ui.insertAdjacentHTML('beforeend', `<div class="flyer" style="left:${p[0]}px;top:${p[1]}px;transform:translate(-50%,-110%)">落石</div>`); }
   else {
     const a = toS(ANCH.ferry[0], ANCH.ferry[1]), b = toS(ANCH.rock[0], ANCH.rock[1] - 10);
-    p = draw([(a[0] + b[0]) / 2, (a[1] + b[1]) / 2 + 20], 0.55, 0.85);
+    const mid = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2 + 20]; p = draw(mid, 0.55, 0); { const c = ctl(start, mid); ctx.strokeStyle = 'rgba(224,88,58,0.85)'; ctx.lineWidth = 1.4; ctx.beginPath(); for (let i = 33; i <= 60 * 0.55; i++) { const t = i / 60; const x = (1 - t) ** 2 * start[0] + 2 * (1 - t) * t * c[0] + t * t * mid[0], y = (1 - t) ** 2 * start[1] + 2 * (1 - t) * t * c[1] + t * t * mid[1]; i > 33 ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke(); }
     for (const tgt of [a, b]) { ctx.strokeStyle = 'rgba(224,88,58,0.35)'; ctx.setLineDash([3, 5]); ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.quadraticCurveTo((p[0] + tgt[0]) / 2, Math.min(p[1], tgt[1]) - 30, tgt[0], tgt[1] - 6); ctx.stroke(); }
     ctx.setLineDash([]); ui.insertAdjacentHTML('beforeend', `<div class="flyer" style="left:${p[0]}px;top:${p[1]}px;transform:translate(-50%,-110%)">？</div>`);
   }
