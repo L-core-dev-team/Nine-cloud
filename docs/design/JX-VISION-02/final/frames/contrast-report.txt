@@ -1,8 +1,8 @@
-ui-you n= 42 min= 4.89 fails= 0
-ui-tan n= 32 min= 4.82 fails= 0
+ui-you n= 41 min= 4.81 fails= 0
+ui-tan n= 29 min= 4.75 fails= 0
 ui-dou n= 10 min= 5.48 fails= 0
-ui-du n= 31 min= 5.46 fails= 0
-ui-yi n= 30 min= 6.2 fails= 0
-ui-home n= 4 min= 6.52 fails= 0
-ui-phone-a n= 13 min= 6.21 fails= 0
-ui-phone-b n= 10 min= 6.91 fails= 0
+ui-du n= 31 min= 5.4 fails= 0
+ui-yi n= 28 min= 6.2 fails= 0
+ui-home n= 4 min= 8.15 fails= 0
+ui-phone-a n= 12 min= 6.21 fails= 0
+ui-phone-b n= 10 min= 6.71 fails= 0
