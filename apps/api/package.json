@@ -20,7 +20,7 @@
     "@jiuxiao/content": "workspace:*",
     "@jiuxiao/contracts": "workspace:*",
     "@jiuxiao/domain": "workspace:*",
-    "hono": "4.13.12",
+    "hono": "4.13.16",
     "jpeg-js": "0.4.4",
     "js-tiktoken": "1.0.21",
     "nodemailer": "10.1.4",
