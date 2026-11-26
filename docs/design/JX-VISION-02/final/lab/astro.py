@@ -9,7 +9,7 @@ import math
 OBLIQUITY = math.radians(23.44)
 
 def solar_declination(day_of_year):
-    # 低精度：以春分为 day 80 的正弦近似（误差 < 1°），足够驱动光照
+    # 低精度：以春分为 day 80 的正弦近似（最大误差约 1.7°，只用于画面；生产改用精确式）
     return OBLIQUITY * math.sin(2 * math.pi * (day_of_year - 80) / 365.2422)
 
 def sun_alt_az(standard_minutes, day_of_year, lat_deg, lon_east_of_ref_deg):

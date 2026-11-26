@@ -24,6 +24,7 @@ ap.add_argument('--preview', action='store_true')
 ap.add_argument('--exposure', type=float, default=None)
 ap.add_argument('--save-blend', default='')
 ap.add_argument('--lamp', action='store_true')
+ap.add_argument('--cc0', default='')   # 目录：Poly Haven CC0 扫描材质（diff/nor/rough）
 ap.add_argument('--tribulation', action='store_true')   # 天劫预兆（候选表现）
 ap.add_argument('--mask', action='store_true')
 ap.add_argument('--maskset', default='rock,crow,boat,nest')   # 事实遮罩：绑定事实的物体为白，其余为黑
@@ -331,7 +332,7 @@ def crow_mesh():
     for s in (-1, 1):
         v = [bm.verts.new(p) for p in ((0.0, s * 0.03, 0.08), (0.01, s * 0.03, 0.08), (0.01, s * 0.03, 0.0), (0.0, s * 0.03, 0.0))]; bm.faces.new(v)
     me = bpy.data.meshes.new('crow'); bm.to_mesh(me); bm.free()
-    me.materials.append(principled('crow', (0.16, 0.16, 0.17), 0.45))      # 灰羽
+    me.materials.append(principled('crow', (0.05, 0.05, 0.055), 0.4))      # 灰羽（偏深的灰）
     for f in me.polygons: f.use_smooth = True
     ob = add_obj('crow_src', me); ob.hide_render = True; ob.location = (0, 0, -1000); return ob
 
@@ -586,6 +587,60 @@ if args.tribulation:
     # the flash lights the underside of the cloud
     lp = bpy.data.lights.new('flash', 'POINT'); lp.energy = 3.0e8; lp.color = (0.75, 0.82, 1.0); lp.shadow_soft_size = 60
     lo = bpy.data.objects.new('flash', lp); bpy.context.collection.objects.link(lo); lo.location = (cx_ - 250, cy_ - 350, 950)
+
+if args.cc0:
+    CC = args.cc0
+    def texset(N, L, setname, scale, coord):
+        mp = N.new('ShaderNodeMapping'); mp.inputs['Scale'].default_value = (1 / scale,) * 3; L.new(coord, mp.inputs['Vector'])
+        out = {}
+        for k, cs in (('diff', 'sRGB'), ('rough', 'Non-Color'), ('nor', 'Non-Color')):
+            t = N.new('ShaderNodeTexImage'); t.image = bpy.data.images.load(os.path.join(CC, f'{setname}_{k}.jpg'), check_existing=True); t.image.colorspace_settings.name = cs
+            t.projection = 'BOX'; t.projection_blend = 0.25; L.new(mp.outputs['Vector'], t.inputs['Vector']); out[k] = t.outputs['Color']
+        return out
+    def mixc(N, L, a, b, fac, dtype='RGBA'):
+        m = N.new('ShaderNodeMix'); m.data_type = dtype; L.new(fac, m.inputs['Factor'])
+        if dtype == 'RGBA': L.new(a, m.inputs[6]); L.new(b, m.inputs[7]); return m.outputs[2]
+        L.new(a, m.inputs[4]); L.new(b, m.inputs[5]); return m.outputs[1]
+    def cc0_mat(name, layers, maskattrs=()):
+        m, N, L = mat(name); p = N['Principled BSDF']; tc = N.new('ShaderNodeTexCoord'); co = tc.outputs['Object']
+        sets = [texset(N, L, sn, sc_, co) for sn, sc_ in layers]
+        d, r, n = sets[0]['diff'], sets[0]['rough'], sets[0]['nor']
+        for st, at in zip(sets[1:], maskattrs):
+            if isinstance(at, str): a_ = N.new('ShaderNodeAttribute'); a_.attribute_name = at; fac = a_.outputs['Fac']
+            else: fac = at
+            d = mixc(N, L, d, st['diff'], fac); r = mixc(N, L, r, st['rough'], fac); n = mixc(N, L, n, st['nor'], fac)
+        L.new(d, p.inputs['Base Color'])
+        sep = N.new('ShaderNodeSeparateColor'); L.new(r, sep.inputs['Color']); L.new(sep.outputs[0], p.inputs['Roughness'])
+        nm = N.new('ShaderNodeNormalMap'); nm.inputs['Strength'].default_value = 1.0; L.new(n, nm.inputs['Color']); L.new(nm.outputs['Normal'], p.inputs['Normal'])
+        return m
+    # terrain: two scales of grass to break tiling, mud where wet, rock where steep
+    m_ter, N, L = None, None, None
+    nzf = None
+    ter2 = cc0_mat('terrain_cc0', [('forrest_ground_01', 7.0), ('aerial_grass_rock', 45.0), ('brown_mud_02', 4.0), ('rock_face', 12.0)])
+    Nn = ter2.node_tree.nodes; Ln = ter2.node_tree.links
+    # rebuild masks: large-scale noise for the grass blend, attributes for mud and rock
+    mixes = [n for n in Nn if n.bl_idname == 'ShaderNodeMix']
+    nz = Nn.new('ShaderNodeTexNoise'); nz.inputs['Scale'].default_value = 0.01; nz.inputs['Detail'].default_value = 4
+    tcn = Nn.new('ShaderNodeTexCoord'); Ln.new(tcn.outputs['Object'], nz.inputs['Vector'])
+    wet = Nn.new('ShaderNodeAttribute'); wet.attribute_name = 'wet'; rock = Nn.new('ShaderNodeAttribute'); rock.attribute_name = 'rock'
+    facs = [nz.outputs['Fac']] * 3 + [wet.outputs['Fac']] * 3 + [rock.outputs['Fac']] * 3
+    for mx, f in zip(mixes, facs): Ln.new(f, mx.inputs['Factor'])
+    # far ground: blend back to vegetation colours by view distance (avoids the averaged 'dune' look)
+    pb = Nn['Principled BSDF']; base_link = [l for l in Ln if l.to_socket == pb.inputs['Base Color']][0]; src_col = base_link.from_socket; Ln.remove(base_link)
+    cam = Nn.new('ShaderNodeCameraData'); mr = Nn.new('ShaderNodeMapRange'); Ln.new(cam.outputs['View Distance'], mr.inputs['Value']); mr.inputs['From Min'].default_value = 120; mr.inputs['From Max'].default_value = 700
+    nzv = Nn.new('ShaderNodeTexNoise'); nzv.inputs['Scale'].default_value = 0.004; nzv.inputs['Detail'].default_value = 6; Ln.new(tcn.outputs['Object'], nzv.inputs['Vector'])
+    rv = Nn.new('ShaderNodeValToRGB'); rv.color_ramp.elements[0].color = (0.07, 0.09, 0.035, 1); rv.color_ramp.elements[1].color = (0.2, 0.15, 0.06, 1); Ln.new(nzv.outputs['Fac'], rv.inputs['Fac'])
+    fm_ = Nn.new('ShaderNodeMix'); fm_.data_type = 'RGBA'; Ln.new(mr.outputs['Result'], fm_.inputs['Factor']); Ln.new(src_col, fm_.inputs[6]); Ln.new(rv.outputs['Color'], fm_.inputs[7]); Ln.new(fm_.outputs[2], pb.inputs['Base Color'])
+    stone2 = cc0_mat('stone_cc0', [('rock_face', 1.6)]); wood2 = cc0_mat('wood_cc0', [('old_planks_02', 2.0)])
+    sN = stone2.node_tree.nodes; sL = stone2.node_tree.links; sp_ = sN['Principled BSDF']; bl = [l for l in sL if l.to_socket == sp_.inputs['Base Color']][0]; sc_col = bl.from_socket; sL.remove(bl)
+    hs = sN.new('ShaderNodeHueSaturation'); hs.inputs['Saturation'].default_value = 0.15; hs.inputs['Value'].default_value = 0.75; sL.new(sc_col, hs.inputs['Color']); sL.new(hs.outputs['Color'], sp_.inputs['Base Color'])
+    swap = {'terrain': ter2, 'stone': stone2, 'oldwood': wood2, 'wood': wood2, 'boatwood': wood2, 'pole': wood2}
+    for o in bpy.data.objects:
+        if o.type == 'MESH':
+            for i, mm in enumerate(o.data.materials):
+                if mm and mm.name in swap: o.data.materials[i] = swap[mm.name]
+        elif o.type == 'CURVE':
+            pass
 
 # ---------------- cameras ----------------
 def look(cam, frm, to, lens):

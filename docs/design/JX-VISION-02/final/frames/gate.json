@@ -1,0 +1,120 @@
+{
+ "talk-0515": {
+  "G1_fact_corr": 0.227,
+  "G1": false,
+  "G2_edge_corr": 0.729,
+  "G2": true,
+  "G3_top_forbidden": "a person sitting",
+  "G3_p_forbidden": 0.001,
+  "G3_p_allowed": 0.999,
+  "G3": true,
+  "PASS": false
+ },
+ "ferry-0530": {
+  "G1_fact_corr": 0.439,
+  "G1": false,
+  "G2_edge_corr": 0.782,
+  "G2": true,
+  "G3_top_forbidden": "a person sitting",
+  "G3_p_forbidden": 0.031,
+  "G3_p_allowed": 0.893,
+  "G3": true,
+  "PASS": false
+ },
+ "tele-0530": {
+  "G1_fact_corr": 0.218,
+  "G1": false,
+  "G2_edge_corr": 0.667,
+  "G2": true,
+  "G3_top_forbidden": "a modern farm with machinery",
+  "G3_p_forbidden": 0.005,
+  "G3_p_allowed": 0.992,
+  "G3": true,
+  "PASS": false
+ },
+ "burst-0545": {
+  "G1_fact_corr": 0.589,
+  "G1": false,
+  "G2_edge_corr": 0.673,
+  "G2": true,
+  "G3_top_forbidden": "a seagull",
+  "G3_p_forbidden": 0.515,
+  "G3_p_allowed": 0.455,
+  "G3": false,
+  "PASS": false
+ },
+ "macro-0545": {
+  "G1_fact_corr": 0.955,
+  "G1": true,
+  "G2_edge_corr": 0.623,
+  "G2": true,
+  "G3_top_forbidden": "a concrete wall",
+  "G3_p_forbidden": 0.838,
+  "G3_p_allowed": 0.012,
+  "G3": false,
+  "PASS": false
+ },
+ "arrive-0500": {
+  "G2_edge_corr": 0.883,
+  "G2": true,
+  "G3_top_forbidden": "a person sitting",
+  "G3_p_forbidden": 0.019,
+  "G3_p_allowed": 0.957,
+  "G3": true,
+  "PASS": true
+ },
+ "wqt-0530": {
+  "G2_edge_corr": 0.829,
+  "G2": true,
+  "G3_top_forbidden": "a modern farm with machinery",
+  "G3_p_forbidden": 0.506,
+  "G3_p_allowed": 0.031,
+  "G3": false,
+  "PASS": false
+ },
+ "wqt-1200": {
+  "G2_edge_corr": 0.881,
+  "G2": true,
+  "G3_top_forbidden": "a modern farm with machinery",
+  "G3_p_forbidden": 0.512,
+  "G3_p_allowed": 0.057,
+  "G3": false,
+  "PASS": false
+ },
+ "wqt-1645": {
+  "G2_edge_corr": 0.926,
+  "G2": true,
+  "G3_top_forbidden": "a person sitting",
+  "G3_p_forbidden": 0.61,
+  "G3_p_allowed": 0.116,
+  "G3": false,
+  "PASS": false
+ },
+ "wqt-1715": {
+  "G2_edge_corr": 0.93,
+  "G2": true,
+  "G3_top_forbidden": "a person sitting",
+  "G3_p_forbidden": 0.438,
+  "G3_p_allowed": 0.198,
+  "G3": false,
+  "PASS": false
+ },
+ "aerial-0530": {
+  "G2_edge_corr": 0.847,
+  "G2": true,
+  "G3_top_forbidden": "a modern farm with machinery",
+  "G3_p_forbidden": 0.308,
+  "G3_p_allowed": 0.621,
+  "G3": true,
+  "PASS": true
+ },
+ "ferry-cleared": {
+  "G2_edge_corr": 0.844,
+  "G2": true,
+  "G3_top_forbidden": "a seagull",
+  "G3_p_forbidden": 0.082,
+  "G3_p_allowed": 0.729,
+  "G3": true,
+  "PASS": true
+ }
+}

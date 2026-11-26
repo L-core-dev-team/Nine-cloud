@@ -10,15 +10,15 @@
 .bg{position:absolute;inset:0;background-size:cover;background-position:center}
 .scrim-b{position:absolute;left:0;right:0;bottom:0;height:52%;background:linear-gradient(to top,rgba(5,7,10,.86),rgba(5,7,10,.55) 55%,rgba(5,7,10,0))}
 .scrim-t{position:absolute;left:0;right:0;top:0;height:28%;background:linear-gradient(to bottom,rgba(5,7,10,.55),rgba(5,7,10,0))}
-.place{position:absolute;left:64px;top:52px}
+.place{position:absolute;left:48px;top:40px;background:rgba(6,8,12,.6);padding:14px 22px 16px 16px;border-radius:2px}
 .place h1{margin:0;font-weight:600;font-size:34px;letter-spacing:.32em}
-.place p{margin:12px 0 0;font-size:14px;line-height:1.75;color:var(--dim);letter-spacing:.1em}
+.place p{margin:12px 0 0;font-size:14px;line-height:1.75;color:var(--ink);letter-spacing:.1em}
 .place b{font-weight:400;color:var(--ink)}
-.tabs{position:absolute;right:64px;top:58px;display:flex;gap:18px;font-size:15px;letter-spacing:.2em;color:var(--faint)}
+.tabs{position:absolute;right:64px;top:58px;display:flex;gap:18px;font-size:15px;letter-spacing:.2em;color:var(--dim);background:rgba(6,8,12,.5);padding:6px 12px;border-radius:2px}
 .tabs .on{color:var(--ink);border-bottom:1px solid var(--zhu);padding-bottom:4px}
-.read{position:absolute;left:64px;bottom:150px;width:680px}
+.read{position:absolute;left:48px;bottom:140px;width:712px;background:linear-gradient(to right,rgba(6,8,12,.55),rgba(6,8,12,.25));padding:12px 16px;border-radius:2px}
 .read p{margin:0 0 .3em;font-size:20px;line-height:1.85;letter-spacing:.03em}
-.src{font-size:12px;letter-spacing:.18em;color:var(--faint);margin-bottom:10px}
+.src{font-size:12px;letter-spacing:.18em;color:var(--dim);margin-bottom:10px}
 .pick{text-decoration:underline dotted rgba(239,233,220,.75);text-underline-offset:6px}
 .ledger{position:absolute;left:790px;bottom:168px;font-size:13px;line-height:2.1;color:var(--dim);border-left:1px solid var(--line);padding-left:14px;letter-spacing:.06em}
 .ledger b{font-weight:400;color:var(--ink)}
@@ -30,22 +30,22 @@
 .input .ph{color:var(--faint)}.input .go{margin-left:auto;font-size:15px;letter-spacing:.3em}
 .vit{position:absolute;right:64px;bottom:90px;font-size:13px;color:var(--dim);letter-spacing:.06em}
 .vit b{font-weight:400;color:var(--ink)}
-.anc{position:absolute;font-size:13px;letter-spacing:.12em;text-shadow:0 0 6px #000,0 0 2px #000;white-space:nowrap}
+.anc{position:absolute;font-size:13px;letter-spacing:.12em;white-space:nowrap;background:rgba(6,8,12,.66);padding:2px 8px;border-radius:2px}
 .anc::after{content:"";position:absolute;left:50%;top:100%;width:1px;height:var(--l,26px);background:rgba(239,233,220,.55)}
 .voice{font-family:"LXGW WenKai"}
 .who{font-size:13px;letter-spacing:.2em;color:var(--dim);margin-right:12px}
 .mine{color:#f3d9c8}
-.card{position:absolute;right:64px;top:120px;width:260px;border-left:1px solid var(--line);padding-left:16px;font-size:14px;line-height:1.9;color:var(--dim)}
+.card{position:absolute;right:64px;top:120px;width:280px;border-left:1px solid var(--line);padding:10px 16px;background:rgba(6,8,12,.62);font-size:14px;line-height:1.9;color:var(--dim)}
 .card h3{margin:0 0 6px;font-weight:600;font-size:20px;color:var(--ink);letter-spacing:.2em}
 /* reading mode */
 .page{position:absolute;left:0;right:0;top:120px;bottom:0;background:#ece5d6;color:#2a241c;padding:56px 0 0}
 .page .col{width:720px;margin:0 auto;position:relative}
 .page h2{font-weight:600;font-size:22px;letter-spacing:.3em;margin:0 0 6px}
-.page .meta{font-size:13px;color:#7a6f5e;letter-spacing:.15em;margin-bottom:26px}
+.page .meta{font-size:13px;color:#4f463a;letter-spacing:.15em;margin-bottom:26px}
 .page p{font-size:19px;line-height:1.95;margin:0 0 .2em}
-.page .t{position:absolute;left:-118px;width:100px;text-align:right;font-size:12.5px;color:#7a6f5e;letter-spacing:.08em;line-height:2.6}
+.page .t{position:absolute;left:-118px;width:100px;text-align:right;font-size:12.5px;color:#4f463a;letter-spacing:.08em;line-height:2.6}
 .page .act{color:#9b3a24;font-size:16px;margin:18px 0 6px}
-.page .lg{font-size:12.5px;color:#7a6f5e;margin:4px 0 16px;letter-spacing:.06em}
+.page .lg{font-size:12.5px;color:#4f463a;margin:4px 0 16px;letter-spacing:.06em}
 .page .pick{text-decoration-color:#9b3a24}
 .zheng{position:absolute;right:64px;top:176px;width:230px;font-size:13.5px;line-height:2;color:#5c5244}
 .zheng h4{margin:0 0 8px;font-size:14px;letter-spacing:.3em;color:#2a241c}
@@ -58,13 +58,13 @@
 .hr{position:absolute;top:262px;font-size:12px;color:var(--faint);transform:translateX(-50%)}
 .thumbs{position:absolute;left:120px;right:120px;top:420px;display:flex;gap:14px}
 .thumbs div{flex:1;height:170px;background-size:cover;background-position:center;position:relative}
-.thumbs span{position:absolute;left:10px;bottom:8px;font-size:13px;text-shadow:0 0 6px #000}
+.thumbs span{position:absolute;left:8px;bottom:8px;font-size:13px;background:rgba(6,8,12,.7);padding:1px 6px}
 .annal{position:absolute;left:120px;top:640px;width:900px;font-size:15px;line-height:2.1;color:var(--dim)}
 .annal b{font-weight:400;color:var(--ink);margin-right:14px}
 .btns{position:absolute;right:120px;top:640px;display:flex;flex-direction:column;gap:10px;font-size:14px}
 .btns span{border:1px solid var(--line);padding:8px 18px;text-align:center}
-.note{position:absolute;right:16px;bottom:10px;font-size:11px;color:rgba(239,233,220,.45);letter-spacing:.1em}
-.page .note{color:#8a8070}
+.note{position:absolute;right:16px;bottom:10px;font-size:11px;color:rgba(239,233,220,.7);letter-spacing:.1em;background:rgba(6,8,12,.88);padding:1px 6px}
+.page .note{color:#4f463a;background:none;right:auto;left:16px}
 </style></head>
 <body><div class="st" id="st"></div>
 <script>
@@ -86,9 +86,9 @@ if (mode === 'you') {
 }
 if (mode === 'tan') {
   h.push(`<div class="bg" style="background-image:url(${C.bg})"></div><div class="scrim-b"></div><div class="scrim-t"></div>`, place(), tabs('谈'));
-  h.push(`<div class="card"><h3>岑九</h3>芦花渡摆渡人<br><span style="color:var(--faint)">你只知道这些。</span></div>`);
-  h.push(`<div class="read"><div class="src">交谈　一刻</div><p class="mine"><span class="who">你</span>船怎么靠不上岸？</p><p class="voice"><span class="who" style="font-family:'Noto Serif SC'">岑九</span>船没坏。水浅了。</p><p class="mine"><span class="who">你</span>你能帮着把〔落石〕搬开吗？</p><p class="voice"><span class="who" style="font-family:'Noto Serif SC'">岑九</span>我这把骨头，搬不动那些石头。你自己掂量。</p></div>`);
-  h.push(`<div class="chips"><span class="chip">问鸦</span><span class="chip">问望气台</span><span class="chip">问南边那片白</span></div>`);
+  h.push(`<div class="card"><h3>岑九</h3>芦花渡摆渡人<br><span style="color:var(--dim)">你只知道这些。</span></div>`);
+  h.push(`<div class="read"><div class="src">交谈　一刻</div><p class="mine"><span class="who">你</span>船怎么靠不上岸？</p><p class="voice"><span class="who" style="font-family:'Noto Serif SC'">岑九</span>船没坏。水浅了。</p><p class="mine"><span class="who">你</span>渡槽口那堆石头，你能帮着搬开吗？</p><p class="voice"><span class="who" style="font-family:'Noto Serif SC'">岑九</span>我这把骨头，搬不动那些石头。你自己掂量。</p></div>`);
+  h.push(`<div class="chips"><span class="chip">问鸦<small>一刻</small></span><span class="chip">问望气台<small>一刻</small></span><span class="chip">下到渡口作业位<small>一刻　体力 −5</small></span></div>`);
   h.push(`<div class="input"><span class="ph">对岑九说……</span><span class="go">落笔</span></div>`);
 }
 if (mode === 'dou') {
@@ -98,13 +98,13 @@ if (mode === 'dou') {
   h.push(`<div class="input"><span class="ph">写下你要做的事</span><span class="go">落笔</span></div>`);
 }
 if (mode === 'du') {
-  h.push(`<div class="head-sky" style="background-image:url(${C.bg})"></div>`, `<div class="tabs" style="top:44px">${['游','读','谈','观','忆'].map(t => `<span class="${t === '读' ? 'on' : ''}">${t}</span>`).join('')}</div>`);
+  h.push(`<div class="head-sky" style="background-image:url(${C.bg})"></div>`, `<div class="tabs" style="top:40px;background:rgba(6,8,12,.75)">${['游','读','谈','观','忆'].map(t => `<span class="${t === '读' ? 'on' : ''}">${t}</span>`).join('')}</div>`);
   h.push(`<div class="page"><div class="col"><h2>序章　第一日</h2><div class="meta">芦花渡　望气台　·　卷宗</div>
 <div class="t">卯初　05:00</div><p>船底擦过沙洲，芦花没到膝。</p><p>渡口那边本该有船。</p><p>岸上一行新脚印，进去就没了。</p><p>篙在身后一点。「喏，到了。」</p>
 <div class="t" style="margin-top:14px">05:15</div><div class="act">去望气台看看。</div><div class="lg">移动　一刻　体力 100 → 95</div>
-<div class="t">05:30</div><div class="act">四下看看。</div><p>台上没有人。木头朽了，踩上去还有声。</p><p>渡口一览无余。石从上游下来，堆在渡槽口，<span class="pick">最大的那块有门板高</span>。</p>
+<div class="t">05:30</div><div class="act">四下看看。</div><p>台上没有人。木头朽了，踩上去还有声。</p><p>渡口一览无余。石从上游下来，堆在渡槽口，<span class="pick">最大的那块有门板高</span>。</p><p>灰羽鸦在石上落着，<span class="pick">几十只，一动不动</span>。</p>
 <div class="lg">环视　一刻　体力 95 → 92　得 落石线索</div></div>
-<div class="zheng"><h4>证</h4><span>〔落石·门板高〕</span><span>〔鸦·几十只，一动不动〕</span><div style="font-size:12px;color:#8a8070;margin-top:10px">摘下的证据只来自你读到的事实。</div></div>
+<div class="zheng"><h4>证</h4><span>〔落石·门板高〕</span><span>〔鸦·几十只，一动不动〕</span><div style="font-size:12px;color:#4f463a;margin-top:10px">摘下的证据只来自你读到的事实。</div></div>
 <div class="note">规则叙述与玩家原文；无 AI 改写</div></div>`);
 }
 if (mode === 'yi') {
@@ -120,10 +120,10 @@ if (mode === 'yi') {
 if (mode === 'phone') {
   h.push(`<div class="bg" style="background-image:url(${C.bg});bottom:auto;height:${C.kbd ? 200 : 430}px;background-position:${C.pos || 'center'}"></div>`);
   h.push(`<div style="position:absolute;left:0;right:0;top:${C.kbd ? 140 : 370}px;height:60px;background:linear-gradient(to bottom,rgba(7,9,12,0),#07090c)"></div>`);
-  h.push(`<div class="place" style="left:20px;top:22px"><h1 style="font-size:22px">${C.place || '芦花渡'}</h1>${C.kbd ? '' : `<p style="font-size:12px;margin-top:8px">${C.time || '卯初一刻　05:15'}</p>`}</div>`);
+  h.push(`<div class="place" style="left:12px;top:14px;padding:10px 14px"><h1 style="font-size:22px">${C.place || '芦花渡'}</h1>${C.kbd ? '' : `<p style="font-size:12px;margin-top:8px">${C.time || '卯初一刻　05:15'}</p>`}</div>`);
   const top = C.kbd ? 214 : 448;
-  if (!C.kbd) h.push(`<div style="position:absolute;left:20px;right:20px;top:${top}px"><div class="src">交谈　一刻</div><p class="mine" style="font-size:17px;line-height:1.8;margin:0 0 .3em"><span class="who">你</span>船怎么靠不上岸？</p><p class="voice" style="font-size:17px;line-height:1.8;margin:0"><span class="who" style="font-family:'Noto Serif SC'">岑九</span>船没坏。水浅了。</p></div><div style="position:absolute;left:20px;right:0;bottom:86px;display:flex;gap:8px;overflow:hidden"><span class="chip" style="padding:12px 14px;white-space:nowrap">问鸦</span><span class="chip" style="padding:12px 14px;white-space:nowrap">问望气台</span><span class="chip ev" style="padding:12px 14px;white-space:nowrap">〔落石·门板高〕</span></div><div class="input" style="left:20px;right:20px;bottom:26px;font-size:16px"><span class="ph">对岑九说……</span><span class="go">落笔</span></div>`);
-  else h.push(`<div style="position:absolute;left:20px;right:20px;top:${top}px;font-size:15px;color:var(--dim);line-height:1.8">灰羽鸦在石上落着，几十只，一动不动。</div><div style="position:absolute;left:20px;top:${H - 300 - 104}px;font-size:13px;color:var(--dim);letter-spacing:.1em">细察　<b style="font-weight:400;color:var(--ink)">落石</b>　两刻　体力 −6</div><div class="input" style="left:20px;right:20px;bottom:318px;font-size:16px"><span>细看那堆<span style="text-decoration:underline solid var(--zhu);text-decoration-thickness:2px;text-underline-offset:7px">落石</span></span><span class="go">落笔</span></div><div style="position:absolute;left:0;right:0;bottom:0;height:300px;background:#202329;color:#7d828c;font-size:12px;letter-spacing:.2em;display:flex;align-items:center;justify-content:center">系统键盘</div>`);
+  if (!C.kbd) h.push(`<div style="position:absolute;left:20px;right:20px;top:${top}px"><div class="src">交谈　一刻</div><p class="mine" style="font-size:17px;line-height:1.8;margin:0 0 .3em"><span class="who">你</span>船怎么靠不上岸？</p><p class="voice" style="font-size:17px;line-height:1.8;margin:0"><span class="who" style="font-family:'Noto Serif SC'">岑九</span>船没坏。水浅了。</p></div><div style="position:absolute;left:20px;right:0;bottom:86px;display:flex;gap:8px;overflow:hidden"><span class="chip" style="padding:12px 14px;white-space:nowrap">问鸦</span><span class="chip" style="padding:12px 14px;white-space:nowrap">问望气台</span><span class="chip" style="padding:12px 14px;white-space:nowrap">求他搬石头</span></div><div class="input" style="left:20px;right:20px;bottom:26px;font-size:16px"><span class="ph">对岑九说……</span><span class="go">落笔</span></div>`);
+  else h.push(`<div style="position:absolute;left:20px;right:20px;top:${top}px;font-size:15px;color:var(--dim);line-height:1.8">灰羽鸦在石上落着，几十只，一动不动。</div><div style="position:absolute;left:20px;top:${H - 300 - 104}px;font-size:13px;color:var(--dim);letter-spacing:.1em">细察　<b style="font-weight:400;color:var(--ink)">落石</b>　两刻　体力 −6</div><div class="input" style="left:20px;right:20px;bottom:318px;font-size:16px"><span>细看那堆<span style="text-decoration:underline solid var(--zhu);text-decoration-thickness:2px;text-underline-offset:7px">落石</span></span><span class="go">落笔</span></div><div style="position:absolute;left:0;right:0;bottom:0;height:300px;background:#202329;color:#b4b8c0;font-size:12px;letter-spacing:.2em;display:flex;align-items:center;justify-content:center">系统键盘</div>`);
 }
 if (mode === 'home') {
   h.push(`<div class="bg" style="background-image:url(${C.bg})"></div><div class="scrim-b" style="height:40%"></div>`);
