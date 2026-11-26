@@ -1,0 +1,204 @@
+{
+  "task": "JX-DEPLOY-VERIFY-01",
+  "timezone": "Asia/Shanghai",
+  "production": {
+    "version": "UNVERIFIED",
+    "profilePersistence": "UNVERIFIED",
+    "frontendSource": "c4c672f5d2dd1ff5e08b4e10d82edd8e1c4af833",
+    "frontendTree": "3dc2a2e4dd6d255b392a6e7242eed8ff05ea2a2f",
+    "pagesDeployment": "85adf881",
+    "releaseReportGitBlob": "61f9b1a373fe2c085dec0c060bde49f137850da0",
+    "releaseRecord": "https://github.com/L-core-dev-team/Nine-cloud/blob/767ad5d4743178778549bd0a44b5add3e718cb54/docs/acceptance/2026-11-23/JX-UI-E-01-最终报告.md",
+    "entrypoint": {
+      "route": "https://play.jiuxiaogame.cn/new",
+      "http": 200,
+      "entry": "/assets/index-CVXN4bqP.js",
+      "checked": "2026-11-26T21:23:57.0570130+08:00"
+    },
+    "samples": {
+      "api": [
+        {
+          "url": "https://play.jiuxiaogame.cn/health",
+          "status": 200,
+          "json": {
+            "status": "ok",
+            "service": "jiuxiao-api",
+            "saveSchemaVersion": 3
+          },
+          "checked": "2026-11-26T21:14:51.8354355+08:00"
+        },
+        {
+          "url": "https://play.jiuxiaogame.cn/ready",
+          "status": 200,
+          "json": {
+            "status": "ready",
+            "service": "jiuxiao-api",
+            "dependencies": {
+              "database": "ok"
+            }
+          },
+          "checked": "2026-11-26T21:14:54.4020650+08:00"
+        },
+        {
+          "url": "https://play.jiuxiaogame.cn/api/auth/providers",
+          "status": 200,
+          "json": {
+            "email": true,
+            "phone": false,
+            "emailCaptcha": false,
+            "privacyPolicyUrl": "https://play.jiuxiaogame.cn/privacy",
+            "privacyPolicyVersion": "1.0"
+          },
+          "checked": "2026-11-26T21:14:55.6282567+08:00"
+        },
+        {
+          "url": "https://api.jiuxiaogame.cn/health",
+          "status": 200,
+          "json": {
+            "status": "ok",
+            "service": "jiuxiao-api",
+            "saveSchemaVersion": 3
+          },
+          "checked": "2026-11-26T21:14:56.1213606+08:00"
+        },
+        {
+          "url": "https://api.jiuxiaogame.cn/ready",
+          "status": 200,
+          "json": {
+            "status": "ready",
+            "service": "jiuxiao-api",
+            "dependencies": {
+              "database": "ok"
+            }
+          },
+          "checked": "2026-11-26T21:14:56.3004021+08:00"
+        },
+        {
+          "url": "https://api.jiuxiaogame.cn/api/auth/providers",
+          "status": 200,
+          "json": {
+            "email": true,
+            "phone": false,
+            "emailCaptcha": false,
+            "privacyPolicyUrl": "https://play.jiuxiaogame.cn/privacy",
+            "privacyPolicyVersion": "1.0"
+          },
+          "checked": "2026-11-26T21:14:56.6253862+08:00"
+        }
+      ],
+      "static": [
+        {
+          "url": "https://play.jiuxiaogame.cn",
+          "html": 200,
+          "entry": "/assets/index-CVXN4bqP.js",
+          "entryHTTP": 200,
+          "sha256": "571fea6a90d1730e282fa9cc8ec5a47e89f7197c54a82f235002ca1bb91c33d6",
+          "htmlSha256": "bd6a58e8940ca05b540512580c1beed67f1e457071d8c9dd85a8619ee989a62f",
+          "checked": "2026-11-26T21:14:46.8487734+08:00"
+        },
+        {
+          "url": "https://85adf881.jiuxiaogame-public-demo.pages.dev",
+          "html": 200,
+          "entry": "/assets/index-CVXN4bqP.js",
+          "entryHTTP": 200,
+          "sha256": "571fea6a90d1730e282fa9cc8ec5a47e89f7197c54a82f235002ca1bb91c33d6",
+          "htmlSha256": "fca061eac43bd73734ea47167947fc2f4bf69f67e65923903ed886866b1a677c",
+          "checked": "2026-11-26T21:14:50.0597128+08:00"
+        }
+      ]
+    },
+    "matchingAdditionalAssets": [
+      {
+        "name": "assets/CloudGame-BlPep7QP.js",
+        "production": "8d754f26349c01816c3c0114002026823094f1c3700b030ca61653997e6c01f3",
+        "immutable": "8d754f26349c01816c3c0114002026823094f1c3700b030ca61653997e6c01f3",
+        "equal": true
+      },
+      {
+        "name": "assets/use-cloud-game-session-oZR8833C.js",
+        "production": "5ccd52db9ba15c75ecb89784ae81dd6bbeb41f4fa4cdb950cf4c2ffe552ab186",
+        "immutable": "5ccd52db9ba15c75ecb89784ae81dd6bbeb41f4fa4cdb950cf4c2ffe552ab186",
+        "equal": true
+      },
+      {
+        "name": "assets/storage-CWaKv8lw.js",
+        "production": "b62b450ed2646bac20c2fb38490ba7fed04475335d95ad6c46e691af08239666",
+        "immutable": "b62b450ed2646bac20c2fb38490ba7fed04475335d95ad6c46e691af08239666",
+        "equal": true
+      },
+      {
+        "name": "assets/index-CWKuO1FV.css",
+        "production": "cdf5777aac884e0e232ce94ad99af4fa036764b957652f1ffdb3b38e84f80ff3",
+        "immutable": "cdf5777aac884e0e232ce94ad99af4fa036764b957652f1ffdb3b38e84f80ff3",
+        "equal": true
+      }
+    ],
+    "upstream": "https://api.jiuxiaogame.cn",
+    "apiDigest": null,
+    "apiRevision": null,
+    "dbMigrationRecords": null,
+    "dbColumn": null
+  },
+  "git": {
+    "main": "f1fe6ea561c5ef4d1ec670b7a406625ce5df774c",
+    "119_openDraft": "9c0724fb7f3573d7eab97766a8b97bb69c859d74",
+    "120_openDraft": "767ad5d4743178778549bd0a44b5add3e718cb54",
+    "125_openDraft": "6a42844c3a600c1be4ddaab3bddae5cff6d43035"
+  },
+  "isolated": {
+    "scope": "Released browser assets on loopback + main API source tree + newly migrated PostgreSQL. All identifiers and form inputs below are synthetic.",
+    "status": "PERSISTENCE_VERIFIED",
+    "apiCheckout": "86927174dd4aff2139f69d4097a48c56f40b7a2e",
+    "apiTree": "e1751a3318577673028eb98a87528ccec9275194",
+    "recompiledApiJS": 73,
+    "compiledJSMismatches": 0,
+    "result": {
+      "checks": {
+        "serverReadAndSql": true,
+        "pageRefresh": true,
+        "replayAndConflict": [
+          200,
+          409
+        ],
+        "nullProfile": true,
+        "apiProcessRestart": true,
+        "crossAccount": 404,
+        "emptyBrowserRelogin": true
+      },
+      "productionWrites": 0,
+      "modelCalls": 0,
+      "imageCalls": 0,
+      "migrations": {
+        "count": 28,
+        "last": {
+          "tag": "0029_game_character_profile",
+          "ts": "1795219200000",
+          "hash": "7e6f12ca205fa0ae8634d1a5110f3d5ab63c9561835d6dc8f692e5a9549cd66c"
+        },
+        "column": [
+          {
+            "table_schema": "public",
+            "data_type": "jsonb",
+            "is_nullable": "YES"
+          }
+        ]
+      },
+      "creation": {
+        "id": "game-8be6b2d0ab742822d01f56ec0d95244d7ee861e00ae78bf09c257d314a6b8c55",
+        "key": "6682ba56-d4d6-406e-abf6-663e76b1b030",
+        "revision": 0,
+        "mode": "continue",
+        "status": 201,
+        "profile": {
+          "name": "核验渡书人",
+          "personality": "遇事先记一笔",
+          "origin": "海桥修缮所",
+          "appearance": "右袖缝着一枚蓝扣",
+          "goal": "补完冬季航线图"
+        }
+      },
+      "status": "PASS",
+      "stopped": true
+    }
+  }
+}
