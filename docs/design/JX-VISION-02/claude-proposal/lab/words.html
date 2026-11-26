@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>字境 · 概念帧</title>
+<link rel="stylesheet" href="node_modules/@fontsource/noto-serif-sc/index.css">
+<link rel="stylesheet" href="node_modules/@fontsource/zhi-mang-xing/index.css">
+<link rel="stylesheet" href="node_modules/lxgw-wenkai-webfont/lxgwwenkai-regular.css">
+<link rel="stylesheet" href="node_modules/@fontsource/ma-shan-zheng/index.css">
+<style>html,body{margin:0;background:#e9e1cf}canvas{display:block}</style></head>
+<body><canvas id="c"></canvas>
+<script type="module">
+import { rng, makeNoise, ridgeLine, silkGrain, seal, PIGMENT, rgba } from './js/paint.js';
+const q = new URLSearchParams(location.search);
+const mode = q.get('mode') || 'desktop';
+const W = mode === 'phone' ? 390 : 1600, H = mode === 'phone' ? 844 : 900, DPR = 2;
+const cv = document.getElementById('c'); cv.width = W * DPR; cv.height = H * DPR; cv.style.width = W + 'px'; cv.style.height = H + 'px';
+const ctx = cv.getContext('2d'); ctx.scale(DPR, DPR);
+const GL = '山岩峦岭峰崖石嶂岫岑';
+await document.fonts.load('20px "Noto Serif SC"', GL + '水波云雾芦舟人鸦石渡口那边本该有船去看堆头写下你要做的事序章第一日酉初');
+await document.fonts.load('60px "Zhi Mang Xing"', '渡口那边本该有船舟芦花渡'); await document.fonts.load('20px "LXGW WenKai"', '去渡口看看那堆石头'); await document.fonts.load('14px "Ma Shan Zheng"', '九霄');
+const R = rng(5), N = makeNoise(9);
+ctx.fillStyle = '#ebe3d1'; ctx.fillRect(0, 0, W, H);
+const k = mode === 'phone' ? 0.42 : 1;
+// glyph-filled mountain: characters on a jittered grid inside the silhouette, darker near the ridge
+function glyphMountain({ x0, x1, base, height, peaks, cell, alpha, ink = [30, 30, 28], seed = 0 }) {
+  const pts = ridgeLine(N, { x0, x1, base, height, peaks, rough: 0.4, freq: 5, seed, step: 2 });
+  const top = x => { const i = Math.max(0, Math.min(pts.length - 1, Math.round((x - x0) / 2))); return pts[i][1]; };
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  for (let y = base; y > base - height * 1.1; y -= cell * 0.92) for (let x = x0; x < x1; x += cell * 0.92) {
+    const jx = x + (R() - 0.5) * cell * 0.3, jy = y + (R() - 0.5) * cell * 0.3; const t = top(jx); if (jy < t) continue;
+    const d = (jy - t) / (base - t + 1); const a = alpha * (1 - d * 0.75) * (0.55 + R() * 0.45);
+    if (a < 0.03) continue;
+    ctx.fillStyle = rgba(ink, a); ctx.font = `${cell * (0.8 + R() * 0.35)}px "Noto Serif SC"`;
+    ctx.fillText(GL[Math.floor(R() * GL.length)], jx, jy);
+  }
+  return pts;
+}
+if (mode === 'desktop') {
+  glyphMountain({ x0: 420, x1: 1640, base: 486, height: 90, peaks: [[0.2, 0.7, 0.12], [0.45, 1, 0.16], [0.78, 0.8, 0.14]], cell: 9, alpha: 0.26, ink: [60, 80, 96], seed: 2 });
+  glyphMountain({ x0: 1120, x1: 1700, base: 600, height: 280, peaks: [[0.38, 1, 0.09], [0.5, 0.72, 0.08], [0.72, 0.76, 0.1]], cell: 12, alpha: 0.5, ink: [40, 60, 70], seed: 11 });
+  glyphMountain({ x0: -60, x1: 780, base: 630, height: 460, peaks: [[0.38, 1, 0.07], [0.5, 0.82, 0.06], [0.27, 0.62, 0.06], [0.16, 0.48, 0.08], [0.75, 0.42, 0.09]], cell: 15, alpha: 0.82, seed: 3 });
+  // mist band: the characters thin into 云 and 雾
+  ctx.textAlign = 'center';
+  for (let i = 0; i < 160; i++) { const x = R() * W, y = 470 + (R() - 0.5) * 50 + (x < 800 ? 120 : 0); ctx.fillStyle = `rgba(120,120,115,${0.05 + R() * 0.12})`; ctx.font = `${10 + R() * 10}px "Noto Serif SC"`; ctx.fillText(R() < 0.5 ? '云' : '雾', x, y); }
+  // water: rows of 水, wider apart toward the viewer
+  for (let row = 0, y = 640; y < 820; row++, y += 7 + row * 1.6) { for (let x = (row % 2) * 9; x < W; x += 18 + row * 1.4) { if (R() < 0.35) continue; ctx.save(); ctx.translate(x, y); ctx.scale(1.7, 0.55); ctx.fillStyle = `rgba(70,96,110,${0.12 + R() * 0.12})`; ctx.font = `${8 + row * 0.8}px "Noto Serif SC"`; ctx.fillText(R() < 0.8 ? '水' : '波', 0, 0); ctx.restore(); } }
+  // the ferry: a single 舟 with two 人
+  ctx.fillStyle = 'rgba(24,22,20,0.92)'; ctx.font = '54px "Zhi Mang Xing"'; ctx.fillText('舟', 860, 668); ctx.font = '18px "Noto Serif SC"'; ctx.fillText('人', 846, 632); ctx.fillText('人', 878, 628);
+  // the rockslide and crows on the right bank
+  for (let i = 0; i < 26; i++) { ctx.fillStyle = `rgba(40,34,28,${0.55 + R() * 0.4})`; ctx.font = `${14 + R() * 16}px "Noto Serif SC"`; ctx.fillText('石', 1300 + R() * 90, 690 - R() * 40 * (1 - Math.abs(R() - 0.5))); }
+  for (let i = 0; i < 12; i++) { ctx.fillStyle = 'rgba(14,14,14,0.9)'; ctx.font = `${10 + R() * 4}px "Noto Serif SC"`; ctx.fillText('鸦', 1296 + R() * 96, 640 - R() * 30); }
+  for (let i = 0; i < 130; i++) { const x = R() * W, y = 812 + R() * 36; if (x > 150 && x < 1220) continue; ctx.save(); ctx.translate(x, y); ctx.rotate((R() - 0.5) * 0.35); ctx.fillStyle = `rgba(150,110,60,${0.3 + R() * 0.45})`; ctx.font = `${14 + R() * 18}px "Noto Serif SC"`; ctx.fillText('芦', 0, 0); ctx.restore(); }
+  // the narration written across the sky
+  ctx.fillStyle = 'rgba(28,26,24,0.16)'; ctx.font = '96px "Zhi Mang Xing"'; ctx.textAlign = 'left'; ctx.fillText('渡口那边本该有船', 520, 210);
+  ctx.fillStyle = 'rgba(28,26,24,0.85)'; ctx.font = '22px "LXGW WenKai"'; ctx.fillText('渡口那边本该有船。', 760, 262);
+} else {
+  glyphMountain({ x0: -30, x1: 330, base: 470, height: 380, peaks: [[0.42, 1, 0.07], [0.3, 0.75, 0.06], [0.55, 0.7, 0.06], [0.72, 0.5, 0.08]], cell: 11, alpha: 0.8, seed: 3 });
+  for (let row = 0, y = 500; y < 640; row++, y += 6 + row * 1.4) for (let x = (row % 2) * 7; x < W; x += 14 + row) { if (R() < 0.35) continue; ctx.save(); ctx.translate(x, y); ctx.scale(1.7, 0.55); ctx.fillStyle = `rgba(70,96,110,${0.14 + R() * 0.12})`; ctx.font = `${7 + row * 0.7}px "Noto Serif SC"`; ctx.fillText('水', 0, 0); ctx.restore(); }
+  ctx.fillStyle = 'rgba(24,22,20,0.92)'; ctx.font = '40px "Zhi Mang Xing"'; ctx.textAlign = 'center'; ctx.fillText('舟', 150, 560);
+  for (let i = 0; i < 14; i++) { ctx.fillStyle = `rgba(40,34,28,${0.55 + R() * 0.4})`; ctx.font = `${10 + R() * 10}px "Noto Serif SC"`; ctx.fillText('石', 300 + R() * 60, 600 - R() * 26); }
+  ctx.fillStyle = 'rgba(28,26,24,0.85)'; ctx.font = '19px "LXGW WenKai"'; ctx.textAlign = 'left'; ctx.fillText('渡口那边本该有船。', 22, 120);
+}
+silkGrain(ctx, W * DPR, H * DPR, N, 0.8, 0.28);
+// writing: the player's sentence lifts off the line and flies to its target (言出法随)
+const sentence = Array.from('去渡口看看那堆石头');
+const LX = mode === 'phone' ? 22 : 220, LY = H - (mode === 'phone' ? 82 : 70), TX = mode === 'phone' ? 330 : 1345, TY = mode === 'phone' ? 586 : 668;
+ctx.textAlign = 'left'; ctx.font = `${mode === 'phone' ? 17 : 22}px "LXGW WenKai"`;
+ctx.strokeStyle = 'rgba(160,40,30,0.55)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(LX, LY + 14); ctx.lineTo(W - LX, LY + 14); ctx.stroke();
+const cw = mode === 'phone' ? 18 : 23;
+ctx.save(); ctx.setLineDash([2, 6]); ctx.strokeStyle = 'rgba(178,46,34,0.35)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(LX + 4 * cw, LY - 10); ctx.quadraticCurveTo(LX + 4 * cw + (TX - LX) * 0.3, LY - (mode === 'phone' ? 260 : 300), TX, TY - 14); ctx.stroke(); ctx.restore();
+sentence.forEach((ch, i) => {
+  const t = 0.12 + i * 0.1; // later characters are still on the line, earlier ones are already in flight
+  const sx = LX + i * cw, sy = LY;
+  const cx1 = sx + (TX - sx) * 0.3, cy1 = sy - (mode === 'phone' ? 260 : 300);
+  const p = Math.max(0, 1 - t * 1.25);
+  const x = (1 - p) ** 2 * sx + 2 * (1 - p) * p * cx1 + p * p * TX, y = (1 - p) ** 2 * sy + 2 * (1 - p) * p * cy1 + p * p * TY;
+  for (let s = 1; s < 10; s++) { const pp = Math.max(0, p - s * 0.03); const tx = (1 - pp) ** 2 * sx + 2 * (1 - pp) * pp * cx1 + pp * pp * TX, ty = (1 - pp) ** 2 * sy + 2 * (1 - pp) * pp * cy1 + pp * pp * TY; ctx.fillStyle = `rgba(178,46,34,${0.12 - s * 0.011})`; ctx.beginPath(); ctx.arc(tx, ty, 1.4, 0, 7); ctx.fill(); }
+  ctx.fillStyle = p > 0.05 ? `rgba(178,46,34,${0.55 + p * 0.4})` : 'rgba(28,26,24,0.9)';
+  ctx.font = `${(mode === 'phone' ? 17 : 22) * (1 - p * 0.35)}px "LXGW WenKai"`; ctx.fillText(ch, x, y);
+});
+ctx.font = `${mode === 'phone' ? 12 : 14}px "Noto Serif SC"`; ctx.fillStyle = 'rgba(28,26,24,0.55)'; ctx.fillText('言出，法随：这句话正在落向它指向的地方', LX, LY + (mode === 'phone' ? 40 : 42));
+// title and seal
+ctx.fillStyle = 'rgba(28,26,24,0.88)'; ctx.font = `${mode === 'phone' ? 30 : 44}px "Zhi Mang Xing"`; ctx.fillText('芦花渡', mode === 'phone' ? 22 : 64, mode === 'phone' ? 70 : 92);
+ctx.font = `${mode === 'phone' ? 11 : 13}px "Noto Serif SC"`; ctx.fillStyle = 'rgba(28,26,24,0.55)'; ctx.fillText('序章 · 第一日 · 酉初', mode === 'phone' ? 24 : 66, mode === 'phone' ? 92 : 120);
+seal(ctx, { x: mode === 'phone' ? 140 : 230, y: mode === 'phone' ? 58 : 76, size: mode === 'phone' ? 22 : 30, text: '九霄', font: `${mode === 'phone' ? 10 : 13}px "Ma Shan Zheng"`, R });
+document.title = 'ready';
+</script></body></html>

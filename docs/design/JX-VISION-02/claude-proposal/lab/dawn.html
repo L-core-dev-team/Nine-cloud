@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>天光 · 第二轮原型</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="node_modules/@fontsource/noto-serif-sc/400.css">
+<link rel="stylesheet" href="node_modules/@fontsource/noto-serif-sc/600.css">
+<link rel="stylesheet" href="node_modules/lxgw-wenkai-webfont/lxgwwenkai-regular.css">
+<style>
+:root{--ink:#ece6d8;--dim:rgba(236,230,216,.74);--faint:rgba(236,230,216,.5);--cinnabar:#e0583a;--line:rgba(236,230,216,.34)}
+html,body{margin:0;background:#06080c;color:var(--ink);font-family:"Noto Serif SC",serif;overflow:hidden}
+#stage{position:relative}
+canvas{display:block}
+.ui{position:absolute;inset:0;pointer-events:none}
+.place{position:absolute;left:64px;top:56px}
+.place h1{margin:0;font-weight:600;font-size:34px;letter-spacing:.32em;line-height:1}
+.place p{margin:14px 0 0;font-size:14px;letter-spacing:.14em;color:var(--dim);line-height:1.7}
+.vitals{position:absolute;right:110px;bottom:88px;text-align:right;font-size:14px;line-height:1.6;color:var(--dim);letter-spacing:.06em}
+.vitals b{font-weight:400;color:var(--ink);font-variant-numeric:tabular-nums}
+.anchor{position:absolute;font-size:13px;color:var(--ink);letter-spacing:.12em;white-space:nowrap;text-shadow:0 0 6px rgba(0,0,0,.9),0 0 2px rgba(0,0,0,1)}
+.anchor::before{content:"";position:absolute;left:50%;top:100%;width:1px;height:var(--lead,18px);background:var(--line)}
+.anchor.side::before{left:-22px;top:50%;width:16px;height:1px}
+.anchor.unknown{color:var(--faint)}
+.read{position:absolute;left:64px;bottom:150px;width:680px}
+.read p{margin:0 0 .35em;font-size:20px;line-height:1.85;letter-spacing:.04em;text-shadow:0 1px 10px rgba(0,0,0,.6)}
+.read .voice{font-family:"LXGW WenKai";}
+.pick{text-decoration:underline dotted rgba(236,230,216,.7);text-underline-offset:6px;text-decoration-thickness:1px}
+.ledger{position:absolute;left:780px;bottom:160px;font-size:13px;line-height:2.1;color:var(--dim);letter-spacing:.08em;border-left:1px solid var(--line);padding-left:14px}
+.ledger b{font-weight:400;color:var(--ink);font-variant-numeric:tabular-nums}
+.chips{position:absolute;left:64px;bottom:86px;display:flex;gap:10px}
+.chip{border:1px solid var(--line);border-radius:999px;padding:5px 14px;font-size:14px;color:var(--ink);background:rgba(6,8,12,.35);letter-spacing:.08em}
+.chip small{color:rgba(236,230,216,.72);font-size:12px;margin-left:8px}
+.input{position:absolute;left:64px;right:64px;bottom:34px;height:40px;border-bottom:1px solid rgba(236,230,216,.55);display:flex;align-items:flex-end;padding-bottom:8px;font-size:18px;letter-spacing:.06em}
+.input .ph{color:var(--faint)}
+.input .go{margin-left:auto;font-size:15px;color:var(--ink);letter-spacing:.3em}
+.input .tgt{text-decoration:underline solid var(--cinnabar);text-decoration-thickness:2px;text-underline-offset:7px}
+.parse{position:absolute;left:64px;bottom:84px;font-size:13px;color:var(--dim);letter-spacing:.1em}
+.parse b{color:var(--ink);font-weight:400}
+.pending{color:var(--cinnabar);font-size:13px;letter-spacing:.2em;margin-left:16px}
+.flyer{position:absolute;font-size:22px;color:#f3d9c8;letter-spacing:.1em;text-shadow:0 0 12px rgba(224,88,58,.8),0 0 3px rgba(0,0,0,.8)}
+.ask{position:absolute;left:64px;bottom:150px;width:760px}
+.ask p{font-size:20px;line-height:1.8;margin:0 0 14px}
+.opt{display:inline-block;border:1px solid rgba(236,230,216,.5);border-radius:6px;padding:10px 16px;margin:0 10px 10px 0;font-size:16px;background:rgba(6,8,12,.45)}
+.opt small{display:block;color:var(--dim);font-size:12px;margin-top:4px;letter-spacing:.08em}
+.dimmed{opacity:.38}
+/* phone */
+body.phone .place{left:20px;top:28px}.body.phone .place h1{font-size:24px}
+body.phone .place h1{font-size:24px}
+body.phone .place p{font-size:12px;margin-top:10px}
+body.phone .vitals{left:20px;right:20px;top:calc(var(--panel) - 30px);bottom:auto;text-align:left;font-size:12px}
+body.phone .read{left:20px;right:20px;width:auto;top:var(--panel);bottom:auto;padding-top:22px}
+body.phone .read p{font-size:17px;line-height:1.8}
+body.phone .ledger{position:static;border-left:none;border-top:1px solid var(--line);margin-top:14px;padding:8px 0 0;font-size:12px;line-height:1.9}
+body.phone.kbdup .place p{display:none}body.phone.kbdup .place h1{font-size:18px}
+body.phone .chips{left:20px;right:20px;bottom:78px;flex-wrap:nowrap;overflow:hidden}
+body.phone .chip{font-size:14px;padding:13px 14px;white-space:nowrap}
+body.phone .chip small{display:none}
+body.phone .input{left:20px;right:20px;bottom:26px;font-size:16px}
+body.phone .parse{left:20px;right:auto}
+body.phone .anchor{font-size:11px}
+body.phone .ask{left:20px;right:20px;width:auto;top:var(--panel);bottom:auto;padding-top:20px}
+body.phone .ask p{font-size:17px}
+body.phone .opt{display:block;margin-right:0;font-size:15px}
+.kbd{position:absolute;left:0;right:0;bottom:0;height:300px;background:#22252b;color:#8a8f99;font-size:12px;letter-spacing:.2em;display:flex;align-items:center;justify-content:center}
+</style></head>
+<body><div id="stage"><canvas id="c"></canvas><div class="ui" id="ui"></div></div>
+<script type="module">
+import { rng, makeNoise } from './js/paint.js';
+import { sunFromGameMinute, skyRadiance, tonemap } from './js/sky.js';
+const q = new URLSearchParams(location.search);
+const mode = q.get('mode') || 'desktop';
+const stage = q.get('stage') || 'result';      // result | flight | clarify | study | night
+const minute = +(q.get('minute') || ({ result: 330, flight: 330, clarify: 330, study: 345, night: 1035 })[stage]);
+const bare = q.get('bare') === '1';
+const kbd = q.get('kbd') === '1';
+if (mode === 'phone') document.body.classList.add('phone');
+const W = mode === 'phone' ? 390 : 1600, H = mode === 'phone' ? 844 : 900, DPR = 2;
+const cv = document.getElementById('c'); cv.width = W * DPR; cv.height = H * DPR; cv.style.width = W + 'px'; cv.style.height = H + 'px';
+document.getElementById('stage').style.width = W + 'px'; document.getElementById('stage').style.height = H + 'px';
+const ctx = cv.getContext('2d');
+
+// ---------- world plate (the location's fixed optics) ----------
+// world units: 2000 x 1000, horizon at y = HZ. Camera on 望气台, looking roughly east over the river mouth.
+const HZ = 430, FOVH = 46 * Math.PI / 180, F = 1000 / Math.tan(FOVH / 2);
+const CAM_AZ = (+(q.get('az')||74)) * Math.PI / 180;
+// view: which part of the plate the viewport shows (scene spec decides this from anchors)
+const ANCH = { rock: [1330, 0], crows: [1330, 0], boat: [1262, 0], ferry: [1180, 0] };
+let view;
+const PANEL = mode === 'phone' ? (kbd ? 210 : 470) : H; // phone: plate occupies the top part
+if (mode === 'phone') {
+  const s = PANEL / (kbd ? 420 : 760);
+  const cx = 1290, top = kbd ? 390 : 70;
+  view = { s, ox: cx - W / 2 / s, oy: top };
+} else if ((q.get('shot') || ({ result: 'close', study: 'close' })[stage] || 'wide') === 'close') { const s = 1.7; view = { s, ox: 1330 - 980 / s, oy: 430 - 175 / s }; } else view = { s: 0.8, ox: 0, oy: 0 };
+const toS = (x, y) => [(x - view.ox) * view.s, (y - view.oy) * view.s];
+const toW = (sx, sy) => [sx / view.s + view.ox, sy / view.s + view.oy];
+
+const N = makeNoise(7), R = rng(11);
+const farBank = (x) => HZ + 6 + 30 * Math.pow(1 - x / 2000, 2) + N.fbm1(x * 0.004) * 5;
+const nearBank = (x) => 575 + 80 * (x / 2000) + (N.fbm1(x * 0.003 + 9) - 0.5) * 26;
+for (const k in ANCH) ANCH[k][1] = nearBank(ANCH[k][0]);
+ANCH.rock[1] -= 7; ANCH.crows[1] -= 20; ANCH.boat[0] = 1236; ANCH.boat[1] = nearBank(1236) + 92; ANCH.ferry[0] = 1120; ANCH.ferry[1] = nearBank(1120) + 50;
+
+// ---------- light from the authoritative game minute ----------
+const sun = sunFromGameMinute(minute);
+const se = sun.elevation, sa = sun.azimuth;
+const sunDir = [Math.cos(se) * Math.sin(sa), Math.sin(se), Math.cos(se) * Math.cos(sa)];
+const dirOf = (wx, wy) => { const yaw = CAM_AZ + Math.atan2(wx - 1000, F); const p = Math.atan2(HZ - wy, Math.hypot(wx - 1000, F)); return [Math.cos(p) * Math.sin(yaw), Math.sin(p), Math.cos(p) * Math.cos(yaw)]; };
+const NIGHT = [0.00035, 0.0005, 0.0011];
+const sky = (d) => { const c = skyRadiance(d, sunDir, 10, 5); return c.map((v, i) => v + NIGHT[i]); };
+const lum = (c) => 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+const refSky = sky(dirOf(1000, HZ - 300));
+const exposure = Math.min(900, (+(q.get('k')||(0.03 + 0.15 * Math.max(0, Math.sin(se) - 0.12)))) / Math.pow(Math.max(lum(refSky), 1e-5), 0.92));
+const transmit = (() => { if (se < -0.02) return [0, 0, 0]; const m = 1 / (Math.sin(Math.max(se, 0.004)) + 0.15 * Math.pow(Math.max(se * 57.3, 0) + 3.885, -1.253)); return [5.8e-6, 13.5e-6, 33.1e-6].map((b) => Math.exp(-(b * 8000 + 21e-6 * 1.1 * 1200) * m)); })();
+const SUN_E = 22;
+const ambient = sky([0, 1, 0]).map((v) => v * 2.2);
+const sunScreen = (() => { const rel = ((sa - CAM_AZ + 3 * Math.PI) % (2 * Math.PI)) - Math.PI; return { wx: 1000 + F * Math.tan(rel), wy: HZ - F * Math.tan(se) / Math.cos(rel), front: Math.cos(rel) > 0, rel }; })();
+
+// horizon colour per column (for aerial perspective)
+const HC = []; for (let wx = -200; wx <= 2200; wx += 50) HC.push(sky(dirOf(wx, HZ - 4)));
+const hcol = (wx) => { const t = Math.min(HC.length - 1.001, Math.max(0, (wx + 200) / 50)); const i = Math.floor(t), f = t - i; return HC[i].map((v, k) => v * (1 - f) + HC[i + 1][k] * f); };
+// grade (a colourist's choice, separate from the physics): cool shadows, warm highlights — the per-location 'look'
+const GRADE = { lo: [0.78, 0.92, 1.32], hi: [1.04, 1.0, 0.93] };
+const tm = (c) => { const l = Math.min(1, lum(c) * exposure * 1.6); const t = l * l * (3 - 2 * l); return tonemap(c.map((v, k) => v * (GRADE.lo[k] * (1 - t) + GRADE.hi[k] * t)), exposure); };
+const rgb = (c, a = 1) => { const t = tm(c); return `rgba(${t[0]},${t[1]},${t[2]},${a})`; };
+// lit surface radiance: albedo under sky ambient + sun with a facing factor, then aerial perspective by distance (m)
+function shade(albedo, facing, dist, wx) {
+  const L = albedo.map((a, k) => a * 2 * (ambient[k] * 0.6 + SUN_E * transmit[k] * Math.max(0, facing) / Math.PI));
+  const T = Math.exp(-dist / 5200), h = hcol(wx);
+  return L.map((v, k) => v * T + h[k] * (1 - T));
+}
+
+// ---------- paint the sky (per-pixel from a coarse grid) ----------
+function paintSkyAndWater() {
+  const g = mode === 'phone' ? 4 : 6; const Wd = W * DPR, Hd = H * DPR;
+  const gw = Math.ceil(W / g) + 2, ghMax = Math.ceil(H / g) + 2;
+  const grid = new Float32Array(gw * ghMax * 3);
+  for (let j = 0; j < ghMax; j++) for (let i = 0; i < gw; i++) {
+    const [wx, wy] = toW(i * g, j * g);
+    const my = wy < HZ ? wy : HZ - (wy - HZ);  // water: mirrored direction
+    grid.set(sky(dirOf(wx, Math.min(my, HZ - 0.3))), (j * gw + i) * 3);
+  }
+  const img = ctx.createImageData(Wd, Hd), D = img.data;
+  const sunPx = toS(sunScreen.wx, sunScreen.wy);
+  const sunR = 0.27 * Math.PI / 180 * F * view.s;
+  for (let py = 0; py < Hd; py++) {
+    const sy = py / DPR, gy = sy / g, j0 = Math.floor(gy), ty = gy - j0;
+    const wy = toW(0, sy)[1];
+    if (mode === 'phone' && sy > PANEL) break;
+    for (let px = 0; px < Wd; px++) {
+      const sx = px / DPR, gx = sx / g, i0 = Math.floor(gx), tx = gx - i0;
+      const o = (py * Wd + px) * 4; let c = [0, 0, 0];
+      for (let k = 0; k < 3; k++) { const a = grid[(j0 * gw + i0) * 3 + k], b = grid[(j0 * gw + i0 + 1) * 3 + k], cc = grid[((j0 + 1) * gw + i0) * 3 + k], dd = grid[((j0 + 1) * gw + i0 + 1) * 3 + k]; c[k] = (a * (1 - tx) + b * tx) * (1 - ty) + (cc * (1 - tx) + dd * tx) * ty; }
+      const wx = toW(sx, 0)[0];
+      if (wy >= HZ) {
+        // water: Fresnel-weighted sky reflection over silty body colour (渡槽淤了半尺，水发黄)
+        const pitch = Math.atan2(wy - HZ, Math.hypot(wx - 1000, F));
+        const fr = 0.02 + 0.98 * Math.pow(1 - Math.sin(pitch), 5);
+        const body = shade([0.09, 0.075, 0.045], sunDir[1], 900, wx);
+        // ripples: streaks in world space
+        const rip = 0.75 + 0.5 * N.n2(wx * 0.004, (wy - HZ) * 0.22 + N.n1(wx * 0.002) * 3);
+        c = c.map((v, k) => (v * fr * rip + body[k] * (1 - fr)));
+        // sun glitter: facet-slope probability (gentle ripples, sigma ~ 0.09 rad)
+        if (sunScreen.front && se > -0.01) {
+          const yaw = Math.atan2(wx - 1000, F) - sunScreen.rel; const tilt2 = (yaw * yaw + (pitch - se) * (pitch - se)) / 4;
+          const p = Math.exp(-tilt2 / (2 * 0.09 * 0.09)) * (0.35 + 1.6 * Math.pow(Math.max(0, N.n2(wx * 0.06, (wy - HZ) * 0.9)), 6));
+          c = c.map((v, k) => v + p * SUN_E * transmit[k] * 0.006);
+        }
+      } else if (sunScreen.front) {
+        const dd = Math.hypot(sx - sunPx[0], sy - sunPx[1]);
+        if (dd < sunR) c = c.map((v, k) => v + SUN_E * transmit[k] * 0.9);
+        else c = c.map((v, k) => v + SUN_E * transmit[k] * (0.22 * Math.pow(sunR / dd, 2) + 0.012 * Math.exp(-dd / (sunR * 9))));
+      }
+      // blue-noise-ish dither against banding
+      const t = tm(c), n = (R() - 0.5) * 2.2;
+      D[o] = t[0] + n; D[o + 1] = t[1] + n; D[o + 2] = t[2] + n; D[o + 3] = 255;
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+}
+paintSkyAndWater();
+ctx.setTransform(DPR * view.s, 0, 0, DPR * view.s, -view.ox * view.s * DPR, -view.oy * view.s * DPR);
+if (mode === 'phone') { ctx.save(); ctx.beginPath(); ctx.rect(view.ox, view.oy, W / view.s, PANEL / view.s); ctx.clip(); }
+
+// ---------- land layers ----------
+function band(top, bottom, x0, x1, col) { ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(x0, top(x0)); for (let x = x0; x <= x1; x += 6) ctx.lineTo(x, top(x)); for (let x = x1; x >= x0; x -= 6) ctx.lineTo(x, bottom(x)); ctx.closePath(); ctx.fill(); }
+function gradBand(top, bottom, x0, x1, albedo, facing, dist) { const g = ctx.createLinearGradient(x0, 0, x1, 0); for (let i = 0; i <= 8; i++) { const x = x0 + (x1 - x0) * i / 8; g.addColorStop(i / 8, rgb(shade(albedo, facing, dist, x))); } band(top, bottom, x0, x1, g); }
+// far ridge, very far
+const ridge = (x) => HZ - 6 - 26 * N.ridge1(x * 0.0016 + 3) - 10 * N.fbm1(x * 0.01);
+gradBand(ridge, () => HZ + 0.5, -10, 2010, [0.06, 0.07, 0.08], 0.3, 14000);
+// far bank: flat reed land between horizon and the river
+gradBand(() => HZ, farBank, -10, 2010, [0.10, 0.09, 0.06], sunDir[1], 3600);
+// near bank: slopes up toward the platform
+const nearTop = (x) => nearBank(x);
+gradBand(nearTop, () => 1010, -10, 2010, [0.085, 0.075, 0.05], sunDir[1] * 0.9, 1300);
+// the ferry channel (渡槽): a straight water slot cut into the near bank, leading to the berth
+const chan = [[1304, nearBank(1304)+2], [1352, nearBank(1352)+2], [1262, nearBank(1236) + 104], [1214, nearBank(1236) + 98]];
+ctx.fillStyle = rgb(shade([0.05, 0.045, 0.03], sunDir[1], 1300, 1290).map((v, k) => v + hcol(1290)[k] * 0.05)); ctx.beginPath(); chan.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.closePath(); ctx.fill();
+// silt pools on the near bank: small mirrors of the sky at their own depression angle
+{ const pr = rng(31); for (let i = 0; i < 16; i++) { const x = 80 + pr() * 1800, y = nearBank(x) + 60 + pr() * 230, w = 18 + pr() * 60, h = 1 + pr() * 2;
+  const refl = sky(dirOf(x, HZ - (y - HZ))); const fr = 0.02 + 0.98 * Math.pow(1 - Math.sin(Math.atan2(y - HZ, F)), 5);
+  ctx.fillStyle = rgb(refl.map((v) => v * (fr + 0.1)), 0.55); ctx.beginPath(); ctx.ellipse(x, y, w, h, 0, 0, 7); ctx.fill(); } }
+// reed beds along both banks: thousands of stems; plumes catch the light (forward scattering when the sun is ahead)
+const reedLit = Math.max(0, sunScreen.front ? Math.cos(sunScreen.rel) : 0.25) * Math.max(0, Math.min(1, se * 8 + 0.2));
+function reeds(yOf, x0, x1, count, hgt, dist, seed) {
+  const r = rng(seed); const base = shade([0.12, 0.1, 0.06], sunDir[1], dist, (x0 + x1) / 2);
+  const plume = shade([0.55, 0.5, 0.42], 0.5 + reedLit, dist, (x0 + x1) / 2).map((v, k) => v + SUN_E * transmit[k] * reedLit * 0.03);
+  for (let i = 0; i < count; i++) {
+    let x = x0 + r() * (x1 - x0); if (N.n1(x * 0.012 + seed) < 0.42 && r() < 0.8) continue; const y = yOf(x) + r() * 10, h = hgt * (0.45 + r() * 0.5 + N.n1(x * 0.02 + seed * 3) * 0.6), lean = (N.n1(x * 0.01) - 0.5) * 0.5 + 0.18;
+    ctx.strokeStyle = rgb(base, 0.85); ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x + lean * h * 0.3, y - h * 0.6, x + lean * h, y - h); ctx.stroke();
+    ctx.fillStyle = rgb(plume, 0.8); ctx.beginPath(); ctx.ellipse(x + lean * h, y - h, 1.5, h * 0.13, lean, 0, 7); ctx.fill();
+  }
+}
+reeds(farBank, -10, 2010, 900, 7, 3600, 3);
+reeds((x) => nearBank(x) + 8, -10, 2010, 2400, 26, 1000, 4);
+// settlement 芦花渡: a few low roofs behind the berth
+for (const [x, w, h] of [[1080, 80, 28], [1150, 60, 23], [1200, 66, 26], [1030, 50, 20], [1440, 60, 22]]) {
+  const y = nearBank(x) + 62; ctx.fillStyle = rgb(shade([0.05, 0.045, 0.04], 0.2, 1300, x)); ctx.beginPath(); ctx.moveTo(x - w / 2 - 4, y - h * 0.45); ctx.lineTo(x, y - h); ctx.lineTo(x + w / 2 + 4, y - h * 0.45); ctx.lineTo(x + w / 2, y); ctx.lineTo(x - w / 2, y); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = rgb(shade([0.3, 0.27, 0.22], 0.8, 1300, x).map((v, k) => v + SUN_E * transmit[k] * 0.004), 0.35); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(x - w / 2 - 4, y - h * 0.45); ctx.lineTo(x, y - h); ctx.lineTo(x + w / 2 + 4, y - h * 0.45); ctx.stroke();
+}
+// berth and the stuck boat (船吃水太深，蹭着淤泥靠不上岸)
+const [bx, by] = ANCH.boat; ctx.fillStyle = rgb(shade([0.06, 0.05, 0.04], 0.2, 1300, bx));
+ctx.fillRect(1190, by + 10, 36, 3.5); for (let i = 0; i < 5; i++) ctx.fillRect(1191 + i * 8, by + 10, 2.2, 10);
+ctx.save(); ctx.translate(bx, by); ctx.rotate(-0.12); ctx.scale(1.9,1.9); ctx.beginPath(); ctx.moveTo(-17, 0); ctx.quadraticCurveTo(0, 6, 17, -2); ctx.lineTo(14, 2); ctx.quadraticCurveTo(0, 7, -14, 3); ctx.closePath(); ctx.fill(); ctx.strokeStyle = rgb(shade([0.35, 0.3, 0.24], 1, 1000, bx).map((v, k) => v + SUN_E * transmit[k] * 0.01), 0.45); ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(-17, 0); ctx.quadraticCurveTo(0, 6, 17, -2); ctx.stroke(); ctx.restore();
+// the rockslide at the channel mouth: stones from upstream, the largest as tall as a door
+const night = se < -0.06;
+const [rx, ry] = ANCH.rock; const rr = rng(21);
+const stoneCol = shade([0.11, 0.1, 0.09], sunDir[1] * 0.7 + 0.2, 1300, rx), stoneLit = shade([0.2, 0.18, 0.15], 0.9, 1300, rx).map((v, k) => v + SUN_E * transmit[k] * 0.006 * (sunScreen.front ? 1 : 0.4));
+const stones = []; for (let i = 0; i < 40; i++) stones.push([rx - 46 + rr() * 92, ry + 4 + rr() * 20 - rr() * 16 * (1 - Math.abs(rr() - 0.5)), 4 + rr() * 9]);
+stones.push([rx + 6, ry - 12, 16]);
+stones.sort((a, b) => a[1] - b[1]);
+const sideS = Math.sign(sunScreen.wx - rx) || 1;
+for (const [x, y, r0] of stones) {
+  const n = 7, pts = []; for (let i = 0; i < n; i++) { const a = Math.PI * (1 + i / (n - 1)); const rad = r0 * (0.75 + rr() * 0.4); pts.push([x + Math.cos(a) * rad * 1.3, y + Math.sin(a) * rad * (i === 0 || i === n - 1 ? 0.2 : 1)]); }
+  ctx.fillStyle = rgb(stoneCol); ctx.beginPath(); pts.forEach(([a, b], i) => i ? ctx.lineTo(a, b) : ctx.moveTo(a, b)); ctx.lineTo(x + r0 * 1.2, y + r0 * 0.25); ctx.lineTo(x - r0 * 1.2, y + r0 * 0.25); ctx.closePath(); ctx.fill();
+  // the facet facing the sun takes light
+  ctx.fillStyle = rgb(stoneLit, night ? 0 : 0.85); ctx.beginPath(); const k0 = sideS > 0 ? Math.floor(n / 2) : 0; const k1 = sideS > 0 ? n - 1 : Math.floor(n / 2);
+  ctx.moveTo(x, y - r0 * 0.1); for (let i = k0; i <= k1; i++) ctx.lineTo(pts[i][0], pts[i][1]); ctx.closePath(); ctx.globalAlpha = 0.55; ctx.fill(); ctx.globalAlpha = 1;
+}
+// crows: dozens, standing still on the stones (一动不动) — small dark marks with a 1px highlight
+const cr = rng(5); ctx.save(); for (let i = 0; i < 42; i++) { const s = stones[i % stones.length]; const x = s[0] + (cr() - 0.5) * s[2] * 1.6, y = s[1] - s[2] * 0.85 - cr() * 1.5; ctx.fillStyle = rgb(shade([0.2, 0.2, 0.21], 0.4 + sunDir[1], 1000, x).map((v, k) => v + SUN_E * transmit[k] * 0.003)); const f = cr() < 0.5 ? 1 : -1; ctx.beginPath(); ctx.ellipse(x, y, 3.1, 1.9, -0.25 * f, 0, 7); ctx.fill(); ctx.beginPath(); ctx.arc(x + 2.6 * f, y - 2.1, 1.25, 0, 7); ctx.fill(); ctx.beginPath(); ctx.moveTo(x - 2.4 * f, y + 0.4); ctx.lineTo(x - 5.2 * f, y + 1.8); ctx.lineTo(x - 2 * f, y + 1.6); ctx.fill(); ctx.fillRect(x + 3.6 * f - (f < 0 ? 1.4 : 0), y - 2.3, 1.4, 0.6); } ctx.restore();
+
+// ---------- foreground: the old platform (木头朽了，踩上去还有声) frames the view ----------
+function post(x0, w, lean, seed) {
+  const r = rng(seed); const wood = [0.11, 0.085, 0.06];
+  const front = shade(wood, sunScreen.front ? 0.05 : 0.75 * Math.max(0, se * 4), 0, x0);
+  const edge = shade(wood, 1, 0, x0).map((v, k) => v + SUN_E * transmit[k] * 0.02 * (sunScreen.front ? 1 : 0.3));
+  ctx.fillStyle = rgb(front); ctx.beginPath(); ctx.moveTo(x0, -20); ctx.lineTo(x0 + w, -20);
+  for (let y = -20; y <= 1010; y += 20) ctx.lineTo(x0 + w + lean * y + (N.n1(y * 0.02 + seed) - 0.5) * 6, y);
+  for (let y = 1010; y >= -20; y -= 20) ctx.lineTo(x0 + lean * y + (N.n1(y * 0.03 + seed * 2) - 0.5) * 7, y);
+  ctx.closePath(); ctx.fill();
+  // grain and cracks
+  ctx.lineWidth = 0.8; for (let i = 0; i < 26; i++) { const gx = x0 + 3 + r() * (w - 6), y0 = r() * 1000, l = 60 + r() * 260; ctx.strokeStyle = `rgba(0,0,0,${0.18 + r() * 0.25})`; ctx.beginPath(); ctx.moveTo(gx + lean * y0, y0); ctx.lineTo(gx + lean * (y0 + l) + (r() - 0.5) * 3, y0 + l); ctx.stroke(); }
+  // lit edge on the side facing the sun
+  const sideRight = sunScreen.wx > x0; ctx.strokeStyle = rgb(edge, night ? 0 : 0.75); ctx.lineWidth = 1.6; ctx.beginPath();
+  for (let y = -20; y <= 1010; y += 20) { const xx = (sideRight ? x0 + w + lean * y + (N.n1(y * 0.02 + seed) - 0.5) * 6 : x0 + lean * y + (N.n1(y * 0.03 + seed * 2) - 0.5) * 7); y === -20 ? ctx.moveTo(xx, y) : ctx.lineTo(xx, y); } ctx.stroke();
+}
+post(28, 74, 0.012, 1);
+post(1922, 60, -0.012, 2);
+// the platform floor: the UI stands on it
+const woodC = shade([0.1, 0.08, 0.055], sunScreen.front ? 0.05 : 0.6, 0, 600);
+ctx.fillStyle = rgb(woodC.map((v) => v * 0.55)); ctx.beginPath(); ctx.moveTo(-10, 1000); for (let x = -10; x <= 2010; x += 20) ctx.lineTo(x, 948 + (N.n1(x * 0.01) - 0.5) * 5); ctx.lineTo(2010, 1010); ctx.lineTo(-10, 1010); ctx.fill();
+if (mode === 'phone') ctx.restore();
+ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+// film grain over the scene (not over the text, which is DOM)
+{ const Hd = (mode === 'phone' ? PANEL : H) * DPR; const im = ctx.getImageData(0, 0, W * DPR, Hd), d = im.data; for (let i = 0; i < d.length; i += 4) { const n = (R() - 0.5) * 9; d[i] += n; d[i + 1] += n; d[i + 2] += n; } ctx.putImageData(im, 0, 0); }
+// readability scrim: local darkening under text only (E6: measured per time of day in the real build)
+if (mode === 'desktop' && !bare) { const g = ctx.createLinearGradient(0, H, 0, H - 360); g.addColorStop(0, 'rgba(4,6,10,0.78)'); g.addColorStop(1, 'rgba(4,6,10,0)'); ctx.fillStyle = g; ctx.fillRect(0, H - 360, W, 360); }
+if (mode === 'phone') { const g = ctx.createLinearGradient(0, PANEL - 70, 0, PANEL); g.addColorStop(0, 'rgba(6,8,12,0)'); g.addColorStop(1, '#06080c'); ctx.fillStyle = g; ctx.fillRect(0, PANEL - 70, W, 70); ctx.fillStyle = '#06080c'; ctx.fillRect(0, PANEL, W, H - PANEL); }
+
+// ---------- DOM layer: every readable word is HTML ----------
+const ui = document.getElementById('ui'); document.body.style.setProperty('--panel', PANEL + 'px');
+const kec = (m) => { const zh = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥']; const h = Math.floor(((m + 60) % 1440) / 120); const into = ((m + 60) % 120); const half = into < 60 ? '初' : '正'; const k = Math.floor((into % 60) / 15); const hh = String(Math.floor(m / 60) % 24).padStart(2, '0'), mm = String(m % 60).padStart(2, '0'); return `${zh[h]}${half}${k ? ['', '一', '二', '三'][k] + '刻' : ''}　${hh}:${mm}`; };
+const st = { result: { stamina: 92 }, flight: { stamina: 92 }, clarify: { stamina: 92 }, study: { stamina: 86 }, night: { stamina: 86 } }[stage];
+const html = [];
+if (!bare) {
+  html.push(`<div class="place"><h1>望气台${kbd ? `<span style="font-size:12px;font-weight:400;letter-spacing:.1em;margin-left:12px;color:var(--dim)">${kec(minute)}</span>` : ''}</h1><p>序章　第一日<br>${kec(minute)}<br>任务　通渡　<span style="color:var(--ink)">渡槽口被落石堵住</span></p></div>`);
+  html.push(`<div class="vitals">体力 <b>${st.stamina}</b> / 100　　灵力 <b>100</b> / 100　　炼体　修为 <b>0</b> / 10000</div>`);
+}
+const known = !bare; // after clue_rockslide the stones, crows, berth are named
+const anchor = (k, label, lead, cls = '') => { const [x, y] = toS(ANCH[k][0], ANCH[k][1]); if (mode === 'phone' && y > PANEL) return ''; return `<div class="anchor ${cls}" style="left:${x}px;top:${y - lead - 14}px;transform:translateX(-50%);--lead:${lead - 2}px">${label}</div>`; };
+if (known && !kbd) {
+  if (stage !== 'flight') html.push(anchor('rock', '落石', mode === 'phone' ? 34 : 46));
+  if (stage !== 'night') { const [x, y] = toS(ANCH.rock[0] + 70, ANCH.rock[1] - 16); html.push(`<div class="anchor side" style="left:${x}px;top:${y - 9}px">灰羽鸦　几十只</div>`); }
+  html.push(anchor('ferry', '芦花渡', mode === 'phone' ? 36 : 40));
+  html.push(anchor('boat', '渡船', mode === 'phone' ? 16 : 20));
+}
+const chipsBase = `<div class="chips"><span class="chip">细察落石<small>一刻　体力 −6</small></span><span class="chip">下到芦花渡<small>一刻　体力 −5</small></span><span class="chip">走礁石小径<small>两刻　体力 −15</small></span></div>`;
+if (stage === 'result') {
+  html.push(`<div class="read"><p>台上没有人。木头朽了，踩上去还有声。</p><p>渡口一览无余。石从上游下来，堆在渡槽口，<span class="pick">最大的那块有门板高</span>。</p><p>灰羽鸦在石上落着，<span class="pick">几十只，一动不动</span>。</p></div>`);
+  html.push(`<div class="ledger">过一刻　<b>05:15 → 05:30</b><br>体力　<b>95 → 92</b><br>得　<b>落石线索</b></div>`);
+  html.push(chipsBase);
+  html.push(`<div class="input"><span class="ph">写下你要做的事</span><span class="go">落笔</span></div>`);
+}
+if (stage === 'flight') {
+  html.push(`<div class="parse">细察　<b>落石</b>　一刻　体力 −6</div>`);
+  html.push(`<div class="input"><span>细看那堆<span class="tgt">落石</span></span><span class="pending">结算中</span><span class="go dimmed">落笔</span></div>`);
+}
+if (stage === 'clarify') {
+  html.push(`<div class="ask"><p>这句话里有两件事。先做哪一件？</p><span class="opt">先下到芦花渡<small>移动　一刻　体力 −5</small></span><span class="opt">就在台上细看落石<small>细察　一刻　体力 −6</small></span><span class="opt">改写这句话<small>不结算，不耗时</small></span></div>`);
+  html.push(`<div class="input"><span>去<span class="tgt">渡口</span>看看那堆<span class="tgt">石头</span></span><span class="pending">结算中</span><span class="go dimmed">落笔</span></div>`);
+}
+if (stage === 'study') {
+  html.push(`<div class="read"><p>石头缝里铺着干草。<span class="pick">软的，是新铺的</span>。</p><p>干草边上压着一圈浅痕，<span class="pick">密密的</span>。</p></div>`);
+  html.push(`<div class="ledger">过一刻　<b>05:30 → 05:45</b><br>体力　<b>92 → 86</b><br>得　<b>鸦群线索</b></div>`);
+  html.push(chipsBase.replace('<span class="chip">细察落石<small>一刻　体力 −6</small></span>', ''));
+  html.push(`<div class="input"><span class="ph">写下你要做的事</span><span class="go">落笔</span></div>`);
+}
+if (stage === 'night') {
+  html.push(`<div class="read"><p>天光收尽了。渡口只剩水声。石堆成了一片黑。</p></div>`);
+  html.push(`<div class="ledger">入暮　<b>酉初</b><br>通渡　<b>未完成</b></div>`);
+  html.push(`<div class="input"><span class="ph">写下你要做的事</span><span class="go">落笔</span></div>`);
+}
+if (kbd) html.push(`<div class="kbd">系统键盘</div>`);
+ui.innerHTML = bare ? '' : html.join('');
+if (mode === 'phone') { const l = ui.querySelector('.ledger'), r = ui.querySelector('.read'); if (l && r) r.appendChild(l); }
+if (kbd) { document.body.classList.add('kbdup'); const rd = ui.querySelector('.read'); if (rd) rd.innerHTML = '<p style="color:var(--dim)">灰羽鸦在石上落着，几十只，一动不动。</p>'; const inp = ui.querySelector('.input'); inp.style.bottom = '318px'; const pr = ui.querySelector('.parse'); if (pr) pr.style.bottom = '368px'; const a = ui.querySelector('.ask'); if (a) { a.style.top = (PANEL) + 'px'; } }
+await document.fonts.ready;
+{ const zones = [...ui.querySelectorAll('.read,.ledger,.chips,.input,.parse,.ask,.vitals,.place')].map((e) => e.getBoundingClientRect());
+  for (const el of ui.querySelectorAll('.anchor')) { const r = el.getBoundingClientRect(); const box = { left: r.left - 6, right: r.right + 6, top: r.top - 6, bottom: r.bottom + 24 };
+    if (zones.some((z) => !(box.right < z.left || box.left > z.right || box.bottom < z.top || box.top > z.bottom))) el.remove(); } }
+// ---------- the signature move: the parsed target word lifts from the input and travels to its object ----------
+if (stage === 'flight' || stage === 'clarify') {
+  const tg = [...ui.querySelectorAll('.tgt')]; const first = tg[tg.length - 1].getBoundingClientRect();
+  const end = stage === 'flight' ? toS(ANCH.rock[0], ANCH.rock[1] - 10) : null;
+  const start = [first.left + first.width / 2, first.top];
+  const ctl = (a, b) => [a[0] + (b[0] - a[0]) * 0.05, Math.min(a[1], b[1]) - (mode === 'phone' ? 60 : 260)];
+  const draw = (b, upto, alpha) => { const c = ctl(start, b); ctx.strokeStyle = `rgba(224,88,58,${alpha})`; ctx.lineWidth = 1.4; ctx.setLineDash([]); ctx.beginPath(); for (let i = 0; i <= 60 * upto; i++) { const t = i / 60; const x = (1 - t) ** 2 * start[0] + 2 * (1 - t) * t * c[0] + t * t * b[0], y = (1 - t) ** 2 * start[1] + 2 * (1 - t) * t * c[1] + t * t * b[1]; i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke(); const t = upto; return [(1 - t) ** 2 * start[0] + 2 * (1 - t) * t * c[0] + t * t * b[0], (1 - t) ** 2 * start[1] + 2 * (1 - t) * t * c[1] + t * t * b[1]]; };
+  let p;
+  if (end) { draw(end, 1, 0.16); p = draw(end, 0.72, 0.85); ui.insertAdjacentHTML('beforeend', `<div class="flyer" style="left:${p[0]}px;top:${p[1]}px;transform:translate(-50%,-110%)">落石</div>`); }
+  else {
+    const a = toS(ANCH.ferry[0], ANCH.ferry[1]), b = toS(ANCH.rock[0], ANCH.rock[1] - 10);
+    const mid = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2 + 20]; p = draw(mid, 0.55, 0); { const c = ctl(start, mid); ctx.strokeStyle = 'rgba(224,88,58,0.85)'; ctx.lineWidth = 1.4; ctx.beginPath(); for (let i = 33; i <= 60 * 0.55; i++) { const t = i / 60; const x = (1 - t) ** 2 * start[0] + 2 * (1 - t) * t * c[0] + t * t * mid[0], y = (1 - t) ** 2 * start[1] + 2 * (1 - t) * t * c[1] + t * t * mid[1]; i > 33 ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke(); }
+    for (const tgt of [a, b]) { ctx.strokeStyle = 'rgba(224,88,58,0.35)'; ctx.setLineDash([3, 5]); ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.quadraticCurveTo((p[0] + tgt[0]) / 2, Math.min(p[1], tgt[1]) - 30, tgt[0], tgt[1] - 6); ctx.stroke(); }
+    ctx.setLineDash([]); ui.insertAdjacentHTML('beforeend', `<div class="flyer" style="left:${p[0]}px;top:${p[1]}px;transform:translate(-50%,-110%)">？</div>`);
+  }
+}
+document.title = 'ready';
+</script></body></html>

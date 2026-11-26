@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>一线天光 · 概念帧</title>
+<link rel="stylesheet" href="node_modules/@fontsource/noto-serif-sc/index.css">
+<link rel="stylesheet" href="node_modules/lxgw-wenkai-webfont/lxgwwenkai-regular.css">
+<style>html,body{margin:0;background:#000}canvas{display:block}</style></head>
+<body><canvas id="c"></canvas>
+<script type="module">
+import { rng, makeNoise } from './js/paint.js';
+const q = new URLSearchParams(location.search);
+const mode = q.get('mode') || 'desktop', shot = q.get('shot') || 'wide';
+const W = mode === 'phone' ? 390 : 1600, H = mode === 'phone' ? 844 : 900, DPR = 2;
+const cv = document.getElementById('c'); cv.width = W * DPR; cv.height = H * DPR; cv.style.width = W + 'px'; cv.style.height = H + 'px';
+const ctx = cv.getContext('2d'); ctx.scale(DPR, DPR);
+await document.fonts.load('26px "Noto Serif SC"', '芦花渡序章第一日酉初船底擦过沙洲没到膝灰羽鸦在石上落着写下你要做的事体灵'); await document.fonts.load('20px "LXGW WenKai"', '船底擦过沙洲芦花没到膝');
+const R = rng(77), N = makeNoise(13);
+const HY = Math.round(H * (mode === 'phone' ? 0.56 : 0.58)); // horizon
+// sky: deep blue field, dusk falling
+let g = ctx.createLinearGradient(0, 0, 0, HY);
+g.addColorStop(0, '#060b18'); g.addColorStop(0.55, '#0f1c38'); g.addColorStop(0.9, '#1f2f52'); g.addColorStop(1, '#3a3550');
+ctx.fillStyle = g; ctx.fillRect(0, 0, W, HY);
+// afterglow concentrated toward the sun's azimuth (real build: from the authoritative game minute)
+const SX = mode === 'phone' ? W * 0.62 : W * 0.66;
+let rg = ctx.createRadialGradient(SX, HY, 0, SX, HY, W * 0.7); rg.addColorStop(0, 'rgba(255,120,40,0.42)'); rg.addColorStop(0.25, 'rgba(200,70,40,0.16)'); rg.addColorStop(1, 'rgba(120,40,60,0)');
+ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, HY); ctx.clip(); ctx.translate(SX, HY); ctx.scale(1, 0.32); ctx.translate(-SX, -HY); ctx.fillStyle = rg; ctx.beginPath(); ctx.arc(SX, HY, W * 0.7, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+// two faint stars and a thin crescent (the 序章 first evening)
+ctx.fillStyle = 'rgba(230,236,255,0.8)'; [[0.31, 0.12], [0.36, 0.09]].forEach(([x, y]) => { ctx.beginPath(); ctx.arc(W * x, H * y, 1.1, 0, 7); ctx.fill(); });
+ctx.save(); ctx.translate(W * 0.2, H * 0.18); ctx.fillStyle = 'rgba(246,236,214,0.9)'; ctx.beginPath(); ctx.arc(0, 0, 9, 0, 7); ctx.fill(); ctx.globalCompositeOperation = 'destination-out'; ctx.beginPath(); ctx.arc(3.6, -1.8, 8.6, 0, 7); ctx.fill(); ctx.restore();
+// water: long-exposure mirror with horizontal streaks
+g = ctx.createLinearGradient(0, HY, 0, H); g.addColorStop(0, '#1a1f36'); g.addColorStop(0.3, '#0b1022'); g.addColorStop(1, '#03050b');
+ctx.fillStyle = g; ctx.fillRect(0, HY, W, H - HY);
+for (let i = 0; i < 900; i++) { const y = HY + Math.pow(R(), 1.7) * (H - HY); const x = R() * W; const l = 40 + R() * 340; const a = 0.02 + R() * 0.05 * (1 - (y - HY) / (H - HY)); ctx.fillStyle = `rgba(140,160,220,${a})`; ctx.fillRect(x, y, l, 1); }
+// the reflection column of the afterglow
+rg = ctx.createLinearGradient(0, HY, 0, H); rg.addColorStop(0, 'rgba(255,130,50,0.5)'); rg.addColorStop(0.4, 'rgba(255,110,40,0.08)'); rg.addColorStop(1, 'rgba(255,110,40,0)');
+for (let i = 0; i < 160; i++) { const y = HY + Math.pow(R(), 1.3) * (H - HY) * 0.7; const w = (30 + R() * 160) * (1 - (y - HY) / (H - HY)); ctx.fillStyle = rg; ctx.globalAlpha = 0.25; ctx.fillRect(SX - w / 2 + (R() - 0.5) * 30, y, w, 1.2); }
+ctx.globalAlpha = 1;
+// the line of light: the horizon as a blade of fire
+for (const [w, a] of [[26, 0.05], [10, 0.12], [4, 0.35], [1.6, 0.95]]) { const lg = ctx.createLinearGradient(0, 0, W, 0); lg.addColorStop(0, `rgba(255,90,30,${a * 0.15})`); lg.addColorStop(SX / W, `rgba(255,150,70,${a})`); lg.addColorStop(1, `rgba(255,90,30,${a * 0.35})`); ctx.fillStyle = lg; ctx.fillRect(0, HY - w / 2, W, w); }
+// distant shore silhouettes on the line: far bank, the rockslide with crows, the ferry
+ctx.fillStyle = '#05070d';
+ctx.beginPath(); ctx.moveTo(0, HY); for (let x = 0; x <= W * 0.28; x += 4) ctx.lineTo(x, HY - 6 - N.fbm1(x * 0.01) * 22 * (1 - x / (W * 0.28))); ctx.lineTo(W * 0.28, HY); ctx.fill();
+const RX = mode === 'phone' ? W * 0.82 : W * 0.86;
+ctx.beginPath(); ctx.moveTo(RX - 40, HY); for (let i = 0; i < 14; i++) { const x = RX - 34 + i * 5; ctx.lineTo(x, HY - 4 - R() * 9); } ctx.lineTo(RX + 40, HY); ctx.fill();
+for (let i = 0; i < 9; i++) { const x = RX - 26 + R() * 52, y = HY - 16 - R() * 12; ctx.strokeStyle = '#05070d'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(x - 2.5, y - 1.5); ctx.lineTo(x, y); ctx.lineTo(x + 2.5, y - 1.5); ctx.stroke(); }
+const BX = mode === 'phone' ? W * 0.36 : W * 0.42, BY = HY + (mode === 'phone' ? 18 : 26);
+ctx.fillStyle = '#020306'; ctx.beginPath(); ctx.moveTo(BX - 22, BY); ctx.quadraticCurveTo(BX, BY + 6, BX + 24, BY - 2); ctx.lineTo(BX + 22, BY + 2); ctx.quadraticCurveTo(BX, BY + 8, BX - 20, BY + 3); ctx.fill();
+ctx.fillRect(BX - 9, BY - 12, 2.6, 11); ctx.fillRect(BX + 9, BY - 14, 2.8, 13); ctx.strokeStyle = '#020306'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(BX + 18, BY - 22); ctx.lineTo(BX + 6, BY + 8); ctx.stroke();
+// faint reflection of the boat
+ctx.globalAlpha = 0.25; ctx.fillRect(BX - 18, BY + 5, 36, 1); ctx.globalAlpha = 1;
+// film grain
+const img = ctx.getImageData(0, 0, W * DPR, H * DPR), d = img.data; for (let i = 0; i < d.length; i += 4) { const n = (R() - 0.5) * 14; d[i] += n; d[i + 1] += n; d[i + 2] += n; } ctx.putImageData(img, 0, 0);
+// typography: label block (top-left), vertical hook (right), subtitle (bottom), single-line input
+ctx.textBaseline = 'alphabetic';
+const ink = 'rgba(236,232,222,0.92)', dim = 'rgba(236,232,222,0.5)';
+const M = mode === 'phone' ? 22 : 64;
+ctx.fillStyle = ink; ctx.font = `${mode === 'phone' ? 22 : 30}px "Noto Serif SC"`; ctx.letterSpacing = '0.4em'; ctx.fillText('芦花渡', M, mode === 'phone' ? 64 : 96);
+ctx.font = `${mode === 'phone' ? 11 : 13}px "Noto Serif SC"`; ctx.fillStyle = dim; ctx.letterSpacing = '0.32em';
+ctx.fillText('序章  第一日', M, mode === 'phone' ? 88 : 128); ctx.fillRect(M, mode === 'phone' ? 100 : 146, 18, 1); ctx.fillText('酉初  日落', M, mode === 'phone' ? 120 : 172);
+ctx.letterSpacing = '0px';
+// vertical hook text on the right
+ctx.font = `${mode === 'phone' ? 12 : 14}px "Noto Serif SC"`; ctx.fillStyle = dim; let vy = mode === 'phone' ? 50 : 84; for (const ch of Array.from('灰羽鸦在石上落着')) { ctx.fillText(ch, W - M - 10, vy); vy += mode === 'phone' ? 20 : 24; }
+// subtitle: one sentence at a time, like a film
+ctx.textAlign = 'center'; ctx.fillStyle = ink; ctx.font = `${mode === 'phone' ? 17 : 24}px "LXGW WenKai"`; ctx.letterSpacing = '0.12em';
+if (mode === 'phone') { ctx.fillText('船底擦过沙洲，', W / 2, H - 196); ctx.fillText('芦花没到膝。', W / 2, H - 168); }
+else ctx.fillText('船底擦过沙洲，芦花没到膝。', W / 2, H - 150);
+ctx.letterSpacing = '0px';
+// the input is a second horizon line
+const LY = H - (mode === 'phone' ? 70 : 64);
+const lg2 = ctx.createLinearGradient(M, 0, W - M, 0); lg2.addColorStop(0, 'rgba(236,232,222,0.0)'); lg2.addColorStop(0.15, 'rgba(236,232,222,0.35)'); lg2.addColorStop(0.85, 'rgba(236,232,222,0.35)'); lg2.addColorStop(1, 'rgba(236,232,222,0)');
+ctx.fillStyle = lg2; ctx.fillRect(M, LY, W - 2 * M, 1);
+ctx.textAlign = 'center'; ctx.font = `${mode === 'phone' ? 14 : 16}px "Noto Serif SC"`; ctx.fillStyle = 'rgba(236,232,222,0.42)'; ctx.fillText('写下你要做的事', W / 2, LY - 14);
+ctx.textAlign = 'right'; ctx.font = `${mode === 'phone' ? 11 : 12}px "Noto Serif SC"`; ctx.fillStyle = dim; ctx.letterSpacing = '0.2em'; ctx.fillText('体 92   灵 100', W - M, mode === 'phone' ? H - 30 : H - 28); ctx.letterSpacing = '0px';
+document.title = 'ready';
+</script></body></html>

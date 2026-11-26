@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>九霄长卷 · 概念帧</title>
+<link rel="stylesheet" href="node_modules/@fontsource/zhi-mang-xing/index.css">
+<link rel="stylesheet" href="node_modules/@fontsource/ma-shan-zheng/index.css">
+<link rel="stylesheet" href="node_modules/lxgw-wenkai-webfont/lxgwwenkai-regular.css">
+<link rel="stylesheet" href="node_modules/@fontsource/noto-serif-sc/index.css">
+<style>
+  html, body { margin: 0; background: #11161a; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script type="module">
+import { rng, makeNoise, PIGMENT, rgba, mix, ridgeLine, paintMountain, pines, mist, reeds, silkGrain, seal, verticalText } from './js/paint.js';
+const q = new URLSearchParams(location.search);
+const mode = q.get('mode') || 'desktop';
+const time = q.get('time') || 'dusk';           // dusk | night | dawn
+const state = q.get('state') || 'arrive';       // arrive | writing | resolved
+const W = mode === 'phone' ? 390 : 1600, H = mode === 'phone' ? 844 : 900, DPR = 2;
+const cv = document.getElementById('c'); cv.width = W * DPR; cv.height = H * DPR; cv.style.width = W + 'px'; cv.style.height = H + 'px';
+const ctx = cv.getContext('2d'); ctx.scale(DPR, DPR);
+await document.fonts.load('40px "Zhi Mang Xing"', '芦花渡九霄'); await document.fonts.load('26px "LXGW WenKai"', '船底擦过沙洲芦花没到膝渡口那边本该有船岸上一行新脚印进去就没了写下你要做的事');
+await document.fonts.load('20px "Ma Shan Zheng"', '九霄序章林青'); await document.fonts.load('14px "Noto Serif SC"', '酉初日落前一刻');
+const R = rng(20261125), N = makeNoise(7);
+
+const TOP = mode === 'phone' ? 56 : 64, BOT = mode === 'phone' ? 150 : 118;
+const PY0 = TOP, PY1 = H - BOT; // painting area
+const SUN = time === 'night' ? null : (mode === 'phone' ? [120, 400] : [1060, 432]);
+// --- silk ground with time-of-day wash
+const silkTop = time === 'night' ? [38, 48, 60] : time === 'dawn' ? [214, 204, 186] : [222, 203, 166];
+const silkBot = time === 'night' ? [24, 31, 40] : time === 'dawn' ? [200, 190, 168] : [206, 184, 142];
+let g = ctx.createLinearGradient(0, PY0, 0, PY1); g.addColorStop(0, rgba(silkTop)); g.addColorStop(1, rgba(silkBot));
+ctx.fillStyle = g; ctx.fillRect(0, PY0, W, PY1 - PY0);
+// low sun glow behind the far ridges (dusk), placed by the authoritative game minute in a real build
+if (time !== 'night') {
+  const sx = SUN ? SUN[0] : 0, sy = SUN ? SUN[1] : 0;
+  const sg = ctx.createRadialGradient(sx, sy, 0, sx, sy, mode === 'phone' ? 240 : 520);
+  sg.addColorStop(0, 'rgba(244,196,120,0.55)'); sg.addColorStop(0.35, 'rgba(232,170,100,0.18)'); sg.addColorStop(1, 'rgba(232,170,100,0)');
+  ctx.fillStyle = sg; ctx.fillRect(0, PY0, W, PY1 - PY0);
+  ctx.fillStyle = 'rgba(250,226,180,0.9)'; ctx.beginPath(); ctx.arc(sx, sy, mode === 'phone' ? 12 : 16, 0, Math.PI * 2); ctx.fill();
+}
+const haze = time === 'night' ? 0.55 : 0;
+const S = mode === 'phone' ? { k: 0.42 } : { k: 1 };
+
+function layer(x0, x1, base, height, peaks, h, opts = {}) {
+  const pts = ridgeLine(N, { x0, x1, base, height, peaks, rough: opts.rough ?? 0.3, freq: opts.freq ?? 3.4, seed: opts.seed ?? 0, step: 2 });
+  paintMountain(ctx, N, R, pts, base, { haze: Math.min(1, h + haze * (1 - h)), cun: opts.cun ?? 700, contour: opts.contour ?? 0.5, inkW: opts.inkW ?? 2,
+    top: opts.top ?? PIGMENT.azurite, mid: opts.mid ?? PIGMENT.malachite, foot: opts.foot ?? PIGMENT.ochre,
+    sun: SUN ? [SUN[0], SUN[1], (opts.warm ?? 0.42)] : null, folds: opts.folds ?? 0, moss: opts.moss ?? 0 });
+  return pts;
+}
+
+if (mode === 'desktop') {
+  // far 平远 ridges
+  layer(420, 1640, 486, 70, [[0.2, 0.7, 0.12], [0.45, 1, 0.16], [0.78, 0.8, 0.14]], 0.72, { cun: 220, contour: 0.25, inkW: 1.2, seed: 2 });
+  layer(560, 1560, 520, 120, [[0.3, 1, 0.12], [0.62, 0.7, 0.15]], 0.5, { cun: 320, contour: 0.32, inkW: 1.3, seed: 5 });
+  mist(ctx, N, R, { y: 500, h: 70, x0: 380, x1: 1600, alpha: time === 'night' ? 0.25 : 0.75 });
+  // right massif with 望气台
+  const right = layer(1120, 1700, 620, 290, [[0.38, 1, 0.09], [0.5, 0.72, 0.08], [0.72, 0.76, 0.1], [0.88, 0.5, 0.08]], 0.12, { cun: 1100, seed: 11, rough: 0.4, freq: 5, folds: 22, moss: 40 });
+  // main 高远 massif on the left
+  layer(-80, 520, 600, 300, [[0.25, 0.8, 0.12], [0.6, 1, 0.1]], 0.18, { cun: 900, seed: 21, folds: 18, moss: 30, warm: 0.3 });
+  const main = layer(-60, 780, 640, 470, [[0.38, 1, 0.07], [0.5, 0.82, 0.06], [0.58, 0.66, 0.07], [0.27, 0.62, 0.06], [0.16, 0.48, 0.08], [0.75, 0.42, 0.09], [0.86, 0.3, 0.07]], 0, { cun: 2600, seed: 3, inkW: 2.6, rough: 0.42, freq: 5, folds: 46, moss: 90 });
+  pines(ctx, R, main.filter(p => p[1] < 420), 26, 1, haze);
+  pines(ctx, R, right.filter(p => p[1] < 470), 10, 0.8, haze + 0.1);
+  mist(ctx, N, R, { y: 590, h: 60, x0: -40, x1: 900, alpha: time === 'night' ? 0.2 : 0.6 });
+  if (SUN) { ctx.save(); ctx.globalCompositeOperation = 'screen';
+    for (const [yy, rx, ry, a] of [[470, 640, 70, 0.34], [500, 380, 40, 0.3], [590, 520, 46, 0.16]]) { const gr = ctx.createRadialGradient(SUN[0], yy, 0, SUN[0], yy, rx); gr.addColorStop(0, `rgba(255,206,140,${a})`); gr.addColorStop(1, 'rgba(255,206,140,0)'); ctx.save(); ctx.translate(SUN[0], yy); ctx.scale(1, ry / rx); ctx.translate(-SUN[0], -yy); ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(SUN[0], yy, rx, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
+    ctx.restore(); }
+  // 望气台: a small terrace at the right summit
+  const top = right.reduce((a, b) => (b[1] < a[1] ? b : a));
+  ctx.strokeStyle = rgba(PIGMENT.ink, 0.8); ctx.lineWidth = 1.4; ctx.beginPath();
+  ctx.moveTo(top[0] - 16, top[1] + 2); ctx.lineTo(top[0] + 16, top[1] + 2); ctx.moveTo(top[0] - 12, top[1] + 2); ctx.lineTo(top[0] - 12, top[1] + 9); ctx.moveTo(top[0] + 12, top[1] + 2); ctx.lineTo(top[0] + 12, top[1] + 9); ctx.stroke();
+  // water
+  ctx.fillStyle = rgba(mix(silkBot, [190, 200, 196], 0.25), 0.55); ctx.fillRect(0, 640, W, PY1 - 640);
+  for (let i = 0; i < 260; i++) { const y = 650 + R() * (PY1 - 660); const x = R() * W; const l = 10 + R() * 60; ctx.strokeStyle = rgba(PIGMENT.ink, 0.06 + R() * 0.08); ctx.lineWidth = 0.7; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + l, y + (R() - 0.5) * 1.2); ctx.stroke(); }
+  // reflection of the main massif
+  ctx.save(); ctx.globalAlpha = 0.12; ctx.translate(0, 1280); ctx.scale(1, -1); ctx.fillStyle = rgba(PIGMENT.azurite); ctx.beginPath(); ctx.moveTo(main[0][0], 640); for (const p of main) ctx.lineTo(p[0], p[1]); ctx.lineTo(780, 640); ctx.fill(); ctx.restore();
+  // right bank, landing and the rockslide
+  ctx.fillStyle = rgba(mix(PIGMENT.ochre, silkBot, 0.35), 0.9); ctx.beginPath(); ctx.moveTo(1080, PY1); ctx.quadraticCurveTo(1180, 690, 1320, 688); ctx.lineTo(W, 680); ctx.lineTo(W, PY1); ctx.fill();
+  ctx.strokeStyle = rgba(PIGMENT.ink, 0.55); ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(1080, PY1); ctx.quadraticCurveTo(1180, 690, 1320, 688); ctx.lineTo(W, 680); ctx.stroke();
+  for (let i = 0; i < 7; i++) { ctx.strokeStyle = rgba(PIGMENT.ink, 0.7); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(1205 + i * 9, 694); ctx.lineTo(1209 + i * 9, 714); ctx.stroke(); } // landing posts
+  ctx.strokeStyle = rgba(PIGMENT.ink, 0.75); ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(1196, 696); ctx.lineTo(1272, 694); ctx.stroke();
+  for (let i = 0; i < 18; i++) { const x = 1288 + R() * 76, y = 684 - R() * 30 * (1 - Math.abs(R() - 0.5)), r = 4 + R() * 12; ctx.fillStyle = rgba(mix(PIGMENT.ink, PIGMENT.ochre, 0.35 + R() * 0.35), 0.92); ctx.beginPath(); const k = 5 + Math.floor(R() * 3); for (let j = 0; j < k; j++) { const t = j / k * Math.PI * 2 + R() * 0.4; const rr = r * (0.7 + R() * 0.5); ctx.lineTo(x + Math.cos(t) * rr * 1.3, y + Math.sin(t) * rr * (t > Math.PI ? 1 : 0.55)); } ctx.closePath(); ctx.fill(); ctx.strokeStyle = 'rgba(255,214,150,0.35)'; ctx.lineWidth = 0.8; ctx.stroke(); }
+  for (let i = 0; i < 14; i++) { const x = 1296 + R() * 64, y = 652 - R() * 26; ctx.strokeStyle = rgba(PIGMENT.ink, 0.9); ctx.lineWidth = 1.3; ctx.beginPath(); ctx.moveTo(x - 3, y - 2); ctx.lineTo(x, y); ctx.lineTo(x + 3, y - 2); ctx.stroke(); } // crows
+  reeds(ctx, R, { x0: 1080, x1: 1600, baseY: PY1 + 6, count: 90, height: 70, lean: -0.15 });
+  // the ferry and two figures
+  const bx = 860, by = 664;
+  ctx.fillStyle = rgba(PIGMENT.ink, 0.88); ctx.beginPath(); ctx.moveTo(bx - 52, by); ctx.quadraticCurveTo(bx, by + 14, bx + 56, by - 3); ctx.lineTo(bx + 50, by + 4); ctx.quadraticCurveTo(bx, by + 18, bx - 46, by + 6); ctx.fill();
+  const fig = (x, y, h, hat) => { ctx.fillStyle = rgba(PIGMENT.ink, 0.92); ctx.beginPath(); ctx.ellipse(x, y - h * 0.82, h * 0.1, h * 0.12, 0, 0, Math.PI * 2); ctx.fill(); ctx.beginPath(); ctx.moveTo(x - h * 0.16, y); ctx.lineTo(x - h * 0.08, y - h * 0.72); ctx.lineTo(x + h * 0.08, y - h * 0.72); ctx.lineTo(x + h * 0.14, y); ctx.fill(); if (hat) { ctx.beginPath(); ctx.moveTo(x - h * 0.26, y - h * 0.84); ctx.lineTo(x, y - h * 1.02); ctx.lineTo(x + h * 0.26, y - h * 0.84); ctx.fill(); } };
+  fig(bx - 22, by - 2, 30, false); fig(bx + 30, by - 4, 34, true);
+  ctx.strokeStyle = rgba(PIGMENT.ink, 0.85); ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(bx + 48, by - 44); ctx.lineTo(bx + 18, by + 22); ctx.stroke(); // pole 篙
+  // gold hairline: the player's route to the landing (泥金)
+  ctx.strokeStyle = 'rgba(244,200,110,0.95)'; ctx.lineWidth = 1.8; ctx.setLineDash([3, 6]); ctx.beginPath(); ctx.moveTo(bx + 60, by - 2); ctx.bezierCurveTo(1000, 690, 1120, 700, 1232, 694); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle = rgba(PIGMENT.gold, 0.95); ctx.beginPath(); ctx.arc(1232, 694, 3.2, 0, Math.PI * 2); ctx.fill();
+  reeds(ctx, R, { x0: -20, x1: 420, baseY: PY1 + 8, count: 150, height: 120, lean: 0.3 });
+  // old pine leaning into the frame (框景): dark ink trunk + needle clusters
+  (function pine() {
+    const pts = []; for (let t = 0; t <= 1.0001; t += 0.02) { pts.push([40 + 120 * t * t + 30 * Math.sin(t * 5), PY1 + 20 - 640 * t]); }
+    for (let i = 1; i < pts.length; i++) { const w = 30 * (1 - i / pts.length) + 6; ctx.strokeStyle = rgba(PIGMENT.ink, 0.94); ctx.lineWidth = w; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(pts[i - 1][0], pts[i - 1][1]); ctx.lineTo(pts[i][0], pts[i][1]); ctx.stroke(); }
+    for (let i = 0; i < 90; i++) { const [x, y] = pts[Math.floor(R() * pts.length)]; ctx.strokeStyle = rgba([60, 50, 40], 0.5); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x - 8 + R() * 16, y); ctx.lineTo(x - 6 + R() * 12, y + 6 + R() * 6); ctx.stroke(); }
+    const branch = (x, y, dx, dy) => { ctx.strokeStyle = rgba(PIGMENT.ink, 0.92); ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x + dx * 0.5, y + dy * 0.2, x + dx, y + dy); ctx.stroke();
+      for (let k = 0; k < 7; k++) { const cx = x + dx * (0.35 + k * 0.1) + (R() - 0.5) * 30, cy = y + dy * (0.35 + k * 0.1) - 6 + (R() - 0.5) * 16; for (let n = 0; n < 34; n++) { const a = Math.PI * (1.05 + R() * 0.9); const l = 10 + R() * 16; ctx.strokeStyle = rgba(mix(PIGMENT.ink, PIGMENT.malachite, 0.22), 0.7); ctx.lineWidth = 1.1; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(a) * l * 1.3, cy + Math.sin(a) * l * 0.55); ctx.stroke(); } } };
+    branch(pts[30][0], pts[30][1], 360, -40); branch(pts[38][0], pts[38][1], 250, -120); branch(pts[22][0], pts[22][1], 180, 30);
+  })();
+} else {
+  // phone: hanging-scroll composition (立轴, 高远 above 深远)
+  layer(-40, 440, 360, 90, [[0.6, 1, 0.18]], 0.62, { cun: 160, contour: 0.25, inkW: 1, seed: 4 });
+  mist(ctx, N, R, { y: 372, h: 40, x0: -20, x1: 420, alpha: 0.7 });
+  const main = layer(-30, 330, 470, 380, [[0.42, 1, 0.07], [0.3, 0.75, 0.06], [0.55, 0.7, 0.06], [0.16, 0.55, 0.07], [0.72, 0.5, 0.08]], 0, { cun: 1500, seed: 3, inkW: 2, rough: 0.42, freq: 5, folds: 26, moss: 50 });
+  pines(ctx, R, main.filter(p => p[1] < 260), 12, 0.7, haze);
+  mist(ctx, N, R, { y: 470, h: 50, x0: -20, x1: 420, alpha: 0.6 });
+  ctx.fillStyle = rgba(mix(silkBot, [190, 200, 196], 0.25), 0.5); ctx.fillRect(0, 480, W, PY1 - 480);
+  for (let i = 0; i < 90; i++) { const y = 490 + R() * (PY1 - 500); const x = R() * W; ctx.strokeStyle = rgba(PIGMENT.ink, 0.07 + R() * 0.08); ctx.lineWidth = 0.6; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + 10 + R() * 40, y); ctx.stroke(); }
+  const bx = 170, by = 560;
+  ctx.fillStyle = rgba(PIGMENT.ink, 0.88); ctx.beginPath(); ctx.moveTo(bx - 34, by); ctx.quadraticCurveTo(bx, by + 10, bx + 36, by - 2); ctx.lineTo(bx + 32, by + 3); ctx.quadraticCurveTo(bx, by + 13, bx - 30, by + 4); ctx.fill();
+  ctx.fillRect(bx - 15, by - 22, 5, 20); ctx.beginPath(); ctx.arc(bx - 12.5, by - 25, 3.5, 0, 7); ctx.fill(); ctx.fillRect(bx + 16, by - 25, 5, 23); ctx.beginPath(); ctx.moveTo(bx + 10, by - 26); ctx.lineTo(bx + 18.5, by - 33); ctx.lineTo(bx + 27, by - 26); ctx.fill();
+  ctx.strokeStyle = rgba(PIGMENT.gold, 0.9); ctx.lineWidth = 1; ctx.setLineDash([2, 4]); ctx.beginPath(); ctx.moveTo(bx + 40, by - 2); ctx.bezierCurveTo(260, 590, 300, 640, 340, 650); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle = rgba(PIGMENT.gold, 0.95); ctx.beginPath(); ctx.arc(340, 650, 2.6, 0, 7); ctx.fill();
+  reeds(ctx, R, { x0: -10, x1: 400, baseY: PY1 + 6, count: 110, height: 60, lean: 0.25 });
+}
+
+silkGrain(ctx, W * DPR, H * DPR, N, time === 'night' ? 0.6 : 1, 0.32);
+
+// --- inscription: the actual zero-model narration of the prologue, as a colophon in the empty sky
+const lines = state === 'resolved'
+  ? ['台上没有人。', '木头朽了，踩上去还有声。', '石从上游下来，', '堆在渡槽口，', '最大的那块有门板高。']
+  : ['船底擦过沙洲，', '芦花没到膝。', '渡口那边本该有船。', '岸上一行新脚印，', '进去就没了。'];
+const inkCol = time === 'night' ? [226, 214, 190] : PIGMENT.ink;
+if (mode === 'desktop') {
+  verticalText(ctx, { x: 1520, y: 104, lines, size: 25, lead: 1.55, font: '"LXGW WenKai"', color: inkCol, alpha: 0.88, R });
+  seal(ctx, { x: 1520 - 25 * 1.55 * lines.length + 8, y: 330, size: 30, text: '林青', font: '13px "Ma Shan Zheng"', R, rot: 0.03 });
+  ctx.fillStyle = rgba(inkCol, 0.85); ctx.font = '58px "Zhi Mang Xing"'; ctx.textAlign = 'left'; ctx.fillText('芦花渡', 56, 140);
+  ctx.font = '16px "Noto Serif SC"'; ctx.fillStyle = rgba(inkCol, 0.6); ctx.fillText('序章 · 第一日 · 酉初', 60, 172);
+  seal(ctx, { x: 246, y: 112, size: 34, text: '九霄', font: '15px "Ma Shan Zheng"', R, rot: -0.04 });
+} else {
+  verticalText(ctx, { x: 356, y: TOP + 24, lines, size: 19, lead: 1.5, font: '"LXGW WenKai"', color: inkCol, alpha: 0.9, R });
+  seal(ctx, { x: 356 - 19 * 1.5 * lines.length + 6, y: TOP + 190, size: 22, text: '林青', font: '10px "Ma Shan Zheng"', R, rot: 0.03 });
+  ctx.fillStyle = rgba(inkCol, 0.85); ctx.font = '38px "Zhi Mang Xing"'; ctx.textAlign = 'left'; ctx.fillText('芦花渡', 20, TOP + 330);
+  ctx.font = '12px "Noto Serif SC"'; ctx.fillStyle = rgba(inkCol, 0.62); ctx.fillText('序章 · 第一日 · 酉初', 22, TOP + 352);
+}
+
+// --- mounting bands (天头 / 地头): the UI lives on the scroll's mounting silk, not over the painting
+function damask(y0, y1) {
+  const gr = ctx.createLinearGradient(0, y0, 0, y1); gr.addColorStop(0, '#1d2731'); gr.addColorStop(1, '#151c24'); ctx.fillStyle = gr; ctx.fillRect(0, y0, W, y1 - y0);
+  for (let i = 0; i < 900; i++) { ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.025})`; ctx.fillRect(Math.random() * W, y0 + Math.random() * (y1 - y0), 1 + Math.random() * 30, 1); }
+  ctx.fillStyle = 'rgba(196,154,74,0.7)'; ctx.fillRect(0, y0 === 0 ? y1 - 2 : y0 + 1, W, 1); ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(0, y0 === 0 ? y1 - 1 : y0, W, 1);
+}
+damask(0, TOP); damask(PY1, H);
+ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+if (mode === 'desktop') {
+  ctx.fillStyle = 'rgba(236,226,204,0.9)'; ctx.font = '22px "Zhi Mang Xing"'; ctx.fillText('九霄', 28, TOP / 2);
+  ctx.font = '14px "Noto Serif SC"'; ctx.fillStyle = 'rgba(236,226,204,0.6)'; ctx.fillText('第一卷  ·  芦花渡', 96, TOP / 2);
+  ctx.textAlign = 'right'; ctx.fillText('体力 ', 1340, TOP / 2);
+  ctx.fillStyle = 'rgba(196,154,74,0.9)'; ctx.fillRect(1346, TOP / 2 - 1, 92 * 1.0, 2); ctx.fillStyle = 'rgba(196,154,74,0.3)'; ctx.fillRect(1346 + 92, TOP / 2 - 1, 8, 2);
+  ctx.fillStyle = 'rgba(236,226,204,0.6)'; ctx.fillText('灵力 ', 1500, TOP / 2); ctx.fillStyle = 'rgba(160,206,214,0.9)'; ctx.fillRect(1506, TOP / 2 - 1, 70, 2);
+  // input line on the lower mounting
+  const iy = PY1 + 56;
+  ctx.textAlign = 'left'; ctx.font = '22px "LXGW WenKai"';
+  if (state === 'writing') { ctx.fillStyle = 'rgba(240,232,214,0.95)'; ctx.fillText('去渡口看看那堆石头', 210, iy); ctx.fillStyle = 'rgba(196,154,74,0.95)'; ctx.fillRect(210 + ctx.measureText('去渡口看看那堆石头').width + 4, iy - 13, 2, 26); }
+  else { ctx.fillStyle = 'rgba(236,226,204,0.42)'; ctx.fillText('写下你要做的事……', 210, iy); }
+  ctx.strokeStyle = 'rgba(196,154,74,0.55)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(210, iy + 24); ctx.lineTo(1190, iy + 24); ctx.stroke();
+  ctx.font = '14px "Noto Serif SC"'; ctx.fillStyle = 'rgba(236,226,204,0.55)'; ctx.fillText('可以试试：', 210, iy - 34);
+  const chips = ['去渡口', '看那堆落石', '问岑九'];
+  let cx = 290; for (const c of chips) { const w = ctx.measureText(c).width + 26; ctx.strokeStyle = 'rgba(196,154,74,0.45)'; ctx.strokeRect(cx, iy - 46, w, 24); ctx.fillStyle = 'rgba(236,226,204,0.8)'; ctx.fillText(c, cx + 13, iy - 34); cx += w + 10; }
+  ctx.textAlign = 'center'; ctx.font = '15px "Noto Serif SC"';
+  const tabs = ['行囊', '人物', '舆图', '卷宗']; tabs.forEach((t, i) => { const x = 1300 + i * 72; ctx.fillStyle = 'rgba(236,226,204,0.75)'; ctx.fillText(t, x, iy); });
+  seal(ctx, { x: 162, y: iy + 2, size: 40, text: '落印', font: '17px "Ma Shan Zheng"', R, rot: -0.02, red: state === 'writing' ? [196, 50, 36] : [120, 46, 40] });
+} else {
+  ctx.fillStyle = 'rgba(236,226,204,0.9)'; ctx.font = '20px "Zhi Mang Xing"'; ctx.fillText('九霄', 16, TOP / 2);
+  ctx.font = '12px "Noto Serif SC"'; ctx.fillStyle = 'rgba(236,226,204,0.6)'; ctx.fillText('第一卷 · 芦花渡', 66, TOP / 2);
+  ctx.fillStyle = 'rgba(196,154,74,0.9)'; ctx.fillRect(296, TOP / 2 - 1, 60, 2); ctx.fillStyle = 'rgba(160,206,214,0.9)'; ctx.fillRect(296, TOP / 2 + 5, 46, 2);
+  const iy = PY1 + 92;
+  ctx.font = '12px "Noto Serif SC"'; ctx.fillStyle = 'rgba(236,226,204,0.55)';
+  const chips = ['去渡口', '看那堆落石', '问岑九']; let cx = 16; for (const c of chips) { const w = ctx.measureText(c).width + 20; ctx.strokeStyle = 'rgba(196,154,74,0.45)'; ctx.strokeRect(cx, PY1 + 22, w, 26); ctx.fillStyle = 'rgba(236,226,204,0.82)'; ctx.fillText(c, cx + 10, PY1 + 35); cx += w + 8; }
+  ctx.font = '17px "LXGW WenKai"'; ctx.fillStyle = 'rgba(236,226,204,0.42)'; ctx.fillText('写下你要做的事……', 16, iy);
+  ctx.strokeStyle = 'rgba(196,154,74,0.55)'; ctx.beginPath(); ctx.moveTo(16, iy + 20); ctx.lineTo(300, iy + 20); ctx.stroke();
+  seal(ctx, { x: 350, y: iy + 4, size: 38, text: '落印', font: '16px "Ma Shan Zheng"', R, rot: -0.02, red: [120, 46, 40] });
+}
+document.title = 'ready';
+</script>
+</body>
+</html>
