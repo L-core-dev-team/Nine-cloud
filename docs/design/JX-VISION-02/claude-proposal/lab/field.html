@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>灵台 · 概念帧</title>
+<link rel="stylesheet" href="node_modules/@fontsource/noto-serif-sc/index.css">
+<link rel="stylesheet" href="node_modules/lxgw-wenkai-webfont/lxgwwenkai-regular.css">
+<style>html,body{margin:0;background:#030407}canvas{display:block}</style></head>
+<body><canvas id="c"></canvas>
+<script type="module">
+import { rng, makeNoise } from './js/paint.js';
+const q = new URLSearchParams(location.search);
+const mode = q.get('mode') || 'desktop', phase = q.get('phase') || 'body';
+const W = mode === 'phone' ? 390 : 1600, H = mode === 'phone' ? 844 : 900, DPR = 2;
+const cv = document.getElementById('c'); cv.width = W * DPR; cv.height = H * DPR; cv.style.width = W + 'px'; cv.style.height = H + 'px';
+const ctx = cv.getContext('2d'); ctx.scale(DPR, DPR);
+await document.fonts.load('14px "Noto Serif SC"', '芦花渡序章第一日酉初神识所及炼体期修为体灵岑九灰羽鸦落石河'); await document.fonts.load('20px "LXGW WenKai"', '船底擦过沙洲芦花没到膝');
+const R = rng(3), N = makeNoise(21);
+ctx.fillStyle = '#030407'; ctx.fillRect(0, 0, W, H);
+const s = mode === 'phone' ? 0.5 : 1;
+const C = mode === 'phone' ? [W * 0.5, H * 0.42] : [W * 0.46, H * 0.46];      // 灵台: the player's core
+const ROCK = mode === 'phone' ? [W * 0.8, H * 0.6] : [W * 0.8, H * 0.62];     // the rockslide
+const NPC = mode === 'phone' ? [W * 0.62, H * 0.47] : [W * 0.54, H * 0.5];    // 岑九 on the boat
+const RIVER_Y = mode === 'phone' ? H * 0.66 : H * 0.7;
+// velocity field: curl noise + swirl around the core + eastward river + obstacle turbulence
+function vel(x, y) {
+  const e = 1.5, f = 0.004 / s;
+  const p = (a, b) => N.fbm2(a * f, b * f, 3);
+  let vx = (p(x, y + e) - p(x, y - e)) / (2 * e) * 900, vy = -(p(x + e, y) - p(x - e, y)) / (2 * e) * 900;
+  const dx = x - C[0], dy = y - C[1], r = Math.hypot(dx, dy) + 1; const sw = 2.6 * Math.exp(-r / (230 * s));
+  vx += -dy / r * sw * 1.4 + (-dx / r) * 0.35 * Math.exp(-r / (120 * s)); vy += dx / r * sw * 1.4 + (-dy / r) * 0.35 * Math.exp(-r / (120 * s));
+  const rv = Math.exp(-((y - RIVER_Y) ** 2) / (2 * (60 * s) ** 2)); vx += rv * 2.2;
+  const ox = x - ROCK[0], oy = y - ROCK[1], or = Math.hypot(ox, oy) + 1; const ob = Math.exp(-or / (70 * s));
+  vx += ox / or * ob * 3 + (N.n2(x * 0.05, y * 0.05) - 0.5) * ob * 6; vy += oy / or * ob * 3 + (N.n2(y * 0.05, x * 0.05) - 0.5) * ob * 6;
+  return [vx, vy];
+}
+function colorAt(x, y) {
+  const dc = Math.hypot(x - C[0], y - C[1]), dr = Math.hypot(x - ROCK[0], y - ROCK[1]), rv = Math.abs(y - RIVER_Y);
+  if (dc < 200 * s) return [255, 196, 120];               // body qi of 炼体: warm, dense
+  if (dr < 110 * s) return [200, 70, 60];                  // obstruction: rust red
+  if (rv < 70 * s) return [110, 170, 230];                 // the river
+  return [150, 170, 190];                                  // ambient qi of the place
+}
+ctx.globalCompositeOperation = 'lighter';
+const count = mode === 'phone' ? 5200 : 14000;
+for (let i = 0; i < count; i++) {
+  let x, y; const u = R();
+  if (u < 0.35) { const a = R() * Math.PI * 2, r = Math.pow(R(), 0.7) * 220 * s; x = C[0] + Math.cos(a) * r; y = C[1] + Math.sin(a) * r; }
+  else if (u < 0.6) { x = R() * W; y = RIVER_Y + (R() - 0.5) * 140 * s; }
+  else if (u < 0.7) { const a = R() * Math.PI * 2, r = R() * 120 * s; x = ROCK[0] + Math.cos(a) * r; y = ROCK[1] + Math.sin(a) * r; }
+  else { x = R() * W; y = R() * H; }
+  const col = colorAt(x, y); const steps = 26 + Math.floor(R() * 20);
+  const a0 = 0.05 + R() * 0.07;
+  ctx.strokeStyle = `rgba(${col[0]},${col[1]},${col[2]},${a0})`; ctx.lineWidth = 0.7 + R() * 0.7; ctx.beginPath(); ctx.moveTo(x, y);
+  for (let k = 0; k < steps; k++) { const [vx, vy] = vel(x, y); const m = Math.hypot(vx, vy) + 1e-6; x += vx / m * 2.4; y += vy / m * 2.4; ctx.lineTo(x, y); }
+  ctx.stroke();
+}
+// the core itself and the presence of 岑九
+for (const [r, a] of [[120, 0.08], [60, 0.18], [24, 0.5], [8, 0.9]]) { const g = ctx.createRadialGradient(C[0], C[1], 0, C[0], C[1], r * s); g.addColorStop(0, `rgba(255,214,150,${a})`); g.addColorStop(1, 'rgba(255,214,150,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(C[0], C[1], r * s, 0, 7); ctx.fill(); }
+for (const [r, a] of [[60, 0.08], [18, 0.3], [5, 0.8]]) { const g = ctx.createRadialGradient(NPC[0], NPC[1], 0, NPC[0], NPC[1], r * s); g.addColorStop(0, `rgba(190,220,210,${a})`); g.addColorStop(1, 'rgba(190,220,210,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(NPC[0], NPC[1], r * s, 0, 7); ctx.fill(); }
+// crows: dozens of small life sparks above the obstruction
+for (let i = 0; i < 40; i++) { const x = ROCK[0] + (R() - 0.5) * 120 * s, y = ROCK[1] - 40 * s - R() * 70 * s; const g = ctx.createRadialGradient(x, y, 0, x, y, 4); g.addColorStop(0, 'rgba(255,240,220,0.9)'); g.addColorStop(1, 'rgba(255,240,220,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, 4, 0, 7); ctx.fill(); }
+ctx.globalCompositeOperation = 'source-over';
+// cultivation: an arc around the core. 炼体 0/10000 → empty, with twelve marks of the 周天
+ctx.strokeStyle = 'rgba(255,214,150,0.25)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(C[0], C[1], 250 * s, 0, Math.PI * 2); ctx.stroke();
+for (let i = 0; i < 12; i++) { const a = -Math.PI / 2 + i * Math.PI / 6; ctx.beginPath(); ctx.moveTo(C[0] + Math.cos(a) * 244 * s, C[1] + Math.sin(a) * 244 * s); ctx.lineTo(C[0] + Math.cos(a) * 256 * s, C[1] + Math.sin(a) * 256 * s); ctx.stroke(); }
+// labels: what the senses resolve, quietly attached to the field
+const lab = (t, x, y, al = 'left') => { ctx.textAlign = al; ctx.fillStyle = 'rgba(220,224,230,0.55)'; ctx.font = `${mode === 'phone' ? 10 : 12}px "Noto Serif SC"`; ctx.fillText(t, x, y); };
+lab('岑九', NPC[0] + 12 * s + 6, NPC[1] - 8); lab('落石 · 堵住渡槽', ROCK[0], ROCK[1] + 128 * s, 'center'); lab('灰羽鸦 · 几十只', ROCK[0], ROCK[1] - 128 * s, 'center'); lab('河 · 向东', mode === 'phone' ? 12 : 64, RIVER_Y - 70 * s);
+ctx.textAlign = 'left'; const M = mode === 'phone' ? 20 : 64;
+ctx.fillStyle = 'rgba(236,232,222,0.88)'; ctx.font = `${mode === 'phone' ? 20 : 26}px "Noto Serif SC"`; ctx.fillText('神识所及', M, mode === 'phone' ? 54 : 80);
+ctx.fillStyle = 'rgba(236,232,222,0.5)'; ctx.font = `${mode === 'phone' ? 11 : 13}px "Noto Serif SC"`; ctx.fillText('芦花渡 · 序章 第一日 · 酉初', M, mode === 'phone' ? 76 : 108);
+ctx.fillText('炼体期 · 修为 0 / 10000 · 体 92 · 灵 100', M, mode === 'phone' ? 94 : 130);
+ctx.fillStyle = 'rgba(236,232,222,0.85)'; ctx.font = `${mode === 'phone' ? 16 : 20}px "LXGW WenKai"`; ctx.fillText('船底擦过沙洲，芦花没到膝。', M, H - (mode === 'phone' ? 110 : 96));
+ctx.fillStyle = 'rgba(236,232,222,0.18)'; ctx.fillRect(M, H - (mode === 'phone' ? 62 : 56), W - 2 * M, 1);
+ctx.fillStyle = 'rgba(236,232,222,0.4)'; ctx.font = `${mode === 'phone' ? 13 : 15}px "Noto Serif SC"`; ctx.fillText('写下你要做的事', M, H - (mode === 'phone' ? 72 : 66));
+document.title = 'ready';
+</script></body></html>
