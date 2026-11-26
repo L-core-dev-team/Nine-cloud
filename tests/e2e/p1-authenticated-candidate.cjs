@@ -55,6 +55,17 @@ async function waitFor(url, child, stderr) {
   throw new Error(`Timed out waiting for ${url}: ${stderr()}`);
 }
 
+// Guard against any future early `return` that would skip the gameplay
+// assertions and still exit 0: the process only succeeds once the full
+// journey has run to its final assertion.
+let journeyCompleted = false;
+process.on('exit', code => {
+  if (code === 0 && !journeyCompleted) {
+    console.error('P1 authenticated candidate journey ended without reaching its final assertion.');
+    process.exitCode = 1;
+  }
+});
+
 (async () => {
   assert.ok(databaseUrl, 'Set TEST_DATABASE_URL to a disposable jiuxiao_test database');
   assertTestDatabase();
@@ -112,24 +123,10 @@ async function waitFor(url, child, stderr) {
     child.stderr.on('data', chunk => { childStderr += chunk.toString(); });
     child.stdout.on('data', () => {});
 
-    let health;
-    try {
-      health = await waitFor(`${origin}/health`, child, () => childStderr);
-    } catch (error) {
-      // P2 changes shared Save contracts, so the old P1 candidate digest must
-      // stay closed until its exact bundle is re-approved. Treat that startup
-      // rejection as the expected fail-closed branch, never as gameplay proof.
-      if (!childStderr.includes('P1_REVIEW_RULE_BUNDLE_MISMATCH')) throw error;
-      const writes = await pool.query(`SELECT
-        (SELECT count(*)::int FROM game_saves WHERE owner_id=$1) AS saves,
-        (SELECT count(*)::int FROM turn_requests r JOIN game_saves s ON s.id=r.save_id WHERE s.owner_id=$1) AS requests,
-        (SELECT count(*)::int FROM turn_events e JOIN game_saves s ON s.id=e.save_id WHERE s.owner_id=$1) AS events,
-        (SELECT count(*)::int FROM npc_memory_journals j JOIN game_saves s ON s.id=j.save_id WHERE s.owner_id=$1) AS journals,
-        (SELECT count(*)::int FROM npc_authorized_observation_outbox o JOIN game_saves s ON s.id=o.save_id WHERE s.owner_id=$1) AS observations`, [ownerId]);
-      assert.deepEqual(writes.rows[0], { saves: 0, requests: 0, events: 0, journals: 0, observations: 0 });
-      console.log('P1 authenticated candidate journey stayed closed: candidate bundle hash mismatch; no save, receipt, event, journal, or NPC observation was written. This is not positive gameplay acceptance.');
-      return;
-    }
+    // The positive journey must boot. A rule-bundle or semantic mismatch is a
+    // regression that has to turn CI red; the fail-closed behaviour itself is
+    // covered by apps/api/src/services/p1-review-rule-approval.test.ts.
+    const health = await waitFor(`${origin}/health`, child, () => childStderr);
     assert.equal((await health.json()).saveSchemaVersion, 3);
     await waitFor(`${origin}/ready`, child, () => childStderr);
     const session = await fetch(`${origin}/api/auth/session`, { headers: { cookie: `jx_session=${token}`, origin } });
@@ -290,6 +287,7 @@ async function waitFor(url, child, stderr) {
     assert.ok(rows.rows.every(row => row.schema_version === 3));
     assert.ok(rows.rows.every(row => row.memory_policy.mode === row.memory_mode));
 
+    journeyCompleted = true;
     console.log(`Authenticated P1 review-runtime journey passed: ${expectedRequests} turn requests, ${expectedEvents} committed events, ${expectedObservations} direct-NPC memory grants; both Continue and Forgetting saves completed first clearance by different deterministic paths.`);
     console.log('This is an email-session, non-production candidate test. The zero-configuration guest ≤3-minute acceptance gate remains open.');
   } finally {
