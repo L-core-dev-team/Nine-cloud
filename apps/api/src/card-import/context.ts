@@ -1,3 +1,5 @@
+import type { HistoryQuote } from './history-recall.js';
+
 /** Card data is untrusted, and must never be promoted to platform instructions. */
 export type CardMessage = { role: 'system' | 'user' | 'assistant'; content: string };
 export type CardContext = {
@@ -9,7 +11,7 @@ export type CardContext = {
   persona?: {name:string;description:string;extensions:Record<string,unknown>} | null;
 };
 const text = (v: unknown): string => typeof v === 'string' ? v : '';
-export function buildCardMessages(input: CardContext): CardMessage[] {
+export function buildCardMessages(input: CardContext, quotes: HistoryQuote[] = []): CardMessage[] {
   const c = input.character;
   const before = input.worldbooks.filter(b => b.position === 'before_char').map(b => text(b.content)).filter(Boolean);
   const after = input.worldbooks.filter(b => b.position !== 'before_char').map(b => text(b.content)).filter(Boolean);
@@ -19,6 +21,7 @@ export function buildCardMessages(input: CardContext): CardMessage[] {
     world_before_character: before,
     character: { name: text(c.name), description: text(c.description), personality: text(c.personality), scenario: text(c.scenario), examples: text(c.mes_example), custom_prompt: text(c.system_prompt) },
     world_after_character: after,
+    ...(quotes.length ? { untrusted_history_quotes: quotes } : {}),
   };
   const messages: CardMessage[] = [
     { role: 'system', content: input.instructions },
