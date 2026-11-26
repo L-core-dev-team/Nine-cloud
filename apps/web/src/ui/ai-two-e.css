@@ -1,0 +1,23 @@
+/* P09 · 两套 AI 的区别（JX-UI-E-01）。位于专业 AI 编辑器之外，不改变其冻结样式。 */
+@layer jx.legacy, jx.tokens, jx.base, jx.materials, jx.components, jx.layouts, jx.pages, jx.overrides;
+
+@layer jx.pages {
+  /* 与下方页面同宽：选择方式页 920px，专业编辑器占满主栏。 */
+  .jx-ai-two { width: 100%; margin: clamp(20px, 4vw, 40px) auto 0; font-family: var(--jx-font-ui); }
+  .jx-ai-two:has(~ .ai-mode-page) { width: min(920px, calc(100% - 28px)); }
+  .jx-ai-two + .ai-page { padding-top: clamp(24px, 4vw, 48px); }
+  .jx-ai-two ~ .ai-mode-page { margin-top: var(--jx-space-4); }
+  .jx-ai-two dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 0; background: var(--jx-surface-1); border-radius: var(--jx-radius-card); box-shadow: 0 0 0 1px var(--jx-line-subtle); }
+  .jx-ai-two dl > div { display: grid; align-content: start; gap: var(--jx-space-2); padding: var(--jx-space-4) var(--jx-space-5); }
+  .jx-ai-two dl > div + div { box-shadow: inset 1px 0 0 var(--jx-line-subtle); }
+  .jx-ai-two dt { color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-size: var(--jx-type-body); font-weight: 600; letter-spacing: 0.04em; }
+  .jx-ai-two dd { margin: 0; color: var(--jx-fg-body); font-size: var(--jx-type-small); line-height: 1.7; }
+  .jx-shell .jx-ai-two button.quiet-action { min-height: 40px; padding: 0 var(--jx-space-3); border-style: solid; border-radius: var(--jx-radius-control); font-size: var(--jx-type-small); }
+  @media (max-width: 699px) {
+    .jx-ai-two dl { grid-template-columns: minmax(0, 1fr); }
+    .jx-ai-two dl > div + div { box-shadow: inset 0 1px 0 var(--jx-line-subtle); }
+  }
+}
+@layer jx.pages {
+  @media (max-width: 680px) { .jx-ai-two:has(~ .ai-mode-page) { width: calc(100% - 20px); } }
+}

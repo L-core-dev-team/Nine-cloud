@@ -7,7 +7,7 @@ import { resolveWebBuildTarget } from '../../scripts/build/build-target.mjs';
 
 const webRoot = fileURLToPath(new URL('./', import.meta.url));
 const pagesApprovedFont: Plugin = { name: 'pages-approved-font', apply: 'build', generateBundle() {
-  for (const name of ['ma-shan-zheng-brand.woff2', 'OFL-MaShanZheng.txt']) {
+  for (const name of ['ma-shan-zheng-brand.woff2', 'OFL-MaShanZheng.txt', 'OFL-NotoSerifSC.txt']) {
     this.emitFile({ type: 'asset', fileName: `fonts/${name}`, source: readFileSync(new URL(`./public/fonts/${name}`, import.meta.url)) });
   }
 } };

@@ -1,7 +1,23 @@
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from 'react';
 import './game-shell.css';
 import './story-first.css';
 import type { ReadingPosition } from '../cloud-game-cache';
+
+/**
+ * The self-hosted reading serif arrives in unicode-range slices after first paint. When a
+ * slice lands just after the reading position was restored, the small reflow lets scroll
+ * anchoring nudge the column away from it. Re-apply the restore when fonts finish loading,
+ * for a short window after mount only, so a later font load never pulls a reader back.
+ */
+export function settleAfterFonts(restore: () => void, windowMs = 5000): () => void {
+  const fonts = typeof document !== 'undefined' ? document.fonts : undefined;
+  if (!fonts || typeof fonts.addEventListener !== 'function') return () => undefined;
+  const settle = () => restore();
+  fonts.addEventListener('loadingdone', settle);
+  const stop = () => { clearTimeout(timer); fonts.removeEventListener('loadingdone', settle); };
+  const timer = setTimeout(stop, windowMs);
+  return stop;
+}
 
 /** Presentation only: callers retain their own save, draft and turn handlers. */
 export function GameShell({ saveId, children, archive, readingReady = true, immersive = false, readingScope, readingPosition, onReadingPositionChange }: { saveId: string; children: ReactNode; archive?: ReactNode; readingReady?: boolean; immersive?: boolean; readingScope?: string | undefined; readingPosition?: ReadingPosition | undefined; onReadingPositionChange?: ((position: ReadingPosition) => void) | undefined }) {
@@ -31,19 +47,25 @@ export function GameShell({ saveId, children, archive, readingReady = true, imme
       };
       for (const event of ['wheel', 'touchstart', 'pointerdown', 'keydown']) reading.addEventListener(event, interacted, { passive: true });
       restore(); const animation = requestAnimationFrame(restore);
+      const stopSettling = settleAfterFonts(restore);
       reading.addEventListener('scroll', remember, { passive: true });
-      return () => { cancelAnimationFrame(animation); reading.removeEventListener('scroll', remember);
+      return () => { cancelAnimationFrame(animation); stopSettling(); reading.removeEventListener('scroll', remember);
         for (const event of ['wheel', 'touchstart', 'pointerdown', 'keydown']) reading.removeEventListener(event, interacted); };
     }
     const key = `jiuxiao_1_game_scroll_${saveId}`;
     let top = 0;
     try { const saved = Number(sessionStorage.getItem(key)); top = Number.isFinite(saved) ? Math.max(0, saved) : 0; } catch { /* Reading position is optional. */ }
+    let userMoved = false;
+    const interacted = () => { userMoved = true; };
     const restore = () => { reading.scrollTop = top; };
     const remember = () => { try { sessionStorage.setItem(key, String(reading.scrollTop)); } catch { /* Never affect the save or action draft. */ } };
     restore();
     const animation = requestAnimationFrame(restore);
+    for (const event of ['wheel', 'touchstart', 'pointerdown', 'keydown']) reading.addEventListener(event, interacted, { passive: true });
+    const stopSettling = settleAfterFonts(() => { if (!userMoved) restore(); });
     reading.addEventListener('scroll', remember, { passive: true });
-    return () => { cancelAnimationFrame(animation); reading.removeEventListener('scroll', remember); };
+    return () => { cancelAnimationFrame(animation); stopSettling(); reading.removeEventListener('scroll', remember);
+      for (const event of ['wheel', 'touchstart', 'pointerdown', 'keydown']) reading.removeEventListener(event, interacted); };
   }, [saveId, readingReady, readingScope, onReadingPositionChange]);
   useLayoutEffect(() => {
     const shell = frame.current?.closest<HTMLElement>('.jx-shell');
@@ -65,14 +87,16 @@ export function GameShell({ saveId, children, archive, readingReady = true, imme
       shell.style.removeProperty('--jx-game-viewport-height'); shell.style.removeProperty('--jx-game-viewport-top');
     };
   }, []);
+  const newReply = useNewReplyNotice(frame, readingReady);
   return <section ref={frame} className={`game-page game-frame${immersive?' immersive-game':''}`}>
     {children}
+    {newReply.visible && <button type="button" className="jx-new-reply" style={newReply.style} onClick={newReply.reveal}>有新回复</button>}
     {archive && <button className="game-archive-toggle secondary" onClick={() => setShowArchive(true)}>旧档资料与迁移核对</button>}
     {showArchive && <GameInfoDialog label="旧档资料与迁移核对" onClose={() => setShowArchive(false)}>{archive}</GameInfoDialog>}
   </section>;
 }
 
-export function GameInfoDialog({ label, onClose, children }: { label: string; onClose: () => void; children: ReactNode }) {
+export function GameInfoDialog({ label, onClose, children, className }: { label: string; onClose: () => void; children: ReactNode; className?: string }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -81,7 +105,7 @@ export function GameInfoDialog({ label, onClose, children }: { label: string; on
     dialog.showModal();
     return () => { if (dialog.open) dialog.close(); if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true }); };
   }, []);
-  return <dialog ref={dialogRef} className="game-info-dialog" aria-label={`${label}详情`} onCancel={event => { event.preventDefault(); onClose(); }} onKeyDown={event => {
+  return <dialog ref={dialogRef} className={className ? `game-info-dialog ${className}` : 'game-info-dialog'} aria-label={`${label}详情`} onCancel={event => { event.preventDefault(); onClose(); }} onKeyDown={event => {
     if (event.key !== 'Tab') return;
     const controls = Array.from(event.currentTarget.querySelectorAll<HTMLElement>('button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), summary, [tabindex]:not([tabindex="-1"])')).filter(control => control.getClientRects().length > 0);
     const first = controls[0]; const last = controls.at(-1);
@@ -92,3 +116,62 @@ export function GameInfoDialog({ label, onClose, children }: { label: string; on
     <div className="game-info-dialog-body">{children}</div>
   </dialog>;
 }
+
+/**
+ * 有新回复 (P05 rule 2): when entries are appended below the visible part of the
+ * reading column while the reader is looking at older text, show a notice instead
+ * of scrolling. Presentation only; it never moves the reader unless they click.
+ * New entries also receive data-jx-new for the reading-level ink-in fade.
+ */
+function useNewReplyNotice(frame: RefObject<HTMLElement | null>, ready: boolean) {
+  const [target, setTarget] = useState<HTMLElement | null>(null);
+  const [style, setStyle] = useState<CSSProperties>();
+  useEffect(() => {
+    if (!ready) return;
+    const reading = frame.current?.querySelector<HTMLElement>('.story-reading');
+    if (!reading) return;
+    const place = () => {
+      const rect = reading.getBoundingClientRect();
+      setStyle({ position: 'fixed', left: `${rect.left + rect.width / 2}px`, top: `${Math.max(rect.top + 8, rect.bottom - 52)}px`, bottom: 'auto' });
+    };
+    // History that loads or restores after mount is not a new reply: only entries
+    // appended to an already populated column, after the initial settle, count.
+    const settledAt = performance.now() + 1500;
+    let known = reading.querySelectorAll('[data-reading-id]').length;
+    const observer = new MutationObserver(records => {
+      const added: HTMLElement[] = [];
+      for (const record of records) for (const node of record.addedNodes) {
+        if (node instanceof HTMLElement && node.matches('[data-reading-id]')) added.push(node);
+      }
+      if (!added.length) return;
+      const hadHistory = known > 0;
+      known = reading.querySelectorAll('[data-reading-id]').length;
+      if (!hadHistory || performance.now() < settledAt || added.length > 6) return;
+      for (const node of added) node.dataset.jxNew = '1';
+      const first = added[0]!;
+      const readingRect = reading.getBoundingClientRect();
+      const below = first.getBoundingClientRect().top > readingRect.bottom - 24;
+      if (below) { place(); setTarget(first); }
+    });
+    observer.observe(reading, { childList: true, subtree: true });
+    const clear = () => {
+      setTarget(current => {
+        if (!current) return current;
+        const rect = current.getBoundingClientRect();
+        return rect.top < reading.getBoundingClientRect().bottom - 24 ? null : current;
+      });
+    };
+    reading.addEventListener('scroll', clear, { passive: true });
+    return () => { observer.disconnect(); reading.removeEventListener('scroll', clear); };
+  }, [frame, ready]);
+  const reveal = useCallback(() => {
+    if (!target) return;
+    const reading = target.closest<HTMLElement>('.story-reading');
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches || !!document.querySelector('.jx-shell[data-jx-motion="reduced"]');
+    if (reading) reading.scrollTo({ top: reading.scrollTop + target.getBoundingClientRect().top - reading.getBoundingClientRect().top - 16, behavior: reduce ? 'auto' : 'smooth' });
+    target.focus?.({ preventScroll: true });
+    setTarget(null);
+  }, [target]);
+  return { visible: !!target, style, reveal };
+}
+

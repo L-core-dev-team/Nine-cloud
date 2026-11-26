@@ -462,6 +462,10 @@ async function runDesignAcceptance(browser, origin, outputDir, options = {}) {
       if (target.prepare) await target.prepare(page);
       else if (target.key === 'ai-mode') await page.getByRole('button', { name: '开始新手设置', exact: true }).waitFor();
       else if (target.professional) await page.getByRole('button', { name: '进入专业模式', exact: true }).click();
+      // The graphics route is a lazy chunk that can mount after the load event.
+      // Measuring text runs before it mounts records a one-viewport document, so
+      // every rect lands on the wrong pixels of the full-page capture taken later.
+      else if (target.key === 'graphics') await page.getByRole('heading', { name: '山河光景', exact: true }).waitFor();
       else if (target.key === 'world') {
         // The world reader loads its Canon through a dynamic import, so waiting for
         // the first entry only proves the list has started rendering. Screenshotting

@@ -1,0 +1,74 @@
+/* P02 · 大厅（JX-UI-E-01）：继续行旅最醒目；月洞门三去处；工具入口降为一行。 */
+@layer jx.legacy, jx.tokens, jx.base, jx.materials, jx.components, jx.layouts, jx.pages, jx.overrides;
+
+@layer jx.pages {
+  .lobby-page { display: grid; gap: clamp(28px, 4vw, 44px); padding-block: clamp(32px, 6vw, 72px) var(--jx-space-7); }
+  .lobby-head { display: grid; gap: var(--jx-space-2); max-width: 44em; }
+  .lobby-page .lobby-head h2 { margin: 0; color: var(--jx-fg-strong); font-size: var(--jx-text-h1); font-weight: 600; letter-spacing: 0.04em; }
+  .lobby-head p { margin: 0; color: var(--jx-fg-body); font-size: var(--jx-type-small); line-height: 1.7; }
+
+  .lobby-top { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(260px, 1fr); gap: var(--jx-space-5); align-items: stretch; }
+  .lobby-top:has(> :only-child) { grid-template-columns: minmax(0, 1fr); }
+  .lobby-resume {
+    position: relative; isolation: isolate; overflow: hidden; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--jx-space-4);
+    min-height: clamp(240px, 30vw, 320px); padding: clamp(20px, 3vw, 32px); border-radius: var(--jx-radius-panel);
+    box-shadow: 0 0 0 1px rgb(166 227 217 / 0.2), var(--jx-shadow-float);
+    background: var(--jx-resume-image) center 58% / cover no-repeat, var(--jx-c-xuan-850);
+  }
+  .lobby-resume::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(0deg, rgb(5 14 21 / 0.96) 0%, rgb(5 14 21 / 0.86) 46%, rgb(5 14 21 / 0.3) 78%, rgb(5 14 21 / 0.08)); }
+  :root[data-theme='day'] .lobby-resume::before { background: linear-gradient(0deg, rgb(251 249 244 / 0.97) 0%, rgb(251 249 244 / 0.9) 46%, rgb(251 249 244 / 0.35) 78%, rgb(251 249 244 / 0.1)); }
+  .lobby-resume-body { display: grid; gap: var(--jx-space-1); min-width: 0; }
+  .lobby-resume-kicker { color: var(--jx-fg-body); font-size: var(--jx-type-small); }
+  .lobby-resume-name { color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-size: var(--jx-text-resume); font-weight: 600; line-height: 1.25; overflow-wrap: anywhere; }
+  .lobby-resume--first .lobby-resume-name { font-size: var(--jx-text-resume-first); }
+  .lobby-resume-meta { color: var(--jx-fg-secondary); font-size: var(--jx-type-small); }
+  .lobby-page .lobby-resume-action { min-width: 168px; min-height: 52px; padding: var(--jx-space-2) var(--jx-space-5); align-items: flex-start; justify-content: center; }
+
+  .lobby-recent { display: grid; align-content: start; gap: var(--jx-space-3); padding: var(--jx-space-5); border-radius: var(--jx-radius-panel); background: var(--jx-mat-frost-fill); -webkit-backdrop-filter: var(--jx-mat-frost-blur); backdrop-filter: var(--jx-mat-frost-blur); box-shadow: 0 0 0 1px var(--jx-line-subtle); }
+  .lobby-page .lobby-recent h3 { margin: 0; color: var(--jx-fg-strong); font-size: var(--jx-type-lead); font-weight: 600; }
+  .lobby-recent ul { list-style: none; margin: 0; padding: 0; display: grid; }
+  .lobby-recent li + li { border-top: 1px solid var(--jx-line-subtle); }
+  .lobby-recent li button { display: flex; width: 100%; min-height: 44px; justify-content: space-between; align-items: center; gap: var(--jx-space-3); padding: var(--jx-space-2) 0; color: var(--jx-fg-body); background: none; text-align: left; font-size: var(--jx-type-small); }
+  .lobby-recent li button:hover span { color: var(--jx-accent-hover); }
+  .lobby-recent time { flex: none; color: var(--jx-fg-muted); font-size: var(--jx-type-caption); }
+  .lobby-recent-note { margin: 0; color: var(--jx-fg-muted); font-size: var(--jx-type-caption); line-height: 1.6; }
+
+  /* 月洞门 */
+  .lobby-gates { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 220px)); justify-content: start; gap: var(--jx-space-5) clamp(16px, 4vw, 56px); }
+  .lobby-gate { display: grid; justify-items: center; gap: var(--jx-space-2); padding: var(--jx-space-3); color: var(--jx-fg-body); background: none; border-radius: var(--jx-radius-panel); text-align: center; }
+  .lobby-gate .jx-moongate { width: min(100%, 188px); }
+  .lobby-gate:hover .jx-moongate-view, .lobby-gate:focus-visible .jx-moongate-view { transform: scale(1.04); }
+  .lobby-gate:hover .jx-moongate, .lobby-gate:focus-visible .jx-moongate { box-shadow: 0 0 0 1px var(--jx-accent), inset 0 0 0 1px rgb(241 238 232 / 0.16), var(--jx-shadow-float); }
+  .lobby-gate-name { margin-top: var(--jx-space-2); color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-size: var(--jx-type-subhead); font-weight: 600; }
+  .lobby-gate-desc { color: var(--jx-fg-secondary); font-size: var(--jx-type-small); }
+
+  /* 工具入口：一行安静的文字按钮 */
+  .lobby-tools { display: flex; flex-wrap: wrap; align-items: center; gap: var(--jx-space-1) var(--jx-space-2); padding-top: var(--jx-space-4); border-top: 1px solid var(--jx-line-subtle); }
+  .lobby-tools > button { min-height: 44px; padding: 0 var(--jx-space-3); color: var(--jx-fg-body); background: none; border-radius: var(--jx-radius-control); font-size: var(--jx-type-small); }
+  .lobby-tools > button:hover { color: var(--jx-fg-strong); background: rgb(174 184 188 / 0.08); }
+  .lobby-tools > .lobby-skip { display: inline-flex; flex-direction: column; align-items: flex-start; justify-content: center; margin-left: auto; padding-block: var(--jx-space-1); border: 1px dashed var(--jx-line-control); }
+  .lobby-tools > .lobby-skip span { color: var(--jx-fg-secondary); font-size: var(--jx-type-caption); }
+
+  /* 其他行囊 */
+  .home-saves h2 { color: var(--jx-fg-strong); font-size: var(--jx-type-lead); font-weight: 600; }
+  .home-save { background: var(--jx-surface-1); border: 1px solid var(--jx-line-subtle); border-radius: var(--jx-radius-card); color: var(--jx-fg-body); }
+  .home-save:hover { border-color: var(--jx-accent); }
+  .home-save strong { font-family: var(--jx-font-literary); font-weight: 600; }
+
+  @media (max-width: 860px) {
+    .lobby-top { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 599px) {
+    .lobby-gates { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--jx-space-2); }
+    .lobby-gate { padding: var(--jx-space-1); }
+    .lobby-gate .jx-moongate { width: min(100%, 104px); }
+    .lobby-gate-name { font-size: var(--jx-type-small); }
+    .lobby-gate-desc { display: none; }
+    .lobby-tools > .lobby-skip { margin-left: 0; }
+    .lobby-page .lobby-resume-action { width: 100%; }
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    .lobby-recent { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--jx-surface-1); }
+  }
+}
+

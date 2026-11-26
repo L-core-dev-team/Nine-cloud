@@ -1,6 +1,8 @@
-import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useCallback, useEffect, useMemo, useState, type CSSProperties, type FormEvent } from 'react';
 import { CardHttpError, CardImportClient, cardError, type HistoryItem, type RequestItem, type SessionItem, type GroupMember, type GroupHistoryItem, type CardModelStatus } from '../card-import-client';
 import { GameShell } from '../components/GameShell';
+import { Folio, type FolioBook, type FolioTurn } from '../ui/Folio';
+import { FOLIO_ENABLED } from '../ui/folio-flag';
 import './card-ui.css';
 
 type Props = { owner: string; sessionId: string; onBack: () => void };
@@ -81,18 +83,31 @@ function CardSessionForOwner({ owner, sessionId, onBack }: Props) {
     catch (e) { if (!controller.signal.aborted) setMessage(cardError(e)); }
     finally { if (!controller.signal.aborted) setBusy(false); }
   }
+  const [folio, setFolio] = useState<FolioBook | null>(null);
+  /** 成卷: re-typeset what is already loaded; the only extra read is the card name for the title. */
+  function openFolio() {
+    const turns: FolioTurn[] = [];
+    if (members) for (const row of groupHistory) {
+      const index = members.findIndex(member => member.id === row.participant_id);
+      const part = { speaker: members[index]?.display_name || '未命名角色', pigment: (Math.max(0, index) % 8) + 1, text: row.body };
+      const last = turns.at(-1);
+      if (last?.key === row.key) last.parts.push(part); else turns.push({ key: row.key, label: row.resulting_revision, action: row.action, parts: [part] });
+    } else for (const row of history) turns.push({ key: row.key, label: row.resulting_revision, action: row.action, parts: [{ text: row.narrative }] });
+    setFolio({ title: members ? members.map(member => member.display_name || '未命名角色').join('、') : '角色卡会话', opening: opening || undefined, turns });
+    if (!members && session) void api.card(session.card_id).then(card => { const name = card.name || card.parsed?.name; if (name && !controller.signal.aborted) setFolio(old => old && { ...old, title: name }); }).catch(() => undefined);
+  }
   function back() { if (pending && pending.status !== 'failed' && !window.confirm('当前请求尚未确认。原请求标识已保存在本标签页，返回后请查询；离开不会撤销已提交的行动。仍要离开吗？')) return; onBack(); }
   return <GameShell saveId={`card-${sessionId}`} readingReady={!!session} readingScope={`card:${owner}:${sessionId}`} onReadingPositionChange={ignorePosition}>
-    <header className="game-topline card-session-heading"><div><h1>{members?'角色卡群聊':'角色卡会话'}</h1><span>独立会话 · 修订 {session?.revision ?? '—'}</span></div><button className="secondary" onClick={back}>返回卡库</button></header>
+    <header className="game-topline card-session-heading"><div><h1>{members?'角色卡群聊':'角色卡会话'}</h1><span>独立会话 · 修订 {session?.revision ?? '—'}</span></div>{FOLIO_ENABLED ? <div className="actions"><button type="button" className="secondary" disabled={!session} onClick={openFolio}>成卷</button><button className="secondary" onClick={back}>返回卡库</button></div> : <button className="secondary" onClick={back}>返回卡库</button>}</header>
     <section className="card card-ui-section" aria-label="角色卡模型状态"><p>{!model?'正在核验宿主模型…':model.mode==='synthetic'?'合成演示（非真实 AI）':model.model?`宿主模型：${model.model} · ${model.protocol} · 输出上限 ${model.maxOutputTokens} tokens`:'宿主模型不可用'}</p>{model?.reason&&<p role="status">{cardError(new CardHttpError(403,model.reason))}</p>}{model?.counting&&<p>本地文本 token 估算并预留余量；不等于供应商账单。剩余调用：{model.remainingCalls??'待授权'}</p>}{requestModel?.model&&<p>最近核实请求固定模型：{requestModel.model}</p>}</section>
     <div className="game-workspace card-session"><div className={`story-column${members?' card-group-column':''}`}>
       <div className="story-reading" role="region" tabIndex={0} aria-label="角色卡会话历史"><p role="status" className="card-session-status">{message}</p>
         {members && <section className="card card-ui-section" aria-label="群聊参与者"><h2>参与角色</h2><p>{members.map(m=>`${m.display_name||'未命名角色'} · ${m.id.slice(0,8)}`).join('、')}</p><p>默认策略：{strategy==='auto'?'自动轮流':'手动指定'}</p><div className="actions"><button type="button" disabled={busy||!!pending} onClick={()=>void (async()=>{try{const next=strategy==='manual'?'auto':'manual';const saved=await api.setGroupStrategy(sessionId,next);if(!controller.signal.aborted){rememberStrict(false,[]);setStrategy(saved.strategy);setMode(saved.strategy);}}catch(e){if(!controller.signal.aborted)setMessage(cardError(e));}})()}>切换默认策略</button></div></section>}
-        {opening && <section className="card card-session-turn" data-reading-id="card-opening"><h2>开场</h2><p>{opening}</p></section>}
+        {opening && <section className="card card-session-turn" data-reading-id="card-opening"><h2 className="jx-turn-no">开场</h2><p className="jx-narrative">{opening}</p></section>}
         {!(members?groupHistory.length:history.length) && session && <p>还没有完成的行动。</p>}
-        {history.map(row => <section className="card card-session-turn" key={row.key} data-reading-id={row.key}><h2>行动 {row.resulting_revision}</h2><p>{row.action}</p><h3>剧情</h3><p>{row.narrative}</p></section>)}
-        {members && groupHistory.map((row,index)=><section className="card card-session-turn" key={`${row.key}:${row.ordinal}`} data-reading-id={`${row.key}:${row.ordinal}`}>{(index===0||groupHistory[index-1]?.key!==row.key)&&<><h2>行动 {row.resulting_revision}</h2><p>{row.action}</p></>}<h3>{members.find(x=>x.id===row.participant_id)?.display_name||'未命名角色'} · {row.participant_id.slice(0,8)}</h3><p>{row.body}</p></section>)}
-        {pending && <section className="card card-session-pending" aria-label="待核实行动"><p>请求状态：{pending.status}。{pending.status === 'failed' ? '此请求已失败。' : '请勿刷新或离开页面。'}</p>
+        {history.map(row => <section className="card card-session-turn" key={row.key} data-reading-id={row.key}><h2 className="jx-turn-no">行动 {row.resulting_revision}</h2><p className="jx-act">{row.action}</p><h3 className="jx-visually-hidden">剧情</h3><p className="jx-narrative">{row.narrative}</p></section>)}
+        {members && groupHistory.map((row,index)=>{const speakerIndex=members.findIndex(x=>x.id===row.participant_id);const speakerName=members[speakerIndex]?.display_name||'未命名角色';return <section className="card card-session-turn jx-speaker-turn" key={`${row.key}:${row.ordinal}`} data-reading-id={`${row.key}:${row.ordinal}`} style={{'--jx-speaker':`var(--jx-pigment-${(Math.max(0,speakerIndex)%8)+1})`} as CSSProperties}>{(index===0||groupHistory[index-1]?.key!==row.key)&&<><h2 className="jx-turn-no">行动 {row.resulting_revision}</h2><p className="jx-act">{row.action}</p></>}<h3 className="jx-speaker" data-initial={Array.from(speakerName)[0]}>{speakerName}<span className="jx-speaker-id"> · {row.participant_id.slice(0,8)}</span></h3><p>{row.body}</p></section>;})}
+        {pending && <section className="card card-session-pending jx-receipt" aria-label="待核实行动"><p>请求状态：{pending.status}。{pending.status === 'failed' ? '此请求已失败。' : '请勿刷新或离开页面。'}</p>
           {pending.status !== 'failed' ? <div className="actions"><button disabled={busy} onClick={() => void query(false)}>查询原请求</button><button disabled={busy} onClick={() => void query(true)}>核对过期请求</button></div> : <button disabled={busy} onClick={() => { clearPending(); setPending(null); setMessage('可以修改行动并主动再次提交。'); }}>准备新行动</button>}</section>}
       </div>
       {members && <div className="card-ui-form card-group-controls">
@@ -116,5 +131,5 @@ function CardSessionForOwner({ owner, sessionId, onBack }: Props) {
       </div>}
       <form className="intent-composer" onSubmit={e => void submit(e)}><label htmlFor="card-action">你要做什么？</label><textarea id="card-action" aria-label="角色卡行动" value={text} maxLength={8000} onChange={e => setText(e.target.value)} disabled={!session || busy || !!pending || recoveryBlocked} /><button className="primary" type="submit" disabled={!session || busy || !!pending || recoveryBlocked || !model?.available || !text.trim()}>{busy ? '处理中…' : '提交行动'}</button></form>
     </div></div>
-  </GameShell>;
+  {folio && <Folio book={folio} onClose={() => setFolio(null)} />}</GameShell>;
 }

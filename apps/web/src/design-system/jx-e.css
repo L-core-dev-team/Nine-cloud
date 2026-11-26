@@ -1,0 +1,176 @@
+/*
+ * JX-UI-E-01 · base, materials, shared components and shell.
+ * Everything here sits above @layer jx.legacy, so it restyles legacy markup
+ * without specificity contests. Legacy !important accessibility fallbacks
+ * (reduced transparency, reduced motion, data saver) still win by design.
+ *
+ * Frozen-contract note: the professional AI editor (.ai-page, .ai-actionbar,
+ * .glass-dialog) keeps its historic colours (tests/e2e/foundation.cjs). Colour
+ * rules below exclude those subtrees with :not(:is(...) *).
+ */
+@layer jx.legacy, jx.tokens, jx.base, jx.materials, jx.components, jx.layouts, jx.pages, jx.overrides;
+
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+@layer jx.base {
+  .jx-shell { font-family: var(--jx-font-ui); }
+  .jx-shell :is(h1, h2, h3):not(:is(.ai-page, .ai-actionbar, .glass-dialog) *) { font-family: var(--jx-font-literary); text-wrap: balance; }
+  .jx-shell[data-jx-layer='tool'] :is(h2, h3):not(:is(.ai-page, .ai-actionbar, .glass-dialog) *) { font-family: var(--jx-font-ui); font-weight: 600; }
+  .jx-shell :focus-visible { outline: 2px solid var(--jx-focus-ring); outline-offset: 2px; }
+  .jx-shell ::selection { background: rgb(121 207 196 / 0.3); color: inherit; }
+  :root[data-theme='day'] .jx-shell ::selection { background: rgb(29 107 99 / 0.18); }
+  .jx-shell :is(.tabular, time, .jx-num):not(:is(.ai-page, .ai-actionbar, .glass-dialog) *) { font-variant-numeric: tabular-nums; }
+  /* Chinese text: punctuation compression, strict line breaking, CJK/Latin spacing (progressive). */
+  .jx-shell :is(p, li, h1, h2, h3, dd):not(:is(.ai-page, .ai-actionbar, .glass-dialog) *) { line-break: strict; text-spacing-trim: normal; text-autospace: normal; }
+}
+
+/* ------------------------------------------------------------------ */
+/* Layer canvases                                                      */
+/* ------------------------------------------------------------------ */
+@layer jx.layouts {
+  /* 灵境内页（大厅、卡库、档案）：场景保留，但压暗/淡化到文字可读。首页另有自己的暗角。 */
+  :root:not([data-theme='day']) .jx-shell[data-jx-layer='lobby']:not(.landing-shell)::before { filter: brightness(0.6); }
+  :root[data-theme='day'] .jx-shell[data-jx-layer='lobby']:not(.landing-shell)::after { background: rgb(243 239 230 / 0.64); opacity: 1; mix-blend-mode: normal; }
+  /* 书阁：场景退场，只在页边隐约可见。 */
+  /* 入卷：从灵境进入书阁时，场景缓缓压暗、退远；返回时再亮起来。 */
+  .jx-shell::before { transition: filter calc(var(--jx-dur-scene) * 1.5) var(--jx-ease-ink), transform calc(var(--jx-dur-scene) * 1.5) var(--jx-ease-ink); }
+  .jx-shell[data-jx-layer='story']::before { filter: brightness(0.42) saturate(0.78) blur(5px); transform: scale(1.04); }
+  :root[data-theme='day'] .jx-shell[data-jx-layer='story']::before { filter: saturate(0.6) blur(5px); }
+  /* 晴昼书阁：宣纸色遮罩让场景只剩淡影，保证页边文字对比。 */
+  :root[data-theme='day'] .jx-shell[data-jx-layer='story']::after { background: rgb(243 239 230 / 0.86); opacity: 1; mix-blend-mode: normal; }
+  .jx-shell[data-jx-layer='story'] .scene-atmosphere { opacity: 0.45; }
+  /* 案头：平光，不放场景。画面设置页保留场景用于预览。 */
+  /* 案头：场景只留极淡的影子（约 8%），保持品牌连续，工具内容在平光里。 */
+  .jx-shell[data-jx-layer='tool']:not([data-jx-route='graphics'])::before { background: linear-gradient(rgb(8 23 34 / 0.9), rgb(8 23 34 / 0.94)), var(--jx-scene-poster-desktop, url('/scenes/gate-moonlight.webp')) center / cover no-repeat; }
+  .jx-shell[data-jx-layer='tool']:not([data-jx-route='graphics'])::after { opacity: 0; }
+  /* 画面设置保留完整场景以便预览；晴昼时加一层浅纸色，让说明文字可读。 */
+  :root[data-theme='day'] .jx-shell[data-jx-route='graphics']::after { background: rgb(243 239 230 / 0.6); opacity: 1; mix-blend-mode: normal; }
+  .jx-shell[data-jx-layer='tool'] .eyebrow:not(:is(.ai-page, .ai-actionbar, .glass-dialog) *) { color: var(--jx-fg-secondary); }
+  .jx-shell[data-jx-layer='tool']:not([data-jx-route='graphics']) .scene-atmosphere { opacity: 0; }
+  :root[data-theme='day'] .jx-shell[data-jx-layer='tool']:not([data-jx-route='graphics'])::before { background: linear-gradient(rgb(243 239 230 / 0.92), rgb(243 239 230 / 0.95)), var(--jx-scene-poster-desktop, url('/scenes/gate-moonlight.webp')) center / cover no-repeat; }
+  @media (max-width: 720px) {
+    .jx-shell[data-jx-layer='tool']:not([data-jx-route='graphics'])::before { background-image: linear-gradient(rgb(8 23 34 / 0.9), rgb(8 23 34 / 0.94)), var(--jx-scene-poster-mobile, url('/scenes/gate-moonlight-mobile.webp')); }
+    :root[data-theme='day'] .jx-shell[data-jx-layer='tool']:not([data-jx-route='graphics'])::before { background-image: linear-gradient(rgb(243 239 230 / 0.92), rgb(243 239 230 / 0.95)), var(--jx-scene-poster-mobile, url('/scenes/gate-moonlight-mobile.webp')); }
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Materials                                                           */
+/* ------------------------------------------------------------------ */
+@layer jx.materials {
+  .jx-mat-metal { background: var(--jx-mat-metal-fill); box-shadow: 0 0 0 1px var(--jx-mat-metal-rim), var(--jx-mat-highlight); border-radius: var(--jx-radius-small); }
+  .jx-mat-paper { background: var(--jx-surface-reading); border-radius: var(--jx-radius-small); }
+  .jx-mat-frost { background: var(--jx-mat-frost-fill); -webkit-backdrop-filter: var(--jx-mat-frost-blur); backdrop-filter: var(--jx-mat-frost-blur); border-radius: var(--jx-radius-panel); }
+}
+
+/* ------------------------------------------------------------------ */
+/* Components                                                          */
+/* ------------------------------------------------------------------ */
+@layer jx.components {
+  /* Buttons: one primary meaning (灵玉青 = 可以操作), one secondary, one quiet. */
+  .jx-shell :is(button.primary, a.primary):not(:is(.ai-page, .ai-actionbar, .glass-dialog) *) {
+    color: var(--jx-fg-on-accent); background: var(--jx-accent); border: 1px solid transparent; border-radius: var(--jx-radius-card);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.28), var(--jx-shadow-raise); font-weight: 600;
+    transition: background-color var(--jx-dur-quick) var(--jx-ease-out), transform var(--jx-dur-quick) var(--jx-ease-out), box-shadow var(--jx-dur-quick) var(--jx-ease-out);
+  }
+  .jx-shell :is(button.primary, a.primary):not(:is(.ai-page, .ai-actionbar, .glass-dialog) *):hover:not(:disabled) { background: var(--jx-accent-hover); transform: translateY(-1px); }
+  .jx-shell :is(button.primary, a.primary):not(:is(.ai-page, .ai-actionbar, .glass-dialog) *):active:not(:disabled) { transform: scale(0.98); }
+  .jx-shell :is(button.primary):not(:is(.ai-page, .ai-actionbar, .glass-dialog) *) span { opacity: 0.78; }
+  .jx-shell :is(button.secondary, a.secondary):not(:is(.ai-page, .ai-actionbar, .glass-dialog) *) {
+    color: var(--jx-fg-body); background: var(--jx-surface-2); border: 1px solid var(--jx-line-control); border-radius: var(--jx-radius-card);
+    transition: border-color var(--jx-dur-quick) var(--jx-ease-out), background-color var(--jx-dur-quick) var(--jx-ease-out);
+  }
+  .jx-shell :is(button.secondary, a.secondary):not(:is(.ai-page, .ai-actionbar, .glass-dialog) *):hover:not(:disabled) { border-color: var(--jx-accent); background: var(--jx-surface-3); }
+  .jx-shell button.quiet-action:not(:is(.ai-page, .ai-actionbar, .glass-dialog) *) { color: var(--jx-fg-secondary); background: transparent; border: 1px dashed var(--jx-line-default); border-radius: var(--jx-radius-card); }
+  .jx-shell button.quiet-action:not(:is(.ai-page, .ai-actionbar, .glass-dialog) *):hover { color: var(--jx-fg-strong); border-color: var(--jx-accent); }
+  .jx-shell :is(.primary, .secondary, .quiet-action):not(:is(.ai-page, .ai-actionbar, .glass-dialog) *) { font-family: var(--jx-font-ui); }
+
+  /* Eyebrows: keep the information, drop the tracked-out template look. */
+  .jx-shell .eyebrow:not(:is(.ai-page, .ai-actionbar, .glass-dialog) *) { color: var(--jx-fg-muted); letter-spacing: 0.04em; font-family: var(--jx-font-ui); }
+
+  /* 浑天环 */
+  .jx-armillary { display: block; overflow: visible; color: var(--jx-ornament); pointer-events: none; }
+  .jx-armillary-ring { fill: none; stroke: currentColor; stroke-linecap: round; }
+  .jx-armillary-ticks line { stroke: currentColor; stroke-linecap: round; }
+  .jx-armillary-star { fill: var(--jx-fg-strong); }
+  @media (prefers-reduced-motion: no-preference) {
+    .jx-shell:not([data-jx-motion='reduced']):not([data-jx-data-saver]) .jx-armillary--draw .jx-armillary-ring { stroke-dasharray: 1; stroke-dashoffset: 1; animation: jx-ring-draw var(--jx-dur-ceremony) var(--jx-ease-ink) forwards; }
+    .jx-shell:not([data-jx-motion='reduced']):not([data-jx-data-saver]) .jx-armillary--draw .jx-armillary-ticks { opacity: 0; animation: jx-fade-in 600ms var(--jx-ease-ink) 900ms forwards; }
+    .jx-shell:not([data-jx-motion='reduced']):not([data-jx-data-saver]) .jx-armillary--draw .jx-armillary-star { opacity: 0; animation: jx-fade-in 320ms ease-out forwards; }
+  }
+  @keyframes jx-ring-draw { to { stroke-dashoffset: 0; } }
+  @keyframes jx-fade-in { to { opacity: 1; } }
+  @keyframes jx-spin { to { transform: rotate(360deg); } }
+
+  /* 朱印：字由 CSS 绘制，不进入 innerText。 */
+  .jx-seal { display: inline-grid; place-items: center; flex: none; width: 22px; height: 22px; border-radius: var(--jx-radius-seal); background: var(--jx-seal); box-shadow: inset 0 0 0 1.5px rgb(246 233 230 / 0.16); transform: rotate(-3deg); }
+  .jx-seal::before { content: '霄'; color: #f6e9e6; font-family: var(--jx-font-brand); font-size: var(--jx-type-seal); line-height: 1; }
+  .jx-seal--lg { width: 46px; height: 46px; border-radius: var(--jx-radius-small); }
+  .jx-seal--lg::before { content: '九霄'; writing-mode: vertical-rl; font-size: var(--jx-type-seal-lg); letter-spacing: 0; }
+
+  /* 首字占位 */
+  .jx-monogram { position: relative; display: grid; place-items: center; overflow: hidden; background: radial-gradient(120% 80% at 50% 38%, color-mix(in srgb, var(--jx-monogram-pigment, var(--jx-pigment-1)) 36%, transparent), transparent 62%), linear-gradient(180deg, var(--jx-c-xuan-800), var(--jx-c-xuan-900)); color: rgb(241 238 232 / 0.9); font-family: var(--jx-font-literary); font-weight: 600; }
+  :root[data-theme='day'] .jx-monogram { background: radial-gradient(120% 80% at 50% 38%, color-mix(in srgb, var(--jx-monogram-pigment, var(--jx-pigment-1)) 28%, transparent), transparent 64%), linear-gradient(180deg, var(--jx-c-zhi-50), var(--jx-c-zhi-300)); color: var(--jx-c-mo-800); }
+
+  /* 月洞门 */
+  .jx-moongate { position: relative; display: block; width: 100%; aspect-ratio: 1; border-radius: 50%; overflow: hidden; box-shadow: 0 0 0 1px var(--jx-line-ornament), inset 0 0 0 1px rgb(241 238 232 / 0.12), var(--jx-shadow-float); transition: box-shadow var(--jx-dur-base) var(--jx-ease-out); }
+  .jx-moongate-view { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform 600ms var(--jx-ease-out); }
+  .jx-moongate::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: radial-gradient(80% 80% at 50% 30%, transparent 40%, rgb(5 14 21 / 0.45)); }
+
+  /* 回执卡：失败与恢复 */
+  .jx-shell .card-session-pending:not(:is(.ai-page *)),
+  .jx-shell .jx-receipt { border-left: 3px solid var(--jx-status-warning); border-radius: var(--jx-radius-small); background: var(--jx-surface-2); }
+
+  /* 空态 */
+  .jx-empty { display: grid; justify-items: start; gap: var(--jx-space-3); padding: var(--jx-space-6) var(--jx-space-5); }
+  .jx-empty .jx-armillary { width: 72px; height: 72px; opacity: 0.8; }
+  .jx-empty p { margin: 0; color: var(--jx-fg-secondary); max-width: 32em; }
+
+  /* 星环等待（仅真实 AI 生成时使用） */
+  .jx-wait-ring { display: inline-block; width: 16px; height: 16px; vertical-align: -3px; color: currentColor; }
+  @media (prefers-reduced-motion: no-preference) {
+    .jx-shell:not([data-jx-motion='reduced']) .jx-wait-ring { animation: jx-spin 3s linear infinite; }
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Shell: header, menu, footer, bottom navigation                      */
+/* ------------------------------------------------------------------ */
+@layer jx.layouts {
+  .jx-shell > header .brand { display: inline-flex; align-items: center; gap: var(--jx-space-2); min-height: var(--jx-touch-target-min); color: var(--jx-fg-strong); font-family: var(--jx-font-brand); font-size: var(--jx-type-subhead); letter-spacing: 0.1em; text-shadow: none; }
+  .jx-shell > header .brand .brand-word { line-height: 1; }
+  .jx-shell > header nav { gap: var(--jx-space-1); }
+  .jx-shell > header nav button { position: relative; min-height: var(--jx-touch-target-min); padding: 0 var(--jx-space-3); color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); font-size: var(--jx-type-small); border-radius: var(--jx-radius-control); transition: color var(--jx-dur-quick) var(--jx-ease-out), background-color var(--jx-dur-quick) var(--jx-ease-out); }
+  .jx-shell > header nav button:hover { color: var(--jx-fg-strong); background: rgb(174 184 188 / 0.08); }
+  .jx-shell > header nav button[aria-current='page'] { color: var(--jx-fg-strong); }
+  .jx-shell > header nav button[aria-current='page']::after { content: ''; position: absolute; left: var(--jx-space-3); right: var(--jx-space-3); bottom: 6px; height: 2px; border-radius: var(--jx-radius-hairline); background: var(--jx-accent); }
+  .jx-shell > header .header-tools button { font-family: var(--jx-font-ui); }
+
+  /* 书阁、案头：顶栏改为实色，让位给正文。 */
+  .jx-shell:is([data-jx-layer='story'], [data-jx-layer='tool']) > header { height: var(--jx-header-h-compact); background: var(--jx-surface-1); box-shadow: 0 1px 0 var(--jx-line-subtle); border-bottom-color: var(--jx-line-subtle); }
+  .jx-shell:is([data-jx-layer='story'], [data-jx-layer='tool']) > header .liquid-glass-optics { display: none; }
+
+  /* 菜单抽屉：月光磨砂。 */
+  .jx-shell > aside { font-family: var(--jx-font-ui); }
+
+  /* 页脚：安静的两行。 */
+  .jx-shell > footer { gap: var(--jx-space-2) var(--jx-space-5); color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); }
+
+  /* 移动端灵境层底部导航。 */
+  .jx-bottom-nav { display: none; }
+  @media (max-width: 599px) {
+    .jx-shell[data-jx-layer='lobby']:not(.landing-shell) .jx-bottom-nav {
+      position: fixed; z-index: 40; left: 0; right: 0; bottom: 0; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr);
+      padding: var(--jx-space-1) max(var(--jx-space-2), env(safe-area-inset-right)) max(var(--jx-space-1), env(safe-area-inset-bottom)) max(var(--jx-space-2), env(safe-area-inset-left));
+      background: var(--jx-mat-frost-fill); -webkit-backdrop-filter: var(--jx-mat-frost-blur); backdrop-filter: var(--jx-mat-frost-blur); box-shadow: 0 -1px 0 var(--jx-line-subtle);
+    }
+    .jx-shell[data-jx-layer='lobby']:not(.landing-shell) > footer { padding-bottom: calc(var(--jx-bottom-nav-h) + var(--jx-space-5) + env(safe-area-inset-bottom)); }
+    .jx-bottom-nav button { position: relative; display: grid; place-items: center; min-height: 48px; padding: var(--jx-space-1); color: var(--jx-fg-secondary); background: none; border: 0; font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); }
+    .jx-bottom-nav button[aria-current='page'] { color: var(--jx-fg-strong); }
+    .jx-bottom-nav button[aria-current='page']::before { content: ''; position: absolute; top: 2px; width: 18px; height: 2px; border-radius: var(--jx-radius-hairline); background: var(--jx-accent); }
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    .jx-bottom-nav { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; background: var(--jx-surface-1) !important; }
+  }
+}

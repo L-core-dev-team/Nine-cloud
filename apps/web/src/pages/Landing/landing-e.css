@@ -1,0 +1,82 @@
+/* P01 · 首页（JX-UI-E-01）。题字竖排于浑天环中；入口在下，题字在上。 */
+@layer jx.legacy, jx.tokens, jx.base, jx.materials, jx.components, jx.layouts, jx.pages, jx.overrides;
+
+@layer jx.pages {
+  /* 淡墨叠层：用暗角保证文字对比，不再给每段文字套深色底。 */
+  .landing-shell .hero::before {
+    background:
+      radial-gradient(75% 75% at 0% 100%, rgb(5 14 21 / 0.9), rgb(5 14 21 / 0) 72%),
+      linear-gradient(0deg, rgb(5 14 21 / 0.94) 0%, rgb(5 14 21 / 0.82) 34%, rgb(5 14 21 / 0.3) 56%, rgb(5 14 21 / 0) 70%);
+  }
+  :root[data-theme='day'] .landing-shell .hero::before {
+    background:
+      radial-gradient(75% 75% at 0% 100%, rgb(243 239 230 / 0.95), rgb(243 239 230 / 0) 72%),
+      linear-gradient(0deg, rgb(243 239 230 / 0.96) 0%, rgb(243 239 230 / 0.88) 36%, rgb(243 239 230 / 0.4) 58%, rgb(243 239 230 / 0) 72%);
+  }
+
+  .landing-shell .hero > .landing-copy {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 'title title' 'entry .';
+    align-content: space-between; row-gap: var(--jx-space-5);
+    width: 100%; max-width: 1320px;
+    padding-right: clamp(24px, 5vw, 72px); padding-bottom: clamp(32px, 6vh, 64px);
+  }
+
+  .hero-title-group { grid-area: title; justify-self: end; position: relative; display: grid; place-items: center; width: clamp(300px, min(36vw, 54svh), 500px); aspect-ratio: 1; margin-right: clamp(0px, 3vw, 64px); margin-bottom: calc(-0.2 * clamp(300px, min(36vw, 54svh), 500px)); }
+  .hero-title-group .hero-armillary { position: absolute; inset: 0; width: 100%; height: 100%; color: var(--jx-ornament); }
+  /* 月晕：题字背后的一圈暗光（夜）或纸光（昼），让题字在任何场景局部都清晰。 */
+  .hero-title-group::before { content: ''; position: absolute; inset: 14%; border-radius: 50%; background: radial-gradient(closest-side, rgb(5 14 21 / 0.66), rgb(5 14 21 / 0.42) 62%, rgb(5 14 21 / 0)); pointer-events: none; }
+  :root[data-theme='day'] .hero-title-group::before { inset: 4%; background: radial-gradient(closest-side, rgb(243 239 230 / 0.96), rgb(243 239 230 / 0.88) 58%, rgb(243 239 230 / 0.5) 80%, rgb(243 239 230 / 0)); }
+  .hero-lockup { position: relative; display: flex; align-items: flex-end; gap: var(--jx-space-3); }
+  .landing-shell .hero .hero-mark {
+    margin: 0; writing-mode: vertical-rl; text-orientation: upright;
+    color: var(--jx-c-yue-50); font-family: var(--jx-font-brand); font-size: var(--jx-text-brand-vertical); font-weight: 400; line-height: 1; letter-spacing: 0.06em;
+    text-shadow: 0 2px 30px rgb(212 185 135 / 0.2), 0 1px 2px rgb(5 14 21 / 0.6);
+  }
+  :root[data-theme='day'] .landing-shell .hero .hero-mark { color: var(--jx-c-mo-800); text-shadow: 0 1px 18px rgb(255 255 255 / 0.7); }
+  .hero-lockup .hero-seal { margin-bottom: var(--jx-seal-offset); }
+
+  .hero-entry { grid-area: entry; align-self: end; display: grid; gap: var(--jx-space-4); max-width: 34em; }
+  .hero-verse { margin: 0; color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-size: var(--jx-text-verse); line-height: 1.7; letter-spacing: 0.12em; text-shadow: 0 1px 10px rgb(5 14 21 / 0.5); }
+  :root[data-theme='day'] .hero-verse { text-shadow: none; }
+  :root .landing-shell .hero .hero-deck, :root[data-theme='day'] .landing-shell .hero .hero-deck { max-width: none; margin: 0; padding: 0; color: var(--jx-fg-body); background: none; font-size: var(--jx-type-small); letter-spacing: 0; line-height: 1.6; }
+  .hero-actions { display: flex; flex-wrap: wrap; align-items: stretch; gap: var(--jx-space-3); }
+
+  /* 主入口：灵玉玻璃。保留 LiquidGlass 的透射，只染上灵玉青。 */
+  .landing-shell .hero .portal-enter { margin-top: 0; min-width: 196px; min-height: 56px; padding: 0 var(--jx-space-6); border-radius: var(--jx-radius-card); color: var(--jx-c-yue-50); font-family: var(--jx-font-ui); font-size: var(--jx-type-body); font-weight: 600; letter-spacing: 0.12em; background: linear-gradient(150deg, rgb(121 207 196 / 0.34), rgb(79 179 167 / 0.18)); border: 1px solid rgb(166 227 217 / 0.62); box-shadow: inset 0 1px 0 rgb(241 238 232 / 0.32), 0 12px 32px rgb(3 10 17 / 0.36); text-shadow: 0 1px 8px rgb(5 14 21 / 0.45); }
+  .landing-shell .hero .portal-enter:hover { background: linear-gradient(150deg, rgb(121 207 196 / 0.46), rgb(79 179 167 / 0.26)); border-color: var(--jx-c-jade-300); }
+  :root[data-theme='day'] .landing-shell .hero .portal-enter { color: #fff; background: var(--jx-c-jade-700); border-color: rgb(22 86 80 / 0.9); text-shadow: none; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.3), 0 10px 26px rgb(39 49 57 / 0.2); }
+  :root[data-theme='day'] .landing-shell .hero .portal-enter:hover { background: var(--jx-c-jade-800); }
+
+  /* 继续入口：清玻璃次要按钮。 */
+  .landing-shell .hero .landing-read-save { width: auto; min-width: 196px; min-height: 56px; padding: var(--jx-space-2) var(--jx-space-5); align-items: flex-start; justify-content: center; border-radius: var(--jx-radius-card); }
+  .landing-shell .hero .landing-read-save > span { font-family: var(--jx-font-ui); font-size: var(--jx-type-small); font-weight: 600; }
+  .landing-shell .hero .landing-read-save > small { padding: 0; background: none; color: var(--jx-fg-secondary); font-family: var(--jx-font-literary); font-size: var(--jx-type-small); }
+
+  .landing-status { display: flex; flex-wrap: wrap; gap: var(--jx-space-1) var(--jx-space-4); margin: 0; color: var(--jx-fg-body); font-size: var(--jx-type-caption); line-height: 1.7; }
+  .landing-status > span:first-child:not([hidden]) { color: var(--jx-fg-body); }
+  .landing-shell .landing-availability, :root[data-theme='day'] .landing-shell .landing-availability { max-width: 36em; margin: 0; padding: 0; color: inherit; background: none; font-size: inherit; line-height: inherit; }
+  .landing-shell .landing-help { justify-content: flex-start; gap: var(--jx-space-5); }
+  .landing-shell .landing-help a, :root[data-theme='day'] .landing-shell .landing-help a { min-height: var(--jx-touch-target-min); padding: 0; color: var(--jx-fg-body); background: none; font-size: var(--jx-type-small); text-decoration: underline; text-decoration-color: rgb(174 184 188 / 0.45); text-underline-offset: 5px; }
+  .landing-shell .landing-help a:hover { color: var(--jx-accent-hover); text-decoration-color: currentColor; }
+
+  /* 顶栏只留印与题字。 */
+  .landing-shell > header .brand { font-size: var(--jx-type-subhead); }
+
+  @media (max-width: 720px) {
+    .landing-shell .hero > .landing-copy { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'title' 'entry'; padding-right: var(--jx-space-5); }
+    .hero-title-group { width: min(76vw, 300px); margin-right: 0; margin-bottom: 0; }
+    .landing-shell .hero .hero-mark { font-size: var(--jx-text-brand-vertical-compact); }
+    .hero-lockup .hero-seal { width: 36px; height: 36px; }
+    .hero-lockup .hero-seal::before { font-size: var(--jx-type-seal); }
+    .hero-entry { gap: var(--jx-space-3); }
+    .hero-actions > * { flex: 1 1 140px; min-width: 0; }
+    .landing-shell .hero .portal-enter, .landing-shell .hero .landing-read-save { min-width: 0; padding-inline: var(--jx-space-4); }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    :root:not([data-theme='day']) .landing-shell .hero .portal-enter { background: var(--jx-surface-opaque); }
+  }
+  @supports not (backdrop-filter: blur(1px)) {
+    :root:not([data-theme='day']) .landing-shell .hero .portal-enter { background: var(--jx-surface-opaque); }
+  }
+}

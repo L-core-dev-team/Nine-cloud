@@ -1,3 +1,6 @@
+@layer jx.legacy, jx.tokens, jx.base, jx.materials, jx.components, jx.layouts, jx.pages, jx.overrides;
+/* Legacy styles live in the lowest cascade layer (JX-UI-E-01). */
+@layer jx.legacy {
 .liquid-glass-filter-defs {
   position: absolute;
   width: 0;
@@ -269,4 +272,6 @@
 }
 @media (prefers-contrast: more) {
   :root .liquid-glass-surface.liquid-glass--crystal[data-liquid-glass='clear'] { border-width: 2px; }
+}
+
 }

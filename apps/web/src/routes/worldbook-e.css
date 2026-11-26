@@ -1,0 +1,48 @@
+/* P08-b · 角色卡世界书「设定工作台」（JX-UI-E-01）。案头层：书目 / 条目与修订 / 全局设置，三栏。 */
+@layer jx.legacy, jx.tokens, jx.base, jx.materials, jx.components, jx.layouts, jx.pages, jx.overrides;
+
+@layer jx.pages {
+  .card-library > .jx-wb { display: grid; gap: var(--jx-space-4); }
+  .jx-wb h2 { margin: 0; }
+  .jx-wb-notice { margin: 0; color: var(--jx-fg-secondary); font-size: var(--jx-type-small); }
+  .jx-wb-bench { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--jx-space-4); }
+  .jx-wb-bench > div { display: grid; align-content: start; gap: var(--jx-space-3); min-width: 0; padding: var(--jx-space-4); background: var(--jx-surface-1); border-radius: var(--jx-radius-card); box-shadow: 0 0 0 1px var(--jx-line-subtle); }
+  .jx-wb-bench h3 { margin: 0; color: var(--jx-fg-strong); font-family: var(--jx-font-ui); font-size: var(--jx-type-body); font-weight: 600; }
+  .jx-wb-hint { margin: 0; color: var(--jx-fg-secondary); font-size: var(--jx-type-small); line-height: 1.6; }
+  .jx-wb-empty { margin: 0; padding: var(--jx-space-5) 0; color: var(--jx-fg-secondary); font-size: var(--jx-type-small); text-align: center; }
+
+  /* 书目 */
+  .jx-wb-shelf .card-ui-list { display: grid; gap: var(--jx-space-2); margin: 0; padding: 0; }
+  .jx-wb-shelf .card-ui-list > li { display: grid; gap: var(--jx-space-2); padding: var(--jx-space-3); background: transparent; border: 0; border-radius: var(--jx-radius-control); box-shadow: inset 0 0 0 1px var(--jx-line-subtle); }
+  .jx-wb-shelf .card-ui-list > li[aria-current='true'] { background: var(--jx-accent-soft); box-shadow: inset 0 0 0 1px var(--jx-accent); }
+  .jx-wb-book { display: grid; gap: var(--jx-space-1); min-width: 0; }
+  .jx-wb-name { color: var(--jx-fg-strong); font-size: var(--jx-type-small); font-weight: 600; overflow-wrap: anywhere; }
+  .jx-wb-book small { display: inline-flex; align-items: center; gap: var(--jx-space-2); color: var(--jx-fg-secondary); font-size: var(--jx-type-caption); }
+  .jx-wb-book small::before { content: ''; width: 7px; height: 7px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--jx-line-control); }
+  .jx-wb-book small[data-on='true']::before { background: var(--jx-accent); box-shadow: none; }
+  .jx-wb-id { color: var(--jx-fg-muted); font-variant-numeric: tabular-nums; }
+  .jx-wb-shelf .actions { flex-wrap: wrap; gap: var(--jx-space-1); margin: 0; }
+  .jx-wb-shelf .actions button { min-height: 36px; padding: 0 var(--jx-space-2); font-size: var(--jx-type-caption); }
+
+  /* 条目预览：关键词一列，摘要一列，字数在右。 */
+  .jx-wb-entries { display: grid; gap: 0; max-height: 420px; margin: 0; padding: 0; overflow-y: auto; list-style: none; border-radius: var(--jx-radius-control); box-shadow: inset 0 0 0 1px var(--jx-line-subtle); }
+  .jx-wb-entries > li { display: grid; grid-template-columns: minmax(6em, 0.32fr) minmax(0, 1fr) 4.5em; grid-template-areas: 'keys snippet count' 'keys title count'; column-gap: var(--jx-space-3); row-gap: var(--jx-space-1); padding: var(--jx-space-3); font-size: var(--jx-type-small); }
+  .jx-wb-entries > li + li { box-shadow: inset 0 1px 0 var(--jx-line-subtle); }
+  .jx-wb-entries > li[data-off='true'] :is(.jx-wb-keys, .jx-wb-snippet) { color: var(--jx-fg-secondary); }
+  .jx-wb-keys { grid-area: keys; color: var(--jx-fg-strong); font-weight: 600; overflow-wrap: anywhere; }
+  .jx-wb-title { grid-area: title; color: var(--jx-fg-secondary); font-size: var(--jx-type-caption); }
+  .jx-wb-snippet { grid-area: snippet; color: var(--jx-fg-body); font-family: var(--jx-font-literary); line-height: 1.7; overflow-wrap: anywhere; }
+  .jx-wb-off { margin-inline-end: var(--jx-space-2); color: var(--jx-status-warning); font-weight: 600; }
+  .jx-wb-entries small { grid-area: count; text-align: end; color: var(--jx-fg-secondary); font-size: var(--jx-type-caption); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .jx-wb-raw summary { min-height: 40px; color: var(--jx-fg-secondary); font-size: var(--jx-type-small); cursor: pointer; }
+  .jx-wb-editor textarea { min-height: 220px; font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace; font-size: var(--jx-type-small); line-height: 1.6; tab-size: 2; }
+  .jx-wb-count { justify-self: end; margin-top: calc(-1 * var(--jx-space-2)); color: var(--jx-fg-secondary); font-size: var(--jx-type-caption); font-variant-numeric: tabular-nums; }
+
+  @media (min-width: 1100px) {
+    .jx-wb-bench { grid-template-columns: minmax(220px, 0.85fr) minmax(0, 2fr) minmax(220px, 0.9fr); align-items: start; }
+    .jx-wb-bench > .jx-wb-shelf, .jx-wb-bench > .jx-wb-global { position: sticky; top: var(--jx-space-4); }
+  }
+  @media (max-width: 599px) {
+    .jx-wb-entries > li { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 'keys count' 'snippet snippet' 'title title'; }
+  }
+}

@@ -8,6 +8,21 @@ const files = [
   'apps/web/src/style.css',
   'apps/web/src/components/liquid-glass.css',
   'apps/web/src/components/game-shell.css',
+  // JX-UI-E-01: every new product stylesheet joins the audit (scope only grows).
+  'apps/web/src/design-system/tokens-v2.css',
+  'apps/web/src/design-system/jx-e.css',
+  'apps/web/src/design-system/story-e.css',
+  'apps/web/src/design-system/tool-e.css',
+  'apps/web/src/pages/Landing/landing-e.css',
+  'apps/web/src/pages/lobby-e.css',
+  'apps/web/src/pages/world-e.css',
+  'apps/web/src/routes/card-e.css',
+  'apps/web/src/routes/liezhuan-e.css',
+  'apps/web/src/ui/folio-e.css',
+  'apps/web/src/ui/ai-two-e.css',
+  'apps/web/src/routes/worldbook-e.css',
+  'apps/web/src/pages/archive-e.css',
+  'apps/web/src/ui/realm-e.css',
 ];
 const requiredTokens = new Map([
   ['--jx-space-1', '4px'],

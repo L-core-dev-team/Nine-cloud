@@ -1,0 +1,99 @@
+/* 境界铭牌 · 玉璧，与境界图「九重天」（JX-UI-E-01 第三轮）。 */
+@layer jx.legacy, jx.tokens, jx.base, jx.materials, jx.components, jx.layouts, jx.pages, jx.overrides;
+
+@layer jx.pages {
+  .jx-bi {
+    --bi-jade-light: #2f5a5c;
+    --bi-jade: #17363b;
+    --bi-jade-deep: #0a1c22;
+    --bi-flow-start: var(--jx-c-gold-300);
+    --bi-flow-end: var(--jx-c-gold-400);
+    --bi-track: rgb(212 185 135 / 0.18);
+    --bi-tick: rgb(212 185 135 / 0.6);
+    --bi-hole: var(--jx-c-xuan-950);
+    --bi-glyph: var(--jx-c-gold-300);
+    position: relative; display: inline-grid; place-items: center; flex: none;
+    width: 40px; height: 40px;
+  }
+  :root[data-theme='day'] .jx-bi {
+    --bi-jade-light: #e9f1ec; --bi-jade: #cfe0d8; --bi-jade-deep: #9fbcb0;
+    --bi-flow-start: var(--jx-c-gold-700); --bi-flow-end: #5c4724;
+    --bi-track: rgb(125 98 54 / 0.2); --bi-tick: rgb(125 98 54 / 0.65);
+    --bi-hole: var(--jx-c-zhi-50); --bi-glyph: var(--jx-c-gold-700);
+  }
+  .jx-bi--lg { width: 132px; height: 132px; }
+  .jx-bi svg { grid-area: 1 / 1; width: 100%; height: 100%; overflow: visible; }
+  .jx-bi-body { stroke: var(--jx-line-ornament); stroke-width: 0.6; }
+  .jx-bi-ticks line { stroke: var(--bi-tick); stroke-width: 0.8; stroke-linecap: round; }
+  .jx-bi-track { fill: none; stroke: var(--bi-track); stroke-width: 4.6; }
+  .jx-bi-flow { fill: none; stroke-width: 4.6; stroke-linecap: round; transition: stroke-dasharray calc(var(--jx-dur-scene) * 2) var(--jx-ease-ink); }
+  .jx-bi-hole { fill: var(--bi-hole); stroke: var(--jx-line-ornament); stroke-width: 0.5; }
+  .jx-bi-glyph { position: relative; z-index: 1; grid-area: 1 / 1; color: var(--bi-glyph); font-family: var(--jx-font-brand); font-size: var(--jx-type-caption); line-height: 1; }
+  .jx-bi--lg .jx-bi-glyph { font-size: var(--jx-type-section); }
+  .jx-bi[data-perfected='true'] .jx-bi-body { stroke: var(--jx-c-gold-400); stroke-width: 1; }
+
+  /* 顶栏铭牌：璧 + 境界名。 */
+  .jx-shell button.jx-realm {
+    display: inline-flex; align-items: center; gap: var(--jx-space-2); min-height: 44px; padding: 0 var(--jx-space-3) 0 var(--jx-space-1);
+    color: var(--jx-fg-body); background: transparent; border: 1px solid transparent; border-radius: var(--jx-radius-pill); box-shadow: none;
+    font-family: var(--jx-font-ui); cursor: pointer;
+  }
+  .jx-shell button.jx-realm:hover { border-color: var(--jx-line-ornament); background: var(--jx-surface-1); }
+  .jx-shell button.jx-realm:focus-visible { outline: 2px solid var(--jx-focus-ring); outline-offset: 2px; }
+  .jx-realm-text { display: grid; justify-items: start; line-height: 1.25; }
+  .jx-realm-text strong { color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-size: var(--jx-type-small); font-weight: 600; letter-spacing: 0.08em; }
+  .jx-realm-text small { color: var(--jx-fg-secondary); font-size: var(--jx-type-caption); font-variant-numeric: tabular-nums; }
+
+  /* 修为增加：周天运转一次——金光沿璧环走一周，璧身微亮。 */
+  .jx-realm[data-surge='true'] .jx-bi::after { content: ''; grid-area: 1 / 1; width: 100%; height: 100%; border-radius: 50%; background: conic-gradient(from 0deg, transparent 0deg, rgb(230 211 172 / 0.85) 24deg, transparent 60deg); -webkit-mask: radial-gradient(circle, transparent 56%, #000 58%, #000 72%, transparent 74%); mask: radial-gradient(circle, transparent 56%, #000 58%, #000 72%, transparent 74%); animation: jx-bi-orbit 1.4s var(--jx-ease-ink) both; pointer-events: none; }
+  .jx-realm[data-surge='true'] .jx-bi svg { animation: jx-bi-glow 1.6s var(--jx-ease-out) both; }
+  @keyframes jx-bi-orbit { from { transform: rotate(-90deg); opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } to { transform: rotate(270deg); opacity: 0; } }
+  @keyframes jx-bi-glow { 30% { filter: drop-shadow(0 0 6px rgb(230 211 172 / 0.7)); } }
+
+  /* 境界图：九重天自下而上，越往上越淡，像抬头望进云里。 */
+  .jx-realm-chart { display: grid; grid-template-columns: minmax(150px, 0.8fr) minmax(0, 1.6fr); gap: var(--jx-space-6); align-items: stretch; }
+  .game-info-dialog.jx-realm-dialog { width: min(880px, calc(100% - 24px)); max-height: min(90dvh, 860px); }
+  .jx-realm-ladder { display: flex; flex-direction: column-reverse; justify-content: space-between; min-height: 420px; gap: 0; margin: 0; padding: 0; list-style: none; -webkit-mask-image: linear-gradient(to top, #000 55%, rgb(0 0 0 / 0.35) 100%); mask-image: linear-gradient(to top, #000 55%, rgb(0 0 0 / 0.35) 100%); }
+  .jx-realm-ladder li { position: relative; display: flex; align-items: center; justify-content: center; gap: var(--jx-space-2); min-height: calc(46px - var(--rung) * 2px); color: var(--jx-fg-secondary); font-family: var(--jx-font-literary); font-size: var(--jx-type-small); letter-spacing: calc(0.3em - var(--rung) * 0.02em); opacity: calc(1 - var(--rung) * 0.07); }
+  .jx-realm-ladder li::before { content: ''; position: absolute; inset: auto 0 0; height: 1px; background: linear-gradient(to right, transparent, var(--jx-line-ornament) 20%, var(--jx-line-ornament) 80%, transparent); }
+  .jx-realm-ladder li[data-state='current'] { min-height: 64px; color: var(--jx-fg-strong); font-size: var(--jx-type-lead); font-weight: 600; opacity: 1; }
+  .jx-realm-ladder li[data-state='current']::before { height: 2px; background: linear-gradient(to right, transparent, var(--jx-c-gold-400) 15%, var(--jx-c-gold-400) 85%, transparent); }
+  :root[data-theme='day'] .jx-realm-ladder li[data-state='current']::before { background: linear-gradient(to right, transparent, var(--jx-c-gold-700) 15%, var(--jx-c-gold-700) 85%, transparent); }
+  .jx-realm-rung-now { color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); font-weight: 400; letter-spacing: 0; }
+
+  .jx-realm-detail { display: grid; align-content: start; gap: var(--jx-space-4); min-width: 0; }
+  .jx-realm-figure { display: flex; align-items: center; gap: var(--jx-space-5); }
+  .jx-realm-figure p { margin: 0; }
+  .jx-realm-name { color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-size: var(--jx-text-h2); font-weight: 600; letter-spacing: 0.12em; }
+  .jx-realm-numbers { color: var(--jx-fg-secondary); font-size: var(--jx-type-small); font-variant-numeric: tabular-nums; }
+  .jx-realm-note { margin: 0; color: var(--jx-fg-body); font-size: var(--jx-type-small); line-height: 1.8; }
+  .jx-realm-canon { display: grid; gap: var(--jx-space-2); padding: var(--jx-space-4) var(--jx-space-5); background: var(--jx-surface-reading); border-radius: var(--jx-radius-small); box-shadow: inset 0 0 0 1px var(--jx-line-subtle); }
+  .jx-realm-canon h3 { margin: 0; color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-size: var(--jx-type-body); font-weight: 600; letter-spacing: 0.08em; }
+  .jx-realm-canon p { margin: 0; color: var(--jx-fg-body); font-family: var(--jx-font-literary); font-size: var(--jx-type-small); line-height: 1.85; }
+  .jx-realm-canon .jx-realm-source { color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); }
+
+  .story-header > div:first-child { min-width: 0; }
+  /* 本机预览玩法：铭牌挂在“人物与任务状态”的标题行右侧。 */
+  .p2-state-head { display: flex; align-items: center; justify-content: space-between; gap: var(--jx-space-3); flex-wrap: wrap; }
+  .p2-state-head h3 { margin: 0; }
+  @media (max-width: 599px) {
+    .jx-realm-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .jx-shell button.jx-realm { flex: none; padding: 0; }
+    .jx-realm-ladder { min-height: 0; }
+    .jx-realm-chart { grid-template-columns: minmax(0, 1fr); }
+    .jx-realm-ladder { max-height: 300px; }
+    .jx-bi--lg { width: 96px; height: 96px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .jx-bi-flow { transition: none; }
+    .jx-realm[data-surge='true'] .jx-bi::after, .jx-realm[data-surge='true'] .jx-bi svg { animation: none; }
+  }
+  @media (forced-colors: active) {
+    .jx-bi-flow { stroke: Highlight; }
+    .jx-bi-track, .jx-bi-body, .jx-bi-hole { stroke: CanvasText; }
+  }
+}
+
+@layer jx.pages {
+  .jx-shell .story-header .story-utilities button { display: inline-flex; align-items: center; justify-content: center; }
+}

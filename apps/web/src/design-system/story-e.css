@@ -1,0 +1,190 @@
+/*
+ * 书阁层（JX-UI-E-01 P05–P07）：正文是唯一主角。
+ * Presentation only. Reading preferences arrive as data-* attributes on .game-frame.
+ */
+@layer jx.legacy, jx.tokens, jx.base, jx.materials, jx.components, jx.layouts, jx.pages, jx.overrides;
+
+@layer jx.pages {
+  /* ---- 阅读偏好 → 变量 ---- */
+  .jx-shell[data-jx-size='16'] { --jx-reading-size: 1rem; }
+  .jx-shell[data-jx-size='17'] { --jx-reading-size: 1.0625rem; }
+  .jx-shell[data-jx-size='18'] { --jx-reading-size: 1.125rem; }
+  .jx-shell[data-jx-size='20'] { --jx-reading-size: 1.25rem; }
+  .jx-shell[data-jx-size='22'] { --jx-reading-size: 1.375rem; }
+  .jx-shell[data-jx-leading='compact'] { --jx-reading-leading: 1.7; }
+  .jx-shell[data-jx-leading='loose'] { --jx-reading-leading: 2.1; }
+  .jx-shell[data-jx-measure='narrow'] { --jx-reading-measure-n: 32; }
+  .jx-shell[data-jx-measure='wide'] { --jx-reading-measure-n: 46; }
+  /* Resolve the measure on the shell so it follows the reading size there (an absolute width, not em). */
+  .jx-shell { --jx-reading-measure: calc(var(--jx-reading-measure-n) * var(--jx-reading-size)); }
+  .jx-shell[data-jx-reading-font='kai'] { --jx-reading-font: var(--jx-font-literary-kai); }
+  .jx-shell[data-jx-paragraph='book'] { --jx-reading-indent: 2em; --jx-reading-para-gap: 0.35em; }
+  .jx-shell[data-jx-reading-theme='soft'] { --jx-fg-body: var(--jx-c-yue-200); }
+  :root[data-theme='day'] .jx-shell[data-jx-reading-theme='soft'] { --jx-fg-body: var(--jx-c-mo-600); }
+  .jx-shell[data-jx-reading-theme='paper'] .story-reading {
+    --jx-surface-reading: var(--jx-c-zhi-100); --jx-surface-2: var(--jx-c-zhi-50); --jx-fg-body: var(--jx-c-mo-800); --jx-fg-strong: #1b242b;
+    --jx-fg-secondary: var(--jx-c-mo-600); --jx-fg-muted: var(--jx-c-mo-500); --jx-line-subtle: rgb(39 49 57 / 0.1); --jx-line-default: rgb(39 49 57 / 0.18);
+    --jx-accent: var(--jx-c-jade-700); --jx-status-warning: var(--jx-c-warning-day); --jx-status-danger: var(--jx-c-danger-day);
+    --jx-pigment-1: var(--jx-c-pigment-1-day); --jx-pigment-2: var(--jx-c-pigment-2-day); --jx-pigment-3: var(--jx-c-pigment-3-day); --jx-pigment-4: var(--jx-c-pigment-4-day);
+    --jx-pigment-5: var(--jx-c-pigment-5-day); --jx-pigment-6: var(--jx-c-pigment-6-day); --jx-pigment-7: var(--jx-c-pigment-7-day); --jx-pigment-8: var(--jx-c-pigment-8-day);
+    --jx-paper-fiber: var(--jx-paper-fiber-day);
+    color-scheme: light;
+  }
+
+  /* ---- 纸面 ---- */
+  .game-frame .story-reading, .immersive-game .story-reading {
+    color: var(--jx-fg-body); background: var(--jx-surface-reading) var(--jx-paper-fiber) local; border-radius: var(--jx-radius-small);
+    box-shadow: 0 0 0 1px var(--jx-line-subtle), 0 24px 60px rgb(3 10 17 / 0.28);
+    scroll-padding-block: var(--jx-space-6);
+    /* 入卷：正文像挂轴一样自上而下展开一次。遮罩只在动画期间存在，结束后不留在滚动层上。 */
+    animation: jx-unfurl calc(var(--jx-dur-scene) * 1.25) var(--jx-ease-ink) backwards;
+  }
+  @keyframes jx-unfurl {
+    from { -webkit-mask: linear-gradient(to bottom, #000 0 50%, transparent 62%) 0 100% / 100% 200% no-repeat; mask: linear-gradient(to bottom, #000 0 50%, transparent 62%) 0 100% / 100% 200% no-repeat; }
+    to { -webkit-mask: linear-gradient(to bottom, #000 0 50%, transparent 62%) 0 0 / 100% 200% no-repeat; mask: linear-gradient(to bottom, #000 0 50%, transparent 62%) 0 0 / 100% 200% no-repeat; }
+  }
+  :root[data-theme='day'] :is(.game-frame, .immersive-game) .story-reading { box-shadow: 0 0 0 1px var(--jx-line-subtle), 0 18px 40px rgb(39 49 57 / 0.1); }
+  .story-prose, .game-frame .story-reading :is(.card-session-turn, .jx-prose) {
+    font-family: var(--jx-reading-font); font-size: var(--jx-reading-size); line-height: var(--jx-reading-leading);
+    max-width: var(--jx-reading-measure); margin-inline: auto;
+  }
+  .story-prose p { margin: 0 0 var(--jx-reading-para-gap); text-indent: var(--jx-reading-indent); }
+  .story-history-entry { border-top: 0; padding-top: 0; margin-top: var(--jx-reading-turn-gap); }
+  .story-history-entry::before { content: ''; display: block; width: 40px; height: 1px; margin: 0 auto var(--jx-reading-entry-gap); background: var(--jx-line-default); }
+  .story-turn-kind { color: var(--jx-fg-muted); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); letter-spacing: 0; text-indent: 0; }
+
+  /* ---- 角色卡会话：回合 = 批注 + 正文，不用气泡 ---- */
+  .game-frame .story-reading { padding: clamp(20px, 3.4vw, 44px) clamp(16px, 4vw, 56px); }
+  .game-frame .card-session .story-reading { display: block; }
+  .game-frame .story-reading .card-session-turn { display: block; width: 100%; margin: 0 auto; padding: 0; background: none; border: 0; box-shadow: none; border-radius: 0; }
+  .game-frame .story-reading .card-session-turn + .card-session-turn { margin-top: var(--jx-reading-turn-gap); }
+  .game-frame .story-reading .card-session-turn p { margin: 0 0 var(--jx-reading-para-gap); text-indent: var(--jx-reading-indent); }
+  .game-frame .story-reading .card-session-turn .jx-turn-no { margin: 0 0 var(--jx-reading-note-gap); color: var(--jx-fg-muted); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); font-weight: 400; letter-spacing: 0; }
+  .game-frame .story-reading .card-session-turn .jx-act {
+    margin: 0 0 var(--jx-reading-act-gap); padding-left: var(--jx-space-3); border-left: 2px solid var(--jx-accent); text-indent: 0;
+    color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); font-size: calc(var(--jx-reading-size) * 0.85); line-height: 1.65;
+  }
+  .game-frame .story-reading .card-session-turn .jx-act::before { content: '你'; margin-right: var(--jx-reading-note-gap); color: var(--jx-fg-strong); font-weight: 600; }
+  .game-frame .story-reading .card-session-turn .jx-narrative { white-space: pre-wrap; }
+  .jx-visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: calc(-1 * var(--jx-space-optical-1)); overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+  /* 群像：矿彩署名 */
+  .game-frame .story-reading .jx-speaker-turn { --jx-speaker: var(--jx-pigment-1); }
+  .game-frame .story-reading .jx-speaker-turn + .jx-speaker-turn { margin-top: var(--jx-reading-speaker-gap); }
+  .game-frame .story-reading .jx-speaker-turn .jx-speaker { display: flex; align-items: center; gap: var(--jx-space-2); margin: 0 0 var(--jx-reading-speaker-name-gap); color: var(--jx-speaker); font-family: var(--jx-font-literary); font-size: var(--jx-type-small); font-weight: 600; letter-spacing: 0; }
+  .game-frame .story-reading .jx-speaker-turn .jx-speaker::before { content: attr(data-initial); display: inline-grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 50%; color: var(--jx-speaker); background: var(--jx-surface-2); box-shadow: 0 0 0 1.5px currentColor; font-size: var(--jx-type-avatar); }
+  .jx-speaker-avatar { display: inline-grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 50%; color: var(--jx-speaker); background: var(--jx-surface-2); box-shadow: 0 0 0 1.5px currentColor; font-size: var(--jx-type-avatar); }
+  .jx-speaker-id { color: var(--jx-fg-muted); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); font-weight: 400; }
+  .game-frame .story-reading .jx-speaker-turn > p:last-child { padding-left: var(--jx-space-3); border-left: 2px solid var(--jx-speaker); }
+
+  /* 状态与模型信息：安静的说明条，不抢正文 */
+  .game-frame .card-session-status { max-width: var(--jx-reading-measure); margin: 0 auto var(--jx-reading-speaker-gap); color: var(--jx-fg-muted); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); }
+  .game-frame .card-session > .story-column > .card-ui-section,
+  .game-frame .story-reading > .card-ui-section { max-width: var(--jx-reading-measure); margin: 0 auto var(--jx-reading-block-gap); padding: var(--jx-space-3) var(--jx-space-4); background: var(--jx-surface-2); border: 0; border-radius: var(--jx-radius-small); box-shadow: 0 0 0 1px var(--jx-line-subtle); font-family: var(--jx-font-ui); font-size: var(--jx-type-small); }
+  .game-frame > .card-ui-section[aria-label='角色卡模型状态'] { display: flex; flex-wrap: wrap; gap: var(--jx-space-optical-2) var(--jx-space-3); line-height: 1.5; }
+  .game-frame > .card-ui-section[aria-label='角色卡模型状态'] > p { margin: 0; }
+  .game-frame > .card-ui-section[aria-label='角色卡模型状态'] { margin: 0 0 var(--jx-space-2); padding: var(--jx-space-2) var(--jx-space-3); background: var(--jx-surface-1); border: 0; border-radius: var(--jx-radius-control); box-shadow: 0 0 0 1px var(--jx-line-subtle); color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); }
+
+  /* 回执卡：失败与恢复 */
+  .game-frame .card-session-pending, .story-action-feedback {
+    width: 100%; max-width: var(--jx-reading-measure); margin: var(--jx-reading-entry-gap) auto 0; padding: var(--jx-space-3) var(--jx-space-4);
+    color: var(--jx-fg-body); background: var(--jx-surface-2); border: 0; border-left: 3px solid var(--jx-status-warning); border-radius: var(--jx-radius-small);
+    font-family: var(--jx-font-ui); font-size: var(--jx-type-small); line-height: 1.7; text-indent: 0;
+  }
+  .story-action-feedback { border-left-color: var(--jx-accent); }
+  .story-reading > .story-action-feedback:first-child, .story-reading > :first-child .story-action-feedback { margin-top: 0; }
+  .story-action-area .story-action-feedback { width: auto; max-width: none; margin: 0; border-left-color: var(--jx-status-warning); }
+  .story-recovery-actions button, .game-frame .card-session-pending .actions button, .game-frame .card-session-pending > button, .card-library button:not([class]), .game-frame .card-session button:not([class]), .jx-shell > main > section.card > button:not([class]) {
+    min-height: 44px; padding: 0 var(--jx-space-4); color: var(--jx-fg-body); background: var(--jx-surface-2); border: 1px solid var(--jx-line-control); border-radius: var(--jx-radius-control);
+    font-family: var(--jx-font-ui); font-size: var(--jx-type-small); transition: border-color var(--jx-dur-quick) var(--jx-ease-out);
+  }
+  :is(.story-recovery-actions button, .game-frame .card-session-pending .actions button, .game-frame .card-session-pending > button, .card-library button:not([class]), .game-frame .card-session button:not([class]), .jx-shell > main > section.card > button:not([class])):hover:not(:disabled) { border-color: var(--jx-accent); }
+  .jx-shell[data-jx-layer='story'] :is(.story-help, .game-footer-details, .story-action-area) a { color: var(--jx-fg-body); text-decoration-color: var(--jx-line-strong); text-underline-offset: 3px; }
+  .jx-shell[data-jx-layer='story'] :is(.story-help, .game-footer-details, .story-action-area) a:hover { color: var(--jx-accent); }
+  .story-action-feedback h2 { font-family: var(--jx-font-ui); font-size: var(--jx-type-body); font-weight: 600; }
+
+  /* ---- 玉案：输入栏 ---- */
+  .game-frame .intent-composer, .story-action-area {
+    color: var(--jx-fg-body); background: var(--jx-surface-1); border: 0; border-radius: var(--jx-radius-card);
+    box-shadow: 0 0 0 1px var(--jx-line-default), inset 0 1px 0 rgb(241 238 232 / 0.05), 0 12px 28px rgb(3 10 17 / 0.22);
+    font-family: var(--jx-font-ui);
+  }
+  :root[data-theme='day'] :is(.game-frame .intent-composer, .story-action-area) { box-shadow: 0 0 0 1px var(--jx-line-default), 0 10px 24px rgb(39 49 57 / 0.08); }
+  .game-frame .intent-composer > label, .story-composer label { color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); font-size: var(--jx-type-small); }
+  .game-frame .intent-composer textarea, .story-composer textarea {
+    color: var(--jx-fg-strong); background: var(--jx-surface-sunken); border-radius: var(--jx-radius-control); font-family: var(--jx-font-ui); line-height: 1.6;
+    transition: box-shadow var(--jx-dur-quick) var(--jx-ease-out);
+  }
+  :root[data-theme='day'] :is(.game-frame .intent-composer textarea, .story-composer textarea) { background: #fff; }
+  .game-frame .intent-composer textarea:focus-visible, .story-composer textarea:focus-visible { outline: 2px solid var(--jx-focus-ring); outline-offset: 1px; }
+  .story-action-instruction { color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); }
+  .story-suggestion {
+    color: var(--jx-fg-body); background: var(--jx-surface-2); border: 1px solid var(--jx-line-control); border-radius: var(--jx-radius-pill);
+    font-family: var(--jx-font-ui); transition: border-color var(--jx-dur-quick) var(--jx-ease-out), background-color var(--jx-dur-quick) var(--jx-ease-out);
+  }
+  .story-suggestion:hover { border-color: var(--jx-accent); background: var(--jx-accent-soft); }
+  .story-help[open] { color: var(--jx-fg-body); background: var(--jx-surface-2); }
+
+  /* ---- 点将台：群聊发言控制 ---- */
+  .game-frame .card-group-controls { padding: var(--jx-space-2) var(--jx-space-3); background: var(--jx-surface-1); border-radius: var(--jx-radius-card); box-shadow: 0 0 0 1px var(--jx-line-subtle); font-family: var(--jx-font-ui); font-size: var(--jx-type-small); }
+  .game-frame .card-group-controls > label:first-child { display: flex; align-items: center; gap: var(--jx-space-2); color: var(--jx-fg-secondary); }
+  .game-frame .card-group-controls [role='group'] .card-ui-check { padding: 0 var(--jx-space-3) 0 var(--jx-space-2); border-radius: var(--jx-radius-pill); background: var(--jx-surface-2); box-shadow: inset 0 0 0 1px var(--jx-line-default); color: var(--jx-fg-body); }
+  .game-frame .card-group-controls [role='group'] .card-ui-check:has(input:checked) { box-shadow: inset 0 0 0 1.5px var(--jx-accent); background: var(--jx-accent-soft); color: var(--jx-fg-strong); }
+  .game-frame .card-group-controls input { accent-color: var(--jx-accent); }
+
+  /* ---- 顶行与地点铭牌 ---- */
+  .game-frame .game-topline h1, .story-header h1 { color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-weight: 600; letter-spacing: 0.06em; }
+  .game-frame .game-topline > div > span, .story-header .eyebrow { color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); letter-spacing: 0; }
+  .story-header { position: relative; padding: var(--jx-space-1) var(--jx-space-4) var(--jx-space-1) var(--jx-space-7); background: var(--jx-mat-metal-fill); border-radius: var(--jx-radius-small); box-shadow: 0 0 0 1px var(--jx-mat-metal-rim), var(--jx-mat-highlight); overflow: hidden; }
+  .story-header::after {
+    content: ''; position: absolute; left: 12px; top: 50%; width: 28px; height: 28px; transform: translateY(-50%); pointer-events: none; opacity: 0.85;
+    background: no-repeat center / contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='none' stroke='%23d4b987' stroke-linecap='round'%3E%3Ccircle cx='50' cy='50' r='45' stroke-width='.6'/%3E%3Cellipse cx='50' cy='50' rx='45' ry='15' transform='rotate(-18 50 50)' stroke-width='.5'/%3E%3Cpath d='M50 5v4M95 50h-4M50 95v-4M5 50h4M82 18l-2.5 2.5M82 82l-2.5-2.5' stroke-width='.6'/%3E%3C/g%3E%3C/svg%3E");
+  }
+  .story-utilities { position: relative; z-index: 1; color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); }
+  .game-frame .game-statusline { color: var(--jx-fg-secondary); background: var(--jx-surface-1); box-shadow: 0 0 0 1px var(--jx-line-subtle); font-family: var(--jx-font-ui); }
+
+  /* ---- 有新回复 ---- */
+  .jx-new-reply { position: absolute; z-index: 3; left: 50%; transform: translateX(-50%); bottom: var(--jx-space-3); min-height: 36px; padding: 0 var(--jx-space-4); border-radius: var(--jx-radius-pill); color: var(--jx-fg-strong); background: var(--jx-surface-3); box-shadow: 0 0 0 1px rgb(121 207 196 / 0.5), 0 8px 20px rgb(3 10 17 / 0.4); font-family: var(--jx-font-ui); font-size: var(--jx-type-small); }
+  :root[data-theme='day'] .jx-new-reply { box-shadow: 0 0 0 1px rgb(29 107 99 / 0.5), 0 8px 20px rgb(39 49 57 / 0.16); }
+  .jx-reading-wrap { position: relative; min-height: 0; display: flex; flex-direction: column; flex: 1 1 auto; }
+  .jx-reading-wrap > .story-reading { flex: 1 1 auto; }
+
+  /* ---- 新段落：墨迹晕开 ---- */
+  @media (prefers-reduced-motion: no-preference) {
+    .jx-shell:not([data-jx-motion='reduced']) .story-reading [data-reading-id][data-jx-new] { animation: jx-ink-in 220ms var(--jx-ease-ink) both; }
+  }
+  @keyframes jx-ink-in { from { opacity: 0; filter: blur(2px); } to { opacity: 1; filter: none; } }
+
+  /* ---- 阅读设置面板 ---- */
+  .jx-reading-prefs-toggle { min-height: 44px; min-width: 44px; padding: 0 var(--jx-space-3); color: var(--jx-fg-secondary); background: transparent; border: 1px solid var(--jx-line-default); border-radius: var(--jx-radius-control); font-family: var(--jx-font-literary); font-size: var(--jx-type-small); }
+  .jx-reading-prefs-toggle:hover { color: var(--jx-fg-strong); border-color: var(--jx-accent); }
+  .jx-reading-prefs { width: min(360px, calc(100vw - 24px)); padding: 0; color: var(--jx-fg-body); background: var(--jx-surface-1); border: 0; border-radius: var(--jx-radius-panel); box-shadow: 0 0 0 1px var(--jx-line-default), var(--jx-shadow-float); font-family: var(--jx-font-ui); }
+  .jx-reading-prefs::backdrop { background: rgb(2 8 14 / 0.5); }
+  .jx-reading-prefs-head { display: flex; align-items: center; justify-content: space-between; padding: var(--jx-space-3) var(--jx-space-4); border-bottom: 1px solid var(--jx-line-subtle); }
+  .jx-reading-prefs-head h2 { margin: 0; font-family: var(--jx-font-ui); font-size: var(--jx-type-body); font-weight: 600; }
+  .jx-reading-prefs-head button { min-width: 44px; min-height: 44px; color: inherit; background: none; font-size: var(--jx-type-section); }
+  .jx-reading-prefs-body { display: grid; gap: var(--jx-space-4); padding: var(--jx-space-4); }
+  .jx-reading-prefs fieldset { display: grid; gap: var(--jx-space-2); margin: 0; padding: 0; border: 0; }
+  .jx-reading-prefs legend { margin-bottom: var(--jx-space-2); color: var(--jx-fg-secondary); font-size: var(--jx-type-small); }
+  .jx-segmented { display: flex; flex-wrap: wrap; gap: var(--jx-space-1); }
+  .jx-segmented label { position: relative; display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 40px; padding: 0 var(--jx-space-3); border-radius: var(--jx-radius-control); background: var(--jx-surface-2); box-shadow: inset 0 0 0 1px var(--jx-line-default); color: var(--jx-fg-body); cursor: pointer; font-size: var(--jx-type-small); }
+  .jx-segmented input { position: absolute; opacity: 0; pointer-events: none; }
+  .jx-segmented label:has(input:checked) { color: var(--jx-fg-strong); background: var(--jx-accent-soft); box-shadow: inset 0 0 0 1.5px var(--jx-accent); }
+  .jx-segmented label:has(input:focus-visible) { outline: 2px solid var(--jx-focus-ring); outline-offset: 2px; }
+  .jx-reading-prefs-note { margin: 0; color: var(--jx-fg-muted); font-size: var(--jx-type-caption); }
+}
+
+/* 手机书阁：顶栏 48px，标题行高固定，字体异步替换后输入栏仍完整留在视口内（P11）。 */
+@layer jx.pages {
+  @media (max-width: 599px) {
+    .jx-shell[data-jx-layer='story'] > header { height: var(--jx-header-h-story-compact); }
+    .game-frame .game-topline :is(h1, h2), .story-header h1 { line-height: 1.3; }
+  }
+}
+
+/* 游玩页外壳高度：取 visualViewport 写入值与 100dvh 的较小者。旋转或缩小窗口时，
+   dvh 与布局同步更新，避免 resize 事件到达前的一帧里输入栏被挤出视口；
+   软键盘弹出时可视高度更小，仍以它为准。 */
+@layer jx.pages {
+  .jx-shell:has(.game-frame) { height: min(var(--jx-game-viewport-height, 100dvh), 100dvh); }
+}

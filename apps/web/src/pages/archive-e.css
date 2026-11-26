@@ -1,0 +1,192 @@
+/* P10 · 修行档案馆（JX-UI-E-01）：存档是一面墙上悬挂的命牌；账号与云档、山河光景同属案头，但沿用这一套材质。 */
+@layer jx.legacy, jx.tokens, jx.base, jx.materials, jx.components, jx.layouts, jx.pages, jx.overrides;
+
+@layer jx.pages {
+  /* ---------------------------------------------------------------- 存档 · 命牌 */
+  .save-manager {
+    --mingpai-arch: 50% 50% var(--jx-radius-card) var(--jx-radius-card) / 72px 72px var(--jx-radius-card) var(--jx-radius-card);
+    --mingpai-jade: linear-gradient(172deg, #183840 0%, #10262f 38%, #0b1b23 100%);
+    --mingpai-rim: rgb(121 207 196 / 0.16);
+    --mingpai-cord: var(--jx-c-gold-400);
+    --mingpai-engrave: 0 1px 0 rgb(0 0 0 / 0.55), 0 -1px 0 rgb(255 255 255 / 0.05);
+    width: min(1120px, calc(100% - 2 * var(--jx-gutter)));
+    margin-inline: auto;
+  }
+  :root[data-theme='day'] .save-manager {
+    --mingpai-jade: linear-gradient(172deg, #f3f6f1 0%, #e7eee9 45%, #dce6e0 100%);
+    --mingpai-rim: rgb(29 107 99 / 0.22);
+    --mingpai-cord: var(--jx-c-gold-700);
+    --mingpai-engrave: 0 1px 0 rgb(255 255 255 / 0.8);
+  }
+  .save-manager > h2 { margin: 0 0 var(--jx-space-3); color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-size: var(--jx-text-h1); font-weight: 600; letter-spacing: 0.08em; }
+  .save-manager-lede { max-width: 40em; margin: 0; color: var(--jx-fg-body); font-size: var(--jx-type-body); line-height: 1.8; }
+  .save-manager-summary { margin: var(--jx-space-2) 0 0; color: var(--jx-fg-secondary); font-size: var(--jx-type-small); }
+  .save-manager-empty { display: grid; justify-items: start; gap: var(--jx-space-4); margin-top: var(--jx-space-6); }
+  .save-manager-empty p { margin: 0; color: var(--jx-fg-secondary); }
+
+  .save-manager-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 272px), 1fr)); align-items: start; gap: var(--jx-space-8) var(--jx-space-5); margin: var(--jx-space-8) 0 var(--jx-space-6); }
+  .save-manager-list .card.jx-mingpai {
+    position: relative; display: grid; align-content: start; gap: var(--jx-space-4);
+    width: auto; max-width: none; margin: 0; padding: var(--jx-space-7) var(--jx-space-5) var(--jx-space-5);
+    color: var(--jx-fg-body); background: var(--mingpai-jade);
+    border: 0; border-radius: var(--mingpai-arch);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.07), inset 0 0 0 1px var(--mingpai-rim), 0 22px 44px rgb(2 8 14 / 0.42);
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+    transition: transform var(--jx-dur-base) var(--jx-ease-out), box-shadow var(--jx-dur-base) var(--jx-ease-out);
+  }
+  :root[data-theme='day'] .save-manager-list .card.jx-mingpai { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.9), inset 0 0 0 1px var(--mingpai-rim), 0 16px 34px rgb(39 49 57 / 0.14); }
+  /* 系绳与绳结：命牌挂在墙上。 */
+  .save-manager-list .card.jx-mingpai::before { content: ''; position: absolute; top: calc(-1 * var(--jx-space-8)); left: 50%; width: 1px; height: calc(var(--jx-space-8) + 4px); background: linear-gradient(to bottom, transparent, var(--mingpai-cord)); opacity: 0.7; transform: translateX(-50%); pointer-events: none; }
+  .save-manager-list .card.jx-mingpai::after { content: ''; position: absolute; top: calc(-1 * var(--jx-space-4)); left: 50%; width: 9px; height: 9px; border: 1px solid var(--mingpai-cord); border-radius: var(--jx-radius-hairline); opacity: 0.75; transform: translateX(-50%) rotate(45deg); pointer-events: none; }
+  /* 最近一次行旅：绳结点亮。 */
+  .save-manager-list .card.jx-mingpai[data-latest='true']::after { background: var(--mingpai-cord); opacity: 1; box-shadow: 0 0 12px rgb(212 185 135 / 0.55); }
+  .save-manager-list .card.jx-mingpai:hover:not([data-editing='true']) { transform: translateY(-3px); }
+
+  .jx-mingpai-head { display: grid; justify-items: center; gap: var(--jx-space-2); text-align: center; }
+  .save-manager-list .jx-mingpai h3 { margin: 0; color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-size: var(--jx-text-h2); font-weight: 600; letter-spacing: 0.16em; text-indent: 0.16em; text-shadow: var(--mingpai-engrave); overflow-wrap: anywhere; }
+  .jx-mingpai-marks { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--jx-space-1); margin: 0; padding: 0; list-style: none; }
+  .jx-mingpai-marks li { padding: 0 var(--jx-space-2); color: var(--jx-fg-secondary); font-size: var(--jx-type-caption); line-height: 1.8; border-radius: var(--jx-radius-pill); box-shadow: inset 0 0 0 1px var(--jx-line-control); }
+  .save-manager-list .jx-mingpai[data-pending='true'] .jx-mingpai-marks li:is(:nth-child(1), :nth-child(2)) { color: var(--jx-fg-strong); }
+
+  .jx-mingpai-facts { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--jx-space-1) var(--jx-space-4); margin: 0; padding: var(--jx-space-3) 0 0; border-top: 1px solid var(--jx-line-ornament); }
+  .jx-mingpai-facts > div { display: contents; }
+  .jx-mingpai-facts dt { color: var(--jx-fg-secondary); font-size: var(--jx-type-small); }
+  .jx-mingpai-facts dd { margin: 0; color: var(--jx-fg-body); font-family: var(--jx-font-literary); font-size: var(--jx-type-small); overflow-wrap: anywhere; }
+  .jx-mingpai-revision { margin: 0; color: var(--jx-fg-secondary); font-size: var(--jx-type-caption); font-variant-numeric: tabular-nums; }
+
+  .save-manager-list .jx-mingpai .actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--jx-space-1); margin: 0; }
+  .save-manager-list .jx-mingpai .actions button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 var(--jx-space-1); font-size: var(--jx-type-small); }
+  .jx-shell .save-manager-list .jx-mingpai .actions button:first-child:not(:disabled) { color: var(--jx-fg-on-accent); background: var(--jx-accent); border-color: var(--jx-accent); }
+  .jx-shell .save-manager button.jx-danger:not(:disabled) { color: var(--jx-status-danger); border-color: rgb(240 144 124 / 0.5); border-style: solid; }
+  :root[data-theme='day'] .jx-shell .save-manager button.jx-danger:not(:disabled) { border-color: rgb(168 58 44 / 0.45); }
+  .jx-shell .save-manager .jx-danger-zone button.primary.jx-danger:not(:disabled) { color: #fff7f4; background: var(--jx-c-danger-day); border-color: var(--jx-c-danger-day); }
+
+  .save-manager-list .save-manager-form { display: grid; gap: var(--jx-space-3); margin: 0; padding: var(--jx-space-4) 0 0; border-top: 1px solid var(--jx-line-subtle); }
+  .save-manager-list .save-manager-form p { margin: 0; color: var(--jx-fg-body); font-size: var(--jx-type-small); line-height: 1.7; }
+  .save-manager-list .save-manager-form label { display: grid; gap: var(--jx-space-1); color: var(--jx-fg-secondary); font-size: var(--jx-type-small); }
+  .save-manager-list .save-manager-form input { min-height: 44px; padding: 0 var(--jx-space-3); color: var(--jx-fg-strong); background: var(--jx-surface-sunken); border: 1px solid var(--jx-line-control); border-radius: var(--jx-radius-control); font-size: var(--jx-type-input-min); }
+  .save-manager-list .save-manager-form button { min-height: 44px; }
+  .save-manager-list .jx-danger-zone { margin-inline: calc(-1 * var(--jx-space-3)); padding: var(--jx-space-4) var(--jx-space-3) var(--jx-space-3); background: rgb(240 144 124 / 0.07); border-top-color: rgb(240 144 124 / 0.4); border-radius: var(--jx-radius-control); }
+  :root[data-theme='day'] .save-manager-list .jx-danger-zone { background: rgb(168 58 44 / 0.06); border-top-color: rgb(168 58 44 / 0.35); }
+  .save-manager > p[role='status'] { color: var(--jx-fg-body); }
+
+  @media (max-width: 599px) {
+    .save-manager-list { gap: var(--jx-space-8) var(--jx-space-4); }
+    .save-manager-list .jx-mingpai .actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .save-manager-list .card.jx-mingpai, .save-manager-list .card.jx-mingpai:hover { transform: none; transition: none; }
+  }
+  @media (forced-colors: active) {
+    .save-manager-list .card.jx-mingpai { border: 1px solid CanvasText; }
+    .save-manager-list .card.jx-mingpai::before, .save-manager-list .card.jx-mingpai::after { display: none; }
+  }
+
+  /* ---------------------------------------------------------------- 账号与云档 */
+  .jx-shell .cloud-page.card { max-width: 980px; padding: clamp(20px, 4vw, 44px); color: var(--jx-fg-body); background: var(--jx-surface-1); border: 0; border-radius: var(--jx-radius-panel); box-shadow: 0 0 0 1px var(--jx-line-subtle), 0 24px 60px rgb(2 8 14 / 0.35); -webkit-backdrop-filter: none; backdrop-filter: none; font-family: var(--jx-font-ui); }
+  :root[data-theme='day'] .jx-shell .cloud-page.card { box-shadow: 0 0 0 1px var(--jx-line-subtle), 0 16px 40px rgb(39 49 57 / 0.1); }
+  .cloud-page .cloud-page-heading { align-items: flex-start; padding-bottom: var(--jx-space-5); border-bottom: 1px solid var(--jx-line-ornament); }
+  .cloud-page .cloud-page-heading .eyebrow { color: var(--jx-fg-secondary); font-size: var(--jx-type-small); letter-spacing: 0.04em; text-transform: none; }
+  .cloud-page h1 { margin: var(--jx-space-1) 0; color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-size: var(--jx-text-h1); font-weight: 600; letter-spacing: 0.12em; }
+  .cloud-page-heading p { color: var(--jx-fg-secondary); font-family: var(--jx-font-literary); font-size: var(--jx-type-body); }
+  .cloud-page .cloud-session-badge { padding: var(--jx-space-1) var(--jx-space-3); color: var(--jx-fg-strong); background: var(--jx-surface-2); border: 0; border-radius: var(--jx-radius-pill); box-shadow: inset 0 0 0 1px var(--jx-line-control); font-size: var(--jx-type-small); }
+  .cloud-page .cloud-status { color: var(--jx-fg-body); background: var(--jx-surface-sunken); border-left: 2px solid var(--jx-accent); border-radius: var(--jx-radius-control); }
+  .cloud-page :is(h2, summary) { color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-weight: 600; letter-spacing: 0.04em; }
+  .cloud-page p { color: var(--jx-fg-body); }
+  .cloud-page .cloud-section-description, .cloud-page .auth-provider-note, .cloud-field-caption, .cloud-page .cloud-section-heading > span, .cloud-page summary > span { color: var(--jx-fg-secondary); }
+  .cloud-page label { color: var(--jx-fg-secondary); }
+  .cloud-page :is(input, select) { color: var(--jx-fg-strong); background: var(--jx-surface-sunken); border: 1px solid var(--jx-line-control); border-radius: var(--jx-radius-control); padding-inline: var(--jx-space-3); }
+  .cloud-page :is(input, select):focus-visible { border-color: var(--jx-accent); outline: 2px solid var(--jx-focus-ring); outline-offset: 1px; }
+  .jx-shell .cloud-page button { color: var(--jx-fg-body); background: transparent; border: 1px solid var(--jx-line-control); border-radius: var(--jx-radius-control); font-family: var(--jx-font-ui); }
+  .jx-shell .cloud-page button:hover:not(:disabled) { color: var(--jx-fg-strong); background: var(--jx-surface-2); border-color: var(--jx-accent); }
+  .jx-shell .cloud-page button.secondary { color: var(--jx-fg-strong); }
+  .cloud-page .auth-method-switch { display: inline-flex; gap: var(--jx-space-optical-2); padding: var(--jx-space-optical-2); background: var(--jx-surface-sunken); border-radius: var(--jx-radius-card); }
+  .jx-shell .cloud-page .auth-method-switch button { border-color: transparent; }
+  .jx-shell .cloud-page .auth-method-switch button[aria-pressed='true'] { color: var(--jx-fg-strong); background: var(--jx-accent-soft); box-shadow: inset 0 0 0 1px var(--jx-accent); }
+  .cloud-page .cloud-block { background: var(--jx-surface-reading); border: 0; border-radius: var(--jx-radius-card); box-shadow: 0 0 0 1px var(--jx-line-subtle); }
+  .cloud-page .cloud-empty { color: var(--jx-fg-secondary); border-color: var(--jx-line-default); }
+  .cloud-save-row { border-top-color: var(--jx-line-subtle); }
+  .cloud-avatar { color: var(--jx-fg-strong); background: var(--jx-surface-2); border: 0; box-shadow: inset 0 0 0 1px var(--jx-line-ornament); font-family: var(--jx-font-literary); }
+  .cloud-page details.cloud-security { box-shadow: 0 0 0 1px rgb(240 144 124 / 0.32); }
+  :root[data-theme='day'] .cloud-page details.cloud-security { box-shadow: 0 0 0 1px rgb(168 58 44 / 0.3); }
+
+  /* ---------------------------------------------------------------- 山河光景 */
+  .graphics-page > .eyebrow { color: var(--jx-fg-secondary); font-size: var(--jx-type-small); letter-spacing: 0.04em; text-transform: none; }
+  .graphics-page > h2 { color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-weight: 600; letter-spacing: 0.1em; }
+  /* 导语题在一条题签上：场景画面在身后流动时，字仍落在纸上。 */
+  .graphics-page .graphics-lede { max-width: 40em; padding: var(--jx-space-3) var(--jx-space-4); color: var(--jx-fg-body); background: color-mix(in srgb, var(--jx-surface-reading) 94%, transparent); border-inline-start: 2px solid var(--jx-line-ornament); border-radius: 0 var(--jx-radius-small) var(--jx-radius-small) 0; font-family: var(--jx-font-literary); font-size: var(--jx-type-body); line-height: 1.85; }
+  .graphics-page .graphics-section { color: var(--jx-fg-body); background: var(--jx-surface-1); border: 0; border-radius: var(--jx-radius-panel); box-shadow: 0 0 0 1px var(--jx-line-subtle), 0 20px 48px rgb(2 8 14 / 0.3); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  :root[data-theme='day'] .graphics-page .graphics-section { box-shadow: 0 0 0 1px var(--jx-line-subtle), 0 14px 36px rgb(39 49 57 / 0.1); }
+  .graphics-page .graphics-section-heading { border-bottom-color: var(--jx-line-ornament); }
+  .graphics-page .graphics-section-heading h3 { color: var(--jx-fg-strong); font-family: var(--jx-font-literary); font-weight: 600; letter-spacing: 0.06em; }
+  .graphics-page .graphics-kicker { color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); font-size: var(--jx-type-small); letter-spacing: 0.04em; text-transform: none; }
+  .graphics-page .graphics-status { color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); }
+  .graphics-page .quiet-note, .graphics-page .quality-description, .graphics-page .graphics-toggle small { color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); }
+
+  /* 场景试览：四扇屏风。画面嵌在木框里，名字题在画面下沿。
+     夜里是灯下的黄花梨，白天换成紫檀——两种木色都让屏风的边界在各自底色上站得住。 */
+  .graphics-page .scene-choice-list { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--jx-space-3); }
+  .jx-shell .graphics-page .scene-choice {
+    --screen-frame: 6px;
+    --screen-wood: #9a7444;
+    /* 外缘 1px 实线：未选中的切换按钮由全站无障碍边线（legacy 层 !important，夜浅昼深）接管颜色，
+       这里的木色只作兜底。有一道真实边框，边界对比就不必依赖截图里像素恰好落在木框上。 */
+    --screen-edge: #a8824f;
+    --screen-ring: var(--jx-c-gold-400);
+    --screen-glint: rgb(255 236 200 / 0.22);
+    --screen-drop: 0 14px 30px rgb(2 8 14 / 0.35);
+    position: relative; display: grid; align-content: end; gap: var(--jx-space-1); aspect-ratio: 3 / 4; min-height: 0; overflow: hidden;
+    padding: var(--jx-space-4); color: #f1eee8; text-align: start;
+    background-color: var(--screen-wood);
+    background-image: linear-gradient(164deg, color-mix(in srgb, var(--screen-wood) 90%, #fff) 0%, var(--screen-wood) 38%, color-mix(in srgb, var(--screen-wood) 93%, #000) 100%);
+    border: 1px solid var(--screen-edge); border-radius: var(--jx-radius-small);
+    box-shadow: inset 0 0 0 1px var(--screen-glint), var(--screen-drop);
+    isolation: isolate; transition: transform var(--jx-dur-base) var(--jx-ease-out), box-shadow var(--jx-dur-base) var(--jx-ease-out);
+  }
+  :root[data-theme='day'] .jx-shell .graphics-page .scene-choice { --screen-wood: #3b2a24; --screen-edge: #3b2a24; --screen-ring: var(--jx-c-gold-700); --screen-glint: rgb(255 236 200 / 0.12); --screen-drop: 0 12px 26px rgb(39 30 22 / 0.22); }
+  .graphics-page .scene-choice-view { position: absolute; inset: var(--screen-frame); z-index: -2; width: calc(100% - var(--screen-frame) * 2); height: calc(100% - var(--screen-frame) * 2); object-fit: cover; filter: saturate(0.85); transition: filter var(--jx-dur-base) var(--jx-ease-out); }
+  .jx-shell .graphics-page .scene-choice::after { content: ''; position: absolute; inset: var(--screen-frame); z-index: -1; background: linear-gradient(to top, rgb(5 14 21 / 0.92) 0%, rgb(5 14 21 / 0.62) 34%, rgb(5 14 21 / 0.08) 66%); pointer-events: none; }
+  .jx-shell .graphics-page .scene-choice:hover:not([aria-pressed='true']) { transform: translateY(-2px); }
+  .jx-shell .graphics-page .scene-choice:hover .scene-choice-view { filter: saturate(1) brightness(1.06); }
+  /* 选中：木框外隔一道底色，再落一圈金线，像屏风前点了一盏灯。 */
+  .jx-shell .graphics-page .scene-choice[aria-pressed='true'] { box-shadow: inset 0 0 0 1px var(--screen-glint), 0 0 0 3px var(--jx-surface-1), 0 0 0 5px var(--screen-ring), var(--screen-drop); }
+  .jx-shell .graphics-page .scene-choice[aria-pressed='true'] .scene-choice-view { filter: saturate(1.05); }
+  .graphics-page .scene-choice strong { color: #f7f3ea; font-family: var(--jx-font-literary); font-size: var(--jx-type-lead); font-weight: 600; letter-spacing: 0.12em; text-shadow: 0 1px 6px rgb(0 0 0 / 0.6); }
+  .graphics-page .scene-choice small { color: #d9dfe2; font-family: var(--jx-font-ui); font-size: var(--jx-type-caption); line-height: 1.5; }
+  .graphics-page .scene-choice .scene-choice-current { color: var(--jx-c-gold-300); font-weight: 600; }
+
+  /* 控件：滑轨与开关用同一套灵玉色，案头层不再出现第二种强调色。 */
+  .graphics-page .graphics-field { color: var(--jx-fg-body); font-family: var(--jx-font-ui); }
+  .graphics-page .graphics-field > span { color: var(--jx-fg-strong); font-family: var(--jx-font-ui); font-variant-numeric: tabular-nums; }
+  .graphics-page .graphics-field select { color: var(--jx-fg-strong); background: var(--jx-surface-sunken); border: 1px solid var(--jx-line-control); border-radius: var(--jx-radius-control); }
+  .graphics-page .graphics-field select option { color: var(--jx-fg-strong); background: var(--jx-surface-1); }
+  .graphics-page input[type='range'] { accent-color: var(--jx-accent); }
+  .graphics-page .range-markers { color: var(--jx-fg-secondary); font-family: var(--jx-font-ui); }
+  .graphics-page .graphics-toggle-grid { border-top-color: var(--jx-line-subtle); }
+  .graphics-page .graphics-toggle { border-bottom-color: var(--jx-line-subtle); }
+  .graphics-page .graphics-toggle strong { color: var(--jx-fg-strong); font-family: var(--jx-font-ui); font-weight: 600; }
+  /* 开关：仍是原生复选框（可访问性与测试不变），只改外形。 */
+  .graphics-page .graphics-toggle input[type='checkbox'] {
+    -webkit-appearance: none; appearance: none; position: relative; flex: none; width: 38px; height: 22px; margin: 0;
+    background: var(--jx-surface-sunken); border-radius: var(--jx-radius-pill); box-shadow: inset 0 0 0 1px var(--jx-line-control);
+    cursor: pointer; transition: background var(--jx-dur-quick) var(--jx-ease-out);
+  }
+  .graphics-page .graphics-toggle input[type='checkbox']::before { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; background: var(--jx-fg-secondary); border-radius: 50%; transition: transform var(--jx-dur-quick) var(--jx-ease-out), background var(--jx-dur-quick) var(--jx-ease-out); }
+  .graphics-page .graphics-toggle input[type='checkbox']:checked { background: var(--jx-accent); box-shadow: none; }
+  .graphics-page .graphics-toggle input[type='checkbox']:checked::before { background: var(--jx-fg-on-accent); transform: translateX(16px); }
+  .graphics-page .graphics-toggle input[type='checkbox']:disabled { opacity: 0.45; cursor: not-allowed; }
+  .graphics-page .graphics-toggle input[type='checkbox']:focus-visible { outline: 2px solid var(--jx-focus-ring); outline-offset: 2px; }
+  .graphics-page .renderer-readout { color: var(--jx-fg-secondary); background: var(--jx-surface-sunken); border-radius: var(--jx-radius-control); font-family: var(--jx-font-ui); }
+  .graphics-page .renderer-readout strong { color: var(--jx-fg-strong); font-variant-numeric: tabular-nums; }
+
+  @media (max-width: 767px) {
+    .graphics-page .scene-choice-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .graphics-page .scene-choice-view, .jx-shell .graphics-page .scene-choice { transition: none; }
+  }
+  @media (forced-colors: active) {
+    .graphics-page .graphics-toggle input[type='checkbox'] { -webkit-appearance: auto; appearance: auto; width: 18px; height: 18px; }
+    .graphics-page .graphics-toggle input[type='checkbox']::before { display: none; }
+  }
+}

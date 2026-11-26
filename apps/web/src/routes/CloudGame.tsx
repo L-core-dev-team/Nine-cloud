@@ -6,6 +6,8 @@ import { CloudHttpError, cloudRequest } from '../cloud-sync';
 import { createIdempotencyKey, readActionDraft, writeActionDraft } from '../storage';
 import { formatReceiptDelta, projectReceiptEvents } from '../receipt-event-view';
 import { GameShell, GameInfoDialog } from '../components/GameShell';
+import { RealmChart, RealmPlaque } from '../ui/RealmSeal';
+import { realmPercent, realmStatusFromSave } from '../ui/realm';
 import {CloudGameCacheBridge} from '../cloud-game-cache-bridge';
 import {buildGameplayBrief} from '../gameplay-brief';
 import type {ReadingPosition} from '../cloud-game-cache';
@@ -376,8 +378,11 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
     }
   },[receipt,currentInHistory,busy,pendingTurn,rememberPosition]);
   const canAct=cacheReady&&!!save&&!busy&&!refreshBusy&&!saveNeedsRefresh&&!pendingTurn&&!rulesUnavailable;
+  const realm=realmStatusFromSave(save);
+  const [showRealm,setShowRealm]=useState(false);
   return <GameShell saveId={saveId} readingReady={!!save&&cacheReady&&!refreshBusy} immersive readingScope={cacheKey} readingPosition={readingPosition} onReadingPositionChange={rememberPosition}>
     <header className="story-header"><div><span className="eyebrow">{ISOLATED_PLAYTEST?'九霄 · 隔离试玩':'九霄 · 行旅'}</span><h1>{scene}</h1></div>
+      {realm&&<RealmPlaque status={realm} onOpen={()=>setShowRealm(true)}/>}
       <div className="story-utilities"><span aria-live="polite">{busy?'正在记录…':pendingTurn?'结果待确认':save?(historyUnavailable?'进度已保存':'经历已保存'):'正在读取…'}</span>
       <button className="quiet-action" onClick={()=>setShowState(true)}>人物 · 行囊</button><button className="quiet-action" onClick={onBack}>离开此局</button></div>
     </header>
@@ -429,9 +434,10 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
       </section>}
     </div>
     {showActions&&<GameInfoDialog label="当前可以尝试" onClose={()=>setShowActions(false)}><p>选择一项填入行动框，确认后才会执行。</p><div className="story-all-actions">{suggestions.map(suggestionButton)}</div></GameInfoDialog>}
+    {showRealm&&realm&&<GameInfoDialog label="境界" className="jx-realm-dialog" onClose={()=>setShowRealm(false)}><RealmChart status={realm}/></GameInfoDialog>}
     {showState&&save&&<GameInfoDialog label="人物与行囊" onClose={()=>setShowState(false)}>
       {profile && <section aria-label="玩家设定"><h2>玩家设定</h2><dl>{Object.entries({name:"姓名",personality:"性格",origin:"出身",appearance:"外貌",goal:"个人目标"}).map(([key,label]) => profile[key as ProfileField] && <div key={key}><dt>{label}</dt><dd>{profile[key as ProfileField]}</dd></div>)}</dl></section>}
-      <h2>规则状态</h2><p>当前地点：{scene}</p><p>体力：{String(save?.state.facts.stamina??'未记录')}</p><h2>行囊</h2>{inventory.length?<ul>{inventory.map(item=><li key={item.name}>{item.name} ×{item.quantity}</li>)}</ul>:<p>暂无可显示的随身物品。</p>}<details><summary>存档与技术详情</summary><pre>{JSON.stringify(save,null,2)}</pre></details><button className="quiet-action" onClick={onLogin}>账号与存档管理</button></GameInfoDialog>}
+      <h2>规则状态</h2><p>当前地点：{scene}</p>{realm&&<p>境界：{realm.realm}期{realm.perfected?'圆满':`（修为 ${realmPercent(realm)}%）`}</p>}<p>体力：{String(save?.state.facts.stamina??'未记录')}</p><h2>行囊</h2>{inventory.length?<ul>{inventory.map(item=><li key={item.name}>{item.name} ×{item.quantity}</li>)}</ul>:<p>暂无可显示的随身物品。</p>}<details><summary>存档与技术详情</summary><pre>{JSON.stringify(save,null,2)}</pre></details><button className="quiet-action" onClick={onLogin}>账号与存档管理</button></GameInfoDialog>}
   </GameShell>;
 }
 

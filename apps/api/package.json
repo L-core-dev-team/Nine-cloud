@@ -17,17 +17,20 @@
   },
   "dependencies": {
     "@hono/node-server": "2.1.3",
-    "@jiuxiao/contracts": "workspace:*",
     "@jiuxiao/content": "workspace:*",
+    "@jiuxiao/contracts": "workspace:*",
     "@jiuxiao/domain": "workspace:*",
     "hono": "4.13.12",
+    "jpeg-js": "0.4.4",
+    "js-tiktoken": "1.0.21",
     "nodemailer": "10.1.4",
     "pg": "8.23.1",
-    "js-tiktoken": "1.0.21"
+    "pngjs": "7.0.0"
   },
   "devDependencies": {
     "@types/nodemailer": "8.0.2",
     "@types/pg": "8.23.1",
+    "@types/pngjs": "6.0.5",
     "tsx": "4.23.15",
     "wrangler": "4.147.0"
   }

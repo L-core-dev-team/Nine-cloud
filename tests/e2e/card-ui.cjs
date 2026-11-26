@@ -62,6 +62,9 @@ const parsed = { kind: 'card', format: 'v3', name: '测试角色', document: { d
         else { const card = { id: CARD, import_id: IMP, parent_id: null, metadata: { source: data.source, notes: data.notes, links: data.links }, parsed }; if (!cards.length) cards.push(card); body = card; conflict = true; }
       } else if (path === `/cards/${CARD}` && method === 'GET') body = cards[0];
       else if (path === `/cards/${CARD}` && method === 'DELETE') { status = 409; body = { error: 'RESOURCE_IN_USE' }; }
+      // The fixture original is four non-PNG bytes, so the real server answers the
+      // shelf thumbnail with THUMBNAIL_UNAVAILABLE and the client decodes locally.
+      else if (/^\/imports\/[^/]+\/thumbnail$/.test(path) && method === 'GET') { status = 404; body = { error: 'THUMBNAIL_UNAVAILABLE' }; }
       else if (path === `/imports/${IMP}/original`) return route.fulfill({ status: 200, contentType: 'application/octet-stream', body: Buffer.from([0, 1, 2, 255]) });
       else if (path === '/sessions' && method === 'POST') { const data = req.postDataJSON(); if (firstSessionId) assert.equal(data.id, firstSessionId); else firstSessionId = data.id; if (viewport.width === 360) history = Array.from({ length: 101 }, (_, i) => ({ key: `history-${i}`, action: `历史行动 ${i}`, narrative: `历史剧情 ${i}`, resulting_revision: i + 1 })); const item = { id: data.id, card_id: data.cardId, revision: history.length }; sessions = [item]; body = item; if (!lostSession) { lostSession = true; return route.abort('failed'); } }
       else if (/^\/sessions\/[^/]+$/.test(path) && method === 'GET') body = { ...sessions[0], revision: history.length, greeting:'测试开场' };

@@ -1,3 +1,6 @@
+@layer jx.legacy, jx.tokens, jx.base, jx.materials, jx.components, jx.layouts, jx.pages, jx.overrides;
+/* Legacy styles live in the lowest cascade layer (JX-UI-E-01). */
+@layer jx.legacy {
 .card-library { display: grid; gap: 1rem; width: min(900px, 100%); margin: 0 auto; padding: 1rem 0 max(1rem, env(safe-area-inset-bottom)); }
 .card-ui-heading, .card-session-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 .card-ui-heading h1, .card-ui-heading p { margin: .25rem 0; }
@@ -42,3 +45,5 @@
 .game-frame .card-session .card-ui-section h2 { font-size: 1rem; }
 .game-frame .card-session .card-ui-section { padding: .5rem; gap: .25rem; }
 .game-frame .card-session .story-reading { gap: .5rem; }
+
+}
