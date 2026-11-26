@@ -1,6 +1,6 @@
 import { createHmac, randomBytes, randomUUID } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
-import type { AuthSession, EmailAuthSession, EmailAuthService, GuestUpgradeResult } from './email-auth.js';
+import type { AuthSession, EmailAuthSession, EmailAuthService, GuestUpgradeResult, RequestCodeOptions } from './email-auth.js';
 import { normalizeEmail, hashToken, SESSION_SECONDS } from './email-auth.js';
 import { AuthFailure } from './auth-failure.js';
 
@@ -43,11 +43,18 @@ export class SupabaseAuthService {
       && this.config.phoneOwnerHourlyLimit > 0 && this.config.phoneOwnerDailyLimit > 0;
   }
 
-  async requestCode(emailValue: unknown, clientIp?: string | null): Promise<'sent' | 'limited'> {
+  async requestCode(emailValue: unknown, clientIp?: string | null, options: RequestCodeOptions = {}): Promise<'sent' | 'limited'> {
     if (!this.config.enabledEmail) throw new AuthFailure('AUTH_PROVIDER_DISABLED', 'auth_config');
     const email = normalizeEmail(emailValue);
     if (clientIp && !await this.reserveProviderIp(clientIp, 60, 60)) return 'limited';
-    return this.requestOtp('email', email);
+    const guestOwnerId = options.guestOwnerId;
+    // Guest-originated codes share the same per-owner and guest sub-pool budget as the local mailer.
+    if (guestOwnerId !== undefined && !await this.sessions.reserveGuestCode(guestOwnerId)) return 'limited';
+    let result: 'sent' | 'limited';
+    try { result = await this.requestOtp('email', email); }
+    catch (error) { if (guestOwnerId !== undefined) await this.sessions.releaseGuestCode(guestOwnerId); throw error; }
+    if (result !== 'sent' && guestOwnerId !== undefined) await this.sessions.releaseGuestCode(guestOwnerId);
+    return result;
   }
 
   async verify(emailValue: unknown, code: unknown, restore = false): Promise<{ session: EmailAuthSession; token: string } | null> {

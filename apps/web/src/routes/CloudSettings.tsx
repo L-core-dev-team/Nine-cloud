@@ -189,7 +189,13 @@ export function CloudSettings({ saves, onRestore }: { saves: LocalSave[]; onRest
         {account.kind === 'guest' && <p>游客会话有效期为 7 天。丢失或清除浏览器站点数据后，无法仅凭存档编号找回云档；连续 90 天无活动后，在线资料进入服务器获批的清理范围，冷备遵循独立政策。</p>}
         {account.kind === 'guest' ? <section aria-label="游客账号升级"><h2>升级为邮箱账号</h2><p>升级会保留当前账号 ID 与云档。邮箱验证码证明你能收取该邮箱；当前游客会话与最终确认共同证明你要保留的游客账号。</p><p>清除浏览器站点数据会删除游客会话凭据。未活动游客在线资料在 90 天后进入经批准的数据清理；托管方冷备遵循独立政策。</p>
           <label>升级邮箱<input type="email" autoComplete="email" value={upgradeEmail} onChange={event => setUpgradeEmail(event.target.value)} disabled={busy} /></label>
-          <button disabled={busy} onClick={() => void act(async () => { await cloudRequest('/api/auth/code', 'POST', { email: upgradeEmail }); return '验证码已发送。请在当前游客会话中完成核验。'; })}>发送升级验证码</button>
+          {providers.emailCaptcha && turnstileSiteKey && <TurnstileBox siteKey={turnstileSiteKey} generation={emailCaptchaGeneration} onToken={setEmailCaptchaToken} />}
+          {providers.emailCaptcha && !turnstileSiteKey && <p className="auth-provider-note">邮箱升级尚未就绪：网站缺少 Turnstile 公钥配置。</p>}
+          <button disabled={busy || (providers.emailCaptcha ? !turnstileSiteKey || !emailCaptchaToken : false)} onClick={() => void act(async () => {
+            const captchaToken = emailCaptchaToken; setEmailCaptchaToken(''); setEmailCaptchaGeneration(value => value + 1);
+            await cloudRequest('/api/auth/code', 'POST', providers.emailCaptcha && turnstileSiteKey ? { email: upgradeEmail, captchaToken } : { email: upgradeEmail });
+            return '验证码已发送。请在当前游客会话中完成核验。';
+          })}>发送升级验证码</button>
           <label>邮箱验证码<input inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={upgradeCode} onChange={event => setUpgradeCode(event.target.value)} disabled={busy} /></label>
           <button disabled={busy} onClick={() => { if (!window.confirm('确认把当前游客账号升级为此已验证邮箱？账号 ID 和云存档归属保持不变。')) return; void act(async () => { const result = await cloudRequest('/api/auth/guest/upgrade', 'POST', { email: upgradeEmail, code: upgradeCode, confirmation: 'UPGRADE_GUEST_TO_EMAIL' }, account.id); const user = readAccount(result.account); if (user.kind !== 'email') throw new Error('INVALID_ACCOUNT'); setAccount(user); setUpgradeCode(''); await refresh(user.id, 0); return '邮箱升级完成；账号 ID 与云档归属保持不变。'; }); }}>核验并升级</button>
         </section>

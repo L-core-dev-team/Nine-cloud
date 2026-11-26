@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createApp } from '../app.js';
 import { AuthFailure } from './auth-failure.js';
-import { EmailAuthService, hashToken, normalizeEmail, SESSION_SECONDS, type AuthSession, type EmailAuthRepository } from './email-auth.js';
+import { EmailAuthService, GUEST_CODE_OWNER_HOURLY, GUEST_CODE_POOL_HOURLY, hashToken, normalizeEmail, SESSION_SECONDS, type AuthSession, type EmailAuthRepository } from './email-auth.js';
 
 class TestAuthRepository implements EmailAuthRepository {
   codes = new Map<string, { digest: string | null; attempts: number; expiresAt: Date; issuedAt: Date }>();
@@ -24,6 +24,21 @@ class TestAuthRepository implements EmailAuthRepository {
   async refundIssue(email: string, ip: string | null, now: Date) {
     const code = this.codes.get(email); if (code) code.issuedAt = new Date(0);
     if (ip) this.ipCounts.set(ip, Math.max((this.ipCounts.get(ip) ?? 1) - 1, 0));
+  }
+  guestCodes = new Map<string, { started: number; count: number }>();
+  private guestBucket(key: string, now: Date) {
+    const current = this.guestCodes.get(key);
+    if (!current || now.getTime() - current.started >= 3_600_000) return { started: now.getTime(), count: 0 };
+    return current;
+  }
+  async issueGuestLimit(ownerId: string, now: Date) {
+    const owner = this.guestBucket(`owner:${ownerId}`, now); const pool = this.guestBucket('pool', now);
+    if (owner.count >= GUEST_CODE_OWNER_HOURLY || pool.count >= GUEST_CODE_POOL_HOURLY) return false;
+    this.guestCodes.set(`owner:${ownerId}`, { ...owner, count: owner.count + 1 });
+    this.guestCodes.set('pool', { ...pool, count: pool.count + 1 }); return true;
+  }
+  async refundGuestLimit(ownerId: string) {
+    for (const key of [`owner:${ownerId}`, 'pool']) { const value = this.guestCodes.get(key); if (value) value.count = Math.max(value.count - 1, 0); }
   }
   async invalidate(email: string, digest: string) { const code = this.codes.get(email); if (code?.digest === digest) code.digest = null; }
   async consume(email: string, digest: string, hash: string, now: Date, expiresAt: Date) {
@@ -230,7 +245,7 @@ describe('anonymous email challenge turnstile gate', () => {
     expect(providers.emailCaptcha).toBe(false);
   });
 
-  it('refuses anonymous requests without a valid token when the verifier is enabled, but skips the gate for sessions', async () => {
+  it('refuses anonymous requests without a valid token when the verifier is enabled', async () => {
     const f = fixture();
     const checked: unknown[] = [];
     const emailCaptcha = async (token: unknown) => {
@@ -249,13 +264,104 @@ describe('anonymous email challenge turnstile gate', () => {
 
     expect((await post(app, { email: 'a@example.invalid', captchaToken: 'good-token' })).status).toBe(202);
     expect(checked).toEqual([null, 'bad-token', 'good-token']);
+  });
 
-    // Authenticated reuse (guest upgrade / unlink confirmation) bypasses the gate.
+  it('does not let a guest session skip Turnstile', async () => {
+    const f = fixture();
+    const checked: unknown[] = [];
+    const emailCaptcha = async (token: unknown) => {
+      checked.push(token);
+      if (token !== 'good-token') throw new AuthFailure(token === null ? 'CAPTCHA_REQUIRED' : 'CAPTCHA_INVALID', 'captcha_verify');
+    };
+    const app = createApp(undefined, undefined, { service: f.service, origin, emailCaptcha });
     const guestResponse = await app.request('/api/auth/guest', { method: 'POST', headers: { origin, 'content-type': 'application/json' }, body: '{}' });
+    expect(guestResponse.status).toBe(201);
     const guestCookie = guestResponse.headers.get('set-cookie')!.split(';')[0]!;
-    const before = checked.length;
-    expect((await post(app, { email: 'upgrade@example.invalid' }, guestCookie)).status).toBe(202);
-    expect(checked.length).toBe(before); // The gate did not run for the authenticated caller.
+
+    const missing = await post(app, { email: 'victim@example.invalid' }, guestCookie);
+    expect(missing.status).toBe(403); expect((await missing.json()).code).toBe('CAPTCHA_REQUIRED');
+    const invalid = await post(app, { email: 'victim@example.invalid', captchaToken: 'bad-token' }, guestCookie);
+    expect(invalid.status).toBe(403); expect((await invalid.json()).code).toBe('CAPTCHA_INVALID');
+    expect(f.sent.size).toBe(0);
+    expect(f.repository.guestCodes.size).toBe(0); // Refused requests never reach the mail budget.
+
+    // The guest-upgrade flow still works once the widget token is supplied.
+    expect((await post(app, { email: 'upgrade@example.invalid', captchaToken: 'good-token' }, guestCookie)).status).toBe(202);
+    expect(checked).toEqual([null, 'bad-token', 'good-token']);
+    const upgraded = await app.request('/api/auth/guest/upgrade', { method: 'POST', headers: { origin, cookie: guestCookie, 'content-type': 'application/json' },
+      body: JSON.stringify({ email: 'upgrade@example.invalid', code: f.sent.get('upgrade@example.invalid'), confirmation: 'UPGRADE_GUEST_TO_EMAIL' }) });
+    expect(upgraded.status).toBe(200);
+  });
+
+  it('skips Turnstile only for a full account confirming its own mailbox', async () => {
+    const f = fixture();
+    const checked: unknown[] = [];
+    const emailCaptcha = async (token: unknown) => {
+      checked.push(token);
+      if (token !== 'good-token') throw new AuthFailure('CAPTCHA_REQUIRED', 'captcha_verify');
+    };
+    const app = createApp(undefined, undefined, { service: f.service, origin, emailCaptcha });
+    expect((await post(app, { email: 'owner@example.invalid', captchaToken: 'good-token' })).status).toBe(202);
+    const login = await app.request('/api/auth/verify', { method: 'POST', headers: { origin, 'content-type': 'application/json' },
+      body: JSON.stringify({ email: 'owner@example.invalid', code: f.sent.get('owner@example.invalid') }) });
+    expect(login.status).toBe(200);
+    const cookie = login.headers.get('set-cookie')!.split(';')[0]!;
+    f.advance(60_000); checked.length = 0;
+
+    // Unlink confirmation: own mailbox (case/whitespace-insensitive) needs no widget.
+    expect((await post(app, { email: ' Owner@Example.invalid ' }, cookie)).status).toBe(202);
+    expect(checked).toEqual([]);
+    // Any other recipient from the same account session is gated like an anonymous request.
+    const other = await post(app, { email: 'someone-else@example.invalid' }, cookie);
+    expect(other.status).toBe(403); expect((await other.json()).code).toBe('CAPTCHA_REQUIRED');
+    expect(f.sent.has('someone-else@example.invalid')).toBe(false);
+    expect((await post(app, { email: 'someone-else@example.invalid', captchaToken: 'good-token' }, cookie)).status).toBe(202);
+    expect(f.repository.guestCodes.size).toBe(0); // Account sessions are not charged to the guest sub-quota.
+  });
+
+  it('caps guest-originated codes per guest and keeps guest traffic inside its sub-pool', async () => {
+    const f = fixture();
+    const app = createApp(undefined, undefined, { service: f.service, origin, emailCaptcha: async () => {} });
+    const guestCookie = (await app.request('/api/auth/guest', { method: 'POST', headers: { origin, 'content-type': 'application/json' }, body: '{}' }))
+      .headers.get('set-cookie')!.split(';')[0]!;
+    for (let i = 0; i < GUEST_CODE_OWNER_HOURLY; i++) {
+      expect((await post(app, { email: `target-${i}@example.invalid`, captchaToken: 'good-token' }, guestCookie)).status).toBe(202);
+    }
+    const over = await post(app, { email: 'target-over@example.invalid', captchaToken: 'good-token' }, guestCookie);
+    expect(over.status).toBe(429); expect((await over.json()).code).toBe('RATE_LIMITED');
+    expect(f.sent.size).toBe(GUEST_CODE_OWNER_HOURLY);
+    // Refreshing the guest cookie does not reset the owner's budget.
+    const refreshed = await app.request('/api/auth/refresh', { method: 'POST', headers: { origin, cookie: guestCookie } });
+    const nextCookie = refreshed.headers.get('set-cookie')!.split(';')[0]!;
+    expect((await post(app, { email: 'target-rotated@example.invalid', captchaToken: 'good-token' }, nextCookie)).status).toBe(429);
+    // Anonymous login is unaffected.
+    expect((await post(app, { email: 'anonymous@example.invalid', captchaToken: 'good-token' })).status).toBe(202);
+    f.advance(3_600_000);
+    expect((await post(app, { email: 'target-next-hour@example.invalid', captchaToken: 'good-token' }, nextCookie)).status).toBe(202);
+
+    // The shared guest sub-pool stops guests well before the global budget.
+    const pooled = fixture();
+    let sent = 0;
+    for (let owner = 0; sent < GUEST_CODE_POOL_HOURLY; owner++) {
+      for (let i = 0; i < GUEST_CODE_OWNER_HOURLY && sent < GUEST_CODE_POOL_HOURLY; i++, sent++) {
+        expect(await pooled.service.requestCode(`pool-${owner}-${i}@example.invalid`, null, { guestOwnerId: `guest-pool-${owner}` })).toBe('sent');
+      }
+    }
+    expect(await pooled.service.requestCode('pool-fresh@example.invalid', null, { guestOwnerId: 'guest-pool-fresh' })).toBe('limited');
+    expect(pooled.sent.has('pool-fresh@example.invalid')).toBe(false);
+    expect(await pooled.service.requestCode('login@example.invalid', null)).toBe('sent');
+  });
+
+  it('returns the guest reservation when the challenge is not issued or the mail fails', async () => {
+    const f = fixture();
+    expect(await f.service.requestCode('same@example.invalid', null, { guestOwnerId: 'guest-refund' })).toBe('sent');
+    // Per-email one-minute cooldown refuses the challenge; the guest is not charged for it.
+    expect(await f.service.requestCode('same@example.invalid', null, { guestOwnerId: 'guest-refund' })).toBe('limited');
+    expect(f.repository.guestCodes.get('owner:guest-refund')!.count).toBe(1);
+    const failing = new EmailAuthService(f.repository, async () => { throw new Error('smtp down'); }, 'x'.repeat(32), () => new Date('2026-10-01T00:00:00Z'));
+    await expect(failing.requestCode('fail@example.invalid', null, { guestOwnerId: 'guest-refund' })).rejects.toThrow('MAIL_UNAVAILABLE');
+    expect(f.repository.guestCodes.get('owner:guest-refund')!.count).toBe(1);
+    expect(f.repository.guestCodes.get('pool')!.count).toBe(1);
   });
 
   it('fails closed with CAPTCHA_UNAVAILABLE when the verification service is unreachable', async () => {

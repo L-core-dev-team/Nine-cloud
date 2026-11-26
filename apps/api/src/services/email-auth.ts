@@ -9,6 +9,10 @@ export interface EmailAuthRepository {
   issue(email: string, digest: string, now: Date, expiresAt: Date): Promise<boolean>;
   issueIpLimit(ip: string, now: Date): Promise<boolean>;
   refundIssue(email: string, ip: string | null, now: Date): Promise<void>;
+  /** Reserve one guest-originated code: per guest owner and against the shared guest sub-pool, atomically. */
+  issueGuestLimit(ownerId: string, now: Date): Promise<boolean>;
+  /** Return a guest reservation whose challenge was not issued or whose mail was not delivered. */
+  refundGuestLimit(ownerId: string, now: Date): Promise<void>;
   invalidate(email: string, digest: string): Promise<void>;
   consume(email: string, digest: string, tokenHash: string, now: Date, expiresAt: Date, restore?: boolean): Promise<EmailAuthSession | null>;
   createGuest(tokenHash: string, now: Date, expiresAt: Date, clientIp: string): Promise<GuestAuthSession | null>;
@@ -19,29 +23,59 @@ export interface EmailAuthRepository {
 }
 export type AuthMailSender = (email: string, code: string) => Promise<void>;
 export const SESSION_SECONDS = 7 * 24 * 60 * 60;
+/** Codes one guest owner may request per hour (guest upgrade to an email address). */
+export const GUEST_CODE_OWNER_HOURLY = 3;
+/** All guests together may consume at most this share of the 600/hour global mail budget. */
+export const GUEST_CODE_POOL_HOURLY = 120;
+/** A code requested from inside a guest session is charged to that guest's sub-quota. */
+export type RequestCodeOptions = { guestOwnerId?: string };
 export class EmailAuthService {
   constructor(private readonly repository: EmailAuthRepository, private readonly send: AuthMailSender,
     private readonly secret: string, private readonly now = () => new Date()) {
     if (Buffer.byteLength(secret) < 32) throw new Error('AUTH_SECRET requires at least 32 bytes');
   }
-  async requestCode(emailValue: unknown, clientIp?: string | null): Promise<'sent' | 'limited'> {
+  async requestCode(emailValue: unknown, clientIp?: string | null, options: RequestCodeOptions = {}): Promise<'sent' | 'limited'> {
     const email = normalizeEmail(emailValue);
     const code = String(randomInt(0, 1_000_000)).padStart(6, '0');
     const digest = this.codeDigest(email, code);
     const now = this.now();
+    const guestOwnerId = options.guestOwnerId;
     if (clientIp) {
       try { if (!await this.repository.issueIpLimit(clientIp, now)) return 'limited'; }
       catch { throw new AuthFailure('VERIFICATION_STORE_FAILED', 'verification_store'); }
     }
-    try { if (!await this.repository.issue(email, digest, now, new Date(now.getTime() + 600_000))) return 'limited'; }
-    catch { throw new AuthFailure('VERIFICATION_STORE_FAILED','verification_store'); }
+    if (guestOwnerId !== undefined && !await this.reserveGuestCode(guestOwnerId)) return 'limited';
+    let issued: boolean;
+    try { issued = await this.repository.issue(email, digest, now, new Date(now.getTime() + 600_000)); }
+    catch {
+      if (guestOwnerId !== undefined) await this.releaseGuestCode(guestOwnerId);
+      throw new AuthFailure('VERIFICATION_STORE_FAILED','verification_store');
+    }
+    if (!issued) {
+      if (guestOwnerId !== undefined) await this.releaseGuestCode(guestOwnerId);
+      return 'limited';
+    }
     try { await this.send(email, code); }
     catch (error) {
-      try { await this.repository.invalidate(email, digest); await this.repository.refundIssue(email, clientIp ?? null, this.now()); }
+      try {
+        await this.repository.invalidate(email, digest); await this.repository.refundIssue(email, clientIp ?? null, this.now());
+        if (guestOwnerId !== undefined) await this.repository.refundGuestLimit(guestOwnerId, this.now());
+      }
       catch { throw new AuthFailure('VERIFICATION_STORE_FAILED','verification_store'); }
       throw error instanceof AuthFailure?error:new AuthFailure('MAIL_UNAVAILABLE','mail_send');
     }
     return 'sent';
+  }
+  /** Charges one guest-originated code to the guest owner and the shared guest sub-pool. Fails closed. */
+  async reserveGuestCode(ownerId: string): Promise<boolean> {
+    if (!ownerId) return false;
+    try { return await this.repository.issueGuestLimit(ownerId, this.now()); }
+    catch { throw new AuthFailure('VERIFICATION_STORE_FAILED', 'verification_store'); }
+  }
+  /** Returns a guest reservation after the code was not issued or not delivered. */
+  async releaseGuestCode(ownerId: string): Promise<void> {
+    try { await this.repository.refundGuestLimit(ownerId, this.now()); }
+    catch { throw new AuthFailure('VERIFICATION_STORE_FAILED', 'verification_store'); }
   }
   async verify(emailValue: unknown, code: unknown, restore=false): Promise<{ session: EmailAuthSession; token: string } | null> {
     const email = normalizeEmail(emailValue);
