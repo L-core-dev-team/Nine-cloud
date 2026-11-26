@@ -75,7 +75,8 @@ try{
   for(const r of results)assert.equal(r.status,200);
   assert.equal(calls,count+1);assert.equal((await raw('退回渡岸',key)).status,409);
   const other=await server.create();assert.equal((await server.app.request('/api/games/'+trial.id,{headers:{cookie:'greywing='+other.token}})).status,404);
-  unknown=true;const lost=randomUUID();assert.equal((await raw('吐纳一刻',lost,8)).status,503);
+  unknown=true;const lost=randomUUID();const unknownTurn=await raw('吐纳一刻',lost,8);assert.equal(unknownTurn.status,200);
+  assert.equal((await unknownTurn.json()).narrative.status,'unconfirmed');
   await server.close();server=await listen({file,generate,source:'mock'});
   const reread=await raw('吐纳一刻',lost,8);assert.equal((await reread.json()).narrative.status,'unconfirmed');
   assert.equal((await raw('观察渡船',randomUUID(),9)).status,503);

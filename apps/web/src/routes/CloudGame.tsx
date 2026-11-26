@@ -314,7 +314,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
     event.preventDefault();
     const utterance = text.trim();
     if (!save || !utterance || busy || refreshBusy || saveNeedsRefresh || pendingTurn || rulesUnavailable) return;
-    if(encounter&&(blockedProse||(useAI&&!encounter.aiAvailable)))return;
+    if(aiUnavailable)return;
     if(encounter?.waiting&&!suggestions.some(item=>item.text===utterance.replace(/[。！]$/u,''))){
       setChoiceHint('还没有出手。请选择一项应对，或输入对应的行动名称。');return;
     }
@@ -387,8 +387,9 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
         fraction:Math.max(0,Math.min(1,(reading.getBoundingClientRect().top-result.getBoundingClientRect().top)/Math.max(1,result.offsetHeight)))});
     }
   },[receipt,currentInHistory,busy,pendingTurn,rememberPosition]);
-  const blockedProse=encounter?.lastStatus&&encounter.lastStatus!=='received';
-  const canAct=!blockedProse&&!(encounter&&useAI&&!encounter.aiAvailable)&&cacheReady&&!!save&&!busy&&!refreshBusy&&!saveNeedsRefresh&&!pendingTurn&&!rulesUnavailable;
+  const missingProse=encounter?.lastStatus&&encounter.lastStatus!=='received';
+  const aiUnavailable=encounter && useAI && (missingProse || !encounter.aiAvailable);
+  const canAct=!aiUnavailable&&cacheReady&&!!save&&!busy&&!refreshBusy&&!saveNeedsRefresh&&!pendingTurn&&!rulesUnavailable;
   return <GameShell saveId={saveId} readingReady={!!save&&cacheReady&&!refreshBusy} immersive readingScope={cacheKey} readingPosition={readingPosition} onReadingPositionChange={rememberPosition}>
     <header className="story-header"><div><span className="eyebrow">{ISOLATED_PLAYTEST?'九霄 · 隔离试玩':'九霄 · 行旅'}</span><h1>{scene}</h1></div>
       <div className="story-utilities"><span aria-live="polite">{busy?'正在记录…':pendingTurn?'结果待确认':save?(historyUnavailable?'进度已保存':'经历已保存'):'正在读取…'}</span>
@@ -399,7 +400,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
         {nextBefore!==null&&<button className="quiet-action" onClick={()=>void loadEarlier()}>读取更早的经历</button>}
         {save&&!!opening.length&&<article className="story-prose" data-reading-id="opening" aria-label="故事开场">{opening.map((line,index)=><p key={index}>{line}</p>)}</article>}
         {save&&history.map(row=><article ref={row.receipt.idempotencyKey===receipt?.idempotencyKey?resultRegion:undefined} className="story-prose story-history-entry" data-reading-id={row.receipt.idempotencyKey} data-story-revision={row.receipt.resultingRevision} key={row.receipt.idempotencyKey}>
-          <span className="story-turn-kind">{turnLabel(row.receipt)}{encounter&&(row.source==='model'?' · AI 正文（已保存）':row.source==='deterministic'?' · 本地正文':row.source==='mock'?' · 模拟正文':'')}{row.source==='local-cache'?' · 本机保留的原文':''}</span>
+          <span className="story-turn-kind">{turnLabel(row.receipt)}{encounter&&row.text&&(row.source==='model'?' · AI 正文（已保存）':row.source==='deterministic'?' · 本地正文':row.source==='mock'?' · 模拟正文':'')}{row.source==='local-cache'?' · 本机保留的原文':''}</span>
           {row.text?<div data-testid={row.receipt.idempotencyKey===receipt?.idempotencyKey?'p2-narrative':undefined}>{row.text.split(/\n+/).map((line,index)=><p key={index}>{line}</p>)}</div>
             :<p className="quiet-note">这段经历的原剧情尚未留存，行动记录仍在。</p>}
         </article>)}
@@ -418,7 +419,7 @@ function CloudGameSession({ saveId, onBack, onHome, onLogin, onWorld }: CloudGam
           const ai=e.target.value==='ai';setUseAI(ai);try{sessionStorage.setItem('greywing-prose-'+saveId,ai?'ai':'local');}catch{/* choice lasts for this view */}
         }}><option value="local">本地正文 · 免费</option><option value="ai">实时 AI 正文 · 按用量计费</option></select></label>
         {useAI&&<small role="status">{!encounter.aiAvailable?'当前试玩进程未配置模型凭据。可选择本地正文。':busy?'正在等待 AI 正文…':'使用当前项目的 gpt-6-luna，每次有效行动最多生成一次。'}</small>}
-        {blockedProse&&<div role="alert">{encounter.lastStatus==='failed'?'供应商请求失败，行动已保存。':'行动已保存，正文状态待核实。'} 已暂停后续行动。<button type="button" onClick={()=>void reloadSave()}>重读原记录</button></div>}
+        {missingProse&&!pendingTurn&&<div role="status">{encounter.lastStatus==='failed'?'行动已生效，这一段 AI 正文未能生成。':'行动已生效，这一段 AI 正文暂未取得。'} 可用免费正文继续。<button type="button" onClick={()=>void reloadSave()}>重读原记录</button></div>}
         </div>}
         <p className="story-action-instruction">{encounter?.risk??'你可以描述自己的行动，九霄会根据当前世界规则决定结果。'}</p>
         {encounter&&choiceHint&&<p role="status">{choiceHint}</p>}

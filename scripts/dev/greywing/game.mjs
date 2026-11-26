@@ -53,8 +53,10 @@ export function openGame(file,generate,source='deterministic'){
     if(step.status==='duplicate')return {status:'duplicate',receipt:step.receipt,narrative:{text:prior.text,source:prior.source,status:prior.status}};
     if(step.status!=='prepared')return {status:step.receipt.decision.status,receipt:step.receipt};
     const previous=db.prepare('SELECT * FROM entries WHERE id=? ORDER BY revision DESC LIMIT 1').get(id);
-    if(previous && previous.status!=='received')throw Error('PREVIOUS_PROSE_UNCONFIRMED');
     const ai=requestedAI.getStore()===true;
+    // Another handler may have committed this key while resolveTurn checked the fingerprint.
+    if(one(id,key))return turns.execute(owner,intent,narrative,signal);
+    if(ai && previous && previous.status!=='received')throw Error('PREVIOUS_PROSE_UNCONFIRMED');
     if(ai&&(!generate||!narrative))throw Error('LIVE_PROSE_UNAVAILABLE');
     const actualSource=ai?source:'deterministic';
     const input=passage(save,step,row.phase,intent.payload.text,previous?.text,row.minutes);
@@ -69,21 +71,24 @@ export function openGame(file,generate,source='deterministic'){
       db.prepare('INSERT INTO entries VALUES(?,?,?,?,?,?,?,?)').run(id,key,step.save.revision,encoded,null,actualSource,'reserved',JSON.stringify(input.record));
       db.exec('COMMIT');
     }catch(error){db.exec('ROLLBACK');throw error}
+    let text;
     try{
-      const text=ai?await generate(input.wire,step.receipt,signal):input.response;
-      db.prepare("UPDATE entries SET text=?,source=?,status='received' WHERE id=? AND k=?").run(text,actualSource,id,key);
-      return {status:'accepted',receipt:step.receipt,narrative:{text,source:actualSource,status:'received'}};
+      text=ai?await generate(input.wire,step.receipt,signal):input.response;
     }catch(error){
-      db.prepare('UPDATE entries SET status=? WHERE id=? AND k=?').run(error.code==='PROVIDER_DECLINED'?'failed':'unconfirmed',id,key);
-      throw error;
+      const status=error?.code==='PROVIDER_DECLINED'?'failed':'unconfirmed';
+      db.prepare('UPDATE entries SET status=? WHERE id=? AND k=?').run(status,id,key);
+      return {status:'accepted',receipt:step.receipt,narrative:{text:null,source:actualSource,status}};
     }
+    db.prepare("UPDATE entries SET text=?,source=?,status='received' WHERE id=? AND k=?").run(text,actualSource,id,key);
+    return {status:'accepted',receipt:step.receipt,narrative:{text,source:actualSource,status:'received'}};
   }};
   const app=new Hono();
   app.use('/api/games/:id/turns',async(c,next)=>{
     const mode=c.req.query('prose');
     if(mode!==undefined && mode!=='ai')return c.json({code:'INVALID_PROSE_MODE'},400);
-    if(mode==='ai'&&!generate)return c.json({code:'LIVE_PROSE_UNAVAILABLE'},503);
-    return requestedAI.run(mode==='ai',next);
+    await requestedAI.run(mode==='ai',next);
+    // Old keys are readable even on a free-only host. New paid turns retain the availability error.
+    if(mode==='ai'&&!generate&&c.res.status===503)c.res=c.json({code:'LIVE_PROSE_UNAVAILABLE'},503);
   });
   const auth={resolveOwnerId:async req=>{
     const token=/^(?:.*; )?greywing=([a-f0-9-]{36})(?:;.*)?$/.exec(req.headers.get('cookie')??'')?.[1];
