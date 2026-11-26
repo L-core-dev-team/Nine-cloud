@@ -43,3 +43,7 @@
 ## 未验证与风险
 
 容器 Git clone DNS 失败；GitHub API 可读树/PR/文件但无法运行真实构建。本次没有逐字阅读全部文件、所有分支树、所有 Markdown，也没有完整逆向依赖扫描、实际 git 祖先关系核对、实际线上部署、Cloudflare/Supabase 运行账户、资产授权核验或本地合作者未提交状态。GitHub deployments/tags API 在当前连接器不允许查询；releases 列表为空，不证明无部署或 tag。全部现存 refs 保护。不得用这份审计作为物理删除许可证。
+
+## 追加：分支祖先证明
+
+已完成固定 main 的完整 732 commit/parent 闭合检查，见 [BRANCH-REVIEW](BRANCH-REVIEW.md)。因此原未完成祖先核对的限制仅适用于 squash/rebase 内容等价、非 main 历史及部署/回滚引用核对，不再适用于精确 tip 的 main 可达性。仍不删除任何原分支。
