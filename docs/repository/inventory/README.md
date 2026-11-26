@@ -16,3 +16,5 @@ file SHA 是 Git blob SHA，非原始字节 SHA-256。目录用途分类保守�
 - [branch-reachability.tsv](branch-reachability.tsv)：完整 732 commit 可达集合比对后的逐分支结论。
 - [branch-cleanup-candidates.tsv](branch-cleanup-candidates.tsv)：已证明可达、非 HOLD 的清退候选，仍需部署和协作者复核。
 - [main-ancestry.tsv](main-ancestry.tsv)：固定 main 的完整可达 commit/parent 证据。
+
+- [branch-divergence-summary.tsv](branch-divergence-summary.tsv) 与 [branch-divergence-paths.tsv](branch-divergence-paths.tsv)：13 个非活跃、未证明等价候选的 GitHub compare 结果；300 路径上限标明，非完整 patch 等价证明。
