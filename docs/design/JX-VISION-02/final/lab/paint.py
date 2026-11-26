@@ -17,7 +17,7 @@ pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
 img = Image.open(src).convert('RGB')
 W, H = img.size; s = 768 / max(W, H); w8, h8 = int(W * s) // 8 * 8, int(H * s) // 8 * 8
 init = img.resize((w8, h8), Image.LANCZOS)
-neg = 'text, watermark, signature, logo, cartoon, anime, 3d render, cgi, low poly, plastic, blurry, deformed, oversaturated'
+neg = (sys.argv[7] + ', ' if len(sys.argv) > 7 else '') + 'text, watermark, signature, logo, cartoon, anime, 3d render, cgi, low poly, plastic, blurry, deformed, oversaturated'
 t = time.time()
 out = pipe(prompt=prompt, negative_prompt=neg, image=init, strength=strength, num_inference_steps=steps, guidance_scale=6.5, generator=torch.Generator().manual_seed(seed)).images[0]
 out = out.resize((W, H), Image.LANCZOS); out.save(dst)

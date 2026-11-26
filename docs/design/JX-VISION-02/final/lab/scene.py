@@ -24,6 +24,7 @@ ap.add_argument('--preview', action='store_true')
 ap.add_argument('--exposure', type=float, default=None)
 ap.add_argument('--save-blend', default='')
 ap.add_argument('--lamp', action='store_true')
+ap.add_argument('--tribulation', action='store_true')   # 天劫预兆（候选表现）
 ap.add_argument('--mask', action='store_true')
 ap.add_argument('--maskset', default='rock,crow,boat,nest')   # 事实遮罩：绑定事实的物体为白，其余为黑
 args = ap.parse_args(sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else sys.argv[1:])
@@ -553,6 +554,39 @@ if args.fog > 0:
     L.new(ml.outputs['Value'], vs.inputs['Density']); vs.inputs['Anisotropy'].default_value = 0.65; vs.inputs['Color'].default_value = (0.9, 0.92, 0.95, 1)
     L.new(vs.outputs['Volume'], N['Material Output'].inputs['Volume']); fogb.data.materials.append(fm)
 
+if args.tribulation:
+    # 雷云：望气台上空一片扁平的体积云，极坐标扭转出旋涡；云底被闪电从内部照亮
+    cx_, cy_ = WQT[0] + 900, WQT[1] + 1300
+    bpy.ops.mesh.primitive_cylinder_add(vertices=64, radius=2600, depth=500, location=(cx_, cy_, 1250)); cl = bpy.context.active_object
+    cm, N, L = mat('tribcloud'); N.remove(N['Principled BSDF']); vp = N.new('ShaderNodeVolumePrincipled')
+    tc = N.new('ShaderNodeTexCoord'); cen = N.new('ShaderNodeVectorMath'); cen.operation = 'SUBTRACT'; L.new(tc.outputs['Generated'], cen.inputs[0]); cen.inputs[1].default_value = (0.5, 0.5, 0.5)
+    # swirl: rotate noise coords by angle proportional to 1/r
+    nz = N.new('ShaderNodeTexNoise'); nz.inputs['Scale'].default_value = 5.0; nz.inputs['Detail'].default_value = 12; nz.inputs['Roughness'].default_value = 0.6
+    vr = N.new('ShaderNodeVectorRotate'); vr.rotation_type = 'Z_AXIS'
+    ln = N.new('ShaderNodeVectorMath'); ln.operation = 'LENGTH'; L.new(cen.outputs['Vector'], ln.inputs[0])
+    inv = N.new('ShaderNodeMath'); inv.operation = 'DIVIDE'; inv.inputs[0].default_value = 0.35; L.new(ln.outputs['Value'], inv.inputs[1])
+    L.new(cen.outputs['Vector'], vr.inputs['Vector']); L.new(inv.outputs['Value'], vr.inputs['Angle']); L.new(vr.outputs['Vector'], nz.inputs['Vector'])
+    rr = N.new('ShaderNodeMapRange'); L.new(nz.outputs['Fac'], rr.inputs['Value']); rr.inputs['From Min'].default_value = 0.42; rr.inputs['From Max'].default_value = 0.68; rr.inputs['To Min'].default_value = 0; rr.inputs['To Max'].default_value = 0.02
+    L.new(rr.outputs['Result'], vp.inputs['Density']); vp.inputs['Color'].default_value = (0.55, 0.58, 0.66, 1)
+    L.new(vp.outputs['Volume'], N['Material Output'].inputs['Volume']); cl.data.materials.append(cm)
+    # lightning: a jagged emissive tube from cloud base toward the hill
+    r_ = np.random.default_rng(9); tgt = np.array([WQT[0] + 260, WQT[1] + 420, 60.0])
+    pts = [np.array([cx_ - 300, cy_ - 400, 1000.0]), tgt]
+    disp = 160.0
+    for lvl in range(6):
+        nxt = [pts[0]]
+        for a_, b_ in zip(pts[:-1], pts[1:]):
+            m_ = (a_ + b_) / 2 + np.array([r_.normal(0, disp), r_.normal(0, disp), r_.normal(0, disp * 0.3)]); nxt += [m_, b_]
+        pts = nxt; disp *= 0.52
+    cu = bpy.data.curves.new('bolt', 'CURVE'); cu.dimensions = '3D'; cu.bevel_depth = 0.9
+    sp_ = cu.splines.new('POLY'); sp_.points.add(len(pts) - 1)
+    for i_, p_ in enumerate(pts): sp_.points[i_].co = (*p_, 1)
+    bo = bpy.data.objects.new('bolt', cu); bpy.context.collection.objects.link(bo)
+    em, N, L = mat('boltm'); N.remove(N['Principled BSDF']); e = N.new('ShaderNodeEmission'); e.inputs['Color'].default_value = (0.78, 0.84, 1.0, 1); e.inputs['Strength'].default_value = 60; L.new(e.outputs[0], N['Material Output'].inputs['Surface']); cu.materials.append(em)
+    # the flash lights the underside of the cloud
+    lp = bpy.data.lights.new('flash', 'POINT'); lp.energy = 3.0e8; lp.color = (0.75, 0.82, 1.0); lp.shadow_soft_size = 60
+    lo = bpy.data.objects.new('flash', lp); bpy.context.collection.objects.link(lo); lo.location = (cx_ - 250, cy_ - 350, 950)
+
 # ---------------- cameras ----------------
 def look(cam, frm, to, lens):
     cam.location = frm; d = np.array(to) - np.array(frm)
@@ -590,6 +624,8 @@ elif V == 'macro':     # 细察落石：石缝里的干草
     nm = bpy.data.meshes.new('nest'); nb.to_mesh(nm); nb.free(); nm.materials.append(principled('straw2', (0.55, 0.45, 0.25), 0.8)); add_obj('nest', nm)
 elif V == 'aerial':    # 万象尺度：从西南高空看整片水口
     look(cam, (-2600, -3400, 1500), (-300, -300, 0), 30)
+elif V == 'trib':      # 天劫预兆：从折桂坪下方仰望望气台丘顶与雷云
+    px, py = WQT[0] - 380, WQT[1] - 520; look(cam, (px, py, gz(px, py) + 1.6), (WQT[0] + 300, WQT[1] + 500, 420), 22)
 elif V == 'zhegui':    # 折桂坪：望气台北侧缓坡，俯瞰渡口
     look(cam, (WQT[0] + 120, WQT[1] + 380, float(height(np.array([WQT[0] + 120], np.float32), np.array([WQT[1] + 380], np.float32))[0]) + 1.6), (fm_[0], fm_[1], 0), 28)
 

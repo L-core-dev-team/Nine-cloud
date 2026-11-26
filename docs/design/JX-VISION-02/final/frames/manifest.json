@@ -1,0 +1,156 @@
+{
+ "factcheck": {
+  "c-talk-test": {
+   "fact_pixels": 1514,
+   "corr_ai_only_vs_render": 0.4304799735546112,
+   "corr_composite_vs_render": 0.9954280853271484
+  },
+  "C-tele-0530": {
+   "fact_pixels": 1578,
+   "corr_ai_only_vs_render": 0.2186022698879242,
+   "corr_composite_vs_render": 0.9926276206970215
+  },
+  "C-talk-0515": {
+   "fact_pixels": 5689,
+   "corr_ai_only_vs_render": 0.22741618752479553,
+   "corr_composite_vs_render": 0.9931113719940186
+  },
+  "C-ferry-0530": {
+   "fact_pixels": 41007,
+   "corr_ai_only_vs_render": 0.4387972950935364,
+   "corr_composite_vs_render": 0.9994478821754456
+  },
+  "C-macro-0545": {
+   "fact_pixels": 747322,
+   "corr_ai_only_vs_render": 0.9555456042289734,
+   "corr_composite_vs_render": 0.9999434947967529
+  },
+  "C-burst-0545": {
+   "fact_pixels": 72809,
+   "corr_ai_only_vs_render": 0.5889025926589966,
+   "corr_composite_vs_render": 0.9993759989738464
+  }
+ },
+ "ai": {
+  "A-aerial-0530": {
+   "model": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+   "license": "CreativeML OpenRAIL-M",
+   "strength": 0.45,
+   "steps": 22,
+   "seed": 7,
+   "seconds": 74.3,
+   "sha256": "1785d7990481916ae4d51f110330ab82546f26fea90ca0ece800569977c20919",
+   "prompt": "aerial photograph at sunrise over a winding river widening into a delta, autumn floodplain, low hills, morning mist in the valley, small villages, ancient China landscape, photorealistic"
+  },
+  "A-ferry-cleared": {
+   "model": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+   "license": "CreativeML OpenRAIL-M",
+   "strength": 0.45,
+   "steps": 22,
+   "seed": 7,
+   "seconds": 70.9,
+   "sha256": "9675ca4e1dab5403d2efab48053d0db660bd3165c35e2d607d03c96b55bff2f9",
+   "prompt": "cinematic film still, calm river ferry channel in the morning, boulders pushed aside, an open dark water channel, reeds with white plumes, misty hills, ancient China, photorealistic"
+  },
+  "A-arrive-0500": {
+   "model": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+   "license": "CreativeML OpenRAIL-M",
+   "strength": 0.42,
+   "steps": 22,
+   "seed": 7,
+   "seconds": 75.2,
+   "sha256": "ed9a30342369bcc8cd492f53aa161e48d5034ede1e4f69136c5e3ff464ab6b44",
+   "prompt": "cinematic film still, dawn on a wide calm river mouth in ancient China, pink and gold sky, distant misty mountains, reed flowers on sandbars, mirror reflections, small ferry settlement on the far bank, photorealistic"
+  },
+  "A-macro-0545": {
+   "model": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+   "license": "CreativeML OpenRAIL-M",
+   "strength": 0.5,
+   "steps": 22,
+   "seed": 7,
+   "seconds": 216.9,
+   "sha256": "afaf70f16b653e93cd18b94ac49f13b8254b541bdc0776506ece53af03f4cb01",
+   "prompt": "macro photograph, crevice between large river boulders with a nest of soft fresh dry grass, pressed ring marks, morning light, shallow depth of field, photorealistic"
+  },
+  "A-wqt-1715": {
+   "model": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+   "license": "CreativeML OpenRAIL-M",
+   "strength": 0.38,
+   "steps": 22,
+   "seed": 7,
+   "seconds": 63.4,
+   "sha256": "8b9c3d6f800946ab4beb88c89fe7a25f8166693a4b729721177fe02e36047a96",
+   "prompt": "cinematic film still, blue hour after sunset viewed from an old wooden watchtower, dark river valley, pink band above the eastern horizon, deep blue sky, quiet, ancient China, photorealistic"
+  },
+  "A-tele-0530": {
+   "model": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+   "license": "CreativeML OpenRAIL-M",
+   "strength": 0.42,
+   "steps": 22,
+   "seed": 11,
+   "seconds": 221.3,
+   "sha256": "a0ded914a70b8038d644938465ddecdb6a44fee0bd424322cc2b5cd49641b59f",
+   "prompt": "telephoto film still, ancient Chinese riverside ferry hamlet, low thatched mud-brick huts with grey tile, dawn haze, a pile of boulders blocking the ferry channel, crows on the rocks, autumn reeds, photorealistic"
+  },
+  "A-wqt-1645": {
+   "model": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+   "license": "CreativeML OpenRAIL-M",
+   "strength": 0.42,
+   "steps": 22,
+   "seed": 7,
+   "seconds": 76.0,
+   "sha256": "b996f8bf0fe0f756a5b93c076fa1ba6a43e9b1eb48e60fcd8fc417067a829084",
+   "prompt": "cinematic film still, view from an old wooden watchtower framing a river valley in golden late afternoon light, long shadows, autumn grassland, trees, distant hills, ancient China, photorealistic"
+  },
+  "A-talk-0515": {
+   "model": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+   "license": "CreativeML OpenRAIL-M",
+   "strength": 0.5,
+   "steps": 22,
+   "seed": 7,
+   "seconds": 267.1,
+   "sha256": "96137f44ea513f384c2ae2ab5c2f4ae3e5a1657ed9aa46ddf6fe783333fafb8b",
+   "prompt": "cinematic film still, old ferryman in straw rain cape and conical bamboo hat on a muddy riverbank at dawn, back view, long bamboo pole, boulders blocking a river channel, grey crows on the rocks, golden morning mist, reeds, ancient rural China, photorealistic"
+  },
+  "A-wqt-0530": {
+   "model": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+   "license": "CreativeML OpenRAIL-M",
+   "strength": 0.42,
+   "steps": 22,
+   "seed": 7,
+   "seconds": 135.5,
+   "sha256": "201b3cc6b735fc0d26e7ad3394f02e0c8ddd43c704805dce6ad37c82688c3933",
+   "prompt": "cinematic film still, view from an old weathered wooden watchtower with posts and roof beams framing a river valley at sunrise, autumn grassland, scattered trees, river mist, distant hills, ancient China, photorealistic"
+  },
+  "A-burst-0545": {
+   "model": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+   "license": "CreativeML OpenRAIL-M",
+   "strength": 0.45,
+   "steps": 22,
+   "seed": 7,
+   "seconds": 294.9,
+   "sha256": "908537fd7f763a6425f6e13cb46a18c9843d264a5d379d6875886c1edf409ac9",
+   "prompt": "cinematic film still, dozens of grey crows bursting into flight from a pile of boulders in a river at morning, motion blur, reeds, hills, ancient China, photorealistic"
+  },
+  "A-wqt-1200": {
+   "model": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+   "license": "CreativeML OpenRAIL-M",
+   "strength": 0.42,
+   "steps": 22,
+   "seed": 7,
+   "seconds": 68.9,
+   "sha256": "991761a21694b17b830273da09bd7217e19242eb47d66a1cbd8ca0d3f87e3fbe",
+   "prompt": "cinematic film still, view from an old wooden watchtower framing a river valley at noon, clear sky, autumn grassland, scattered trees, distant hills, ancient China, photorealistic"
+  },
+  "A-ferry-0530": {
+   "model": "stable-diffusion-v1-5/stable-diffusion-v1-5",
+   "license": "CreativeML OpenRAIL-M",
+   "strength": 0.45,
+   "steps": 22,
+   "seed": 7,
+   "seconds": 65.5,
+   "sha256": "47140920f6167dca72b37d07f995fa18e91cc1155cc14789dde1e8fca3c0fddb",
+   "prompt": "cinematic film still, a pile of large boulders blocking a ferry channel on a calm river at dawn, the largest rock as tall as a door, dozens of grey crows perched on the rocks, reeds with white plumes, misty hills, ancient China, photorealistic"
+  }
+ }
+}

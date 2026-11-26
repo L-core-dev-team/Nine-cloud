@@ -69,7 +69,7 @@
 <body><div class="st" id="st"></div>
 <script>
 const q = new URLSearchParams(location.search); const mode = q.get('mode') || 'you';
-const C = JSON.parse(decodeURIComponent(q.get('cfg') || '%7B%7D'));
+const C = JSON.parse(q.get('cfg') || '{}');
 const phone = q.get('phone') === '1'; const W = phone ? 390 : 1600, H = phone ? 844 : (mode === 'atlas' ? 1000 : 900);
 const st = document.getElementById('st'); st.style.width = W + 'px'; st.style.height = H + 'px';
 const h = [];
@@ -124,6 +124,12 @@ if (mode === 'phone') {
   const top = C.kbd ? 214 : 448;
   if (!C.kbd) h.push(`<div style="position:absolute;left:20px;right:20px;top:${top}px"><div class="src">交谈　一刻</div><p class="mine" style="font-size:17px;line-height:1.8;margin:0 0 .3em"><span class="who">你</span>船怎么靠不上岸？</p><p class="voice" style="font-size:17px;line-height:1.8;margin:0"><span class="who" style="font-family:'Noto Serif SC'">岑九</span>船没坏。水浅了。</p></div><div style="position:absolute;left:20px;right:0;bottom:86px;display:flex;gap:8px;overflow:hidden"><span class="chip" style="padding:12px 14px;white-space:nowrap">问鸦</span><span class="chip" style="padding:12px 14px;white-space:nowrap">问望气台</span><span class="chip ev" style="padding:12px 14px;white-space:nowrap">〔落石·门板高〕</span></div><div class="input" style="left:20px;right:20px;bottom:26px;font-size:16px"><span class="ph">对岑九说……</span><span class="go">落笔</span></div>`);
   else h.push(`<div style="position:absolute;left:20px;right:20px;top:${top}px;font-size:15px;color:var(--dim);line-height:1.8">灰羽鸦在石上落着，几十只，一动不动。</div><div style="position:absolute;left:20px;top:${H - 300 - 104}px;font-size:13px;color:var(--dim);letter-spacing:.1em">细察　<b style="font-weight:400;color:var(--ink)">落石</b>　两刻　体力 −6</div><div class="input" style="left:20px;right:20px;bottom:318px;font-size:16px"><span>细看那堆<span style="text-decoration:underline solid var(--zhu);text-decoration-thickness:2px;text-underline-offset:7px">落石</span></span><span class="go">落笔</span></div><div style="position:absolute;left:0;right:0;bottom:0;height:300px;background:#202329;color:#7d828c;font-size:12px;letter-spacing:.2em;display:flex;align-items:center;justify-content:center">系统键盘</div>`);
+}
+if (mode === 'home') {
+  h.push(`<div class="bg" style="background-image:url(${C.bg})"></div><div class="scrim-b" style="height:40%"></div>`);
+  h.push(`<div style="position:absolute;left:0;right:0;top:38%;text-align:center;font-weight:600;font-size:64px;letter-spacing:.6em;text-indent:.6em;text-shadow:0 2px 30px rgba(0,0,0,.45)">九霄</div>`);
+  h.push(`<div style="position:absolute;left:0;right:0;top:calc(38% + 110px);text-align:center;font-size:13px;letter-spacing:.4em;color:var(--dim)">${C.time || '此刻　卯初二刻'}</div>`);
+  h.push(`<div style="position:absolute;left:50%;bottom:90px;transform:translateX(-50%);border:1px solid rgba(239,233,220,.6);padding:12px 44px;font-size:17px;letter-spacing:.6em;text-indent:.6em;background:rgba(6,8,12,.25)">入世</div>`);
 }
 if (mode === 'atlas') {
   h.push(`<div class="bg" style="background-image:url(${C.bg});background-size:1600px 1000px;background-position:center top"></div><div class="scrim-t"></div>`);
