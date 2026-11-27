@@ -5,7 +5,7 @@ import type { ActionIntent } from '@jiuxiao/contracts';
 import { replayEvents } from '@jiuxiao/domain';
 import { RuleResolver } from './rule-resolver.js';
 import { ServerTurnService, type ServerTurnRules } from './server-turn.js';
-import { createPostgresServerTurnRepository } from './postgres-server-turn.js';
+import { createPostgresServerTurnRepository, EVENT_CHAIN_FULL_AUDIT_EVERY, verifyTurnEventChain } from './postgres-server-turn.js';
 
 const databaseUrl = process.env.TEST_DATABASE_URL;
 const suite = databaseUrl ? describe : describe.skip;
@@ -184,4 +184,80 @@ suite('ServerTurnService on isolated PostgreSQL (synthetic rules only)', () => {
 
     const counts=await pool.query('SELECT count(*)::int AS count FROM turn_events WHERE save_id=$1',[id]);expect(counts.rows[0].count).toBe(120);
   },30000);
+  it('per-turn integrity check hashes only the new tail; full audits and head mismatches still catch tampering',async()=>{
+    const id=randomUUID();templateIds.push(id);
+    await pool.query('INSERT INTO game_saves(id,owner_id,revision,schema_version,canon_version,rule_version,memory_policy_version,snapshot) VALUES($1,$2,0,1,$3,$3,$3,$4::jsonb)',[id,owner,'fixture-only',JSON.stringify({playerId:'fixture-player',locationId:'origin',elapsedMinutes:0,facts:{items:500,gameMinute:0}})]);
+    const resolver=new RuleResolver({version:{ruleVersion:'fixture-only',ActionRulesVersion:'fixture-actions',CombatRulesVersion:'fixture-combat',canonVersion:'fixture-only',memoryPolicyVersion:'fixture-only'},resolve:(_intent,save)=>({status:'accepted',outcome:'success',delta:{timeChange:1,locationChange:null,factChanges:[{key:'items',before:{present:true,value:save.state.facts.items},after:{present:true,value:Number(save.state.facts.items)-1}},{key:'gameMinute',before:{present:true,value:save.state.facts.gameMinute},after:{present:true,value:Number(save.state.facts.gameMinute)+1}}]}})},event=>[{npcId:'tail-witness',eventId:event.id,channel:'witnessed',authorizationPolicyVersion:'visibility-v1',authorizedFields:['summary'],authorizedFacts:{summary:'Synthetic committed fact.'},visibleSummary:'Synthetic committed fact.'}],()=>'exact-recall-v1');
+    // Record every integrity check the hot path performs through a pass-through pool.
+    const checks:{interval:number;fullAudit:boolean;hashedEvents:number;headSequence:number}[]=[];
+    const counted=new Proxy(pool,{get(target,prop){
+      if(prop==='query')return async(...args:Parameters<Pool['query']>)=>{const result=await (target.query as (...a:unknown[])=>Promise<{rows:Record<string,unknown>[]}>)(...args);
+        if(typeof args[0]==='string'&&args[0].includes('verify_turn_event_chain_incremental')){const row=result.rows[0]!;checks.push({interval:Number((args[1] as unknown[])[1]),fullAudit:row.full_audit===true,hashedEvents:Number(row.hashed_events),headSequence:Number(row.head_sequence)});}
+        return result;};
+      const value=Reflect.get(target,prop,target);return typeof value==='function'?value.bind(target):value;}});
+    const hot=createPostgresServerTurnRepository(counted as Pool);
+    const turns=150;
+    for(let step=0;step<turns;step++){
+      const request:ActionIntent={kind:'free_text',saveId:id,actorId:'fixture-player',expectedRevision:step,idempotencyKey:randomUUID(),payload:{text:'Synthetic one-item consumption'}};
+      expect(await new ServerTurnService(hot,resolver).execute(owner,request)).toMatchObject({status:'accepted',duplicate:false});
+    }
+    expect(checks).toHaveLength(turns);
+    // First check in this process is a forced full audit; later ones use the documented interval.
+    expect(checks[0]).toMatchObject({interval:1,fullAudit:true,hashedEvents:0});
+    expect(checks.slice(1).every(check=>check.interval===EVENT_CHAIN_FULL_AUDIT_EVERY)).toBe(true);
+    for(const [index,check] of checks.entries()){
+      expect(check.headSequence).toBe(index-1);
+      // Incremental: re-hash the recorded head plus the single event appended by the previous turn.
+      if(!check.fullAudit)expect(check.hashedEvents).toBeLessThanOrEqual(2);
+      else expect(check.hashedEvents).toBe(index);
+    }
+    const fullAudits=checks.filter(check=>check.fullAudit).length;
+    expect(fullAudits).toBe(1+Math.floor((turns-1)/EVENT_CHAIN_FULL_AUDIT_EVERY));
+    const hashed=checks.reduce((sum,check)=>sum+check.hashedEvents,0);
+    const fullEveryTurn=turns*(turns-1)/2;
+    console.info(JSON.stringify({eventChainHashing:{turns,hashedIncremental:hashed,hashedIfFullEveryTurn:fullEveryTurn,fullAudits}}));
+    expect(hashed).toBeLessThan(fullEveryTurn/10);
+    expect((await pool.query('SELECT verified_sequence FROM turn_event_chain_checkpoints WHERE save_id=$1',[id])).rows[0].verified_sequence).toBe(turns-2);
+
+    const tamper=await pool.connect();
+    try{
+      // Bring the checkpoint up to the real head (149) so the head row is the anchor.
+      expect(await verifyTurnEventChain(tamper,id)).toMatchObject({ok:true,fullAudit:false,hashedEvents:2,headSequence:turns-1});
+      const inTransaction=async(body:()=>Promise<void>)=>{await tamper.query('BEGIN');try{await body();}finally{await tamper.query('ROLLBACK');}};
+      // Historic row rewritten in place (hash column kept): the full audit catches it.
+      await inTransaction(async()=>{
+        await tamper.query("SET LOCAL session_replication_role=replica");
+        await tamper.query("UPDATE turn_events SET payload=jsonb_set(payload,'{tampered}','true') WHERE save_id=$1 AND sequence=40",[id]);
+        expect((await tamper.query('SELECT verify_turn_event_chain($1) AS ok',[id])).rows[0].ok).toBe(false);
+        expect(await verifyTurnEventChain(tamper,id,1)).toMatchObject({ok:false,fullAudit:true});
+        // The periodic audit picks it up even without a forced audit.
+        await tamper.query('UPDATE turn_event_chain_checkpoints SET incremental_checks=$2 WHERE save_id=$1',[id,EVENT_CHAIN_FULL_AUDIT_EVERY-1]);
+        expect(await verifyTurnEventChain(tamper,id)).toMatchObject({ok:false,fullAudit:true});
+      });
+      // Recorded head rewritten in place: the very next incremental check fails.
+      await inTransaction(async()=>{
+        await tamper.query("SET LOCAL session_replication_role=replica");
+        await tamper.query("UPDATE turn_events SET payload=jsonb_set(payload,'{tampered}','true') WHERE save_id=$1 AND sequence=$2",[id,turns-1]);
+        expect(await verifyTurnEventChain(tamper,id)).toMatchObject({ok:false,fullAudit:false});
+      });
+      // Recorded head deleted (tail truncation): the stateless chain still looks valid, the checkpoint does not.
+      await inTransaction(async()=>{
+        await tamper.query("SELECT set_config('jiuxiao.account_erasure_operation','test-cleanup',true)");
+        await tamper.query('DELETE FROM turn_events WHERE save_id=$1 AND sequence=$2',[id,turns-1]);
+        expect((await tamper.query('SELECT verify_turn_event_chain($1) AS ok',[id])).rows[0].ok).toBe(true);
+        expect(await verifyTurnEventChain(tamper,id)).toMatchObject({ok:false,fullAudit:false});
+        expect(await verifyTurnEventChain(tamper,id,1)).toMatchObject({ok:false,fullAudit:true});
+      });
+      // A failed check never advances the checkpoint, so the save keeps failing in the API.
+      await inTransaction(async()=>{
+        await tamper.query("SELECT set_config('jiuxiao.account_erasure_operation','test-cleanup',true)");
+        await tamper.query('DELETE FROM turn_events WHERE save_id=$1 AND sequence=$2',[id,turns-1]);
+        for(let attempt=0;attempt<3;attempt++)expect((await verifyTurnEventChain(tamper,id)).ok).toBe(false);
+        expect((await tamper.query('SELECT verified_sequence FROM turn_event_chain_checkpoints WHERE save_id=$1',[id])).rows[0].verified_sequence).toBe(turns-1);
+      });
+    }finally{tamper.release();}
+    // Untampered data still verifies, both ways.
+    expect(await verifyTurnEventChain(pool,id,1)).toMatchObject({ok:true,fullAudit:true,hashedEvents:turns});
+    expect(await hot.loadSave(owner,id)).toMatchObject({revision:turns});
+  },60000);
 });

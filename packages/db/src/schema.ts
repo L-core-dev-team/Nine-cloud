@@ -292,3 +292,15 @@ export const storyNarratives = pgTable('story_narratives', {
  check('story_narrative_revision_check',sql`${table.revision}>0`),
  check('story_narrative_source_check',sql`${table.source} IN ('model','deterministic')`),
  check('story_narrative_text_check',sql`char_length(${table.narrativeText})>0 AND octet_length(${table.narrativeText})<=400000`)]);
+
+/** Last turn-event head proven by verify_turn_event_chain_incremental (0030); integrity cache only. */
+export const turnEventChainCheckpoints = pgTable('turn_event_chain_checkpoints', {
+ saveId: text('save_id').primaryKey().references(() => gameSaves.id, { onDelete: 'cascade' }),
+ verifiedSequence: integer('verified_sequence').notNull(), verifiedHash: text('verified_hash').notNull(),
+ incrementalChecks: integer('incremental_checks').notNull().default(0),
+ fullAuditAt: timestamp('full_audit_at',{withTimezone:true}).notNull().defaultNow(),
+ updatedAt: timestamp('updated_at',{withTimezone:true}).notNull().defaultNow(),
+}, table => [
+ check('turn_event_chain_checkpoints_verified_sequence_check',sql`${table.verifiedSequence} >= -1`),
+ check('turn_event_chain_checkpoints_verified_hash_check',sql`${table.verifiedHash} ~ '^[0-9a-f]{64}$'`),
+ check('turn_event_chain_checkpoints_incremental_checks_check',sql`${table.incrementalChecks} >= 0`)]);

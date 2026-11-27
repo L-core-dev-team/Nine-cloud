@@ -197,6 +197,13 @@
       "when": 1795219200000,
       "tag": "0029_game_character_profile",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1795305600000,
+      "tag": "0030_turn_event_chain_checkpoint",
+      "breakpoints": true
     }
   ]
 }
