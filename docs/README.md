@@ -8,7 +8,7 @@
 |---|---|---|
 | 了解项目与当前工程状态 | [STATUS](repository/STATUS.md) | [架构地图](项目结构地图.md) |
 | 本地开发和测试 | [开发指南](README-workspace-guide.md) | [CI](../.github/workflows/ci.yml) |
-| 前端/玩法设计 | [当前分支的产品文档](../PRODUCT.md) | [现行设计文件](../DESIGN.md)；正在进行的创意研究保持独立，不在 main 假定批准 |
+| 前端/玩法设计 | [JX-VISION-02 最终方案](design/JX-VISION-02/final/README.md)（已批准实施）与 [执行台账](execution/JX-VISION-02/README.md) | [产品文档](../PRODUCT.md)、[旧设计文件](../DESIGN.md) 只作历史与功能参考 |
 | API、数据库与部署 | [部署指南](../deployment/README.md) | [Worker 候选](../deployment/worker-production.md)、[ADR](adr/) |
 | 世界书与授权事实 | [Canon 交付](世界书Canon1.0交付说明.md) | [核验更正](世界书核验状态更正.md)、[作者验收](世界书作者侧交付验收索引.md)、[来源登记](sources/README.md) |
 | 游戏规则、双记忆 | [P1 已签规格](九霄1.0-P1-执行规格-GPT交付版-2026-10-03.md) | [P0 契约](九霄1.0-P0双记忆契约与评审记录.md)、[P 轨缺口](九霄1.0P0-P8玩法与双记忆阶段缺口与人工交接清单.md) |

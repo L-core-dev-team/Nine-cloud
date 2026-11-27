@@ -1,6 +1,6 @@
 # 九霄协作导航（先读）
 
-- 先确认 branch、HEAD、工作区及目标范围。不得改动其他成员正在使用的分支、PR 或未提交内容；以独立分支/工作树工作，不强推、不擅自合并或部署。
+- 先确认 branch、HEAD、工作区及目标范围。不得改动其他成员正在使用的分支、PR 或未提交内容；以独立分支/工作树工作，不强推、不擅自合并或部署（JX-VISION-02 执行者已获作者授权按既有流程合并与发布，见 [执行台账](docs/execution/JX-VISION-02/README.md) §1）。
 - 先读 [docs/README.md](docs/README.md)；按任务读取 [架构地图](docs/项目结构地图.md)、[状态与权威来源](docs/repository/STATUS.md)、[开发指南](docs/README-workspace-guide.md) 和 [治理](docs/repository/GOVERNANCE.md)。全量历史清单只在审计/追溯任务时读取，不默认灌入上下文。
 - 运行命令以当前 package.json 和 .github/workflows/ci.yml 为准；测试必须使用隔离数据。未执行的测试标 NOT RUN，未批准的候选不说已发布。
 - 文学等仍在进行的研究以其任务分支的现行文件为准；不将 main 的历史审美说明覆盖候选研究。

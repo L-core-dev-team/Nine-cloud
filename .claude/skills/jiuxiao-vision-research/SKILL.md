@@ -1,6 +1,7 @@
 ---
 name: jiuxiao-vision-research
-description: 九霄全站艺术、全栈与玩法独立研究；先读VISION 02，检查真实代码、线上体验、58图、官方来源，交付自由创新方案，不实施生产。
+description: 九霄 JX-VISION-02 的研究阶段已于 2026-11-26 结束，现为执行阶段。处理九霄的设计、玩法、全栈或艺术任务时，用它找到执行台账、交接包与最终方案入口。
 ---
-Read docs/design/JX-VISION-02/README.md and 05-claude-master-brief.md. Use topical files as needed. Verify baseline, collect evidence, independently explore creative directions, propose full-stack alternatives, document uncertainty, submit proposal-only Draft PR. Do not inherit old visual rules. Preserve real state, data, privacy, licensing, authorization and production boundaries.
-Read the independent creative critique protocol (07-creative-critique-protocol.md). Separate creator and evaluator, establish competing concepts, give evidence and materially revise; never report self-rated scores as objective proof.
+The VISION-02 research round is finished; do not produce another proposal-only Draft PR. The project is in the approved EXECUTION phase.
+Start from docs/execution/JX-VISION-02/README.md (single progress and recovery entry). A new session should read docs/execution/JX-VISION-02/handoff/README.md first. The current plan is docs/design/JX-VISION-02/final/README.md; older VISION-02 files (00-08, claude-proposal/) are history.
+Keep the independent creator/evaluator separation from docs/design/JX-VISION-02/07-creative-critique-protocol.md for milestone reviews; never report self-rated scores as objective proof. Preserve real state, data, privacy, licensing, authorization and production boundaries, the worldbook rules in AGENTS.md, and the P1 freeze (docs/adr/0010-P1规则冻结与版本化.md).

@@ -15,7 +15,7 @@
 | D1 | 境界顺序 | **炼体→炼气→筑基→结丹→元婴→化神→合体→大乘→渡劫**（化神在合体之前） | 已核对原始材料：`docs/acceptance/2026-10-02-LYL-decisions.json` 的 `rulesConflict` 写明签署规则表（E5）是化神在前、Canon 原稿是合体在前，并要求作者明确裁决；LYL 于 2026-10-03 明确更正为化神在前（`docs/FINAL_HUMAN_GATES.md`）；`docs/九境五域世界书依据表.md` 写明“原稿不回写，现行规则以作者更正为准”；`packages/content/src/realm-order.ts` 已按更正实现。所以这不是新裁决，而是确认作者已有的裁决。Canon 原文不改；神识表采用 06 §1 的选项乙（交换最后两行）。 |
 | D12 | P1 冻结 | 批准（作者授权）。`prologue-v1` 冻结为只读，修复进入新规则版本 | 授权表 |
 | D2 | 双作者签收 | 取消，不恢复。锁定文件通过“新版本 + 台账登记 + CI”升级，旧版本保留 | 授权表 |
-| D3 | 算力 | 主管线（Blender + CC0）用 CPU。本容器没有 GPU，也没有连接作者的电脑；需要 GPU 时按第 5 节申请，不租用 | 授权表；`nvidia-smi` 不可用、Cycles 报 CUEW 初始化失败 |
+| D3 | 算力 | 使用作者现有的本地 GPU（2026-11-27 起由本地会话执行）；不租用、不付费，除非另给预算。云端阶段没有 GPU，只用 CPU 验证了 Blender + CC0 原型；该路线是推荐路线，不是唯一许可路线（ADR 0009） | 授权表；云端 `nvidia-smi` 不可用 |
 | D4 / D11 | 叙述持久化、AIGC 标识、备案 | 技术上实现保存、导出、删除与显式/隐式标识；生产保存期限与备案适用性**没有法律意见前不在生产开启**，功能以开关隔离，不阻断其他开发 | 授权表要求“实际合规”，不得虚构法律意见 |
 | D5 | 五域地理与九霄历法 | Claude 自主创作，作为“兼容扩展”登记在新 Canon 版本中，不改 Canon 1.0 原文 | 授权表 |
 | D6 | 避水符语义 | 选 (a)：战斗时“持有或已使用”避水符都算准备充分 | 授权表；最终方案 12 §1 |
@@ -31,10 +31,10 @@
 | 1 | 合并 #119（角色卡酒馆整合，head `9c0724f`，CI 通过） | main `331df35` |
 | 2 | 合并 #120（方案 E，head `767ad5d`，CI 通过；线上已是同一代码的 `c4c672f` 构建） | main `8652afb` |
 | 3 | 合并 #121（VISION-02 研究，仅文档，head `4f1c314`，CI 通过） | main `559119d` |
-| 4 | #124（最终方案）与 #123（仓库整理）经 #126（`claude/integrate-123`）合入；6 个导航文件的冲突已解决；12 份旧设计文档的“仅研究、不实施”横幅改为现行方向 | main `684aced`（CI 通过） |
-| 5 | R1 执行分支 `claude/jx-exec-r1`：main + 缺陷 9、8、3 + P1 冻结与 ADR 0009–0011 + 交接包 | 本地全绿，CI 待开 PR |
+| 4 | #124（最终方案）与 #123（仓库整理）经 #126（`claude/integrate-123`）合入；6 个导航文件的冲突已解决；12 份旧设计文档的“仅研究、不实施”横幅改为现行方向 | main `684aced`（PR #126 头 `a0d54fb` 的 CI 通过，树相同） |
+| 5 | R1 执行分支 `claude/jx-exec-r1`：main + 缺陷 9、8、3 + P1 冻结与 ADR 0009–0011 + 交接包 | 本地全绿；草稿 PR #127，CI 交接时运行中 |
 
-未处理：#122（文学研究，独立）、#125（审计摘要）、#116–#118（酒馆早期 PR，内容大概率已被 #119 覆盖，待逐一核对后处理）、dependabot 各 PR。核对之前不关闭、不删分支。
+未处理：#122（文学研究，独立）、#125（审计摘要）、#87、#91（早期未合并 PR，待核对）、dependabot 各 PR。核对之前不关闭、不删分支。
 
 ## 4. 任务台账
 
@@ -52,7 +52,7 @@
 | R1 | 缺陷 7：导航后重读 localStorage 镜像 | TODO | |
 | R1 | P1 冻结（X14） | DONE | `618e09f`；ADR 0010 |
 | R1 | ADR 0009、0011 | DONE（文档） | `618e09f` |
-| R1 | 合并分支验证 | 本地 DONE；CI NOT RUN | `claude/jx-exec-r1` @ `d22b078`：typecheck、test（web 319、api 494、domain 141）、build、integration 54/54、migration-upgrade、P1/P2 e2e、auth-login-ui 全部通过（Node 22、PG16） |
+| R1 | 合并分支验证 | 本地 DONE；CI 见草稿 PR #127 | `claude/jx-exec-r1` @ `d22b078`：typecheck、test（web 319、api 494、domain 141）、build、integration 54/54、migration-upgrade、P1/P2 e2e、auth-login-ui 全部通过（Node 22、PG16） |
 | R1 | 新规则版本：缺陷 1、2、5、6 | TODO | |
 | R1 | CI 门禁重构（渲染依赖登记表、数据与安全检查） | TODO | |
 | R1 | 回合提交与叙述分离、可见性视图、`packages/scene`、`packages/world` | TODO | |
