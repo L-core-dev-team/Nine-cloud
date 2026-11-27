@@ -1,6 +1,6 @@
 import { createHash, createHmac, randomBytes, randomUUID, timingSafeEqual } from 'node:crypto';
 import type { Pool, PoolClient } from 'pg';
-import type { AuthSession, EmailAuthRepository, EmailAuthSession, GuestAuthSession, GuestUpgradeResult } from './email-auth.js';
+import { GUEST_CODE_OWNER_HOURLY, GUEST_CODE_POOL_HOURLY, type AuthSession, type EmailAuthRepository, type EmailAuthSession, type GuestAuthSession, type GuestUpgradeResult } from './email-auth.js';
 
 /** Codes are HMACs and sessions are random-token hashes; neither plaintext is persisted. */
 export class PostgresEmailAuthRepository implements EmailAuthRepository {
@@ -55,6 +55,43 @@ export class PostgresEmailAuthRepository implements EmailAuthRepository {
       if (ip) await client.query('UPDATE auth_ip_mail_limits SET count = greatest(count - 1, 0) WHERE ip = $1', [ip]);
       await client.query('COMMIT');
     } catch (error) { await client.query('ROLLBACK'); throw error; } finally { client.release(); }
+  }
+  /** Guest-originated codes: a per-owner hourly budget plus a shared guest sub-pool, both
+   * in account_rate_limits (keys are HMACs, so neither owner IDs nor counters leak). The
+   * owner row is always locked before the pool row, so concurrent reservations cannot deadlock. */
+  async issueGuestLimit(ownerId: string, now: Date): Promise<boolean> {
+    const client = await this.pool.connect();
+    try {
+      await client.query('BEGIN');
+      for (const [key, limit] of [[this.guestCodeOwnerKey(ownerId), GUEST_CODE_OWNER_HOURLY], [this.guestCodePoolKey(), GUEST_CODE_POOL_HOURLY]] as const) {
+        const result = await client.query(`INSERT INTO account_rate_limits(key, expires_at, hits)
+          VALUES ($1, $2::timestamptz + interval '1 hour', 1)
+          ON CONFLICT (key) DO UPDATE SET
+            hits = CASE WHEN account_rate_limits.expires_at <= $2 THEN 1 ELSE account_rate_limits.hits + 1 END,
+            expires_at = CASE WHEN account_rate_limits.expires_at <= $2 THEN $2::timestamptz + interval '1 hour' ELSE account_rate_limits.expires_at END
+          WHERE account_rate_limits.expires_at <= $2 OR account_rate_limits.hits < $3
+          RETURNING hits`, [key, now, limit]);
+        if (!result.rowCount) { await client.query('ROLLBACK'); return false; }
+      }
+      await client.query('COMMIT'); return true;
+    } catch (error) { await client.query('ROLLBACK'); throw error; } finally { client.release(); }
+  }
+  async refundGuestLimit(ownerId: string, now: Date): Promise<void> {
+    const client = await this.pool.connect();
+    try {
+      await client.query('BEGIN');
+      const keys = [this.guestCodeOwnerKey(ownerId), this.guestCodePoolKey()];
+      // hits has CHECK (hits > 0): drop single-hit rows first, then decrement the rest.
+      await client.query('DELETE FROM account_rate_limits WHERE key = ANY($1::text[]) AND hits = 1 AND expires_at > $2', [keys, now]);
+      await client.query('UPDATE account_rate_limits SET hits = hits - 1 WHERE key = ANY($1::text[]) AND hits > 1 AND expires_at > $2', [keys, now]);
+      await client.query('COMMIT');
+    } catch (error) { await client.query('ROLLBACK'); throw error; } finally { client.release(); }
+  }
+  private guestCodeOwnerKey(ownerId: string): string {
+    return createHmac('sha256', this.secret).update(`guest-code\0${ownerId}`).digest('hex');
+  }
+  private guestCodePoolKey(): string {
+    return createHmac('sha256', this.secret).update('guest-code-pool').digest('hex');
   }
   async invalidate(email: string, digest: string): Promise<void> {
     await this.pool.query('UPDATE auth_challenges SET digest = NULL WHERE email = $1 AND digest = $2', [email, digest]);

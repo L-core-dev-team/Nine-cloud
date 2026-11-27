@@ -14,7 +14,9 @@ const webPort = 15175;
 const apiPort = 15176;
 const origin = `http://127.0.0.1:${webPort}`;
 let phoneProviderEnabled = true;
+let emailCaptchaEnabled = false;
 const phoneCodeRequests = [];
+const emailCodeRequests = [];
 let vite;
 const api = http.createServer(async (request, response) => {
   const chunks = [];
@@ -26,7 +28,7 @@ const api = http.createServer(async (request, response) => {
   }
   const path = new URL(request.url || '/', `http://127.0.0.1:${apiPort}`).pathname;
   if (path === '/api/auth/providers') return sendJson(response, 200, {
-    email: true, phone: phoneProviderEnabled,
+    email: true, phone: phoneProviderEnabled, emailCaptcha: emailCaptchaEnabled,
     privacyPolicyUrl: 'https://play.example.invalid/privacy', privacyPolicyVersion: 'test-v1',
   });
   if (path === '/api/auth/session') return sendJson(response, 401, { code: 'UNAUTHENTICATED' });
@@ -38,6 +40,13 @@ const api = http.createServer(async (request, response) => {
     return sendJson(response, 200, { account: { id: 'browser-test-owner', email: 'phone-user@example.invalid' }, expiresAt: '2026-10-07T00:00:00Z' }, {
       'set-cookie': 'jx_session=browser-test-session; Path=/; HttpOnly; SameSite=Strict; Max-Age=604800; Secure',
     });
+  }
+  if (path === '/api/auth/guest' && request.method === 'POST') {
+    return sendJson(response, 201, { account: { id: 'browser-test-guest', kind: 'guest' }, expiresAt: '2026-10-07T00:00:00Z' });
+  }
+  if (path === '/api/auth/code' && request.method === 'POST') {
+    emailCodeRequests.push(body);
+    return sendJson(response, 202, { status: 'sent', resendAfterSeconds: 60 });
   }
   if (path === '/api/auth/phone/status') return sendJson(response, 200, { phoneLinked: true });
   if (path === '/api/save-index' || path === '/api/save-trash') return sendJson(response, 200, { saves: [], hasMore: false });
@@ -117,7 +126,34 @@ async function main() {
     await closedPage.getByText('手机号登录当前关闭；可使用邮箱登录。', { exact: true }).waitFor();
     assert.equal(await closedPage.getByRole('button', { name: '手机号验证码', exact: true }).count(), 0);
     await closedContext.close(); await browserContext.close();
-    console.log('Mocked login browser flow passed: Turnstile token, SMS request, phone OTP login, and fail-closed provider UI. No real provider behavior claimed.');
+
+    // A guest session is not exempt from the email Turnstile gate: the upgrade
+    // code request waits for the widget and carries its token.
+    emailCaptchaEnabled = true;
+    const guestContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
+    const guestPage = await guestContext.newPage();
+    await guestPage.addInitScript(() => {
+      window.turnstile = {
+        render(_container, options) { window.__solveTurnstile = () => options.callback('test-captcha-token-guest-upgrade'); return 'guest-widget'; },
+        remove() {},
+      };
+    });
+    await guestPage.goto(`${origin}/settings/cloud`);
+    await guestPage.getByRole('button', { name: '以游客身份开始', exact: true }).click();
+    await guestPage.getByRole('heading', { name: '升级为邮箱账号', exact: true }).waitFor();
+    await guestPage.getByLabel('升级邮箱', { exact: true }).fill('guest-upgrade@example.invalid');
+    const sendUpgrade = guestPage.getByRole('button', { name: '发送升级验证码', exact: true });
+    await sendUpgrade.waitFor({ state: 'visible' });
+    assert.equal(await sendUpgrade.isEnabled(), false, 'guest upgrade code request waits for Turnstile');
+    await guestPage.waitForFunction(() => typeof window.__solveTurnstile === 'function');
+    await guestPage.evaluate(() => window.__solveTurnstile());
+    for (let i = 0; i < 40 && !(await sendUpgrade.isEnabled()); i++) await new Promise(resolveDelay => setTimeout(resolveDelay, 50));
+    assert.equal(await sendUpgrade.isEnabled(), true, 'Turnstile success should enable the guest upgrade code request');
+    await sendUpgrade.click();
+    await guestPage.getByText('验证码已发送。请在当前游客会话中完成核验。', { exact: true }).waitFor();
+    assert.deepEqual(emailCodeRequests, [{ email: 'guest-upgrade@example.invalid', captchaToken: 'test-captcha-token-guest-upgrade' }]);
+    await guestContext.close();
+    console.log('Mocked login browser flow passed: Turnstile token, SMS request, phone OTP login, fail-closed provider UI, and Turnstile-gated guest upgrade code. No real provider behavior claimed.');
   } finally {
     await browser.close();
   }

@@ -2,8 +2,9 @@ import { createHash, createHmac, randomUUID } from 'node:crypto';
 import { Pool } from 'pg';
 import { afterAll, describe, expect, it } from 'vitest';
 import { createApp } from '../app.js';
+import { AuthFailure } from './auth-failure.js';
 import { sessionToken } from '../routes/auth.js';
-import { EmailAuthService } from './email-auth.js';
+import { EmailAuthService, GUEST_CODE_OWNER_HOURLY, GUEST_CODE_POOL_HOURLY } from './email-auth.js';
 import { PostgresEmailAuthRepository } from './postgres-email-auth.js';
 import { CloudSaveService } from './cloud-save-service.js';
 import { PostgresCloudSaveRepository } from './postgres-cloud-save-repository.js';
@@ -15,6 +16,7 @@ suite('PostgreSQL email sessions and cloud ownership', () => {
   const saveId = `auth-${prefix}`; const sent = new Map<string, string>(); let now = new Date();
   const guestOwners: string[] = []; const guestSaveIds: string[] = []; const guestRateLimitKeys: string[] = [];
   const guestEmails = [`upgraded-${prefix}@example.invalid`, `occupied-${prefix}@example.invalid`];
+  const guestTargets = Array.from({ length: GUEST_CODE_OWNER_HOURLY + 2 }, (_, i) => `guest-target-${i}-${prefix}@example.invalid`);
   const secret = 'integration-only-secret'.repeat(3);
   const repository = new PostgresEmailAuthRepository(pool, secret);
   const service = new EmailAuthService(repository, async (email, code) => { sent.set(email, code); }, secret, () => now);
@@ -42,7 +44,7 @@ suite('PostgreSQL email sessions and cloud ownership', () => {
       await client.query('DELETE FROM auth_accounts WHERE email=ANY($1::text[])', [emails]);
       await client.query('COMMIT'); } catch (error) { await client.query('ROLLBACK'); throw error; } finally { client.release(); } }
     await pool.query('DELETE FROM auth_accounts WHERE email = ANY($1::text[])', [emails]);
-    await pool.query('DELETE FROM auth_challenges WHERE email = ANY($1::text[]) OR email = ANY($2::text[])', [emails, guestEmails]);
+    await pool.query('DELETE FROM auth_challenges WHERE email = ANY($1::text[]) OR email = ANY($2::text[]) OR email = ANY($3::text[])', [emails, guestEmails, guestTargets]);
     await pool.end();
   });
   it('single-use login, concurrent refresh, logout and two accounts cannot cross-read/write', async () => {
@@ -179,6 +181,58 @@ suite('PostgreSQL email sessions and cloud ownership', () => {
     expect((await guestGet('/api/auth/session', secondCookie)).status).toBe(401);
     expect((await guestPost('/api/auth/logout', {}, rotatedCookie)).status).toBe(200);
     expect((await guestGet('/api/auth/session', rotatedCookie)).status).toBe(401);
+  });
+  it('guest sessions must pass Turnstile and are capped per guest and by a shared guest sub-pool', async () => {
+    const quotaSecret = `guest-quota-${randomUUID()}-secret`;
+    const quotaRepository = new PostgresEmailAuthRepository(pool, quotaSecret);
+    const mailed: string[] = [];
+    const quotaService = new EmailAuthService(quotaRepository, async email => { mailed.push(email); }, quotaSecret, () => now);
+    const emailCaptcha = async (token: unknown) => {
+      if (token !== 'good-token') throw new AuthFailure(token == null ? 'CAPTCHA_REQUIRED' : 'CAPTCHA_INVALID', 'captcha_verify');
+    };
+    const quotaApp = createApp(undefined, undefined, { service: quotaService, origin, emailCaptcha });
+    const quotaPost = (path: string, body: unknown, cookie = '') => quotaApp.request(path, {
+      method: 'POST', headers: { origin, cookie, 'content-type': 'application/json' }, body: JSON.stringify(body),
+    });
+    const ownerKey = (owner: string) => createHmac('sha256', quotaSecret).update(`guest-code\0${owner}`).digest('hex');
+    const poolKey = createHmac('sha256', quotaSecret).update('guest-code-pool').digest('hex');
+    guestRateLimitKeys.push(createHmac('sha256', quotaSecret).update('guest-create\0unidentified').digest('hex'), poolKey);
+
+    const created = await quotaPost('/api/auth/guest', {});
+    expect(created.status).toBe(201);
+    const owner = (await created.json()).account.id as string; guestOwners.push(owner); guestRateLimitKeys.push(ownerKey(owner));
+    const cookie = created.headers.get('set-cookie')!.split(';')[0]!;
+
+    const refused = await quotaPost('/api/auth/code', { email: guestTargets[0] }, cookie);
+    expect(refused.status).toBe(403); expect((await refused.json()).code).toBe('CAPTCHA_REQUIRED');
+    expect(mailed).toEqual([]);
+    expect((await pool.query('SELECT count(*)::int AS count FROM auth_challenges WHERE email=$1', [guestTargets[0]])).rows[0].count).toBe(0);
+
+    for (let i = 0; i < GUEST_CODE_OWNER_HOURLY; i++) {
+      expect((await quotaPost('/api/auth/code', { email: guestTargets[i], captchaToken: 'good-token' }, cookie)).status).toBe(202);
+    }
+    const over = await quotaPost('/api/auth/code', { email: guestTargets[GUEST_CODE_OWNER_HOURLY], captchaToken: 'good-token' }, cookie);
+    expect(over.status).toBe(429);
+    expect(mailed).toEqual(guestTargets.slice(0, GUEST_CODE_OWNER_HOURLY));
+    expect((await pool.query('SELECT hits FROM account_rate_limits WHERE key=$1', [ownerKey(owner)])).rows[0].hits).toBe(GUEST_CODE_OWNER_HOURLY);
+    expect((await pool.query('SELECT hits FROM account_rate_limits WHERE key=$1', [poolKey])).rows[0].hits).toBe(GUEST_CODE_OWNER_HOURLY);
+
+    // Fill the shared guest sub-pool with synthetic owners; one more guest is refused, then a refund frees a slot.
+    const remaining = GUEST_CODE_POOL_HOURLY - GUEST_CODE_OWNER_HOURLY;
+    for (let i = 0; i < remaining; i++) {
+      const synthetic = `pool-${prefix}-${Math.floor(i / GUEST_CODE_OWNER_HOURLY)}`;
+      if (i % GUEST_CODE_OWNER_HOURLY === 0) guestRateLimitKeys.push(ownerKey(synthetic));
+      expect(await quotaRepository.issueGuestLimit(synthetic, now)).toBe(true);
+    }
+    const fresh = `pool-${prefix}-fresh`; guestRateLimitKeys.push(ownerKey(fresh));
+    expect(await quotaRepository.issueGuestLimit(fresh, now)).toBe(false);
+    expect((await pool.query('SELECT count(*)::int AS count FROM account_rate_limits WHERE key=$1', [ownerKey(fresh)])).rows[0].count).toBe(0);
+    expect((await pool.query('SELECT hits FROM account_rate_limits WHERE key=$1', [poolKey])).rows[0].hits).toBe(GUEST_CODE_POOL_HOURLY);
+    await quotaRepository.refundGuestLimit(`pool-${prefix}-0`, now);
+    expect(await quotaRepository.issueGuestLimit(fresh, now)).toBe(true);
+    // Anonymous login with a solved captcha is not blocked by exhausted guest budgets.
+    now = new Date(now.getTime() + 60_000);
+    expect((await quotaPost('/api/auth/code', { email: guestTargets[GUEST_CODE_OWNER_HOURLY + 1], captchaToken: 'good-token' })).status).toBe(202);
   });
 });
 
