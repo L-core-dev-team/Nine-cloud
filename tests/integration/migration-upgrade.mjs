@@ -80,6 +80,9 @@ try {
       const functions = await pool.query("SELECT proname,proconfig FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND proname IN ('append_turn_event_hash','verify_turn_event_chain','validate_npc_memory_observation_supersession') ORDER BY proname");
       assert.equal(functions.rows.length, 3);
       for (const fn of functions.rows) assert.ok(fn.proconfig?.includes('search_path=pg_catalog, public, pg_temp'), fn.proname);
+      const incremental = (await pool.query("SELECT p.proconfig, EXISTS(SELECT 1 FROM LATERAL aclexplode(coalesce(p.proacl,acldefault('f',p.proowner))) a WHERE a.grantee=0 AND a.privilege_type='EXECUTE') AS public_execute FROM pg_proc p WHERE p.oid='public.verify_turn_event_chain_incremental(text,integer)'::regprocedure")).rows[0];
+      assert.ok(incremental?.proconfig?.includes('search_path=pg_catalog, public, pg_temp'), 'verify_turn_event_chain_incremental search_path');
+      assert.equal(incremental.public_execute, false, 'verify_turn_event_chain_incremental must not be executable by PUBLIC');
     } finally { await pool.end(); }
   }
   mkdirSync(resolve(root, 'test-results'), { recursive: true });
