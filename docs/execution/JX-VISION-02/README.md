@@ -58,7 +58,9 @@
 | R1 | P2 本机事件链增量校验 | TODO | `authoritative-turn-store.ts` 每次提交都 `readAndVerifyHistory` |
 | R1 | 新规则版本：缺陷 1、2、5、6 | TODO | |
 | R1 | CI 门禁重构（渲染依赖登记表、数据与安全检查） | TODO | |
-| R1 | 回合提交与叙述分离、可见性视图、`packages/scene`、`packages/world` | TODO | |
+| R1 | `packages/world`：九霄历与天文（只影响表现） | DONE | `c517297c`，合并 `dca93d84`；37 项单测。芦花渡（30°N，标准子午线以东 15°）序章历元：日出 04:57、日落 17:03、正午 11:00 高度 59.67°，与规则 05:00 开局、17:00 入暗一致 |
+| R1 | CI 隔离缺陷：`runtime-controls` 集成测试无条件过期全部限流行，并行时重置游客邮件池计数 | DONE | `bf2e8c61`（PR #127 CI run 45932289433 失败的根因） |
+| R1 | 回合提交与叙述分离、可见性视图、`packages/scene` | TODO | |
 | R2 | 天光序章：资产套件、渲染、言落、摘句为证、多形态界面 | TODO | |
 | R3–R5 | 卷宗、天文季节、地图、神识修炼、社会 | TODO | |
 
