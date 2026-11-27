@@ -1,0 +1,22 @@
+{
+  "format": "jiuxiao-p1-frozen-rules-v1",
+  "ruleVersion": "prologue-v1-candidate-20261005",
+  "adr": "docs/adr/0010-P1规则冻结与版本化.md",
+  "sha256": "sha256:6bc7b69dfb0b4375e67add179c4a6d718b331066bd49bea7ef5f324b1117eab1",
+  "files": {
+    "apps/api/src/services/p1-memory-policy.ts": "sha256:82984d77000311cc5ea134607276694f02ad3bc4822938761b1a930014eaab81",
+    "apps/api/src/services/p1-nlu-runtime.ts": "sha256:836e7acb5ac651f4f3947a4d86e72f82b6619c45fc4c679d17d4f0ea735d4a43",
+    "apps/api/src/services/p1-prologue-plugin.ts": "sha256:e3d1fc56643e644841c3aa929a8ef95f24239242da77db1b3e2ad09aa25b2637",
+    "apps/api/src/services/p1-rule-semantic-functions.ts": "sha256:b64d39a09fabffe0bf817721d612254f8ec48b3cc078d164651be659d4715b8a",
+    "packages/content/src/prologue/prologue-v1.rulebook-candidate.ts": "sha256:e45ede3035770bc4dcc56c85daddfd567314eea9ac8bfbc3821edda89f6a53c4",
+    "packages/content/src/prologue/prologue-v1.ts": "sha256:5a73149978919112d2ec2e29064a0c82e5c487c68b46444d9b5699b00fb49d7a",
+    "packages/content/src/rules/prologue-v1.constants.ts": "sha256:f759db23414c2987e61d9c45d712686be0a56b2ccf71fb9c8f54881909533e3d",
+    "packages/domain/src/__golden__/prologue-v1-replay.json": "sha256:8041d8c08e1db70836f134d01449f2735896751aec6bf64436046e81c17e3fd7",
+    "packages/domain/src/memory/p4-recall-cues-v1.json": "sha256:d3dcd20c850741d5095b960488310007a163b03b53cb40aaa60b57dae9031e31",
+    "packages/domain/src/memory/p4-recall-policy-v2.json": "sha256:5da8bd8e61e4859e5492b5393e3f458b12ded9cc36025858415fbe51c27261de",
+    "packages/domain/src/nlu/action-parser.ts": "sha256:fb7374c307998b2a384bfad385e6a5ce19bd9501bc1982b29aade0e2bdd72e70",
+    "packages/domain/src/nlu/prologue-v1-nlu-fixtures.ts": "sha256:53ed4f2b9204cd0ae2220537b32238a1d9bb644eb25285b13da6f90df41b62b5",
+    "packages/domain/src/prologue-v1-rules.ts": "sha256:c8b68595c1c3f38da660c6781edbdde77eb1111a8be0a684440167a8c929319f",
+    "packages/domain/src/prologue-v1-time.ts": "sha256:480171d4e2117024b593bacbd93521149c3e972ade693083f5c2813095d06ffe"
+  }
+}

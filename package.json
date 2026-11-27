@@ -12,7 +12,7 @@
     "dev:web": "pnpm --filter @jiuxiao/contracts build && pnpm --filter @jiuxiao/web dev",
     "dev:api": "pnpm --filter @jiuxiao/contracts build && pnpm --filter @jiuxiao/domain build && pnpm --filter @jiuxiao/api dev",
     "typecheck": "pnpm --filter @jiuxiao/contracts build && pnpm --filter @jiuxiao/content build && pnpm --filter @jiuxiao/domain build && pnpm -r --filter=!@jiuxiao/scene-studio --filter=!@jiuxiao/scene-gate typecheck",
-    "test": "pnpm --filter @jiuxiao/domain build && node work/core-regression.cjs && pnpm -r --filter=!@jiuxiao/scene-studio --filter=!@jiuxiao/scene-gate test",
+    "test": "node scripts/p1-frozen-rules.mjs --check && pnpm --filter @jiuxiao/domain build && node work/core-regression.cjs && pnpm -r --filter=!@jiuxiao/scene-studio --filter=!@jiuxiao/scene-gate test",
     "typecheck:scene-pilot": "pnpm --filter @jiuxiao/scene-gate build && pnpm --filter @jiuxiao/scene-gate typecheck && pnpm --filter @jiuxiao/scene-studio typecheck",
     "test:scene-pilot": "pnpm --filter @jiuxiao/scene-gate build && pnpm --filter @jiuxiao/scene-studio verify:preview",
     "build": "pnpm worldbook:runtime:check && pnpm -r --filter=!@jiuxiao/scene-studio --filter=!@jiuxiao/scene-gate build && node scripts/build/write-manifest.mjs --stage S6",
