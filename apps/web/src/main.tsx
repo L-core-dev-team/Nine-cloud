@@ -655,6 +655,13 @@ function LegacyGame({ save, onExport, onImportSupplement, onUpdate, onBranch, on
 
 function App() {
   const [saves, setSaves] = useState<LocalSave[]>(readSaves);
+  // The latest committed list, for async callbacks whose render closure may be stale.
+  const savesRef = useRef(saves);
+  savesRef.current = saves;
+  // Navigation only re-renders the route. Saves come from IndexedDB (hydration,
+  // commit results, cross-tab storage events), never from the compatibility
+  // mirror, which can lag behind when its write failed (defect 7).
+  const [, setRouteRevision] = useState(0);
   useEffect(() => {
     if (!INTERNAL_TURN_WORKSPACE_ENABLED && route() === '/turns') {
       history.replaceState({}, '', '/lobby');
@@ -726,7 +733,7 @@ function App() {
       else if (!result.indexedDb) setNotice('IndexedDB 不可用，当前仅使用本地回退存储；原存档不会被删除。');
       document.documentElement.dataset.jxStorageHydrated = 'true';
     });
-    const refresh = () => setSaves(readSaves());
+    const refresh = () => setRouteRevision(revision => revision + 1);
     const externalSaveChange = (event: StorageEvent) => {
       if (event.key !== 'jiuxiao_1_local_saves_v2' && event.key !== 'jiuxiao_1_local_saves') return;
       void hydrateSaves().then(result => {
@@ -905,7 +912,7 @@ function App() {
       go(path);
     }} onBack={() => go('/lobby')} /> : currentRoute === '/intro' ? <Introduction onStart={() => go('/new')} onWorld={() => go('/world')} /> : currentRoute === '/world' ? <World onClose={returnFromReading} save={returningToJourney ? saves.find(item => worldReturnTarget === `/game/${item.saveId}`) : activeSave} onImportSupplement={importSupplement} isReturningToJourney={returningToJourney} /> : currentRoute === '/settings/ai' ? <><AiTwoModels onCards={() => go("/cards")} /><AiSettings onClose={returnFromReading} /></> : currentRoute === '/settings/cloud' ? <CloudSettings saves={saves} onRestore={async archive => {
     const copied = { ...archive, saveId: createSaveId(), name: `${archive.name}（云端副本）`, updatedAt: new Date().toISOString() };
-    const expected = readSaves(); const result = await commitSaves(expected, [copied, ...expected]);
+    const expected = savesRef.current; const result = await commitSaves(expected, [copied, ...expected]);
     setSaves(result.saves); if (result.ok) setNotice(commitSuccessMessage(result, '云端档已恢复为新副本。')); return result.ok ? copied : null;
   }} /> : currentRoute === '/settings/graphics' ? <GraphicsSettingsPage settings={graphicsSettings} onChange={updateGraphicsSettings} renderer={rendererStatus} ambientAudioActive={ambientAudioActive} onToggleAmbientAudio={() => { void toggleAmbientAudio(); }} onPreviewScene={onScenePreview} /> : currentRoute === '/cards' || currentRoute.startsWith('/cards/session/') ? <CardArea key={currentRoute} sessionId={currentRoute.startsWith('/cards/session/') ? decodeURIComponent(currentRoute.slice('/cards/session/'.length)) : undefined} onBack={() => go(currentRoute.startsWith('/cards/session/') ? '/cards' : '/lobby')} onSession={id => go(`/cards/session/${encodeURIComponent(id)}`)} onLogin={() => go('/settings/cloud')} /> : currentRoute === '/lobby' ? <WorldHub saves={saves} /> : currentRoute === '/saves' ? <SaveManager saves={saves} onExport={exportFile}
     onRename={async (save, name) => {
