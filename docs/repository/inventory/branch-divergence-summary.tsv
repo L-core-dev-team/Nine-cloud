@@ -1,0 +1,14 @@
+branch	tip	status	ahead	behind	returned_files	coverage	top_level_areas
+codex/beian-public-release-20261012	871c1b51531428a3371daf5e3859acdb43fa2bd8	diverged	2	160	4	API_RETURNED_LIST	{"apps":2,"package.json":1,"tests":1}
+codex/card-github-sync-20261107	7fe1d72de8aa977c56490b665f61567fdef8bc45	diverged	36	159	95	API_RETURNED_LIST	{".github":1,"apps":58,"docs":18,"packages":5,"scripts":1,"tests":12}
+codex/card-provider-transport-20261103	054daa016fa4b6004139898aeccd466c6214194a	diverged	19	159	71	API_RETURNED_LIST	{".github":1,"apps":47,"docs":10,"packages":5,"scripts":1,"tests":7}
+codex/card-recovery-delivery-20261117	b9a7ff92de6065e2e3fb7021293646f3116cd976	diverged	2	27	8	API_RETURNED_LIST	{"docs":2,"scripts":1,"tests":5}
+codex/local-docs-sync-20261111	0936e548b90c0242dcc15e05a6306574a83ded81	diverged	37	159	96	API_RETURNED_LIST	{".github":1,"apps":58,"docs":19,"packages":5,"scripts":1,"tests":12}
+codex/p3-final-playability-review-20261012	f159b5468966fb95f91cc9ab7bbcdf6cd665c3bd	diverged	2	154	9	API_RETURNED_LIST	{"apps":3,"docs":1,"scripts":1,"tests":4}
+codex/p3-zero-config-loop	de8cc1da18ad56d84e66fada5381e4787cd45daf	diverged	2	336	69	API_RETURNED_LIST	{".env.example":1,".gitignore":1,"apps":36,"deployment":4,"docs":5,"package.json":1,"packages":5,"pnpm-lock.yaml":1,"pnpm-workspace.yaml":1,"scripts":4,"supabase":7,"tests":3}
+codex/p4-recall-wiring	8999c87e0d7d3c4a9535f0b3dbcab2262f381616	diverged	2	250	1	API_RETURNED_LIST	{"apps":1}
+codex/t1-public-review-20261111	cb697877221a29192a2108fd5f6fef8fc19ce403	diverged	14	159	53	API_RETURNED_LIST	{".github":1,"apps":38,"docs":2,"packages":2,"scripts":1,"tests":9}
+shuilongyin/p3-p6-handover-01-20261014	ac74ee6fa7850d984e47f12e0d751c8f807d5908	diverged	10	154	300	POSSIBLY_TRUNCATED	{"apps":17,"docs":283}
+shuilongyin/s-draft-durability-20261011	a834fff6064b350d07f48d042c58c5a22385bb46	diverged	4	182	6	API_RETURNED_LIST	{"apps":3,"docs":2,"tests":1}
+shuilongyin/t1-v2-draft-20261016	d83f5317d71a9d0334d676fff14ba21fd635a87c	diverged	10	154	300	POSSIBLY_TRUNCATED	{"apps":23,"docs":277}
+shuilongyin/ui-final-20261008	7ec47f4a939f0cb2459f53a4a9033ea04ea6a238	diverged	2	338	10	API_RETURNED_LIST	{"apps":5,"docs":1,"package.json":1,"tests":3}
