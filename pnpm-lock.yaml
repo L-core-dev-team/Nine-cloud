@@ -181,6 +181,12 @@ importers:
         specifier: 0.186.0
         version: 0.186.0
 
+  packages/world:
+    devDependencies:
+      '@types/node':
+        specifier: 26.6.3
+        version: 26.6.3
+
 packages:
 
   '@cloudflare/kv-asset-handler@0.5.0':
