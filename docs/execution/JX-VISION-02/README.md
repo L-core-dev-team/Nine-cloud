@@ -47,12 +47,15 @@
 | E0 | 整合 PR 栈、建立本台账 | DONE | main `684aced` |
 | R1 | 缺陷 9：CI 提前返回 | DONE | `f50671e`；变异测试 |
 | R1 | 缺陷 8：群聊多人模式提示与解析不一致 | DONE | `7802590`；单测 12/12，card-real-play 40/40 |
-| R1 | 缺陷 3：访客会话绕过 Turnstile | DONE（验证不完整） | `5917962`；单测、集成、auth-login-ui 通过；真实 Turnstile NOT RUN |
-| R1 | 缺陷 4：每回合全量验证事件链 | DOING（半成品，未审未测） | `claude/jx-fix-d47-wip` `b4eeb4c` |
-| R1 | 缺陷 7：导航后重读 localStorage 镜像 | TODO | |
+| R1 | 缺陷 3：访客会话绕过 Turnstile | DONE（验证不完整） | `5917962`；单测、集成、auth-login-ui 通过；2026-11-27 复核 `CloudSettings.tsx`：游客升级渲染 Turnstile、无令牌时禁用发送、发送后重置令牌。真实 Turnstile 与真实邮件 NOT RUN（需生产配置） |
+| R1 | 缺陷 4：每回合全量验证事件链 | DONE（服务端） | `055bb659`（审阅自 `b4eeb4c`，补撤权与升级测试）；迁移 0030 的备份与回滚见 [migrations/0030](migrations/0030-turn-event-chain-checkpoint.md)。本机 Node 24.16 + PG17：typecheck、test（api 495）、build、migrate×2、migration-upgrade、integration 55/55、P1 e2e 通过。**生产迁移未执行**。P2 本机 IndexedDB 侧仍每回合全量校验与重放（序章存档短，影响小），另列一项 TODO |
+| R1 | 缺陷 7：导航后重读 localStorage 镜像 | DONE | `a6e007b3`；`foundation.cjs` 新增回归：镜像写失败 → 导航 → 再提交，无冲突且显示 IndexedDB 修订。旧代码上该断言失败，新代码上通过。注：本机 Windows 上 `foundation.cjs` 在更后面的“世界书返回后恢复滚动位置”断言超时，未改动的基线同样超时（本机既有问题，Linux CI 通过） |
 | R1 | P1 冻结（X14） | DONE | `618e09f`；ADR 0010 |
 | R1 | ADR 0009、0011 | DONE（文档） | `618e09f` |
 | R1 | 合并分支验证 | 本地 DONE；CI 见草稿 PR #127 | `claude/jx-exec-r1` @ `d22b078`：typecheck、test（web 319、api 494、domain 141）、build、integration 54/54、migration-upgrade、P1/P2 e2e、auth-login-ui 全部通过（Node 22、PG16） |
+| R1 | preview-1 规则批准格式 v2（解除 R1 之后 API 上线的阻塞） | DONE（代码）；宿主安装 BLOCKED（需服务器权限） | `91cafab0`；校验器单测 7 项；用生成的 v2 文件实际加载已构建的 P1 插件成功，篡改插件哈希被拒；ADR 0010 补记；`deployment/README.md`“规则批准文件” |
+| R1 | 本地环境检测与基线 | DONE | [local-environment.md](local-environment.md)；PR #127 基线 CI run 45929785918 通过 |
+| R1 | P2 本机事件链增量校验 | TODO | `authoritative-turn-store.ts` 每次提交都 `readAndVerifyHistory` |
 | R1 | 新规则版本：缺陷 1、2、5、6 | TODO | |
 | R1 | CI 门禁重构（渲染依赖登记表、数据与安全检查） | TODO | |
 | R1 | 回合提交与叙述分离、可见性视图、`packages/scene`、`packages/world` | TODO | |
