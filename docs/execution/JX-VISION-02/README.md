@@ -31,40 +31,48 @@
 | 1 | 合并 #119（角色卡酒馆整合，head `9c0724f`，CI 通过） | main `331df35` |
 | 2 | 合并 #120（方案 E，head `767ad5d`，CI 通过；线上已是同一代码的 `c4c672f` 构建） | main `8652afb` |
 | 3 | 合并 #121（VISION-02 研究，仅文档，head `4f1c314`，CI 通过） | main `559119d` |
-| 4 | #124（最终方案）与 #123（仓库整理）在 `claude/integrate-123` 合并；解决 6 个文件冲突：保留 #123 的新导航，加现行方向说明；12 份旧设计文档的“仅研究、不实施”横幅改为现行方向 | 待 CI |
+| 4 | #124（最终方案）与 #123（仓库整理）经 #126（`claude/integrate-123`）合入；6 个导航文件的冲突已解决；12 份旧设计文档的“仅研究、不实施”横幅改为现行方向 | main `684aced`（CI 通过） |
+| 5 | R1 执行分支 `claude/jx-exec-r1`：main + 缺陷 9、8、3 + P1 冻结与 ADR 0009–0011 + 交接包 | 本地全绿，CI 待开 PR |
 
-未处理：#122（文学研究，独立）、#125（审计摘要）、#116–#118（酒馆早期 PR，内容已被 #119 覆盖，待逐一核对后处理）、dependabot 各 PR。核对之前不关闭、不删分支。
+未处理：#122（文学研究，独立）、#125（审计摘要）、#116–#118（酒馆早期 PR，内容大概率已被 #119 覆盖，待逐一核对后处理）、dependabot 各 PR。核对之前不关闭、不删分支。
 
 ## 4. 任务台账
 
-状态：DONE（已完成并有证据）、DOING、TODO、BLOCKED、NOT RUN。
+状态：DONE（已完成并有证据）、DOING、TODO、BLOCKED、NOT RUN。逐项全量覆盖（R0–R5、X1–X14、缺陷、替换项）见 [handoff/03](handoff/03-覆盖台账.md)；本表只列当前进行中的部分。
+
+**当前执行者**：2026-11-27 起由本地会话接手（见 [交接包](handoff/README.md)）。云端会话 `session_01UT1aoYGEtYtLan2nHHEUfE` 已停止开发，不再修改下列分支。
 
 | 阶段 | 任务 | 状态 | 证据 |
 |---|---|---|---|
-| E0 | 整合 PR 栈、建立本台账 | DOING | 第 3 节 |
-| R1 | 缺陷 9：CI 提前返回 | TODO | |
-| R1 | 缺陷 3：访客会话绕过 Turnstile | TODO | |
-| R1 | 缺陷 8：群聊多人模式的系统提示与解析不一致 | TODO | |
-| R1 | 缺陷 4：每回合全量验证事件链 | TODO | |
+| E0 | 整合 PR 栈、建立本台账 | DONE | main `684aced` |
+| R1 | 缺陷 9：CI 提前返回 | DONE | `f50671e`；变异测试 |
+| R1 | 缺陷 8：群聊多人模式提示与解析不一致 | DONE | `7802590`；单测 12/12，card-real-play 40/40 |
+| R1 | 缺陷 3：访客会话绕过 Turnstile | DONE（验证不完整） | `5917962`；单测、集成、auth-login-ui 通过；真实 Turnstile NOT RUN |
+| R1 | 缺陷 4：每回合全量验证事件链 | DOING（半成品，未审未测） | `claude/jx-fix-d47-wip` `b4eeb4c` |
 | R1 | 缺陷 7：导航后重读 localStorage 镜像 | TODO | |
-| R1 | P1 冻结（X14） | TODO | |
+| R1 | P1 冻结（X14） | DONE | `618e09f`；ADR 0010 |
+| R1 | ADR 0009、0011 | DONE（文档） | `618e09f` |
+| R1 | 合并分支验证 | 本地 DONE；CI NOT RUN | `claude/jx-exec-r1` @ `d22b078`：typecheck、test（web 319、api 494、domain 141）、build、integration 54/54、migration-upgrade、P1/P2 e2e、auth-login-ui 全部通过（Node 22、PG16） |
 | R1 | 新规则版本：缺陷 1、2、5、6 | TODO | |
-| R1 | ADR 0009、CI 门禁重构 | TODO | |
-| R1 | 回合提交与叙述分离、可见性视图 | TODO | |
+| R1 | CI 门禁重构（渲染依赖登记表、数据与安全检查） | TODO | |
+| R1 | 回合提交与叙述分离、可见性视图、`packages/scene`、`packages/world` | TODO | |
 | R2 | 天光序章：资产套件、渲染、言落、摘句为证、多形态界面 | TODO | |
 | R3–R5 | 卷宗、天文季节、地图、神识修炼、社会 | TODO | |
+
+**精确下一步**：见 [handoff/03 §0](handoff/03-覆盖台账.md)。
 
 ## 5. 需要作者提供的资源
 
 | 需求 | 用途 | 现状 |
 |---|---|---|
-| GPU（作者现有设备，经远程控制连接） | AI 局部增强、快速渲染 | 本容器无 GPU；作者的电脑没有连接到本会话。没有 GPU 时继续用 CPU |
+| GPU | AI 局部增强、快速渲染 | 作者在本地机器上接续执行；按 [handoff/04](handoff/04-本地环境与GPU.md) 检测后使用 |
 | 法务意见 | D4、D11 的生产开启 | 未提供；相关功能以开关隔离 |
-| 真机 | X3、X8、X9 | 未提供 |
+| 真机、真人玩家、Cloudflare 凭据、API 服务器访问 | X3、X6、X8–X10；发布 | 见 [handoff/05 §5](handoff/05-接续步骤与资源.md) |
 
 ## 6. 恢复入口
 
-1. 读本页第 4 节，找到第一个不是 DONE 的任务。
+0. 新接手的会话先读 [交接包](handoff/README.md)。
+1. 读本页第 4 节和 [handoff/03 §0](handoff/03-覆盖台账.md)，找到第一个不是 DONE 的任务。
 2. `git fetch origin && git log --oneline origin/main -5`，核对第 3 节的最后一个 SHA。
-3. 执行分支以 `claude/` 开头，基于最新 main；每完成一项就提交，并在第 4 节写入提交 SHA 和测试记录。
+3. 当前执行分支是 `claude/jx-exec-r1`；新分支以 `claude/` 开头，基于最新 main 或该分支；每完成一项就提交，并在第 4 节写入提交 SHA 和测试记录。
 4. 生产部署只用既有流程（Cloudflare Pages 直传），部署前记录回滚点。

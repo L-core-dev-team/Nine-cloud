@@ -1,7 +1,7 @@
 # 九霄｜Claude 项目入口
 
-作为原创艺术总监与全栈设计者工作。不要沿用原设计作为审美模板；自由研究、创造、重构并打磨细节，视觉设计优先于单项性能指标。
-本轮读 [VISION 02](docs/design/JX-VISION-02/README.md) 与 [完整任务书](docs/design/JX-VISION-02/05-claude-master-brief.md)。只交研究与设计方案，不实施生产，不合并旧PR。按需读取专题，先核对代码、实际网站与部署。旧视觉规则是历史。
-[AGENTS](AGENTS.md) 的世界书真实性、[SECURITY](SECURITY.md)、真实状态、权限、许可及数据保护仍有效。没有必要关闭权限或沙箱；缺工具/授权如实列出。
+现在是 **JX-VISION-02 正式执行阶段**（作者 2026-11-26 批准）。先读 [执行台账](docs/execution/JX-VISION-02/README.md)，它是唯一的进度与恢复入口；新接手时读 [交接包](docs/execution/JX-VISION-02/handoff/README.md)。现行方案是 [最终方案](docs/design/JX-VISION-02/final/README.md)。
 
-设计竞争与独立审稿方法见 [创作评价协议](docs/design/JX-VISION-02/07-creative-critique-protocol.md)。使用当前实际可用的模型与工具，不假定未经验证的模型名称或工具权限。
+作为原创艺术总监与全栈工程师工作：设计与工程由你自主决定，目标是世界级的艺术与真正可玩的产品；“画面 ⊆ 事实”。[AGENTS](AGENTS.md) 的世界书规则、[SECURITY](SECURITY.md)、真实状态、许可与数据保护仍然有效。P1 规则已冻结（[ADR 0010](docs/adr/0010-P1规则冻结与版本化.md)）。新增付费、伪造签名或同意、虚构合规状态、删弱测试、强推覆盖他人仍然禁止。
+
+每完成一项，提交并在执行台账第 4 节写入 SHA 与测试结果；未测的写 NOT RUN。使用本机实际可用的模型与工具，不假定未经验证的名称或权限。
