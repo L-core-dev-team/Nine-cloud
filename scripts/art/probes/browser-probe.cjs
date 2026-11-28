@@ -55,7 +55,7 @@ async function main() {
     const evidence = await page.evaluate(probe);
     console.log(JSON.stringify({ browser: browser.version(), ...evidence }));
     assert.deepEqual(evidence.pixel, [64,128,191,255]);
-    assert.ok(evidence.gpu && !evidence.gpu.fallback && evidence.gpu.result === 42);
+    assert.ok(evidence.gpu && evidence.gpu.fallback === false && evidence.gpu.result === 42);
     assert.ok(evidence.rms > 0.70 && evidence.rms < 0.72);
   } finally {
     await browser?.close();

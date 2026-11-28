@@ -70,7 +70,7 @@
 
 | 需求 | 用途 | 现状 |
 |---|---|---|
-| GPU | AI 局部增强、快速渲染 | 作者在本地机器上接续执行；按 [handoff/04](handoff/04-本地环境与GPU.md) 检测后使用 |
+| GPU | AI 局部增强、快速渲染 | 本机 CUDA、OptiX、ControlNet 已实测，详见[环境记录](local-environment.md)。完整基础模型及 X1(b) 留待 R2 |
 | 法务意见 | D4、D11 的生产开启 | 未提供；相关功能以开关隔离 |
 | 真机、真人玩家、Cloudflare 凭据、API 服务器访问 | X3、X6、X8–X10；发布 | 见 [handoff/05 §5](handoff/05-接续步骤与资源.md) |
 
@@ -81,14 +81,17 @@
 ```sh
 git fetch --no-prune origin
 gh pr view 127 --json state,baseRefName,headRefName,headRefOid,statusCheckRollup
+git rev-parse HEAD
 git rev-parse origin/claude/jx-exec-r1
 git status --short --branch
 ```
 
+本地 HEAD、远端跟踪 ref 与 PR head 应一致。若当前目录另有工作，在原仓库另建独立工作树，例如 `git worktree add -b codex/jx-r1-next ../jx-r1-next origin/claude/jx-exec-r1`；在新目录核对三者后开工。在 PR #127 仍为执行线时，用 `git push origin HEAD:refs/heads/claude/jx-exec-r1` 正常快进同步；并发前移时先重新抓取和审查。
+
 | 接任成果 | 提交及核验范围 |
 |---|---|
 | 云端以后八项提交 | `06b327b8..64ca7ddf` 共 8 个，含一个合并提交。缺陷 4 服务端、7、批准格式 v2 和世界包均已进入执行线。[逐项审读](handoff/08-接任核验与R1顺序.md) |
-| 遗留门禁 | [恢复提交 bc534a33](https://github.com/L-core-dev-team/Nine-cloud/commit/bc534a3304791174d78b5aa5a0188f7d51da6f90)，父节点 `055bb659`。6 个跟踪修改及 12 个新文件已单独保存。4 组 Node 测试共 20 项及离线响应头检查通过。生产工作流接线、契约升级回放、完整 CI 另验。 |
+| 遗留门禁 | [恢复提交 bc534a33](https://github.com/L-core-dev-team/Nine-cloud/commit/bc534a3304791174d78b5aa5a0188f7d51da6f90)，远端分支 `codex/recovery-jx-r1-guards`，父节点 `055bb659`。6 个跟踪修改及 12 个新文件已单独保存。4 组 Node 测试共 20 项及离线响应头检查通过。生产工作流接线、契约升级回放、完整 CI 另验。 |
 | T1 兼容 | [0e2e3b56](https://github.com/L-core-dev-team/Nine-cloud/commit/0e2e3b56cb16ff6a98ba88117a69b7c32f815053) 修正 pending overlay 与 0030 校验接口的组合，只在专用测试库模拟原生回合登录权限。保留全审、增量检查、事务边界与旧加载器拒绝。 |
 | 工程基线 | Windows、Node 24、PG17：冻结安装，类型、单测、构建、隔离迁移两次、旧库升级、P1 候选浏览器旅程（13 请求、15 事件、2 授权）。其中已提交的 `0e2e3b56` 独立重跑 typecheck、test、build、PG 集成 55/55、T1 8/8、逻辑备份还原。API 普通单测 452 通过、102 跳过；数据库组另行运行。Windows 全套 e2e 在 `foundation.cjs` 的世界书返回滚动位置断言超时。 |
 | 远端与本地范围 | [冻结时各分支 SHA、相对 PR head 的提交数和 PR verify](handoff/2026-11-27-remote-refs.tsv)。入场时远端 152 个分支、126 个 PR、其中 17 个 OPEN；[接任恢复依据](handoff/README.md)记录了独立工作与 CI 历史。 |
