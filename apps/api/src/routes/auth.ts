@@ -74,13 +74,17 @@ export function mountAuth(app: Hono, service: AuthSessionService, origin: string
     const body = await authBody(c.req.raw);
     if (!body || Object.keys(body).some(key => !['email', 'captchaToken'].includes(key))) return c.json({ code: 'INVALID_REQUEST' }, 400);
     try {
-      // Turnstile guards the anonymous entry only. Guest-upgrade and unlink
-      // confirmations reuse this endpoint behind an authenticated session, so
-      // they must not be blocked by (or depend on) the captcha widget.
-      if (!await service.resolve(sessionToken(c.req.raw))) {
-        if (emailCaptchaVerifier) await emailCaptchaVerifier(body.captchaToken ?? null, clientIp(c, trustedProxyAddresses));
-      }
-      const result = await service.requestCode(body.email, clientIp(c, trustedProxyAddresses));
+      // Turnstile guards every request that can mail an arbitrary address. The only
+      // exemption is a full (non-guest) account confirming its own mailbox, e.g. the
+      // phone-unlink confirmation; guests are anonymous identities created without a
+      // captcha, so a guest session must solve Turnstile and is charged to a
+      // per-guest sub-quota and a capped guest share of the global mail budget.
+      const current = await service.resolve(sessionToken(c.req.raw));
+      const ownMailbox = current?.kind === 'email' && typeof body.email === 'string'
+        && body.email.trim().toLowerCase() === current.email.trim().toLowerCase();
+      if (!ownMailbox && emailCaptchaVerifier) await emailCaptchaVerifier(body.captchaToken ?? null, clientIp(c, trustedProxyAddresses));
+      const result = await service.requestCode(body.email, clientIp(c, trustedProxyAddresses),
+        current?.kind === 'guest' ? { guestOwnerId: current.ownerId } : {});
       if(result==='limited')c.header('Retry-After','60');
       return result === 'sent' ? c.json({ status: 'sent', resendAfterSeconds:60 }, 202) : c.json({ code: 'RATE_LIMITED',retryAfterSeconds:60 }, 429);
     } catch (error) { if(error instanceof AuthFailure)return c.json({code:error.code,stage:error.stage,requestId:error.requestId},error.code.startsWith('CAPTCHA')?403:503);return c.json({ code: error instanceof TypeError ? 'INVALID_EMAIL' : 'MAIL_UNAVAILABLE' }, error instanceof TypeError ? 400 : 503); }

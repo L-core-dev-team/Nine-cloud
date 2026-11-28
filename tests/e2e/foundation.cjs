@@ -441,6 +441,20 @@ async function ready(url) {
       await page.locator('#player-intent').fill('本地镜像配额失败时仍由 IndexedDB 保全的行动');
       await page.getByRole('button', { name: '收入待处理' }).click();
       await page.locator('.pending-intent').filter({ hasText: '本地镜像配额失败时仍由 IndexedDB 保全的行动' }).waitFor();
+      // Defect 7: navigating away and back while the mirror is stale must keep the
+      // IndexedDB revision on screen, and the next commit must not report a conflict.
+      const mirrorFailureGamePath = new URL(page.url()).pathname;
+      const navigateInApp = path => page.evaluate(target => { history.pushState({}, '', target); dispatchEvent(new PopStateEvent('popstate')); }, path);
+      await navigateInApp('/saves');
+      await page.waitForFunction(() => location.pathname === '/saves');
+      await navigateInApp(mirrorFailureGamePath);
+      await page.locator('.pending-intent').filter({ hasText: '本地镜像配额失败时仍由 IndexedDB 保全的行动' }).waitFor();
+      await page.locator('#player-intent').fill('导航后再次提交的行动');
+      await page.getByRole('button', { name: '收入待处理' }).click();
+      await page.locator('.pending-intent').filter({ hasText: '导航后再次提交的行动' }).waitFor();
+      assert.equal(await page.locator('.pending-intent').filter({ hasText: '本地镜像配额失败时仍由 IndexedDB 保全的行动' }).count(), 1, 'the IndexedDB revision stays visible after navigation');
+      assert.equal(await page.locator('[aria-label="存档冲突处理"]').count(), 0, 'a stale compatibility mirror must not surface as a save conflict');
+      assert.equal(await page.getByText(/另一个?标签页/).count(), 0, 'no conflict notice after navigation');
       await page.evaluate(() => { Storage.prototype.setItem = window.__restoreLocalStorageSetItem; });
       await page.reload();
       await page.locator('.game-topline h1').waitFor();

@@ -1,11 +1,12 @@
 # 九霄协作导航（先读）
 
-- 先确认 branch、HEAD、工作区及目标范围。不得改动其他成员正在使用的分支、PR 或未提交内容；以独立分支/工作树工作，不强推、不擅自合并或部署。
+- 先确认 branch、HEAD、工作区及目标范围。不得改动其他成员正在使用的分支、PR 或未提交内容；以独立分支/工作树工作，不强推、不擅自合并或部署（JX-VISION-02 执行者已获作者授权按既有流程合并与发布，见 [执行台账](docs/execution/JX-VISION-02/README.md) §1）。
 - 先读 [docs/README.md](docs/README.md)；按任务读取 [架构地图](docs/项目结构地图.md)、[状态与权威来源](docs/repository/STATUS.md)、[开发指南](docs/README-workspace-guide.md) 和 [治理](docs/repository/GOVERNANCE.md)。全量历史清单只在审计/追溯任务时读取，不默认灌入上下文。
 - 运行命令以当前 package.json 和 .github/workflows/ci.yml 为准；测试必须使用隔离数据。未执行的测试标 NOT RUN，未批准的候选不说已发布。
 - 文学等仍在进行的研究以其任务分支的现行文件为准；不将 main 的历史审美说明覆盖候选研究。
 - 不删除或移动历史证据、素材、迁移、原型或重复 blob，仅凭路径或文件名不得判定无用。先验证构建、测试、授权与引用。
 - 视觉、玩法与全栈的现行方案是 [JX-VISION-02 最终方案](docs/design/JX-VISION-02/final/README.md)，作者已于 2026-11-26 批准实施；执行进度、决策与恢复入口见 [执行台账](docs/execution/JX-VISION-02/README.md)。方案 E 是初版，不约束新方案；Canon、权限、安全、许可与生产事实不因此改变。
+- JX-VISION-02 的现任执行者为 GPT-6.2 / Codex。切换模型后从执行台账 §6 核对 PR head 和 CI，并从记录的阶段断点开始。每阶段提交、同步、核验后停在交接点，由作者手动切换模型并发出继续命令。
 - 根指令保持精简，具体专题放 docs。维护文档和代码状态一致，避免重复声明。
 
 # 协作代理交接：世界书状态

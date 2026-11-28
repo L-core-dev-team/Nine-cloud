@@ -100,6 +100,9 @@ describe.skipIf(!adminUrl)('T1 pending protected patch on an isolated synthetic 
       GRANT UPDATE(revision,schema_version,canon_version,canon_artifact_hash,rule_version,memory_policy_version,memory_mode,
         memory_policy,branch_id,parent_branch_id,fork_revision,created_policy_version,source_migration_id,snapshot,updated_at) ON game_saves TO ${r};
       GRANT INSERT ON turn_requests,turn_events,npc_memory_journals,npc_authorized_observation_outbox TO ${r};
+      GRANT EXECUTE ON FUNCTION public.verify_turn_event_chain_incremental(text,integer) TO ${r};
+      GRANT SELECT,INSERT,UPDATE(verified_sequence,verified_hash,incremental_checks,full_audit_at,updated_at)
+        ON public.turn_event_chain_checkpoints TO ${r};
       GRANT UPDATE(narrative_updated_at) ON turn_requests TO ${r};
       GRANT UPDATE(schema_version,revision,payload,updated_at) ON npc_memory_journals TO ${r};
       GRANT SELECT,DELETE ON auth_accounts,auth_sessions,auth_challenges,cloud_archive_trash,game_saves,
@@ -115,6 +118,24 @@ describe.skipIf(!adminUrl)('T1 pending protected patch on an isolated synthetic 
     await prepareNarrativeV2Runtime({pool:runtime,workerPool:worker,rendererVersion:renderer,render:()=> 'fixture',limits});
   });
   afterAll(async()=>{await Promise.all(pools.map(pool=>pool.end()));});
+
+  it('verifies the authoritative chain as the native runtime when composing narrative V2',async()=>{
+    const f=await fixture();
+    expect(await actual.loadSave(f.owner,f.saveId)).toMatchObject({revision:0});
+    const checkpoint=async()=>(await admin.query(
+      'SELECT verified_sequence,incremental_checks FROM public.turn_event_chain_checkpoints WHERE save_id=$1',[f.saveId]
+    )).rows[0];
+    expect(await checkpoint()).toEqual({verified_sequence:-1,incremental_checks:0});
+    expect(await service.execute(f.owner,f.intent(),false)).toMatchObject({status:'accepted',narrative:{status:'not_requested'}});
+    expect(await actual.loadSave(f.owner,f.saveId)).toMatchObject({revision:1});
+    expect(await checkpoint()).toEqual({verified_sequence:0,incremental_checks:2});
+    for(const pool of [worker,operator,erasure]){
+      const access=await pool.query(`SELECT
+        has_function_privilege(current_user,'public.verify_turn_event_chain_incremental(text,integer)','EXECUTE') AS verify,
+        has_any_column_privilege(current_user,'public.turn_event_chain_checkpoints','UPDATE') AS write`);
+      expect(access.rows[0]).toEqual({verify:false,write:false});
+    }
+  });
 
   it('rolls back authority events, grant journal, receipt, save revision and outbox on registration failure',async()=>{
     const f=await fixture(), intent=f.intent();

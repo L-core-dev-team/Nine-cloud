@@ -46,6 +46,17 @@ Worker + Supabase 适配器仍保留为工程候选；Worker 尚未覆盖完整�
 
 ## 正式规则与叙事接入
 
+### 规则批准文件（preview-1）
+
+`JIUXIAO_RELEASE_CHANNEL=preview-1` 时，API 只在宿主上有有效批准文件时加载规则（`TURN_RULES_APPROVAL_PATH`，容器内绝对路径，例如 `/run/jiuxiao/rules-approval.json`）。格式见 `apps/api/src/services/preview-rule-approval.ts`：
+
+- 旧双签文件（scope `jiuxiao-preview-1-20261014`）在语义摘要不变时继续有效。
+- 语义摘要重新固定后（ADR 0010），用新版本代码生成 v2 文件：在与镜像同一提交的检出中 `pnpm build`，再运行
+  `node scripts/write-preview-rule-approval.mjs --plugin apps/api/dist/services/p1-prologue-plugin.js --out <私有路径>/rules-approval.json --issued-by "<签发人>" --days 180`。
+  `--plugin` 必须是宿主上实际安装的那份规则模块（文件字节决定 `pluginSha256`）。
+- 把文件放进只读的 `runtime/`，在 `api.private.env` 设置 `TURN_RULES_APPROVAL_PATH`，先部署到隔离环境确认日志出现 `preview_rules_loaded` 且 `approvalKind` 为 `owner-v2`，再切生产。旧文件保留为回滚点。
+- 文件引用的是作者真实的授权记录；不得填写未发生的签署。
+
 把审核后的 JS/MJS 规则模块放入只读 runtime/，TURN_RULES_MODULE 设置为容器绝对路径 `/run/jiuxiao/rules.mjs`。模块默认导出 TurnPlugin：provider（version 和 resolve）、grantsForEvent、policyForNpc、initialState。模块由可信宿主安装，永不从客户端、模型或远程 URL 加载。没有模块时回合/建档 503 RULES_NOT_READY。
 
 initialState 只根据作者批准的建档规则选择，客户端 name/goal 不授予修为或资源。POST /api/games 输入 idempotencyKey 和 choices，返回服务端权威 SaveEnvelope；owner 来自 Session。同键同输入只建一次，不同输入 409。

@@ -8,4 +8,4 @@
 - 精细打磨：没有必要急着沿用旧版交付，先做真正不同的原创方案、实质比较，后续通过屏幕和实际使用迭代。每个页面、动作、空态、过渡都有意义。
 - 诚实与安全：视觉不得冒充未完成的玩法，真实规则/存档/授权/第三方权益仍受保护。允许提出改进，但不得以设计自由跳过必要批准或破坏用户状态。
 
-现行研究入口：[VISION 02](docs/design/JX-VISION-02/README.md)。原DESIGN及方案E留在Git历史和原设计文档，不再是硬性视觉规范。此阶段仅方案。
+现行研究入口：[VISION 02](docs/design/JX-VISION-02/README.md)。原DESIGN及方案E留在Git历史和原设计文档，不再是硬性视觉规范。2026-11-26 起为执行阶段，现行方案见 [最终方案](docs/design/JX-VISION-02/final/README.md)，进度见 [执行台账](docs/execution/JX-VISION-02/README.md)。

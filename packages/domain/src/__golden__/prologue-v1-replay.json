@@ -1,0 +1,478 @@
+{
+  "format": "jiuxiao-p1-frozen-replay-v1",
+  "ruleVersion": "prologue-v1-candidate-20261005",
+  "note": "Frozen prologue-v1 golden traces (ADR 0010). Never regenerate to make a change pass; a new rule version gets its own golden file.",
+  "journeys": {
+    "openingPath": {
+      "sha256": "46d1911c248170403a1f1b87edf300d0e0dc976e079b1311b9eea1929ef0afd0",
+      "steps": 7,
+      "finalRevision": 7,
+      "finalLocation": "loc_luhuadu",
+      "finalFacts": {
+        "gameMinute": 450,
+        "currentSublocationId": null,
+        "npcPresence": [
+          "npc_cenjiu",
+          "npc_shuiyuya"
+        ],
+        "stamina": 31,
+        "staminaDayIndex": 0,
+        "spiritStamina": 100,
+        "cultivationProgress": 1600,
+        "fatigueCount": 0,
+        "inventory": [
+          {
+            "itemId": "item_jiuyifu",
+            "quantity": 1
+          }
+        ],
+        "collectedSources": [],
+        "effectFlags": [],
+        "clues": [
+          "clue_rockslide",
+          "clue_crow_nest"
+        ],
+        "observationLog": [
+          {
+            "targetId": "obstacle_rockslide",
+            "method": "scan",
+            "result": "found",
+            "clueId": "clue_rockslide",
+            "clueLevel": 1
+          },
+          {
+            "targetId": "obstacle_rockslide",
+            "method": "study",
+            "result": "found",
+            "clueId": "clue_crow_nest",
+            "clueLevel": 2
+          }
+        ],
+        "npcInteractionLog": [
+          {
+            "npcId": "npc_cenjiu",
+            "topicTag": "obstacle_rockslide",
+            "outcome": "refuse"
+          }
+        ],
+        "travelLog": [],
+        "injuryFlags": [
+          "shoulder_scrape"
+        ],
+        "questState": {
+          "status": "completed",
+          "rewardClaimed": true
+        },
+        "knownLocations": [
+          "loc_luhuadu",
+          "loc_wangqitai",
+          "loc_zheguiping"
+        ],
+        "knownTechniques": [
+          "tech_breath_basic"
+        ],
+        "locationGraph": [
+          {
+            "from": "loc_luhuadu",
+            "to": "loc_wangqitai",
+            "state": "open"
+          },
+          {
+            "from": "loc_wangqitai",
+            "to": "loc_luhuadu",
+            "state": "open",
+            "via": "subloc_reef_ledge"
+          },
+          {
+            "from": "loc_wangqitai",
+            "to": "loc_zheguiping",
+            "state": "open"
+          },
+          {
+            "from": "loc_zheguiping",
+            "to": "loc_wangqitai",
+            "state": "open"
+          }
+        ],
+        "idleCount": 0,
+        "obstacleState": "cleared",
+        "ferryState": "clear"
+      }
+    },
+    "ferryClues": {
+      "sha256": "fb1615790559380459729a3126b2214df92edb381797ea3134a3ae4682b41d5d",
+      "steps": 7,
+      "finalRevision": 4,
+      "finalLocation": "loc_luhuadu",
+      "finalFacts": {
+        "gameMinute": 390,
+        "currentSublocationId": null,
+        "npcPresence": [
+          "npc_cenjiu",
+          "npc_shuiyuya"
+        ],
+        "stamina": 85,
+        "staminaDayIndex": 0,
+        "spiritStamina": 100,
+        "cultivationProgress": 0,
+        "fatigueCount": 0,
+        "inventory": [
+          {
+            "itemId": "item_bishuifu",
+            "quantity": 1
+          }
+        ],
+        "collectedSources": [
+          "src_ferry_shore"
+        ],
+        "effectFlags": [],
+        "clues": [
+          "clue_ferry_stuck",
+          "clue_ferry_scrubbed",
+          "clue_wrong_way"
+        ],
+        "observationLog": [
+          {
+            "targetId": "obj_ferry",
+            "method": "scan",
+            "result": "found",
+            "clueId": "clue_ferry_stuck",
+            "clueLevel": 1
+          },
+          {
+            "targetId": "obj_ferry",
+            "method": "study",
+            "result": "found",
+            "clueId": "clue_ferry_scrubbed",
+            "clueLevel": 2
+          },
+          {
+            "targetId": "obj_ferry_gear",
+            "method": "study",
+            "result": "found",
+            "clueId": "clue_wrong_way",
+            "clueLevel": 2
+          }
+        ],
+        "npcInteractionLog": [],
+        "travelLog": [],
+        "injuryFlags": [],
+        "questState": {
+          "status": "unavailable",
+          "rewardClaimed": false
+        },
+        "knownLocations": [
+          "loc_luhuadu",
+          "loc_wangqitai"
+        ],
+        "knownTechniques": [
+          "tech_breath_basic"
+        ],
+        "locationGraph": [
+          {
+            "from": "loc_luhuadu",
+            "to": "loc_wangqitai",
+            "state": "open"
+          },
+          {
+            "from": "loc_wangqitai",
+            "to": "loc_luhuadu",
+            "state": "blocked"
+          },
+          {
+            "from": "loc_wangqitai",
+            "to": "loc_zheguiping",
+            "state": "locked"
+          },
+          {
+            "from": "loc_zheguiping",
+            "to": "loc_wangqitai",
+            "state": "locked"
+          }
+        ],
+        "idleCount": 0,
+        "obstacleState": "blocked",
+        "ferryState": "aground"
+      }
+    },
+    "wardAndCombat": {
+      "sha256": "1bcf08e4ddc9acfae1ab29951210b9028b60e6e8c18507f3e2a3bc0fd0c365ab",
+      "steps": 4,
+      "finalRevision": 3,
+      "finalLocation": "loc_luhuadu",
+      "finalFacts": {
+        "gameMinute": 360,
+        "currentSublocationId": "subloc_ferry_berm",
+        "npcPresence": [
+          "npc_cenjiu",
+          "npc_shuiyuya"
+        ],
+        "stamina": 75,
+        "staminaDayIndex": 0,
+        "spiritStamina": 75,
+        "cultivationProgress": 0,
+        "fatigueCount": 0,
+        "inventory": [
+          {
+            "itemId": "item_jiuyifu",
+            "quantity": 1
+          }
+        ],
+        "collectedSources": [],
+        "effectFlags": [
+          "effect_ward_water"
+        ],
+        "clues": [],
+        "observationLog": [],
+        "npcInteractionLog": [],
+        "travelLog": [],
+        "injuryFlags": [],
+        "questState": {
+          "status": "completed",
+          "rewardClaimed": true
+        },
+        "knownLocations": [
+          "loc_luhuadu",
+          "loc_wangqitai",
+          "loc_zheguiping"
+        ],
+        "knownTechniques": [
+          "tech_breath_basic"
+        ],
+        "locationGraph": [
+          {
+            "from": "loc_luhuadu",
+            "to": "loc_wangqitai",
+            "state": "open"
+          },
+          {
+            "from": "loc_wangqitai",
+            "to": "loc_luhuadu",
+            "state": "open"
+          },
+          {
+            "from": "loc_wangqitai",
+            "to": "loc_zheguiping",
+            "state": "open"
+          },
+          {
+            "from": "loc_zheguiping",
+            "to": "loc_wangqitai",
+            "state": "open"
+          }
+        ],
+        "idleCount": 0,
+        "obstacleState": "cleared",
+        "ferryState": "clear"
+      }
+    },
+    "duskAtReef": {
+      "sha256": "75b88474df4125f727f4120086e0869709b7e2d228af3c0d6d34559783abd6d5",
+      "steps": 2,
+      "finalRevision": 2,
+      "finalLocation": "loc_wangqitai",
+      "finalFacts": {
+        "gameMinute": 1080,
+        "currentSublocationId": "subloc_reef_ledge",
+        "npcPresence": [
+          "npc_cenjiu",
+          "npc_shuiyuya"
+        ],
+        "stamina": 69,
+        "staminaDayIndex": 0,
+        "spiritStamina": 75,
+        "cultivationProgress": 0,
+        "fatigueCount": 0,
+        "inventory": [],
+        "collectedSources": [],
+        "effectFlags": [],
+        "clues": [],
+        "observationLog": [
+          {
+            "targetId": "obstacle_rockslide",
+            "method": "study",
+            "result": "blocked",
+            "blockedReason": "too_dark"
+          }
+        ],
+        "npcInteractionLog": [],
+        "travelLog": [],
+        "injuryFlags": [
+          "crowding_bite"
+        ],
+        "questState": {
+          "status": "completed",
+          "rewardClaimed": false
+        },
+        "knownLocations": [
+          "loc_luhuadu",
+          "loc_wangqitai"
+        ],
+        "knownTechniques": [
+          "tech_breath_basic"
+        ],
+        "locationGraph": [
+          {
+            "from": "loc_luhuadu",
+            "to": "loc_wangqitai",
+            "state": "open"
+          },
+          {
+            "from": "loc_wangqitai",
+            "to": "loc_luhuadu",
+            "state": "open"
+          },
+          {
+            "from": "loc_wangqitai",
+            "to": "loc_zheguiping",
+            "state": "locked"
+          },
+          {
+            "from": "loc_zheguiping",
+            "to": "loc_wangqitai",
+            "state": "locked"
+          }
+        ],
+        "idleCount": 0,
+        "obstacleState": "cleared",
+        "ferryState": "clear"
+      }
+    },
+    "woundedAndRetreat": {
+      "sha256": "d3feac42b43b74be254fbad7368c05ee19fdbbe1f91d90c5215a1d7ee28d53fd",
+      "steps": 3,
+      "finalRevision": 2,
+      "finalLocation": "loc_luhuadu",
+      "finalFacts": {
+        "gameMinute": 345,
+        "currentSublocationId": null,
+        "npcPresence": [
+          "npc_cenjiu",
+          "npc_shuiyuya"
+        ],
+        "stamina": 75,
+        "staminaDayIndex": 0,
+        "spiritStamina": 5,
+        "cultivationProgress": 0,
+        "fatigueCount": 0,
+        "inventory": [],
+        "collectedSources": [],
+        "effectFlags": [],
+        "clues": [],
+        "observationLog": [],
+        "npcInteractionLog": [
+          {
+            "npcId": "npc_cenjiu",
+            "topicTag": "obstacle_rockslide",
+            "outcome": "refuse"
+          }
+        ],
+        "travelLog": [],
+        "injuryFlags": [
+          "retreated"
+        ],
+        "questState": {
+          "status": "unavailable",
+          "rewardClaimed": false
+        },
+        "knownLocations": [
+          "loc_luhuadu",
+          "loc_wangqitai"
+        ],
+        "knownTechniques": [
+          "tech_breath_basic"
+        ],
+        "locationGraph": [
+          {
+            "from": "loc_luhuadu",
+            "to": "loc_wangqitai",
+            "state": "open"
+          },
+          {
+            "from": "loc_wangqitai",
+            "to": "loc_luhuadu",
+            "state": "blocked"
+          },
+          {
+            "from": "loc_wangqitai",
+            "to": "loc_zheguiping",
+            "state": "locked"
+          },
+          {
+            "from": "loc_zheguiping",
+            "to": "loc_wangqitai",
+            "state": "locked"
+          }
+        ],
+        "idleCount": 0,
+        "obstacleState": "blocked",
+        "ferryState": "aground"
+      }
+    },
+    "reefWithoutWard": {
+      "sha256": "3f750749d0fc9b71ec549a57d90994e07f00774e9c39bd299878c74458bc61a6",
+      "steps": 1,
+      "finalRevision": 1,
+      "finalLocation": "loc_wangqitai",
+      "finalFacts": {
+        "gameMinute": 330,
+        "currentSublocationId": "subloc_reef_ledge",
+        "npcPresence": [
+          "npc_cenjiu",
+          "npc_shuiyuya"
+        ],
+        "stamina": 75,
+        "staminaDayIndex": 0,
+        "spiritStamina": 75,
+        "cultivationProgress": 0,
+        "fatigueCount": 0,
+        "inventory": [],
+        "collectedSources": [],
+        "effectFlags": [],
+        "clues": [],
+        "observationLog": [],
+        "npcInteractionLog": [],
+        "travelLog": [],
+        "injuryFlags": [
+          "crow_scratch"
+        ],
+        "questState": {
+          "status": "completed",
+          "rewardClaimed": false
+        },
+        "knownLocations": [
+          "loc_luhuadu",
+          "loc_wangqitai"
+        ],
+        "knownTechniques": [
+          "tech_breath_basic"
+        ],
+        "locationGraph": [
+          {
+            "from": "loc_luhuadu",
+            "to": "loc_wangqitai",
+            "state": "open"
+          },
+          {
+            "from": "loc_wangqitai",
+            "to": "loc_luhuadu",
+            "state": "open"
+          },
+          {
+            "from": "loc_wangqitai",
+            "to": "loc_zheguiping",
+            "state": "locked"
+          },
+          {
+            "from": "loc_zheguiping",
+            "to": "loc_wangqitai",
+            "state": "locked"
+          }
+        ],
+        "idleCount": 0,
+        "obstacleState": "cleared",
+        "ferryState": "clear"
+      }
+    }
+  }
+}
