@@ -13,7 +13,7 @@
 | # | 事项 | 现状 | 需要作者做什么 |
 |---|---|---|---|
 | A1 | Hugging Face 注册/登录/FLUX 访问授权 + 本地身份验证 | 本机 `~/.cache/huggingface/token` 不存在；助手不代注册、不代登录 | 完成注册与登录，接受目标模型许可，回执“已授权”；之后由助手下载、校验、配置、实跑 |
-| A2 | FLUX.2 [klein] 4B（Apache-2.0）/ Qwen-Image 2512（Apache-2.0）下载 | 未下载：授权未回执 + 带宽 0.41 MB/s（klein 约 8 GB 需 5–6 h，Qwen FP8 20.4 GB 需 14 h+） | 授权回执后决定：只下 klein，或同时评估 ModelScope 镜像；不建议在 0.4 MB/s 下强拉 20 GB |
+| A2 | FLUX.2 [klein] 4B（Apache-2.0）/ Qwen-Image 2512（Apache-2.0）下载 | 未下载：授权未回执 + 带宽 0.41 MB/s（klein 约 8 GB 需 5–6 h，Qwen FP8 20.4 GB 需 14 h+）；且 FLUX.2 需更新 ComfyUI 核心/节点与配套编码器，当前 0.30.1 不保证加载 | 授权回执后先确认目标 ComfyUI 版本与节点，再决定只下 klein 或同时评估 ModelScope 镜像 |
 | A3 | 旧共享根下两份截断 Wan 权重 | 已加 `README-DO-NOT-USE.txt`，未删除；完整副本已哈希核验但未做“删除后重跑”二次确认 | 确认后删除（回收约 2.4 GB）；或明确保留 |
 | A4 | RenderDoc 抓帧是否继续 | 已确认 API 注入失败（详见 §C1），当前无 `.rdc` | 决定：管理员权限/关安全软件重试，或接受 BLOCKED 并改用内置 profiler |
 | A5 | 大型商业工具（Unreal / Unity / Houdini / DaVinci） | 未安装，不在本轮范围 | 按需点名，不预装、不产生费用 |

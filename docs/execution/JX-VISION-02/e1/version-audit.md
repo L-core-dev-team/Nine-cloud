@@ -11,6 +11,7 @@
 |---|---|---|---|---|
 | Node.js | v24.16.0 | v26.13.1 | 2 个大版本 | **隔离升级**：Node 26 已进入 LTS 通道；先建独立目录 + 新 pnpm，跑 `pnpm install --frozen-lockfile` 与前端构建，通过后再切换；不在本轮直接替换 |
 | pnpm | 11.19.0 | 12.23.0 | 1 个大版本 | **随 Node 一起升级**；pnpm 12 改变锁文件解析，需验证 lockfile 不被动改写 |
+| Python（ComfyUI venv） | 3.13.12 | 3.15.2 | 2 个版本 | **保持 3.13**：ComfyUI/torch CUDA 轮子兼容优先；WSL 侧已有 3.14 独立 venv，不为追新换解释器 |
 | ComfyUI | 0.30.1 | v0.46.0 | 16 个小版本 | **隔离克隆验证**：工作流 JSON 与前端 API 均有变动；在 `<LAB_ROOT>\Workspaces\ComfyUI-next` 克隆后跑六条工作流 + 双 CN + Wan，全部通过再切换；禁止原地 `git pull` 覆盖现有可用环境 |
 | PyTorch（ComfyUI venv） | 2.12.1+cu130 | 2.15.0 | 3 个小版本 | **随 ComfyUI 升级一起评估**；WSL 侧已实测 2.15.0+cu132 可用（67.8 TFLOPS），Windows 侧暂不动，避免自定义节点 CUDA 扩展失效 |
 | FFmpeg | 8.1.1 | 9.1 | 1 个大版本 | **保持 8.1.1**；现有视频封装/抽帧脚本未做 9.x 回归，升级收益低 |
@@ -53,7 +54,7 @@
 ## 4. 审计脚本的已知盲区
 
 - npm 项目内依赖（axe-core、lighthouse、pixelmatch）未装全局，`installed` 显示为空；实际版本以各工作区 `package.json` / `node_modules` 为准。
-- Python 最新稳定版字段为空（endoflife 返回结构未适配）；当前 Windows 3.13.12、WSL 3.14 均可用，**不为追新而更换 ComfyUI 解释器**。
+- Python 最新版字段在首版审计中为空（endoflife 返回结构未适配）；`scripts/audit-versions.ps1` 已修正，实测返回 3.15.2。当前 Windows 3.13.12、WSL 3.14 均可用，**不为追新而更换 ComfyUI 解释器**。
 - RenderDoc 的版本输出被 PowerShell 匹配对象包装，JSON 中显示为对象而非字符串；实际版本 v1.47 正确。
 
 ## 5. 升级执行顺序（建议）

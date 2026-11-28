@@ -82,5 +82,6 @@ Black Forest Labs 当前公开权重与 API 并存，命名按“代际 + 规模
 1. **HF 授权**：作者需完成 Hugging Face 注册、登录、FLUX 模型访问授权与本地身份验证；助手不代注册、不代登录。
 2. **带宽**：实测 `hf-mirror.com` 0.41 MB/s、`huggingface.co` 直连 0.04–0.07 MB/s。klein 4B 约 8 GB 量级需 5–6 小时；Qwen FP8 20.4 GB 需 14 小时以上。先下 klein，Qwen 待评估 ModelScope 镜像后再决定。
 3. **磁盘**：D 盘当前可用 178 GiB，容得下两者；下载前仍需保留 ≥60 GiB 余量供 ComfyUI/Blender 缓存。
+4. **运行栈**：FLUX.2 需要比当前 ComfyUI 0.30.1 更新的核心/节点，且不只一个 UNet 权重（还涉及配套文本编码器与 VAE）。下载前先确认目标 ComfyUI 版本与节点清单，避免“权重到了却加载不了”。
 
 阻塞解除后，按 `scripts/hf_download_verified.py` 断点下载 → SHA-256/字节校验 → 放入 `<LAB_ROOT>\Models\` → 跑第 5 节实测 → 回填本表。
