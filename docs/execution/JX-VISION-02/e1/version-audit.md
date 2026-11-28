@@ -41,13 +41,22 @@
 - **已装** Numba 0.68.1、Taichi 1.7.4，科学计算栈实跑通过（相对误差 3e-6）。
 - **未升级** Node/pnpm/ComfyUI/FFmpeg：大版本升级需要在独立目录做完整回归，本轮只给方案，不在可用环境上冒险。
 
-## 3. 审计脚本的已知盲区
+## 3. 插件与扩展面
+
+| 面 | 现状 | 结论 |
+|---|---|---|
+| ComfyUI 自定义节点 | `custom_nodes` 下无第三方节点（仅 `__pycache__`） | 无节点版本/安全更新可审；工作流只用核心节点，升级 0.46 时不受第三方节点阻塞 |
+| Blender 扩展 | 仅官方 `system` 目录，无用户扩展 | 无第三方插件兼容风险；5.3/5.2.5 双版本均用出厂节点 |
+| Python 包 | analysis venv：numpy 2.5.5 / scikit-image 0.26.0 / scipy 1.18.1 / moderngl 5.13 / numba 0.68.1 / taichi 1.7.4 | 均为当前稳定版；科学栈实跑通过 |
+| IDE 扩展（Cursor/VS Code） | 属于开发工具，不在资产生产链 | 本轮不做逐扩展审计；若后续引入 Blender/GLSL 扩展，再登记到 `tools-manifest.json` |
+
+## 4. 审计脚本的已知盲区
 
 - npm 项目内依赖（axe-core、lighthouse、pixelmatch）未装全局，`installed` 显示为空；实际版本以各工作区 `package.json` / `node_modules` 为准。
 - Python 最新稳定版字段为空（endoflife 返回结构未适配）；当前 Windows 3.13.12、WSL 3.14 均可用，**不为追新而更换 ComfyUI 解释器**。
 - RenderDoc 的版本输出被 PowerShell 匹配对象包装，JSON 中显示为对象而非字符串；实际版本 v1.47 正确。
 
-## 4. 升级执行顺序（建议）
+## 5. 升级执行顺序（建议）
 
 1. Git / GitHub CLI（低风险，先做）。
 2. Node 26 + pnpm 12（独立目录，锁文件只读验证）。
@@ -56,3 +65,5 @@
 5. FFmpeg 9.1（最后，等脚本回归用例补齐）。
 
 任何一步失败即回退到本表“本机”列记录的版本；便携版均保留原目录，不做覆盖式升级。
+
+
