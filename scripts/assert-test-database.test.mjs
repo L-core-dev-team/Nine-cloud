@@ -38,6 +38,34 @@ test('requires a PostgreSQL integration database and rejects other protocols', a
     assert.equal(result.status, 1);
     assert.match(result.stderr, /must begin with jiuxiao_test/);
   });
+  await t.test('production hostnames are refused by name', () => {
+    for (const host of ['api.jiuxiaogame.cn', 'db.jiuxiaogame.cn', 'abcdefgh.supabase.co', 'aws-0-ap-east-1.pooler.supabase.com', 'API.JIUXIAOGAME.CN.']) {
+      const result = runGuard(`postgresql://postgres:private-value@${host}:5432/jiuxiao_test`);
+      assert.equal(result.status, 1, host);
+      assert.match(result.stderr, /production service/, host);
+      assert.doesNotMatch(result.stdout + result.stderr, /private-value/);
+    }
+  });
+  await t.test('non-loopback hosts are refused', () => {
+    for (const host of ['db.example.com', '10.0.0.5', '192.168.1.20', 'postgres', '0.0.0.0', '[2001:db8::1]', '127.0.0.1.nip.io']) {
+      const result = runGuard(`postgresql://postgres:postgres@${host}:5432/jiuxiao_test`);
+      assert.equal(result.status, 1, host);
+      assert.match(result.stderr, /local loopback test instance/, host);
+    }
+  });
+  await t.test('libpq host overrides in the query string are refused', () => {
+    for (const query of ['host=db.example.com', 'hostaddr=10.0.0.5']) {
+      const result = runGuard(`postgresql://postgres:postgres@127.0.0.1:5432/jiuxiao_test?${query}`);
+      assert.equal(result.status, 1, query);
+      assert.match(result.stderr, /query parameter is not allowed/, query);
+    }
+  });
+  await t.test('loopback hosts used by CI and local containers pass', () => {
+    for (const host of ['localhost', '127.0.0.1', '127.0.0.2', '[::1]']) {
+      const result = runGuard(`postgresql://postgres:postgres@${host}:55432/jiuxiao_test_ci`);
+      assert.equal(result.status, 0, `${host}: ${result.stderr}`);
+    }
+  });
   await t.test('valid PostgreSQL URL passes without printing credentials', () => {
     const result = runGuard('postgresql://test-user:private-value@127.0.0.1:5432/jiuxiao_test_ci');
     assert.equal(result.status, 0, result.stderr);

@@ -1,0 +1,29 @@
+{
+  "format": "JIUXIAO_SAVE",
+  "version": 1,
+  "save": {
+    "schemaVersion": 1,
+    "saveId": "fixture-local-save-002",
+    "name": "回档修士",
+    "createdAt": "2026-09-24T08:00:00.000Z",
+    "updatedAt": "2026-09-25T09:30:00.000Z",
+    "revision": 7,
+    "canonVersion": "legacy-unverified",
+    "ruleVersion": "rules-not-signed",
+    "memoryPolicyVersion": "legacy-unknown",
+    "character": { "name": "回档修士", "灵根": "水木双灵根" },
+    "location": "望气台",
+    "status": "pending_rules",
+    "messages": [
+      { "role": "user", "content": "我在望气台观察落石。" },
+      { "role": "assistant", "content": "落石堵住了石槽，缝里冒出新草。\n  （测试文本，含换行与全角标点）" }
+    ],
+    "pendingQueue": [{ "id": "intent-fixture-1", "text": "绕到芦花渡问路" }],
+    "legacySupplement": { "status": "姓名：回档修士", "memory": "曾在山门登记" },
+    "legacyArchive": {
+      "sourceFormat": "JIUXIAO_LEGACY_JSON",
+      "sourceVersion": null,
+      "payload": { "messages": ["旧故事：登记后上山"], "extension": { "clue": "石阶剑痕", "unicode": "\u2028分隔符与 emoji 🌊" } }
+    }
+  }
+}

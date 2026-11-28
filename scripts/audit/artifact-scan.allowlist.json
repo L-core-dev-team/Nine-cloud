@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "note": "Release-artifact leak scan allowlist (scripts/audit/artifact-scan.mjs). Add an entry only for a value that is intentionally public and already reviewed; every entry needs a reason. Values are matched exactly after normalisation (emails lower-cased, phone numbers reduced to digits without the +86 prefix).",
+  "emails": [
+    {
+      "value": "3507103376@qq.com",
+      "reason": "Public player feedback / privacy contact address, intentionally published on /feedback, /privacy and /privacy-rights (apps/web/public)."
+    }
+  ],
+  "phones": [
+    {
+      "value": "13800138000",
+      "reason": "Conventional fictitious placeholder number shown as the input-format example in the cloud settings phone field (apps/web/src/routes/CloudSettings.tsx); not a real subscriber."
+    }
+  ],
+  "envKeys": []
+}

@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "saves": [
+    { "id": "fixture-library-001", "name": "库中修士", "turn": 2, "created": "2026-09-20T00:00:00.000Z", "player": { "姓名": "库中修士" }, "world": { "location": "芦花渡" }, "messages": [{ "role": "assistant", "content": "渡口无人。" }], "intel": "地点：芦花渡", "extension": { "unknownField": [1, 2, 3] } },
+    { "saveId": "bad/id with spaces", "name": "坏编号", "messages": ["纯文本消息"], "memory": "测试 saveId 净化" }
+  ]
+}

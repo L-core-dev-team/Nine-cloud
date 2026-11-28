@@ -1,0 +1,24 @@
+# gitleaks configuration (JX-VISION-02 governance §5.2, docs/execution/JX-VISION-02/ci-guards.md).
+#
+# The default gitleaks rule set stays fully enabled. Allowlist entries below are
+# only for findings that were individually proven to be false positives; each one
+# is scoped to a single rule, file and commit so that any new match elsewhere still
+# fails. Never add a path-wide or rule-wide exemption to make a scan pass: if a real
+# secret is found, rotate it first and record the incident.
+
+title = "jiuxiao gitleaks config"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = """\
+  DEPLOY-VERIFY-01 evidence (branch codex/jx-deploy-verify-01, commit 1092be48): \
+  lines 151/152 are the git commit and tree object IDs of the verified API checkout \
+  (both resolve with `git cat-file -t` in this repository) and line 188 is the \
+  UUIDv4 idempotency key of a synthetic game-creation request. None is a credential.\
+  """
+condition = "AND"
+targetRules = ["generic-api-key"]
+commits = ["1092be4895a76dcdeaf16721fc6f6c3826acd5c4"]
+paths = ['''^docs/integration/DEPLOY-VERIFY-01/evidence\.json$''']

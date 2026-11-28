@@ -17,6 +17,7 @@ api.jiuxiaogame.cn {
         >Cache-Control no-store
         X-Content-Type-Options nosniff
         Referrer-Policy strict-origin-when-cross-origin
+        Content-Security-Policy "default-src 'none'; frame-ancestors 'self'; base-uri 'none'; form-action 'none'"
         X-Frame-Options SAMEORIGIN
         Strict-Transport-Security max-age=31536000
     }
@@ -53,6 +54,7 @@ api.jiuxiaogame.cn {
             Cache-Control no-store
             X-Content-Type-Options nosniff
             Referrer-Policy strict-origin-when-cross-origin
+            Content-Security-Policy "default-src 'none'; frame-ancestors 'self'; base-uri 'none'; form-action 'none'"
             X-Frame-Options SAMEORIGIN
             Strict-Transport-Security max-age=31536000
         }
