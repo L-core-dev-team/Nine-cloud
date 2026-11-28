@@ -76,7 +76,7 @@ $ktxRel = J 'https://api.github.com/repos/KhronosGroup/KTX-Software/releases/lat
 $rows += Row 'KTX-Software' $ktxInst $ktxRel.tag_name
 
 $rdExe = Find-Exe 'renderdoccmd'
-$rdInst = if ($rdExe) { ((& $rdExe version) 2>$null | Select-String 'v1\.' | Select-Object -First 1) } else { $null }
+$rdInst = if ($rdExe) { ((& $rdExe version) 2>$null | Select-String 'v1\.' | ForEach-Object { $_.Line } | Select-Object -First 1) } else { $null }
 $rdRel = J 'https://api.github.com/repos/baldurk/renderdoc/releases/latest'
 $rows += Row 'RenderDoc' $rdInst $rdRel.tag_name
 

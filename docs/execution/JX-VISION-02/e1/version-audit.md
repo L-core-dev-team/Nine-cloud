@@ -55,7 +55,7 @@
 
 - npm 项目内依赖（axe-core、lighthouse、pixelmatch）未装全局，`installed` 显示为空；实际版本以各工作区 `package.json` / `node_modules` 为准。
 - Python 最新版字段在首版审计中为空（endoflife 返回结构未适配）；`scripts/audit-versions.ps1` 已修正，实测返回 3.15.2。当前 Windows 3.13.12、WSL 3.14 均可用，**不为追新而更换 ComfyUI 解释器**。
-- RenderDoc 的版本输出被 PowerShell 匹配对象包装，JSON 中显示为对象而非字符串；实际版本 v1.47 正确。
+- 首版报告曾把 RenderDoc 版本输出写成 PowerShell 匹配对象；`scripts/audit-versions.ps1` 已改为取 `.Line` 字符串，重跑后为 `v1.47 / CURRENT`。
 
 ## 5. 升级执行顺序（建议）
 
