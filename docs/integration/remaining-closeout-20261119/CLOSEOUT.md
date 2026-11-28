@@ -41,8 +41,10 @@
 显式安装候选在 `packages/db/pending`，0027→0028 **未登记到自动 journal**。需 schema-owner、lock-owner、operator、erasure、worker、runtime 职责分离、旧 writer 完整清单、旧角色失权消退、generation 排空和 fence 证据。测试工具在专用库中构造这些前提。不得仅凭主进程退出切换写入者。标准校验：
 `node scripts/build/t1-authority-ci.mjs`，仅在本次独立 test DB 且具备该脚本要求的环境证明时运行。临时应用 [待签补丁](t1-authority.PENDING.patch)，编译并验证原加载器的拒绝和受限 PG 组合。
 
-- 待签代码实现摘要 `sha256:6e7845780218bd7035b13bb174fc37a75228a771fbe857f15bfa2f1967eb52b9`，新聚合 `sha256:24d52dbea9e3effaa6d14bbf9f976e5772ab6a32f3b3f5d1fb283a54e36ed016`，已批准聚合 `sha256:8b938f92e0427ef03b44a7fe6cb90f8fb208e9ca7140a316dae187dfdd422006`。补丁 SHA-256 `23678dd62605da2b95ac956dbc9043912efe88a978ddedbceb4d23d74939b18f`。原 35 项的修改只在补丁中，针对同一回合事务登记/恢复及受限记忆快照；最终正式签署由原授权主体决定。
+- 待签代码实现摘要 `sha256:6e7845780218bd7035b13bb174fc37a75228a771fbe857f15bfa2f1967eb52b9`，新聚合 `sha256:24d52dbea9e3effaa6d14bbf9f976e5772ab6a32f3b3f5d1fb283a54e36ed016`，已批准聚合 `sha256:8b938f92e0427ef03b44a7fe6cb90f8fb208e9ca7140a316dae187dfdd422006`。历史补丁 SHA-256 `23678dd62605da2b95ac956dbc9043912efe88a978ddedbceb4d23d74939b18f`。原 35 项的修改只在补丁中，针对同一回合事务登记/恢复及受限记忆快照；最终正式签署由原授权主体决定。
 - 历史黄金 Commit `dbae068d86e5f9cd188d6196e403ce6dd701a1de`、Tree `2281d824dfe18d387b34cb9e13722dff125b49b0`、夹具 SHA-256 `e585515a8b4ca273aac962863f093c8fb0312055d8a49755baf37d4b3404e8e7`。本次合成规则事务、Continue/Forgetting 授权联合测试与正式黄金规则加载验收分别记账。历史原件见 `b0a22eb7:docs/integration/t1-v2-final-closeout-01/T1-V2-OWNER-ACCEPTANCE-EXCEPTIONS.md`。14 项本地 PASS、T03 延期及 T09 可信来源例外仅适用于原封存；新候选不推定旧无正文回执的来源。
+
+2026-11-27 的 `0e2e3b56` 调整补丁上下文以兼容 0030。Git blob 的现行 SHA-256 为 `3ef3906cb44b19366a67c0ddc59b9c85b5d9cadb5d02b9458c89ff5e3d6fc548`；隔离组合重新计算的实现与聚合摘要和上段一致。8 项 PG 测试通过，原加载器仍拒绝该组合。
 
 ## M5 门禁与待决条件
 

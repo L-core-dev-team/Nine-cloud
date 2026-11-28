@@ -6,7 +6,7 @@
 
 - 2026-11-26，作者在 PR [L-core-dev-team/Nine-cloud#124](https://github.com/L-core-dev-team/Nine-cloud/pull/124) 的授权评论（LYL-Z，2026-11-26T15:29:55Z）和执行命令中批准全面实施：设计与工程由 Claude 自主决定；取消双作者签收和阶段性再批准；批准使用现有及已授权的 GPU；批准 P1 冻结与升级、ADR 0009、CI 门禁重构、正式产品开发；合并和发布按既有权限和验收流程推进。
 - 这份授权**不包括**：新增付费（须另给预算）、外部账户的管理员权限、不可逆的生产数据操作、跳过平台安全机制。缺少的凭据或资源在第 5 节列为需求，其他工作照常进行。
-- 本页记录的决定都是 Claude 依授权做出的决定，不是任何作者的签名。历史签署原文一律不改。
+- §2 保留 Claude 依据原授权作出的决定。2026-11-27 作者在接任命令中将项目执行权转交 GPT-6.2 / Codex，并指定模型手动切换。历史签署保留原文。
 
 ## 2. 决定登记（对应最终方案 12 §1 的 D1–D12）
 
@@ -40,7 +40,7 @@
 
 状态：DONE（已完成并有证据）、DOING、TODO、BLOCKED、NOT RUN。逐项全量覆盖（R0–R5、X1–X14、缺陷、替换项）见 [handoff/03](handoff/03-覆盖台账.md)；本表只列当前进行中的部分。
 
-**当前执行者**：2026-11-27 起由本地会话接手（见 [交接包](handoff/README.md)）。云端会话 `session_01UT1aoYGEtYtLan2nHHEUfE` 已停止开发，不再修改下列分支。
+**当前执行者为 GPT-6.2 / Codex。** 本地接任已建立独立恢复提交并修复 PR #127 基线。当前阶段、测试修订与下一步见 §6。下表保留原执行记录。
 
 | 阶段 | 任务 | 状态 | 证据 |
 |---|---|---|---|
@@ -64,7 +64,7 @@
 | R2 | 天光序章：资产套件、渲染、言落、摘句为证、多形态界面 | TODO | |
 | R3–R5 | 卷宗、天文季节、地图、神识修炼、社会 | TODO | |
 
-**精确下一步**：见 [handoff/03 §0](handoff/03-覆盖台账.md)。
+**接任核验与工程断点**见本页 §6 和[源码核验与 R1 七步顺序](handoff/08-接任核验与R1顺序.md)。
 
 ## 5. 需要作者提供的资源
 
@@ -74,10 +74,27 @@
 | 法务意见 | D4、D11 的生产开启 | 未提供；相关功能以开关隔离 |
 | 真机、真人玩家、Cloudflare 凭据、API 服务器访问 | X3、X6、X8–X10；发布 | 见 [handoff/05 §5](handoff/05-接续步骤与资源.md) |
 
-## 6. 恢复入口
+## 6. 阶段交接与恢复入口 · 2026-11-27
 
-0. 新接手的会话先读 [交接包](handoff/README.md)。
-1. 读本页第 4 节和 [handoff/03 §0](handoff/03-覆盖台账.md)，找到第一个不是 DONE 的任务。
-2. `git fetch origin && git log --oneline origin/main -5`，核对第 3 节的最后一个 SHA。
-3. 当前执行分支是 `claude/jx-exec-r1`；新分支以 `claude/` 开头，基于最新 main 或该分支；每完成一项就提交，并在第 4 节写入提交 SHA 和测试记录。
-4. 生产部署只用既有流程（Cloudflare Pages 直传），部署前记录回滚点。
+**接任核验结束，等待作者手动切换到 Sol Xhigh 并发送继续命令。** 执行线沿用 [Draft PR #127](https://github.com/L-core-dev-team/Nine-cloud/pull/127) 的 `claude/jx-exec-r1`。接任使用独立工作树；新的本地任务分支可用 `codex/` 前缀。main 采样为 `684aced9`。每次切换先运行以下只读核验及抓取，在干净的独立工作树以实际 PR head 为基线：
+
+```sh
+git fetch --no-prune origin
+gh pr view 127 --json state,baseRefName,headRefName,headRefOid,statusCheckRollup
+git rev-parse origin/claude/jx-exec-r1
+git status --short --branch
+```
+
+| 接任成果 | 提交及核验范围 |
+|---|---|
+| 云端以后八项提交 | `06b327b8..64ca7ddf` 共 8 个，含一个合并提交。缺陷 4 服务端、7、批准格式 v2 和世界包均已进入执行线。[逐项审读](handoff/08-接任核验与R1顺序.md) |
+| 遗留门禁 | [恢复提交 bc534a33](https://github.com/L-core-dev-team/Nine-cloud/commit/bc534a3304791174d78b5aa5a0188f7d51da6f90)，父节点 `055bb659`。6 个跟踪修改及 12 个新文件已单独保存。4 组 Node 测试共 20 项及离线响应头检查通过。生产工作流接线、契约升级回放、完整 CI 另验。 |
+| T1 兼容 | [0e2e3b56](https://github.com/L-core-dev-team/Nine-cloud/commit/0e2e3b56cb16ff6a98ba88117a69b7c32f815053) 修正 pending overlay 与 0030 校验接口的组合，只在专用测试库模拟原生回合登录权限。保留全审、增量检查、事务边界与旧加载器拒绝。 |
+| 工程基线 | Windows、Node 24、PG17：冻结安装，类型、单测、构建、隔离迁移两次、旧库升级、P1 候选浏览器旅程（13 请求、15 事件、2 授权）。其中已提交的 `0e2e3b56` 独立重跑 typecheck、test、build、PG 集成 55/55、T1 8/8、逻辑备份还原。API 普通单测 452 通过、102 跳过；数据库组另行运行。Windows 全套 e2e 在 `foundation.cjs` 的世界书返回滚动位置断言超时。 |
+| 远端与本地范围 | [冻结时各分支 SHA、相对 PR head 的提交数和 PR verify](handoff/2026-11-27-remote-refs.tsv)。入场时远端 152 个分支、126 个 PR、其中 17 个 OPEN；[接任恢复依据](handoff/README.md)记录了独立工作与 CI 历史。 |
+| 工具与资产 | [环境、实测与复现](local-environment.md)。作者参考原图和模型留在私有环境。 |
+| 发布状态 | #127 仍为候选。此次只读取正式站公开资源，build-manifest 路径返回 HTML，线上 API 与迁移版本未知。生产数据库迁移 0030、T1 启用、宿主 v2 安装本轮 NOT RUN。 |
+
+**R1 第一项工程改动**是将恢复的门禁逐项接到执行线并用反例验收。先核对当前 head 的 verify 和两个分支的差异；无需重复移植 `b4eeb4c`、缺陷 7 或重建世界包。[任务依赖、源码入口与逐项完成条件](handoff/08-接任核验与R1顺序.md)
+
+手动阶段顺序为接任核验（Astra Xhigh）、R1 工程地基（Sol Xhigh）、R1 独立终审（Astra Xhigh）、R2 天光（Astra Xhigh）、R3 卷宗与叙事（Sol High）、R4 世界与玩法（Astra Xhigh）、R5 长期世界演化（Astra Xhigh）、全项目终审（Astra Max，如客户端可用）。每阶段在此处更新执行分支、可恢复的提交、已验与失败项目、原方案覆盖及下一项操作；以 GitHub 的 PR head 和该 head 的检查记录解析最新交接提交，避免文档自引用 SHA。完成阶段后等待手动指令。

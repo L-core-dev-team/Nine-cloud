@@ -1,5 +1,7 @@
 # 迁移 0030：事件链增量校验检查点（缺陷 4）
 
+> 2026-11-27 在隔离 PostgreSQL 上实测 T1 和 0030 组合。接任修复与证据在[执行台账 §6](../README.md)。
+
 ## 内容
 
 - 新表 `turn_event_chain_checkpoints`：每个存档记录最近一次校验通过的链头（`verified_sequence`、`verified_hash`）。只作完整性缓存，不授权任何写入；随 `game_saves` 级联删除。
