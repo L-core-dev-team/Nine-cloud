@@ -1,4 +1,4 @@
-# E1 · 工具链清单与验证状态
+# 工具链清单与验证状态（E1 + E1.1）
 
 状态口径：
 
@@ -8,6 +8,8 @@
 - **deferred**：评估后有意不装（体积 / 许可 / 无明确用途）
 
 本文件不含本机绝对安装路径；具体路径由 `<LAB_ROOT>\Management\Manifests\tools-manifest.json` 在本地记录。
+
+**版本复核（2026-11-28）**：全部已装软件与官方最新版逐项比对，结果与升级决策见 `version-audit.md`。当前明确落后且值得处理的是 Node 24→26、pnpm 11→12、ComfyUI 0.30→0.46、FFmpeg 8.1→9.1；四者均需隔离回归，不在本轮原地升级。
 
 ---
 
@@ -39,22 +41,27 @@
 | PostgreSQL（容器） | 17-alpine | PostgreSQL License | verified | 建库 `jiuxiao_test`、建表、插入、`select version()` 返回 17.x |
 | PostgreSQL（宿主客户端） | — | PostgreSQL License | **missing** | 仅容器内 psql 可用；宿主原生 psql 需管理员安装（见 blockers） |
 | Supabase CLI | 3.4.0 | Apache-2.0 | verified | `--version` 与本地命令可用；**未登录生产** |
-| Wrangler | 4.169.0 | MIT/Apache-2.0 | verified | 需补装 `@cloudflare/workerd-windows-64` 可选依赖后才能启动 |
+| Wrangler | 4.169.0 | MIT/Apache-2.0 | verified | `wrangler dev --local` 启动 Worker，`GET /health` 返回 200；未登录、未部署 |
 | aria2 | 1.37.0 | GPL-2.0 | verified | 多连接下载；**大文件最终校验改用单连接** |
 
 ## 4. 图形 / 三维 / 媒体
 
 | 工具 | 版本 | 许可 | 状态 | 验证方式 |
 |---|---|---|---|---|
-| Blender | 5.2.2 LTS | GPL-2.0+ | verified | Cycles OptiX 渲染 1.55 s 出图；场景→GLB 导出 |
+| Blender 5.3.0 | 5.3.0（2026-11-10） | GPL-2.0+ | verified | 便携 ZIP，官方 SHA-256 通过；OptiX 1.52 s / GN 625 顶点 / GLB 64,524 B / 浏览器加载 |
+| Blender 5.2.5 LTS | 5.2.5（2026-11-24） | GPL-2.0+ | verified | 便携 ZIP，官方 SHA-256 通过；同场景 1.60 s，作为兼容备份 |
+| Blender 5.2.2 LTS（系统） | 5.2.2 | GPL-2.0+ | verified | 保留为第三回退点，不覆盖 |
 | ComfyUI | 0.30.1 | GPL-3.0 | verified | `/system_stats`、`/object_info`、`/prompt`、`/history` 全流程可用 |
 | FFmpeg | 8.1.1 | LGPL/GPL | verified | 音视频转码/探测命令可用 |
 | ImageMagick | 7.1.2-36 Q16-HDRI | ImageMagick License | verified | 图像转换、montage、compare 度量 |
 | KTX-Software | 4.4.2 | Apache-2.0 | verified | `ktx create` 生成 KTX2 + `ktx info` 校验通过 |
 | glTF-Transform CLI | 4.5.1 | MIT | verified | `inspect` / `validate`（零 error / 零 warning） |
-| RenderDoc | 1.47 | MIT | installed | `renderdoccmd` CLI 可用；未做实际抓帧 |
+| RenderDoc | 1.47 | MIT | installed | `renderdoccmd` CLI 可用；**API 注入失败，无 `.rdc`**，详见 blockers C1 |
 | Godot | 4.7.2 | MIT | verified | `--version` 可用（当前无产品用途） |
-| Krita | — | GPL-3.0 | **missing** | winget 安装被交互式 UAC 阻断（见 blockers） |
+| **Krita** | **5.3.4.1** | GPL-3.0 | **verified（E1.1）** | 便携解压，官方 SHA-256 匹配；`krita.exe --version` 通过 |
+| **Audacity** | **4.0.2** | GPL-2.0 | **verified（E1.1）** | 7z 便携，官方 checksum 匹配；`Audacity4 4.0.2` 启动 |
+| **Numba** | **0.68.1** | BSD-2-Clause | **verified（E1.1）** | JIT 求和结果正确（analysis venv） |
+| **Taichi** | **1.7.4** | Apache-2.0 | **verified（E1.1）** | `rel_error=3e-6`，`taichi_ok=true` |
 
 ## 5. 测试 / 审计
 
@@ -70,7 +77,7 @@
 
 | 工具 | 版本 | 状态 | 说明 |
 |---|---|---|---|
-| WSL2 + Ubuntu | Ubuntu 24.04 LTS | installed | WSL 内可见同一 GPU；**CUDA 计算未跑**（发行版 python3 为 3.14，无对应 cu130 wheel） |
+| WSL2 + Ubuntu | Ubuntu 24.04 LTS | verified | `/root/jx-gpu` venv（Python 3.14）+ torch 2.15.0+cu132；8192³ FP16 实测 **67.8 TFLOPS** |
 | CUDA Toolkit | — | deferred | 当前无本地 CUDA 扩展编译需求；PyTorch 自带 cu130 运行时已够用 |
 
 ---
@@ -83,3 +90,4 @@
 | CUDA Toolkit 整包 | 3–5 GB，且当前无编译原生扩展的需求 |
 | 本地大语言模型 | 与 E1 目标无关，且会占用 24 GB 显存中的大部分 |
 | Wan 14B 视频模型 | 1.3B 已完整可用，14B 约 28 GB，留给 R1 明确需求后再评估 |
+| Inkscape / TripoSR | 可便携安装，但本轮带宽与许可核验未完成；不虚报为已装（DEFERRED） |
